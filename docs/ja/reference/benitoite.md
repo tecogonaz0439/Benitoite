@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,7 +16,7 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.7` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.8` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
 `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
@@ -100,7 +100,7 @@ benitoite --licenses
 | `skill` | 同梱の Agent Skill をインストール・削除する。または、インストールせずに埋め込み文書の一覧を取得し、本文を取り出す。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.7`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.8`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
 | `--version=json` | 版・ビルド・対応する形式の情報を一つの JSON オブジェクトとして出力する。最初の引数でなければならず、後続の引数は受け付けない。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
@@ -158,7 +158,7 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "unicodeVersion": "17.0.0",
   "build": {
     "commit": null,
@@ -232,6 +232,8 @@ benitoite test --check --report=json tests/
 成功した `main` は `{symbol: "main", location, effects, processShellReference, shellReferenceScope}` である。`tests` の各要素は `{function, description, location, effects}` であり、宣言順に並ぶ。テストの説明を省いた場合は `null`、空の説明を明示した場合は `""` になる。`location` は `{file, start, end, label: ""}` で関数名の位置を示す。start と end は、1 から数える `line` と `column`、元のソースでの 0 から数えるバイト位置 `offset` を含む。
 
 Effects オブジェクトは `{basis: "declaredUpperBound", expanded: [...]}` である。配列には組み込みの原子的なエフェクトの名前が、重複なく辞書順に並ぶ。本体で使わないものも含め、宣言した上限を報告する。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` へ展開し、HTTP のどちらのエフェクトも `Assert.Check` も含まない。テストの各契約、集計、後のエフェクトの上限の比較では `Assert.Check` を保持する。`main` での `Assert.Check` の宣言は検査の誤り（`E0415`）になる。処理していない `or die` は `Process.Exit` を要する。これをすべて処理し、宣言した上限から取り除けば、報告からも取り除かれる。単独の `try` や `or return` は終了のエフェクトを加えない。
+
+main かテストに未処理の `Failure.Fail[E]` があれば、test --check も含め、検査の誤り E0506 になる。入口の内部で処理するか、Failure.toResult で変換する。Fail は IO.All、expanded、--allow-effects が受け付ける名前に含めない。報告とエフェクト上限のスキーマの版は変わらない。
 
 純粋な契約の検査が成功すれば `expanded: []` になる。不明なエフェクトは Effects の値全体を `null` として表し、空配列にはしない。対象の検査が失敗すれば、その `main` か `tests` は `null` になる。検査済みのファイルにテストがなければ `tests: []` になる。空のディレクトリは、`targets: []` と空の集計エフェクト集合を持つ完全な成功である。一つのファイルが失敗しても、成功した対象の契約は残るが、全体の `complete` は false、`aggregateEffects` は null になる。探索の失敗では、どの入口も検査せずに止まる。それまでに発見した対象は、`status: "checkError"`、`tests: null` の不完全な参考情報として残る。処理系の不具合や観測した中断では、後の入口が未検査のまま残ることがある。
 
@@ -540,6 +542,66 @@ end function
 
 `xs |> List.map(xs: _, f: action)` のように直接の穴がある場合は、パイプは生成した関数を一引数で呼ぶ。括弧で囲んだ右辺も、関数値として一引数を受け取る。二つの穴には二つの引数が必要であり、パイプがその関数を自動で再び部分適用することはない。
 
+### 型付きの失敗
+
+`Benitoite.Unofficial.Failure` を明示的に取り込む。`Failure.raise(error)` の型は `function(error: E) -> T uses Failure.Fail[E]` である。エラーには任意の値型を使え、Show も equality も要らない。型引数を取るエフェクトは標準の Fail だけである。uses の一覧には、`Failure.Fail[String]` のように修飾した名前と型引数を書き、ほかのエフェクトとコンマで区切る。
+
+```benitoite
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+function recovered() -> Integer
+  return handle Failure.raise(error: "bad") with
+    case Failure.raise(error) -> String.characterCount(error)
+  end handle
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(recovered()))
+end function
+```
+
+```output
+3
+```
+
+失敗の節は、handle 全体の結果を返す。`resume` は使えず、一つの handle に失敗の節と通常の操作の節を混ぜられない。両方が要るときは handle を二重にする。最も近い失敗の節が捕捉し、実行時にエラーの型でハンドラを選ぶことはない。節で別の型の失敗を明示的に発生させ、外側の handle で捕捉することはできる。
+
+一つのソースのエフェクト集合に含められる失敗型は高々一つであり、不変である。異なる失敗型の合流は E0514 を報告する。宣言したシグネチャで明示的な Fail と並ぶエフェクト行は、コールバックと戻り値の関数型の内部も含め、失敗を除外する。この内部の条件を `Rest excludes Failure.Fail` と表示し、関数値、高階の呼び出し、モジュールの境界を通して保つ。条件はシグネチャから求め、本体からは求めない。handle の残りの行にこの条件がなければ E0515 を報告する。List.map のような普通の行は失敗を伝播できる。失敗を捕捉しても、返す関数に残る潜在的なエフェクトは取り除かれない。main やテストが戻る前に失敗を処理する。
+
+`Failure.fromResult(result)` は、Ok の値を返すか、Error の元の E を使って失敗を発生させる。`Failure.toResult(body)` は、失敗のハンドラの内側で body を一度呼び、正常な戻り値を Ok に包み、発生した失敗を Error として返す。コールバックの型は `function() -> T uses Failure.Fail[E], Rest`、結果は `Result[T, E]` である。残るエフェクトは、Fail を除外する Rest である。どちらの変換にも Show と equality は要らない。E を推論できなければ、束縛かコールバックの型に注釈を加える。呼び出しに明示的な型引数は書けない。
+
+```benitoite
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+record Invalid
+  value: Integer
+end record
+
+function convert(value: Integer) -> Integer uses Failure.Fail[Invalid]
+  return Failure.fromResult(if value = 2 then Result.Error(Invalid(value: value)) else Result.Ok(value) end if)
+end function
+
+function main() -> Unit uses Console.Write
+  bind result: Result[List[Integer], Invalid] <- Failure.toResult(body: lambda()
+    return List.map(xs: [1, 2, 3], f: convert)
+  end lambda)
+  match result with
+    case Result.Ok(_) -> Console.writeLine("all succeeded")
+    case Result.Error(error) -> Console.writeLine("failed at " + Integer.toString(Invalid.value(error)))
+  end match
+end function
+```
+
+```output
+failed at 2
+```
+
+最初の失敗で map は止まり、後の要素も処理しない。ほかのエフェクトと、既に終えた外部の作業は残る。入れ子の with は、toResult が戻る前に内側から外側へ一度ずつリソースを解放する。解放の失敗は実行時エラーとして止まり、Error には変換しない。body が return や try で Result を返した場合も、正常な戻り値は常に Ok に包む。
+
+子タスクごとにその内側で失敗を変換し、既存の Task API を通じて Result を返す。親の非再開型の失敗ハンドラを使う子は、引き続き R0502 で止まる。lazy の本体は純粋でなければならない。本体の内部で toResult を使って失敗を処理すれば Result を記憶できる。エフェクトを持つ計算を遅らせる場合はラムダを使う。この変換は die、Process.Exit、実行時エラー、資源の上限、中断、取り消し、外部のトラップを捕捉しない。
+
 ### 型とエフェクトのパラメータ
 
 型パラメータは、名前の後の角括弧に書く。`function first[T](xs: List[T]) -> Option[T]` のように書く。型引数も角括弧を使う。`List[Integer]`、`Map[String, Integer]` のように書く。*エフェクト変数*は、エフェクトの集合を表す型パラメータである。エフェクト変数を使うと、関数は任意のエフェクトを持つ関数を引数に取り、そのエフェクトをそのまま自分のエフェクトにできる。
@@ -608,6 +670,22 @@ HI
 - リスト `[]`、`[x]`、`[first, ..rest]`、`[.., last]`。
 - コンマで区切った複数の選択肢 `case 1, 2 ->`。
 - ガードを後に続けたもの `case n if n > 0 ->`。
+
+Character の範囲は、Unicode スカラー値の全域を覆える。`case '\u{0}'..'\u{10ffff}' ->` 一つ、または `'\u{0}'..'\u{d7ff}'` と `'\u{e000}'..'\u{10ffff}'` の二つの範囲で、包括的な最後の分岐なしに網羅できる。レコード、構成子、リストの内部にも同じ規則を適用し、全域の範囲は bind のパターンにも使える。その後の包括的な分岐は E0602、コンマで並べた冗長な選択肢は E0608 で拒否する。ガード付きの分岐は網羅性を成立させない。Integer の範囲には、実装上の Integer の全域を覆っていても包括的な分岐が要る。未被覆の文字に対して E0601 は具体的なスカラー値を示す。例えば `'a'` だけの match なら `'\u{0}'` となる。
+
+```benitoite check
+function scalarHalf(c: Character) -> Integer
+  bind '\u{0}'..'\u{10ffff}' <- c
+  return match c with
+    case '\u{0}'..'\u{d7ff}' -> 0
+    case '\u{e000}'..'\u{10ffff}' -> 1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- scalarHalf('\u{e000}')
+end function
+```
 
 リストのリテラルは、別のリストの要素を差し込む展開 `[first, ..rest]` を一つ含められる。`bind` と `shadow` は、`bind Pair(a, b) <- pair` のように、必ず照合するパターンを受け付ける。
 
@@ -685,7 +763,7 @@ A B almost nothing C
 
 パッケージの境界は `public(package)` と同じである。起点のスクリプトと根のモジュールは一つのパッケージ、標準ライブラリと prelude は別の一つのパッケージを成し、各依存の内部モジュールはその依存に属する。同じパッケージの別のモジュールへ型を取り込んでも、外部からの使用にはならない。
 
-標準ライブラリは、四つの失敗型 `IOErrorKind`、`NetworkErrorKind`、`Json.ParseError`、`Csv.ParseError` を拡張可能と指定する。`Result` と `Option` 自体は閉じた型のままである。中身を変数で束縛する `Result.Ok(value)` と `Result.Error(error)` で、両方の場合を覆える。`String` の失敗値には通常の文字列パターンの規則を保つ。不透明な `IOError` と `NetworkError` には、照合できる構成子がない。
+標準ライブラリは、失敗型 `IOErrorKind`、`NetworkErrorKind`、`Json.ParseError`、`Json.Codec.ConversionError`、`Csv.ParseError` を拡張可能と指定する。`Result` と `Option` 自体は閉じた型のままである。中身を変数で束縛する `Result.Ok(value)` と `Result.Error(error)` で、両方の場合を覆える。`String` の失敗値には通常の文字列パターンの規則を保つ。不透明な `IOError` と `NetworkError` には、照合できる構成子がない。
 
 拡張可能なレコードでは、`ParseError(message: text, ..)` は既知のレコードの形だけを覆う。`..` は現在のフィールドの省略である。パッケージの外では、`match` に変数か `_` の分岐を加える。分解する `bind` や `shadow` は常に一致しなければならないので、そのレコードパターンだけを使うと `E0607` を報告する。取り出す関数か、将来の形の分岐を持つ `match` を使う。構築・更新・フィールドの取り出しは、宣言したフィールドの契約を保つ。この属性は、レコードのフィールドを追加・変更したときの互換性を保証しない。
 
@@ -879,6 +957,10 @@ error[E0501]
 エフェクトは関数の値の型の一部である。`function(text: String) -> Unit uses Console.Write` のように書く。
 
 ## 11. エフェクトハンドラ
+
+操作の値型のパラメータには、型クラスと組み込みの制約を付けられる。例えば `function render[T: Trait.Show](value: T) -> String` と書く。呼び出し側が実装を選び、ハンドラの節では、呼び出し側のどの型に対しても宣言したメソッドを使える。上位の型クラスを含め、複数の制約は `&` でつなぐ。制約によって公開の引数が増えることはない。操作は型構築子パラメータ、エフェクト変数、独自の `uses` を宣言できない。
+
+制約付きの操作は、関数値として保存し、`_` で部分適用し、`|>` の右辺に使える。関数型には宣言した公開のパラメータと操作のエフェクトだけを保つ。節内のラムダは、上位の型クラスを含む宣言した制約を捕捉できる。入れ子の節はそれぞれの制約を保つ。名前付き引数はソース順に一度ずつ評価し、その後で宣言順へ並べる。
 
 エフェクトは自分で宣言できる。`effect` の宣言はその操作を挙げ、操作は関数と同じように呼ぶ。`handle body with case operation(arguments) -> clause end handle` は `body` を実行し、本体が挙げた操作のどれかを呼ぶたびに、代わりに節を実行する。節の中の `resume(value)` は、`value` を操作の結果として本体を続ける。`resume` を呼ばない節は、自分の値で `handle` を終える。`resume` は節の中に直接書く。ラムダ、`lazy` の本体、`match` のガード、プレースホルダ `_` を持つ呼び出しの引数の中には書けない（そこに書いた `handle` は、自分の節で `resume` できる）。
 
@@ -1146,6 +1228,39 @@ test result: FAILED. 1 passed; 1 failed
 
 テストを実行する `test` の終了状態は、すべてのテストが通れば 0、テストが失敗すれば 1、検査の誤り、エフェクト上限による拒否、コンパイルの上限、読めないファイル、使い方の誤りでは 2、処理系の不具合では 3、中断されたときは 130 である。複数が当てはまるときは、130、3、2、1 の順で最初のものを使う。出力の失敗では 1 になる。実行しない `test --check` は、JSON の報告の有無にかかわらず、[非実行の検査の状態](#検査報告)を使う。
 
+### 純粋な性質の試行
+
+`Benitoite.Unofficial.Test.Property` を取り込むと、純粋な生成器、縮小器、上限付きの性質の試行を使える。これらは通常のライブラリ関数である。一つの @test から Property.check を呼び、結果を照合し、整形した String のエラーを返す。test --check は型とエフェクトだけを検査し、生成器も性質も実行しない。
+
+```benitoite test
+import Benitoite.Unofficial.Test.Property
+
+@test("integer addition agrees with multiplication")
+function addition() -> Result[Unit, String]
+  bind gen <- try Property.integer(low: -100, high: 100)
+  bind config <- Property.Config(seed: 17, trials: 100, size: 8, maxShrinks: 100)
+  bind result <- Property.check(config: config, gen: gen, shrinker: Property.shrinkInteger(), property: lambda(value)
+    return if value + value = value * 2 then Result.Ok(()) else Result.Error("addition disagrees") end if
+  end lambda)
+  return match result with
+    case Result.Ok(_) -> Result.Ok(())
+    case Result.Error(failure) -> Result.Error(Property.formatFailure(failure: failure, show: lambda(value) return Integer.toString(value) end lambda))
+  end match
+end function
+```
+
+Gen[T] は、`run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]` を持つ公開レコードである。Shrinker[T] は `candidates: function(value: T) -> List[T]` を持つ。生成器を手で書く場合は Benitoite.Unofficial.IO.Random を取り込み、返された乱数の状態を次の抽選へ渡す。両コールバックと性質は純粋でなければならず、Assert、IO、型付き Fail、終了を実行できない。実行時エラーと中断はそのまま伝播し、反例には変換しない。
+
+Config は、任意の Integer の seed、1〜10000 の trials、0〜10000 の size、0〜100000 の maxShrinks を受け付ける。両端を含む。不正な設定は、コールバックを一度も呼ばず CheckFailure.InvalidConfig(String) を返す。各試行には同じ size を渡す。Gen.run を直接呼ぶ場合は、保持する関数の size の契約に従う。組み込みの string、list、map の生成器には 0〜10000 の size を要する。
+
+生成器には constant(value)、map(gen, f)、both(left, right)、integer(low, high)、boolean()、float()、string()、list(element)、option(element)、stringMap(value) がある。Result を返すのは integer だけである。境界が逆なら誤り、同じ境界なら乱数の状態を進めない。Integer の全域にわたる場合も両端を含む。整数の抽選は意図的にゼロと両端へ偏らせており、一様性を約束しない。Float は [-1, 1] の有限値で、ゼロと ±1 の分岐を持つ。文字列には有効な Unicode スカラー値を使う。文字列とリストの長さは 0〜size である。stringMap は 0〜size 回キーと値を生成し、重複キーでは最初の値を残して再試行しない。入れ子の生成器にも同じ size を渡すため、これは総確保量の絶対的な上限ではない。Option は確率 1/4 で None を選ぶ。
+
+shrinkInteger、shrinkFloat、shrinkBoolean、shrinkString は引数を取らない。shrinkList(element)、shrinkOption(element)、shrinkStringMap(value) は要素の縮小器を取り、変化のない候補と重複する候補を除くため要素型に equality を要する。整数の候補はゼロから始め、ゼロへ向かって半分にした値を並べる。最小の Integer でも桁あふれしない。Float の候補はゼロと有限の半分である。文字列とリストは、空、幅を半分にしていく連続範囲の削除、要素一つずつの順に試す。Map はキー順に削除した後、キー順に値を縮小する。Option は None を試してから中身を縮小する。map した Gen には Shrinker を別に与える。逆写像は推測しない。手書きの Gen、Shrinker、check 自体には equality は不要であり、関数値も扱える。
+
+性質が最初に Result.Error を返すと縮小を始める。通る候補は飛ばす。失敗する候補を現在の入力にし、候補の列を先頭からやり直す。反復や循環を含め、すべての候補の試行を maxShrinks に数える。ゼロなら縮小器を呼ばず、上限に達したと記録する。予算が制限するのはコールバックの呼び出し回数であり、呼び出し自体の実行時間やメモリ使用量ではない。組み込みの List、String、Map の縮小では size を小さく保つ。候補の生成と重複除去に、入力長の二乗を超える時間がかかることがあり、maxShrinks はその作業を制限しない。
+
+CheckFailure.Falsified(Counterexample[T]) は、config、最初に失敗した 1 始まりの trial、original、reduced、originalMessage、message、shrinks、limitReached、libraryVersion（現在は 1.0.0）を持つ。縮小後の入力も記録した説明とともに失敗するが、最小の反例とは限らない。formatFailure(failure, show) は、予算と再現の情報に加え、`show: function(value: T) -> String` による元と縮小後の具体的な入力を含める。同じ seed、config、ライブラリの規則、性質、手書きのコールバックで再現する。Random.fromSeed の版をまたぐ契約を、変更された Property の規則へ広げるものではない。情報を省く show からの完全な復元は保証しない。必要な具体的な失敗は固定例として残す。レコードの生成器と縮小器のコード生成は、[レコードの生成器と縮小器](#レコードの生成器と縮小器)を参照する。
+
 ## 17. 整形
 
 `benitoite fmt` は、ファイルを標準の配置に書き換える。変えるのは空白（行の中の空白、字下げ、空行、行末の空白）だけである。改行とコメントを保ち、字句を加えも除きもせず、設定を持たない。`fmt` は構文だけを検査するので、型の誤りがあるファイルも整形できる。字句の誤りか構文の誤り（コード `E01nn` と `E02nn`）があるファイルは変えずに残し、その診断を報告する。ほかのファイルは整形する。ファイルを読む間に見つかるほかの誤り（誤った属性など）は、整形を止めない。
@@ -1222,6 +1337,9 @@ prelude のモジュールは取り込みが要らない。ほかのモジュー
 | `Time` | `import Benitoite.Unofficial.Time` | 時点と暦の日付 |
 | `Path` | `import Benitoite.Unofficial.Path` | パスの結合と分割 |
 | `Json` | `import Benitoite.Unofficial.Json` | JSON |
+| `Failure` | `import Benitoite.Unofficial.Failure` | 型付きの失敗と Result との変換 |
+| `Test.Property` | `import Benitoite.Unofficial.Test.Property` | 純粋な生成器・縮小器・性質の試行 |
+| `Json.Codec` | `import Benitoite.Unofficial.Json.Codec` | 純粋な Result による JSON 変換 |
 | `Csv` | `import Benitoite.Unofficial.Csv` | CSV（RFC 4180） |
 | `Regex` | `import Benitoite.Unofficial.Regex` | 正規表現。一つの一致を探す時間は、入力の長さと正規表現の大きさの積に比例し、すべての一致を探す時間は、入力の長さの 2 乗に比例することがある |
 | `Encoding` | `import Benitoite.Unofficial.Encoding` | Base64 |
@@ -1319,7 +1437,7 @@ food: 300
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.1` から `0.0.7` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.8` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -1331,7 +1449,7 @@ food: 300
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.7"
+language "0.0.8"
 
 package Textkit
   license "MIT"
@@ -1349,7 +1467,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.7"
+language "0.0.8"
 
 dependency Textkit
   path "packages/textkit"
@@ -1381,7 +1499,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.7"
+language "0.0.8"
 ```
 
 ```benitoite check
@@ -1392,7 +1510,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.7` では、`0.0.7` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.8` では、`0.0.8` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
@@ -1587,3 +1705,36 @@ public function bump(self: Cell, by: Integer) -> Integer uses State
 引数と結果は、ホストのメモリに同時に存在しうる。動的な WIT の表現、型付きの配列、詰めて格納したアダプタのバッファ、ゲストとアダプタの線形メモリ、Benitoite の値は、すべてメモリを使う。設定した転送量とメモリの上限は、この消費の異なる部分を制限し、プロセスのメモリ全体は制限しない。
 
 これらの検査は、コンポーネントの結果が正しいことも、正常に戻ることも保証しない。コンポーネントのコンパイルは、実行時だけでなく検査時にも行う。入力のコンポーネントは 256 MiB に制限するが、検査の時間とホストのメモリには上限がない。信頼できないコンポーネントの検査も含め、処理系の隔離は引き続きハーネスか OS の責任であり、スクリプトには実行時の権限制御がない。
+
+### JSON とレコードの変換
+
+Benitoite.Unofficial.Json.Codec は、String、Boolean、Integer、有限の Float、List、String をキーとする Map、Option に対し、純粋な Result による変換を提供する。数値には正確な JSON の構成子を要し、Integer を Float へ暗黙に変換しない。NaN と無限大は両方向で失敗する。ConversionError は path、expected、found、reason を持つ拡張可能なレコードである。経路は Field、Index、Key からなり、外側のコンテナから最初の失敗へ並ぶ。Show は経路と種類を表示し、入力値の中身を自動では表示しない。
+
+```benitoite
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+
+function main() -> Result[Unit, String]
+  bind encoded <- try Codec.encodeList(value: [1, 2, 3], encode: Codec.encodeInteger)
+    |> Result.mapError(r: _, f: lambda(error) return Codec.ConversionError.reason(error) end lambda)
+  bind decoded <- try Codec.decodeList(value: encoded, decode: Codec.decodeInteger)
+    |> Result.mapError(r: _, f: lambda(error) return Codec.ConversionError.reason(error) end lambda)
+  if decoded <> [1, 2, 3] then
+    return Result.Error("JSON conversion roundtrip failed")
+  end if
+  return Result.Ok(())
+end function
+```
+
+```output
+```
+
+開発用の [derive](../../../tools/derive/README.md) は、型パラメータがなく循環しないレコードについて、通常の encode/decode 関数を生成する。フィールドを宣言順に検査し、その後でキー順に最初の余分なキーを拒否する。自動の Option フィールドは、欠落と null を None に変換する。必須のフィールドに暗黙の既定値はない。json.keys でキーを改名する。入れ子の Option と非対応の型には、フィールド全体の独自の encode/decode を要する。任意の decodeMissing が欠落を扱う。独自の変換は純粋で、意図した往復則を満たさなければならない。
+
+preview の差分と manifest を確認し、確認済み manifest のハッシュで apply した後、通常の check/test と derive check を行う。通常の check は生成記録を読まず、フィールドの追加による古いエンコーダをすべては検出できない。[二段のレコードの例](../../../tools/derive/examples/People.bnt) は、通常の @test、生成した Gen/Shrinker 関数、JSON の往復を試す性質、Failure.fromResult を使う明示的なアプリケーションの境界を含む。codec 自体には Fail は不要である。JSON の文字列の解析は、引き続き ParseError を持つ別の Result である。任意の JSON の綴りと parse/stringify をまたぐ表現は、変換の往復の保証に含めない。
+
+### レコードの生成器と縮小器
+
+同じ derive の設定で property.generator と property.shrinker を指定できる。JSON と同時にも、別々にも生成できる。レコードの Gen と Shrinker を返す、引数のない純粋な関数を生成する。フィールドは宣言順に乱数の状態を進め、同じ size を使う。縮小はその順で一度に一つのフィールドを変える。対応する型は String、Boolean、全域の Integer、有限の Float、循環しないレコード、List、String をキーとする Map、Option である。Property だけなら入れ子の Option にも対応する。依存レコードには、それ自体の Property の対象と、モジュールをまたぐ場合は公開の関数を要する。総称型と再帰型のレコードは生成しない。
+
+独自の fields.gen と fields.shrink は対で指定し、完全修飾の、単相で引数のない純粋な関数でなければならない。フィールドの型に合う Gen/Shrinker を返し、フィールド全体を置き換える。その本体と分布は利用者の責任である。フィールド間の関係は、レコード全体の生成器と縮小器を手で書いて扱う。失敗の報告には、Property の seed/config、ライブラリの版、具体的な入力に加え、generatorVersion と configSha256 を含む .generated.json の記録を添える。再現は、型の構造、生成の設定、独自の関数、性質が変わらないことにも依存する。生成器の識別用の関数は生成しない。

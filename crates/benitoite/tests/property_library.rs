@@ -1,0 +1,461 @@
+//! Property の公開関数を型検査から実行までつなぎ、生成・縮小・停止の契約を守る
+//! （設計書 06-04「プロパティベーステスト」）。
+// テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
+#![allow(clippy::unwrap_used)]
+
+use benitoite::pipeline::{self, CheckOptions};
+use benitoite::runtime::heap::HeapConfig;
+use benitoite::runtime::io::services::{InterruptSource, RunInput};
+use benitoite::runtime::run::{
+    self, EndKind, NoInterrupt, OutputTarget, RunEnd, RunEnv, StdinSource,
+};
+use benitoite::vm::{ExecMode, VmConfig};
+use std::sync::{Arc, Mutex};
+
+// 作成時の四問は g3/results.md に記録する。既存 Random の検査と分け、
+// Property が公開する候補の順・予算・反例を本物のソースから観測する。
+fn execute(source: &str) -> RunEnd {
+    execute_with_interrupt(source, Box::new(NoInterrupt), None)
+}
+
+fn execute_with_interrupt(
+    source: &str,
+    interrupt: Box<dyn InterruptSource>,
+    parts: Option<benitoite::runtime::sched::parts::RuntimeParts>,
+) -> RunEnd {
+    let checked = pipeline::check_text(
+        "property.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let core = pipeline::desugar_checked(checked.program.as_ref().unwrap()).unwrap();
+    let program = pipeline::compile(&core, checked.sources).unwrap();
+    run::run_program(
+        &program,
+        RunEnv {
+            input: RunInput {
+                arguments: vec![],
+                working_directory: "/".into(),
+                script_directory: "/".into(),
+            },
+            stdin: StdinSource::Empty,
+            stdout: OutputTarget::Capture(Arc::new(Mutex::new(Vec::new()))),
+            stderr: OutputTarget::Capture(Arc::new(Mutex::new(Vec::new()))),
+            interrupt,
+            parts,
+            mode: ExecMode::Direct,
+            vm: VmConfig::default(),
+            heap: HeapConfig::default(),
+            dev_panic_after_first_write: false,
+        },
+    )
+}
+
+fn script(body: &str) -> String {
+    format!(
+        r#"
+import Benitoite.Unofficial.Test.Property
+import Benitoite.Unofficial.IO.Random
+function expect(condition: Boolean, message: String) -> Result[Unit, String]
+  return if condition then Result.Ok(()) else Result.Error(message) end if
+end function
+function draw[T](gen: Property.Gen[T], seed: Integer, size: Integer) -> T
+  bind run <- Property.Gen.run(gen)
+  return Pair.first(run(generator: Random.fromSeed(seed), size: size))
+end function
+function samples[T](gen: Property.Gen[T], size: Integer) -> List[T]
+  return List.map(xs: List.range(start: 0, stop: 80), f: lambda(value) return draw(gen: gen, seed: value, size: size) end lambda)
+end function
+function nonASCII(value: String) -> Boolean
+  return hasNonASCII(cs: String.characters(value))
+end function
+function hasNonASCII(cs: List[Character]) -> Boolean
+  return List.any(xs: cs, p: lambda(value) return Character.toInteger(value) > 127 end lambda)
+end function
+function allFour(xs: List[Integer]) -> Boolean
+  return List.all(xs: xs, p: lambda(value) return value = 4 end lambda)
+end function
+function main() -> Result[Unit, String]
+{body}
+end function
+"#
+    )
+}
+
+fn succeeds(body: &str) {
+    succeeds_source(&script(body));
+}
+
+fn succeeds_source(source: &str) {
+    let result = execute(source);
+    assert_eq!(result.end, EndKind::Returned, "{result:?}");
+    assert_eq!(result.exit_code, 0, "{result:?}");
+    assert!(result.main_error.is_none(), "{result:?}");
+    assert!(result.reports.is_empty(), "{result:?}");
+}
+
+#[test]
+fn inclusive_integers_finite_floats_unicode_and_empty_containers() {
+    succeeds(
+        r#"
+  bind full <- try Property.integer(low: -9223372036854775808, high: 9223372036854775807)
+  bind values <- samples(gen: full, size: 0)
+  try expect(condition: List.contains(xs: values, x: -9223372036854775808) and List.contains(xs: values, x: 9223372036854775807) and List.contains(xs: values, x: 0), message: "full integer endpoints")
+  bind positive <- try Property.integer(low: 3, high: 7)
+  bind positives <- samples(gen: positive, size: 0)
+  try expect(condition: List.contains(xs: positives, x: 3) and List.contains(xs: positives, x: 7) and List.all(xs: positives, p: lambda(value) return value >= 3 and value <= 7 end lambda), message: "inclusive nonzero bounds")
+  try expect(condition: match Property.integer(low: 1, high: 0) with
+    case Result.Error(_) -> true
+    case _ -> false
+  end match, message: "reversed bounds")
+  bind fixed <- try Property.integer(low: -9223372036854775808, high: -9223372036854775808)
+  bind runFixed <- Property.Gen.run(fixed)
+  bind initial <- Random.fromSeed(-9223372036854775808)
+  bind fixedPair <- runFixed(generator: initial, size: 0)
+  try expect(condition: Pair.first(fixedPair) = -9223372036854775808 and Pair.first(Random.nextInteger(generator: Pair.second(fixedPair), low: 0, high: 1000)) = Pair.first(Random.nextInteger(generator: initial, low: 0, high: 1000)), message: "fixed does not advance state")
+  bind floats <- samples(gen: Property.float(), size: 0)
+  try expect(condition: List.all(xs: floats, p: lambda(value) return not Float.isNaN(value - value) and value >= -1.0 and value <= 1.0 end lambda) and List.contains(xs: floats, x: 0.0) and List.contains(xs: floats, x: 1.0) and List.contains(xs: floats, x: -1.0), message: "finite float branches")
+  bind bools <- samples(gen: Property.boolean(), size: 0)
+  try expect(condition: List.contains(xs: bools, x: true) and List.contains(xs: bools, x: false), message: "boolean branches")
+  try expect(condition: List.all(xs: samples(gen: Property.string(), size: 0), p: lambda(value) return value = "" end lambda), message: "empty strings")
+  try expect(condition: List.all(xs: samples(gen: Property.list(positive), size: 0), p: lambda(value) return List.isEmpty(value) end lambda), message: "empty lists")
+  try expect(condition: List.all(xs: samples(gen: Property.stringMap(positive), size: 0), p: lambda(value) return Map.size(value) = 0 end lambda), message: "empty maps")
+  bind strings <- samples(gen: Property.string(), size: 4)
+  try expect(condition: List.all(xs: strings, p: lambda(value) return String.characterCount(value) <= 4 end lambda) and List.any(xs: strings, p: nonASCII), message: "Unicode scalars and size")
+  bind options <- samples(gen: Property.option(positive), size: 0)
+  try expect(condition: List.contains(xs: options, x: Option.None) and List.any(xs: options, p: lambda(value)
+    return match value with
+    case Option.Some(x) -> x >= 3 and x <= 7
+    case _ -> false
+    end match
+  end lambda), message: "option branches")
+  return Result.Ok(())
+"#,
+    );
+}
+
+#[test]
+fn explicit_state_size_and_map_duplicate_contracts() {
+    succeeds(
+        r#"
+  bind raw <- Property.Gen(run: lambda(generator, size)
+    bind next <- Random.nextInteger(generator: generator, low: 0, high: 1000000)
+    return Pair(Pair(Pair.first(next), size), Pair.second(next))
+  end lambda)
+  bind run <- Property.Gen.run(Property.both(left: raw, right: raw))
+  bind initial <- Random.fromSeed(17)
+  bind first <- Random.nextInteger(generator: initial, low: 0, high: 1000000)
+  bind second <- Random.nextInteger(generator: Pair.second(first), low: 0, high: 1000000)
+  bind pair <- run(generator: initial, size: 999)
+  try expect(condition: Pair.first(pair) = Pair(Pair(Pair.first(first), 999), Pair(Pair.first(second), 999)), message: "both state and size")
+  try expect(condition: Pair.first(Random.nextInteger(generator: Pair.second(pair), low: 0, high: 1000000)) = Pair.first(Random.nextInteger(generator: Pair.second(second), low: 0, high: 1000000)), message: "both final state")
+  bind sizes <- Property.Gen(run: lambda(generator, size) return Pair(size, generator) end lambda)
+  try expect(condition: draw(gen: Property.map(gen: sizes, f: lambda(value) return value + 1 end lambda), seed: 7, size: -5) = -4, message: "direct run does not clamp size")
+  bind lists <- samples(gen: Property.list(sizes), size: 4)
+  try expect(condition: List.all(xs: lists, p: lambda(value) return List.length(value) <= 4 and allFour(value) end lambda), message: "container size")
+  bind pairGen <- Property.both(left: Property.string(), right: sizes)
+  bind runPairs <- Property.Gen.run(Property.list(pairGen))
+  bind runMap <- Property.Gen.run(Property.stringMap(sizes))
+  bind pairs <- runPairs(generator: Random.fromSeed(21), size: 0)
+  bind mapped <- runMap(generator: Random.fromSeed(21), size: 0)
+  try expect(condition: List.isEmpty(Pair.first(pairs)) and Map.size(Pair.first(mapped)) = 0, message: "zero draws")
+  return Result.Ok(())
+"#,
+    );
+}
+
+#[test]
+fn builtin_shrinkers_have_ordered_distinct_candidates() {
+    succeeds(
+        r#"
+  bind ints <- Property.Shrinker.candidates(Property.shrinkInteger())
+  try expect(condition: ints(8) = [0, 4, 2, 1] and ints(-8) = [0, -4, -2, -1] and ints(0) = [], message: "integer order")
+  bind minimum <- ints(-9223372036854775808)
+  try expect(condition: List.length(minimum) = 64 and List.head(minimum) = Option.Some(0) and List.get(xs: minimum, i: 63) = Option.Some(-1) and not List.contains(xs: minimum, x: -9223372036854775808), message: "minimum without abs overflow")
+  bind floats <- Property.Shrinker.candidates(Property.shrinkFloat())
+  try expect(condition: floats(8.0) = [0.0, 4.0] and floats(-8.0) = [0.0, -4.0] and floats(0.0) = [] and floats(1e-323) = [0.0, 5e-324] and floats(5e-324) = [0.0], message: "finite float shrink")
+  bind bools <- Property.Shrinker.candidates(Property.shrinkBoolean())
+  try expect(condition: bools(true) = [false] and bools(false) = [], message: "boolean shrink")
+  bind options <- Property.Shrinker.candidates(Property.shrinkOption(Property.shrinkInteger()))
+  try expect(condition: options(Option.Some(2)) = [Option.None, Option.Some(0), Option.Some(1)] and options(Option.None) = [], message: "option order")
+  bind noisy <- Property.Shrinker(candidates: lambda(value: Integer) return [value, 0, 0] end lambda)
+  bind lists <- Property.Shrinker.candidates(Property.shrinkList(noisy))
+  try expect(condition: lists([2, 2]) = [[], [2], [0, 2], [2, 0]] and lists([]) = [], message: "deletions then elements; unique and changed")
+  bind strings <- Property.Shrinker.candidates(Property.shrinkString())
+  try expect(condition: strings("") = [] and List.take(xs: strings("é😀"), n: 3) = ["", "😀", "é"] and List.contains(xs: strings("é😀"), x: "\u{0}😀"), message: "scalar string shrink")
+  bind maps <- Property.Shrinker.candidates(Property.shrinkStringMap(noisy))
+  bind original <- Map.fromList([Pair("b", 2), Pair("a", 2)])
+  try expect(condition: maps(original) = [Map.fromList([Pair("b", 2)]), Map.fromList([Pair("a", 2)]), Map.fromList([Pair("a", 0), Pair("b", 2)]), Map.fromList([Pair("a", 2), Pair("b", 0)])] and maps(Map.empty()) = [], message: "map key order and unique values")
+  return Result.Ok(())
+"#,
+    );
+}
+
+#[test]
+fn configuration_is_validated_before_any_callback() {
+    succeeds(
+        r#"
+  bind badGen <- Property.Gen(run: lambda(generator, size) return Pair(1 div (size - size), generator) end lambda)
+  bind badShrink <- Property.Shrinker(candidates: lambda(value: Integer) return [1 div (value - value)] end lambda)
+  bind badProperty <- lambda(value: Integer) -> Result[Unit, String] return if 1 div (value - value) = 0 then Result.Ok(()) else Result.Error("called") end if end lambda
+  bind configs <- [Property.Config(seed: 0, trials: 0, size: 0, maxShrinks: 0), Property.Config(seed: 0, trials: 10001, size: 0, maxShrinks: 0), Property.Config(seed: 0, trials: 1, size: -1, maxShrinks: 0), Property.Config(seed: 0, trials: 1, size: 10001, maxShrinks: 0), Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: -1), Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 100001)]
+  try expect(condition: List.all(xs: configs, p: lambda(value)
+    return match Property.check(config: value, gen: badGen, shrinker: badShrink, property: badProperty) with
+      case Result.Error(Property.CheckFailure.InvalidConfig(message)) -> not String.isEmpty(message)
+      case _ -> false
+    end match
+  end lambda), message: "invalid configurations must not execute callbacks")
+  bind sizes <- Property.Gen(run: lambda(generator, size) return Pair(size, generator) end lambda)
+  return expect(condition: Property.check(config: Property.Config(seed: 9223372036854775807, trials: 10000, size: 10000, maxShrinks: 100000), gen: sizes, shrinker: badShrink, property: lambda(value)
+    return if value = 10000 then Result.Ok(()) else Result.Error("size changed") end if
+  end lambda) = Result.Ok(()), message: "inclusive config upper bounds and unchanged size")
+"#,
+    );
+}
+
+#[test]
+fn shrinking_preserves_messages_counts_all_candidates_and_replays() {
+    succeeds(
+        r#"
+  bind config <- Property.Config(seed: -9223372036854775808, trials: 3, size: 7, maxShrinks: 20)
+  bind property <- lambda(value: Integer) -> Result[Unit, String]
+    return if value >= 3 then Result.Error("bad:" + Integer.toString(value)) else Result.Ok(()) end if
+  end lambda
+  bind result <- Property.check(config: config, gen: Property.constant(8), shrinker: Property.shrinkInteger(), property: property)
+  bind replay <- Property.check(config: config, gen: Property.constant(8), shrinker: Property.shrinkInteger(), property: property)
+  try expect(condition: result = replay, message: "same seed and callbacks replay")
+  try expect(condition: match result with
+    case Result.Error(Property.CheckFailure.Falsified(failure)) ->
+      Property.Counterexample.config(failure) = config and Property.Counterexample.trial(failure) = 1 and Property.Counterexample.original(failure) = 8 and Property.Counterexample.reduced(failure) = 4 and Property.Counterexample.originalMessage(failure) = "bad:8" and Property.Counterexample.message(failure) = "bad:4" and Property.Counterexample.shrinks(failure) = 5 and not Property.Counterexample.limitReached(failure) and Property.Counterexample.libraryVersion(failure) = "1.0.0"
+    case _ -> false
+  end match, message: "last failing value and message, count successful candidates")
+  bind formatted <- match result with
+    case Result.Error(failure) -> Property.formatFailure(failure: failure, show: lambda(value) return Integer.toString(value) end lambda)
+    case _ -> ""
+  end match
+  try expect(condition: String.contains(s: formatted, part: "seed=-9223372036854775808 trials=3 size=7 maxShrinks=20 trial=1 shrinks=5 limitReached=false") and String.contains(s: formatted, part: "original: 8\noriginal message: bad:8\nreduced: 4\nmessage: bad:4") and String.contains(s: formatted, part: "library 1.0.0"), message: "format replay and concrete inputs")
+  bind never <- Property.Shrinker(candidates: lambda(value: Integer) return [1 div (value - value)] end lambda)
+  try expect(condition: Property.check(config: config, gen: Property.constant(0), shrinker: never, property: property) = Result.Ok(()), message: "success never calls shrinker")
+  bind random <- Property.Gen(run: lambda(generator, size) return Random.nextInteger(generator: generator, low: 0, high: 1000000) end lambda)
+  bind first <- Random.nextInteger(generator: Random.fromSeed(17), low: 0, high: 1000000)
+  bind second <- Random.nextInteger(generator: Pair.second(first), low: 0, high: 1000000)
+  try expect(condition: Pair.first(first) <> Pair.first(second), message: "distinct replay inputs")
+  bind afterFirst <- Property.check(config: Property.Config(..config, seed: 17, trials: 2, maxShrinks: 0), gen: random, shrinker: never, property: lambda(value)
+    return if value = Pair.first(first) then Result.Ok(()) else Result.Error("second") end if
+  end lambda)
+  try expect(condition: match afterFirst with
+    case Result.Error(Property.CheckFailure.Falsified(example)) -> Property.Counterexample.trial(example) = 2 and Property.Counterexample.original(example) = Pair.first(second) and Property.Counterexample.message(example) = "second"
+    case _ -> false
+  end match, message: "trial number and next state after a passing trial")
+  return Result.Ok(())
+"#,
+    );
+}
+
+#[test]
+fn cyclic_equal_and_zero_budget_shrinkers_stop_without_equality_on_inputs() {
+    succeeds(
+        r#"
+  bind failure <- lambda(value: Integer) -> Result[Unit, String] return Result.Error(Integer.toString(value)) end lambda
+  bind cycle <- Property.Shrinker(candidates: lambda(value: Integer) return [1 - value] end lambda)
+  bind config <- Property.Config(seed: 9223372036854775807, trials: 1, size: 0, maxShrinks: 7)
+  try expect(condition: match Property.check(config: config, gen: Property.constant(0), shrinker: cycle, property: failure) with
+    case Result.Error(Property.CheckFailure.Falsified(example)) -> Property.Counterexample.shrinks(example) = 7 and Property.Counterexample.reduced(example) = 1 and Property.Counterexample.message(example) = "1" and Property.Counterexample.limitReached(example)
+    case _ -> false
+  end match, message: "cycle consumes total budget")
+  bind noCalls <- Property.Shrinker(candidates: lambda(value: Integer) return [1 div (value - value)] end lambda)
+  try expect(condition: match Property.check(config: Property.Config(..config, maxShrinks: 0), gen: Property.constant(8), shrinker: noCalls, property: failure) with
+    case Result.Error(Property.CheckFailure.Falsified(example)) -> Property.Counterexample.original(example) = 8 and Property.Counterexample.reduced(example) = 8 and Property.Counterexample.shrinks(example) = 0 and Property.Counterexample.message(example) = "8" and Property.Counterexample.limitReached(example)
+    case _ -> false
+  end match, message: "zero budget never calls shrinker")
+  bind callable <- lambda(value: Integer) return value end lambda
+  bind callableShrink <- Property.Shrinker(candidates: lambda(value: function(value: Integer) -> Integer) return [value] end lambda)
+  return expect(condition: match Property.check(config: Property.Config(..config, maxShrinks: 2), gen: Property.constant(callable), shrinker: callableShrink, property: lambda(value) return Result.Error(Integer.toString(value(9))) end lambda) with
+    case Result.Error(Property.CheckFailure.Falsified(example)) -> Property.Counterexample.shrinks(example) = 2 and Property.Counterexample.message(example) = "9" and Property.Counterexample.limitReached(example)
+    case _ -> false
+  end match, message: "no equality constraint and equal candidates consume budget")
+"#,
+    );
+}
+
+#[test]
+fn runtime_failures_from_each_callback_propagate() {
+    for body in [
+        r#"
+  bind gen <- Property.Gen(run: lambda(generator, size) return Pair(1 div size, generator) end lambda)
+  bind result <- Property.check(config: Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 3), gen: gen, shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("property") end lambda)
+  return Result.Ok(())
+"#,
+        r#"
+  bind shrinker <- Property.Shrinker(candidates: lambda(value: Integer) return [1 div value] end lambda)
+  bind result <- Property.check(config: Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 3), gen: Property.constant(0), shrinker: shrinker, property: lambda(value) return Result.Error("property") end lambda)
+  return Result.Ok(())
+"#,
+        r#"
+  bind result <- Property.check(config: Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 3), gen: Property.constant(0), shrinker: Property.shrinkInteger(), property: lambda(value) return if 1 div value = 0 then Result.Ok(()) else Result.Error("property") end if end lambda)
+  return Result.Ok(())
+"#,
+    ] {
+        let result = execute(&script(body));
+        assert_eq!(result.end, EndKind::Stopped, "{result:?}");
+        assert_eq!(result.reports.len(), 1, "{result:?}");
+        assert_eq!(
+            result.reports.first().unwrap().code,
+            Some(benitoite::diag::codes::DiagCode::R0101)
+        );
+    }
+}
+
+#[test]
+fn duplicate_map_keys_keep_first_and_consume_each_draw() {
+    let source = format!(
+        "{}\n{}",
+        script("  return checkMaps(seed: 0, sawDuplicate: false)"),
+        r#"
+function checkMaps(seed: Integer, sawDuplicate: Boolean) -> Result[Unit, String]
+  if seed = 200 then
+    return expect(condition: sawDuplicate, message: "exercised duplicate key draws")
+  end if
+  bind numbers <- Property.Gen(run: lambda(generator, size) return Random.nextInteger(generator: generator, low: 0, high: 1000000) end lambda)
+  bind runPairs <- Property.Gen.run(Property.list(Property.both(left: Property.string(), right: numbers)))
+  bind runMap <- Property.Gen.run(Property.stringMap(numbers))
+  bind pairs <- runPairs(generator: Random.fromSeed(seed), size: 2)
+  bind mapped <- runMap(generator: Random.fromSeed(seed), size: 2)
+  try expect(condition: Pair.first(Random.nextInteger(generator: Pair.second(pairs), low: 0, high: 1000000)) = Pair.first(Random.nextInteger(generator: Pair.second(mapped), low: 0, high: 1000000)), message: "map consumes exactly the attempted draws")
+  return match Pair(List.get(xs: Pair.first(pairs), i: 0), List.get(xs: Pair.first(pairs), i: 1)) with
+    case Pair(Option.Some(first), Option.Some(second)) ->
+      if Pair.first(first) = Pair.first(second) then
+        try expect(condition: Map.size(Pair.first(mapped)) = 1 and Map.get(m: Pair.first(mapped), k: Pair.first(first)) = Option.Some(Pair.second(first)), message: "first duplicate value survives")
+        checkMaps(seed: seed + 1, sawDuplicate: true)
+      else
+        checkMaps(seed: seed + 1, sawDuplicate: sawDuplicate)
+      end if
+    case _ -> checkMaps(seed: seed + 1, sawDuplicate: sawDuplicate)
+  end match
+end function
+"#
+    );
+    succeeds_source(&source);
+}
+
+#[test]
+fn effectful_callbacks_are_rejected_at_the_public_contract() {
+    for call in [
+        r#"Property.check(config: config, gen: Property.constant(0), shrinker: Property.shrinkInteger(), property: lambda(value)
+    Process.exit(0)
+    return Result.Ok(())
+  end lambda)"#,
+        r#"Property.check(config: config, gen: Property.constant(0), shrinker: Property.shrinkInteger(), property: lambda(value)
+    Console.writeLine("effect")
+    return Result.Ok(())
+  end lambda)"#,
+        r#"Property.Gen(run: lambda(generator, size)
+    Process.exit(0)
+    return Pair(0, generator)
+  end lambda)"#,
+        r#"Property.Shrinker(candidates: lambda(value: Integer)
+    Assert.isTrue(condition: false, message: "effect")
+    return [value]
+  end lambda)"#,
+    ] {
+        let source = format!(
+            r#"
+import Benitoite.Unofficial.Test.Property
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit
+  bind config <- Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 1)
+  bind result <- {call}
+  return ()
+end function
+"#
+        );
+        let checked = pipeline::check_text(
+            "property-effects.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 1, "{:?}", checked.diagnostics);
+        assert!(
+            checked.diagnostics.iter().any(|diagnostic| {
+                diagnostic.code == Some(benitoite::diag::codes::DiagCode::E0401)
+            }),
+            "{:?}",
+            checked.diagnostics
+        );
+    }
+}
+
+#[test]
+fn interruption_remains_a_runtime_stop_during_property_trials() {
+    use std::sync::atomic::{AtomicBool, Ordering};
+    #[derive(Debug)]
+    struct Flag(Arc<AtomicBool>);
+    impl InterruptSource for Flag {
+        fn requested(&self) -> bool {
+            self.0.load(Ordering::Relaxed)
+        }
+        fn flag(&self) -> Option<&AtomicBool> {
+            Some(&self.0)
+        }
+    }
+    #[derive(Debug)]
+    struct InterruptPicker(Arc<AtomicBool>);
+    impl benitoite::runtime::sched::parts::TaskPicker for InterruptPicker {
+        fn pick(
+            &mut self,
+            ready: &std::collections::VecDeque<benitoite::vm::TaskId>,
+        ) -> Option<usize> {
+            if ready.is_empty() {
+                return None;
+            }
+            self.0.store(true, Ordering::Relaxed);
+            Some(0)
+        }
+    }
+    let source = script(
+        r#"
+  bind result <- Property.check(config: Property.Config(seed: 0, trials: 10000, size: 0, maxShrinks: 100000), gen: Property.constant(1), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Ok(()) end lambda)
+  return Result.Ok(())
+"#,
+    );
+    let flag = Arc::new(AtomicBool::new(false));
+    let mut parts = benitoite::runtime::sched::testing::ScheduleHandle::new([], false).parts();
+    parts.picker = Box::new(InterruptPicker(Arc::clone(&flag)));
+    let result = execute_with_interrupt(&source, Box::new(Flag(flag)), Some(parts));
+    assert_eq!(result.end, EndKind::Interrupted, "{result:?}");
+    assert_eq!(result.exit_code, 130, "{result:?}");
+    assert!(result.main_error.is_none(), "{result:?}");
+}
+
+// 最後の成功候補で予算を使い切った場合と、未試行の候補がある場合を区別する。
+#[test]
+fn exhausted_candidates_at_exact_budget_do_not_report_limit() {
+    succeeds(
+        r#"
+  bind shrinker <- Property.Shrinker(candidates: lambda(value: Integer) return [0, 1] end lambda)
+  bind property <- lambda(value: Integer) -> Result[Unit, String]
+    return if value = 8 then Result.Error("original failure") else Result.Ok(()) end if
+  end lambda
+  return expect(condition: List.all(xs: [1, 2, 3], p: lambda(value)
+    bind budget <- value
+    return match Property.check(config: Property.Config(seed: 17, trials: 1, size: 0, maxShrinks: budget), gen: Property.constant(8), shrinker: shrinker, property: property) with
+      case Result.Error(Property.CheckFailure.Falsified(failure)) ->
+        Property.Counterexample.shrinks(failure) = (if budget = 1 then 1 else 2 end if)
+          and Property.Counterexample.limitReached(failure) = (budget = 1)
+          and Property.Counterexample.original(failure) = 8
+          and Property.Counterexample.reduced(failure) = 8
+          and Property.Counterexample.message(failure) = "original failure"
+      case _ -> false
+    end match
+  end lambda), message: "limit only when candidates remain untried")
+"#,
+    );
+}

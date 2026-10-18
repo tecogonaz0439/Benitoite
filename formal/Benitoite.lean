@@ -7,7 +7,15 @@ import Benitoite.Core.Assumptions
 import Benitoite.Core.Theorems
 import Benitoite.Core.Examples
 import Benitoite.Release.Syntax
+import Benitoite.Release.Order.Atoms
+import Benitoite.Release.Order.Labels
+import Benitoite.Release.Order.Tree
+import Benitoite.Release.Order.SortUnique
+import Benitoite.Release.Order.Types
 import Benitoite.Release.Subst
+import Benitoite.Release.SubstEnv
+import Benitoite.Release.SubstExamples
+import Benitoite.Release.Order.Shift
 import Benitoite.Release.Typing
 import Benitoite.Release.WellFormed
 import Benitoite.Release.Semantics
@@ -93,3 +101,24 @@ import Benitoite.Exchange.Builtins
 import Benitoite.Exchange.CheckInput
 
 import Benitoite.Release.CoverageExtension
+
+import Benitoite.Release.Order.FiniteAtoms
+import Benitoite.Release.Finite
+import Benitoite.Release.FiniteSupport
+import Benitoite.Surface.FiniteTools
+import Benitoite.Surface.FinitePredicates
+import Benitoite.Surface.FiniteExamples
+
+import Benitoite.Release.NoFail
+import Benitoite.Release.Admissible
+import Benitoite.Release.Lemmas.Irrelevant
+import Benitoite.Surface.NoFailCheck
+import Benitoite.Surface.NoFailCheckExamples
+
+import Benitoite.Release.FailureEffects
+
+import Benitoite.Release.FailureExamples
+
+import Benitoite.Surface.SingleFail
+import Benitoite.Surface.SingleFailCheck
+import Benitoite.Surface.FailureExamples

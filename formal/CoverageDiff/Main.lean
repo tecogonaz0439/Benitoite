@@ -92,7 +92,7 @@ partial def readTy (ds : List RawDecl) (params : Nat) (j : Json) : Except String
       Benitoite.Exchange.checkNames names ps.length
       let r ← readTy ds params (← field j "ret")
       let eff : Benitoite.Exchange.Eff ← get j "eff"
-      return .fn names ps r eff.toRelease
+      return .fn names ps r (← eff.toRelease)
   | "list" =>
       let [a] ← (← array j "args").mapM (readTy ds params) | throw "list arity"
       return .list a

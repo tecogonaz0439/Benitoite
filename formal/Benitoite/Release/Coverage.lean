@@ -1,5 +1,6 @@
 import Benitoite.Release.Typing
 import Benitoite.Release.Lemmas.TySubst
+import Benitoite.Release.CoverageTypes
 
 /-!
 # 契約名を持つ型の網羅性判定と健全性
@@ -53,57 +54,18 @@ def isWild : Pat → Bool
   | .wild | .var => true
   | _ => false
 
-mutual
-  /-- 型引数だけの置換の評価用の写し。既存の Ty.substAt は整礎再帰なので使わない。
-  深さ 0 の型置換は、置換する型を shift する必要がなく、空のエフェクト置換は恒等である。 -/
-  def substTy (ts : List Ty) : Ty → Ty
-    | .base b => .base b
-    | .opaque o => .opaque o
-    | .data d args => .data d (substTys ts args)
-    | .list a => .list (substTy ts a)
-    | .fn names ps r eff => .fn names (substTys ts ps) (substTy ts r) eff
-    | .tvar i => if i < ts.length then (ts[i]?).getD (.tvar i) else .tvar (i - ts.length)
-    | .reference a => .reference (substTy ts a)
-    | .lazy a => .lazy (substTy ts a)
-    | .cont b t eff => .cont (substTy ts b) (substTy ts t) eff
-    | .map k v => .map (substTy ts k) (substTy ts v)
-    | .set a => .set (substTy ts a)
-    | .bytes => .bytes
-    | .dict cl a => .dict cl (substTy ts a)
-    | .tapp i args =>
-        if i < ts.length then Ty.applyTo ((ts[i]?).getD (.tvar i)) (substTys ts args)
-        else .tapp (i - ts.length) (substTys ts args)
-    | .ctor c => .ctor c
-  def substTys (ts : List Ty) : List Ty → List Ty
-    | [] => []
-    | a :: as => substTy ts a :: substTys ts as
-end
+/-- 評価には同じ共有型の正規化前の代入を使う。潜在効果の正規化は照合の形を変えない。 -/
+def substTy (ts : List Ty) (a : Ty) : Ty := a.rawSubstAt 0 ts []
+def substTys (ts : List Ty) (as : List Ty) : List Ty := as.map (substTy ts)
 
-mutual
-  /-- 評価用の型置換と Inhabits.con の既存の置換を接続する。 -/
-  theorem substTy_eq (ts : List Ty) : (a : Ty) → substTy ts a = Ty.subst ts [] a
-    | .base _ => by simp [substTy, Ty.subst, Ty.substAt]
-    | .opaque _ => by simp [substTy, Ty.subst, Ty.substAt]
-    | .data _ as => by simp [substTy, Ty.subst, Ty.substAt, substTys_eq]
-    | .list a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
-    | .fn names ps r e => by
-        simp [substTy, Ty.subst, Ty.substAt, substTys_eq, substTy_eq ts r, Eff.substRho_nil]
-    | .tvar i => by simp [substTy, Ty.subst, Ty.substAt, Ty.shift_zero]
-    | .reference a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
-    | .lazy a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
-    | .cont b t e => by
-        simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts b, substTy_eq ts t, Eff.substRho_nil]
-    | .map k v => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts k, substTy_eq ts v]
-    | .set a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
-    | .bytes => by simp [substTy, Ty.subst, Ty.substAt]
-    | .dict _ a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
-    | .tapp i as => by simp [substTy, Ty.subst, Ty.substAt, substTys_eq, Ty.shift_zero]
-    | .ctor _ => by simp [substTy, Ty.subst, Ty.substAt]
+/-- 旧入力では正規化前の計算用代入も公開する代入と等しい。 -/
+theorem substTy_eq (ts : List Ty) (ht : ∀ t ∈ ts, t.Legacy) (a : Ty) (ha : a.Legacy) :
+    substTy ts a = Ty.subst ts [] a :=
+  (Ty.substAt_eq_raw_of_legacy 0 ts [] ht (by simp) a ha).symm
 
-  theorem substTys_eq (ts : List Ty) : (as : List Ty) → substTys ts as = as.map (Ty.subst ts [])
-    | [] => rfl
-    | a :: as => by simp only [substTys, List.map_cons]; rw [substTy_eq, substTys_eq]
-end
+theorem substTys_eq (ts : List Ty) (ht : ∀ t ∈ ts, t.Legacy) (as : List Ty)
+    (ha : ∀ a ∈ as, a.Legacy) : substTys ts as = as.map (Ty.subst ts []) := by
+  exact List.map_congr_left (fun a h => substTy_eq ts ht a (ha a h))
 
 /-- 宣言の所属と型引数の数も検査し、`Inhabits.con` と同じ型置換をする。 -/
 def conFields (P : Program) (d : DataName) (ts : List Ty) (c : ConName) :
@@ -172,6 +134,16 @@ def intervalAt (bounds : List Int) (v : Int) : Option (Int × Int) := do
 def segments (bounds : List Int) : List (Int × Int) :=
   (sortEnds bounds).eraseDups.filterMap (intervalAt bounds)
 
+/-- Character の二つの値域を、列の下端と上端の直後でも分割する。 -/
+def charBounds (column : List Pat) : List Int :=
+  [0, 0xD800, 0xE000, 0x110000] ++
+    (column.filterMap (interval (.base .character))).flatMap fun (lo, hi) => [lo, hi + 1]
+
+/-- 有効なスカラー値だけを含む閉区間。サロゲートと値域外は列挙しない。 -/
+def charPartition (column : List Pat) : List (Int × Int) :=
+  (segments (charBounds column)).filter fun (lo, hi) =>
+    0 ≤ lo && lo ≤ hi && hi < 0x110000 && (hi < 0xD800 || 0xE000 ≤ lo)
+
 inductive Shape where
   | con (c : ConName) (fields : List Ty)
   | invalidCon (c : ConName)
@@ -198,8 +170,7 @@ def listBounds (column : List Pat) : Nat × Nat × Nat :=
     | .list before (some _) after => (exactEnd, max front before.length, max back after.length)
     | _ => (exactEnd, front, back)) (0, 0, 0)
 
-/-- 列は問いの先頭も含む。区間の隙間を外側とともに `other` に含める。
-サロゲートだけの区間を除き、それ以外の端は Char に戻さない。 -/
+/-- 列は問いの先頭も含む。文字は全値域の区間を列挙し、整数は `other` を残す。 -/
 def shapes (P : Program) (ctors : DataName → List ConName) (ty : Ty)
     (column : List Pat) : List Shape :=
   match ty with
@@ -209,14 +180,14 @@ def shapes (P : Program) (ctors : DataName → List ConName) (ty : Ty)
       | none => .invalidCon c
   | .base .boolean => [.boolean true, .boolean false]
   | .base .unit => [.unit]
-  | .base .integer | .base .character =>
-      let chars := match ty with | .base .character => true | _ => false
-      let intervals := column.filterMap (interval ty)
+  | .base .character =>
+      (charPartition column).map fun (lo, hi) => .interval true lo hi
+  | .base .integer =>
+      let intervals := column.filterMap (interval (.base .integer))
       let bounds := intervals.flatMap fun (lo, hi) => [lo, hi + 1]
       let covered := (segments bounds).filter fun (lo, hi) =>
-        intervals.any (fun (a, b) => a ≤ lo && hi ≤ b) &&
-          !(chars && lo ≥ 0xD800 && hi ≤ 0xDFFF)
-      .other :: covered.map (fun (lo, hi) => .interval chars lo hi)
+        intervals.any (fun (a, b) => a ≤ lo && hi ≤ b)
+      .other :: covered.map (fun (lo, hi) => .interval false lo hi)
   | .base .string =>
       let strings := column.filterMap fun p =>
         match p with | .const (.string s) => some s | _ => none
@@ -934,44 +905,92 @@ theorem character_interval_of_match {P : Program} {q : Pat} {c : Char}
         by simp [interval, Option.filter, show a.toNat ≤ b.toNat by omega], by omega, by omega⟩
   | _ => simp_all [isWild, compatible]
 
-/-- 列に含まれる問いの区間を、列挙された区間で細分する。 -/
+/-- 整数は入力の区間の内側だけを列挙し、残りの値を別に保つ。 -/
 theorem shapes_interval_cover (P : Program) (ctors : DataName → List ConName)
-    (chars : Bool) (column : List Pat) (q : Pat) (a b n : Int)
-    (hq : q ∈ column)
-    (hi : interval (if chars then .base .character else .base .integer) q = some (a, b))
-    (ha : a ≤ n) (hb : n ≤ b)
-    (hv : chars = true → n < 55296 ∨ 57343 < n) :
-    ∃ lo hh, Shape.interval chars lo hh ∈
-      shapes P ctors (if chars then .base .character else .base .integer) column ∧
+    (column : List Pat) (q : Pat) (a b n : Int)
+    (hq : q ∈ column) (hi : interval (.base .integer) q = some (a, b))
+    (ha : a ≤ n) (hb : n ≤ b) :
+    ∃ lo hh, Shape.interval false lo hh ∈ shapes P ctors (.base .integer) column ∧
       lo ≤ n ∧ n ≤ hh ∧ a ≤ lo ∧ hh ≤ b := by
-  let ty : Ty := if chars then .base .character else .base .integer
-  let intervals := column.filterMap (interval ty)
+  let intervals := column.filterMap (interval (.base .integer))
   let bounds := intervals.flatMap fun (a, b) => [a, b + 1]
   have hm : (a, b) ∈ intervals := List.mem_filterMap.mpr ⟨q, hq, hi⟩
   have hba : a ∈ bounds := List.mem_flatMap.mpr ⟨(a,b), hm, by simp⟩
   have hbb : b + 1 ∈ bounds := List.mem_flatMap.mpr ⟨(a,b), hm, by simp⟩
   obtain ⟨lo, hh, hs, hal, hln, hnh, hhb⟩ := segments_cover hba hbb ha hb
-  have hcovered : intervals.any (fun (a,b) => decide (a ≤ lo) && decide (hh ≤ b)) = true :=
-    List.any_eq_true.mpr ⟨(a,b), hm, by simp [hal, hhb]⟩
-  have hscalar : (chars && decide (lo ≥ 0xD800) && decide (hh ≤ 0xDFFF)) = false := by
-    cases chars <;> simp_all <;> omega
   refine ⟨lo, hh, ?_, hln, hnh, hal, hhb⟩
-  have hfiltered : (lo, hh) ∈ (segments bounds).filter (fun (lo, hh) =>
-      intervals.any (fun (a,b) => decide (a ≤ lo) && decide (hh ≤ b)) &&
-      !(chars && decide (lo ≥ 0xD800) && decide (hh ≤ 0xDFFF))) := by
-    simp only [List.mem_filter]; exact ⟨hs, by simp [hcovered, hscalar]⟩
-  cases chars <;> simp only [shapes]
-  all_goals
-    right
-    apply List.mem_map.mpr
-    refine ⟨(lo,hh), ?_, rfl⟩
-    simpa [ty, intervals, bounds] using hfiltered
+  simp only [shapes, List.mem_cons]
+  right
+  apply List.mem_map.mpr
+  refine ⟨(lo, hh), ?_, rfl⟩
+  exact List.mem_filter.mpr ⟨hs,
+    List.any_eq_true.mpr ⟨(a,b), hm, by simp [hal, hhb]⟩⟩
+
+/-- 分割の区間の内部に、別の分割端はない。 -/
+theorem segments_refine {bounds : List Int} {lo hi n x : Int}
+    (hs : (lo, hi) ∈ segments bounds) (hl : lo ≤ n) (hh : n ≤ hi) (hx : x ∈ bounds) :
+    (x ≤ n → x ≤ lo) ∧ (n < x → hi < x) := by
+  obtain ⟨v, _, he⟩ := List.mem_filterMap.mp hs
+  unfold intervalAt at he
+  cases helo : lowerEnd bounds v with
+  | none => simp [helo] at he
+  | some l =>
+    cases hehi : upperEnd bounds v with
+    | none => simp [helo, hehi] at he
+    | some h =>
+      simp [helo, hehi] at he
+      have hlow := lowerEnd_some helo
+      have hupp := upperEnd_some hehi
+      constructor
+      · intro hxn
+        by_cases hxv : x ≤ v
+        · have := hlow.2.2 x hx hxv; omega
+        · have := hupp.2.2 x hx (by omega); omega
+      · intro hnx
+        by_cases hxv : x ≤ v
+        · have := hlow.2.2 x hx hxv; omega
+        · have := hupp.2.2 x hx (by omega); omega
 
 theorem char_scalar (c : Char) :
     (c.toNat : Int) < 55296 ∨ 57343 < (c.toNat : Int) := by
   have hc := c.valid
   change c.toNat < 55296 ∨ 57343 < c.toNat ∧ c.toNat < 1114112 at hc
   omega
+
+/-- 全ての Char は、サロゲートを含まない列挙済みの区間に属する。 -/
+theorem char_partition_cover (column : List Pat) (c : Char) :
+    ∃ lo hi, (lo, hi) ∈ charPartition column ∧ lo ≤ (c.toNat : Int) ∧ (c.toNat : Int) ≤ hi := by
+  have hc := c.valid
+  change c.toNat < 55296 ∨ 57343 < c.toNat ∧ c.toNat < 1114112 at hc
+  have hb (x : Int) (h : x ∈ ([0, 0xD800, 0xE000, 0x110000] : List Int)) :
+      x ∈ charBounds column := List.mem_append_left _ h
+  have hz := hb 0 (by simp)
+  have he := hb 0x110000 (by simp)
+  obtain ⟨lo, hi, hs, hlo, hlc, hch, hhi⟩ :=
+    segments_cover hz (b := 0x10FFFF) (by simpa using he)
+      (v := (c.toNat : Int)) (by omega) (by omega)
+  have hscalar : hi < 0xD800 ∨ 0xE000 ≤ lo := by
+    rcases hc with hc | hc
+    · have := (segments_refine hs hlc hch (hb 0xD800 (by simp))).2 (by omega)
+      exact Or.inl (by omega)
+    · have := (segments_refine hs hlc hch (hb 0xE000 (by simp))).1 (by omega)
+      exact Or.inr this
+  exact ⟨lo, hi, List.mem_filter.mpr ⟨hs, by simp [hlo, hscalar]; omega⟩, hlc, hch⟩
+
+/-- 問いの端も分割に含まれるため、値を含む区間全体が問いの範囲内にある。 -/
+theorem char_partition_query {column : List Pat} {q : Pat} {a b : Int} {c : Char}
+    (hq : q ∈ column) (hi : interval (.base .character) q = some (a, b))
+    (ha : a ≤ (c.toNat : Int)) (hb : (c.toNat : Int) ≤ b) :
+    ∃ lo hh, (lo, hh) ∈ charPartition column ∧ lo ≤ (c.toNat : Int) ∧
+      (c.toNat : Int) ≤ hh ∧ a ≤ lo ∧ hh ≤ b := by
+  obtain ⟨lo, hh, hs, hl, hu⟩ := char_partition_cover column c
+  have hm := List.mem_filterMap.mpr ⟨q, hq, hi⟩
+  have ends : ∀ x ∈ ([a, b + 1] : List Int), x ∈ charBounds column := by
+    intro x hx
+    exact List.mem_append_right _ (List.mem_flatMap.mpr ⟨(a,b), hm, hx⟩)
+  have hal := (segments_refine (List.mem_filter.mp hs).1 hl hu (ends a (by simp))).1 ha
+  have hhb := (segments_refine (List.mem_filter.mp hs).1 hl hu (ends (b+1) (by simp))).2 (by omega)
+  exact ⟨lo, hh, hs, hl, hu, hal, by omega⟩
 
 /-- 先頭の値の照合を、形の引数の照合に移すための全前提。 -/
 def ShapeStep (P : Program) (ctors : DataName → List ConName) (ty : Ty)
@@ -1002,7 +1021,7 @@ theorem shapeStep_integer {P : Program} {ctors : DataName → List ConName}
   · exact shapeStep_other (by simp [shapes]) hw
   have hw' : isWild q = false := by cases he : isWild q <;> simp_all
   obtain ⟨a,b, hi, ha,hb⟩ := integer_interval_of_match hw' hc hm
-  obtain ⟨lo,hh, hs,hl,hu,hal,hhb⟩ := shapes_interval_cover P ctors false column q a b n hq hi ha hb (by simp)
+  obtain ⟨lo,hh, hs,hl,hu,hal,hhb⟩ := shapes_interval_cover P ctors column q a b n hq hi ha hb
   refine ⟨.interval false lo hh, [], [], hs, .integer lo hh n hl hu, .nil, ?_, rfl⟩
   simp [specialize, hw', hi, hal, hhb]
 
@@ -1012,12 +1031,13 @@ theorem shapeStep_character {P : Program} {ctors : DataName → List ConName}
     (hm : (Pat.matchVal q (.const (.character c))).isSome = true) :
     ShapeStep P ctors (.base .character) column q (.const (.character c)) := by
   by_cases hw : isWild q = true
-  · exact shapeStep_other (by simp [shapes]) hw
+  · obtain ⟨lo, hi, hs, hl, hh⟩ := char_partition_cover column c
+    exact shapeStep_wild (List.mem_map.mpr ⟨(lo, hi), hs, rfl⟩) (.character lo hi c hl hh) .nil hw
   have hw' : isWild q = false := by cases he : isWild q <;> simp_all
   obtain ⟨a,b, hi, ha,hb⟩ := character_interval_of_match hw' hc hm
-  obtain ⟨lo,hh, hs,hl,hu,hal,hhb⟩ := shapes_interval_cover P ctors true column q a b ((c.toNat : Int))
-    hq hi ha hb (fun _ => char_scalar c)
-  refine ⟨.interval true lo hh, [], [], hs, .character lo hh c hl hu, .nil, ?_, rfl⟩
+  obtain ⟨lo,hh, hs,hl,hu,hal,hhb⟩ := char_partition_query hq hi ha hb
+  refine ⟨.interval true lo hh, [], [], List.mem_map.mpr ⟨(lo,hh), hs, rfl⟩,
+    .character lo hh c hl hu, .nil, ?_, rfl⟩
   simp [specialize, hw', hi, hal, hhb]
 
 theorem shapeStep_list {P : Program} {ctors : DataName → List ConName}
@@ -1092,7 +1112,12 @@ theorem shapeStep_con {P : Program} {ctors : DataName → List ConName}
     ShapeStep P ctors (.data cd.data ts) column q (.con c tys xs) := by
   let fields := substTys ts cd.args
   have hf : conFields P cd.data ts c = some fields := by simp [conFields, hdecl, hn, fields]
-  have hi : InhabitsAll P fields xs := by simpa [fields, substTys_eq] using hx
+  have hi : InhabitsAll P fields xs := by
+    apply inhabitsAll_erase_transfer hx
+    simp only [fields, substTys, eraseTys_map, List.map_map]
+    apply List.map_congr_left
+    intro a _
+    exact erase_subst_raw ts a
   have hs : Shape.con c fields ∈ shapes P ctors (.data cd.data ts) column := by
     apply List.mem_map.mpr
     exact ⟨c, hctors c cd hdecl, by simp [hf]⟩
@@ -1935,12 +1960,62 @@ example : inspect intTy [guarded [int 1], plain [int 1], plain [.wild]] =
     (none, [], false) := by decide
 
 /-- サロゲートだけの区間には Character の値がない。連続した問いは選ばれない。
-10FFFF は Char.ofNat で書く。範囲の全体を覆っても網羅とは判定しない。 -/
+10FFFF は Char.ofNat で書く。0〜96 が欠ける場合と全域の場合を区別する。 -/
 example : inspect charTy
     [plain [chars 97 0xD7FF], plain [chars 0xE000 0x10FFFF], plain [chars 97 0x10FFFF]] =
-    (some [.other], [(2, 0)], false) := by decide
+    (some [.interval true 0 96], [(2, 0)], false) := by decide
 
-example : inspect charTy [plain [chars 0 0x10FFFF]] = (some [.other], [], false) := by decide
+example : inspect charTy [plain [chars 0 0x10FFFF]] = (none, [], false) := by decide
+
+/-- 単一の全域、サロゲート前後、リテラルとの和、一点と値域の両端の穴。 -/
+example : ([
+    [chars 0 0xD7FF, chars 0xE000 0x10FFFF],
+    [chars 0 96, .const (.character 'a'), chars 98 0x10FFFF],
+    [chars 0 96, chars 98 0x10FFFF],
+    [chars 1 0x10FFFF], [chars 0 0x10FFFE],
+    [chars 0 0xD7FF, chars 0xE001 0x10FFFF],
+    [chars 0 0xD7FE, chars 0xE000 0x10FFFF]] : List (List Pat)).map
+    (fun ps => inspect charTy (ps.map fun p => plain [p])) =
+    [(none, [], false), (none, [], false),
+     (some [.interval true 97 97], [], false), (some [.interval true 0 0], [], false),
+     (some [.interval true 0x10FFFF 0x10FFFF], [], false),
+     (some [.interval true 0xE000 0xE000], [], false),
+     (some [.interval true 0xD7FF 0xD7FF], [], false)] := by decide
+
+/-- 全域後の分岐と同じ分岐内の重複は非選択。ガード行は後の分岐を覆わない。 -/
+example : [
+    inspect charTy [plain [chars 0 0x10FFFF], plain [.wild]],
+    inspect charTy [plain [chars 0 0xD7FF], plain [chars 0xE000 0x10FFFF], plain [.wild]],
+    inspect charTy [plain [chars 0 0x10FFFF, .wild]],
+    inspect charTy [guarded [chars 0 0x10FFFF, .wild]],
+    inspect charTy [guarded [chars 0 0x10FFFF], plain [chars 0 0x10FFFF]],
+    inspect charTy [guarded [chars 0 0x10FFFF]]] =
+    [(none, [(1, 0)], false), (none, [(2, 0)], false), (none, [(0, 1)], false),
+     (some [.wild], [(0, 1)], false), (none, [], false), (some [.wild], [], false)] := by decide
+
+/-- 全域の範囲は束縛できるが、一点を欠く範囲とIntegerの有界な全域は認めない。 -/
+example : [irrefutable program ctors charTy (chars 0 0x10FFFF),
+    irrefutable program ctors charTy (chars 1 0x10FFFF),
+    irrefutable program ctors intTy (.range (.integer (-9223372036854775808))
+      (.integer 9223372036854775807))] = [true, false, false] := by decide
+
+/-- 二欄それぞれの被覆だけでは、交差する組合せを覆ったことにならない。 -/
+example : ([
+    [[chars 0 0x10FFFF, bool true], [chars 0 0x10FFFF, bool false]],
+    [[chars 0 96, bool true], [chars 97 0x10FFFF, bool false]]] : List (List (List Pat))).map
+    (fun rows => (useful program ctors [charTy, boolTy] rows [.wild, .wild]).map
+      (List.flatMap summarize)) =
+    [none, some [.interval true 0 96, .boolean false]] := by decide
+
+/-- 構成子の欄とリストにも同じ分割を適用し、外部viewの将来の形は残す。 -/
+example : ([closedView, externalChoice] : List CoverageView).map (fun view =>
+    inspectWithView view (.data "Choice" [charTy])
+      [plain [.con "L" [chars 0 0x10FFFF]], plain [.con "R" [chars 0 0x10FFFF]]]) =
+    [(none, [], [], false), (some [.future "Choice"], [], [], false)] := by rfl
+
+example : inspect (.list charTy)
+    [plain [.list [] none []], plain [.list [chars 0 0x10FFFF] (some .skip) []]] =
+    (none, [], false) := by decide
 
 /-- 問いを端の分割に含めないと、0 と 2 の間の 1 を見落とす。 -/
 example : (useful program ctors [intTy] [[int 0], [int 2]]

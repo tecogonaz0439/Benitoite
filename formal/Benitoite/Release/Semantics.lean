@@ -17,6 +17,8 @@ import Benitoite.Release.WellFormed
   E-EscDrop・E-EscDropRel・E-ErrDrop・E-ErrDropRel・E-ExitDrop・E-ExitDropRel の規則として書く。
 -/
 
+noncomputable section
+
 namespace Benitoite.Release
 
 /-- 継続の枠。 -/
@@ -81,6 +83,7 @@ def NoHandler (k : Cont) (o : OpRef) : Prop :=
 
 /-- 状態が、継続のどの `handle` の枠も処理しない利用者の操作を呼ぶ。 -/
 def UnhandledOp : State → Prop
+  | .run (.app (.raise _ _) _) k _ => NoHandler k .fail
   | .run (.app (.op o _) _) k _ => NoHandler k (.user o)
   | _ => False
 
@@ -261,6 +264,12 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
       Step P B (.run (.app (.op o ts) ws) k σ) none
         (.run ((c.body.substTy ts []).instantiate (ws ++ [.loc κ])) (.drop κ :: k2)
           (σ.set κ (.cont (k1 ++ [.handleF h]))))
+  /-- 最も内側のFail節を型の比較なしで選び、結果型Tだけを代入する。 -/
+  | E_OpFail {T E' v k σ k1 E body k2 κ} :
+      SplitAt .fail k k1 [.fail E body] k2 → σ κ = none →
+      Step P B (.run (.app (.raise T E') [v]) k σ) none
+        (.run ((body.substTy [T] []).instantiate [v, .loc κ])
+          (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF [.fail E body]]))))
   /-- E-Op（組み込みの操作）。継続に b の節を持つ `handle` の枠があるときは、E-IO の代わりに使う。 -/
   | E_OpPrim {b ts es ws k σ s k1 h k2 c κ} :
       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
@@ -371,6 +380,13 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
                 (σ.set κ (.cont (k1 ++ [.handleF h]))))
           | none => none
       | none => none
+  | .run (.app (.raise t _) [v]) k σ =>
+      match splitHandler .fail k with
+      | some (k1, [.fail e body], k2) =>
+          let κ := fresh σ
+          some (none, .run ((body.substTy [t] []).instantiate [v, .loc κ])
+            (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF [.fail e body]]))))
+      | _ => none
   | .run (.app (.prim b ts es) ws) k σ =>
       match B.sig b with
       | none => none
@@ -505,7 +521,7 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
     Option Ty → Eff → Cont → Ty → Ty → Eff → Option Ty → Prop
   | K_Empty {R ε a ε0} : Eff.Sub ε ε0 → Ty.WF 0 a → ContTy P B Ψ R ε [] a a ε0 R
   | K_Let {R ε n k a c b ε0 ε1 Re} :
-      HasTypeC P B Ψ [] [some a] R n c ε1 → Eff.Sub ε1 ε → ContTy P B Ψ R ε k c b ε0 Re →
+      HasTypeC P B Ψ [] [some a] R n c ε1 → Ty.WF 0 a → Eff.Sub ε1 ε → ContTy P B Ψ R ε k c b ε0 Re →
       ContTy P B Ψ R ε (.letF n :: k) a b ε0 Re
   | K_Mark {R' ε k a b ε0 Re} :
       ContTy P B Ψ R' ε k a b ε0 Re → Ty.WF 0 a → ContTy P B Ψ (some a) ε (.mark :: k) a b ε0 Re
@@ -513,17 +529,22 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
       Ψ l = some (.lazy a) → ContTy P B Ψ R ε k a b ε0 Re →
       ContTy P B Ψ none ε (.update l :: k) a b ε0 Re
   | K_Release {R ε v o k a b ε0 Re} :
-      HasTypeV P B Ψ [] [] v (.opaque o) → B.isResource o = true → ε (.name stateEff) = true →
+      HasTypeV P B Ψ [] [] v (.opaque o) → B.isResource o = true → Eff.mem ε (.name stateEff) →
       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
   /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
   | K_Handle {R ε εc h k t b ε0 Re} :
       ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ [] [] R h t εc →
       Ty.WF 0 t →
       ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
+  /-- Fail節の出力を、捕捉する本体の上限へ混ぜない。 -/
+  | K_Handle_Fail {R ε ec Rest E h k t b ε0 Re} :
+      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub Rest ε → NoFail Qempty Rest →
+      HasFailureClause P B Ψ Qempty [] [] E R h t ec → Eff.Sub ec ε → Ty.WF 0 t →
+      ContTy P B Ψ R (Eff.union (Eff.singleFail E) Rest) (.handleF h :: k) t b ε0 Re
   /-- K-Drop。捨てる継続の解放の枠を、この位置で実行できるように、κ の継続の型のエフェクトが `State` を
   含むなら、ε も `State` を含む（01-12「確かめる性質」）。 -/
   | K_Drop {R ε κ k a b ε0 Re b' t' ε' R'} :
-      Ψ κ = some (.cont b' t' ε' R') → (ε' (.name stateEff) = true → ε (.name stateEff) = true) →
+      Ψ κ = some (.cont b' t' ε' R') → (Eff.mem ε' (.name stateEff) → Eff.mem ε (.name stateEff)) →
       ContTy P B Ψ R ε k a b ε0 Re →
       ContTy P B Ψ R ε (.drop κ :: k) a b ε0 Re
   /-- ガードは R = none、空のエフェクトで実行し、本体と再開先では元の R とエフェクトに戻る。 -/
@@ -552,7 +573,7 @@ def CellOk (P : Program) (B : Builtins) (Ψ : StoreTy) (l : Nat) : Cell → Prop
 def LocTy.WF : LocTy → Prop
   | .ref a => Ty.WF 0 a
   | .lazy a => Ty.WF 0 a
-  | .cont b t _ r => Ty.WF 0 b ∧ Ty.WF 0 t ∧ ∀ x, r = some x → Ty.WF 0 x
+  | .cont b t e r => Ty.WF 0 b ∧ Ty.WF 0 t ∧ (∀ x, r = some x → Ty.WF 0 x) ∧ Eff.WF 0 e ∧ Eff.Canonical e
 
 /-- ストアがストアの型付けに合う。ストアは有限であり、Ψ が型を与える場所には中身がある（`dom Ψ = dom σ`。
 01-12「確かめる性質」）。 -/
@@ -561,9 +582,10 @@ def StoreOk (P : Program) (B : Builtins) (Ψ : StoreTy) (σ : Store) : Prop :=
     (∀ l x, Ψ l = some x → σ l ≠ none) ∧
     (∀ l c, σ l = some c → CellOk P B Ψ l c)
 
-/-- 継続の末尾で許すエフェクト Eb は、組み込みのエフェクトの名前の集合である。 -/
+/-- 継続の末尾で許すエフェクト Eb は、Fail を含まない組み込みのエフェクトの名前の集合である。 -/
 def BuiltinOnly (P : Program) (B : Builtins) (ε : Eff) : Prop :=
-  ∀ a, ε a = true → ∃ l, a = .name l ∧ P.effects l = none ∧ (B.effects l).isSome
+  ε.fails = [] ∧
+    ∀ a, Eff.mem ε a → ∃ l, a = .name l ∧ P.effects l = none ∧ (B.effects l).isSome
 
 /-! ## 状態の中の項が閉じていること -/
 

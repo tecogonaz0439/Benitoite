@@ -1,0 +1,7 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad() -> (function() -> Integer uses Failure.Fail[String])
+ return if true then lambda() return Failure.raise(error: "bad") end lambda else lambda() return Failure.raise(error: 42) end lambda end if
+end function
+function main() -> Unit
+end function

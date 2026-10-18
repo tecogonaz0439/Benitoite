@@ -96,11 +96,11 @@ theorem ContTy.R_wf {Ψ R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε0 Re)
     (hRe : ∀ x, Re = some x → Ty.WF 0 x) : ∀ x, R = some x → Ty.WF 0 x := by
   induction h with
   | K_Empty _ _ => exact hRe
-  | K_Let _ _ _ ih => exact ih hRe
+  | K_Let _ _ _ _ ih => exact ih hRe
   | K_Mark _ hw _ => intro x hx; cases hx; exact hw
   | K_Update _ _ _ => intro x hx; cases hx
   | K_Release _ _ _ _ ih => exact ih hRe
-  | K_Handle _ _ _ _ ih => exact ih hRe
+  | K_Handle _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih => exact ih hRe
   | K_Drop _ _ _ ih => exact ih hRe
   | K_Guard => intro x hx; cases hx
   | K_Sub _ _ ih => exact ih hRe
@@ -119,15 +119,15 @@ theorem ContTy.markPush {Ψ R ε k a b E r} (hk : ContTy P B Ψ R ε k a b E non
 
 /-! ## 節の探索 -/
 
-theorem HasTypeClauses.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
+theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
     (hc : findClause hs o = some c) :
-    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧
+    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
       HasTypeC P B Ψ (sg.tparams ++ C)
-        (some (.cont sg.ret (t.shift c.ntys 0) ε) :: (binds sg.params ++ shiftEnv c.ntys Γ))
-        (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) ε := by
+        (some (.cont sg.ret (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε)) :: (binds sg.params ++ shiftEnv c.ntys Γ))
+        (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε) := by
   match h with
   | .nil => simp [findClause] at hc
-  | .cons (o := o') (n := n) (k := k) (body := body) hsg hnames hn hk hbody hrest =>
+  | .cons (o := o') (n := n) (k := k) (body := body) hsg hnames hn hk hew hbody hrest =>
       simp only [findClause, List.find?_cons] at hc
       split at hc
       · rename_i heq
@@ -135,8 +135,8 @@ theorem HasTypeClauses.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C
         subst hc
         have : o' = o := by simpa [Clause.op] using heq
         subst this
-        exact ⟨_, hsg, hn, hk, hbody⟩
-      · exact HasTypeClauses.find hrest hc
+        exact ⟨_, hsg, hn, hk, hew, hbody⟩
+      · exact HasTypeClausesQ.find hrest hc
 
 theorem findClause_op {hs : List Clause} {o c} (h : findClause hs o = some c) : c.op = o := by
   simp only [findClause] at h
@@ -145,12 +145,12 @@ theorem findClause_op {hs : List Clause} {o c} (h : findClause hs o = some c) : 
 
 /-! ## 閉じた値の並び -/
 
-theorem HasTypeVs.get {Ψ C Γ vs as} :
+theorem HasTypeVsQ.get {Ψ C Γ vs as} :
     HasTypeVs P B Ψ C Γ vs as → ∀ (i : Nat) (a : Ty), as[i]? = some a →
       ∃ v, vs[i]? = some v ∧ HasTypeV P B Ψ C Γ v a
   | .nil, i, a, h => by simp at h
   | .cons hv _, 0, a, h => by simp at h; subst h; exact ⟨_, rfl, hv⟩
-  | .cons _ hvs, i + 1, a, h => by simpa using HasTypeVs.get hvs i a (by simpa using h)
+  | .cons _ hvs, i + 1, a, h => by simpa using HasTypeVsQ.get hvs i a (by simpa using h)
 
 theorem Val.VarsInList.get {n pe} : {ws : List Val} → Val.VarsInList n pe ws → ∀ {i : Nat} {w},
     ws[i]? = some w → Val.VarsIn n pe w

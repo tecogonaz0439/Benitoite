@@ -1,0 +1,63 @@
+// spec: 01-07 型付きの失敗
+// spec: 01-06 型付きの失敗と行の条件
+import Benitoite.Unofficial.Failure
+
+function catchString[T, effect Rest](body: function() -> T uses Failure.Fail[String], Rest, fallback: T) -> T uses Rest
+  return handle body() with
+    case Failure.raise(error) -> fallback
+  end handle
+end function
+
+record ErrorValue
+ value: Integer
+end record
+
+function failed(value: Integer) -> Integer uses Failure.Fail[String]
+  return if value = 2 then Failure.raise(error: "bad") else value end if
+end function
+
+function main() -> Result[Unit, String]
+  bind functionError <- handle
+    Failure.raise(error: lambda() -> Integer uses Failure.Fail[String]
+      return Failure.raise(error: "nested")
+    end lambda)
+  with
+    case Failure.raise(error) ->
+      handle error() with
+        case Failure.raise(message) -> String.characterCount(message)
+      end handle
+  end handle
+  bind opaque <- handle
+    Failure.raise(error: ErrorValue(value: 17))
+  with
+    case Failure.raise(error) -> ErrorValue.value(error)
+  end handle
+  bind caught <- handle
+    Failure.raise(error: "hello") + 1000
+  with
+    case Failure.raise(error) -> String.characterCount(error)
+  end handle
+  bind reraised <- handle
+    handle Failure.raise(error: "abc") with
+      case Failure.raise(error) -> Failure.raise(error: String.characterCount(error))
+    end handle
+  with
+    case Failure.raise(error) -> error + 10
+  end handle
+  bind mapped <- catchString(body: lambda() return List.map(xs: [1, 2, 3], f: failed) end lambda, fallback: [99])
+  bind partial: function(error: String) -> Integer uses Failure.Fail[String] <- Failure.raise(error: _)
+  bind piped <- handle "pipe" |> partial with
+    case Failure.raise(error) -> String.characterCount(error)
+  end handle
+  bind latent <- catchString(body: lambda()
+    return lambda() return Failure.raise(error: "latent") end lambda
+  end lambda, fallback: lambda() return 8 end lambda)
+  bind last <- handle latent() with
+    case Failure.raise(error) -> String.characterCount(error)
+  end handle
+  return if functionError = 6 and opaque = 17 and caught = 5 and reraised = 13 and mapped = [99] and piped = 4 and last = 6 then
+    Result.Ok(())
+  else
+    Result.Error("typed failure produced the wrong result")
+  end if
+end function

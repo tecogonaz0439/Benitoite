@@ -89,4 +89,4 @@ cargo build -p benitoite --example try_actions_inventory
 python3 -B tools/try-actions-migrate/test_migrate.py
 ```
 
-一時ディレクトリの実ファイルと実際の補助プログラムを使う。過去の inventory や LLM は使わない。parser の operand の境界、複数行と inline、補間、Rust の escape、保留と分類、die の契約確認、確認済みハッシュと全入力・範囲の拒否、diff、適用と再適用を確認する。通常の `scripts/check.sh` の python の検査も、helper のビルドとこの自己検査を呼ぶ。
+一時ディレクトリの実ファイルと実際の補助プログラムを使う。過去の inventory や LLM は使わない。parser の operand の境界、複数行と inline、補間、Rust の escape、保留と分類、die の契約確認、確認済みハッシュと全入力・範囲の拒否、diff、適用と再適用を確認する。通常の `scripts/check.sh` の `python_syntax` が構文を確認し、`migrate_selftests` が helper のビルドとこの自己検査を呼ぶ（水準なしの互換指定は `python`）。

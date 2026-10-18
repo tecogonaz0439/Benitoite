@@ -8,6 +8,7 @@ JSON の必須欄、契約とラベル・位置、宣言表、比較の正規化
 import copy
 import json
 from pathlib import Path
+import runpy
 import subprocess
 import tempfile
 import unittest
@@ -33,6 +34,34 @@ def surface(data, index):
 
 def expr(data, index):
     return surface(data, index)["body"]["last"]["expr"]["returnE"]["inner"]
+
+
+def effect_order_input(data, effects):
+    """既存の宣言を残し、潜在効果を含む型をそのまま返す多相関数を加える。"""
+    data = copy.deepcopy(data)
+    ty = {"list": {"elem": {"fn": {"names": ["value"],
+          "params": [{"base": {"name": "Integer"}}],
+          "ret": {"base": {"name": "Integer"}}, "eff": effects}}}}
+    h = {"tparams": [], "neffs": 2, "names": ["value"],
+         "params": [ty], "ret": ty, "eff": []}
+    data["corpus"]["inputs"][0]["definitions"].append({
+        "name": "effectOrder (fn:100)", "scope": {"inScope": {
+            "surface": {"header": copy.deepcopy(h), "dictParams": [],
+                "implementation": None, "method": None, "supers": [],
+                "coverageView": [], "package": "author",
+                "body": {"last": {"expr": {"returnE": {
+                    "ret": copy.deepcopy(ty), "inner": {"local": {"index": 0}}}}}}},
+            "core": {"header": copy.deepcopy(h), "lambdaEffects": [], "supers": [],
+                "body": {"ret": {"value": {"var": {"index": 0}}}}}}}})
+    # 四形式の側の読者にも同じ潜在効果を渡す。期待値はワイルドカードによる全域である。
+    data["builtins"]["inputs"][0]["prims"].append({
+        "name": "effectOrder", **copy.deepcopy(h), "kind": "pure", "opEff": None,
+        "classConstraints": [], "unconvertibleTypes": []})
+    data["stdlib"]["inputs"][0]["functions"].append({
+        "name": "fn:101", "header": copy.deepcopy(h), "dictParams": []})
+    data["coverage"]["cases"][0]["ty"]["eff"] = copy.deepcopy(effects)
+    data["coverage-program"]["inputs"][0]["matches"][0]["scrutineeTy"]["fn"]["eff"] = copy.deepcopy(effects)
+    return data
 
 
 class ExchangeTests(unittest.TestCase):
@@ -87,6 +116,52 @@ class ExchangeTests(unittest.TestCase):
         self.assertEqual(report["result"], {"ok": True})
         self.assertEqual(report["definition"], "fn:2")
         self.assertEqual(len(report["checkNanos"]), 2)
+
+    def test_legacy_effect_order_and_membership(self):
+        legacy = runpy.run_path(str(Path(__file__).with_name("test_extensible_exchange.py")))["legacy"]
+        # Atom.code の順序。Python側にその符号の実装は置かない。
+        effects = [{"rho": {"index": 0}}, {"rho": {"index": 1}},
+                   {"name": {"value": "Ask"}}, {"name": {"value": "Console"}}]
+        for version in (8, 9, 10):
+            for order in (effects, list(reversed(effects)) + effects[:1]):
+                data = effect_order_input(self.data, order)
+                core = data["corpus"]["inputs"][0]["definitions"][-1]["scope"]["inScope"]["core"]
+                core["header"]["params"][0]["list"]["elem"]["fn"]["eff"] = list(reversed(effects))
+                if version == 8:
+                    data = legacy(data)
+                data["corpus"]["version"] = version
+                for tool in TOOLS:
+                    with self.subTest(version=version, order=order, tool=tool):
+                        result, report = self.run_tool(tool, data, selected="fn:100" if tool == "surfaceCheck" else None)
+                        self.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
+                        if tool == "desugarDiff":
+                            self.assertEqual(report["golden"]["definitions"],
+                                             dict(matched=19, mismatched=0, outside=0, excluded=0))
+                            self.assertEqual(report["mismatches"], [])
+                        elif tool == "builtinCheck":
+                            self.assertEqual(report["errors"], [])
+                            self.assertEqual(report["summaryMismatchCount"], 0)
+                        elif tool.startswith("coverage"):
+                            self.assertEqual((report["matched"], report["mismatched"], report["fuelExhausted"]), (2, 0, 0))
+                        elif tool == "surfaceCheck":
+                            self.assertEqual(report["result"], {"ok": True})
+                        else:
+                            self.assertEqual(report["counts"], dict(matched=18, mismatched=0, outOfScope=0,
+                                             q11=0, lazyRestriction=0, preparationFailure=0))
+                # 並びと重複だけをそろえ、実際の要素の欠落を消さない。
+                core = data["corpus"]["inputs"][0]["definitions"][-1]["scope"]["inScope"]["core"]
+                core["header"]["params"][0]["list"]["elem"]["fn"]["eff"] = effects[:-1]
+                with self.subTest(version=version, order=order, missing=True):
+                    result, report = self.run_tool("desugarDiff", data)
+                    self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
+                    self.assertEqual(report["golden"]["definitions"],
+                                     dict(matched=18, mismatched=1, outside=0, excluded=0))
+                    self.assertEqual(len(report["mismatches"]), 1)
+                    mismatch = report["mismatches"][0]
+                    self.assertEqual(mismatch["definition"], "effectOrder (fn:100)")
+                    self.assertIn("header.params[0].list.elem.fn.eff", mismatch["path"])
+                    self.assertNotEqual(mismatch["expected"], mismatch["actual"])
+                    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
 
     def test_implementation_and_method_dictionaries(self):
         # 実装の T: Show とメソッドの U: Show は別の束縛である。

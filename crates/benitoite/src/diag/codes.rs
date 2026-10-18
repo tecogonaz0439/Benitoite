@@ -860,8 +860,7 @@ diag_codes! {
     E0510 Check "invalid effect operation declaration" ""
         [uses: "an operation declaration cannot have `uses`; the handler decides the effects",
          effect_var: "an operation cannot have effect variables",
-         type_ctor: "an operation cannot have type constructor parameters such as `F[_]`",
-         trait_constraint: "a type parameter of an operation can have only `equality` or `key`, not a trait"]
+         type_ctor: "an operation cannot have type constructor parameters such as `F[_]`"]
         "Operations of an effect are declared with a name, parameters, and a result type.";
 
     E0511 Check "the message of `or die` cannot perform `{effect}`" ""
@@ -875,12 +874,31 @@ diag_codes! {
          review: "review the required effects before changing --allow-effects"]
         "The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.";
 
+    E0513 Check "invalid type arguments for effect `{name}` (expected {count})" ""
+        []
+        "Only the standard Failure.Fail takes exactly one value type argument.";
+    E0514 Check "incompatible failure types `{expected}` and `{found}` in one effect set" ""
+        [convert: "convert errors explicitly in a failure clause before joining effects"]
+        "A source computation can have at most one invariant failure type.";
+    E0515 Check "cannot establish that the remaining effects exclude Failure.Fail" ""
+        [signature: "declare Failure.Fail in the callback signature, handle failures inside the callback, or move the handle boundary"]
+        "NoFail conditions come only from declared signatures. A row next to an explicit Failure.Fail excludes failures.";
+    E0516 Check "`resume` is not allowed in a failure clause" ""
+        [result: "return the result of the whole handle instead"]
+        "Failure.raise aborts the captured continuation.";
+    E0517 Check "cannot determine the error type caught by this handle" ""
+        [annotation: "annotate the callback or result type to fix the failure type"]
+        "The failure type must be fixed before its handler is erased.";
+    E0518 Check "cannot mix failure and ordinary operation clauses in one handle" ""
+        [nest: "nest two handles instead"]
+        "A failure handle contains exactly one Failure.raise clause.";
+
     // ---- E06: パターン ----
     E0601 Check "`match` does not cover every value" "`{witness}` is not matched"
         [add_arm: "add a branch `case {witness} ->`, or `case _ ->`",
          future: "add an unguarded variable or `_` pattern to cover future values of `{future_ty}`",
          extensible_decl: "this type permits future shapes outside its package"]
-        "Every possible value must be matched by some branch.";
+        r"Every possible value must be matched by some branch. Character ranges can cover all Unicode scalars without a catch-all. For a match containing only 'a', the missing-character witness is '\u{0}'. Integer ranges still need a catch-all.";
     E0602 Check "this branch can never be selected" "unreachable branch"
         [covering: "this earlier branch already matches the values"]
         "Earlier branches match every value this branch matches.";

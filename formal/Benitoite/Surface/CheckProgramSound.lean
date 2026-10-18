@@ -101,7 +101,7 @@ theorem checkProgram_under {q : Check.Input} {m : Materials} {names : Names}
     (him : ∀ n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id → Check.ImplNamesComplete q id names.methods names.supers)
     (hext : Extends q.D m.program.declarations)
     (h : checkProgram q m names = .ok ()) : CheckedUnder m.program q := by
-  have steps := bind_ok h
+  have steps := bind_ok (Check.guardResult_ok h)
   have more := bind_ok steps.2
   refine ⟨?_, hext, ?_, ?_⟩
   · intro n d hget
@@ -128,7 +128,7 @@ theorem checkProgram_contracts {m : Materials} {B sat admits op atoms}
     (h : checkProgram (m.input B sat admits op atoms) m m.names = .ok ()) :
     ∀ n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id →
       id.ContractsMatch m.declarations := by
-  have steps := bind_ok h
+  have steps := bind_ok (Check.guardResult_ok h)
   have more := bind_ok steps.2
   intro n id hget
   have hmem := lookup_mem hget

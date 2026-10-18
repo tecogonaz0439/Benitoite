@@ -6,61 +6,24 @@ import Benitoite.Surface.CheckPatterns
 namespace Benitoite.Surface.CheckTools
 open Benitoite.Release
 
-def tyJoin (atoms : List Atom) (a b : Ty) : Option Ty :=
-  match a, b with
-  | .fn names ps r ε, .fn otherNames qs s ε' =>
-      if (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s then
-        some (.fn names ps r (unionEff atoms ε ε')) else none
-  | _, _ => if tyEq atoms a b then some a else none
+def tyJoin := Finite.tyJoin
 
-theorem tyJoin_sound {atoms a b j} (ha : Ty.AtomsIn atoms a)
-    (hb : Ty.AtomsIn atoms b) (h : tyJoin atoms a b = some j) :
-    Ty.Le a j ∧ Ty.Le b j := by
-  cases a <;> cases b <;> simp only [tyJoin] at h
-    <;> split at h <;> simp only [Option.some.injEq, reduceCtorEq] at h
-    <;> try (subst j; exact ⟨Or.inl rfl, Or.inl (tyEq_sound ha hb ‹_›).symm⟩)
-  rename_i names ps r ε otherNames qs s ε' hh
-  simp only [Bool.and_eq_true_iff] at hh
-  rcases hh with ⟨⟨hn, hp⟩, hr⟩
-  have hnames := eq_of_beq hn
-  have ep := tysEq_sound ha.1 hb.1 hp
-  have er := tyEq_sound ha.2.1 hb.2.1 hr
-  subst otherNames; subst qs; subst s; subst j
-  rw [unionEff_eq ha.2.2 hb.2.2]
-  constructor
-  · exact Or.inr ⟨names, ps, r, ε, Eff.union ε ε', rfl, rfl, by
-      intro a he; simp [Eff.union, he]⟩
-  · exact Or.inr ⟨names, ps, r, ε', Eff.union ε ε', rfl, rfl, by
-      intro a he; simp [Eff.union, he]⟩
+theorem tyJoin_sound {atoms a b j} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
+    (h : tyJoin atoms a b = some j) : Ty.Le a j ∧ Ty.Le b j := Finite.tyJoin_sound ha hb h
 
-theorem tyJoin_atoms {atoms a b j} (ha : Ty.AtomsIn atoms a)
-    (h : tyJoin atoms a b = some j) : Ty.AtomsIn atoms j := by
-  cases a <;> cases b <;> simp only [tyJoin] at h
-    <;> split at h <;> simp only [Option.some.injEq, reduceCtorEq] at h <;> try (subst j; exact ha)
-  subst j
-  exact ⟨ha.1, ha.2.1, unionEff_atoms _ _ _⟩
+theorem tyJoin_atoms {atoms a b j} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
+    (h : tyJoin atoms a b = some j) : Ty.AtomsIn atoms j := Finite.tyJoin_support ha hb h
 
-def diffEff (atoms : List Atom) (ε h : Eff) : Eff :=
-  fun a => atoms.contains a && ε a && !h a
+def diffEff (_atoms : List Atom) (e h : Eff) := Finite.diffEff e h
 
-theorem diffEff_cover {atoms ε h} (ha : Eff.AtomsIn atoms ε) :
-    Eff.Sub ε (Eff.union (diffEff atoms ε h) h) := by
-  intro a he
-  have hm : atoms.contains a = true := List.elem_eq_true_of_mem (ha a he)
-  cases hh : h a <;> simp only [Eff.union, diffEff, hm, he, hh, Bool.not_false, Bool.not_true, Bool.true_and, Bool.or_true, Bool.or_false]
+theorem diffEff_cover {atoms ε h} (_ha : Eff.AtomsIn atoms ε) :
+    Eff.Sub ε (Eff.union (diffEff atoms ε h) h) := Finite.diffEff_cover ε h
 
-theorem diffEff_atoms (atoms : List Atom) (ε h : Eff) :
-    Eff.AtomsIn atoms (diffEff atoms ε h) := by
-  intro a ha
-  have hh : atoms.contains a = true := ((Bool.and_eq_true_iff.mp ha).1 |> Bool.and_eq_true_iff.mp).1
-  exact List.mem_of_elem_eq_true hh
+theorem diffEff_atoms {atoms : List Atom} {ε h : Eff} (he : Eff.AtomsIn atoms ε) :
+    Eff.AtomsIn atoms (diffEff atoms ε h) := Finite.diffEff_support he
 
 theorem diffEff_mono {atoms ε ε' h} (hh : Eff.Sub ε ε') :
-    Eff.Sub (diffEff atoms ε h) (diffEff atoms ε' h) := by
-  intro a ha
-  have ⟨hmhe, hn⟩ := Bool.and_eq_true_iff.mp ha
-  have ⟨hm, he⟩ := Bool.and_eq_true_iff.mp hmhe
-  simp only [diffEff, hm, hh a he, hn, Bool.true_and]
+    Eff.Sub (diffEff atoms ε h) (diffEff atoms ε' h) := Finite.diffEff_mono hh
 
 theorem singleEff_eq_contains {atoms : List Atom} {l : EffName}
     (h : atoms.contains (.name l) = true) : singleEff atoms (.name l) = Eff.single l :=
@@ -133,10 +96,23 @@ def Declarations.AtomsIn (atoms : List Atom) (D : Declarations) : Prop :=
     Ty.AtomsIn atoms (.fn ms.names ms.params ms.ret ms.eff)) ∧
   (∀ i id, D.impls i = some id → Ty.AtomsIn atoms id.target ∧ Tys.AtomsIn atoms id.dictTys)
 
+theorem OpDecl.dictTys_atoms (d : OpDecl) (atoms : List Atom) :
+    Tys.AtomsIn atoms d.dictTys := by
+  apply CheckTools.tysAtoms_iff.mpr
+  intro t ht
+  obtain ⟨p, _, rfl⟩ := List.mem_map.mp ht
+  trivial
+
+theorem OpDecl.valueParams_atoms {d : OpDecl} {atoms : List Atom}
+    (h : Tys.AtomsIn atoms d.params) : Tys.AtomsIn atoms d.valueParams := by
+  apply CheckTools.tysAtoms_iff.mpr
+  intro t ht
+  exact CheckTools.tysAtoms_iff.mp h t (List.mem_of_mem_drop ht)
+
 mutual
   def DictEv.AtomsIn (atoms : List Atom) : DictEv → Prop
     | .impl _ ts ds => Tys.AtomsIn atoms ts ∧ DictEvs.AtomsIn atoms ds
-    | .local _ => True
+    | .local _ | .clause _ _ _ => True
     | .super d _ => d.AtomsIn atoms
   def DictEvs.AtomsIn (atoms : List Atom) : List DictEv → Prop
     | [] => True
@@ -156,6 +132,7 @@ mutual
     | .methName d _ ts es ds _ ps => d.AtomsIn atoms ∧ Tys.AtomsIn atoms ts ∧
         (∀ ε ∈ es, ε.AtomsIn atoms) ∧ DictEvs.AtomsIn atoms ds ∧ Tys.AtomsIn atoms ps
     | .opName _ ts | .nullCon _ ts => Tys.AtomsIn atoms ts
+    | .opDicts _ ts ds _ ps => Tys.AtomsIn atoms ts ∧ DictEvs.AtomsIn atoms ds ∧ Tys.AtomsIn atoms ps
     | .conValue _ ts _ ps => Tys.AtomsIn atoms ts ∧ Tys.AtomsIn atoms ps
     | .paren e | .not e | .resume _ e => e.AtomsIn atoms
     | .conCall _ ts es | .record _ ts _ es => Tys.AtomsIn atoms ts ∧ es.AtomsIn atoms
@@ -186,6 +163,8 @@ mutual
     | .withE _ e b => e.AtomsIn atoms ∧ b.AtomsIn atoms
     | .lazyE b => b.AtomsIn atoms
     | .handleE b cs => b.AtomsIn atoms ∧ cs.AtomsIn atoms
+    | .raise t e => t.AtomsIn atoms ∧ e.AtomsIn atoms
+    | .handleFail e t b c => e.AtomsIn atoms ∧ t.AtomsIn atoms ∧ b.AtomsIn atoms ∧ c.AtomsIn atoms
     | _ => True
   def Exprs.AtomsIn (atoms : List Atom) : Exprs → Prop
     | .nil => True
@@ -205,7 +184,7 @@ mutual
     | .cons _ g b rest => (∀ e, g = some e → e.AtomsIn atoms) ∧ b.AtomsIn atoms ∧ rest.AtomsIn atoms
   def Clauses.AtomsIn (atoms : List Atom) : Clauses → Prop
     | .nil => True
-    | .cons _ _ _ b rest => b.AtomsIn atoms ∧ rest.AtomsIn atoms
+    | .cons _ _ _ b rest _ => b.AtomsIn atoms ∧ rest.AtomsIn atoms
 end
 
 def Def.AtomsIn (atoms : List Atom) (d : Def) : Prop :=
@@ -215,6 +194,22 @@ def ImplDecl.AtomsIn (atoms : List Atom) (id : ImplDecl) : Prop :=
   id.target.AtomsIn atoms ∧ Tys.AtomsIn atoms id.dictTys ∧
   (∀ s d, id.supers s = some d → d.AtomsIn atoms) ∧
   (∀ m b, id.methods m = some b → b.AtomsIn atoms)
+
+/-- 内部の辞書引数は型変数だけなので、原子集合の支持を要求しない。 -/
+theorem FunDecl.dictTys_atoms (d : FunDecl) (atoms : List Atom) :
+    Tys.AtomsIn atoms d.dictTys := by
+  apply CheckTools.tysAtoms_iff.mpr
+  intro t ht
+  obtain ⟨p, _, rfl⟩ := List.mem_map.mp ht
+  trivial
+
+theorem FunDecl.coreParams_atoms {d : FunDecl} {atoms}
+    (h : Tys.AtomsIn atoms d.params) : Tys.AtomsIn atoms (d.dictTys ++ d.params) := by
+  apply CheckTools.tysAtoms_iff.mpr
+  intro t ht
+  rcases List.mem_append.mp ht with ht | ht
+  · exact CheckTools.tysAtoms_iff.mp (d.dictTys_atoms atoms) t ht
+  · exact CheckTools.tysAtoms_iff.mp h t ht
 
 def OpPrimTypeArgs (op : OpPrim) : Prop :=
   ∀ o t b ts, op o t = some (b, ts) → ts = o.typeArgs t
@@ -227,6 +222,6 @@ theorem OpPrimTypeArgs.atoms {atoms op o t b ts} (h : OpPrimTypeArgs op)
   rw [h o t b ts ho]
   cases o with
   | neg => trivial
-  | binary o => cases o <;> simp [Operator.typeArgs, Tys.AtomsIn, ht]
+  | binary o => cases o <;> simp [Operator.typeArgs, Ty.SupportList, ht]
 
 end Benitoite.Surface

@@ -1,0 +1,393 @@
+//! Pure property trials with explicit random state and bounded shrinking.
+//! Keep size small for List, String, and Map shrinking: candidate generation and
+//! deduplication can cost more than quadratic time in the input length; maxShrinks
+//! bounds candidate trials, not this work.
+
+import Benitoite.Unofficial.IO.Random
+
+/// A pure generator. Direct calls interpret size according to the stored function.
+public record Gen[T]
+  run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]
+end record
+
+/// Finite ordered candidates; check does not require equality on T.
+public record Shrinker[T]
+  candidates: function(value: T) -> List[T]
+end record
+
+/// Trial budget: trials 1..10000, size 0..10000, maxShrinks 0..100000.
+public record Config
+  seed: Integer
+  trials: Integer
+  size: Integer
+  maxShrinks: Integer
+end record
+
+/// A failing input and its replay information. reduced is not necessarily minimal.
+public record Counterexample[T]
+  config: Config
+  trial: Integer
+  original: T
+  reduced: T
+  originalMessage: String
+  message: String
+  shrinks: Integer
+  limitReached: Boolean
+  libraryVersion: String
+end record
+
+/// Configuration errors never call the generator, shrinker, or property.
+public data CheckFailure[T]
+  InvalidConfig(String)
+  Falsified(Counterexample[T])
+end data
+
+/// Returns a value without advancing the generator.
+public function constant[T](value: T) -> Gen[T]
+  return Gen(run: lambda(generator, size) return Pair(value, generator) end lambda)
+end function
+
+/// Transforms generated values without inventing an inverse shrinker.
+public function map[A, B](gen: Gen[A], f: function(value: A) -> B) -> Gen[B]
+  return Gen(run: lambda(generator, size)
+    bind run <- Gen.run(gen)
+    bind pair <- run(generator: generator, size: size)
+    return Pair(f(Pair.first(pair)), Pair.second(pair))
+  end lambda)
+end function
+
+/// Generates left then right, passing the next random state and the same size.
+public function both[A, B](left: Gen[A], right: Gen[B]) -> Gen[Pair[A, B]]
+  return Gen(run: lambda(generator, size)
+    bind runLeft <- Gen.run(left)
+    bind runRight <- Gen.run(right)
+    bind first <- runLeft(generator: generator, size: size)
+    bind second <- runRight(generator: Pair.second(first), size: size)
+    return Pair(Pair(Pair.first(first), Pair.first(second)), Pair.second(second))
+  end lambda)
+end function
+
+/// Inclusive bounds, with deliberate bias to zero and endpoints; not uniform.
+public function integer(low: Integer, high: Integer) -> Result[Gen[Integer], String]
+  if low > high then
+    return Result.Error("integer: low must not exceed high")
+  end if
+  if low = high then
+    return Result.Ok(constant(low))
+  end if
+  return Result.Ok(Gen(run: lambda(generator, size)
+    bind branch <- Random.nextInteger(generator: generator, low: 0, high: 8)
+    bind next <- Pair.second(branch)
+    return match Pair.first(branch) with
+      case 0 -> Pair(if low <= 0 and high >= 0 then 0 else low end if, next)
+      case 1 -> Pair(low, next)
+      case 2 -> Pair(high, next)
+      case _ ->
+        bind endpoint <- Random.nextInteger(generator: next, low: 0, high: 2)
+        if Pair.first(endpoint) = 0 then
+          Pair(high, Pair.second(endpoint))
+        else
+          Random.nextInteger(generator: Pair.second(endpoint), low: low, high: high)
+        end if
+    end match
+  end lambda))
+end function
+
+/// Generates false or true from a single 0/1 draw.
+public function boolean() -> Gen[Boolean]
+  return Gen(run: lambda(generator, size)
+    bind pair <- Random.nextInteger(generator: generator, low: 0, high: 2)
+    return Pair(Pair.first(pair) = 1, Pair.second(pair))
+  end lambda)
+end function
+
+/// Chooses 0, 1, -1, or a finite nextFloat-derived value in [-1, 1).
+public function float() -> Gen[Float]
+  return Gen(run: lambda(generator, size)
+    bind branch <- Random.nextInteger(generator: generator, low: 0, high: 4)
+    bind next <- Pair.second(branch)
+    return match Pair.first(branch) with
+      case 0 -> Pair(0.0, next)
+      case 1 -> Pair(1.0, next)
+      case 2 -> Pair(-1.0, next)
+      case _ ->
+        bind pair <- Random.nextFloat(next)
+        Pair(Pair.first(pair) * 2.0 - 1.0, Pair.second(pair))
+    end match
+  end lambda)
+end function
+
+/// Generates valid Unicode scalars, including non-ASCII, with length 0..size. Direct run requires size in 0..10000.
+public function string() -> Gen[String]
+  return map(gen: list(character()), f: charactersToString)
+end function
+
+function character() -> Gen[Character]
+  return Gen(run: lambda(generator, size)
+    bind pair <- Random.nextInteger(generator: generator, low: 0, high: 1112064)
+    bind number <- Pair.first(pair)
+    bind scalar <- if number >= 55296 then number + 2048 else number end if
+    return Pair(Option.unwrapOr(o: Character.fromInteger(scalar), fallback: '\u{0}'), Pair.second(pair))
+  end lambda)
+end function
+
+/// Generates 0..size elements, passing the same size to each element generator. Direct run requires size in 0..10000.
+public function list[T](element: Gen[T]) -> Gen[List[T]]
+  return Gen(run: lambda(generator, size)
+    bind length <- Random.nextInteger(generator: generator, low: 0, high: size + 1)
+    return listFrom(element: element, generator: Pair.second(length), size: size, remaining: Pair.first(length), acc: [])
+  end lambda)
+end function
+
+function listFrom[T](element: Gen[T], generator: Random.Generator, size: Integer, remaining: Integer, acc: List[T]) -> Pair[List[T], Random.Generator]
+  if remaining = 0 then
+    return Pair(acc, generator)
+  end if
+  bind run <- Gen.run(element)
+  bind pair <- run(generator: generator, size: size)
+  return listFrom(element: element, generator: Pair.second(pair), size: size, remaining: remaining - 1, acc: List.append(xs: acc, x: Pair.first(pair)))
+end function
+
+/// Chooses None with probability 1/4, otherwise generating Some.
+public function option[T](element: Gen[T]) -> Gen[Option[T]]
+  return Gen(run: lambda(generator, size)
+    bind branch <- Random.nextInteger(generator: generator, low: 0, high: 4)
+    if Pair.first(branch) = 0 then
+      return Pair(Option.None, Pair.second(branch))
+    end if
+    bind run <- Gen.run(element)
+    bind pair <- run(generator: Pair.second(branch), size: size)
+    return Pair(Option.Some(Pair.first(pair)), Pair.second(pair))
+  end lambda)
+end function
+
+/// Makes 0..size key/value draws; duplicate keys keep the first value, without retry. Direct run requires size in 0..10000.
+public function stringMap[T](value: Gen[T]) -> Gen[Map[String, T]]
+  return map(gen: list(both(left: string(), right: value)), f: firstValues)
+end function
+
+function firstValues[T](value: List[Pair[String, T]]) -> Map[String, T]
+  return firstValuesFrom(pairs: value, i: 0, acc: Map.empty())
+end function
+
+function firstValuesFrom[T](pairs: List[Pair[String, T]], i: Integer, acc: Map[String, T]) -> Map[String, T]
+  return match List.get(xs: pairs, i: i) with
+    case Option.None -> acc
+    case Option.Some(pair) ->
+      bind key <- Pair.first(pair)
+      bind next <- if Map.contains(m: acc, k: key) then acc else Map.set(m: acc, k: key, value: Pair.second(pair)) end if
+      firstValuesFrom(pairs: pairs, i: i + 1, acc: next)
+  end match
+end function
+
+function charactersToString(value: List[Character]) -> String
+  return String.fromCharacters(value)
+end function
+
+function some[T](value: T) -> Option[T]
+  return Option.Some(value)
+end function
+
+/// Tries zero, then successive halves toward zero, without negating the input.
+public function shrinkInteger() -> Shrinker[Integer]
+  return Shrinker(candidates: lambda(value)
+    return if value = 0 then [] else integerHalves(value: value div 2, acc: [0]) end if
+  end lambda)
+end function
+
+function integerHalves(value: Integer, acc: List[Integer]) -> List[Integer]
+  if value = 0 then
+    return acc
+  end if
+  return integerHalves(value: value div 2, acc: List.append(xs: acc, x: value))
+end function
+
+/// Tries zero and a finite half; zero has no candidates. Non-finite inputs try zero.
+public function shrinkFloat() -> Shrinker[Float]
+  return Shrinker(candidates: lambda(value)
+    if value = 0.0 then
+      return []
+    end if
+    if Float.isNaN(value - value) then
+      return [0.0]
+    end if
+    bind half <- value / 2.0
+    return if half = 0.0 or half = value then [0.0] else [0.0, half] end if
+  end lambda)
+end function
+
+/// Shrinks true to false; false has no candidates.
+public function shrinkBoolean() -> Shrinker[Boolean]
+  return Shrinker(candidates: lambda(value) return if value then [false] else [] end if end lambda)
+end function
+
+/// Shrinks to None first, then shrinks the contained value; removes duplicates.
+public function shrinkOption[T: equality](element: Shrinker[T]) -> Shrinker[Option[T]]
+  return Shrinker(candidates: lambda(value)
+    return match value with
+      case Option.None -> []
+      case Option.Some(x) ->
+        bind candidates <- Shrinker.candidates(element)
+        unique(original: value, values: List.prepend(xs: List.map(xs: candidates(x), f: some), x: Option.None))
+    end match
+  end lambda)
+end function
+
+/// Tries empty, contiguous deletions of halving widths, then one element at a time.
+public function shrinkList[T: equality](element: Shrinker[T]) -> Shrinker[List[T]]
+  return Shrinker(candidates: lambda(value)
+    bind deletions <- deleteWidths(xs: value, width: List.length(value) div 2, collected: if List.isEmpty(value) then [] else [[]] end if)
+    bind replacements <- replaceElements(xs: value, element: element, i: 0, collected: deletions)
+    return unique(original: value, values: replacements)
+  end lambda)
+end function
+
+function deleteWidths[T](xs: List[T], width: Integer, collected: List[List[T]]) -> List[List[T]]
+  if width = 0 then
+    return collected
+  end if
+  bind next <- List.fold(xs: List.range(start: 0, stop: List.length(xs) - width + 1), initial: collected, f: lambda(acc, value)
+    return List.append(xs: acc, x: removePart(xs: xs, start: value, width: width))
+  end lambda)
+  return deleteWidths(xs: xs, width: width div 2, collected: next)
+end function
+
+function removePart[T](xs: List[T], start: Integer, width: Integer) -> List[T]
+  return List.concatenate(xs: List.take(xs: xs, n: start), ys: List.drop(xs: xs, n: start + width))
+end function
+
+function replaceElements[T](xs: List[T], element: Shrinker[T], i: Integer, collected: List[List[T]]) -> List[List[T]]
+  return match List.get(xs: xs, i: i) with
+    case Option.None -> collected
+    case Option.Some(x) ->
+      bind candidates <- Shrinker.candidates(element)
+      bind next <- List.fold(xs: candidates(x), initial: collected, f: lambda(acc, value)
+        return List.append(xs: acc, x: List.concatenate(xs: List.append(xs: List.take(xs: xs, n: i), x: value), ys: List.drop(xs: xs, n: i + 1)))
+      end lambda)
+      replaceElements(xs: xs, element: element, i: i + 1, collected: next)
+  end match
+end function
+
+function unique[T: equality](original: T, values: List[T]) -> List[T]
+  return List.fold(xs: values, initial: [], f: lambda(acc, value)
+    return if value = original or List.contains(xs: acc, x: value) then acc else List.append(xs: acc, x: value) end if
+  end lambda)
+end function
+
+/// Shrinks by Unicode scalar deletions and scalar values, never UTF-8 byte fragments.
+public function shrinkString() -> Shrinker[String]
+  return Shrinker(candidates: lambda(value)
+    bind candidates <- Shrinker.candidates(shrinkList(shrinkCharacter()))
+    return List.map(xs: candidates(String.characters(value)), f: charactersToString)
+  end lambda)
+end function
+
+function shrinkCharacter() -> Shrinker[Character]
+  return Shrinker(candidates: lambda(value)
+    bind candidates <- Shrinker.candidates(shrinkInteger())
+    return scalarCandidates(numbers: candidates(Character.toInteger(value)))
+  end lambda)
+end function
+
+function scalarCandidates(numbers: List[Integer]) -> List[Character]
+  return List.fold(xs: numbers, initial: [], f: lambda(acc, value)
+    return match Character.fromInteger(value) with
+      case Option.None -> acc
+      case Option.Some(c) -> List.append(xs: acc, x: c)
+    end match
+  end lambda)
+end function
+
+/// Deletes keys in key order, then shrinks one value at a time in key order.
+public function shrinkStringMap[T: equality](value: Shrinker[T]) -> Shrinker[Map[String, T]]
+  return mapShrinker(element: value)
+end function
+
+function mapShrinker[T: equality](element: Shrinker[T]) -> Shrinker[Map[String, T]]
+  return Shrinker(candidates: lambda(value) return mapCandidates(original: value, element: element) end lambda)
+end function
+
+function mapCandidates[T: equality](original: Map[String, T], element: Shrinker[T]) -> List[Map[String, T]]
+  bind pairs <- Map.toList(original)
+  bind deleted <- List.map(xs: pairs, f: lambda(value) return Map.remove(m: original, k: Pair.first(value)) end lambda)
+  return unique(original: original, values: replaceMapValues(original: original, element: element, pairs: pairs, i: 0, collected: deleted))
+end function
+
+function replaceMapValues[T](original: Map[String, T], element: Shrinker[T], pairs: List[Pair[String, T]], i: Integer, collected: List[Map[String, T]]) -> List[Map[String, T]]
+  return match List.get(xs: pairs, i: i) with
+    case Option.None -> collected
+    case Option.Some(pair) ->
+      bind candidates <- Shrinker.candidates(element)
+      bind next <- List.fold(xs: candidates(Pair.second(pair)), initial: collected, f: lambda(acc, value)
+        return List.append(xs: acc, x: Map.set(m: original, k: Pair.first(pair), value: value))
+      end lambda)
+      replaceMapValues(original: original, element: element, pairs: pairs, i: i + 1, collected: next)
+  end match
+end function
+
+/// Runs pure trials and shrinks only Result.Error; runtime stops propagate normally.
+public function check[T](config: Config, gen: Gen[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String]) -> Result[Unit, CheckFailure[T]]
+  if Config.trials(config) < 1 or Config.trials(config) > 10000 then
+    return Result.Error(CheckFailure.InvalidConfig("trials must be in 1..10000"))
+  end if
+  if Config.size(config) < 0 or Config.size(config) > 10000 then
+    return Result.Error(CheckFailure.InvalidConfig("size must be in 0..10000"))
+  end if
+  if Config.maxShrinks(config) < 0 or Config.maxShrinks(config) > 100000 then
+    return Result.Error(CheckFailure.InvalidConfig("maxShrinks must be in 0..100000"))
+  end if
+  return trials(config: config, gen: gen, shrinker: shrinker, property: property, generator: Random.fromSeed(Config.seed(config)), trial: 1)
+end function
+
+function trials[T](config: Config, gen: Gen[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String], generator: Random.Generator, trial: Integer) -> Result[Unit, CheckFailure[T]]
+  if trial > Config.trials(config) then
+    return Result.Ok(())
+  end if
+  bind run <- Gen.run(gen)
+  bind pair <- run(generator: generator, size: Config.size(config))
+  bind value <- Pair.first(pair)
+  return match property(value) with
+    case Result.Ok(_) -> trials(config: config, gen: gen, shrinker: shrinker, property: property, generator: Pair.second(pair), trial: trial + 1)
+    case Result.Error(message) ->
+      bind failure <- Counterexample(config: config, trial: trial, original: value, reduced: value, originalMessage: message, message: message, shrinks: 0, limitReached: false, libraryVersion: "1.0.0")
+      Result.Error(CheckFailure.Falsified(reduce(failure: failure, shrinker: shrinker, property: property)))
+  end match
+end function
+
+function reduce[T](failure: Counterexample[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String]) -> Counterexample[T]
+  if Counterexample.shrinks(failure) >= Config.maxShrinks(Counterexample.config(failure)) then
+    return Counterexample(..failure, limitReached: true)
+  end if
+  bind candidates <- Shrinker.candidates(shrinker)
+  return tryCandidates(failure: failure, shrinker: shrinker, property: property, remaining: candidates(Counterexample.reduced(failure)))
+end function
+
+function tryCandidates[T](failure: Counterexample[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String], remaining: List[T]) -> Counterexample[T]
+  return match List.head(remaining) with
+    case Option.None -> failure
+    case Option.Some(value) ->
+      if Counterexample.shrinks(failure) >= Config.maxShrinks(Counterexample.config(failure)) then
+        return Counterexample(..failure, limitReached: true)
+      end if
+      bind counted <- Counterexample(..failure, shrinks: Counterexample.shrinks(failure) + 1)
+      match property(value) with
+        case Result.Ok(_) -> tryCandidates(failure: counted, shrinker: shrinker, property: property, remaining: List.drop(xs: remaining, n: 1))
+        case Result.Error(message) -> reduce(failure: Counterexample(..counted, reduced: value, message: message), shrinker: shrinker, property: property)
+      end match
+  end match
+end function
+
+/// Formats replay budgets, original and reduced inputs and messages using caller-supplied show.
+public function formatFailure[T](failure: CheckFailure[T], show: function(value: T) -> String) -> String
+  return match failure with
+    case CheckFailure.InvalidConfig(message) -> "Invalid property configuration: " + message
+    case CheckFailure.Falsified(example) ->
+      bind config <- Counterexample.config(example)
+      "Property counterexample (library " + Counterexample.libraryVersion(example) + ")\nseed=" + Integer.toString(Config.seed(config))
+        + " trials=" + Integer.toString(Config.trials(config)) + " size=" + Integer.toString(Config.size(config))
+        + " maxShrinks=" + Integer.toString(Config.maxShrinks(config)) + " trial=" + Integer.toString(Counterexample.trial(example))
+        + " shrinks=" + Integer.toString(Counterexample.shrinks(example)) + " limitReached=" + (if Counterexample.limitReached(example) then "true" else "false" end if)
+        + "\noriginal: " + show(Counterexample.original(example)) + "\noriginal message: " + Counterexample.originalMessage(example)
+        + "\nreduced: " + show(Counterexample.reduced(example)) + "\nmessage: " + Counterexample.message(example)
+  end match
+end function

@@ -11,24 +11,24 @@ private def atoms : List Atom := [.name "IO", .name "State", .rho 0, .rho 2]
 private def intTy : Ty := .base .integer
 private def boolTy : Ty := .base .boolean
 private def ioEff : Eff := Eff.single "IO"
-private def rhoEff : Eff := fun a => a == .rho 0
+private def rhoEff : Eff := Eff.ofAtoms fun a => a == .rho 0
 private def gotTypes (xs : Option (List Ty)) (ts : List Ty) : Bool :=
   match xs with
   | some us => tysEq atoms us ts
   | none => false
 
--- エフェクトの包含、等しさ、切り詰めた構築。
+-- エフェクトの包含、等しさ、原子を保持する構築。
 example : effSub atoms emptyEff ioEff = true := by decide
 example : effSub atoms ioEff emptyEff = false := by decide
 example : effEq atoms ioEff (singleEff atoms (.name "IO")) = true := by decide
 example : effEq atoms ioEff rhoEff = false := by decide
-example : singleEff atoms (.rho 0) (.rho 0) = true := by decide
-example : singleEff atoms (.name "Unknown") (.name "Unknown") = false := by decide
-example : unionEff atoms ioEff rhoEff (.rho 0) = true := by decide
-example : unionEff atoms ioEff (Eff.single "Unknown") (.name "Unknown") = false := by decide
-example : emptyEff (.rho 2) = false := rfl
-example : Eff.substRho [ioEff] rhoEff (.name "IO") = true := by decide
-example : Eff.substRho [ioEff] (fun a => a == .rho 2) (.rho 2) = true := by decide
+example : Eff.mem (singleEff atoms (.rho 0)) (.rho 0) := by decide
+example : Eff.test (singleEff atoms (.name "Unknown")) (.name "Unknown") = true := by decide
+example : Eff.mem (unionEff atoms ioEff rhoEff) (.rho 0) := by decide
+example : Eff.test (unionEff atoms ioEff (Eff.single "Unknown")) (.name "Unknown") = true := by decide
+example : Eff.test emptyEff (.rho 2) = false := rfl
+example : Eff.mem (Eff.substRho [ioEff] rhoEff) (.name "IO") := by decide
+example : Eff.mem (Eff.substRho [ioEff] (Eff.ofAtoms fun a => a == .rho 2)) (.rho 2) := by decide
 
 -- 型の全構成、並行した型リスト、外側だけのエフェクトの包含。
 private def richTypes : List Ty := [intTy, .opaque "O", .data "D" [intTy], .list intTy,
@@ -40,44 +40,44 @@ example : tysEq atoms richTypes richTypes = true := by decide
 example : tyEq atoms intTy boolTy = false := by decide
 example : tyEq atoms (.fn ["value"] [intTy] boolTy emptyEff) (.fn ["value"] [intTy] boolTy ioEff) = false := by decide
 example : tysEq atoms [intTy] [] = false := by decide
-example : tyConEq (.data "D") (.data "E") = false := by decide
-example : tyConEq .list .map = false := by decide
+example : tyEq atoms (.ctor (.data "D")) (.ctor (.data "E")) = false := by decide
+example : tyEq atoms (.ctor .list) (.ctor .map) = false := by decide
 example : tyLe atoms (.fn ["value"] [intTy] boolTy emptyEff) (.fn ["value"] [intTy] boolTy ioEff) = true := by decide
 example : tyLe atoms (.fn ["value"] [intTy] boolTy ioEff) (.fn ["value"] [intTy] boolTy emptyEff) = false := by decide
 example : tyLe atoms (.list (.fn [] [] intTy emptyEff)) (.list (.fn [] [] intTy ioEff)) = false := by decide
 example : tyLe atoms intTy intTy = true := by decide
 
--- shift はエフェクトに触れず、subst はエフェクト変数も具体化する。
-example : tyEq atoms (shiftTy 2 1 (.fn ["a", "b"] [.tvar 0, .tvar 1] (.tapp 2 [.tvar 0]) rhoEff))
+-- shift はFail内部の型も移し、substは行変数も具体化する。ここではFailなしの対照を保つ。
+example : tyEq atoms (shiftTy atoms 2 1 (.fn ["a", "b"] [.tvar 0, .tvar 1] (.tapp 2 [.tvar 0]) rhoEff))
     (.fn ["a", "b"] [.tvar 0, .tvar 3] (.tapp 4 [.tvar 0]) rhoEff) = true := by decide
-example : tyEq atoms (substTyAt 1 [intTy] [ioEff] (.fn ["a", "b", "c"] [.tvar 0, .tvar 1, .tvar 2] (.tvar 1) rhoEff))
+example : tyEq atoms (substTyAt atoms 1 [intTy] [ioEff] (.fn ["a", "b", "c"] [.tvar 0, .tvar 1, .tvar 2] (.tvar 1) rhoEff))
     (.fn ["a", "b", "c"] [.tvar 0, intTy, .tvar 1] intTy ioEff) = true := by decide
-example : tyEq atoms (substTyAt 1 [.tvar 0] [] (.tvar 1)) (.tvar 1) = true := by decide
-example : tyEq atoms (substTy [.ctor .list] [] (.tapp 0 [intTy])) (.list intTy) = true := by decide
-example : tyEq atoms (substTyAt 1 [intTy] [] (.tapp 0 [.tvar 1])) (.tapp 0 [intTy]) = true := by decide
-example : tyEq atoms (substTy [intTy] [] (.tapp 2 [.tvar 0])) (.tapp 1 [intTy]) = true := by decide
-example : tyEq atoms (applyToTy (.ctor .map) [intTy, boolTy]) (.map intTy boolTy) = true := by decide
-example : tyEq atoms (applyToTy (.ctor .map) []) (.map (.base .unit) (.base .unit)) = true := by decide
-example : tyEq atoms (applyToTy (.tvar 2) [intTy]) (.tapp 2 [intTy]) = true := by decide
-example : tyEq atoms (applyToTy intTy [boolTy]) intTy = true := by decide
-example : tyEq atoms (fnTyCheck ["value"] [.tvar 0] (.tvar 0) rhoEff [intTy] [ioEff])
+example : tyEq atoms (substTyAt atoms 1 [.tvar 0] [] (.tvar 1)) (.tvar 1) = true := by decide
+example : tyEq atoms (substTy atoms [.ctor .list] [] (.tapp 0 [intTy])) (.list intTy) = true := by decide
+example : tyEq atoms (substTyAt atoms 1 [intTy] [] (.tapp 0 [.tvar 1])) (.tapp 0 [intTy]) = true := by decide
+example : tyEq atoms (substTy atoms [intTy] [] (.tapp 2 [.tvar 0])) (.tapp 1 [intTy]) = true := by decide
+example : tyEq atoms (applyToTy atoms (.ctor .map) [intTy, boolTy]) (.map intTy boolTy) = true := by decide
+example : tyEq atoms (applyToTy atoms (.ctor .map) []) (.map (.base .unit) (.base .unit)) = true := by decide
+example : tyEq atoms (applyToTy atoms (.tvar 2) [intTy]) (.tapp 2 [intTy]) = true := by decide
+example : tyEq atoms (applyToTy atoms intTy [boolTy]) intTy = true := by decide
+example : tyEq atoms (fnTyCheck atoms ["value"] [.tvar 0] (.tvar 0) rhoEff [intTy] [ioEff])
     (.fn ["value"] [intTy] intTy ioEff) = true := by decide
 
 -- 既存の整礎再帰の式は、その等式補題で展開してから比較する。
-example : shiftTy 2 0 (.list (.tvar 0)) = Ty.shift 2 0 (.list (.tvar 0)) := by
+example : shiftTy atoms 2 0 (.list (.tvar 0)) = Ty.shift 2 0 (.list (.tvar 0)) := by
   simp only [Ty.shift]; rfl
-example : substTyAt 1 [intTy] [ioEff] (.list (.tvar 1)) =
+example : substTyAt atoms 1 [intTy] [ioEff] (.list (.tvar 1)) =
     Ty.substAt 1 [intTy] [ioEff] (.list (.tvar 1)) := by
-  simp [substTyAt, Ty.substAt, intTy, shiftTy, Ty.shift]
-example : applyToTy (.ctor .map) [intTy, boolTy] =
+  rfl
+example : applyToTy atoms (.ctor .map) [intTy, boolTy] =
     Ty.applyTo (.ctor .map) [intTy, boolTy] := rfl
-example : tyEq atoms (substTy [intTy] [] (.list (.tvar 0)))
+example : tyEq atoms (substTy atoms [intTy] [] (.list (.tvar 0)))
     (Coverage.substTy [intTy] (.list (.tvar 0))) = true := by decide
 
 -- 規則の前提に使う構文の判定。
-example : wfTys 2 richTypes = true := by decide
-example : wfTy 1 (.tvar 1) = false := by decide
-example : wfTy 1 (.tapp 1 [intTy]) = false := by decide
+example : wfTys atoms 2 richTypes = true := by decide
+example : wfTy atoms 1 (.tvar 1) = false := by decide
+example : wfTy atoms 1 (.tapp 1 [intTy]) = false := by decide
 example : exprExits (.ite .unit (.last (.returnE intTy .unit)) (.last (.returnE intTy .unit))) = true := by decide
 example : exprExits (.constE intTy (.returnE intTy .unit)) = false := by decide
 example : exprExits (.paren (.withE "R" .unit (.last (.returnE intTy .unit)))) = true := by decide
@@ -141,27 +141,27 @@ private def ctors : DataName → List ConName
   | "Option" => ["Some", "None"]
   | _ => []
 
-example : gotTypes (patTy decls.patternProgram .wild intTy) [] = true := by decide
-example : gotTypes (patTy decls.patternProgram .var intTy) [intTy] = true := by decide
-example : gotTypes (patTy decls.patternProgram (.const (.integer 3)) intTy) [] = true := by decide
-example : (patTy decls.patternProgram (.const (.byte 3)) (.base .byte)).isNone = true := by decide
-example : (patTy decls.patternProgram (.const (.integer 3)) boolTy).isNone = true := by decide
-example : gotTypes (patTy decls.patternProgram (.range (.integer 1) (.integer 3)) intTy) [] = true := by decide
-example : gotTypes (patTy decls.patternProgram (.range (.character 'a') (.character 'z')) (.base .character)) [] = true := by decide
-example : gotTypes (patTy decls.patternProgram (.list [.var] (some .bind) [.var]) (.list intTy))
+example : gotTypes (patTy atoms decls.patternProgram .wild intTy) [] = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram .var intTy) [intTy] = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.const (.integer 3)) intTy) [] = true := by decide
+example : (patTy atoms decls.patternProgram (.const (.byte 3)) (.base .byte)).isNone = true := by decide
+example : (patTy atoms decls.patternProgram (.const (.integer 3)) boolTy).isNone = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.range (.integer 1) (.integer 3)) intTy) [] = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.range (.character 'a') (.character 'z')) (.base .character)) [] = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.list [.var] (some .bind) [.var]) (.list intTy))
     [intTy, .list intTy, intTy] = true := by decide
-example : (patTy decls.patternProgram (.list [] none [.var]) (.list intTy)).isNone = true := by decide
-example : gotTypes (patTy decls.patternProgram (.con "Pair" [.var, .var]) (.data "PairTy" [intTy]))
+example : (patTy atoms decls.patternProgram (.list [] none [.var]) (.list intTy)).isNone = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.con "Pair" [.var, .var]) (.data "PairTy" [intTy]))
     [intTy, boolTy] = true := by decide
-example : (patTy decls.patternProgram (.con "Pair" [.var, .var]) (.data "Wrong" [intTy])).isNone = true := by decide
-example : (patTy decls.patternProgram (.con "Pair" [.var, .var]) (.data "PairTy" [])).isNone = true := by decide
-example : (patTy decls.patternProgram (.con "Unknown" []) intTy).isNone = true := by decide
-example : gotTypes (surfacePatTy decls (.record "Pair" 2 [1, 0] [.var, .var]) (.data "PairTy" [intTy]))
+example : (patTy atoms decls.patternProgram (.con "Pair" [.var, .var]) (.data "Wrong" [intTy])).isNone = true := by decide
+example : (patTy atoms decls.patternProgram (.con "Pair" [.var, .var]) (.data "PairTy" [])).isNone = true := by decide
+example : (patTy atoms decls.patternProgram (.con "Unknown" []) intTy).isNone = true := by decide
+example : gotTypes (surfacePatTy atoms decls (.record "Pair" 2 [1, 0] [.var, .var]) (.data "PairTy" [intTy]))
     [intTy, boolTy] = true := by decide
-example : gotTypes (surfacePatTy decls (.record "Pair" 2 [1] [.var]) (.data "PairTy" [intTy]))
+example : gotTypes (surfacePatTy atoms decls (.record "Pair" 2 [1] [.var]) (.data "PairTy" [intTy]))
     [boolTy] = true := by decide
-example : gotTypes (patTys decls.patternProgram [.var, .wild] [intTy, boolTy]) [intTy] = true := by decide
-example : (patTys decls.patternProgram [.var] []).isNone = true := by decide
+example : gotTypes (patTys atoms decls.patternProgram [.var, .wild] [intTy, boolTy]) [intTy] = true := by decide
+example : (patTys atoms decls.patternProgram [.var] []).isNone = true := by decide
 
 private def pairAlts : List Release.Alt :=
   [⟨.con "Pair" [.var, .var], [0, 1]⟩, ⟨.con "Pair" [.var, .var], [0, 1]⟩]

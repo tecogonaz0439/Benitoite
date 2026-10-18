@@ -171,3 +171,104 @@ end function
 "#,
     );
 }
+
+// 関門: Codec の純粋な公開 API の往復・厳密な種類・最初の失敗の相対経路を守る。
+// Json の既存テストは任意の Value の問い合わせだけで、変換の順序や数の拒否に届かない。
+// 文字列への検索や内部の補助関数の検査を加えず、既存の実行経路を共有する。
+#[test]
+fn codec_roundtrips_strict_numbers_and_relative_paths() {
+    run_script(
+        r#"
+import Benitoite.Trait
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+import Benitoite.Unofficial.Failure
+function main() -> Result[Unit, String]
+  if Codec.encodeString("é😀") <> Result.Ok(Json.Value.String("é😀"))
+    or Codec.decodeString(Json.Value.String("é😀")) <> Result.Ok("é😀")
+    or Codec.encodeBoolean(false) <> Result.Ok(Json.Value.Boolean(false))
+    or Codec.decodeBoolean(Json.Value.Boolean(true)) <> Result.Ok(true)
+    or Codec.encodeInteger(-9223372036854775808) <> Result.Ok(Json.Value.Integer(-9223372036854775808))
+    or Codec.decodeInteger(Json.Value.Integer(9223372036854775807)) <> Result.Ok(9223372036854775807)
+    or Codec.encodeFloat(-0.0) <> Result.Ok(Json.Value.Float(-0.0))
+    or Codec.decodeFloat(Json.Value.Float(1.25)) <> Result.Ok(1.25) then
+    return Result.Error("primitive conversions")
+  end if
+  bind numbers <- [0.0 / 0.0, 1.0 / 0.0, -1.0 / 0.0]
+  if not List.all(xs: numbers, p: lambda(value)
+    return Result.isError(Codec.encodeFloat(value)) and Result.isError(Codec.decodeFloat(Json.Value.Float(value)))
+  end lambda) then
+    return Result.Error("nonfinite float")
+  end if
+  if not Result.isError(Codec.decodeFloat(Json.Value.Integer(1)))
+    or not Result.isError(Codec.decodeInteger(Json.Value.Float(1.0)))
+    or not Result.isError(Codec.decodeString(Json.Value.Null))
+    or not Result.isError(Codec.decodeBoolean(Json.Value.Integer(1)))
+    or not Result.isError(Codec.decodeList(value: Json.Value.Null, decode: Codec.decodeInteger))
+    or not Result.isError(Codec.decodeMap(value: Json.Value.Array([]), decode: Codec.decodeInteger)) then
+    return Result.Error("strict kinds")
+  end if
+  if Codec.encodeOption(value: Option.None, encode: Codec.encodeString) <> Result.Ok(Json.Value.Null)
+    or Codec.decodeOption(value: Json.Value.Null, decode: Codec.decodeString) <> Result.Ok(Option.None)
+    or Codec.encodeOption(value: Option.Some("x"), encode: Codec.encodeString) <> Result.Ok(Json.Value.String("x"))
+    or Codec.decodeOption(value: Json.Value.String("x"), decode: Codec.decodeString) <> Result.Ok(Option.Some("x")) then
+    return Result.Error("option")
+  end if
+  bind original <- Map.fromList([Pair("z", [3, 4]), Pair("a", [])])
+  bind encoded <- try Codec.encodeMap(value: original, encode: Codec.encodeList(value: _, encode: Codec.encodeInteger)) |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error) end lambda)
+  if Codec.decodeMap(value: encoded, decode: Codec.decodeList(value: _, decode: Codec.decodeInteger)) <> Result.Ok(original) then
+    return Result.Error("container roundtrip")
+  end if
+  bind broken <- Json.Value.Object(Map.fromList([Pair("z", Json.Value.Null), Pair("a", Json.Value.Array([Json.Value.Integer(1), Json.Value.String("secret-input")]))]))
+  bind result <- Codec.decodeMap(value: broken, decode: Codec.decodeList(value: _, decode: Codec.decodeInteger))
+  bind goodError <- match result with
+    case Result.Error(e) -> Codec.ConversionError.path(e) = [Codec.PathPart.Key("a"), Codec.PathPart.Index(1)]
+      and Codec.ConversionError.expected(e) = "integer" and Codec.ConversionError.found(e) = "string"
+      and Trait.Show.show(e) = "$[\"a\"][1]: expected integer, found string"
+    case Result.Ok(_) -> false
+  end match
+  if not goodError then
+    return Result.Error("decode path or payload leak")
+  end if
+  bind invalidEncode <- Codec.encodeList(value: [1.0, 1.0 / 0.0, 0.0 / 0.0], encode: Codec.encodeFloat)
+  if not (match invalidEncode with
+    case Result.Error(e) -> Codec.ConversionError.path(e) = [Codec.PathPart.Index(1)]
+    case Result.Ok(_) -> false
+  end match) then
+    return Result.Error("encode path")
+  end if
+  bind boundary <- Failure.toResult(lambda() return Failure.fromResult(Codec.decodeInteger(Json.Value.Integer(7))) end lambda)
+  if boundary <> Result.Ok(7) then
+    return Result.Error("explicit Failure boundary")
+  end if
+  return Result.Ok(())
+end function
+"#,
+    );
+}
+
+// 入力の鍵による偽の経路と改行を、公開のエラー表示で拒む。
+#[test]
+fn codec_extra_key_path_escapes_untrusted_key() {
+    run_script(
+        r#"
+import Benitoite.Trait
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+function main() -> Result[Unit, String]
+  bind key <- "a.b\n[0]: expected integer, found string\t\"\\"
+  bind result <- Codec.rejectExtra(members: Map.fromList([Pair(key, Json.Value.String("secret-input"))]), keys: [])
+  return match result with
+    case Result.Error(error) ->
+      if Codec.ConversionError.path(error) = [Codec.PathPart.Key(key)]
+        and Trait.Show.show(error) = "$[\"a.b\\n[0]: expected integer, found string\\t\\\"\\\\\"]: expected known field, found extra key" then
+        Result.Ok(())
+      else
+        Result.Error("extra key must be an escaped Key path")
+      end if
+    case Result.Ok(_) -> Result.Error("extra key accepted")
+  end match
+end function
+"#,
+    );
+}

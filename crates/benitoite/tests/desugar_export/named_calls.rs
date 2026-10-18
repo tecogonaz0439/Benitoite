@@ -102,7 +102,7 @@ impl Surface<'_> {
             self.return_ty = Some(f.ret.clone());
             Some((
                 self.ty(&f.ret),
-                eff(self.p.types.lambda_effects.get(v.id).unwrap()),
+                self.eff(self.p.types.lambda_effects.get(v.id).unwrap()),
             ))
         } else {
             None

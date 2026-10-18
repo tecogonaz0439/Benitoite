@@ -449,6 +449,40 @@ fn run_effect_limits_recheck_changed_sources() {
     }
 }
 
+// 関門: run の許可上限で未処理の Fail を隠さず、処理済みなら実行できることを守る。
+// 検査報告だけでは実行前の照合とコンパイルへの接続を確かめられない。
+#[test]
+fn run_failure_contracts_are_checked_before_effect_limits() {
+    let directory = TestDirectory::new();
+    for (name, source, expected) in [
+        (
+            "unhandled",
+            "import Benitoite.Unofficial.Failure\nfunction main() -> Unit uses Failure.Fail[String]\n  Failure.raise(\"stop\")\nend function\n",
+            2,
+        ),
+        (
+            "handled",
+            "import Benitoite.Unofficial.Failure\nfunction main() -> Unit\n  bind result: Result[Unit, String] <- Failure.toResult(body: lambda() return Failure.raise(\"stop\") end lambda)\nend function\n",
+            0,
+        ),
+    ] {
+        let script = directory.write(&format!("{name}.bnt"), source);
+        let output = command()
+            .args(["run", "--allow-effects=", "--diagnostics=json"])
+            .arg(script)
+            .output()
+            .unwrap();
+        assert_eq!(exit_code(&output), expected, "{output:?}");
+        assert!(output.stdout.is_empty(), "{output:?}");
+        if expected == 2 {
+            let diagnostic: serde_json::Value = serde_json::from_slice(&output.stderr).unwrap();
+            assert_eq!(diagnostic["code"], "E0506");
+        } else {
+            assert!(output.stderr.is_empty(), "{output:?}");
+        }
+    }
+}
+
 // 作成時の関門: 単一報告の完全性・契約・元ソース・診断を CLI の境界で守る。
 // 既存の check は成功時に情報を出さないため、誤った空集合や再描画の退行を捕まえない。
 // 実ファイルと既存の CLI を使い、内部の表やテスト用の API には依存しない。
@@ -465,6 +499,7 @@ type CheckReportCase<'a> = (
 #[test]
 fn main_check_reports_contracts_without_execution() {
     check_main_reports(&[
+        ("handled-failure", Some(b"import Benitoite.Unofficial.Failure\nfunction main() -> Unit\n  bind result: Result[Unit, String] <- Failure.toResult(body: lambda() return Failure.raise(\"stop\") end lambda)\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("pure", Some(b"function main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("declared", Some("\u{feff}// 日本語\r\nimport Benitoite.Unofficial.IO.Console\r\nimport Benitoite.Unofficial.IO.Process\r\nfunction main() -> Unit uses Process.Exit, State, Console.Write\r\n    Console.writeLine(\"must not execute\")\r\nend function\r\n".as_bytes()), Some(&["Console.Write", "Process.Exit", "State"]), "absent", None, true, &[]),
         ("io-all", Some(b"function main() -> Unit uses IO.All\nend function\n"), Some(&["Clock.Time", "Console.Read", "Console.Write", "File.Read", "File.Write", "Process.Environment", "Process.Exit", "Process.Run", "Random.Generate", "State"]), "absent", None, false, &[]),
@@ -477,6 +512,7 @@ fn main_check_reports_contracts_without_execution() {
 #[test]
 fn main_check_reports_failures_without_execution() {
     check_main_reports(&[
+        ("unhandled-failure", Some(b"import Benitoite.Unofficial.Failure\nfunction main() -> Unit uses Failure.Fail[String]\n  Failure.raise(\"stop\")\nend function\n"), None, "unknown", Some("E0506"), false, &[]),
         ("no-main", Some(b"function helper() -> Unit\nend function\n"), None, "unknown", Some("E0414"), false, &[]),
         ("syntax", Some(b"function main( -> Unit\nend function\n"), None, "unknown", None, false, &[]),
         ("invalid-utf8", Some(b"// \xff\nfunction main() -> Unit\nend function\n"), None, "unknown", None, false, &[]),
@@ -587,7 +623,7 @@ fn main_check_reports_sources_without_execution() {
         ("bom", Some(b"\xef\xbb\xbf// source\nfunction main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("dependency-package", Some(b"import Tk.Helper\nfunction main() -> Unit\nend function\n"), Some(&[]), "present", None, true, &[
             ("package.bnt", b"// root config\ndependency Tk\n    path \"deps/kit\"\nend dependency\n"),
-            ("deps/kit/package.bnt", b"language \"0.0.7\"\npackage Kit\nend package\n"),
+            ("deps/kit/package.bnt", b"language \"0.0.8\"\npackage Kit\nend package\n"),
             ("deps/kit/Helper.bnt", b"import Benitoite.Unofficial.IO.Process\npublic function unused() -> Unit\n    bind action <- Process.shell\nend function\n"),
         ]),
     ]);
@@ -1251,6 +1287,10 @@ fn cli_process_contracts() {
         (
             "empty effect name in `--allow-effects`",
             &["run", "--allow-effects=State,,Console.Write", "a.bnt"],
+        ),
+        (
+            "invalid effect name `Failure.Fail[String]` in `--allow-effects`; use atomic names from `expanded`",
+            &["run", "--allow-effects=Failure.Fail[String]", "a.bnt"],
         ),
         (
             "invalid effect name `IO.All` in `--allow-effects`; use atomic names from `expanded`",

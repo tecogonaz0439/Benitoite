@@ -1,6 +1,6 @@
 //! 型の確定後に辞書を解く。実装の上位の辞書も同じ手順を使う（設計書 02-05「型クラスの制約の解決」）。
 use super::{class_name, collect::show, constraint_name, parameter_edit};
-use crate::base::{BindingId, ModuleId, NodeId};
+use crate::base::{BindingId, ModuleId, NodeId, NodeMap, Span};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
 use crate::typeck::{
     context::Body,
@@ -133,6 +133,32 @@ fn resolve_normalized(
             })
             .ok_or(Failure::Parameter { class, index });
     }
+    if let IClassArg::Ty(ITy::Rigid { clause, index }) = normalized {
+        let mut best: Option<(usize, Vec<BindingId>)> = None;
+        if let Some(constraints) = solver.clause_constraints.get(clause) {
+            for (i, c) in constraints.iter().enumerate() {
+                if c.param == *index
+                    && let Some(path) = path(d, c.class, class)
+                    && best.as_ref().is_none_or(|(_, old)| path.len() < old.len())
+                {
+                    best = Some((i, path));
+                }
+            }
+        }
+        return best
+            .map(|(i, supers)| Resolution {
+                dict: DictExpr::Clause {
+                    clause: *clause,
+                    constraint: u32::try_from(i).unwrap_or(u32::MAX),
+                    supers,
+                },
+                bounds: vec![],
+            })
+            .ok_or_else(|| Failure::Missing {
+                class,
+                arg: normalized.clone(),
+            });
+    }
     if matches!(
         normalized,
         IClassArg::Ty(ITy::Var(_)) | IClassArg::Head(IHead::Var(_))
@@ -241,6 +267,7 @@ fn charge_type(parts: &mut usize, ty: &ITy) -> Result<(), Failure> {
         match ty {
             ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
             ITy::Fn(f) => {
+                pending.extend(&f.effect.failures);
                 pending.extend(&f.params);
                 pending.push(&f.ret);
             }
@@ -290,6 +317,9 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
     }
 }
 
+// 補助の検査でも節の型パラメータと診断の操作名を保つ（設計書 02-05「型クラスの制約の解決」）。
+pub(super) type ClauseBounds<'a> = (&'a NodeMap<Vec<TypeParamInfo>>, &'a NodeMap<(String, Span)>);
+
 pub(super) fn check_bounds(
     d: &mut Decls<'_>,
     module: ModuleId,
@@ -297,6 +327,7 @@ pub(super) fn check_bounds(
     scheme: &Scheme,
     resolution: &Resolution,
     reason: &Reason,
+    clauses: Option<ClauseBounds<'_>>,
 ) -> Vec<Diagnostic> {
     if resolution.bounds.is_empty() {
         return vec![];
@@ -323,6 +354,10 @@ pub(super) fn check_bounds(
         })
         .collect();
     let mut body = Body::new(d, module, scope.clone(), scheme.clone());
+    if let Some((params, ops)) = clauses {
+        body.clause_params = params.clone();
+        body.clause_ops = ops.clone();
+    }
     Solver::default().solve(&mut body, constraints);
     body.diagnostics
 }
@@ -342,6 +377,7 @@ fn unresolved_argument(solver: &Solver, arg: &IClassArg) -> bool {
                 if matches!(solver.resolve_contract(&f.contract), IContract::Var(_)) {
                     return true;
                 }
+                pending.extend(solver.failure_types(&f.effect));
                 pending.extend(f.params);
                 pending.push(f.ret);
             }
@@ -415,6 +451,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
                     &ctx.scheme,
                     &resolution,
                     &reason,
+                    Some((&ctx.clause_params, &ctx.clause_ops)),
                 );
                 if !diagnostics.is_empty() {
                     ctx.diagnostics.extend(diagnostics);

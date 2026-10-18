@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "targets": [
+    {
+      "source": "People.bnt",
+      "type": "People.Person",
+      "region": "person",
+      "json": {
+        "encode": "encodePerson",
+        "decode": "decodePerson",
+        "keys": {
+          "displayName": "display_name"
+        }
+      },
+      "property": {
+        "generator": "genPerson",
+        "shrinker": "shrinkPerson"
+      }
+    },
+    {
+      "source": "Address.bnt",
+      "type": "Address.Address",
+      "region": "address",
+      "json": {
+        "encode": "encodeAddress",
+        "decode": "decodeAddress"
+      },
+      "property": {
+        "generator": "genAddress",
+        "shrinker": "shrinkAddress"
+      }
+    }
+  ]
+}

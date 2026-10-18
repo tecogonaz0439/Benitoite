@@ -1,0 +1,44 @@
+✔ [49/74] Built Benitoite.Surface.CheckTools (382ms)
+✔ [50/74] Built Benitoite.Surface.CheckPredicates (1.6s)
+✔ [51/74] Built Benitoite.Surface.CheckPatterns (528ms)
+✔ [52/74] Built Benitoite.Surface.CheckSupport (2.6s)
+✔ [53/74] Built Benitoite.Surface.Check (1.2s)
+✔ [54/74] Built Benitoite.Surface.CheckTables (435ms)
+✔ [55/74] Built Benitoite.Surface.CheckLemmas (495ms)
+✔ [56/74] Built Benitoite.Surface.CheckComputeAtoms (415ms)
+✔ [57/74] Built Benitoite.Surface.CheckComputeCases (810ms)
+✔ [58/74] Built Benitoite.Surface.CheckComputeCalls (334ms)
+✔ [59/74] Built Benitoite.Surface.CheckComputeControl (342ms)
+✔ [60/74] Built Benitoite.Surface.CheckComputePipe (340ms)
+✔ [61/74] Built Benitoite.Surface.CheckComputeSound (873ms)
+✔ [62/74] Built Benitoite.Surface.CheckInduction (374ms)
+✔ [63/74] Built Benitoite.Surface.CheckDictSupport (741ms)
+✔ [64/74] Built Benitoite.Surface.CheckSoundSequence (521ms)
+✔ [65/74] Built Benitoite.Surface.CheckSoundBasicExpr (559ms)
+✔ [66/74] Built Benitoite.Surface.CheckSoundDie (538ms)
+✔ [67/74] Built Benitoite.Surface.CheckSoundCollections (452ms)
+✔ [68/74] Built Benitoite.Surface.CheckSoundCalls (38s)
+✔ [69/74] Built Benitoite.Surface.CheckSoundControl (502ms)
+✔ [70/74] Built Benitoite.Surface.CheckSoundDicts (388ms)
+✔ [71/74] Built Benitoite.Surface.CheckSound (291ms)
+✔ [72/74] Built Benitoite.Surface.CheckTablesSound (296ms)
+✔ [73/74] Built Benitoite.Surface.CheckProgramSound (331ms)
+✖ [74/74] Building Benitoite.Surface.CheckExamples (1.9s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/CheckExamples.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckExamples.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckExamples.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckExamples.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckExamples.setup.json --json
+error: Benitoite/Surface/CheckExamples.lean:436:71: Type mismatch
+  rfl
+has type
+  ?m.29 = ?m.29
+but is expected to have type
+  List.map
+      (fun mode =>
+        checkClauses polyClauseInput mode [{ }] [some (Ty.fn [] [] unitTy outerFail)] none [] polyClause unitTy
+          outerFail)
+      [ResumeMode.strict, ResumeMode.relaxed] =
+    [Except.ok outerFail, Except.ok outerFail]
+Some required targets logged failures:
+- Benitoite.Surface.CheckExamples
+error: build failed
+real 53.83
+user 60.51
+sys 4.94

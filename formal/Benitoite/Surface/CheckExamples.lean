@@ -258,9 +258,347 @@ private def handled : Expr :=
   .handleE (.last (.call (.opName "A.id" []) [some "value"] [0] (.cons (eInt 7) .nil)))
     (.cons (.user "A.id") 1 0 (.last (.resume 0 (.local 1))) .nil)
 example : got (checkExpr opInput .strict [] [] none .other [] handled) intTy = true := by decide
+
+-- 節で初めて現れる効果は反復で集計し、確定後も純粋な注釈を許さない。
+private def effectfulClauseHandle : Expr :=
+  .handleE (.last (eInt 1))
+    (.cons (.user "A.id") 1 0
+      (.seq (.call (.local 2) [some "value"] [0] (.cons (eInt 7) .nil))
+        (.last (.resume 0 (.local 1)))) .nil)
+private def clauseEffectEnv : List (Option Ty) :=
+  [some (.fn ["value"] [intTy] unitTy (Eff.single "B"))]
+example : got (checkExpr opInput .strict [] clauseEffectEnv none .other []
+    effectfulClauseHandle) intTy (Eff.single "B") = true := by decide
+example : checkExpr opInput .strict [] clauseEffectEnv none .other []
+    (.lam [] [] intTy emptyEff (.last (.returnE unitTy effectfulClauseHandle))) =
+    .error ⟨[0], "effect exceeds the allowed effect"⟩ := by rfl
+
 example : checkExpr opInput .strict [] [] none .other []
     (.handleE (.last (eInt 1)) (.cons (.user "A.id") 0 0 (.last (eInt 2)) .nil)) =
     .error ⟨[1], "handler operation arity mismatch"⟩ := by rfl
+
+-- 操作の辞書は公開引数に含めず、節では同じ制約番号を局所の型で読み直す。
+private def renderDecl : OpDecl :=
+  { eff := "A", tparams := [{}], names := ["%dict1", "value"],
+    params := [.dict "Show" (.tvar 0), .tvar 0], ret := .base .string,
+    dictParams := [("Show", 0)] }
+private def renderInput : Input :=
+  { opInput with D := { opDecls with
+      ops := fun o => if o == "render" then some renderDecl else none
+      effects := fun e => if e == "A" then some ["render"] else none
+      classes := fun c => if c == "Show" then some {
+        supers := [], methods := fun m => if m == "show" then some {
+          tparams := [], neffs := 0, names := ["value"], params := [.tvar 0],
+          ret := .base .string, eff := emptyEff } else none } else none } }
+private def renderCall (t : Ty) (d : DictEv := .local 0) : Expr :=
+  .call (.opDicts "render" [t] [d] ["value"] [t]) [some "value"] [0]
+    (.cons (.local 1) .nil)
+private def renderClause (d : DictEv) : Block :=
+  .last (.resume 0 (.call (.methName d "show" [] [] [] ["value"] [.tvar 0])
+    [some "value"] [0] (.cons (.local 1) .nil)))
+private def renderHandle (t : Ty) (d : DictEv) (count : Nat := 1) : Expr :=
+  .handleE (.last (renderCall t))
+    (.cons (.user "render") 1 1 (renderClause d) .nil count)
+private def renderEnv (t : Ty) : List (Option Ty) := [some (.dict "Show" t), some t]
+
+-- Integer と String を同じ多相の節で扱い、外側の辞書0と節の辞書0を区別する。
+example : ([intTy, .base .string] : List Ty).map (fun t =>
+    got (checkExpr renderInput .strict [] (renderEnv t) none .other []
+      (renderHandle t (.clause ⟨2, 1, 1⟩ 0))) (.base .string)) = [true, true] := by decide
+
+
+-- 外側の同名クラスの辞書を、節のrigid型の辞書へ流用できない。
+example : checkExpr renderInput .strict [] (renderEnv intTy) none .other []
+    (renderHandle intTy (.local 3)) =
+    .error ⟨[1, 0, 0, 0, 0], "method parameter annotation mismatch"⟩ := by rfl
+
+-- 所属する節の環境がなければ、同じクラスの外側の辞書があっても根拠を拒否する。
+example : checkDict renderInput [] (renderEnv intTy) [] (.clause ⟨2, 1, 1⟩ 0) =
+    .error ⟨[], "clause dictionary scope mismatch"⟩ := by rfl
+
+-- 未使用の辞書も束縛数に含め、継続を常に0番に保つ。
+example : got (checkExpr renderInput .strict [] (renderEnv intTy) none .other []
+    (.handleE (.last (renderCall intTy))
+      (.cons (.user "render") 1 1 (.last (.resume 0 (.literal (.string "unused")))) .nil 1)))
+    (.base .string) = true := by decide
+example : checkExpr renderInput .strict [] (renderEnv intTy) none .other []
+    (renderHandle intTy (.clause ⟨2, 1, 1⟩ 0) 0) =
+    .error ⟨[1], "handler operation arity mismatch"⟩ := by rfl
+
+-- 辞書のクラスと公開引数の名前・個数は、それぞれの契約を独立に検査する。
+example : checkExpr renderInput .strict [] [some (.dict "Other" intTy), some intTy]
+    none .other [] (renderCall intTy) =
+    .error ⟨[0, 0, 0], "dictionary type mismatch"⟩ := by rfl
+example : checkExpr renderInput .strict [] (renderEnv intTy) none .other []
+    (.call (.opDicts "render" [intTy] [.local 0] ["value"] [intTy])
+      [some "%dict1", some "value"] [0, 1] (.cons (.local 0) (.cons (.local 1) .nil))) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : checkExpr renderInput .strict [] (renderEnv intTy) none .other []
+    (.opName "render" [intTy]) =
+    .error ⟨[], "operation needs dictionaries"⟩ := by rfl
+
+-- 脱糖から実行まで、同じ節へ二種類の辞書を渡して表示結果を観測する。
+private def renderBuiltins : Builtins :=
+  { Release.Examples.builtins with
+    sig := fun b => if b == "intToString" then some {
+      tparams := [], neffs := 0, names := ["value"], params := [intTy], ret := .base .string,
+      eff := emptyEff, kind := .pure, opEff := none, admits := fun _ _ => True } else none
+    delta := fun b _ _ vs => match b, vs with
+      | "intToString", [.const (.integer n)] => some (.val (.const (.string (toString n))))
+      | _, _ => none }
+private def renderImpl (t : Ty) (body : Comp) : Release.ImplDecl :=
+  { tparams := [], dictParams := [], cls := "Show", target := t,
+    supers := fun _ => none, methods := fun m => if m == "show" then some body else none }
+private def renderProgram : Release.Program :=
+  { Release.Examples.program with
+    ops := renderInput.D.ops, effects := renderInput.D.effects, classes := renderInput.D.classes,
+    impls := fun i => match i with
+      | "ShowInt" => some (renderImpl intTy (.app (.prim "intToString" [] []) [.var 0]))
+      | "ShowString" => some (renderImpl (.base .string) (.ret (.var 0)))
+      | _ => none }
+private noncomputable def renderResult (t : Ty) (impl : ImplName) (value : Val) : Option String :=
+  let body := (desugarExpr (fun _ _ => none) .other
+    (renderHandle t (.clause ⟨2, 1, 1⟩ 0))).instantiate [value, .dict impl [] []]
+  match (Release.run renderProgram renderBuiltins Release.Examples.oracle Release.Examples.rel
+    Release.Examples.fresh 60 (.run body [] Store.empty) []).1 with
+  | .run (.ret (.const (.string s))) [] _ => some s
+  | _ => none
+example : [renderResult intTy "ShowInt" (.const (.integer 7)),
+    renderResult (.base .string) "ShowString" (.const (.string "text"))] =
+    [some "7", some "text"] := by decide
+
+namespace OperationValues
+
+private def renderValue (t : Ty) (d : DictEv := .local 0) : Expr :=
+  .opDicts "render" [t] [d] ["value"] [t]
+
+-- 作成は純粋、呼び出しは A。値の束縛・穴・パイプにも同じ公開型を使う。
+private def renderForms (t : Ty) : List Expr :=
+  [renderCall t,
+   .call (.paren (renderValue t)) [some "value"] [0] (.cons (.local 1) .nil),
+   .call (.partialCall (renderValue t) ["value"] (.hole none 0 t .nil)
+     (.base .string) (Eff.single "A")) [none] [0] (.cons (.local 1) .nil),
+   .pipe (.local 1) (renderValue t),
+   .pipe (.local 1) (.call (renderValue t) [] [] .nil),
+   .handleE (.bind .bind (.fn ["value"] [t] (.base .string) (Eff.single "A")) (renderValue t)
+     (.last (.call (.local 0) [some "value"] [0] (.cons (.local 2) .nil))))
+     (.cons (.user "render") 1 1 (renderClause (.clause ⟨2, 1, 1⟩ 0)) .nil 1)]
+
+example : ([intTy, .base .string] : List Ty).map (fun t =>
+    got (checkExpr renderInput .strict [] (renderEnv t) none .other [] (renderValue t))
+      (.fn ["value"] [t] (.base .string) (Eff.single "A"))) = [true, true] := by decide
+
+example : ([intTy, .base .string] : List Ty).map (fun t =>
+    (renderForms t).map fun e => got
+      (checkExpr renderInput .strict [] (renderEnv t) none .other [] e)
+      (.base .string) (if e matches .handleE .. then emptyEff else Eff.single "A")) =
+    [[true, true, true, true, true, true], [true, true, true, true, true, true]] := by decide
+
+-- 操作値を純粋な関数だと扱う注釈は拒否する。作成時の純粋性と潜在効果を混同しない。
+example : checkExpr renderInput .strict [] (renderEnv intTy) none .other []
+    (.partialCall (renderValue intTy) ["value"] (.hole none 0 intTy .nil)
+      (.base .string) emptyEff) =
+    .error ⟨[], "effect exceeds the allowed effect"⟩ := by rfl
+
+private def runRender (e : Expr) (impl : ImplName) (value : Val) : Comp :=
+  (desugarExpr (fun _ _ => none) .other e).instantiate [value, .dict impl [] []]
+
+private noncomputable def renderFormResult (impl : ImplName) (value : Val)
+    (e : Expr) : Option String :=
+  let body := match e with
+    | .handleE .. => e
+    | _ => .handleE (.last e)
+        (.cons (.user "render") 1 1 (renderClause (.clause ⟨2, 1, 1⟩ 0)) .nil 1)
+  match (Release.run renderProgram renderBuiltins Release.Examples.oracle Release.Examples.rel
+    Release.Examples.fresh 150 (.run (runRender body impl value) [] Store.empty) []).1 with
+  | .run (.ret (.const (.string s))) [] _ => some s
+  | _ => none
+
+example : [(renderForms intTy).map (renderFormResult "ShowInt" (.const (.integer 7))),
+    (renderForms (.base .string)).map
+      (renderFormResult "ShowString" (.const (.string "text")))] =
+    [[some "7", some "7", some "7", some "7", some "7", some "7"],
+     [some "text", some "text", some "text", some "text", some "text", some "text"]] := by decide
+
+end OperationValues
+
+namespace OperationDictionaries
+
+private def strTy : Ty := .base .string
+private def pairDecl : OpDecl :=
+  { eff := "A", tparams := [{}], names := ["%dict1", "%dict2", "first", "second"],
+    params := [.dict "Show" (.tvar 0), .dict "Tag" (.tvar 0), .tvar 0, .tvar 0],
+    ret := strTy, dictParams := [("Show", 0), ("Tag", 0)] }
+private def tagSig : MethSig :=
+  { tparams := [], neffs := 0, names := ["value"], params := [.tvar 0],
+    ret := strTy, eff := emptyEff }
+private def declarations : Declarations :=
+  { renderInput.D with
+    ops := fun o => if o == "pair" then some pairDecl else none
+    effects := fun e => if e == "A" then some ["pair"] else none
+    classes := fun c => match c with
+      | "Fancy" => some { supers := ["Show"], methods := fun _ => none }
+      | "Tag" => some { supers := [], methods := fun m => if m == "tag" then some tagSig else none }
+      | _ => renderInput.D.classes c }
+private def builtins : Builtins :=
+  { renderBuiltins with
+    sig := fun b => match b with
+      | "first" | "second" => some (Release.Examples.sig [] [] [] intTy
+          (Eff.single "B") .io (some "B"))
+      | "append" => some (Release.Examples.sig [] ["left", "right"] [strTy, strTy]
+          strTy emptyEff .pure)
+      | "tagInt" => some (Release.Examples.sig [] ["value"] [intTy] strTy emptyEff .pure)
+      | _ => renderBuiltins.sig b
+    delta := fun b ts es vs => match b, vs with
+      | "append", [.const (.string a), .const (.string b)] => some (.val (.const (.string (a ++ b))))
+      | "tagInt", [.const (.integer n)] => some (.val (.const (.string ("tag" ++ toString n))))
+      | _, _ => renderBuiltins.delta b ts es vs
+    ioResponse := fun b ts es vs out => match b, vs with
+      | "first", [] => out = .val (.const (.integer 7))
+      | "second", [] => out = .val (.const (.integer 9))
+      | _, _ => renderBuiltins.ioResponse b ts es vs out
+    effects := fun e => if e == "B" then some ["first", "second"] else renderBuiltins.effects e }
+private def q : Input := { renderInput with D := declarations, B := builtins }
+private def env : List (Option Ty) :=
+  [some (.dict "Fancy" intTy), some (.dict "Tag" intTy)]
+private def pairHead (ds : List DictEv := [.super (.local 0) "Show", .local 1]) : Expr :=
+  .opDicts "pair" [intTy] ds ["first", "second"] [intTy, intTy]
+private def readArg (name : String) : Expr := .call (.primName name [] []) [] [] .nil
+private def pairArgs : Exprs := .cons (readArg "second") (.cons (readArg "first") .nil)
+private def directCall : Expr := .call (pairHead) [some "second", some "first"] [1, 0] pairArgs
+private def partialPair : Expr :=
+  .partialCall (pairHead) ["first", "second"]
+    (.expr (some "second") 1 (readArg "second") (.hole (some "first") 0 intTy .nil))
+    strTy (unionEff atoms (Eff.single "A") (Eff.single "B"))
+
+-- 宣言順と逆に書いた引数、値化した頭、穴、パイプを同じ契約へ接続する。
+private def calls : List Expr :=
+  [directCall,
+   .call (.paren (pairHead)) [some "second", some "first"] [1, 0] pairArgs,
+   .call (.partialCall (pairHead) ["first", "second"]
+     (.hole (some "second") 1 intTy (.hole (some "first") 0 intTy .nil))
+     strTy (Eff.single "A")) [some "second", some "first"] [0, 1] pairArgs,
+   .pipe (readArg "first")
+     (.call (pairHead) [some "second"] [1] (.cons (readArg "second") .nil)),
+   .call partialPair [some "first"] [0] (.cons (readArg "first") .nil)]
+
+private def showValue (d : DictEv) (v : Expr) (method : String := "show") : Expr :=
+  .call (.methName d method [] [] [] ["value"] [.tvar 0]) [some "value"] [0] (.cons v .nil)
+
+-- 辞書も値も、内側の一引数ラムダから参照する。継続はラムダの外でだけ使う。
+private def pairClause (depth : Nat := 1) (swapped : Bool := false) : Block :=
+  .last (.resume 0 (.call
+    (.lam ["unused"] [unitTy] strTy emptyEff
+      (.last (.returnE unitTy (.call (.primName "append" [] []) [some "left", some "right"] [0, 1]
+        (.cons (showValue (.clause ⟨2, 2, 2⟩ (if swapped then 1 else 0) depth) (.local 3))
+          (.cons (showValue (.clause ⟨2, 2, 2⟩ 1 depth) (.local 2) "tag") .nil))))))
+    [none] [0] (.cons .unit .nil)))
+private def handledPair (e : Expr) (depth : Nat := 1) (swapped : Bool := false) : Expr :=
+  .handleE (.last e) (.cons (.user "pair") 2 1 (pairClause depth swapped) .nil 2)
+
+example : calls.map (fun e => got (checkExpr q .strict [] env none .other [] e)
+    strTy (Eff.union (Eff.single "A") (Eff.single "B"))) =
+    [true, true, true, true, true] := by decide
+example : calls.map (fun e => got (checkExpr q .strict [] env none .other [] (handledPair e))
+    strTy (Eff.single "B")) = [true, true, true, true, true] := by decide
+example : got (checkExpr q .strict [] env none .other [] partialPair)
+    (.fn ["first"] [intTy] strTy (Eff.union (Eff.single "A") (Eff.single "B"))) = true := by decide
+
+-- 辞書の順序と上位クラスの根拠を独立に拒否する。
+example : checkExpr q .strict [] env none .other []
+    (pairHead [.local 1, .super (.local 0) "Show"]) =
+    .error ⟨[0, 0], "dictionary type mismatch"⟩ := by rfl
+example : checkExpr q .strict [] env none .other []
+    (pairHead [.super (.local 0) "Missing", .local 1]) =
+    .error ⟨[0, 0], "class is not a superclass"⟩ := by rfl
+
+-- 内側ラムダでのdepthを省くと所属を拒否し、同じ枠の別クラスを使うとメソッドを拒否する。
+example : checkExpr q .strict [] env none .other [] (handledPair directCall 0) =
+    .error ⟨[1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "clause dictionary scope mismatch"⟩ := by rfl
+example : checkExpr q .strict [] env none .other [] (handledPair directCall 1 true) =
+    .error ⟨[1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "unknown method"⟩ := by rfl
+
+private def program : Release.Program :=
+  { renderProgram with
+    ops := declarations.ops, effects := declarations.effects,
+    classes := declarations.classes,
+    impls := fun i => match i with
+      | "FancyInt" => some {
+          tparams := [], dictParams := [], cls := "Fancy", target := intTy,
+          supers := fun s => if s == "Show" then some (.dict "ShowInt" [] []) else none,
+          methods := fun _ => none }
+      | "TagInt" => some {
+          tparams := [], dictParams := [], cls := "Tag", target := intTy,
+          supers := fun _ => none,
+          methods := fun m => if m == "tag" then some (.app (.prim "tagInt" [] []) [.var 0]) else none }
+      | _ => renderProgram.impls i }
+private def oracle : Oracle
+  | "first", _, _, _ => .val (.const (.integer 7))
+  | "second", _, _, _ => .val (.const (.integer 9))
+  | b, ts, es, vs => Release.Examples.oracle b ts es vs
+
+-- 表示結果は辞書・値の配置を、事象列はソース順と一度だけの評価を観測する。
+private noncomputable def result (e : Expr) : Option String × List PrimName :=
+  let body := (desugarExpr (fun _ _ => none) .other (handledPair e)).instantiate
+    [.dict "TagInt" [] [], .dict "FancyInt" [] []]
+  let (s, events) := Release.run program builtins oracle Release.Examples.rel
+    Release.Examples.fresh 250 (.run body [] Store.empty) []
+  let value := match s with
+    | .run (.ret (.const (.string text))) [] _ => some text
+    | _ => none
+  (value, events.filterMap fun ev => match ev with | .io b _ _ => some b | _ => none)
+
+example : calls.map result =
+    [(some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]),
+     (some "7tag9", ["second", "first"]), (some "7tag9", ["first", "second"]),
+     (some "7tag9", ["first", "second"])] := by decide
+
+-- 節へ受け取った上位クラスの辞書も、内側ラムダで所属を保ったまま射影する。
+private def fancyDecl : OpDecl :=
+  { renderDecl with params := [.dict "Fancy" (.tvar 0), .tvar 0], dictParams := [("Fancy", 0)] }
+private def fancyInput : Input :=
+  { q with atoms := .name "R" :: q.atoms, D := { declarations with
+      ops := fun o => match o with
+        | "fancy" => some fancyDecl
+        | "render" => some { renderDecl with eff := "R" }
+        | _ => none
+      effects := fun e => match e with
+        | "A" => some ["fancy"] | "R" => some ["render"] | _ => none } }
+private def fancyBody (d : DictEv) (forward : Bool) : Expr :=
+  if forward then
+    -- 内側ラムダで受け取った辞書を操作値へ捕え、局所束縛の後で呼ぶ。
+    .handleE (.bind .bind (.fn ["value"] [.tvar 0] strTy (Eff.single "R"))
+      (.opDicts "render" [.tvar 0] [.super d "Show"] ["value"] [.tvar 0])
+      (.last (.call (.local 0) [some "value"] [0] (.cons (.local 3) .nil))))
+      (.cons (.user "render") 1 1 (renderClause (.clause ⟨6, 1, 1⟩ 0)) .nil 1)
+  else showValue (.super d "Show") (.local 2)
+private def fancyHandle (d : DictEv := .clause ⟨2, 1, 1⟩ 0 1) (forward : Bool := false) : Expr :=
+  .handleE (.last (.pipe (eInt 7) (.opDicts "fancy" [intTy] [.local 0] ["value"] [intTy])))
+    (.cons (.user "fancy") 1 1
+      (.last (.resume 0 (.call
+        (.lam ["unused"] [unitTy] strTy emptyEff
+          (.last (.returnE unitTy (fancyBody d forward))))
+        [none] [0] (.cons .unit .nil)))) .nil 1)
+
+example : [false, true].map (fun forward => got
+    (checkExpr fancyInput .strict [] env none .other []
+      (fancyHandle (.clause ⟨2, 1, 1⟩ 0 1) forward)) strTy) = [true, true] := by decide
+example : checkExpr fancyInput .strict [] env none .other [] (fancyHandle (.local 4)) =
+    .error ⟨[1, 0, 0, 0, 0, 0, 0, 0, 0], "method parameter annotation mismatch"⟩ := by rfl
+
+private noncomputable def fancyResult (forward : Bool) : Option String :=
+  let p := { program with ops := fancyInput.D.ops, effects := fancyInput.D.effects }
+  let body := (desugarExpr (fun _ _ => none) .other
+    (fancyHandle (.clause ⟨2, 1, 1⟩ 0 1) forward)).instantiate
+    [.dict "TagInt" [] [], .dict "FancyInt" [] []]
+  match (Release.run p builtins oracle Release.Examples.rel Release.Examples.fresh
+    150 (.run body [] Store.empty) []).1 with
+  | .run (.ret (.const (.string s))) [] _ => some s
+  | _ => none
+
+example : [false, true].map fancyResult = [some "7", some "7"] := by decide
+
+end OperationDictionaries
 
 -- リソースの State と、純粋な補間・直接の連結関数の契約。
 example : got (checkExpr (input) .strict [] [some (.opaque "File")] none .other []
@@ -387,5 +725,140 @@ example : [checkPointProgram false false false, checkPointProgram true true true
     checkPointProgram true false true, checkPointProgram true true false] =
     [.ok (), .ok (), .error ⟨[0, 1, 0, 0], "match is not exhaustive"⟩,
       .error ⟨[1, 0, 0, 1, 0], "match is not exhaustive"⟩] := by rfl
+
+-- 一般のFailを持つ型も、使わない入力を含めて一律には拒否しない。
+private def nestedFailTy : Ty :=
+  .list (.fn [] [] unitTy (.mk (fun _ => false) [intTy]))
+private def nestedLegacyTy : Ty := .list (.fn [] [] unitTy Eff.empty)
+
+example : run .unit [some nestedFailTy] =
+    .ok (unitTy, emptyEff) := rfl
+example : run .unit [some nestedLegacyTy] = .ok (unitTy, emptyEff) := rfl
+example : run (.returnE nestedFailTy .unit) [] (some unitTy) .tail =
+    .ok (unitTy, emptyEff) := rfl
+example : checkEach input .strict [] [] none [] .nil nestedFailTy =
+    .ok emptyEff := rfl
+
+-- 未参照の有限の宣言も、一般のFailを理由に拒否しない。
+example :
+    let m : CheckTables.Materials := { pointMaterials false false false with
+      trustedFuns := [("unused", {
+        tparams := [], neffs := 0, names := [], params := [], ret := nestedFailTy, eff := Eff.empty })] }
+    CheckTables.checkProgram
+      (m.input (CheckTables.builtins [] [] builtinMaterial) (satB [])
+        (CheckTables.admitsDec [] []) (CheckTables.makeOpPrim selectOp) []) m m.names =
+      .ok () := rfl
+
+-- 入力だけでなく、結果の型と実際に呼び出した潜在効果も一般のFailを保つ。
+private def intFail : Eff := .mk (fun _ => false) [intTy]
+private def failFn : Ty := .fn [] [] unitTy intFail
+example : run (.local 0) [some nestedFailTy] = .ok (nestedFailTy, emptyEff) := rfl
+example : run (.call (.local 0) [] [] .nil) [some failFn] = .ok (unitTy, intFail) := rfl
+
+-- 同じ正規形の型を受理し、重複したFailを持つ注釈は書き換えずに拒否する。
+example : checkEach input .strict [] [some failFn] none [] (.cons (.local 0) .nil) failFn =
+    .ok emptyEff := rfl
+example : checkEach input .strict [] [some failFn] none [] (.cons (.local 0) .nil)
+    (.fn [] [] unitTy (.mk (fun _ => false) [intTy, intTy])) =
+    .error ⟨[0], "type is not included in the expected type"⟩ := rfl
+
+-- 節の内側のFail[α₁]を外側のFail[α₀]へ戻し、両モードで同じ包含を検査する。
+private def polyClauseInput : Input :=
+  { input with D := { emptyDecls with ops := fun _ => some {
+      eff := "A", tparams := [{}], names := [], params := [], ret := unitTy } } }
+private def outerFail : Eff := .mk (fun _ => false) [.tvar 0]
+private def polyClause : Clauses :=
+  .cons (.user "A.poly") 0 1 (.last (.call (.local 1) [] [] .nil)) .nil
+example (mode : ResumeMode) :
+    checkClauses polyClauseInput mode [{}] [some (.fn [] [] unitTy outerFail)] none []
+      polyClause unitTy outerFail = .ok outerFail := by
+  cases mode <;> apply congrArg Except.ok
+  all_goals apply Eff.ext_test
+  all_goals first | (intro a; cases a <;> rfl) | rfl
+
+
+-- 宣言から本体へ渡す Q と、通常の行多相の区別を公開入口で検査する。
+private def noFailRow : Eff := .mk (· == .rho 0) []
+private def explicitFailureRow : Eff := .mk (· == .rho 0) [intTy]
+private def failureString : Eff := .mk (fun _ => false) [.base .string]
+private def noFailSignature (marked : Bool) : FunDecl :=
+  { tparams := [], neffs := 1, names := ["action"],
+    params := [.fn [] [] unitTy (if marked then explicitFailureRow else noFailRow)],
+    ret := unitTy, eff := Eff.empty }
+private def noFailInput (marked : Bool) : Input :=
+  { input { emptyDecls with funs := fun f => if f == "accept" then some (noFailSignature marked) else none }
+    with atoms := [Atom.rho 0] }
+private def noFailCaller (marked : Bool) : Def :=
+  { toFunDecl := noFailSignature marked, body := .lastDiscard (.funName "accept" [] [noFailRow]) }
+
+/-- 行の印は呼び出しの検査に渡る。通常の行は Fail を具体化できる。 -/
+example :
+    [(checkExpr (noFailInput true) .strict [] [] none .other []
+        (.funName "accept" [] [failureString])).isOk,
+     (checkExpr (noFailInput false) .strict [] [] none .other []
+        (.funName "accept" [] [failureString])).isOk,
+     (checkDef (noFailInput true) [] (noFailCaller true)).isOk,
+     (checkExpr ({ noFailInput true with noFailRows := [true] }) .strict [] [] none .other []
+        (.funName "accept" [] [noFailRow])).isOk] =
+      [false, true, true, false] := by rfl
+
+/-- 署名から得られない行の印を、本体から追加して受理しない。 -/
+example : checkDef (noFailInput true) [] (noFailCaller false) =
+    .error ⟨[0, 0], "function instantiation violates scope or NoFail"⟩ := by rfl
+
+namespace CharacterCoverage
+
+private def charTy : Ty := .base .character
+private def range (lo hi : Nat) : Pattern :=
+  .range (.character (Char.ofNat lo)) (.character (Char.ofNat hi))
+private def full : Pattern := range 0 0x10FFFF
+private def rows (ps : List Pattern) : Arms :=
+  match ps with
+  | [] => .nil
+  | p :: ps => .single p (.last (eInt 1)) (rows ps)
+
+/-- 公開checkerのmatchとbind/shadowが、文字全域の同じ判定を使う。 -/
+example : ([ [full], [range 0 0xD7FF, range 0xE000 0x10FFFF],
+    [range 0 96, .character 'a', range 98 0x10FFFF],
+    [range 0 96, range 98 0x10FFFF] ] : List (List Pattern)).map
+    (fun ps => (run (.matchE intTy (.local 0) (rows ps)) [some charTy]).map
+      (fun r => got (.ok r) intTy)) =
+    [.ok true, .ok true, .ok true, .error ⟨[], "match is not exhaustive"⟩] := by rfl
+
+example : ([BindKind.bind, .shadow] : List BindKind).map (fun kind =>
+    [full, range 1 0x10FFFF].map (fun p =>
+      [Block.lastPat kind p charTy (.local 0),
+       .bindPat kind p charTy (.local 0) (.lastDiscard (.local 0))].map (fun b =>
+        (checkBlock (input) .strict [] [some charTy] none .other [] b).map
+          (fun r => got (.ok r) unitTy)))) =
+    [[[.ok true, .ok true], [.error ⟨[], "binding pattern is not exhaustive"⟩,
+       .error ⟨[], "binding pattern is not exhaustive"⟩]],
+     [[.ok true, .ok true], [.error ⟨[], "binding pattern is not exhaustive"⟩,
+       .error ⟨[], "binding pattern is not exhaustive"⟩]]] := by rfl
+
+/-- ガードだけでは網羅せず、後のガードなし全域で網羅する。 -/
+example : ([Arms.nil, rows [full]] : List Arms).map (fun rest =>
+    (run (.matchE intTy (.local 0) (.cons [⟨full, []⟩] (some eTrue)
+      (.last (eInt 1)) rest)) [some charTy]).map (fun r => got (.ok r) intTy)) =
+    [.error ⟨[], "match is not exhaustive"⟩, .ok true] := by rfl
+
+private def recordDecls : Declarations :=
+  { emptyDecls with
+    cons := fun c => if c == "Sample" then some ⟨"Sample", 0, [charTy, .base .boolean]⟩ else none,
+    conFields := fun c => if c == "Sample" then some ["letter", "flag"] else none }
+private def recordInput (view : CoverageView) : Input :=
+  { input (recordDecls.withView view) with ctors := fun d => if d == "Sample" then ["Sample"] else [] }
+private def rec (p : Pattern) (b : Bool) : Pattern := .record "Sample" 2 [0, 1] [p, .boolean b]
+
+/-- レコードの二欄の相関と、文字の全域を覆っても残る将来の構成子。 -/
+example : ([closedView, fun d => d == "Sample"] : List CoverageView).map (fun view =>
+    [[rec full true, rec full false],
+     [rec (range 0 96) true, rec (range 97 0x10FFFF) false]].map (fun ps =>
+      (checkExpr (recordInput view) .strict [] [some (.data "Sample" [])] none .other []
+        (.matchE intTy (.local 0) (rows ps))).map (fun r => got (.ok r) intTy))) =
+    [[.ok true, .error ⟨[], "match is not exhaustive"⟩],
+     [.error ⟨[], "match is not exhaustive"⟩, .error ⟨[], "match is not exhaustive"⟩]] := by rfl
+
+end CharacterCoverage
 
 end Benitoite.Surface.Check.Examples

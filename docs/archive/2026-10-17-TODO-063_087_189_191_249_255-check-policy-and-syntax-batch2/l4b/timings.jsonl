@@ -1,0 +1,7 @@
+{"label": "dry-run", "command": ["scripts/check.sh", "--level", "work", "--base", "affb710656ee011d1a49dd75f993d536dfd237c6", "--only", "formal_build,spec_examples,spec_tally", "--dry-run"], "status": 0, "seconds": 0.017}
+{"label": "work-check", "command": ["scripts/check.sh", "--level", "work", "--base", "affb710656ee011d1a49dd75f993d536dfd237c6", "--only", "formal_build,spec_examples,spec_tally"], "status": 0, "seconds": 20.091}
+{"label": "batch2-exchange", "command": ["python3", "-B", "formal/tests/test_batch2_exchange.py"], "status": 0, "seconds": 6.073}
+{"label": "axioms", "command": ["lake", "-d", "formal", "env", "lean", "/private/tmp/l4b_axioms.lean"], "status": 1, "seconds": 1.367}
+{"label": "axioms-final", "command": ["lake", "env", "lean", "/private/tmp/l4b_axioms.lean"], "status": 0, "seconds": 0.689}
+{"label": "formal-regression", "command": ["scripts/check-formal.sh"], "status": 1, "seconds": 749.555}
+{"label": "final-diff", "command": ["git", "diff", "--check"], "status": 0, "seconds": 0.025}

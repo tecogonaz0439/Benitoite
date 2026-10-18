@@ -35,7 +35,8 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 // 循環や予算切れでは途中の結果で State を判定せず、境界の照合で根の E1010 を報告する。
                 continue;
             };
-            let state = scheme.effects.vars.is_empty()
+            let state = scheme.effects.failures.is_empty()
+                && scheme.effects.vars.is_empty()
                 && scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE)];
             if external && !state || !external && f.uses.is_some() {
                 d.diagnostics.push(external_effect_error(f, external));

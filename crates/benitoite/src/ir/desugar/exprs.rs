@@ -108,7 +108,9 @@ impl State<'_> {
                 n.span,
             ))),
             BindingKind::Method { .. } => self.dictionary_lambda(n),
-            BindingKind::Fn if !self.declared(id)?.class_constraints.is_empty() => {
+            BindingKind::Fn | BindingKind::Op { .. }
+                if !self.declared(id)?.class_constraints.is_empty() =>
+            {
                 self.dictionary_lambda(n)
             }
             BindingKind::Fn
@@ -257,7 +259,12 @@ impl State<'_> {
         pending: &mut Vec<(Var, Comp)>,
         span: Span,
     ) -> Result<Callee<'e>, InternalError> {
-        if let ast::Expr::Name(n) = callee {
+        // 標準 raise は表層の専用値であり、普通の操作名の直接呼び出しと
+        // 区別して先に値へ束縛する（設計書 01-12「型付きの失敗の表層検査」）。
+        if let ast::Expr::Name(n) = callee
+            && self.resolved.refs.get(n.id).copied()
+                != self.resolved.stdlib("Benitoite.Failure.raise")
+        {
             let id = self.reference(n.id)?;
             match self.binding(id)?.kind {
                 BindingKind::Ctor { data, tag } => {

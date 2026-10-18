@@ -2,6 +2,7 @@
 import copy
 from collections import Counter
 import json
+import runpy
 from pathlib import Path
 import subprocess
 import sys
@@ -123,7 +124,12 @@ def check_named(directory, entry, versions):
     item = corpus["inputs"][0]
     require(item["name"] == stem and item["group"] == "golden" and not item["excluded"], stem)
     require(len(item["definitions"]) == entry["definitions"], f"{stem}: definition count")
-    require(all("inScope" in d["scope"] for d in item["definitions"]), f"{stem}: outside")
+    if "scopes" in entry:
+        require(all(len(d["scope"]) == 1 for d in item["definitions"]), f"{stem}: ambiguous scope")
+        scopes = Counter(next(iter(d["scope"])) for d in item["definitions"])
+        require(dict(scopes) == entry["scopes"], f"{stem}: scopes")
+    else:
+        require(all("inScope" in d["scope"] for d in item["definitions"]), f"{stem}: outside")
     for path in (builtins, stdlib):
         table = read(path)
         require(table["version"] == versions["table"], str(path))
@@ -142,7 +148,7 @@ def check_named(directory, entry, versions):
     require(reports["builtinCheck"]["errors"] == [], stem)
     require(reports["surfaceCheck"]["result"] == {"ok": True}, stem)
     require(reports["surfaceCheckAll"]["counts"] == {
-        "matched": entry["definitions"], "q11": 0, "outOfScope": 0, "lazyRestriction": 0,
+        "matched": entry.get("scopes", {}).get("inScope", entry["definitions"]), "q11": 0, "outOfScope": 0, "lazyRestriction": 0,
         "mismatched": 0, "preparationFailure": 0}, stem)
     if entry["coverage"] is not None:
         path = directory / f"{stem}-coverage.json"
@@ -166,7 +172,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 10, "width corpus version")
+    require(corpus["version"] == 11, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -434,8 +440,8 @@ def check_extensible_package(directory):
     require(info['package'] == 'stdlib' and info['extensible'], 'external IO type metadata')
     standard = [d for d in item['dataTypes'] if d['package'] == 'stdlib' and d['extensible']]
     require([(d['typeName'], d['isRecord']) for d in standard] ==
-            [('IOErrorKind', False), ('NetworkErrorKind', False), ('ParseError', True), ('ParseError', True)],
-            'four extensible standard failure types')
+            [('IOErrorKind', False), ('NetworkErrorKind', False), ('ParseError', True), ('ParseError', True), ('ConversionError', True)],
+            'five extensible standard failure types')
     body = next(d['scope']['inScope']['surface'] for d in item['definitions']
                 if 'inspect (' in d['name'])
     require(body['package'] == 'package:Dep' and body['coverageView'] == [d['name'] for d in standard],
@@ -472,10 +478,15 @@ def check_extensible_package(directory):
 def main():
     directory, coverage_dir = map(Path, sys.argv[1:])
     manifest = read(MANIFEST)
+    batch2 = runpy.run_path(str(ROOT / "formal/tests/test_batch2_exchange.py"))
+    for feature in ("op", "failure", "character"):
+        batch2["check_rust"](ROOT / f"target/formal-batch2-{feature}")
+    failure = runpy.run_path(str(Path(__file__).with_name("check_failure.py")))
+    failure["check"](ROOT / "target/formal-batch2-failure")
+    character = read(ROOT / "target/formal-batch2-character/corpus.json")
+    require({i["name"]: len(i["definitions"]) for i in character["inputs"]} == manifest["batch2Character"]["definitions"], "batch2 character definitions")
     check_routing(directory, manifest)
     check_coverage_exports(coverage_dir, manifest["coverageExports"])
-    report = run("coverageDiff", [coverage_dir / "named-all-corpus.json"], coverage_dir / "named-all-report.json")
-    require({k: report[k] for k in manifest["allCoverageReport"]} == manifest["allCoverageReport"], "all independent coverage")
     check_width(directory, manifest["width"])
     check_programs(directory, manifest)
     outputs = {entry["stem"]: check_named(directory, entry, manifest["namedVersions"])
@@ -489,7 +500,12 @@ def main():
             and report["fuelExhausted"] == 0, "named coverage")
     check_extensible_package(directory)
     check_rejections(directory, outputs["named-calls"], outputs["named-static-calls"])
-    print("named export: manifest agrees; corpus 10, tables 3 and coverage 3 match all six entries")
+    print("final routing, per-program exports and rejection checks passed; checking all independent coverage", flush=True)
+    # 独立した全件の網羅性に差があっても、先に他の六入口と固定記録を照合する。
+    # 全件一致の条件と失敗の終了状態は維持する（設計書 07-04「01-12 との対応」）。
+    report = run("coverageDiff", [coverage_dir / "named-all-corpus.json"], coverage_dir / "named-all-report.json")
+    require({k: report[k] for k in manifest["allCoverageReport"]} == manifest["allCoverageReport"], "all independent coverage")
+    print("named export: manifest agrees; corpus 11, tables 4 and coverage 4 match all six entries")
 
 
 if __name__ == "__main__":

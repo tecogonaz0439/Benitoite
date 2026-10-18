@@ -674,6 +674,14 @@ mod tests {
                 Some("Box"),
             ),
             (
+                "character-domain",
+                "Types.Box[Character]",
+                "match n with\ncase Types.Box.Wrap('\\u{0}'..'\\u{10ffff}') -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Box"),
+            ),
+            (
                 "generic-argument",
                 "ContainerOf[Alias]",
                 "match n with\ncase ContainerOf(value: Types.Kind.Known) -> ()\ncase ContainerOf(value: Types.Kind.Other) -> ()\nend match",
@@ -862,7 +870,7 @@ mod tests {
                     files.extend([
                         (
                             "package.bnt",
-                            "language \"0.0.7\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                            "language \"0.0.8\"\ndependency Dep\n path \"dep\"\nend dependency\n",
                         ),
                         (
                             "dep/package.bnt",
@@ -1098,6 +1106,54 @@ mod tests {
             match_source("List[Integer]", " case [x, 0, ..rest], [..rest, 0, x] if x > 0 -> ()\n case _ -> ()"),
         ] { clean(&s); }
     }
+    // 診断の位置・反例と入れ子の相関は、実ソースから型検査までを通して確かめる。
+    #[test]
+    fn character_domain_source_contracts() {
+        for source in [
+            match_source("Character", " case '\\u{0}'..'\\u{10ffff}' -> ()"),
+            match_source("Character", " case '\\u{0}'..'\\u{d7ff}' -> ()\n case '\\u{e000}'..'\\u{10ffff}' -> ()"),
+            "function f(c: Character) -> Unit\n bind '\\u{0}'..'\\u{10ffff}' <- c\n bind x <- 0\n shadow Pair(x, '\\u{0}'..'\\u{10ffff}') <- Pair(1, c)\n ()\nend function".into(),
+            match_source("List[Character]", " case [] -> ()\n case ['\\u{0}'..'\\u{10ffff}', ..] -> ()"),
+            "record Row\n c: Character\n b: Boolean\nend record\nfunction f(n: Row) -> Unit\n match n with\n case Row(c: '\\u{0}'..'\\u{10ffff}', b: true) -> ()\n case Row(c: '\\u{0}'..'\\u{10ffff}', b: false) -> ()\n end match\nend function".into(),
+        ] { clean(&source); }
+        for (arms, code, needle, occurrence) in [
+            (
+                " case '\\u{0}'..'\\u{10ffff}' -> ()\n case _ -> ()",
+                C::E0602,
+                "_",
+                0,
+            ),
+            (
+                " case '\\u{0}'..'\\u{10ffff}', 'a' -> ()",
+                C::E0608,
+                "'a'",
+                0,
+            ),
+            (
+                " case '\\u{0}'..'\\u{10ffff}', 'a' if true -> ()\n case _ -> ()",
+                C::E0608,
+                "'a'",
+                0,
+            ),
+        ] {
+            let d = expect(
+                &match_source("Character", arms),
+                &[(code, needle, occurrence)],
+            );
+            assert_eq!(d[0].secondary.len(), 1);
+        }
+        for (source, witness) in [
+            (match_source("Character", " case '\\u{0}'..'`' -> ()\n case 'b'..'\\u{10ffff}' -> ()"), "'a'"),
+            (match_source("Character", " case '\\u{0}'..'\\u{d7ff}' -> ()\n case '\\u{e001}'..'\\u{10ffff}' -> ()"), "'\\u{e000}'"),
+            (match_source("Character", " case '\\u{0}'..'\\u{10ffff}' if true -> ()"), "_"),
+            ("record Row\n c: Character\n b: Boolean\nend record\nfunction f(n: Row) -> Unit\n match n with\n case Row(c: '\\u{0}'..'m', b: true) -> ()\n case Row(c: 'n'..'\\u{10ffff}', b: false) -> ()\n end match\nend function".into(), "Row(c: '\\u{0}', b: false)"),
+        ] {
+            let d = check(&source);
+            assert_eq!(d.iter().map(|d| d.code).collect::<Vec<_>>(), vec![Some(C::E0601)], "{source}\n{d:?}");
+            assert_eq!(d[0].primary.as_ref().unwrap().text, format!("`{witness}` is not matched"));
+        }
+    }
+
     #[test]
     fn nonexhaustive_witnesses_and_refutable_bindings() {
         for (s,code,needle,witness) in [

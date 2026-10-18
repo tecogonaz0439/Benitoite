@@ -175,7 +175,7 @@ def summarize : State × List Event → Result × Nat
       | _ => .other
     (r, evs.length)
 
-def exec (m : Comp) : Result × Nat :=
+noncomputable def exec (m : Comp) : Result × Nat :=
   summarize (run program builtins oracle rel fresh 1000 (.run m [] Store.empty) [])
 
 def add (a b : Val) : Comp := .app (.prim "add" [] []) [a, b]
@@ -362,18 +362,18 @@ example : HasTypeC choiceProgram builtins StoreTy.empty [] [] none choiceMatch i
       rcases h with rfl | rfl
       · exact ⟨[intTy, intTy], .P_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
           (by simp [choiceProgram]) rfl
-          (by simpa [Ty.subst, Ty.substAt, intTy] using
+          (by simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy] using
               (PatTys.cons (PatTy.P_Var (a := intTy)) (PatTys.cons (PatTy.P_Var (a := intTy)) .nil))), .refl _, rfl⟩
       · exact ⟨[intTy, intTy], .P_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
           (by simp [choiceProgram]) rfl
-          (by simpa [Ty.subst, Ty.substAt, intTy] using
+          (by simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy] using
               (PatTys.cons (PatTy.P_Var (a := intTy)) (PatTys.cons (PatTy.P_Var (a := intTy)) .nil))), .swap 0 1 [], rfl⟩
   refine .C_Match (a := .data "Choice" [])
     (.V_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
       (by simp [choiceProgram]) rfl (by
-        simpa [Ty.subst, Ty.substAt, intTy, int, Const.type] using
-          (HasTypeVs.cons (HasTypeV.V_Const (c := .integer 10))
-            (HasTypeVs.cons (HasTypeV.V_Const (c := .integer 20)) .nil))))
+        simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy, int, Const.type] using
+          (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer 10))
+            (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer 20)) .nil))))
     (.plain ha (.C_Return (.V_Var rfl (by intro b t e h; cases h)))
       (.plain (wildAltsTy choiceProgram _) (.C_Return .V_Const) (.nil trivial))) ?_
   intro v _

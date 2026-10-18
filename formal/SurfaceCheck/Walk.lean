@@ -83,6 +83,7 @@ mutual
       return .tryOptionDie t yes no exit a' message'
     | .withE o a body => return .withE o (← walkExpr q R .other (child path 0) none a) (← walkBlock q R .other (child path 1) expected body)
     | .lazyE body => return .lazyE (← walkBlock q none .other (child path 0) none body)
+    | .handleFail e t body clause => return .handleFail e t (← walkBlock q R .other (child path 0) none body) (← walkBlock q R .other (child path 1) (some t) clause)
     | .handleE body cs => return .handleE (← walkBlock q R .other (child path 0) none body) (← walkClauses q R (child path 1) cs)
     | .resume k a => return .resume k (← walkExpr q R .other (child path 0) none a)
     | _ => return e
@@ -115,9 +116,9 @@ mutual
       return .cons alts g (← walkBlock q R p (child path 1) (some t) body) (← walkArms q R p (child path 2) t rest)
   def walkClauses (q : Input) (R : Option Ty) (path : List Nat) : Clauses → Walk Clauses
     | .nil => pure .nil
-    | .cons o n nt body rest => do
+    | .cons o n nt body rest ndicts => do
       if let .prim name := o then modify fun s => { s with prims := name :: s.prims }
-      return .cons o n nt (← walkBlock q (R.map (shiftTy nt 0)) .other (child path 0) none body) (← walkClauses q R (child path 1) rest)
+      return .cons o n nt (← walkBlock q (R.map (shiftTy q.atoms nt 0)) .other (child path 0) none body) (← walkClauses q R (child path 1) rest) ndicts
 end
 
 -- 分類に使う全ノードの列を独立に期待する。説明を落とす場合と、説明に外側の

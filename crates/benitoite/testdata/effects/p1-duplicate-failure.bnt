@@ -1,0 +1,8 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function duplicate() -> Unit uses Failure.Fail[String], Failure.Fail[String]
+  ()
+end function
+function main() -> Unit
+  ()
+end function

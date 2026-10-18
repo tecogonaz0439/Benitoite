@@ -1,0 +1,20 @@
+// spec: 01-09 型付きの失敗と Result の変換
+import Benitoite.Unofficial.Failure
+
+record Hidden
+  value: Integer
+end record
+
+function main() -> Result[Unit, String]
+  bind result: Result[Integer, Hidden] <- Failure.toResult(body: lambda()
+    return Failure.fromResult(Result.Error(Hidden(value: 42)))
+  end lambda)
+  bind delayed: Lazy[Result[Integer, String]] <- lazy
+    Failure.toResult(body: lambda() return Failure.raise(error: "delayed") end lambda)
+  end lazy
+  return match result with
+    case Result.Error(error) ->
+      if Hidden.value(error) = 42 and Lazy.force(delayed) = Result.Error("delayed") then Result.Ok(()) else Result.Error("wrong result") end if
+    case Result.Ok(_) -> Result.Error("failure was ignored")
+  end match
+end function

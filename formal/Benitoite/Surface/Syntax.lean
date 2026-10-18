@@ -186,10 +186,23 @@ def Pattern.Nontrivial : Pattern → Prop
   | .wild | .var => False
   | _ => True
 
-/-- 01-12「型クラス」: 型検査が決めた辞書。local は普通の環境 Γ の番号（P6）。 -/
+/-- 節の辞書の所属。outer は節の外側の値環境の長さである。 -/
+structure ClauseScope where
+  outer : Nat
+  arity : Nat
+  dictCount : Nat
+  deriving DecidableEq
+
+/-- 宣言順の辞書番号を、継続と値引数の後の de Bruijn 番号へ写す。 -/
+def ClauseScope.slot (s : ClauseScope) (i : Nat) : Nat :=
+  1 + s.arity + (s.dictCount - 1 - i)
+
+/-- 01-12「型クラス」: 型検査が決めた辞書。節の所属を普通の局所番号と区別する。 -/
 inductive DictEv where
   | impl (i : ImplName) (tys : List Ty) (args : List DictEv)
   | local (j : Nat)
+  /-- depth は節の内側で追加した値束縛の数。所属は内側のラムダでも保つ。 -/
+  | clause (scope : ClauseScope) (constraint : Nat) (depth : Nat := 0)
   | super (d : DictEv) (s : ClassName)
 
 mutual
@@ -199,6 +212,7 @@ mutual
     | .impl i ts ds => .dict i ts (DictEv.toValList ds)
     -- 同節の辞書の決め方: 受け取った辞書の引数 d。
     | .local j => .var j
+    | .clause s i depth => .var (depth + s.slot i)
     -- V-Super: V↑S。上位の上位へはこの構成を重ねる。
     | .super d s => .super d.toVal s
 
@@ -291,6 +305,13 @@ mutual
         (dicts : List DictEv) (names : List String) (params : List Ty)
     | primName (b : PrimName) (tys : List Ty) (effs : List Eff)
     | opName (o : OpName) (tys : List Ty)
+    /-- 辞書は操作名を解決した位置で選ぶ。params と names は公開の値引数だけ。 -/
+    | opDicts (o : OpName) (tys : List Ty) (dicts : List DictEv)
+        (names : List String) (params : List Ty)
+    /-- 標準 Fail.raise。通常の操作表には登録しない。 -/
+    | raise (result error : Ty)
+    /-- 型付け後の非再開の一節。通常節の列との混在を表さない。 -/
+    | handleFail (error result : Ty) (body clause : Block)
     | nullCon (c : ConName) (tys : List Ty)
     | conValue (c : ConName) (tys : List Ty) (names : List String) (params : List Ty)
     | literal (l : Literal)
@@ -383,7 +404,7 @@ mutual
   /-- 番号 0 は継続、その後は最後の引数から順に並ぶ。arity は `_` も数える。 -/
   inductive Clauses where
     | nil
-    | cons (op : OpRef) (arity ntys : Nat) (body : Block) (rest : Clauses)
+    | cons (op : OpRef) (arity ntys : Nat) (body : Block) (rest : Clauses) (dictCount : Nat := 0)
 
   inductive Block where
     | empty
@@ -434,7 +455,7 @@ def Arms.unguardedPatterns : Arms → List Release.Pat
 /-- handled は操作名だけを読む。本体を型付けに依存せずに捨てた節の並び。 -/
 def Clauses.skeleton : Clauses → List Release.Clause
   | .nil => []
-  | .cons o n k _ rest => .mk o n k (.ret (.const .unit)) :: rest.skeleton
+  | .cons o n k _ rest d => .mk o (d + n) k (.ret (.const .unit)) :: rest.skeleton
 
 /-- パイプの規則 2。呼び出しと裸の構成子の名前は別の規則で型付けする。 -/
 def Expr.PipeValue : Expr → Prop
@@ -569,7 +590,7 @@ structure ImplDecl extends ImplSig where
   supers : ClassName → Option DictEv
   methods : MethName → Option Block
 
-def ImplDecl.methTy (id : ImplDecl) (ms : MethSig) (t : Ty) : Ty :=
+noncomputable def ImplDecl.methTy (id : ImplDecl) (ms : MethSig) (t : Ty) : Ty :=
   t.substAt ms.tparams.length [id.target] []
 
 /-- 01-05 の型パラメータは無制約。番号は構成子の宣言と同じ。 -/

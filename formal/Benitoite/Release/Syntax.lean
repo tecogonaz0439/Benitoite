@@ -1,3 +1,5 @@
+import Benitoite.Release.TypeSubst
+
 /-!
 # 契約名を持つコア計算の構文
 
@@ -25,99 +27,6 @@
 -/
 
 namespace Benitoite.Release
-
-/-- エフェクトの名前。01-12「エフェクトの名前と開始状態」の `L`。宣言したモジュールと名前の組を、
-一つの文字列で表す。 -/
-abbrev EffName := String
-
-/-- 状態を扱う組み込みの関数と解放のエフェクト `State`（01-07「可変のセル（初回リリース版）」）。 -/
-def stateEff : EffName := "State"
-
-/-- エフェクトの原子。01-12 の `e ::= L | ρ`。 -/
-inductive Atom where
-  | name (l : EffName)
-  | rho (i : Nat)
-  deriving DecidableEq, Repr
-
-/-- エフェクトの集合。 -/
-def Eff := Atom → Bool
-
-namespace Eff
-
-def empty : Eff := fun _ => false
-
-/-- 名前一つの集合 `{L}`。 -/
-def single (l : EffName) : Eff := fun a => a == .name l
-
-def Sub (ε ε' : Eff) : Prop := ∀ a, ε a = true → ε' a = true
-
-def union (ε ε' : Eff) : Eff := fun a => ε a || ε' a
-
-/-- エフェクト変数の置き換え `ε[Ē/ρ̄]`（段階 A と同じ）。 -/
-def substRho (es : List Eff) (ε : Eff) : Eff := fun a =>
-  let kept := match a with
-    | .name l => ε (.name l)
-    | .rho i => if i < es.length then false else ε (.rho i)
-  kept || (List.range es.length).any (fun i =>
-    ε (.rho i) && match es[i]? with
-      | some e => e a
-      | none => false)
-
-end Eff
-
-/-- 基本型。01-12 の `ι`。既存の Integer・Float・Byte と幅付きの七種を区別する。 -/
-inductive BaseTy where
-  | integer | float | string | character | boolean | unit | byte | decimal
-  | integer8 | integer16 | integer32
-  | unsignedInteger16 | unsignedInteger32 | unsignedInteger64 | float32
-  deriving DecidableEq, Repr
-
-abbrev DataName := String
-abbrev ConName := String
-abbrev FunName := String
-abbrev PrimName := String
-abbrev OpName := String
-/-- 中身を見せない型の名前（`IOError`・`NetworkError`・リソースの型など）。01-12 の `O`。 -/
-abbrev OpaqueName := String
-abbrev ClassName := String
-abbrev ImplName := String
-abbrev MethName := String
-
-/-- 型構成子 φ（01-12「型クラス」の `τ ::= A | φ`）。型引数を与えずに書いた型構成子であり、高カインドの
-型パラメータの型引数と、型構成子を引数にとる型クラスの辞書の型に現れる。高カインドの型パラメータそのものを
-型構成子として書く形は、型の変数 `Ty.tvar` で表す。 -/
-inductive TyCon where
-  | data (d : DataName)
-  | list
-  | set
-  | map
-  | reference
-  | lazy
-
-/-- 型。01-12 の型に、初回リリース版の拡張が加える型を加えたもの。
-`tvar i` は番号 i の型パラメータ。`cont b t ε` は継続の型 `Cont(B → T ! ε)`。`dict cl τ` は辞書の型
-`Dict[Cl, τ]`、`tapp i Ā` は型構成子を表す型パラメータの適用 `α[Ā]`、`ctor φ` は型構成子 φ である。 -/
-inductive Ty where
-  | base (ι : BaseTy)
-  | opaque (o : OpaqueName)
-  | data (d : DataName) (args : List Ty)
-  | list (a : Ty)
-  | fn (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
-  | tvar (i : Nat)
-  | reference (a : Ty)
-  | lazy (a : Ty)
-  | cont (b : Ty) (t : Ty) (eff : Eff)
-  | map (k : Ty) (v : Ty)
-  | set (a : Ty)
-  | bytes
-  | dict (cl : ClassName) (τ : Ty)
-  | tapp (i : Nat) (args : List Ty)
-  | ctor (φ : TyCon)
-
-/-- 契約名は引数型と同じ個数であり、重複しない。
-名前は宣言順に対応し、de Bruijn の局所変数とは区別する。 -/
-def NamesWF (names : List String) (params : List Ty) : Prop :=
-  names.length = params.length ∧ names.Nodup
 
 /-- 型パラメータに付けた組み込みの制約（01-06「組み込みの制約（初回リリース版）」、01-12「型パラメータの組み込みの制約」）。 -/
 structure TParam where
@@ -212,6 +121,7 @@ structure Alt where
 inductive OpRef where
   | user (o : OpName)
   | prim (b : PrimName)
+  | fail
   deriving DecidableEq
 
 mutual
@@ -226,6 +136,8 @@ mutual
     | list (elems : List Val)
     /-- 利用者が宣言したエフェクトの操作 `op[T̄]`。 -/
     | op (o : OpName) (tys : List Ty)
+    /-- 型付きの中断。結果型は節の内側で一つ束縛する。 -/
+    | raise (result error : Ty)
     /-- ストアの場所 ℓ（可変のセルと明示遅延）と、継続の場所 κ。 -/
     | loc (l : Nat)
     /-- マップ `{V1 ↦ W1, …, Vn ↦ Wn}`。鍵の並びと値の並びで表す。 -/
@@ -263,6 +175,8 @@ mutual
   番号 1 から n が x̄ を最後の引数から順に指す。操作の型パラメータは、N の中の型の変数の番号 `0..ntys-1` である。 -/
   inductive Clause where
     | mk (op : OpRef) (arity : Nat) (ntys : Nat) (body : Comp)
+    /-- 0番は利用不能、1番はエラーであり、本体だけが結果型を束縛する。 -/
+    | fail (error : Ty) (body : Comp)
 
   /-- 照合の分岐。本体とガードは分岐ごとに一つだけ持つ。 -/
   inductive Arm where
@@ -280,15 +194,19 @@ def Arm.body : Arm → Comp
 
 def Clause.op : Clause → OpRef
   | .mk o _ _ _ => o
+  | .fail _ _ => .fail
 
 def Clause.arity : Clause → Nat
   | .mk _ n _ _ => n
+  | .fail _ _ => 1
 
 def Clause.ntys : Clause → Nat
   | .mk _ _ k _ => k
+  | .fail _ _ => 1
 
 def Clause.body : Clause → Comp
   | .mk _ _ _ m => m
+  | .fail _ m => m
 
 /-- トップレベルの関数の定義。`fn f[ᾱ : c̄; ρ̄](x̄:Ā) : B ! ε = M`。`tparams` は型パラメータと、その
 組み込みの制約である（01-12「型パラメータの組み込みの制約」）。 -/
@@ -316,6 +234,18 @@ structure OpDecl where
   names : List String
   params : List Ty
   ret : Ty
+  /-- 制約の宣言順。params と names の先頭はこの列の辞書である。 -/
+  dictParams : List (ClassName × Nat) := []
+
+/-- 操作の辞書の型。組み込みの制約は辞書に含めない。 -/
+def OpDecl.dictTys (d : OpDecl) : List Ty :=
+  d.dictParams.map fun p => .dict p.1 (.tvar p.2)
+
+/-- 利用者に見える値の引数。コアの前置辞書を除く。 -/
+def OpDecl.valueParams (d : OpDecl) : List Ty := d.params.drop d.dictParams.length
+
+/-- 利用者に見える契約名。 -/
+def OpDecl.valueNames (d : OpDecl) : List String := d.names.drop d.dictParams.length
 
 /-- 型クラスのメソッドの型 `∀γ̄ ρ̄. (Ā) → B ! ε`（01-12 の C-Meth）。型の中では、メソッドの型パラメータ γ̄ が
 番号 `0..g-1`（g は γ̄ の個数）、型クラスの引数 P が番号 g である。メソッドが自分の型クラスの制約を持つときは、

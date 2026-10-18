@@ -23,6 +23,20 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
         to: ty.clone(),
         reason: reason(e.body.span, ReasonKind::HandleBody),
     });
+    let failure_op = ctx.decls.resolved.stdlib("Benitoite.Failure.raise");
+    let failure = e
+        .clauses
+        .iter()
+        .any(|c| ctx.decls.reference(c.op.id) == failure_op && failure_op.is_some());
+    if failure && e.clauses.len() != 1 {
+        ctx.diagnostic(
+            DiagBuilder::new(DiagCode::E0518)
+                .primary(e.span)
+                .help("nest")
+                .build(),
+        );
+    }
+    let error_ty = ctx.fresh_ty();
     let mut seen = BTreeMap::new();
     let mut clauses = vec![];
     for clause in &e.clauses {
@@ -88,6 +102,7 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                 seen.insert(op, first);
             }
             clauses.push(ClauseInfo {
+                failure_type: None,
                 op,
                 tail_resumptive: super::tail::resumptive(&clause.body),
             });
@@ -98,6 +113,9 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                 .iter()
                 .enumerate()
                 .map(|(i, _)| {
+                    if failure && i == 1 {
+                        return IArg::Ty(error_ty.clone());
+                    }
                     IArg::Ty(ITy::Rigid {
                         clause: clause.id,
                         index: u32::try_from(i).unwrap_or(u32::MAX),
@@ -105,6 +123,9 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                 })
                 .collect();
             ctx.clause_params.insert(clause.id, s.type_params.clone());
+            ctx.solver
+                .clause_constraints
+                .insert(clause.id, s.class_constraints.clone());
             ctx.clause_ops.insert(
                 clause.id,
                 (
@@ -165,6 +186,7 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
             ctx.record_type(param.id, t);
         }
         ctx.clauses.push(ClauseContext {
+            failure,
             op_ret: ret,
             handle_ty: ty.clone(),
         });
@@ -180,18 +202,37 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
     }
     let mut handled = EffectSet::empty();
     for (_, effect) in ctx.decls.out.effects.iter() {
-        if !effect.ops.is_empty() && effect.ops.iter().all(|op| seen.contains_key(op)) {
+        if !failure && !effect.ops.is_empty() && effect.ops.iter().all(|op| seen.contains_key(op)) {
             handled.insert_name(effect.name);
         }
     }
-    ctx.add(Constraint::EffSub {
-        sub: body_effect,
-        sup: IEffect {
-            fixed: handled.clone(),
-            var: clause_effect.var,
-        },
-        reason: reason(e.span, ReasonKind::HandleBody),
-    });
+    if failure {
+        let rest = ctx.fresh_effect();
+        ctx.solver.require_no_fail(rest.clone(), e.span);
+        ctx.failure_handles.push((e.id, error_ty.clone(), e.span));
+        let mut upper = rest.clone();
+        upper.failures.push(error_ty);
+        ctx.add(Constraint::EffSub {
+            sub: body_effect,
+            sup: upper,
+            reason: reason(e.span, ReasonKind::HandleBody),
+        });
+        ctx.add(Constraint::EffSub {
+            sub: rest,
+            sup: ctx.effect.clone(),
+            reason: reason(e.span, ReasonKind::HandleBody),
+        });
+    } else {
+        ctx.add(Constraint::EffSub {
+            sub: body_effect,
+            sup: IEffect {
+                failures: vec![],
+                fixed: handled.clone(),
+                var: clause_effect.var,
+            },
+            reason: reason(e.span, ReasonKind::HandleBody),
+        });
+    }
     ctx.add(Constraint::EffSub {
         sub: clause_effect,
         sup: ctx.effect.clone(),

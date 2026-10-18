@@ -20,6 +20,7 @@ enum ZonkHead<'a> {
 }
 enum ZonkStep<'a> {
     Visit(&'a ITy, usize),
+    Count(&'a ITy, usize),
     Args {
         head: ZonkHead<'a>,
         remaining: std::slice::Iter<'a, ITy>,
@@ -51,6 +52,7 @@ enum Elem {
 #[derive(Default)]
 struct EffectState {
     set: EffectSet,
+    failures: Vec<ITy>,
     origins: BTreeMap<Elem, Span>,
 }
 type Escape = (NodeId, u32);
@@ -63,10 +65,14 @@ pub(super) struct Solver {
     vars: Vec<Var>,
     contracts: Vec<ContractState>,
     clauses: Vec<NodeId>,
+    // 遅延した制約も節の rigid 型から辞書を選べるよう、所属ごとの宣言を保持する。
+    pub(super) clause_constraints: BTreeMap<NodeId, Vec<crate::types::ClassConstraint>>,
     // 現在の単一化の失敗の出どころ。報告を保留するときは失敗とともに保存する。
     escaped: Option<Escape>,
     heads: BTreeMap<u32, TyHead>,
     effs: Vec<EffectState>,
+    no_fail: Vec<(IEffect, Span)>,
+    failure_reported: std::collections::HashSet<(Span, DiagCode)>,
     effects: Vec<EffectConstraint>,
     required: Vec<(ITy, Reason)>,
     // 宣言の型への流れ込む制約（`return` など）が先に結び付けた型変数と、その理由。
@@ -215,10 +221,25 @@ impl Solver {
             | ITy::Error => IHead::Param(0),
         }
     }
+    pub fn require_no_fail(&mut self, effect: IEffect, span: Span) {
+        self.no_fail.push((effect, span));
+    }
+    pub fn failure_types(&self, e: &IEffect) -> Vec<ITy> {
+        let mut ts = e.failures.clone();
+        ts.extend(e.fixed.failures.iter().map(super::context::lift));
+        if let Some(state) = e
+            .var
+            .and_then(|v| usize::try_from(v.0).ok().and_then(|i| self.effs.get(i)))
+        {
+            ts.extend(state.failures.clone());
+        }
+        ts
+    }
     pub fn fresh_effect(&mut self) -> IEffect {
         let n = u32::try_from(self.effs.len()).unwrap_or(u32::MAX);
         self.effs.push(EffectState::default());
         IEffect {
+            failures: vec![],
             fixed: EffectSet::empty(),
             var: Some(EffInfer(n)),
         }
@@ -266,7 +287,19 @@ impl Solver {
                     let children = match t {
                         ITy::Con(c, args) => Some((ZonkHead::Con(*c), args)),
                         ITy::App(h, args) => Some((ZonkHead::App(*h), args)),
-                        ITy::Fn(f) => Some((ZonkHead::Fn(f), &f.params)),
+                        ITy::Fn(f) => {
+                            for t in &f.effect.failures {
+                                pending.push(ZonkStep::Count(t, depth.saturating_add(1)));
+                            }
+                            if let Some(st) = f.effect.var.and_then(|v| {
+                                usize::try_from(v.0).ok().and_then(|i| self.effs.get(i))
+                            }) {
+                                for t in &st.failures {
+                                    pending.push(ZonkStep::Count(t, depth.saturating_add(1)));
+                                }
+                            }
+                            Some((ZonkHead::Fn(f), &f.params))
+                        }
                         ITy::Var(v) => {
                             result = ITy::Var(self.root(*v));
                             None
@@ -284,6 +317,37 @@ impl Solver {
                             depth: depth.saturating_add(1),
                             has_child: false,
                         });
+                    }
+                }
+                ZonkStep::Count(mut t, depth) => {
+                    while let ITy::Var(v) = t {
+                        match self.node(*v).and_then(|n| n.binding.as_ref()) {
+                            Some(bound) => t = bound,
+                            None => break,
+                        }
+                    }
+                    budget.enter(depth)?;
+                    let next = depth.saturating_add(1);
+                    match t {
+                        ITy::Con(_, ts) | ITy::App(_, ts) => {
+                            pending.extend(ts.iter().map(|t| ZonkStep::Count(t, next)))
+                        }
+                        ITy::Fn(f) => {
+                            pending.push(ZonkStep::Count(&f.ret, next));
+                            pending.extend(
+                                f.params
+                                    .iter()
+                                    .chain(&f.effect.failures)
+                                    .map(|t| ZonkStep::Count(t, next)),
+                            );
+                            if let Some(st) = f.effect.var.and_then(|v| {
+                                usize::try_from(v.0).ok().and_then(|i| self.effs.get(i))
+                            }) {
+                                pending
+                                    .extend(st.failures.iter().map(|t| ZonkStep::Count(t, next)));
+                            }
+                        }
+                        ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
                     }
                 }
                 ZonkStep::Args {
@@ -359,6 +423,7 @@ impl Solver {
                     }) {
                         return true;
                     }
+                    pending.extend(self.failure_types(&f.effect));
                     pending.extend(f.params);
                     pending.push(f.ret);
                 }
@@ -398,9 +463,66 @@ impl Solver {
         }
     }
     pub fn finalize_effect(&self, e: &IEffect) -> EffectSet {
-        e.var
+        let mut out = e
+            .var
             .and_then(|v| usize::try_from(v.0).ok().and_then(|i| self.effs.get(i)))
-            .map_or_else(|| e.fixed.clone(), |s| e.fixed.union(&s.set))
+            .map_or_else(|| e.fixed.clone(), |s| e.fixed.union(&s.set));
+        out.failures.clear();
+        for ty in self.failure_types(e) {
+            out.insert_failure(self.finalize_failure_type(&ty));
+        }
+        out
+    }
+    fn finalize_failure_type(&self, t: &ITy) -> Ty {
+        match self.zonk(t) {
+            ITy::Var(_) | ITy::Error => super::decls::unit(),
+            ITy::Con(c, ts) => Ty::Con(
+                c,
+                ts.iter().map(|t| self.finalize_failure_type(t)).collect(),
+            ),
+            ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+                param_names: self.contract_names(&f.contract).unwrap_or_default(),
+                params: f
+                    .params
+                    .iter()
+                    .map(|t| self.finalize_failure_type(t))
+                    .collect(),
+                ret: self.finalize_failure_type(&f.ret),
+                effects: self.finalize_effect(&f.effect),
+            })),
+            ITy::Param(i) => Ty::Param(i),
+            ITy::Rigid { clause, index } => Ty::Rigid { clause, index },
+            ITy::App(h, ts) => {
+                let ts = ts.iter().map(|t| self.finalize_failure_type(t)).collect();
+                match self.head(h) {
+                    Some(TyHead::Con(c)) => Ty::Con(c, ts),
+                    Some(TyHead::Param(i)) => Ty::App(i, ts),
+                    None => super::decls::unit(),
+                }
+            }
+        }
+    }
+    pub fn unresolved_type(&self, t: &ITy) -> bool {
+        let mut pending = vec![self.zonk(t)];
+        while let Some(t) = pending.pop() {
+            match t {
+                ITy::Var(_) => return true,
+                ITy::App(IHead::Var(v), ts) => {
+                    if self.head(IHead::Var(v)).is_none() {
+                        return true;
+                    }
+                    pending.extend(ts);
+                }
+                ITy::Fn(f) => {
+                    pending.extend(self.failure_types(&f.effect));
+                    pending.extend(f.params);
+                    pending.push(f.ret);
+                }
+                ITy::Con(_, ts) | ITy::App(_, ts) => pending.extend(ts),
+                ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+            }
+        }
+        false
     }
     pub fn contains_error(&self, t: &ITy) -> bool {
         has_error(&self.zonk(t))
@@ -416,6 +538,7 @@ impl Solver {
                 }
                 ITy::Con(_, a) | ITy::App(_, a) => todo.extend(a),
                 ITy::Fn(f) => {
+                    todo.extend(self.failure_types(&f.effect));
                     todo.extend(f.params);
                     todo.push(f.ret);
                 }
@@ -458,6 +581,7 @@ impl Solver {
                 }
                 ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
                 ITy::Fn(f) => {
+                    pending.extend(self.failure_types(&f.effect));
                     pending.extend(f.params);
                     pending.push(f.ret);
                 }
@@ -495,6 +619,7 @@ impl Solver {
     }
     // 関数の入れ子のエフェクトが一致しない場合も、制約の外側の期待と実際を示す。
     // solve_effects は (実際, 期待) の対を受け取る（設計書 02-05「誤りの報告と検査の継続」）。
+    #[inline(never)]
     fn equal_with_outer(
         &mut self,
         a: &ITy,
@@ -537,18 +662,7 @@ impl Solver {
                     self.equal_with_outer(a, b, reason, expected, found)?;
                 }
                 self.equal_with_outer(&x.ret, &y.ret, reason, expected, found)?;
-                self.effects.push((
-                    x.effect.clone(),
-                    y.effect.clone(),
-                    reason.clone(),
-                    Some((found.clone(), expected.clone())),
-                ));
-                self.effects.push((
-                    y.effect.clone(),
-                    x.effect.clone(),
-                    reason.clone(),
-                    Some((found.clone(), expected.clone())),
-                ));
+                self.equal_function_effects(&x.effect, &y.effect, reason, expected, found);
                 Ok(())
             }
             (ITy::App(h, x), ITy::Con(c, y)) | (ITy::Con(c, y), ITy::App(h, x))
@@ -585,6 +699,29 @@ impl Solver {
                     DiagCode::E0401
                 },
             ),
+        }
+    }
+    // EffectConstraint の構築だけに必要な大きい一時値を、型引数を辿る各段に
+    // 積まない（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn equal_function_effects(
+        &mut self,
+        x: &IEffect,
+        y: &IEffect,
+        reason: &Reason,
+        expected: &ITy,
+        found: &ITy,
+    ) {
+        for (sub, sup) in [(x, y), (y, x)] {
+            let constraint = (
+                sub.clone(),
+                sup.clone(),
+                reason.clone(),
+                Some((found.clone(), expected.clone())),
+            );
+            if !self.effects.contains(&constraint) {
+                self.effects.push(constraint);
+            }
         }
     }
     fn flow(&mut self, a: &ITy, b: &ITy, r: &Reason) -> Result<bool, DiagCode> {
@@ -696,6 +833,7 @@ impl Solver {
                 }
                 ITy::Con(_, a) | ITy::App(_, a) => todo.extend(a),
                 ITy::Fn(f) => {
+                    todo.extend(f.effect.failures);
                     todo.extend(f.params);
                     todo.push(f.ret);
                 }
@@ -939,7 +1077,8 @@ impl Solver {
                 | ReasonKind::LazyBody
                 | ReasonKind::HandleBody
                 | ReasonKind::HandleClause
-                | ReasonKind::Resume => None,
+                | ReasonKind::Resume
+                | ReasonKind::FailureType => None,
             };
             if let Some(note) = note {
                 d = d.note(note);
@@ -1049,6 +1188,9 @@ impl Solver {
                     }],
                 );
             }
+        }
+        if code == DiagCode::E0514 {
+            d = d.help("convert");
         }
         ctx.diagnostic(d.build());
         self.poison(&[expected.clone(), found.clone()]);
@@ -1164,6 +1306,19 @@ impl Solver {
                         ctx.add(c);
                     }
                     Constraint::Class { .. } => ctx.add(c),
+                }
+            }
+            // Fail の E が関数型なら、その固定が節の内部の呼び出し契約を定める。
+            // NoFail の判定は最後に行い、ここでは型と行の情報だけを伝える。
+            if ctx
+                .decls
+                .resolved
+                .stdlib("Benitoite.Failure.raise")
+                .is_some()
+            {
+                self.propagate_effects(ctx);
+                if calls.iter().any(|call| super::calls::ready(self, call)) {
+                    continue;
                 }
             }
             if before == (calls.len(), deferred.len()) && special_before == special_after {
@@ -1610,9 +1765,130 @@ impl Solver {
             .collect();
         d.arg("function", function).help_edits("show", edits)
     }
-    fn solve_effects(&mut self, ctx: &mut Body<'_, '_>) {
+    fn failure_mentions_row(&self, ty: &ITy, row: EffInfer) -> bool {
+        let mut pending = vec![self.zonk(ty)];
+        let mut seen = BTreeSet::new();
+        while let Some(t) = pending.pop() {
+            match t {
+                ITy::Fn(f) => {
+                    if f.effect.var == Some(row) {
+                        return true;
+                    }
+                    if let Some(v) = f.effect.var
+                        && seen.insert(v.0)
+                    {
+                        pending.extend(self.failure_types(&f.effect));
+                    } else {
+                        pending.extend(f.effect.failures);
+                    }
+                    pending.extend(f.params);
+                    pending.push(f.ret);
+                }
+                ITy::Con(_, ts) | ITy::App(_, ts) => pending.extend(ts),
+                ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+            }
+        }
+        false
+    }
+    fn propagate_effects(&mut self, ctx: &mut Body<'_, '_>) {
+        let has_failures = self
+            .effects
+            .iter()
+            .any(|(sub, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
         loop {
             let mut changed = false;
+            // 型を先に結び、Fail 以外の残りだけを行へ伝える。節の出力の Fail を
+            // 本体の上限に混ぜない（設計書 02-05「制約の解決」）。
+            for (sub, sup, r, pair) in if has_failures {
+                self.effects.clone()
+            } else {
+                vec![]
+            } {
+                if pair
+                    .as_ref()
+                    .is_some_and(|(a, b)| self.contains_error(a) || self.contains_error(b))
+                {
+                    continue;
+                }
+                let source = self.failure_types(&sub);
+                let target = sup
+                    .failures
+                    .iter()
+                    .cloned()
+                    .chain(sup.fixed.failures.iter().map(super::context::lift))
+                    .collect::<Vec<_>>();
+                for ty in source {
+                    if let Some(expected) = target.first() {
+                        let mut failure_reason = r.clone();
+                        failure_reason.kind = ReasonKind::FailureType;
+                        if let Err(code) = self.equal(expected, &ty, &failure_reason) {
+                            let code = if matches!(
+                                code,
+                                DiagCode::E0401
+                                    | DiagCode::E0402
+                                    | DiagCode::E0403
+                                    | DiagCode::E0454
+                            ) {
+                                DiagCode::E0514
+                            } else {
+                                code
+                            };
+                            if self.failure_reported.insert((r.span, code)) {
+                                self.failure(ctx, code, expected, &ty, &r);
+                            }
+                        }
+                    } else if let Some(v) = sup.var {
+                        let existing = usize::try_from(v.0)
+                            .ok()
+                            .and_then(|i| self.effs.get(i))
+                            .and_then(|st| st.failures.first())
+                            .cloned();
+                        if let Some(expected) = existing {
+                            let mut failure_reason = r.clone();
+                            failure_reason.kind = ReasonKind::FailureType;
+                            if let Err(code) = self.equal(&expected, &ty, &failure_reason) {
+                                let code = if matches!(
+                                    code,
+                                    DiagCode::E0401
+                                        | DiagCode::E0402
+                                        | DiagCode::E0403
+                                        | DiagCode::E0454
+                                ) {
+                                    DiagCode::E0514
+                                } else {
+                                    code
+                                };
+                                if self.failure_reported.insert((r.span, code)) {
+                                    self.failure(ctx, code, &expected, &ty, &r);
+                                }
+                            }
+                        } else if self.failure_mentions_row(&ty, v) {
+                            if self.failure_reported.insert((r.span, DiagCode::E0404)) {
+                                self.failure(ctx, DiagCode::E0404, &ty, &ty, &r);
+                            }
+                        } else if let Some(st) =
+                            usize::try_from(v.0).ok().and_then(|i| self.effs.get_mut(i))
+                        {
+                            st.failures.push(ty);
+                            changed = true;
+                        }
+                    } else if self.failure_reported.insert((r.span, DiagCode::E0501)) {
+                        let effect = self.diagnostic_type(&ty);
+                        let name = format!(
+                            "Failure.Fail[{}]",
+                            effect.show(&TyNames {
+                                bindings: &ctx.decls.resolved.bindings,
+                                adts: &ctx.decls.out.adts,
+                                effects: &ctx.decls.out.effects,
+                                type_params: &ctx.type_param_names(),
+                                effect_params: &ctx.scheme.effect_params,
+                            })
+                        );
+                        let d = missing_effect(ctx, &r, &name, r.span);
+                        ctx.diagnostic(d);
+                    }
+                }
+            }
             for (sub, sup, r, pair) in &self.effects {
                 if pair
                     .as_ref()
@@ -1645,6 +1921,22 @@ impl Solver {
                 break;
             }
         }
+    }
+    fn solve_effects(&mut self, ctx: &mut Body<'_, '_>) {
+        self.propagate_effects(ctx);
+        for (effect, span) in self.no_fail.clone() {
+            let actual = self.finalize_effect(&effect);
+            if !actual.failures.is_empty()
+                || actual.vars.iter().any(|v| !ctx.scheme.no_fail.contains(v))
+            {
+                ctx.diagnostic(
+                    DiagBuilder::new(DiagCode::E0515)
+                        .primary(span)
+                        .help("signature")
+                        .build(),
+                );
+            }
+        }
         let mut reported = BTreeSet::new();
         let items = std::mem::take(&mut self.effects);
         for (sub, sup, r, pair) in items {
@@ -1663,7 +1955,18 @@ impl Solver {
                 }
                 if let Some((a, b)) = &pair {
                     if reported.insert((r.span.file.0, r.span.start.0, r.span.end.0)) {
-                        self.failure_with_escape(ctx, DiagCode::E0401, b, a, &r, None);
+                        self.failure_with_escape(
+                            ctx,
+                            if r.kind == ReasonKind::FailureType {
+                                DiagCode::E0514
+                            } else {
+                                DiagCode::E0401
+                            },
+                            b,
+                            a,
+                            &r,
+                            None,
+                        );
                     }
                     break;
                 }
@@ -1685,80 +1988,85 @@ impl Solver {
                     })),
                 );
                 let name = shown.split_once(" uses ").map_or("_", |(_, s)| s);
-                let d = match r.kind {
-                    ReasonKind::LazyBody => super::effects::effect_failure(ctx, &r, name, origin),
-                    ReasonKind::DieMessage => {
-                        let mut d = DiagBuilder::new(DiagCode::E0511)
-                            .arg("effect", name)
-                            .primary(origin)
-                            .help("pure");
-                        if let Some(span) = r.related {
-                            d = d.secondary(span, "message");
-                        }
-                        d.build()
-                    }
-                    ReasonKind::MatchGuard => {
-                        super::pattern_ext::effect_failure(ctx, &r, name, origin)
-                    }
-                    ReasonKind::CallArg { .. }
-                    | ReasonKind::Call
-                    | ReasonKind::IfCondition
-                    | ReasonKind::IfBranches
-                    | ReasonKind::IfNoElse
-                    | ReasonKind::MatchArms
-                    | ReasonKind::Pattern
-                    | ReasonKind::Alternatives
-                    | ReasonKind::ListElement
-                    | ReasonKind::ListSpread
-                    | ReasonKind::BindAnnotation
-                    | ReasonKind::LambdaReturn
-                    | ReasonKind::LambdaUses
-                    | ReasonKind::Return
-                    | ReasonKind::FnBody
-                    | ReasonKind::FnUses
-                    | ReasonKind::ExprStmt
-                    | ReasonKind::Operands { .. }
-                    | ReasonKind::Logic { .. }
-                    | ReasonKind::Operator { .. }
-                    | ReasonKind::Interp
-                    | ReasonKind::CallEffect
-                    | ReasonKind::BuiltinParam { .. }
-                    | ReasonKind::ParamBound { .. }
-                    | ReasonKind::RecordField { .. }
-                    | ReasonKind::RecordBase
-                    | ReasonKind::ClassUse { .. }
-                    | ReasonKind::ImplSuper { .. }
-                    | ReasonKind::Try
-                    | ReasonKind::WithResource
-                    | ReasonKind::WithState
-                    | ReasonKind::HandleBody
-                    | ReasonKind::HandleClause
-                    | ReasonKind::Resume
-                    | ReasonKind::ConstValue => super::context::effect_diagnostic(
-                        if r.kind == ReasonKind::LambdaUses {
-                            DiagCode::E0502
-                        } else {
-                            DiagCode::E0501
-                        },
-                        &r,
-                        name,
-                        origin,
-                    ),
-                };
-                let mut d = d;
-                // 同じ Exit でも通常の呼び出しの案内は保ち、処置の発生位置だけを補う
-                // （設計書 01-09「失敗時に終了する処置」）。
-                if d.code == Some(DiagCode::E0501)
+                let d = missing_effect(ctx, &r, name, origin);
+                ctx.diagnostic(d);
+            }
+        }
+    }
+}
+
+fn missing_effect(ctx: &mut Body<'_, '_>, r: &Reason, name: &str, origin: Span) -> Diagnostic {
+    let d = match r.kind {
+        ReasonKind::LazyBody => super::effects::effect_failure(ctx, r, name, origin),
+        ReasonKind::DieMessage => {
+            let mut d = DiagBuilder::new(DiagCode::E0511)
+                .arg("effect", name)
+                .primary(origin)
+                .help("pure");
+            if let Some(span) = r.related {
+                d = d.secondary(span, "message");
+            }
+            d.build()
+        }
+        ReasonKind::MatchGuard => super::pattern_ext::effect_failure(ctx, r, name, origin),
+        ReasonKind::CallArg { .. }
+        | ReasonKind::Call
+        | ReasonKind::IfCondition
+        | ReasonKind::IfBranches
+        | ReasonKind::IfNoElse
+        | ReasonKind::MatchArms
+        | ReasonKind::Pattern
+        | ReasonKind::Alternatives
+        | ReasonKind::ListElement
+        | ReasonKind::ListSpread
+        | ReasonKind::BindAnnotation
+        | ReasonKind::LambdaReturn
+        | ReasonKind::LambdaUses
+        | ReasonKind::Return
+        | ReasonKind::FnBody
+        | ReasonKind::FnUses
+        | ReasonKind::ExprStmt
+        | ReasonKind::Operands { .. }
+        | ReasonKind::Logic { .. }
+        | ReasonKind::Operator { .. }
+        | ReasonKind::Interp
+        | ReasonKind::CallEffect
+        | ReasonKind::BuiltinParam { .. }
+        | ReasonKind::ParamBound { .. }
+        | ReasonKind::RecordField { .. }
+        | ReasonKind::RecordBase
+        | ReasonKind::ClassUse { .. }
+        | ReasonKind::ImplSuper { .. }
+        | ReasonKind::Try
+        | ReasonKind::WithResource
+        | ReasonKind::WithState
+        | ReasonKind::HandleBody
+        | ReasonKind::HandleClause
+        | ReasonKind::Resume
+        | ReasonKind::FailureType
+        | ReasonKind::ConstValue => super::context::effect_diagnostic(
+            if r.kind == ReasonKind::LambdaUses {
+                DiagCode::E0502
+            } else {
+                DiagCode::E0501
+            },
+            r,
+            name,
+            origin,
+        ),
+    };
+    let mut d = d;
+    // 同じ Exit でも通常の呼び出しの案内は保ち、処置の発生位置だけを補う
+    // （設計書 01-09「失敗時に終了する処置」）。
+    if d.code == Some(DiagCode::E0501)
                     && ctx.try_kinds.iter().any(|(_, (_, action))| {
                         matches!(action, TryConstraintAction::Die { span, .. } if *span == origin)
                     })
                 {
                     add_die_effect_help(ctx, origin.file, &mut d);
                 }
-                ctx.diagnostic(d);
-            }
-        }
-    }
+
+    d
 }
 
 #[cold]
@@ -1790,7 +2098,11 @@ pub(super) fn has_error(t: &ITy) -> bool {
     match t {
         ITy::Error => true,
         ITy::Con(_, a) | ITy::App(_, a) => a.iter().any(has_error),
-        ITy::Fn(f) => f.params.iter().any(has_error) || has_error(&f.ret),
+        ITy::Fn(f) => {
+            f.params.iter().any(has_error)
+                || has_error(&f.ret)
+                || f.effect.failures.iter().any(has_error)
+        }
         ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } => false,
     }
 }
@@ -1857,6 +2169,7 @@ fn op_text(r: &ReasonKind) -> String {
         | ReasonKind::HandleBody
         | ReasonKind::HandleClause
         | ReasonKind::Resume
+        | ReasonKind::FailureType
         | ReasonKind::ConstValue => super::text::operator_spelling(OpName::Bin(BinOp::Eq)).into(),
     }
 }

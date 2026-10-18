@@ -1,0 +1,10 @@
+// spec: 01-09 型付きの失敗と Result の変換
+import Benitoite.Unofficial.Failure
+
+function deferred() -> Lazy[Integer]
+  return lazy Failure.raise(error: "unhandled") end lazy
+end function
+
+function main() -> Unit
+  ()
+end function

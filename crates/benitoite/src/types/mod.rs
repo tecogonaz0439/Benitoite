@@ -9,6 +9,10 @@
 
 pub mod builtin;
 
+mod text {
+    pub const EXCLUDES_FAILURE: &str = "excludes Failure.Fail";
+}
+
 use crate::base::{BindingId, BindingMap, Decimal, ModuleId, NodeId};
 pub use crate::syntax::ast::BuiltinConstraint;
 use builtin::{BuiltinEffectId, BuiltinTypeId};
@@ -25,7 +29,7 @@ pub enum TyCon {
 }
 
 /// 値の型を書く位置の型構成子の頭（型構成子そのもの、または型構成子を表す型パラメータ）。
-#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
 pub enum TyHead {
     Con(TyCon),
     /// 型構成子を表す型パラメータの番号
@@ -46,8 +50,10 @@ pub enum EffectName {
 pub struct EffVar(pub u32);
 
 /// 確定したエフェクトの集合。`names` と `vars` は昇順で重複を持たない。`IO.All` は展開してある。
-#[derive(Clone, PartialEq, Eq, Hash, Debug, Default)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug, Default, PartialOrd, Ord)]
 pub struct EffectSet {
+    /// 型付きの失敗。型の固定順序で整列し、重複を持たない。
+    pub failures: Vec<Ty>,
     pub names: Vec<EffectName>,
     pub vars: Vec<EffVar>,
 }
@@ -58,7 +64,7 @@ impl EffectSet {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.names.is_empty() && self.vars.is_empty()
+        self.names.is_empty() && self.vars.is_empty() && self.failures.is_empty()
     }
 
     pub fn insert_name(&mut self, n: EffectName) {
@@ -73,8 +79,18 @@ impl EffectSet {
         }
     }
 
+    /// 正規化した失敗型を集合へ挿入する。
+    pub fn insert_failure(&mut self, ty: Ty) {
+        if let Err(pos) = self.failures.binary_search(&ty) {
+            self.failures.insert(pos, ty);
+        }
+    }
+
     pub fn union(&self, other: &EffectSet) -> EffectSet {
         let mut out = self.clone();
+        for ty in &other.failures {
+            out.insert_failure(ty.clone());
+        }
         for n in &other.names {
             out.insert_name(*n);
         }
@@ -86,9 +102,11 @@ impl EffectSet {
 
     /// self ⊆ other
     pub fn is_subset(&self, other: &EffectSet) -> bool {
-        self.names
-            .iter()
-            .all(|n| other.names.binary_search(n).is_ok())
+        self.failures.iter().all(|ty| other.failures.contains(ty))
+            && self
+                .names
+                .iter()
+                .all(|n| other.names.binary_search(n).is_ok())
             && self
                 .vars
                 .iter()
@@ -97,7 +115,7 @@ impl EffectSet {
 }
 
 /// 型検査を終えた後の型。
-#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
 pub enum Ty {
     Con(TyCon, Vec<Ty>),
     Fn(Box<FnTy>),
@@ -112,7 +130,7 @@ pub enum Ty {
     },
 }
 
-#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
 pub struct FnTy {
     /// params と同じ長さで、一意な契約名を宣言順に並べる。
     pub param_names: Vec<String>,
@@ -186,6 +204,8 @@ pub struct Scheme {
     pub type_params: Vec<TypeParamInfo>,
     /// エフェクト変数の名前（番号の順）
     pub effect_params: Vec<String>,
+    /// シグネチャの同じ uses で Fail と並ぶ行。
+    pub no_fail: Vec<EffVar>,
     /// 型クラスの制約。並びの順が制約の番号であり、辞書の引数の順である（設計書 02-06「辞書の引数」）
     pub class_constraints: Vec<ClassConstraint>,
     pub params: Vec<Ty>,
@@ -196,6 +216,34 @@ pub struct Scheme {
 }
 
 impl Scheme {
+    /// シグネチャ全体から行の条件を集める。
+    pub fn signature_no_fail(&self) -> Vec<EffVar> {
+        let mut out = std::collections::BTreeSet::new();
+        if !self.effects.failures.is_empty() {
+            out.extend(self.effects.vars.iter().copied());
+        }
+        let mut pending = self
+            .params
+            .iter()
+            .chain(std::iter::once(&self.ret))
+            .chain(&self.effects.failures)
+            .collect::<Vec<_>>();
+        while let Some(t) = pending.pop() {
+            match t {
+                Ty::Fn(f) => {
+                    if !f.effects.failures.is_empty() {
+                        out.extend(f.effects.vars.iter().copied());
+                    }
+                    pending.extend(&f.params);
+                    pending.push(&f.ret);
+                    pending.extend(&f.effects.failures);
+                }
+                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
+                Ty::Param(_) | Ty::Rigid { .. } => {}
+            }
+        }
+        out.into_iter().collect()
+    }
     /// 関数の型として見た型（型パラメータは置き換えない）。
     pub fn fn_ty(&self) -> Ty {
         Ty::Fn(Box::new(FnTy {
@@ -297,7 +345,7 @@ pub struct ImplDef {
     pub supers: Vec<DictExpr>,
 }
 
-/// エフェクトの定義（ソースで宣言したもの。組み込みのエフェクトの宣言を含む）。
+/// エフェクトの定義。ソースの宣言と、標準専用の Fail の宣言を含む。
 #[derive(Clone, PartialEq, Debug)]
 pub struct EffectDef {
     /// エフェクトの宣言の束縛の番号
@@ -318,6 +366,12 @@ pub enum DictExpr {
         impl_decl: NodeId,
         type_args: Vec<TypeArg>,
         args: Vec<DictExpr>,
+    },
+    /// 操作の節が受け取った辞書。節の所属を外側の定義の制約番号と区別する。
+    Clause {
+        clause: NodeId,
+        constraint: u32,
+        supers: Vec<BindingId>,
     },
     /// いま検査している定義が受け取った辞書。`constraint` はその定義の制約の番号、
     /// `supers` はそこから辿る上位の型クラスの並び（辿らなければ空。`d↑Monoid↑Semigroup` の Monoid・Semigroup）
@@ -468,7 +522,7 @@ impl Ty {
                 param_names: f.param_names.clone(),
                 params: f.params.iter().map(|t| t.subst(tys, effs)).collect(),
                 ret: f.ret.subst(tys, effs),
-                effects: f.effects.subst(effs),
+                effects: f.effects.subst_types(tys, effs),
             })),
             // 同時置換なので、置換先に含まれるパラメータを再び置き換えない（設計書 01-12「型付け規則」）。
             Ty::Param(i) => match arg(*i) {
@@ -486,6 +540,46 @@ impl Ty {
             Ty::Rigid { .. } => self.clone(),
         }
     }
+    /// 表層の具体化後にだけ課す単一 Fail の検査。内部の上限には用いない。
+    pub fn single_failure(&self) -> bool {
+        let mut pending = vec![self];
+        while let Some(t) = pending.pop() {
+            match t {
+                Ty::Fn(f) => {
+                    if f.effects.failures.len() > 1 {
+                        return false;
+                    }
+                    pending.extend(&f.params);
+                    pending.push(&f.ret);
+                    pending.extend(&f.effects.failures);
+                }
+                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
+                Ty::Param(_) | Ty::Rigid { .. } => {}
+            }
+        }
+        true
+    }
+    /// Fail と同じ位置に残る行は宣言由来の NoFail を持たなければならない。
+    pub fn failure_rows_valid(&self, no_fail: &[EffVar]) -> bool {
+        let mut pending = vec![self];
+        while let Some(t) = pending.pop() {
+            match t {
+                Ty::Fn(f) => {
+                    if !f.effects.failures.is_empty()
+                        && f.effects.vars.iter().any(|v| !no_fail.contains(v))
+                    {
+                        return false;
+                    }
+                    pending.extend(&f.params);
+                    pending.push(&f.ret);
+                    pending.extend(&f.effects.failures);
+                }
+                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
+                Ty::Param(_) | Ty::Rigid { .. } => {}
+            }
+        }
+        true
+    }
     /// 型を診断に示す形にする（`List[Integer]`、`function(value: Integer) -> Integer uses Console.Write`）。
     pub fn show(&self, names: &TyNames<'_>) -> String {
         let mut out = String::new();
@@ -497,10 +591,18 @@ impl Ty {
 impl EffectSet {
     /// エフェクト変数を集合で置き換える（01-12「構文」の `ε[E/ρ]`）。`effs` にない変数はそのまま残す。
     pub fn subst(&self, effs: &[EffectSet]) -> EffectSet {
+        self.subst_types(&[], effs)
+    }
+    /// Fail 内の型と行を同時に置換する。
+    pub fn subst_types(&self, tys: &[TypeArg], effs: &[EffectSet]) -> EffectSet {
         let mut out = EffectSet {
+            failures: vec![],
             names: self.names.clone(),
             vars: Vec::new(),
         };
+        for ty in &self.failures {
+            out.insert_failure(ty.subst(tys, effs));
+        }
         for v in &self.vars {
             match usize::try_from(v.0).ok().and_then(|i| effs.get(i)) {
                 Some(set) => out = out.union(set),
@@ -622,8 +724,16 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
                     };
                     effects.push(text);
                 }
+                for ty in &f.effects.failures {
+                    effects.push(format!("Failure.Fail[{}]", ty.show(names)));
+                }
                 for v in &f.effects.vars {
-                    effects.push(param_name(v.0, names.effect_params).into());
+                    let row = param_name(v.0, names.effect_params);
+                    effects.push(if f.effects.failures.is_empty() {
+                        row.into()
+                    } else {
+                        format!("{row} ({row} {})", text::EXCLUDES_FAILURE)
+                    });
                 }
                 out.push_str(&effects.join(", "));
             }
@@ -720,6 +830,7 @@ mod tests {
 
     fn io_all_for_display() -> EffectSet {
         EffectSet {
+            failures: vec![],
             names: builtin::BUILTIN_EFFECTS
                 .iter()
                 .enumerate()
@@ -751,15 +862,18 @@ mod tests {
         let console = EffectName::Builtin(BuiltinEffectId(2));
         let state = EffectName::Builtin(BuiltinEffectId::STATE);
         let effects = EffectSet {
+            failures: vec![],
             names: vec![state],
             vars: vec![EffVar(0), EffVar(1), EffVar(3)],
         };
         let effs = vec![
             EffectSet {
+                failures: vec![],
                 names: vec![console],
                 vars: vec![EffVar(1)],
             },
             EffectSet {
+                failures: vec![],
                 names: vec![state],
                 vars: vec![EffVar(2)],
             },

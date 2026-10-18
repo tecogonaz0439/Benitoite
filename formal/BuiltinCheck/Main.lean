@@ -150,7 +150,7 @@ def run (args : List String) : IO UInt32 := do
     throw (IO.userError "usage: builtinCheck corpus.json builtins.json builtin-report.json")
   let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= readCorpus)
   let tables ← IO.ofExcept ((Json.parse (← IO.FS.readFile tableFile)) >>= readBuiltins)
-  if (corpus.version >= 9) != (tables.version == 3) then throw (IO.userError "exchange version pair mismatch")
+  if sidecarVersion corpus.version != tables.version then throw (IO.userError "exchange version pair mismatch")
   if duplicateNames (tables.inputs.map (fun b => s!"{b.group}/{b.name}")) then
     throw (IO.userError "duplicate input table")
   let checked := corpus.inputs.filter (fun i => i.excluded.isEmpty)

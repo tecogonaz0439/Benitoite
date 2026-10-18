@@ -19,6 +19,7 @@ mutual
     | .impl _ ts ds => Ty.VarsInList nt pe ts ∧ DictEv.ScopedList nt pe nv ds
     -- 同節の辞書の決め方: 受け取った辞書は Γ の普通の変数。
     | .local j => j < nv
+    | .clause s i depth => i < s.dictCount ∧ nv = depth + 1 + s.arity + s.dictCount + s.outer
     -- V-Super: V↑S は V の範囲を保つ。
     | .super d _ => d.Scoped nt pe nv
 
@@ -33,17 +34,23 @@ mutual
     -- P5: 型の範囲は使用位置のまま、値の変数は 0 個で本体を検査する。
     | .constE a body => Ty.VarsIn nt pe a ∧ body.Scoped nt pe 0
     | .funName _ ts es | .primName _ ts es =>
-        Ty.VarsInList nt pe ts ∧ Eff.RhosInList pe es
+        Ty.VarsInList nt pe ts ∧ Eff.VarsInList nt pe es
     -- 01-12「型クラス」第 4 行: 型引数・エフェクト引数・Ū・ラムダの値引数型。
     | .funDicts _ ts es ds names ps =>
-        Ty.VarsInList nt pe ts ∧ Eff.RhosInList pe es ∧
+        Ty.VarsInList nt pe ts ∧ Eff.VarsInList nt pe es ∧
           DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
     -- 同表第 2 行: V と Ū は、ラムダに入る前の Γ で指す。
     | .methName d _ ss es us names ps =>
-        d.Scoped nt pe nv ∧ Ty.VarsInList nt pe ss ∧ Eff.RhosInList pe es ∧
+        d.Scoped nt pe nv ∧ Ty.VarsInList nt pe ss ∧ Eff.VarsInList nt pe es ∧
           DictEv.ScopedList nt pe nv us ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
     | .nullCon _ ts => Ty.VarsInList nt pe ts
     | .opName _ ts => Ty.VarsInList nt pe ts
+    | .opDicts _ ts ds names ps => Ty.VarsInList nt pe ts ∧
+        DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
+    | .raise t e => Ty.VarsIn nt pe t ∧ Ty.VarsIn nt pe e
+    | .handleFail e t body clause =>
+        Ty.VarsIn nt pe e ∧ Ty.VarsIn nt pe t ∧ body.Scoped nt pe nv ∧
+          clause.Scoped (nt + 1) pe (nv + 2)
     | .conValue _ ts names ps => Ty.VarsInList nt pe ts ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
     | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _ |
       .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit => True
@@ -55,7 +62,7 @@ mutual
     | .call f _ _ es => f.Scoped nt pe nv ∧ es.Scoped nt pe nv
     | .pipe lhs rhs => lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
     | .partialCall f _ args r ε =>
-        f.Scoped nt pe nv ∧ args.Scoped nt pe nv ∧ Ty.VarsIn nt pe r ∧ Eff.RhosIn pe ε
+        f.Scoped nt pe nv ∧ args.Scoped nt pe nv ∧ Ty.VarsIn nt pe r ∧ Eff.VarsIn nt pe ε ∧ Eff.Canonical ε
     | .partialCon _ ts args => Ty.VarsInList nt pe ts ∧ args.Scoped nt pe nv
     | .binary _ t lhs rhs => Ty.VarsIn nt pe t ∧ lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
     | .neg t e => Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv
@@ -68,7 +75,7 @@ mutual
     | .interpolation parts es fs =>
         Ty.VarsInList nt pe (InterpPart.exprTypes parts) ∧ es.Scoped nt pe nv ∧ fs.Scoped nt pe nv
     | .lam names ps r ε body =>
-        NamesWF names ps ∧ Ty.VarsInList nt pe ps ∧ Ty.VarsIn nt pe r ∧ Eff.RhosIn pe ε ∧
+        NamesWF names ps ∧ Ty.VarsInList nt pe ps ∧ Ty.VarsIn nt pe r ∧ Eff.VarsIn nt pe ε ∧ Eff.Canonical ε ∧
           body.Scoped nt pe (ps.length + nv)
     | .ite c yes no => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv ∧ no.Scoped nt pe nv
     | .elseIf c yes no => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv ∧ no.Scoped nt pe nv
@@ -108,8 +115,8 @@ mutual
 
   def Clauses.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Clauses → Prop
     | .nil => True
-    | .cons _ n ntys body rest =>
-        body.Scoped (nt + ntys) pe (nv + 1 + n) ∧ rest.Scoped nt pe nv
+    | .cons _ n ntys body rest ndicts =>
+        body.Scoped (nt + ntys) pe (nv + 1 + ndicts + n) ∧ rest.Scoped nt pe nv
 
   def Block.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Block → Prop
     | .empty => True
@@ -122,12 +129,18 @@ mutual
         Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv ∧ rest.Scoped nt pe (pat.binders + nv)
 end
 
+/-- 操作の共有宣言はコア引数を保持する。表層では辞書の前置と所属型を照合する。 -/
+def _root_.Benitoite.Release.OpDecl.DictionaryScoped (d : OpDecl) : Prop :=
+  (∀ p ∈ d.dictParams, p.2 < d.tparams.length) ∧
+  d.params = d.dictTys ++ d.valueParams ∧
+  d.names = internalNames d.dictParams.length ++ d.valueNames
+
 -- 01-12「型クラス」: 辞書の型 Dict[Cl, α] の α は宣言の型パラメータを指す。
 -- 本体は辞書の引数と値の引数の両方を束縛した環境に置く。
 def Def.Scoped (d : Def) : Prop :=
   NamesWF d.names d.params ∧ NamesWF d.coreNames (d.dictTys ++ d.params) ∧
   Ty.VarsInList d.tparams.length (· < d.neffs) d.params ∧
-    Ty.VarsIn d.tparams.length (· < d.neffs) d.ret ∧ Eff.RhosIn (· < d.neffs) d.eff ∧
+    Ty.VarsIn d.tparams.length (· < d.neffs) d.ret ∧ Eff.VarsIn d.tparams.length (· < d.neffs) d.eff ∧
     (∀ p ∈ d.dictParams, p.2 < d.tparams.length) ∧
     d.body.Scoped d.tparams.length (· < d.neffs) (d.dictParams.length + d.params.length)
 
@@ -151,7 +164,7 @@ def Program.WellFormed (p : Program) : Prop :=
   (∀ c names, p.conFields c = some names → ∃ cd, p.cons c = some cd ∧
     NamesWF names cd.args ∧ (∀ c' cd', p.cons c' = some cd' → cd'.data = cd.data → c' = c)) ∧
   (∀ f d, p.defs f = some d → d.Scoped) ∧ (∀ c cd, p.cons c = some cd → cd.Scoped) ∧
-    (∀ o od, p.ops o = some od → od.Scoped) ∧
+    (∀ o od, p.ops o = some od → od.Scoped ∧ od.DictionaryScoped) ∧
     (∀ l os o, p.effects l = some os → o ∈ os → ∃ od, p.ops o = some od ∧ od.eff = l) ∧
     (∀ o od, p.ops o = some od → ∃ os, p.effects od.eff = some os ∧ o ∈ os) ∧
     -- 01-12「型クラス」: 型クラスのメソッドの宣言と D-Impl の定義の範囲。

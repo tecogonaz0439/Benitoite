@@ -4,6 +4,8 @@ import Benitoite.Surface.Lemmas.Sequence
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {Q : NoFailCtx}
+
 mutual
   theorem PatTy.consCongr {P Q : Release.Program} (hc : P.cons = Q.cons)
       {pat a δ} (h : PatTy P pat a δ) : PatTy Q pat a δ := by
@@ -60,10 +62,10 @@ theorem Exhaustive.consCongr {P Q : Release.Program} (hc : P.cons = Q.cons)
   intro v hv
   exact h v (Inhabits.consCongr hc.symm hv)
 
-theorem HasTypeC.shiftPattern {P B C Γ R m a ε pat t δ}
+theorem HasTypeCQ.shiftPattern {P B C Γ R m a ε pat t δ}
     (hp : PatTy P pat t δ)
-    (h : HasTypeC P B StoreTy.empty C (binds δ ++ Γ) R m a ε) :
-    HasTypeC P B StoreTy.empty C (binds δ ++ some t :: Γ) R
+    (h : HasTypeCQ P B StoreTy.empty Q C (binds δ ++ Γ) R m a ε) :
+    HasTypeCQ P B StoreTy.empty Q C (binds δ ++ some t :: Γ) R
       (m.rename (upRen pat.binders (· + 1))) a ε := by
   have hr := (RenOk.shift [some t] Γ).up (binds δ)
   rw [binds_length, hp.length_eq] at hr

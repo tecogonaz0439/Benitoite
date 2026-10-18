@@ -10,6 +10,9 @@ import Benitoite.Release.Lemmas.Basic
 
 namespace Benitoite.Release
 
+variable {Q : NoFailCtx}
+
+
 variable {P : Program} {B : Builtins}
 
 /-! ## パターンが束縛する変数の個数 -/
@@ -145,7 +148,7 @@ theorem Clause.renameList_ops (ξ : Nat → Nat) (h : List Clause) :
     (Clause.renameList ξ h).map Clause.op = h.map Clause.op := by
   induction h with
   | nil => simp [Clause.renameList]
-  | cons c cs ih => obtain ⟨o, n, k, m⟩ := c; simp [Clause.renameList, Clause.op, ih]
+  | cons c cs ih => cases c <;> simp [Clause.renameList, Clause.op, ih]
 
 theorem handles_of_ops {h h' : List Clause} (e : h'.map Clause.op = h.map Clause.op) (o : OpRef) :
     handles h' o = handles h o := by
@@ -158,120 +161,136 @@ theorem handles_of_ops {h h' : List Clause} (e : h'.map Clause.op = h.map Clause
 
 theorem handled_of_ops {P : Program} {B : Builtins} {h h' : List Clause}
     (e : h'.map Clause.op = h.map Clause.op) : handled P B h' = handled P B h := by
-  funext a
-  unfold handled
-  cases a with
-  | rho _ => rfl
-  | name l =>
+  apply Eff.ext_test
+  · intro a
+    simp only [Eff.test, Eff.ofAtoms, handled, Eff.atoms]
+    cases a with
+    | rho _ => rfl
+    | name l =>
       simp only
       have : handles h' = handles h := funext (handles_of_ops e)
       rw [this]
+  · rfl
 
 theorem handled_renameList {P : Program} {B : Builtins} (ξ : Nat → Nat) (h : List Clause) :
     handled P B (Clause.renameList ξ h) = handled P B h :=
   handled_of_ops (Clause.renameList_ops ξ h)
 
 mutual
-  theorem HasTypeV.rename {Ψ C Γ Δ ξ v a} (h : HasTypeV P B Ψ C Γ v a) (hξ : RenOk Γ Δ ξ) :
-      HasTypeV P B Ψ C Δ (v.rename ξ) a := by
+  theorem HasTypeVQ.rename {Ψ C Γ Δ ξ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hξ : RenOk Γ Δ ξ) :
+      HasTypeVQ P B Ψ Q C Δ (v.rename ξ) a := by
     match h with
     | .V_Var hi hc => simp only [Val.rename]; exact .V_Var (hξ _ _ hi) hc
     | .V_Const => simp only [Val.rename]; exact .V_Const
-    | .V_Fun hd hn hts hes => simp only [Val.rename]; exact .V_Fun hd hn hts hes
-    | .V_Prim hs hn hts hes had => simp only [Val.rename]; exact .V_Prim hs hn hts hes had
+    | .V_Fun hd hn had => simp only [Val.rename]; exact .V_Fun hd hn had
+    | .V_Prim hs hn had => simp only [Val.rename]; exact .V_Prim hs hn had
     | .V_Op hod hn hts => simp only [Val.rename]; exact .V_Op hod hn hts
-    | .V_Lam (ps := ps) hn hb =>
+    | .V_Raise ht he => simp only [Val.rename]; exact .V_Raise ht he
+    | .V_Lam (ps := ps) hn hw hb =>
         simp only [Val.rename]
-        refine .V_Lam hn ?_
+        refine .V_Lam hn hw ?_
         have := hξ.hide.up (binds ps)
         rw [binds_length] at this
-        exact HasTypeC.rename hb this
-    | .V_Con hc hts hargs => simp only [Val.rename]; exact .V_Con hc hts (HasTypeVs.rename hargs hξ)
-    | .V_List he hw => simp only [Val.rename]; exact .V_List (HasTypeEach.rename he hξ) hw
+        exact HasTypeCQ.rename hb this
+    | .V_Con hc hts hargs => simp only [Val.rename]; exact .V_Con hc hts (HasTypeVsQ.rename hargs hξ)
+    | .V_List he hw => simp only [Val.rename]; exact .V_List (HasTypeEachQ.rename he hξ) hw
     | .V_LocRef hl => simp only [Val.rename]; exact .V_LocRef hl
     | .V_LocLazy hl => simp only [Val.rename]; exact .V_LocLazy hl
     | .V_Map hk hv hl hkey hwa hwb =>
         simp only [Val.rename]
-        exact .V_Map (HasTypeEach.rename hk hξ) (HasTypeEach.rename hv hξ)
+        exact .V_Map (HasTypeEachQ.rename hk hξ) (HasTypeEachQ.rename hv hξ)
           (by rw [Val.renameList_length, Val.renameList_length, hl]) hkey hwa hwb
-    | .V_Set he hkey hw => simp only [Val.rename]; exact .V_Set (HasTypeEach.rename he hξ) hkey hw
+    | .V_Set he hkey hw => simp only [Val.rename]; exact .V_Set (HasTypeEachQ.rename he hξ) hkey hw
     | .V_Bytes => simp only [Val.rename]; exact .V_Bytes
-    | .V_Dict hi hts hvs => simp only [Val.rename]; exact .V_Dict hi hts (HasTypeVs.rename hvs hξ)
-    | .V_Super hv hc hs => simp only [Val.rename]; exact .V_Super (HasTypeV.rename hv hξ) hc hs
-    | .V_Sub h hle => exact .V_Sub (HasTypeV.rename h hξ) hle
+    | .V_Dict hi hts hvs => simp only [Val.rename]; exact .V_Dict hi hts (HasTypeVsQ.rename hvs hξ)
+    | .V_Super hv hc hs => simp only [Val.rename]; exact .V_Super (HasTypeVQ.rename hv hξ) hc hs
+    | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.rename h hξ) hle hw
 
-  theorem HasTypeVs.rename {Ψ C Γ Δ ξ vs as} (h : HasTypeVs P B Ψ C Γ vs as) (hξ : RenOk Γ Δ ξ) :
-      HasTypeVs P B Ψ C Δ (Val.renameList ξ vs) as := by
+  theorem HasTypeVsQ.rename {Ψ C Γ Δ ξ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hξ : RenOk Γ Δ ξ) :
+      HasTypeVsQ P B Ψ Q C Δ (Val.renameList ξ vs) as := by
     match h with
     | .nil => simp only [Val.renameList]; exact .nil
     | .cons hv hvs =>
-        simp only [Val.renameList]; exact .cons (HasTypeV.rename hv hξ) (HasTypeVs.rename hvs hξ)
+        simp only [Val.renameList]; exact .cons (HasTypeVQ.rename hv hξ) (HasTypeVsQ.rename hvs hξ)
 
-  theorem HasTypeEach.rename {Ψ C Γ Δ ξ vs a} (h : HasTypeEach P B Ψ C Γ vs a) (hξ : RenOk Γ Δ ξ) :
-      HasTypeEach P B Ψ C Δ (Val.renameList ξ vs) a := by
+  theorem HasTypeEachQ.rename {Ψ C Γ Δ ξ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) (hξ : RenOk Γ Δ ξ) :
+      HasTypeEachQ P B Ψ Q C Δ (Val.renameList ξ vs) a := by
     match h with
     | .nil => simp only [Val.renameList]; exact .nil
     | .cons hv hvs =>
-        simp only [Val.renameList]; exact .cons (HasTypeV.rename hv hξ) (HasTypeEach.rename hvs hξ)
+        simp only [Val.renameList]; exact .cons (HasTypeVQ.rename hv hξ) (HasTypeEachQ.rename hvs hξ)
 
-  theorem HasTypeC.rename {Ψ C Γ Δ ξ R m a ε} (h : HasTypeC P B Ψ C Γ R m a ε) (hξ : RenOk Γ Δ ξ) :
-      HasTypeC P B Ψ C Δ R (m.rename ξ) a ε := by
+  theorem HasTypeCQ.rename {Ψ C Γ Δ ξ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε) (hξ : RenOk Γ Δ ξ) :
+      HasTypeCQ P B Ψ Q C Δ R (m.rename ξ) a ε := by
     match h with
-    | .C_Return hv => simp only [Comp.rename]; exact .C_Return (HasTypeV.rename hv hξ)
-    | .C_Sub h hle hs => exact .C_Sub (HasTypeC.rename h hξ) hle hs
+    | .C_Return hv => simp only [Comp.rename]; exact .C_Return (HasTypeVQ.rename hv hξ)
+    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.rename h hξ) hle hs hw
+    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.rename h hξ) hs
     | .C_Let (a := a) hm hn =>
         simp only [Comp.rename]
-        exact .C_Let (HasTypeC.rename hm hξ) (HasTypeC.rename hn (hξ.up [some a]))
+        exact .C_Let (HasTypeCQ.rename hm hξ) (HasTypeCQ.rename hn (hξ.up [some a]))
     | .C_App hf hargs =>
-        simp only [Comp.rename]; exact .C_App (HasTypeV.rename hf hξ) (HasTypeVs.rename hargs hξ)
+        simp only [Comp.rename]; exact .C_App (HasTypeVQ.rename hf hξ) (HasTypeVsQ.rename hargs hξ)
     | .C_If hv hm hn =>
         simp only [Comp.rename]
-        exact .C_If (HasTypeV.rename hv hξ) (HasTypeC.rename hm hξ) (HasTypeC.rename hn hξ)
+        exact .C_If (HasTypeVQ.rename hv hξ) (HasTypeCQ.rename hm hξ) (HasTypeCQ.rename hn hξ)
     | .C_Match hv harms hex =>
         simp only [Comp.rename]
-        refine .C_Match (HasTypeV.rename hv hξ) (HasTypeArms.rename harms hξ) ?_
+        refine .C_Match (HasTypeVQ.rename hv hξ) (HasTypeArmsQ.rename harms hξ) ?_
         rwa [unguardedPats_rename]
-    | .C_Lazy hm => simp only [Comp.rename]; exact .C_Lazy (HasTypeC.rename hm hξ.hide)
-    | .C_Escape hv hw => simp only [Comp.rename]; exact .C_Escape (HasTypeV.rename hv hξ) hw
+    | .C_Lazy hm => simp only [Comp.rename]; exact .C_Lazy (HasTypeCQ.rename hm hξ.hide)
+    | .C_Escape hv hw => simp only [Comp.rename]; exact .C_Escape (HasTypeVQ.rename hv hξ) hw
     | .C_Use hv hr hm hs =>
-        simp only [Comp.rename]; exact .C_Use (HasTypeV.rename hv hξ) hr (HasTypeC.rename hm hξ) hs
+        simp only [Comp.rename]; exact .C_Use (HasTypeVQ.rename hv hξ) hr (HasTypeCQ.rename hm hξ) hs
     | .C_Handle hm hs hc =>
         simp only [Comp.rename]
-        refine .C_Handle (HasTypeC.rename hm hξ) ?_ (HasTypeClauses.rename hc hξ)
+        refine .C_Handle (HasTypeCQ.rename hm hξ) ?_ (HasTypeClausesQ.rename hc hξ)
         rwa [handled_renameList]
-    | .C_Resume hi hv =>
-        simp only [Comp.rename, Val.rename]; exact .C_Resume (hξ _ _ hi) (HasTypeV.rename hv hξ)
-    | .C_ResumeL hl hv =>
-        simp only [Comp.rename, Val.rename]; exact .C_ResumeL hl (HasTypeV.rename hv hξ)
-    | .C_Meth hv hc hm hnames hts hes hws =>
+    | .C_Handle_Fail hm hs hn hc =>
         simp only [Comp.rename]
-        exact .C_Meth (HasTypeV.rename hv hξ) hc hm hnames hts hes (HasTypeVs.rename hws hξ)
+        exact .C_Handle_Fail (HasTypeCQ.rename hm hξ) hs hn (HasFailureClause.rename hc hξ)
+    | .C_Resume hi hv =>
+        simp only [Comp.rename, Val.rename]; exact .C_Resume (hξ _ _ hi) (HasTypeVQ.rename hv hξ)
+    | .C_ResumeL hl hv =>
+        simp only [Comp.rename, Val.rename]; exact .C_ResumeL hl (HasTypeVQ.rename hv hξ)
+    | .C_Meth hv hc hm hnames hts hscope hes hws =>
+        simp only [Comp.rename]
+        exact .C_Meth (HasTypeVQ.rename hv hξ) hc hm hnames hts hscope hes (HasTypeVsQ.rename hws hξ)
 
-  theorem HasTypeArms.rename {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
-      (hξ : RenOk Γ Δ ξ) : HasTypeArms P B Ψ C Δ R (Arm.renameList ξ arms) a b ε := by
+  theorem HasTypeArmsQ.rename {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
+      (hξ : RenOk Γ Δ ξ) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.renameList ξ arms) a b ε := by
     match h with
     | .nil hw => simp only [Arm.renameList]; exact .nil hw
     | .plain (δ := δ) hp hm ht =>
         simp only [Arm.renameList]
         have hξ' := hξ.up (binds δ)
         rw [binds_length, hp.2.1] at hξ'
-        exact .plain hp (HasTypeC.rename hm hξ') (HasTypeArms.rename ht hξ)
+        exact .plain hp (HasTypeCQ.rename hm hξ') (HasTypeArmsQ.rename ht hξ)
     | .guarded (δ := δ) hp hg hm ht =>
         simp only [Arm.renameList]
         have hξ' := hξ.up (binds δ)
         rw [binds_length, hp.2.1] at hξ'
-        exact .guarded hp (HasTypeC.rename hg hξ'.hide) (HasTypeC.rename hm hξ') (HasTypeArms.rename ht hξ)
+        exact .guarded hp (HasTypeCQ.rename hg hξ'.hide) (HasTypeCQ.rename hm hξ') (HasTypeArmsQ.rename ht hξ)
 
-  theorem HasTypeClauses.rename {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClauses P B Ψ C Γ R h t ε)
-      (hξ : RenOk Γ Δ ξ) : HasTypeClauses P B Ψ C Δ R (Clause.renameList ξ h) t ε := by
+  theorem HasTypeClausesQ.rename {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε)
+      (hξ : RenOk Γ Δ ξ) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε := by
     match hc with
     | .nil => simp only [Clause.renameList]; exact .nil
-    | .cons (sg := sg) (k := k) hsg hnames hn hk hbody hrest =>
+    | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
         simp only [Clause.renameList]
-        refine .cons hsg hnames hn hk ?_ (HasTypeClauses.rename hrest hξ)
-        have := RenOk.clause (some (.cont sg.ret (t.shift k 0) ε)) sg.params k hξ
+        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.rename hrest hξ)
+        have := RenOk.clause (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε))) sg.params k hξ
         rw [← hn] at this
-        exact HasTypeC.rename hbody this
+        exact HasTypeCQ.rename hbody this
+  theorem HasFailureClause.rename {Ψ C Γ Δ ξ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) (hξ : RenOk Γ Δ ξ) :
+      HasFailureClause P B Ψ Q C Δ E R (Clause.renameList ξ h) t ε := by
+    match hc with
+    | .one he ht hew hb =>
+        simp only [Clause.renameList]
+        refine .one he ht hew ?_
+        exact HasTypeCQ.rename hb ((hξ.shiftE 1).up [none, some (E.shift 1 0)])
+
 end
 
 /-! ## ストアの型付けの拡大 -/
@@ -285,109 +304,121 @@ theorem StoreTy.Sub.trans {Ψ₁ Ψ₂ Ψ₃ : StoreTy} (h₁ : StoreTy.Sub Ψ�
     StoreTy.Sub Ψ₁ Ψ₃ := fun l x h => h₂ l x (h₁ l x h)
 
 mutual
-  theorem HasTypeV.store {Ψ Ψ' C Γ v a} (h : HasTypeV P B Ψ C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
-      HasTypeV P B Ψ' C Γ v a := by
+  theorem HasTypeVQ.store {Ψ Ψ' C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
+      HasTypeVQ P B Ψ' Q C Γ v a := by
     match h with
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
-    | .V_Fun hd hn hts hes => exact .V_Fun hd hn hts hes
-    | .V_Prim hs hn hts hes had => exact .V_Prim hs hn hts hes had
+    | .V_Fun hd hn had => exact .V_Fun hd hn had
+    | .V_Prim hs hn had => exact .V_Prim hs hn had
     | .V_Op hod hn hts => exact .V_Op hod hn hts
-    | .V_Lam hn hb => exact .V_Lam hn (HasTypeC.store hb hΨ)
-    | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVs.store hargs hΨ)
-    | .V_List he hw => exact .V_List (HasTypeEach.store he hΨ) hw
+    | .V_Raise ht he => exact .V_Raise ht he
+    | .V_Lam hn hw hb => exact .V_Lam hn hw (HasTypeCQ.store hb hΨ)
+    | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVsQ.store hargs hΨ)
+    | .V_List he hw => exact .V_List (HasTypeEachQ.store he hΨ) hw
     | .V_LocRef hl => exact .V_LocRef (hΨ _ _ hl)
     | .V_LocLazy hl => exact .V_LocLazy (hΨ _ _ hl)
     | .V_Map hk hv hl hkey hwa hwb =>
-        exact .V_Map (HasTypeEach.store hk hΨ) (HasTypeEach.store hv hΨ) hl hkey hwa hwb
-    | .V_Set he hkey hw => exact .V_Set (HasTypeEach.store he hΨ) hkey hw
+        exact .V_Map (HasTypeEachQ.store hk hΨ) (HasTypeEachQ.store hv hΨ) hl hkey hwa hwb
+    | .V_Set he hkey hw => exact .V_Set (HasTypeEachQ.store he hΨ) hkey hw
     | .V_Bytes => exact .V_Bytes
-    | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVs.store hvs hΨ)
-    | .V_Super hv hc hs => exact .V_Super (HasTypeV.store hv hΨ) hc hs
-    | .V_Sub h hle => exact .V_Sub (HasTypeV.store h hΨ) hle
+    | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVsQ.store hvs hΨ)
+    | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.store hv hΨ) hc hs
+    | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.store h hΨ) hle hw
 
-  theorem HasTypeVs.store {Ψ Ψ' C Γ vs as} (h : HasTypeVs P B Ψ C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
-      HasTypeVs P B Ψ' C Γ vs as := by
+  theorem HasTypeVsQ.store {Ψ Ψ' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
+      HasTypeVsQ P B Ψ' Q C Γ vs as := by
     match h with
     | .nil => exact .nil
-    | .cons hv hvs => exact .cons (HasTypeV.store hv hΨ) (HasTypeVs.store hvs hΨ)
+    | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeVsQ.store hvs hΨ)
 
-  theorem HasTypeEach.store {Ψ Ψ' C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeEach P B Ψ' C Γ vs a := by
+  theorem HasTypeEachQ.store {Ψ Ψ' C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeEachQ P B Ψ' Q C Γ vs a := by
     match h with
     | .nil => exact .nil
-    | .cons hv hvs => exact .cons (HasTypeV.store hv hΨ) (HasTypeEach.store hvs hΨ)
+    | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeEachQ.store hvs hΨ)
 
-  theorem HasTypeC.store {Ψ Ψ' C Γ R m a ε} (h : HasTypeC P B Ψ C Γ R m a ε)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeC P B Ψ' C Γ R m a ε := by
+  theorem HasTypeCQ.store {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeCQ P B Ψ' Q C Γ R m a ε := by
     match h with
-    | .C_Return hv => exact .C_Return (HasTypeV.store hv hΨ)
-    | .C_Sub h hle hs => exact .C_Sub (HasTypeC.store h hΨ) hle hs
-    | .C_Let hm hn => exact .C_Let (HasTypeC.store hm hΨ) (HasTypeC.store hn hΨ)
-    | .C_App hf hargs => exact .C_App (HasTypeV.store hf hΨ) (HasTypeVs.store hargs hΨ)
+    | .C_Return hv => exact .C_Return (HasTypeVQ.store hv hΨ)
+    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.store h hΨ) hle hs hw
+    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.store h hΨ) hs
+    | .C_Let hm hn => exact .C_Let (HasTypeCQ.store hm hΨ) (HasTypeCQ.store hn hΨ)
+    | .C_App hf hargs => exact .C_App (HasTypeVQ.store hf hΨ) (HasTypeVsQ.store hargs hΨ)
     | .C_If hv hm hn =>
-        exact .C_If (HasTypeV.store hv hΨ) (HasTypeC.store hm hΨ) (HasTypeC.store hn hΨ)
-    | .C_Match hv harms hex => exact .C_Match (HasTypeV.store hv hΨ) (HasTypeArms.store harms hΨ) hex
-    | .C_Lazy hm => exact .C_Lazy (HasTypeC.store hm hΨ)
-    | .C_Escape hv hw => exact .C_Escape (HasTypeV.store hv hΨ) hw
-    | .C_Use hv hr hm hs => exact .C_Use (HasTypeV.store hv hΨ) hr (HasTypeC.store hm hΨ) hs
-    | .C_Handle hm hs hc => exact .C_Handle (HasTypeC.store hm hΨ) hs (HasTypeClauses.store hc hΨ)
-    | .C_Resume hi hv => exact .C_Resume hi (HasTypeV.store hv hΨ)
-    | .C_ResumeL hl hv => exact .C_ResumeL (hΨ _ _ hl) (HasTypeV.store hv hΨ)
-    | .C_Meth hv hc hm hnames hts hes hws =>
-        exact .C_Meth (HasTypeV.store hv hΨ) hc hm hnames hts hes (HasTypeVs.store hws hΨ)
+        exact .C_If (HasTypeVQ.store hv hΨ) (HasTypeCQ.store hm hΨ) (HasTypeCQ.store hn hΨ)
+    | .C_Match hv harms hex => exact .C_Match (HasTypeVQ.store hv hΨ) (HasTypeArmsQ.store harms hΨ) hex
+    | .C_Lazy hm => exact .C_Lazy (HasTypeCQ.store hm hΨ)
+    | .C_Escape hv hw => exact .C_Escape (HasTypeVQ.store hv hΨ) hw
+    | .C_Use hv hr hm hs => exact .C_Use (HasTypeVQ.store hv hΨ) hr (HasTypeCQ.store hm hΨ) hs
+    | .C_Handle hm hs hc => exact .C_Handle (HasTypeCQ.store hm hΨ) hs (HasTypeClausesQ.store hc hΨ)
+    | .C_Handle_Fail hm hs hn hc =>
 
-  theorem HasTypeArms.store {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArms P B Ψ' C Γ R arms a b ε := by
+        exact .C_Handle_Fail (HasTypeCQ.store hm hΨ) hs hn (HasFailureClause.store hc hΨ)
+    | .C_Resume hi hv => exact .C_Resume hi (HasTypeVQ.store hv hΨ)
+    | .C_ResumeL hl hv => exact .C_ResumeL (hΨ _ _ hl) (HasTypeVQ.store hv hΨ)
+    | .C_Meth hv hc hm hnames hts hscope hes hws =>
+        exact .C_Meth (HasTypeVQ.store hv hΨ) hc hm hnames hts hscope hes (HasTypeVsQ.store hws hΨ)
+
+  theorem HasTypeArmsQ.store {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArmsQ P B Ψ' Q C Γ R arms a b ε := by
     match h with
     | .nil hw => exact .nil hw
-    | .plain hp hm ht => exact .plain hp (HasTypeC.store hm hΨ) (HasTypeArms.store ht hΨ)
+    | .plain hp hm ht => exact .plain hp (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
     | .guarded hp hg hm ht =>
-        exact .guarded hp (HasTypeC.store hg hΨ) (HasTypeC.store hm hΨ) (HasTypeArms.store ht hΨ)
+        exact .guarded hp (HasTypeCQ.store hg hΨ) (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
 
-  theorem HasTypeClauses.store {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClauses P B Ψ C Γ R h t ε)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClauses P B Ψ' C Γ R h t ε := by
+  theorem HasTypeClausesQ.store {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R h t ε := by
     match hc with
     | .nil => exact .nil
-    | .cons hsg hnames hn hk hbody hrest =>
-        exact .cons hsg hnames hn hk (HasTypeC.store hbody hΨ) (HasTypeClauses.store hrest hΨ)
+    | .cons hsg hnames hn hk hew hbody hrest =>
+        exact .cons hsg hnames hn hk hew (HasTypeCQ.store hbody hΨ) (HasTypeClausesQ.store hrest hΨ)
+  theorem HasFailureClause.store {Ψ Ψ' C Γ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) (hΨ : StoreTy.Sub Ψ Ψ') :
+      HasFailureClause P B Ψ' Q C Γ E R h t ε := by
+    match hc with
+    | .one he ht hew hb => exact .one he ht hew (HasTypeCQ.store hb hΨ)
+
 end
 
 /-! ## 値の型付けは、継続の型の変数を使わない -/
 
 mutual
-  theorem HasTypeV.hide {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) :
-      HasTypeV P B Ψ C (hideConts Γ) v a := by
+  theorem HasTypeVQ.hide {Ψ C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) :
+      HasTypeVQ P B Ψ Q C (hideConts Γ) v a := by
     match h with
     | .V_Var hi hc => exact .V_Var (hideConts_get.mpr ⟨hi, hc⟩) hc
     | .V_Const => exact .V_Const
-    | .V_Fun hd hn hts hes => exact .V_Fun hd hn hts hes
-    | .V_Prim hs hn hts hes had => exact .V_Prim hs hn hts hes had
+    | .V_Fun hd hn had => exact .V_Fun hd hn had
+    | .V_Prim hs hn had => exact .V_Prim hs hn had
     | .V_Op hod hn hts => exact .V_Op hod hn hts
-    | .V_Lam hn hb => refine .V_Lam hn ?_; rw [hideConts_hideConts]; exact hb
-    | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVs.hide hargs)
-    | .V_List he hw => exact .V_List (HasTypeEach.hide he) hw
+    | .V_Raise ht he => exact .V_Raise ht he
+    | .V_Lam hn hw hb => refine .V_Lam hn hw ?_; rw [hideConts_hideConts]; exact hb
+    | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVsQ.hide hargs)
+    | .V_List he hw => exact .V_List (HasTypeEachQ.hide he) hw
     | .V_LocRef hl => exact .V_LocRef hl
     | .V_LocLazy hl => exact .V_LocLazy hl
     | .V_Map hk hv hl hkey hwa hwb =>
-        exact .V_Map (HasTypeEach.hide hk) (HasTypeEach.hide hv) hl hkey hwa hwb
-    | .V_Set he hkey hw => exact .V_Set (HasTypeEach.hide he) hkey hw
+        exact .V_Map (HasTypeEachQ.hide hk) (HasTypeEachQ.hide hv) hl hkey hwa hwb
+    | .V_Set he hkey hw => exact .V_Set (HasTypeEachQ.hide he) hkey hw
     | .V_Bytes => exact .V_Bytes
-    | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVs.hide hvs)
-    | .V_Super hv hc hs => exact .V_Super (HasTypeV.hide hv) hc hs
-    | .V_Sub h hle => exact .V_Sub (HasTypeV.hide h) hle
+    | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVsQ.hide hvs)
+    | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.hide hv) hc hs
+    | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.hide h) hle hw
 
-  theorem HasTypeVs.hide {Ψ C Γ vs as} (h : HasTypeVs P B Ψ C Γ vs as) :
-      HasTypeVs P B Ψ C (hideConts Γ) vs as := by
+  theorem HasTypeVsQ.hide {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
+      HasTypeVsQ P B Ψ Q C (hideConts Γ) vs as := by
     match h with
     | .nil => exact .nil
-    | .cons hv hvs => exact .cons (HasTypeV.hide hv) (HasTypeVs.hide hvs)
+    | .cons hv hvs => exact .cons (HasTypeVQ.hide hv) (HasTypeVsQ.hide hvs)
 
-  theorem HasTypeEach.hide {Ψ C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a) :
-      HasTypeEach P B Ψ C (hideConts Γ) vs a := by
+  theorem HasTypeEachQ.hide {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) :
+      HasTypeEachQ P B Ψ Q C (hideConts Γ) vs a := by
     match h with
     | .nil => exact .nil
-    | .cons hv hvs => exact .cons (HasTypeV.hide hv) (HasTypeEach.hide hvs)
+    | .cons hv hvs => exact .cons (HasTypeVQ.hide hv) (HasTypeEachQ.hide hvs)
 end
 
 end Benitoite.Release

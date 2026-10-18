@@ -17,161 +17,86 @@ variable {P : Program} {B : Builtins}
 
 /-! ## 型の置き換えの合成 -/
 
-theorem Eff.substRho_of_noRho (es : List Eff) {e : Eff} (h : Eff.RhosIn (fun _ => False) e) :
-    Eff.substRho es e = e := by
-  have : Ty.substAt 0 [] es (.fn [] [] (.base .unit) e) = .fn [] [] (.base .unit) e :=
-    Ty.substAt_of_closed [] es _ (by
-      simp only [Ty.VarsIn, Ty.VarsInList]
-      exact ⟨⟨rfl, by simp⟩, trivial, trivial, h⟩)
-  simp only [Ty.substAt, List.map_nil] at this
-  exact (Ty.fn.inj this).2.2.2
+theorem Eff.substRho_of_noRho (es : List Eff) {e : Eff}
+    (h : Eff.RhosIn (fun _ => False) e) (hc : Eff.Canonical e) : Eff.substRho es e = e := by
+  rw [Eff.substRho_eq_bind]
+  have he : Eff.bind (SubstEnv.rowsOnly es) e = Eff.bind SubstEnv.identity e := by
+    apply Eff.bind_congr_rows (SubstEnv.rowsOnly es) SubstEnv.identity rfl
+    exact Eff.RowsIn.mono (fun _ hi => hi.elim) e h
+  rw [he, Eff.bind_identity, hc]
 
-mutual
-  /-- 型の変数の番号を g ずらしてから `S̄ ++ T̄`（S̄ の長さが g）で置き換えるのは、T̄ で置き換えるのと同じである
-  （エフェクト変数を含まない型のとき）。 -/
-  theorem Ty.shift_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss : ss.length = g) :
-      (u : Ty) → Ty.VarsIn ts.length (fun _ => False) u →
-      (u.shift g 0).substAt 0 (ss ++ ts) es = u.substAt 0 ts []
-    | .base _, _ => by simp [Ty.shift, Ty.substAt]
-    | .opaque _, _ => by simp [Ty.shift, Ty.substAt]
-    | .data d args, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [List.map_map, Ty.shiftList_subst_append es hss args h]
-    | .list a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [Ty.shift_subst_append es hss a h]
-    | .fn names ps r e, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [List.map_map, Ty.shiftList_subst_append es hss ps h.2.1, Ty.shift_subst_append es hss r h.2.2.1,
-          Eff.substRho_of_noRho es h.2.2.2, Eff.substRho_of_noRho [] h.2.2.2]
-    | .tvar j, h => by
-        simp only [Ty.VarsIn] at h
-        have h1 : j + g < (ss ++ ts).length := by simp; omega
-        simp only [Ty.shift, Nat.not_lt_zero, ↓reduceIte, Ty.substAt, Nat.sub_zero, h1, h,
-          Ty.shift_zero]
-        rw [List.getElem?_append_right (by omega)]
-        simp [hss, List.getElem?_eq_getElem h]
-    | .reference a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [Ty.shift_subst_append es hss a h]
-    | .lazy a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [Ty.shift_subst_append es hss a h]
-    | .cont _ _ _, h => by simp only [Ty.VarsIn] at h
-    | .map a b, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [Ty.shift_subst_append es hss a h.1, Ty.shift_subst_append es hss b h.2]
-    | .set a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [Ty.shift_subst_append es hss a h]
-    | .bytes, _ => by simp [Ty.shift, Ty.substAt]
-    | .dict _ τ, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [Ty.shift_subst_append es hss τ h]
-    | .tapp j args, h => by
-        simp only [Ty.VarsIn] at h
-        have hl := Ty.shiftList_subst_append es hss args h.2
-        have h1 : j + g < (ss ++ ts).length := by simp; omega
-        simp only [Ty.shift, Nat.not_lt_zero, ↓reduceIte, Ty.substAt, Nat.sub_zero, h1, h.1,
-          Ty.shift_zero, List.map_map]
-        rw [hl, List.getElem?_append_right (by omega)]
-        simp [hss, List.getElem?_eq_getElem h.1]
-    | .ctor _, _ => by simp [Ty.shift, Ty.substAt]
+/-- 移動してから前置した引数列で置き換えると、元の引数列での代入になる。 -/
+theorem Ty.shift_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss : ss.length = g)
+    (u : Ty) (h : Ty.VarsIn ts.length (fun _ => False) u) :
+    (u.shift g 0).substAt 0 (ss ++ ts) es = u.substAt 0 ts [] := by
+  rw [Ty.shift_eq_bind, Ty.substAt_eq_bind, Ty.bind_comp, Ty.substAt_eq_bind]
+  apply Ty.bind_congr_scoped (n := ts.length)
+  · intro i hi
+    have hidx : i + g < (ss ++ ts).length := by simp; omega
+    change (Ty.bind (SubstEnv.at 0 (ss ++ ts) es) (.tvar (i + g))).norm = _
+    rw [← Ty.substAt_eq_bind]
+    simp only [Ty.substAt, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, hidx,
+      SubstEnv.at, hi, Ty.shift_zero_norm, Ty.rawShift_zero, Ty.norm_idem]
+    rw [List.getElem?_append_right (by omega)]
+    simp [hss, List.getElem?_eq_getElem hi]
+  · exact Ty.WF.raw u (Ty.VarsIn.wf u h)
+  · exact Ty.RowsIn.mono (fun _ hi => hi.elim) u (Ty.VarsIn.rows u h)
 
-  theorem Ty.shiftList_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss : ss.length = g) :
-      (as : List Ty) → Ty.VarsInList ts.length (fun _ => False) as →
-      as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.shift g 0)) = as.map (Ty.substAt 0 ts [])
-    | [], _ => rfl
-    | a :: as, h => by
-        simp only [Ty.VarsInList] at h
-        have := Ty.shiftList_subst_append es hss as h.2
-        simp only [List.map_cons, Function.comp_apply]
-        rw [Ty.shift_subst_append es hss a h.1, this]
-end
+theorem Ty.shiftList_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss : ss.length = g)
+    (as : List Ty) (h : Ty.VarsInList ts.length (fun _ => False) as) :
+    as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.shift g 0)) = as.map (Ty.substAt 0 ts []) :=
+  List.map_congr_left (fun a ha => Ty.shift_subst_append es hss a (Ty.VarsInList.iff.mp h a ha))
 
-mutual
-  /-- 型クラスの引数 P（番号 g）を u に置き換えてから `S̄ ++ T̄` で置き換えるのは、P を u の置き換えの結果にして
-  `S̄` とともに置き換えるのと同じである。 -/
-  theorem Ty.methTy_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
-      (hss : ss.length = g) :
-      (t : Ty) → Ty.VarsIn (g + 1) pe t →
-      (t.substAt g [u] []).substAt 0 (ss ++ ts) es =
-        t.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es
-    | .base _, _ => by simp [Ty.substAt]
-    | .opaque _, _ => by simp [Ty.substAt]
-    | .data d args, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [List.map_map, Ty.methTyList_subst (ts := ts) u es hss args h]
-    | .list a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [Ty.methTy_subst u es hss a h]
-    | .fn names ps r e, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [List.map_map, Ty.methTyList_subst (ts := ts) u es hss ps h.2.1, Ty.methTy_subst u es hss r h.2.2.1,
-          Eff.substRho_nil]
-    | .tvar i, h => by
-        simp only [Ty.VarsIn] at h
-        by_cases hi : i < g
-        · have h1 : i < (ss ++ ts).length := by simp; omega
-          have h2 : i < (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]).length := by simp; omega
-          simp only [Ty.substAt, hi, ↓reduceIte, Nat.not_lt_zero, Nat.sub_zero, h1, h2, Ty.shift_zero]
-          rw [List.getElem?_append_left (by omega), List.getElem?_append_left (by omega)]
-        · have hig : i = g := by omega
-          subst hig
-          have h2 : i < (ss ++ [(u.shift i 0).substAt 0 (ss ++ ts) es]).length := by simp; omega
-          simp only [Ty.substAt, Nat.lt_irrefl, ↓reduceIte, Nat.sub_self, List.length_singleton,
-            Nat.zero_lt_one, List.getElem?_cons_zero, Option.getD_some, Nat.not_lt_zero, Nat.sub_zero, h2,
-            Ty.shift_zero]
-          rw [List.getElem?_append_right (by omega)]
-          simp [hss]
-    | .reference a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [Ty.methTy_subst u es hss a h]
-    | .lazy a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [Ty.methTy_subst u es hss a h]
-    | .cont _ _ _, h => by simp only [Ty.VarsIn] at h
-    | .map a b, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [Ty.methTy_subst u es hss a h.1, Ty.methTy_subst u es hss b h.2]
-    | .set a, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [Ty.methTy_subst u es hss a h]
-    | .bytes, _ => by simp [Ty.substAt]
-    | .dict _ τ, h => by
-        simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [Ty.methTy_subst u es hss τ h]
-    | .tapp i args, h => by
-        simp only [Ty.VarsIn] at h
-        have hl := Ty.methTyList_subst (ts := ts) u es hss args h.2
-        by_cases hi : i < g
-        · have h1 : i < (ss ++ ts).length := by simp; omega
-          have h2 : i < (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]).length := by simp; omega
-          simp only [Ty.substAt, hi, ↓reduceIte, Nat.not_lt_zero, Nat.sub_zero, h1, h2, Ty.shift_zero,
-            List.map_map]
-          rw [hl, List.getElem?_append_left (by omega), List.getElem?_append_left (by omega)]
-        · have hig : i = g := by omega
-          subst hig
-          have h2 : i < (ss ++ [(u.shift i 0).substAt 0 (ss ++ ts) es]).length := by simp; omega
-          simp only [Ty.substAt, Nat.lt_irrefl, ↓reduceIte, Nat.sub_self, List.length_singleton,
-            Nat.zero_lt_one, List.getElem?_cons_zero, Option.getD_some, Nat.not_lt_zero, Nat.sub_zero, h2,
-            Ty.shift_zero]
-          rw [Ty.substAt_applyTo, List.map_map, hl, List.getElem?_append_right (by omega)]
-          simp [hss]
-    | .ctor _, _ => by simp [Ty.substAt]
+/-- 型クラスの引数の代入と、呼び出し時の同時代入の合成。 -/
+theorem Ty.methTy_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
+    (hss : ss.length = g) (t : Ty) (h : Ty.VarsIn (g + 1) pe t) :
+    (t.substAt g [u] []).substAt 0 (ss ++ ts) es =
+      t.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es := by
+  let v := (u.shift g 0).substAt 0 (ss ++ ts) es
+  let θ := SubstEnv.at g [u] []
+  let φ := SubstEnv.at 0 (ss ++ ts) es
+  let ψ := SubstEnv.at 0 (ss ++ [v]) es
+  change (t.substAt g [u] []).substAt 0 (ss ++ ts) es = t.substAt 0 (ss ++ [v]) es
+  rw [Ty.substAt_eq_bind, Ty.substAt_eq_bind, Ty.substAt_eq_bind]
+  change Ty.bind φ (Ty.bind θ t) = Ty.bind ψ t
+  rw [Ty.bind_comp]
+  apply Ty.bind_congr_scoped_norm (n := g + 1)
+  · intro i hi
+    change (Ty.bind φ (θ.types i)).norm = (ψ.types i).norm
+    by_cases hig : i < g
+    · have hidx : i < (ss ++ ts).length := by simp; omega
+      have hidx' : i < (ss ++ [v]).length := by simp; omega
+      change (Ty.bind φ (if i < g then Ty.tvar i else _)).norm = _
+      simp only [hig, ↓reduceIte]
+      change (φ.types i).norm.norm = (ψ.types i).norm
+      simp only [φ, ψ, SubstEnv.at, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, hidx,
+        hidx', Ty.rawShift_zero, Ty.norm_idem]
+      rw [List.getElem?_append_left (by omega), List.getElem?_append_left (by omega)]
+    · have he : i = g := by omega
+      subst i
+      have hθ : θ.types g = u.rawShift g 0 := by simp [θ, SubstEnv.at]
+      rw [hθ]
+      have hidx : g < (ss ++ [v]).length := by simp; omega
+      simp only [ψ, SubstEnv.at, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, hidx, Ty.rawShift_zero]
+      rw [List.getElem?_append_right (by omega)]
+      simp only [hss, Nat.sub_self, List.getElem?_cons_zero, Option.getD_some]
+      rw [← Ty.bind_norm φ (u.rawShift g 0), ← Ty.shift_eq_norm_rawShift]
+      dsimp only [v]
+      rw [Ty.substAt_eq_bind]
+  · exact Ty.WF.raw t (Ty.VarsIn.wf t h)
+  · apply Ty.RowsIn.mono (h := Ty.VarsIn.rows t h)
+    intro i _
+    rw [Eff.rowImage_compose]
+    change Eff.norm (Eff.bind φ (Eff.row i)) = _
+    rw [Eff.bind_row]
+    simp only [φ, ψ, SubstEnv.at, List.map_id,
+      show Eff.rawShift 0 0 = id from funext (Eff.rawShift_zero 0), Eff.norm_idem]
 
-  theorem Ty.methTyList_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
-      (hss : ss.length = g) :
-      (as : List Ty) → Ty.VarsInList (g + 1) pe as →
-      as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.substAt g [u] [])) =
-        as.map (Ty.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es)
-    | [], _ => rfl
-    | a :: as, h => by
-        simp only [Ty.VarsInList] at h
-        have := Ty.methTyList_subst (ts := ts) u es hss as h.2
-        simp only [List.map_cons, Function.comp_apply]
-        rw [Ty.methTy_subst u es hss a h.1, this]
-end
+theorem Ty.methTyList_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
+    (hss : ss.length = g) (as : List Ty) (h : Ty.VarsInList (g + 1) pe as) :
+    as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.substAt g [u] [])) =
+      as.map (Ty.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es) :=
+  List.map_congr_left (fun a ha => Ty.methTy_subst u es hss a (Ty.VarsInList.iff.mp h a ha))
 
 /-- E-Meth の後のメソッドの型。 -/
 theorem ImplDecl.methTy_subst {id : ImplDecl} (hsc : id.Scoped P) {ms : MethSig} (hms : ms.Scoped)
@@ -190,6 +115,26 @@ theorem ImplDecl.methTy_subst {id : ImplDecl} (hsc : id.Scoped P) {ms : MethSig}
     rw [List.map_map, this, ht]
   · have := Ty.methTy_subst (ts := ts) id.target es hss ms.ret hms.2.2.1
     rw [this, ht]
+
+/-- メソッドの効果に含まれる型にも、型クラスの引数の同じ具体化を行う。 -/
+theorem Eff.methTy_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
+    (hss : ss.length = g) (e : Eff) (h : Eff.VarsIn (g + 1) pe e) :
+    Eff.substAt 0 (ss ++ ts) es (Eff.substAt g [u] [] e) =
+      Eff.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es e := by
+  have hw : Ty.VarsIn (g + 1) pe (.fn [] [] (.base .unit) (Eff.norm e)) :=
+    ⟨⟨rfl, by simp⟩, trivial, trivial, Eff.norm_VarsIn e h, Eff.norm_idem e⟩
+  have ht := Ty.methTy_subst (ts := ts) u es hss _ hw
+  simp only [Ty.substAt, Ty.substTysAt] at ht
+  exact (by simpa only [Eff.substAt_norm] using (Ty.fn.inj ht).2.2.2)
+
+theorem ImplDecl.methEff_subst {id : ImplDecl} (hsc : id.Scoped P) {ms : MethSig} (hms : ms.Scoped)
+    {ts ss : List Ty} {es : List Eff} (hts : ts.length = id.tparams.length) (hss : ss.length = ms.tparams.length) :
+    Eff.substAt 0 (ss ++ ts) es (Eff.substAt ms.tparams.length [id.target] [] ms.eff) =
+      Eff.substAt 0 (ss ++ [id.target.subst ts []]) es ms.eff := by
+  have ht : (id.target.shift ms.tparams.length 0).substAt 0 (ss ++ ts) es = id.target.subst ts [] := by
+    rw [Ty.shift_subst_append es hss]; rfl
+    rw [hts]; exact hsc.2.1
+  rw [Eff.methTy_subst (ts := ts) id.target es hss ms.eff hms.2.2.2, ht]
 
 /-- E-Meth の後の辞書の引数の型。 -/
 theorem ImplDecl.dictTys_subst {id : ImplDecl} (hsc : id.Scoped P) {ts ss : List Ty} {g : Nat}
@@ -251,8 +196,8 @@ theorem superStep_dict_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.
   simp only [Val.VarsIn] at hc
   have htsC : ClosedArgs ts := closedArgs_of hc.1
   have hsc := hwf.impl hi
-  have hθ := HasTypeV.substTy (c := 0) (es' := []) hwf hb hut (Nat.zero_le _) htsC (by simpa using hsat)
-    (StoreFix.empty ts [])
+  have hθ := HasTypeVQ.substTy (c := 0) (es' := []) hwf hb hut (Nat.zero_le _) htsC (by simp) (by simpa using hsat)
+    (StoreFix.empty ts []) (RowTransport.refl Qempty)
   simp only [List.take_zero, envSubst] at hθ
   rw [← binds_map] at hθ
   have hθ' := hθ.store (Ψ' := Ψ) (fun l x h => by simp [StoreTy.empty] at h)
@@ -261,7 +206,7 @@ theorem superStep_dict_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.
   · have := hθ'.instantiate (R := none)
       (InstOk.of_values hb hvs (hvs.wf_all hwf hb hΨ hc.2) hc.2)
     simpa [Val.substTy, Ty.subst] using this
-  · refine Val.VarsIn.instantiate hc.2 (Val.VarsIn.substTyAt (c := 0) [] (fun x hx => varsInList_mem hc.1 hx) u ?_)
+  · refine Val.VarsIn.instantiate hc.2 (Val.VarsIn.substTyAt (c := 0) [] (fun x hx => varsInList_mem hc.1 hx) (by simp) u ?_)
     rw [Nat.zero_add, hsat.1]
     exact Val.VarsIn.toTrue _ (hsc.2.2.1 _ u hu)
 

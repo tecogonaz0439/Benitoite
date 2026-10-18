@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
@@ -102,7 +102,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 直接に入れ子になった二つのラムダのどちらかで終端を省く場合は、内側を括弧で囲む: `lambda(x) return (lambda(y) return x + y)`。呼び出しの引数と束縛文は、それぞれ独立した区切りとなる。`lambda(x) return x + 1 |> increment` のパイプは本体に属し、`(lambda(x) return x + 1)(3)` はラムダ自体を呼ぶ。
 - パターンの照合は、`match value with` の後に、1 行に一つずつ `case pattern -> body` を書き、`end match` で終える。ハンドラは `handle body with` / `case Module.operation(arguments) -> clause` / `end handle` と書く。
 - データ型は `data Name` ... `end data` で、レコードは `record Name` ... `end record` で宣言する。
-- `IOErrorKind`、`NetworkErrorKind`、`Json.ParseError`、`Csv.ParseError` には `@extensible` が付く。利用者のデータ型とレコードにも使える。定義したパッケージの外では、全既知構成子（`Other` を含む）を列挙した後でも、ガードのない変数か `_` で将来の形を覆う。レコードパターンの `..` は現在のフィールドの省略にすぎない。分解する `bind` の代わりに、取り出す関数か、将来の形の分岐を持つ `match` を使う。構築・更新・フィールドの取り出しは契約を保つ。レコードのフィールドの追加に互換性の保証はない。`Result` と `Option` は閉じた型のままである。[レコードとデータ型](references/idioms.md#レコードとデータ型)を参照する。
+- `IOErrorKind`、`NetworkErrorKind`、`Json.ParseError`、`Json.Codec.ConversionError`、`Csv.ParseError` には `@extensible` が付く。利用者のデータ型とレコードにも使える。定義したパッケージの外では、全既知構成子（`Other` を含む）を列挙した後でも、ガードのない変数か `_` で将来の形を覆う。レコードパターンの `..` は現在のフィールドの省略にすぎない。分解する `bind` の代わりに、取り出す関数か、将来の形の分岐を持つ `match` を使う。構築・更新・フィールドの取り出しは契約を保つ。レコードのフィールドの追加に互換性の保証はない。`Result` と `Option` は閉じた型のままである。[レコードとデータ型](references/idioms.md#レコードとデータ型)を参照する。
 - 構成子は、式でもパターンでも型の名前を付けて書く: `Option.Some(x)`、`Option.None`、`Result.Ok(x)`、`Result.Error(e)`、`Shape.Circle(r)`。
 - 演算子: `=` と `<>` は比較、`and`・`or`・`not` は論理演算、`div` と `mod` は整数の除算である。`+` は文字列の連結にも使う。`==`、`!=`、`&&`、`||`、`!` は存在しない。
 - 再利用する関数・ライブラリ・コールバックには `try e or return` を使う。最も内側の関数かラムダから失敗を返し、その戻り値の型は、対応する Result か Option でなければならない。エラーの型が異なるときは、先に `Result.mapError` で変換する。裸の `try e` も同じ失敗を返す意味に固定し、Show の要件を加えない。入力は処置までのパイプを含む: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return`。
@@ -117,6 +117,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 呼び出しは型引数をとらない: `Map.empty[String, Integer]()` でなく `Map.empty()` と書く。map に項目を加えるのは `Map.set(m: m, k: key, value: value)` であり、`Map.insert` はない。`Integer.parse` などの解析の関数は `Option` を返す。
 - 型の引数には角括弧を使う: `List[Integer]`、`Map[String, Integer]`、`Result[Unit, String]`。`List<Integer>` は正しくない。
 - `with r = acquire() do ... end with` は、ブロックが終わるときに、そのリソースを逆の順に解放する。`TaskGroup.spawn(group: group, action: lambda() ... end lambda)` は、`TaskGroup.open()` で開いたタスクの集まりの中でタスクを起動し、`Task.await(task)` はその結果を待つ。タスクの集まりを解放すると、そのすべてのタスクを待つ。
+- 利用者が定義する操作の値型のパラメータには、`function render[T: Trait.Show](value: T) -> String` のように制約を付けられる。呼び出し側が実装を選び、節は呼び出し側のどの型にもそのメソッドを使える。制約によって公開の引数が増えることはない。関数値、`_` の穴、`|>` も、直接の呼び出しと同じ公開のパラメータ名と評価順を使う。節内のラムダは制約を捕捉でき、入れ子の節はそれぞれの制約を保つ。操作は型構築子パラメータ、エフェクト変数、独自の uses を宣言できない。
 - エフェクトの操作の一部だけを処理するハンドラは、型からそのエフェクトを取り除かない。型に `State` を持つ関数（`Reference`、`TaskGroup`、`Task.await`、`close...`）はハンドラで処理できない。
 - マップと集合は、挿入の順ではなくキーの順に並ぶ。
 - 数値のビット幅ごとに型が異なり、暗黙の変換はない。接尾辞のない `1` は常に `Integer` である。`Integer32` には `1s32`、`Float32` には `1.0f32` を使う。接尾辞（`s8`–`s64`、`u8`–`u64`、`f32`/`f64`）は暫定であり、構文の見直しで変わることがある。`Integer64` = `Integer`、`Float64` = `Float`、`UnsignedInteger8` = `Byte`、`UnsignedInteger` = `UnsignedInteger64` である。通常の名前には `Integer`、`Float`、`Byte` を使う。`Byte` に算術演算はなく、符号なしの型に単項の負号はない。
@@ -124,7 +125,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 実験的な `@external("wasm", "path.wasm", "export")` の関数は、取り込みのないバイナリの Component Model のコンポーネントを使い、本体も `end function` も持たない。具体的なレコードとデータ型、引数のない構成子の `Set` で表すフラグ、WIT に対応するキーを持つ `Map` を境界越しに渡せる。外部のリソース型には `uses State` が必要であり、ほかの外部呼び出しは純粋である。生成したアダプタは、詰めて格納したバイト数を数え、それとは別に、同じ `--wasm-transfer` の値で値の構築量の論理的な上限を設ける。`references/idioms.md` の WIT の例と上限を参照する。
 - 文字列補間は `"${expression}"` と書く。コメントは `//` で始まる。
 - `null` も例外もループの文もない。`Option`、`try` を伴う `Result`、および `List.map`・`List.fold`・`List.forEach` か再帰を使う。
-- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Csv`、`Regex`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
+- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Json.Codec`、`Failure`、`Test.Property`、`Csv`、`Regex`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
 - エフェクトを直接または呼び出しを通して行う関数は、すべてそのエフェクトを `uses` の後に並べる。ネットワークのエフェクト（`Http.Connect`、`Http.Listen`）は `IO.All` に含まれない。
 - 値が `Unit` でない文は誤りである。各 `Result` を、`try`、`match`、`bind _ <-` のどれかで処理する。
 - `Process.shell` は、その文字列を `/bin/sh -c` で実行する。POSIX の sh だけを書く。bash の配列、`[[ ]]`、`{a,b}` の展開、`$'...'` は使わない。シェルの機能が要らないときは、引数の並びを渡す `Process.run` を使う。
@@ -199,3 +200,9 @@ end function
 各モジュールには、`references/stdlib/List.md` や `references/stdlib/IO.Console.md` のように、`references/stdlib/<Module>.md` という名前のファイルがある。`references/stdlib/index.md` からのリンクを辿る。
 
 （訳注）この訳のある参照の文書: [idioms.md](references/idioms.md)、[inspection.md](references/inspection.md)、[common-mistakes.md](references/common-mistakes.md)、[language-comparison.md](references/language-comparison.md)。生成の文書（[grammar.md](../../../crates/benitoite/skill/references/grammar.md)、[diagnostics.md](../../../crates/benitoite/skill/references/diagnostics.md)、[stdlib/index.md](../../../crates/benitoite/skill/references/stdlib/index.md)）は訳さないので、英語の原文を参照する。
+
+純粋な JSON の変換には Benitoite.Unofficial.Json.Codec を取り込む。基本型とコンテナの関数は Result[..., Codec.ConversionError] を返す。Integer と Float の種類は厳密に区別し、有限でない Float は拒否する。List と Map は最初の添字かキーの失敗で止まる。ConversionError は、外側から内側へ Field/Index/Key の経路を持つ。Show は経路と種類を報告し、入力値を自動では表示しない。codec には Fail は不要である。アプリケーションの境界で Failure.fromResult を明示的に選ぶ。
+
+純粋な性質の試行には Benitoite.Unofficial.Test.Property を取り込み、通常の @test 一つから `Property.check(config: ..., gen: ..., shrinker: ..., property: ...)` を呼ぶ。性質は Result[Unit, String] を返し、すべてのコールバックは純粋である。実行時の停止と中断はそのまま伝播する。Error を照合し、`Property.formatFailure(failure: ..., show: ...)` をテストの String のエラーとして返す。show の型は `function(value: T) -> String` である。test --check はコールバックを実行しない。Config は明示的な seed と、両端を含む予算 trials 1〜10000、size 0〜10000、maxShrinks 0〜100000 を使う。不正な設定ではコールバックを呼ばない。Integer の生成は両端を含み、Float の生成は有限値に限る。入れ子のコンテナの size は、資源全体の上限ではない。縮小は循環も含め、すべての候補の試行を数える。縮小後の入力が最小であるとは約束しない。再現のため config、規則の版、元と縮小後の入力と説明を残す。Gen/Shrinker のフィールドと各 API は、`references/stdlib/Test.Property.md` を参照する。
+
+ソースのリポジトリには、レコードの codec と Gen/Shrinker 関数のための開発用の derive がある（tools/derive/README.md を参照）。配布した実行ファイルと Skill だけの環境では、Codec と Property の API を使って関数を直接書く。

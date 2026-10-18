@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cargo",
+    "metadata",
+    "--manifest-path",
+    "fuzz/Cargo.toml",
+    "--offline",
+    "--locked",
+    "--format-version",
+    "1",
+    "--no-deps"
+  ],
+  "exit": 0,
+  "seconds": 0.023
+}

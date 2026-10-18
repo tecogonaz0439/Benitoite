@@ -312,20 +312,18 @@ impl<'p> Gen<'p> {
             );
             fg.returned(target, dst, Some(origin));
         } else if let ValKind::Op { op, .. } = &func.kind {
-            if !dicts.is_empty() {
-                return Err(internal("operation with dictionary arguments"));
-            }
             let index = self.operation(*op)?;
             let arity = self
                 .out
                 .op(index)
                 .ok_or_else(|| internal("unknown operation"))?
                 .arity;
-            if usize::from(arity) != args.len() {
+            if usize::from(arity) != dicts.len().saturating_add(args.len()) {
                 return Err(internal("wrong operation arity"));
             }
-            let base = fg.alloc_block(count(args.len())?);
-            self.vals(fg, args, base, future)?;
+            let base = fg.alloc_block(count(dicts.len().saturating_add(args.len()))?);
+            self.dicts(fg, dicts, base)?;
+            self.vals(fg, args, base.saturating_add(count(dicts.len())?), future)?;
             let dst = fg.result(target);
             fg.emit(
                 Instr::abc(Opcode::Perform, r16(dst), r16(index.0), r16(base)),
@@ -1445,9 +1443,10 @@ impl<'p> Gen<'p> {
                 .ok_or_else(|| internal("missing operation"))?;
             let name = format!("{}{}>", text::CASE_PREFIX, info.name);
             let params: Vec<Key> = cl
-                .params
+                .dict_params
                 .iter()
-                .map(|p| Key::Var(p.id))
+                .map(|p| Key::Var(p.var))
+                .chain(cl.params.iter().map(|p| Key::Var(p.id)))
                 .chain(std::iter::once(Key::Var(cl.cont.id)))
                 .collect();
             let index = self.body_proto(

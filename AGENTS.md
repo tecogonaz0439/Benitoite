@@ -44,19 +44,22 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `docs/archive/` | 過去の文書の保管場所。最小実行版の設計書の写し（`2026-09-27-design-initial/`）と、最小実行版の実装プランと実装の結果（`2026-09-27-implement-initial/`）。初回リリース版の設計書の写し（`2026-10-09-design-first-release/`。ADR の `decisions/`、未決事項の一覧の `open-issues.md`、資料の `sources/` を含む）と、初回リリース版の実装プランと検討資料（`2026-10-09-implement-first-release/`）。終えた改造のディレクトリ | 読み取り専用。過去の文書や処理系の作成・改造の経緯を調べるときだけ読む。現在の作業の根拠にしない。設計書の章からリンクしない（`docs/todo/` の項目が出どころとしてリンクするのはよい） |
 | `docs/reference/` | 利用者向けの英語の文書。初回リリース版の言語リファレンス（`benitoite.md`）と導入の手順（`install.md`）、最小実行版の言語リファレンス（`benitoite-minimal.md`） | `benitoite.md` のコードの例は `crates/benitoite/tests/reference_examples.rs` が検査する |
 | `docs/ja/` | 日本語の訳。言語リファレンス・導入の手順（`reference/`）と、同梱の Agent Skill の `SKILL.md` と手で書く参照の文書（`skill/`）の訳。設計者が読むためのもので、英語の版を正とする | 英語の版を変えたら、リリースのときに訳し直す。Skill のディレクトリに含めない |
+| `docs/workflow/` | 共通の実装依頼文（`implementation-request.md`）と改造の実装プランの雛形（`change-plan-template.md`） | 改造のディレクトリへ写し、作業・基準・検査を具体化して使う。`check.sh`・07-03 と同じ変更で保守する。`docs/todo/` へリンクしない |
 | `crates/benitoite/` | 処理系のクレート（lib と bin）。`src/`（ソース）、`tests/`（統合テストとゴールデンテストの実行器）、`testdata/`（ゴールデンテスト）、`examples/`（開発用の例） | モジュールの構成は、初回リリース版の実装プランの `docs/archive/2026-10-09-implement-first-release/00-common/00-01-repository-layout.md` |
 | `crates/benitoite/skill/` | 同梱の Agent Skill（`SKILL.md` と `references/`）。実行ファイルに埋め込む（06-06「Agent Skills 対応」） | `references/` の文法・診断・標準ライブラリの文書は生成物であり、手で直さず `cargo run -p benitoite --example gen_skill` で作り直す。構文の章・標準ライブラリのソース・診断の表を変えたら、同じ変更で作り直す |
 | `tools/syntax-measure/` | 構文の案ごとに、LLM が書いたスクリプトの構文の誤りの率を測る道具（Python。構文の測定の第一段階。続きは docs/todo の TODO-017）。生の記録はリポジトリの外に置く | 使い方は `tools/syntax-measure/README.md`。LLM を呼ぶ測定は設計者の了承を得てから行う |
 | `tools/skill-eval/` | 同梱の Agent Skill を、約 10 の課題とハーネス（Claude Code・Codex CLI・OpenCode）で評価する道具（Python。06-06「Skill の評価」。構文の測定の第二段階にも使う）。記録は `results/`、生の記録はリポジトリの外に置く | 使い方は `tools/skill-eval/README.md`、手順はスキル `skill-eval`。LLM を呼ぶ評価は設計者の了承を得てから行う |
 | `tools/spec-coverage/` | ゴールデンテストが言語仕様のどの節を確かめているかを集計する道具（Python） | |
 | `tools/named-arguments-migrate/` | 名前付き引数・関数型・ラムダ名の移行候補を抽出し、manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。使い方は同ディレクトリの `README.md` |
+| `tools/derive/` | レコードの JSON 変換と Property の生成器・縮小器を通常の関数として生成し、管理領域と生成記録を照合する開発用の道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。先に `derive_inventory` の example をビルドする。使い方は同ディレクトリの `README.md` |
 | `tools/source-migrate/` | ソースの移行に共通するホスト抽出・元の UTF-8 バイト位置・ハッシュ・編集範囲・diff・再適用の検証（Python） | 候補の意味と承認は各移行器が判断する。使い方と自己検査は同ディレクトリの `README.md` |
 | `tools/try-actions-migrate/` | try の AST から処置の移行候補を抽出し、役割の分類・manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。die の契約変更、生成断片、検査入力は自動承認しない。使い方と自己検査は同ディレクトリの `README.md` |
 | `tools/bench/` | ベンチマークと測定の道具、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
 | `assets/brand/` | ロゴ・アイコン・ワードマークの画像（SVG と PNG）と、作り直す道具（`make_logos.py`）。キャラクターの案 A・B・C の画像は `mascots/`。将来の Web サイトや README に貼るためのもの（`reference/Benitoite-brand/` と `reference/benitoite-mascots/` からの写し。色と書体は `README.md`、キャラクターの案は `mascots/README-ja.txt`） | 画像を手で直さず、`make_logos.py` で作り直す |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |
-| `formal/` | 形式検証の段階 2 の Lean 4 のプロジェクト。コア計算（`docs/design/01-spec/01-12-core-calculus.md`）の形式化した規則と、形式化した範囲の脱糖の規則と網羅性の判定の手順の正。進行と保存・エフェクトの健全性・脱糖の型の保存（性質 1）・網羅性の判定と表層の検査の関数の健全性の定理（`docs/design/07-quality/07-04-formal-semantics.md`） | `formal/` で `lake build` を実行する（`scripts/check.sh` は `formal/` を変えたときだけ選ぶ）。形式化した規則を変えるときは、Lean の定義と 01-12 の写しを同じ変更で直し（判断の理由は改造のディレクトリと 01-12 に書く）、`lake build` が `sorry` なしで通ることを確かめる。構文・型の規則・脱糖を変える改造は、07-04「01-12 との対応」の決まりに従い、形式化した範囲の内側なら処理系より先に Lean の定義と性質 1 の証明を直し、範囲の外なら同節の表に「対象外」として書き足す |
-| `scripts/` | `check.sh`（完了条件の共通の検査。変更に応じて検査を選ぶ。`--full` で全体の検査）、`check-heap.sh`（nightly の Rust が要る検査と時間のかかる検査）、`check-formal.sh`（形式化の検査。`lake build` と、脱糖・網羅性の判定についての Lean と処理系の差分テスト、型検査の出力の Lean での検査）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業を取り込む前に `check.sh` を通す（選び方は 07-03「実装の規約と静的な検査」）。形式化した範囲に触れる改造（構文・型の規則・脱糖。07-04「01-12 との対応」）は、`check-formal.sh` も通す。`check.sh` は `runtime::heap` を変えたときに `check-heap.sh` も走らせる。既定の構成のライブラリのテスト（`default_lib`）は、`--only default_lib`・`--full`・`src/runtime/heap/` の変更で走らせる。全体の検査（`--full`）は、リリースの前と設計者が指示したときに行う |
+| `formal/` | 形式検証の段階 2 の Lean 4 のプロジェクト。コア計算（`docs/design/01-spec/01-12-core-calculus.md`）の形式化した規則と、形式化した範囲の脱糖の規則と網羅性の判定の手順の正。進行と保存・エフェクトの健全性・脱糖の型の保存（性質 1）・網羅性の判定と表層の検査の関数の健全性の定理（`docs/design/07-quality/07-04-formal-semantics.md`） | 形式化した規則を変えるときは、Lean の定義と 01-12 の写しを同じ変更で直し、既定の `lake build` が `sorry` なしで通ることと、定義・言明・仮定のレビューを処理系へ進む条件にする。内外の判定と Lean 先行は 07-04「01-12 との対応」に従う。`check.sh` の `formal_build` はこのビルドだけであり、Rust と Lean の接続と最終の関係状態の全比較は独立の `check-formal.sh` で実行または引用する |
+| `scripts/` | `check.sh`（`--level work\|stage\|change\|release`。指定なしは work）、`check-heap.sh`（nightly の Miri と到達可能性の比較）、`check-formal.sh`（Lean と処理系の全比較）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業末の work を一度、条件付きの stage、改造全体の change、実際の公開候補の release を計画へ割り当てる。選び方・例外・引用は 07-03「実装の規約と静的な検査」に従う。Rust の work は既定の lib 全件を含む。水準なしの `--only` と `--full` は旧集合を保つ互換指定であり、change・release の別名ではない |
+| `scripts/check/` | 検査方針の自己検査（`test_policy.py`）、長い対象等の一括実行と件数確認（`run_ignored.py`）、旧指定の固定記録（`fixtures/legacy-commands.json`） | `policy_selftest` は三つのシェルの構文も検査する。新水準の `long_only` は形式化の書き出しを除く ignored を構成ごとに一括実行し、成功0件を拒否する。`release_stack` は名前の前置きで選び、成功10件を要求する |
 | `.claude/skills/` | プロジェクト固有のスキル（`git-workflow`、`test-audit`、`benchmark`、`skill-eval`、`clean-build`、`archive-and-bundle`） | `.agents/skills/` にシンボリックリンクを置く。ビルドの生成物の片付けは `clean-build`、ソースのアーカイブとブランチの bundle は `archive-and-bundle` に従う |
 | `.claude/agents/` | 実装を担うサブエージェントの定義（`impl-medium`、`impl-low`。最小実行版の実装プランに従う担当） | オーケストレータが起動する |
 
@@ -114,7 +117,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
    - `TODO-` の後に、扱う `TODO-nnn` の番号（3 桁）を小さい順に `_` でつないだもの（例: `TODO-001_005_013_043`）。
    - 改造の内容（英小文字とハイフン）。
    例: `docs/2026-10-09-TODO-001_005_013_043-release-preparation/`。扱う TODO が多く名前が長くなるときは、ディレクトリを作る前に設計者に相談する。
-2. そのディレクトリに、改造の内容（扱う `TODO-nnn`、目的、範囲）、判断とその理由（検討した代替案を含む）、実装プランを置く。文書の分け方は改造の大きさに合わせて決める。
+2. そのディレクトリに、改造の内容（扱う `TODO-nnn`、目的、範囲）、判断とその理由（検討した代替案を含む）、実装プランを置く。文書の分け方は改造の大きさに合わせて決める。[共通依頼文](docs/workflow/implementation-request.md)と[実装プランの雛形](docs/workflow/change-plan-template.md)を写し、基準・担当・検査の割り当てを具体化して使う。
 3. 実装と並行して、または実装を終えたときに、設計の変更を `docs/design/` に反映する。設計書には、改造の後の処理系が実装している内容だけを書く（決まりは「設計書の規約」）。
 4. 改造を終えたら、`docs/todo/README.md` の決まりに従って、対応する項目を閉じる。改造の途中で見つけた後の課題は、新しい項目として `docs/todo/` に加える。
 5. 改造のディレクトリを `git mv` で `docs/archive/` へ移す。移した後は読み取り専用とし、設計書の章からリンクしない。
@@ -150,8 +153,13 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 - 処理系のテストを書く・変える・見直すときは、スキル `test-audit`（`.claude/skills/test-audit/SKILL.md`）に従う。テストの設計の原則は `docs/design/07-quality/07-03-compiler-testing.md` の「テストの設計の原則」で定める。
 - 言語仕様と付録 08-04 の例の検査は、`crates/benitoite/tests/spec_examples.rs` にある。構文の章や例を変えたら、リポジトリの根で `cargo test --test spec_examples` を実行する。
-- 検査を走らせる前に、何を走らせるかを設計者に知らせる。`scripts/check.sh --dry-run` で選ばれる検査と理由を確かめ、全体の検査（`--full`）か、長いテスト・`check-heap.sh` を含む検査になるときは、走らせる前にその旨と見込みの時間を報告する。
-- `check.sh` が、どの種類にも当たらないファイルを見つけて止まったとき（`== stop:` を示し、終了状態 3）は、当たらなかったファイルを示して、全体の検査（`--full`）・一部の検査（`--only <検査,...>`）・検査なし（`--none`）のどれにするかを設計者に尋ね、その答えのとおりに走らせる。
+- 検査方針の正は [07-03「実装の規約と静的な検査」](docs/design/07-quality/07-03-compiler-testing.md#実装の規約と静的な検査)、形式化の順序の正は [07-04「01-12 との対応」](docs/design/07-quality/07-04-formal-semantics.md#01-12-との対応)である。具体的なコマンドは改造の計画の「検査の割り当て」に集め、作業の説明や依頼文へ重ねて列挙しない。
+- 途中は関係するテストだけを直接実行し、作業末は `scripts/check.sh --level work --base <前の作業の取り込みのコミット>` を一度実行する。最初の作業の基準は計画で固定した開始版とする。Rust を変えた作業では、既定の lib 全件・関係する統合テスト・clippy・fmt をこの入口で各一度実行する。関連統合テストは `--test <名前>` を繰り返して指定し、省略時は全統合ターゲットとなる。文書だけ・シェルや Python だけ・Lean だけの作業に Rust の全 lib を追加しない。移行中で work が未実装なら計画の直接のコマンドを使う。
+- stage は新しい接続・複数作業の相互作用・共有契約の切り替えがあるときに、計画の `--only` で名指しする。change は改造全体の回帰を一度確認し、release は実際の候補と証拠、版・同梱物・生成物・移行案内・実 CLI・配布を照合する。release の自動選択は `release_stack` だけであり、終了0だけで受け入れ完了にしない。
+- ヒープの不変条件や安全点を越える値を変える作業では、compile_fail を含む文書テスト（doc_default）・局所の heap-verify・gc-stress と必要な `check-heap.sh` を、次の作業の前提にする前に通す。形式化は Lean を先行し、Rust と Lean の接続を閉じる区切りと最終の関係状態で `check-formal.sh` 全体を通す。済んだ結果の引用条件は 07-03 に従う。
+- 検査前に種類を知らせ、計画で固定した同じ基準と指定へ `--dry-run` を付けて選択と理由を確認する。長い検査・heap・全件の特殊構成を含む場合は見込み時間も知らせる。水準なしの `--only <旧検査名,...>` と `--full` は旧集合を保つ互換指定として使えるが、公開前の既定の手順は change と release の割り当てに従う。
+- 自動分類が分類不能のファイルか存在しない基準で止まったら（`== stop:`、dry-run も終了3）、該当箇所を示し、設計者に当該水準の `--level … --only`（停止までに選んだ単位を案内し、分類不能のファイルに必要な単位を補う）、互換の `--full`・水準なしの `--only`、`--none`のどれにするかを尋ね、その答えに従う。既に計画で名指しされている検査はその指定で進める。`--level` と `--only` の併用は分類せず、名指しだけを実行する。指定の誤りは終了2であり、計画の指定を直す。検査失敗・道具不在は1、選んだ検査の成功は0である。
+- 失敗の修正や関係する追加変更の後は、古くなった検査だけをやり直す。普通の作業の results.md は、基準のコミット・走らせたコマンド・終了状態・外側の時間と、計画からのずれ・申し送りだけを記す。失敗した場合は原因と修正も残す。結果を引用するときに限り、07-03「結果の保存と引用」の全欄（HEAD・差分の一覧・入力・構成・件数・元の記録・関係状態が一致する理由・判断者と日付、別の状態への引用なら未コミット差分と未追跡入力の SHA-256 も）を記す。結果は改造の `<小文字作業ID>/results.md`、段・改造・公開候補の集約は `results.md` に置き、一時的な target/ のログだけを引用元にしない。
 - 長いテスト（大きさそのもので確かめるテスト）には `#[ignore = "long: ..."]` を付ける（07-03「実装の規約と静的な検査」）。10 秒を超えるテストを加えるときは、長いテストにするかを考える。
 
 ## 性能の測定

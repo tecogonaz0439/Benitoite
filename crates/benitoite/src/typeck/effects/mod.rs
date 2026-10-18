@@ -1,5 +1,6 @@
 //! エフェクトとハンドラ、遅延・リソース・試行の検査（設計書 02-05）。
 mod declarations;
+pub(super) use declarations::duplicate_use;
 mod handle;
 mod special;
 mod tail;
@@ -117,6 +118,7 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
             };
             ctx.add(Constraint::EffSub {
                 sub: fixed(EffectSet {
+                    failures: vec![],
                     names: vec![EffectName::Builtin(effect)],
                     vars: vec![],
                 }),
@@ -152,6 +154,15 @@ fn resume_expr(ctx: &mut Body<'_, '_>, e: &ResumeExpr) -> ITy {
         ctx.diagnostics.push(d.build());
         return ITy::Error;
     };
+    if clause.failure {
+        ctx.diagnostic(
+            DiagBuilder::new(DiagCode::E0516)
+                .primary(e.span)
+                .help("result")
+                .build(),
+        );
+        return ITy::Error;
+    }
     let ty = clause.handle_ty.clone();
     ctx.add(Constraint::Flow {
         from: value,
@@ -186,6 +197,7 @@ fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
     }
     ctx.add(Constraint::EffSub {
         sub: fixed(EffectSet {
+            failures: vec![],
             names: vec![EffectName::Builtin(BuiltinEffectId::STATE)],
             vars: vec![],
         }),

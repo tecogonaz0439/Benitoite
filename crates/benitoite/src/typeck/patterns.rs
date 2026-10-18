@@ -269,7 +269,11 @@ enum Shape {
     },
     Boolean(bool),
     Unit,
-    Interval(i128, i128),
+    Interval {
+        character: bool,
+        lo: i128,
+        hi: i128,
+    },
     String(String),
     Exact(usize, Ty),
     Long {
@@ -291,7 +295,7 @@ impl Shape {
             } => vec![elem.clone(); front.saturating_add(*back)],
             Self::Boolean(_)
             | Self::Unit
-            | Self::Interval(..)
+            | Self::Interval { .. }
             | Self::String(_)
             | Self::Future(_)
             | Self::Other => {
@@ -347,7 +351,21 @@ impl Shape {
                 parts.extend(args.iter().skip(*front).cloned());
                 format!("[{}]", parts.join(", "))
             }
-            Self::Interval(_, _) | Self::String(_) | Self::Other => "_".into(),
+            Self::Interval {
+                character: true,
+                lo,
+                hi,
+            } => u32::try_from(*lo)
+                .ok()
+                .and_then(char::from_u32)
+                .filter(|_| lo <= hi)
+                .map(show_character)
+                .unwrap_or_else(|| "_".into()),
+            Self::Interval {
+                character: false, ..
+            }
+            | Self::String(_)
+            | Self::Other => "_".into(),
         }
     }
 }
@@ -397,17 +415,33 @@ fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable, view: &CoverageView) -> Opt
                 .iter()
                 .flat_map(|(a, b)| [*a, b.saturating_add(1)])
                 .collect::<Vec<_>>();
+            let character = *b == B::CHARACTER;
+            if character {
+                // 有効な値域の隙間も特殊化し、欄どうしの相関を保つ
+                // （設計書 02-05「本体の後の検査」）。
+                bounds.extend([0, 0xd800, 0xe000, 0x110000]);
+            }
             bounds.sort_unstable();
             bounds.dedup();
-            // 実際の値域をすべて覆っても、規則上は残りの値を一つ設ける（設計書 01-05「網羅性の検査」）。
-            let mut result = vec![Shape::Other];
+            let mut result = if character {
+                vec![]
+            } else {
+                vec![Shape::Other]
+            };
             for ends in bounds.windows(2) {
                 if let [a, hi_boundary] = ends {
                     let hi = hi_boundary.saturating_sub(1);
-                    if intervals.iter().any(|(lo, high)| lo <= a && hi <= *high)
-                        && !(*b == B::CHARACTER && *a >= 0xd800 && hi <= 0xdfff)
-                    {
-                        result.push(Shape::Interval(*a, hi));
+                    let include = if character {
+                        0 <= *a && *a <= hi && hi < 0x110000 && (hi < 0xd800 || 0xe000 <= *a)
+                    } else {
+                        intervals.iter().any(|(lo, high)| lo <= a && hi <= *high)
+                    };
+                    if include {
+                        result.push(Shape::Interval {
+                            character,
+                            lo: *a,
+                            hi,
+                        });
                     }
                 }
             }
@@ -474,7 +508,9 @@ fn specialize(p: &Pat, shape: &Shape) -> Option<Vec<Pat>> {
         }
         (Pat::Boolean(a), Shape::Boolean(b)) if a == b => Some(vec![]),
         (Pat::Unit, Shape::Unit) => Some(vec![]),
-        (p, Shape::Interval(lo, hi)) if interval(p).is_some_and(|(a, b)| a <= *lo && *hi <= b) => {
+        (p, Shape::Interval { lo, hi, .. })
+            if interval(p).is_some_and(|(a, b)| a <= *lo && *hi <= b) =>
+        {
             Some(vec![])
         }
         (Pat::String(a), Shape::String(b)) if a == b => Some(vec![]),
@@ -781,6 +817,18 @@ fn next_branch(
         };
     Ok(Step::Done(search.finish(branches.key, result)))
 }
+fn show_character(c: char) -> String {
+    let body = match c {
+        '\n' => "\\n".into(),
+        '\r' => "\\r".into(),
+        '\t' => "\\t".into(),
+        '\\' => "\\\\".into(),
+        '\'' => "\\'".into(),
+        ' '..='~' => c.to_string(),
+        _ => format!("\\u{{{:x}}}", u32::from(c)),
+    };
+    format!("'{body}'")
+}
 fn show_pattern(p: &Pat, adts: &AdtTable) -> String {
     match p {
         Pat::Ctor { adt, tag, args } => Shape::Ctor {
@@ -812,12 +860,8 @@ fn show_pattern(p: &Pat, adts: &AdtTable) -> String {
             parts.extend(after.iter().map(|p| show_pattern(p, adts)));
             format!("[{}]", parts.join(", "))
         }
-        Pat::Wild
-        | Pat::Integer(_)
-        | Pat::Character(_)
-        | Pat::String(_)
-        | Pat::IntegerRange(..)
-        | Pat::CharacterRange(..) => "_".into(),
+        Pat::Character(c) | Pat::CharacterRange(c, _) => show_character(*c),
+        Pat::Wild | Pat::Integer(_) | Pat::String(_) | Pat::IntegerRange(..) => "_".into(),
     }
 }
 fn overlaps(
@@ -1042,7 +1086,7 @@ mod tests {
             (
                 builtin(B::CHARACTER),
                 vec![arm(Pat::CharacterRange('\0', '\u{10ffff}'))],
-                vec![missing("_")],
+                vec![],
             ),
             (
                 builtin(B::STRING),
@@ -1072,6 +1116,82 @@ mod tests {
             .is_some()
         );
     }
+    // 文字全域の有用性と実在する反例を、公開の判定 API で確かめる。
+    #[test]
+    fn character_domain_partition_and_witnesses() {
+        let table = AdtTable::default();
+        let ty = builtin(B::CHARACTER);
+        let full = Pat::CharacterRange('\0', '\u{10ffff}');
+        for (arms, expected) in [
+            (vec![arm(full.clone())], vec![]),
+            (
+                vec![
+                    arm(Pat::CharacterRange('\0', '\u{d7ff}')),
+                    arm(Pat::CharacterRange('\u{e000}', '\u{10ffff}')),
+                ],
+                vec![],
+            ),
+            (
+                vec![
+                    arm(Pat::Character('\0')),
+                    arm(Pat::CharacterRange('\u{1}', '\u{10ffff}')),
+                ],
+                vec![],
+            ),
+            (
+                vec![arm(full.clone()), arm(Pat::Wild)],
+                vec![unreachable(1, 0, &[0])],
+            ),
+            (
+                vec![ArmPats {
+                    alts: vec![full.clone(), Pat::Character('a')],
+                    guarded: false,
+                }],
+                vec![unreachable(0, 1, &[])],
+            ),
+            (
+                vec![ArmPats {
+                    alts: vec![full.clone()],
+                    guarded: true,
+                }],
+                vec![missing("_")],
+            ),
+        ] {
+            assert_eq!(checked_issues(&ty, &arms, &table), expected);
+        }
+        assert!(
+            check_binding(&ty, &full, &table, &CoverageView::new())
+                .unwrap()
+                .witness
+                .is_none()
+        );
+        for (c, shown) in [
+            ('\0', "'\\u{0}'"),
+            ('a', "'a'"),
+            ('\n', "'\\n'"),
+            ('\r', "'\\r'"),
+            ('\t', "'\\t'"),
+            ('\\', "'\\\\'"),
+            ('\'', "'\\''"),
+            ('\u{e000}', "'\\u{e000}'"),
+            ('\u{10ffff}', "'\\u{10ffff}'"),
+        ] {
+            let n = u32::from(c);
+            let mut arms = vec![];
+            if let Some(lo) = n
+                .checked_sub(1)
+                .and_then(char::from_u32)
+                .or_else(|| (n == 0xe000).then_some('\u{d7ff}'))
+            {
+                arms.push(arm(Pat::CharacterRange('\0', lo)));
+            }
+            if let Some(hi) = n.checked_add(1).and_then(char::from_u32) {
+                arms.push(arm(Pat::CharacterRange(hi, '\u{10ffff}')));
+            }
+            assert_eq!(checked_issues(&ty, &arms, &table), vec![missing(shown)]);
+        }
+    }
+
     #[test]
     fn intervals_choose_single_cover_before_minimal_joint_cover() {
         let table = AdtTable::default();
@@ -1161,7 +1281,7 @@ mod tests {
                 ],
                 &table
             ),
-            vec![unreachable(2, 0, &[0, 1])]
+            vec![unreachable(2, 0, &[0, 1]), unreachable(3, 0, &[2])]
         );
     }
     #[test]

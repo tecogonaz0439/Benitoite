@@ -180,7 +180,7 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
               exact .E_Super hv'
       | app f ws =>
           obtain ⟨_, _, _, _, hf, _⟩ := hm.inv_app rfl
-          rcases hf.canonical_fn with ⟨names, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩
+          rcases hf.canonical_fn_or_raise with ⟨names, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩ | ⟨T, E, rfl⟩
           · simp only [step] at h
             split at h
             · rename_i e; simp only [Option.some.injEq, Prod.mk.injEq] at h
@@ -269,6 +269,20 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
                 obtain ⟨rfl, rfl⟩ := h; exact .E_Op (splitHandler_some e1) e2 hfr
               · simp at h
             · simp at h
+          · obtain ⟨names, as, r, e, hf, hargs, _, _⟩ := hm.inv_app rfl
+            obtain ⟨_, _, hl⟩ := hf.inv_raise rfl
+            obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl
+            rw [← hps] at hargs
+            cases hargs with
+            | cons hv tail =>
+                cases tail
+                simp only [step] at h
+                split at h
+                · rename_i k1 E' body k2 hs
+                  simp only [Option.some.injEq, Prod.mk.injEq] at h
+                  obtain ⟨rfl, rfl⟩ := h
+                  exact .E_OpFail (splitHandler_some hs) hfr
+                · simp at h
       | ite v m n =>
           obtain ⟨_, _, hv, _⟩ := hm.inv_ite rfl
           obtain ⟨bb, rfl⟩ := hv.canonical_boolean

@@ -1,0 +1,1456 @@
+[
+  {
+    "source": "target/coverage-diff/run-26715/report.json",
+    "sha256": "46b2a40fed6a1e0777ad08d2c66b1a49cceecf66921a951a25d3ff8b2cadf856",
+    "total": 10020,
+    "matched": 9133,
+    "mismatched": 887,
+    "fuelExhausted": 0,
+    "differentFields": {
+      "uncovered": 356,
+      "irrefutableWitness": 781,
+      "unreachable": 27,
+      "irrefutable": 14,
+      "exhaustive": 22
+    },
+    "examples": [
+      {
+        "report": {
+          "name": "golden/character",
+          "leanIrrefutableWitness": "'\\u{0}'",
+          "leanIrrefutable": false,
+          "lean": {
+            "unreachable": [],
+            "uncovered": "'\\u{0}'",
+            "exhaustive": false
+          },
+          "fuel": {
+            "overlaps": 0,
+            "matchChecks": 0,
+            "irrefutable": 0,
+            "coveringSingletons": 0,
+            "coveringPrefixes": 0
+          },
+          "extraUnreachable": [],
+          "expectedIrrefutableWitness": "_",
+          "expectedIrrefutable": false,
+          "expected": {
+            "unreachable": [],
+            "uncovered": "_",
+            "exhaustive": false
+          },
+          "classification": "mismatched",
+          "changedCoveredBy": []
+        },
+        "input": {
+          "ty": {
+            "kind": "character",
+            "args": []
+          },
+          "pattern": {
+            "value": 97,
+            "kind": "character"
+          },
+          "package": "author",
+          "name": "golden/character",
+          "irrefutableWitness": "_",
+          "irrefutable": false,
+          "expected": {
+            "unreachable": [],
+            "uncovered": "_",
+            "exhaustive": false
+          },
+          "decls": [
+            {
+              "typeName": "Option",
+              "package": "stdlib",
+              "ntys": 1,
+              "name": "d0",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d0c0",
+                  "constructorName": "None",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d0c1",
+                  "constructorName": "Some",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "option"
+            },
+            {
+              "typeName": "Tree",
+              "package": "author",
+              "ntys": 1,
+              "name": "d1",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d1c0",
+                  "constructorName": "Leaf",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d1c1",
+                  "constructorName": "Node",
+                  "args": [
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Toggle",
+              "package": "author",
+              "ntys": 0,
+              "name": "d2",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d2c0",
+                  "constructorName": "On",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d2c1",
+                  "constructorName": "Off",
+                  "args": []
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Pair",
+              "package": "author",
+              "ntys": 2,
+              "name": "d3",
+              "isRecord": true,
+              "fields": [
+                "first",
+                "last"
+              ],
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d3c0",
+                  "constructorName": "Pair",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "kind": "param",
+                      "index": 1
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Choice",
+              "package": "author",
+              "ntys": 1,
+              "name": "d4",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d4c0",
+                  "constructorName": "Empty",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d4c1",
+                  "constructorName": "Many",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d3",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        },
+                        {
+                          "kind": "unit",
+                          "args": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "d3",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        },
+                        {
+                          "kind": "unit",
+                          "args": []
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": 2,
+                  "name": "d4c2",
+                  "constructorName": "Choice",
+                  "args": [
+                    {
+                      "name": "d0",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d3",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        },
+                        {
+                          "kind": "unit",
+                          "args": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Box",
+              "package": "author",
+              "ntys": 1,
+              "name": "d5",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d5c0",
+                  "constructorName": "Box",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            }
+          ],
+          "coverageView": [],
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "value": 97,
+                  "kind": "character"
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "value": 98,
+                  "kind": "character"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "report": {
+          "name": "boundary/surrogate",
+          "leanIrrefutableWitness": null,
+          "leanIrrefutable": true,
+          "lean": {
+            "unreachable": [
+              {
+                "coveredBy": [
+                  0,
+                  1
+                ],
+                "arm": 2,
+                "alt": 0
+              },
+              {
+                "coveredBy": [
+                  2
+                ],
+                "arm": 3,
+                "alt": 0
+              }
+            ],
+            "uncovered": null,
+            "exhaustive": true
+          },
+          "fuel": {
+            "overlaps": 0,
+            "matchChecks": 0,
+            "irrefutable": 0,
+            "coveringSingletons": 0,
+            "coveringPrefixes": 0
+          },
+          "extraUnreachable": [
+            {
+              "coveredBy": [
+                2
+              ],
+              "arm": 3,
+              "alt": 0
+            }
+          ],
+          "expectedIrrefutableWitness": "_",
+          "expectedIrrefutable": false,
+          "expected": {
+            "unreachable": [
+              {
+                "coveredBy": [
+                  0,
+                  1
+                ],
+                "arm": 2,
+                "alt": 0
+              }
+            ],
+            "uncovered": null,
+            "exhaustive": true
+          },
+          "classification": "mismatched",
+          "changedCoveredBy": []
+        },
+        "input": {
+          "ty": {
+            "kind": "character",
+            "args": []
+          },
+          "pattern": {
+            "lo": 0,
+            "kind": "characterRange",
+            "hi": 1114111
+          },
+          "package": "author",
+          "name": "boundary/surrogate",
+          "irrefutableWitness": "_",
+          "irrefutable": false,
+          "expected": {
+            "unreachable": [
+              {
+                "coveredBy": [
+                  0,
+                  1
+                ],
+                "arm": 2,
+                "alt": 0
+              }
+            ],
+            "uncovered": null,
+            "exhaustive": true
+          },
+          "decls": [
+            {
+              "typeName": "Option",
+              "package": "stdlib",
+              "ntys": 1,
+              "name": "d0",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d0c0",
+                  "constructorName": "None",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d0c1",
+                  "constructorName": "Some",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "option"
+            },
+            {
+              "typeName": "Tree",
+              "package": "author",
+              "ntys": 1,
+              "name": "d1",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d1c0",
+                  "constructorName": "Leaf",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d1c1",
+                  "constructorName": "Node",
+                  "args": [
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Toggle",
+              "package": "author",
+              "ntys": 0,
+              "name": "d2",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d2c0",
+                  "constructorName": "On",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d2c1",
+                  "constructorName": "Off",
+                  "args": []
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Pair",
+              "package": "author",
+              "ntys": 2,
+              "name": "d3",
+              "isRecord": true,
+              "fields": [
+                "first",
+                "last"
+              ],
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d3c0",
+                  "constructorName": "Pair",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "kind": "param",
+                      "index": 1
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Choice",
+              "package": "author",
+              "ntys": 1,
+              "name": "d4",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d4c0",
+                  "constructorName": "Empty",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d4c1",
+                  "constructorName": "Many",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d3",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        },
+                        {
+                          "kind": "unit",
+                          "args": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "d3",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        },
+                        {
+                          "kind": "unit",
+                          "args": []
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": 2,
+                  "name": "d4c2",
+                  "constructorName": "Choice",
+                  "args": [
+                    {
+                      "name": "d0",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d3",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        },
+                        {
+                          "kind": "unit",
+                          "args": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Box",
+              "package": "author",
+              "ntys": 1,
+              "name": "d5",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d5c0",
+                  "constructorName": "Box",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            }
+          ],
+          "coverageView": [],
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "lo": 0,
+                  "kind": "characterRange",
+                  "hi": 55295
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "lo": 57344,
+                  "kind": "characterRange",
+                  "hi": 1114111
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "lo": 0,
+                  "kind": "characterRange",
+                  "hi": 1114111
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "kind": "wild"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "source": "target/coverage-diff/run-26715/future-report.json",
+    "sha256": "8029373d49ec9bf1f32524652acf0529489d59d79629b512de0ece403cb9ab25",
+    "total": 10028,
+    "matched": 9142,
+    "mismatched": 886,
+    "fuelExhausted": 0,
+    "differentFields": {
+      "uncovered": 356,
+      "irrefutableWitness": 779,
+      "unreachable": 26,
+      "exhaustive": 22,
+      "irrefutable": 13
+    },
+    "examples": [
+      {
+        "report": {
+          "name": "future/random/2",
+          "leanIrrefutableWitness": null,
+          "leanIrrefutable": true,
+          "lean": {
+            "unreachable": [
+              {
+                "coveredBy": [
+                  0
+                ],
+                "arm": 1,
+                "alt": 1
+              }
+            ],
+            "uncovered": "'\\u{e001}'",
+            "exhaustive": false
+          },
+          "fuel": {
+            "overlaps": 0,
+            "matchChecks": 0,
+            "irrefutable": 0,
+            "coveringSingletons": 0,
+            "coveringPrefixes": 0
+          },
+          "extraUnreachable": [],
+          "expectedIrrefutableWitness": null,
+          "expectedIrrefutable": true,
+          "expected": {
+            "unreachable": [
+              {
+                "coveredBy": [
+                  0
+                ],
+                "arm": 1,
+                "alt": 1
+              }
+            ],
+            "uncovered": "_",
+            "exhaustive": false
+          },
+          "classification": "mismatched",
+          "changedCoveredBy": []
+        },
+        "input": {
+          "ty": {
+            "kind": "character",
+            "args": []
+          },
+          "pattern": {
+            "kind": "wild"
+          },
+          "package": "consumer",
+          "name": "future/random/2",
+          "irrefutableWitness": null,
+          "irrefutable": true,
+          "expected": {
+            "unreachable": [
+              {
+                "coveredBy": [
+                  0
+                ],
+                "arm": 1,
+                "alt": 1
+              }
+            ],
+            "uncovered": "_",
+            "exhaustive": false
+          },
+          "decls": [
+            {
+              "typeName": "Option",
+              "package": "stdlib",
+              "ntys": 1,
+              "name": "d0",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d0c0",
+                  "constructorName": "None",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d0c1",
+                  "constructorName": "Some",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "option"
+            },
+            {
+              "typeName": "Tree",
+              "package": "author",
+              "ntys": 1,
+              "name": "d1",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d1c0",
+                  "constructorName": "Leaf",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d1c1",
+                  "constructorName": "Node",
+                  "args": [
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Toggle",
+              "package": "author",
+              "ntys": 0,
+              "name": "d2",
+              "isRecord": false,
+              "fields": null,
+              "extensible": true,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d2c0",
+                  "constructorName": "On",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d2c1",
+                  "constructorName": "Off",
+                  "args": []
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Pair",
+              "package": "author",
+              "ntys": 2,
+              "name": "d3",
+              "isRecord": true,
+              "fields": [
+                "first",
+                "last"
+              ],
+              "extensible": true,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d3c0",
+                  "constructorName": "Pair",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "kind": "param",
+                      "index": 1
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Choice",
+              "package": "author",
+              "ntys": 1,
+              "name": "d4",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d4c0",
+                  "constructorName": "Empty",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d4c1",
+                  "constructorName": "Many",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "kind": "list",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": 2,
+                  "name": "d4c2",
+                  "constructorName": "Choice",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Box",
+              "package": "author",
+              "ntys": 1,
+              "name": "d5",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d5c0",
+                  "constructorName": "Box",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            }
+          ],
+          "coverageView": [
+            "d2",
+            "d3"
+          ],
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "lo": 122,
+                  "kind": "characterRange",
+                  "hi": 55295
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "lo": 0,
+                  "kind": "characterRange",
+                  "hi": 57344
+                },
+                {
+                  "value": 55295,
+                  "kind": "character"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "report": {
+          "name": "future/random/4",
+          "leanIrrefutableWitness": "Pair(first: (), last: '\\u{0}')",
+          "leanIrrefutable": false,
+          "lean": {
+            "unreachable": [
+              {
+                "coveredBy": [],
+                "arm": 1,
+                "alt": 1
+              },
+              {
+                "coveredBy": [],
+                "arm": 1,
+                "alt": 2
+              }
+            ],
+            "uncovered": null,
+            "exhaustive": true
+          },
+          "fuel": {
+            "overlaps": 0,
+            "matchChecks": 0,
+            "irrefutable": 0,
+            "coveringSingletons": 0,
+            "coveringPrefixes": 0
+          },
+          "extraUnreachable": [],
+          "expectedIrrefutableWitness": "Pair(first: (), last: _)",
+          "expectedIrrefutable": false,
+          "expected": {
+            "unreachable": [
+              {
+                "coveredBy": [],
+                "arm": 1,
+                "alt": 1
+              },
+              {
+                "coveredBy": [],
+                "arm": 1,
+                "alt": 2
+              }
+            ],
+            "uncovered": null,
+            "exhaustive": true
+          },
+          "classification": "mismatched",
+          "changedCoveredBy": []
+        },
+        "input": {
+          "ty": {
+            "name": "d3",
+            "kind": "data",
+            "args": [
+              {
+                "kind": "unit",
+                "args": []
+              },
+              {
+                "kind": "character",
+                "args": []
+              }
+            ]
+          },
+          "pattern": {
+            "name": "d3c0",
+            "kind": "con",
+            "args": [
+              {
+                "kind": "unit"
+              },
+              {
+                "lo": 122,
+                "kind": "characterRange",
+                "hi": 57344
+              }
+            ]
+          },
+          "package": "consumer",
+          "name": "future/random/4",
+          "irrefutableWitness": "Pair(first: (), last: _)",
+          "irrefutable": false,
+          "expected": {
+            "unreachable": [
+              {
+                "coveredBy": [],
+                "arm": 1,
+                "alt": 1
+              },
+              {
+                "coveredBy": [],
+                "arm": 1,
+                "alt": 2
+              }
+            ],
+            "uncovered": null,
+            "exhaustive": true
+          },
+          "decls": [
+            {
+              "typeName": "Option",
+              "package": "stdlib",
+              "ntys": 1,
+              "name": "d0",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d0c0",
+                  "constructorName": "None",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d0c1",
+                  "constructorName": "Some",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "option"
+            },
+            {
+              "typeName": "Tree",
+              "package": "author",
+              "ntys": 1,
+              "name": "d1",
+              "isRecord": false,
+              "fields": null,
+              "extensible": true,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d1c0",
+                  "constructorName": "Leaf",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d1c1",
+                  "constructorName": "Node",
+                  "args": [
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "name": "d1",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Toggle",
+              "package": "author",
+              "ntys": 0,
+              "name": "d2",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d2c0",
+                  "constructorName": "On",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d2c1",
+                  "constructorName": "Off",
+                  "args": []
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Pair",
+              "package": "author",
+              "ntys": 2,
+              "name": "d3",
+              "isRecord": true,
+              "fields": [
+                "first",
+                "last"
+              ],
+              "extensible": true,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d3c0",
+                  "constructorName": "Pair",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    },
+                    {
+                      "kind": "param",
+                      "index": 1
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Choice",
+              "package": "author",
+              "ntys": 1,
+              "name": "d4",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d4c0",
+                  "constructorName": "Empty",
+                  "args": []
+                },
+                {
+                  "tag": 1,
+                  "name": "d4c1",
+                  "constructorName": "Many",
+                  "args": [
+                    {
+                      "kind": "boolean",
+                      "args": []
+                    },
+                    {
+                      "name": "d0",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "d0",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": 2,
+                  "name": "d4c2",
+                  "constructorName": "Choice",
+                  "args": [
+                    {
+                      "name": "d0",
+                      "kind": "data",
+                      "args": [
+                        {
+                          "kind": "param",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            },
+            {
+              "typeName": "Box",
+              "package": "author",
+              "ntys": 1,
+              "name": "d5",
+              "isRecord": false,
+              "fields": null,
+              "extensible": false,
+              "ctors": [
+                {
+                  "tag": 0,
+                  "name": "d5c0",
+                  "constructorName": "Box",
+                  "args": [
+                    {
+                      "kind": "param",
+                      "index": 0
+                    }
+                  ]
+                }
+              ],
+              "builtin": "ordinary"
+            }
+          ],
+          "coverageView": [
+            "d1",
+            "d3"
+          ],
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "name": "d3c0",
+                  "kind": "con",
+                  "args": [
+                    {
+                      "kind": "unit"
+                    },
+                    {
+                      "lo": 1114111,
+                      "kind": "characterRange",
+                      "hi": 1114111
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "kind": "wild"
+                },
+                {
+                  "name": "d3c0",
+                  "kind": "con",
+                  "args": [
+                    {
+                      "kind": "unit"
+                    },
+                    {
+                      "lo": 0,
+                      "kind": "characterRange",
+                      "hi": 57344
+                    }
+                  ]
+                },
+                {
+                  "name": "d3c0",
+                  "kind": "con",
+                  "args": [
+                    {
+                      "kind": "unit"
+                    },
+                    {
+                      "kind": "wild"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

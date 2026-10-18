@@ -713,3 +713,31 @@ fn width_constant_collections_reach_reference_builtin_calls() {
 
 #[path = "exit_report_tests.rs"]
 mod exit_report_tests;
+
+#[test]
+fn operation_dictionaries_are_passed_and_captured_by_clause_lambdas() {
+    ok(
+        &format!(
+            "{CONSOLE}{}",
+            r#"
+import Benitoite.Trait
+effect Render
+ function render[T: Trait.Show](value: T) -> String
+end effect
+function main() -> Unit uses Console.Write
+ bind text <- handle
+  render([42, 7]) + render("ok")
+ with
+ case render(value) ->
+  bind show <- lambda() return Trait.Show.show(value) end lambda
+  bind suffix <- String.repeat(s: "!", n: 3)
+  bind rest <- resume(show())
+  rest + suffix
+ end handle
+ Console.writeLine(text)
+end function
+"#
+        ),
+        "[42, 7]\"ok\"!!!!!!\n",
+    );
+}

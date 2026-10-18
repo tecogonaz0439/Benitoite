@@ -6,6 +6,8 @@ import Benitoite.Release.Lemmas.Preservation
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {Q : NoFailCtx}
+
 variable {view : CoverageView}
 
 variable {p : Program} {B : Builtins} {op : OpPrim}
@@ -51,42 +53,45 @@ theorem implSig_desugared {i id} (hd : p.declarations.impls i = some id) :
 
 mutual
   theorem DictEv.HasType.toVal (op : OpPrim) {C Γ d a} (h : DictEv.HasType (p.declarationsFor view) B C Γ d a) :
-      HasTypeV (desugarProgram op p) B StoreTy.empty C Γ d.toVal a := by
+      HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C Γ d.toVal a := by
     match h with
     | .impl hd ht hs =>
         obtain ⟨dd, hd', ht', _, hc', hτ', hds'⟩ := implSig_desugared (op := op) hd
         rw [← ht'] at ht
         have hs' := DictEv.HasTypes.toVal op hs
         rw [← hds'] at hs'
-        simpa only [hc', hτ', DictEv.toVal] using HasTypeV.V_Dict hd' ht hs'
+        simpa only [hc', hτ', DictEv.toVal] using HasTypeVQ.V_Dict hd' ht hs'
     | .local hi => exact .V_Var hi (by intro _ _ _ he; cases he)
+    | .clause _ _ hi => exact .V_Var hi (by intro _ _ _ he; cases he)
     | .super hd hc hs => exact .V_Super (DictEv.HasType.toVal op hd) (classDecl_desugared hc) hs
 
   theorem DictEv.HasTypes.toVal (op : OpPrim) {C Γ ds as} (h : DictEv.HasTypes (p.declarationsFor view) B C Γ ds as) :
-      HasTypeVs (desugarProgram op p) B StoreTy.empty C Γ (DictEv.toValList ds) as := by
+      HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C Γ (DictEv.toValList ds) as := by
     match h with
     | .nil => exact .nil
     | .cons h hs => exact .cons (DictEv.HasType.toVal op h) (DictEv.HasTypes.toVal op hs)
 end
 
 /-- E_Sub の連鎖を外し、E_FunDicts の前提と結果型の包含を取り出す。 -/
-theorem HasType.inv_funDicts {D B op C Γ R pos f ts es ds names ps T ε}
-    (h : HasType D B op C Γ R pos (.funDicts f ts es ds names ps) T ε) :
+theorem HasTypeQ.inv_funDicts {D B op C Γ R pos f ts es ds names ps T ε}
+    (h : HasTypeQ D B op Q C Γ R pos (.funDicts f ts es ds names ps) T ε) :
     ∃ d, D.funs f = some d ∧ NamesWF d.names d.params ∧
       NamesWF d.coreNames (d.dictTys ++ d.params) ∧ SatAll B C ts d.tparams ∧ es.length = d.neffs ∧
       d.dictParams ≠ [] ∧ names = d.names ∧ ps = d.params.map (Ty.subst ts es) ∧
       DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) ∧
+      Admissible B C d.tparams d.neffs (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff ∧
       Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by
   generalize he : Expr.funDicts f ts es ds names ps = e at h
   generalize hT : T = a at h
   subst T
   revert he
-  apply HasType.rec (motive_1 := fun C Γ _ _ e a _ _ =>
+  apply HasTypeQ.rec (motive_1 := fun C Γ _ _ e a _ _ =>
     Expr.funDicts f ts es ds names ps = e →
     ∃ d, D.funs f = some d ∧ NamesWF d.names d.params ∧
       NamesWF d.coreNames (d.dictTys ++ d.params) ∧ SatAll B C ts d.tparams ∧ es.length = d.neffs ∧
       d.dictParams ≠ [] ∧ names = d.names ∧ ps = d.params.map (Ty.subst ts es) ∧
       DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) ∧
+      Admissible B C d.tparams d.neffs (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff ∧
       Ty.Le (fnTy d.names d.params d.ret d.eff ts es) a)
     (motive_2 := fun _ _ _ _ _ _ _ => True)
     (motive_3 := fun _ _ _ _ _ _ _ => True)
@@ -96,37 +101,32 @@ theorem HasType.inv_funDicts {D B op C Γ R pos f ts es ds names ps T ε}
     (motive_7 := fun _ _ _ _ _ _ _ _ => True) (t := h)
   all_goals intros
   all_goals first | exact True.intro | (rename_i he; cases he)
-  · exact ⟨_, by assumption, by assumption, by assumption, by assumption,
-      by assumption, by assumption, by assumption, by assumption, by assumption, .refl _⟩
+  · exact ⟨_, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, .refl _⟩
   · rename_i ih
-    obtain ⟨d, hd, hnames, hcore, ht, he, hn, hns, hp, hds, hle⟩ := ih rfl
-    exact ⟨d, hd, hnames, hcore, ht, he, hn, hns, hp, hds, hle.trans (by assumption)⟩
+    obtain ⟨d, hd, hnames, hcore, ht, he, hn, hns, hp, hds, ha, hle⟩ := ih rfl
+    exact ⟨d, hd, hnames, hcore, ht, he, hn, hns, hp, hds, ha, hle.trans (by assumption)⟩
 
-/-- E_Sub の連鎖を外し、E_MethName の辞書の分割を保持する。 -/
-theorem HasType.inv_methName {D B op C Γ R pos d m ss es us names ps T ε}
-    (h : HasType D B op C Γ R pos (.methName d m ss es us names ps) T ε) :
-    ∃ cl τ cd ms, DictEv.HasType D B C Γ d (.dict cl τ) ∧
-      D.classes cl = some cd ∧ cd.methods m = some ms ∧ NamesWF ms.names ms.params ∧
-      names = ms.names.drop us.length ∧ SatAll B C ss ms.tparams ∧
-      es.length = ms.neffs ∧
-      DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) ∧
-      ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length ∧
-      (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) ∧
-      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substRho es ms.eff)) T := by
-  generalize he : Expr.methName d m ss es us names ps = e at h
+/-- 操作の辞書と公開引数の分割を、型の包含を越えて保持する。 -/
+theorem HasTypeQ.inv_opDicts {D B op C Γ R pos o ts ds names ps T ε}
+    (h : HasTypeQ D B op Q C Γ R pos (.opDicts o ts ds names ps) T ε) :
+    ∃ d, D.ops o = some d ∧ NamesWF d.names d.params ∧
+      SatAll B C ts d.tparams ∧ d.params = d.dictTys ++ d.valueParams ∧
+      d.names = internalNames ds.length ++ d.valueNames ∧ names = d.valueNames ∧
+      ps = d.valueParams.map (Ty.subst ts []) ∧
+      DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) ∧
+      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) T := by
+  generalize he : Expr.opDicts o ts ds names ps = e at h
   generalize hT : T = a at h
   subst T
   revert he
-  apply HasType.rec (motive_1 := fun C Γ _ _ e a _ _ =>
-    Expr.methName d m ss es us names ps = e →
-    ∃ cl τ cd ms, DictEv.HasType D B C Γ d (.dict cl τ) ∧
-      D.classes cl = some cd ∧ cd.methods m = some ms ∧ NamesWF ms.names ms.params ∧
-      names = ms.names.drop us.length ∧ SatAll B C ss ms.tparams ∧
-      es.length = ms.neffs ∧
-      DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) ∧
-      ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length ∧
-      (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) ∧
-      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substRho es ms.eff)) a)
+  apply HasTypeQ.rec (motive_1 := fun C Γ _ _ e a _ _ =>
+    Expr.opDicts o ts ds names ps = e →
+    ∃ d, D.ops o = some d ∧ NamesWF d.names d.params ∧
+      SatAll B C ts d.tparams ∧ d.params = d.dictTys ++ d.valueParams ∧
+      d.names = internalNames ds.length ++ d.valueNames ∧ names = d.valueNames ∧
+      ps = d.valueParams.map (Ty.subst ts []) ∧
+      DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) ∧
+      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) a)
     (motive_2 := fun _ _ _ _ _ _ _ => True)
     (motive_3 := fun _ _ _ _ _ _ _ => True)
     (motive_4 := fun _ _ _ _ _ _ _ => True)
@@ -135,44 +135,95 @@ theorem HasType.inv_methName {D B op C Γ R pos d m ss es us names ps T ε}
     (motive_7 := fun _ _ _ _ _ _ _ _ => True) (t := h)
   all_goals intros
   all_goals first | exact True.intro | (rename_i he; cases he)
-  · exact ⟨_, _, _, _, by assumption, by assumption, by assumption, by assumption,
-      by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, .refl _⟩
+  · exact ⟨_, by assumption, by assumption, by assumption, by assumption,
+      by assumption, by assumption, by assumption, by assumption, .refl _⟩
   · rename_i ih
-    obtain ⟨cl, τ, cd, ms, hd, hc, hm, hnames, hns, ht, he, hu, hp, hn, hle⟩ := ih rfl
-    exact ⟨cl, τ, cd, ms, hd, hc, hm, hnames, hns, ht, he, hu, hp, hn, hle.trans (by assumption)⟩
+    obtain ⟨d, hd, hn, ht, hpre, hnames, hns, hp, hds, hle⟩ := ih rfl
+    exact ⟨d, hd, hn, ht, hpre, hnames, hns, hp, hds, hle.trans (by assumption)⟩
+
+/-- E_Sub の連鎖を外し、E_MethName の辞書の分割を保持する。 -/
+theorem HasTypeQ.inv_methName {D B op C Γ R pos d m ss es us names ps T ε}
+    (h : HasTypeQ D B op Q C Γ R pos (.methName d m ss es us names ps) T ε) :
+    ∃ cl τ cd ms, DictEv.HasType D B C Γ d (.dict cl τ) ∧
+      D.classes cl = some cd ∧ cd.methods m = some ms ∧ NamesWF ms.names ms.params ∧
+      names = ms.names.drop us.length ∧ SatAll B C ss ms.tparams ∧
+      es.length = ms.neffs ∧
+      DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) ∧
+      ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length ∧
+      (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) ∧
+      (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
+      MethodRowsAdmissible C Q ms es ∧
+      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) T := by
+  generalize he : Expr.methName d m ss es us names ps = e at h
+  generalize hT : T = a at h
+  subst T
+  revert he
+  apply HasTypeQ.rec (motive_1 := fun C Γ _ _ e a _ _ =>
+    Expr.methName d m ss es us names ps = e →
+    ∃ cl τ cd ms, DictEv.HasType D B C Γ d (.dict cl τ) ∧
+      D.classes cl = some cd ∧ cd.methods m = some ms ∧ NamesWF ms.names ms.params ∧
+      names = ms.names.drop us.length ∧ SatAll B C ss ms.tparams ∧
+      es.length = ms.neffs ∧
+      DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) ∧
+      ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length ∧
+      (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) ∧
+      (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
+      MethodRowsAdmissible C Q ms es ∧
+      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) a)
+    (motive_2 := fun _ _ _ _ _ _ _ => True)
+    (motive_3 := fun _ _ _ _ _ _ _ => True)
+    (motive_4 := fun _ _ _ _ _ _ _ => True)
+    (motive_5 := fun _ _ _ _ _ _ _ _ _ => True)
+    (motive_6 := fun _ _ _ _ _ _ _ => True)
+    (motive_7 := fun _ _ _ _ _ _ _ _ => True) (t := h)
+  all_goals intros
+  all_goals first | exact True.intro | (rename_i he; cases he)
+  · exact ⟨_, _, _, _, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, by assumption, .refl _⟩
+  · rename_i ih
+    obtain ⟨cl, τ, cd, ms, hd, hc, hm, hnames, hns, ht, he, hu, hp, hn, hscope, hrows, hle⟩ := ih rfl
+    exact ⟨cl, τ, cd, ms, hd, hc, hm, hnames, hns, ht, he, hu, hp, hn, hscope, hrows, hle.trans (by assumption)⟩
 
 /-- 辞書付きの頭は表層の導出を逆転する。閉じた名前は return の逆転を使う。
 計算側の許容エフェクトは、sequence が広げた後でもよい。頭の呼び出しの型は変わらない。 -/
 theorem directCallee_typed {C Γ R pos e h names as a ε εcall εdesugar}
     (hd : directCallee e = some h)
-    (hs : HasType (p.declarationsFor view) B op C Γ R pos e (.fn names as a εcall) ε)
-    (hc : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R
+    (hs : HasTypeQ (p.declarationsFor view) B op Q C Γ R pos e (.fn names as a εcall) ε)
+    (hc : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
       (desugarExpr op pos e) (.fn names as a εcall) εdesugar) :
-    CallHead.HasType (desugarProgram op p) B C Γ h names as a εcall := by
+    CallHead.HasTypeQ (desugarProgram op p) B Q C Γ h names as a εcall := by
   cases e <;> simp [directCallee] at hd
   all_goals cases hd
   case funDicts f ts es ds ns ps =>
-    obtain ⟨d, hf, _, hcore, ht, he, _, _, _, hds, hle⟩ := hs.inv_funDicts
+    obtain ⟨d, hf, _, hcore, ht, he, _, _, _, hds, ha, hle⟩ := hs.inv_funDicts
     rw [fnTy_eq] at hle
     obtain ⟨hn, hp, hr, hε⟩ := Ty.Le.fn_fn' hle
     obtain ⟨dd, hd, ht', he', hn', hp', hr', hε'⟩ := funDecl_desugared (op := op) hf
-    have hv := HasTypeV.V_Fun (Ψ := StoreTy.empty) (Γ := Γ) hd
+    have hv := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Γ := Γ) hd
       (by simpa only [hn', hp'] using hcore)
-      (by simpa only [ht'] using ht) (by simpa only [he'] using he)
+      (by simpa only [ht', he', hp', hr', hε'] using ha)
     rw [fnTy_eq, hn', FunDecl.coreNames, hp', List.map_append, hr', hε', hn, hp, hr] at hv
-    have hus := DictEv.HasTypes.toVal op hds
+    have hus := DictEv.HasTypes.toVal (Q := Q) op hds
     rw [d.dictTys_substEff ts es] at hus
-    exact (CallHead.HasType.app hv hus).weakenEff hε
+    exact CallHead.HasTypeQ.app hv hus hε
+  case opDicts o ts ds ns ps =>
+    obtain ⟨d, hd, hn, ht, hpre, hnames, hns, hp, hds, hle⟩ := hs.inv_opDicts
+    rw [fnTy_eq] at hle
+    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle
+    subst names as a
+    have hv := HasTypeVQ.V_Op (P := desugarProgram op p) (B := B)
+      (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) hd hn ht
+    rw [fnTy_eq, hpre, hnames, List.map_append, ← hp, ← hns] at hv
+    rw [hns, hp] at hv
+    exact .app hv (DictEv.HasTypes.toVal op hds) hε
   case methName d m ss es us ns ps =>
-    obtain ⟨cl, τ, cd, ms, hd, hcl, hm, hnames, hns, ht, he, hu, hp, _, hle⟩ := hs.inv_methName
+    obtain ⟨cl, τ, cd, ms, hd, hcl, hm, hnames, hns, ht, he, hu, hp, _, hscope, hrows, hle⟩ := hs.inv_methName
     obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle
     subst names as a
     rw [hns]
-    have hh := CallHead.HasType.meth (as := ps) (DictEv.HasType.toVal op hd) (classDecl_desugared hcl) hm hnames ht he
-      (DictEv.HasTypes.toVal op hu) (by rw [hp, List.take_append_drop]) hε
+    have hh := CallHead.HasTypeQ.meth (as := ps) (DictEv.HasType.toVal (Q := Q) op hd) (classDecl_desugared hcl) hm hnames ht hscope hrows
+      (DictEv.HasTypes.toVal (Q := Q) op hu) (by rw [hp, List.take_append_drop]) hε
     simpa only [DictEv.toValList_length] using hh
   all_goals
-    obtain ⟨t, hv, hle⟩ := hc.inv_ret rfl
-    exact CallHead.HasType.app (dnames := []) (dtys := []) (.V_Sub hv hle) .nil
+    exact CallHead.HasTypeQ.app (dnames := []) (dtys := []) (hc.ret_value rfl) .nil (Eff.Sub.refl _)
 
 end Benitoite.Surface

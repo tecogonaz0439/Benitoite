@@ -1,0 +1,1730 @@
+diff --git a/formal/Benitoite/Surface/Check.lean b/formal/Benitoite/Surface/Check.lean
+index 82963336..bd1d551d 100644
+--- a/formal/Benitoite/Surface/Check.lean
++++ b/formal/Benitoite/Surface/Check.lean
+@@ -1,5 +1,4 @@
+ import Benitoite.Surface.CheckSupport
+-import Benitoite.Surface.LegacyInput
+ 
+ /-! 表層の型・エフェクトを構造的な再帰で計算する検査。
+ 経路は外側から子の番号を積み、番号は 0 から数える。
+@@ -55,14 +54,14 @@ def guardResult (path : List Nat) (inputOK : Bool) (x : Result α) : Result α :
+   if inputOK then x else throw ⟨path, "unsupported typed failure in checked input"⟩
+ 
+ def accept (q : Input) (n : Nat) (path : List Nat) (expected : Ty) (actual : Inferred) : Result Eff := do
+-  require path "type is not included in the expected type" (cleanTy n expected && tyLe q.atoms actual.1 expected)
++  require path "type is not included in the expected type" (cleanTy q.atoms n expected && tyLe q.atoms actual.1 expected)
+   pure actual.2
+ 
+ def acceptEff (q : Input) (path : List Nat) (expected actual : Eff) : Result Unit :=
+   require path "effect exceeds the allowed effect" (effSub q.atoms actual expected)
+ 
+ def join (q : Input) (n : Nat) (path : List Nat) (a b : Ty) : Result Ty :=
+-  lookup path "branch types have no join" (tyJoin q.atoms a b) (cleanTy n)
++  lookup path "branch types have no join" (tyJoin q.atoms a b) (cleanTy q.atoms n)
+ 
+ def fnView (path : List Nat) : Ty → Result (List String × List Ty × Ty × Eff)
+   | .fn names ps r ε => pure (names, ps, r, ε)
+@@ -74,8 +73,8 @@ def dictView (path : List Nat) : Ty → Result (ClassName × Ty)
+ 
+ def union (q : Input) (a b : Eff) : Eff := unionEff q.atoms a b
+ 
+-def substParams (ts : List Ty) (es : List Eff) (ps : List Ty) : List Ty :=
+-  substTysAt 0 ts es ps
++def substParams (atoms : List Atom) (ts : List Ty) (es : List Eff) (ps : List Ty) : List Ty :=
++  substTysAt atoms 0 ts es ps
+ 
+ def fieldTypes (ps : List Ty) (positions : List Nat) : List Ty :=
+   positions.map fun i => (ps[i]?).getD (.base .unit)
+@@ -91,17 +90,17 @@ def fixedEffects (q : Input) (path : List Nat) (step : Eff → Result Eff) : Nat
+ mutual
+   def checkDict (q : Input) (C : List TParam) (Γ : List (Option Ty))
+       (path : List Nat) (d : DictEv) : Result Ty :=
+-    guardResult path (d.isLegacy && Γ.all (fun o => o.all Ty.isLegacy)) <| match d with
++    guardResult path true <| match d with
+     | .local j => do
+-        let a ← lookup path "dictionary local is missing or hidden" ((Γ[j]?).join) Ty.isLegacy
++        let a ← lookup path "dictionary local is missing or hidden" ((Γ[j]?).join) (fun _ => true)
+         let _ ← dictView path a
+         pure a
+     | .impl i ts ds => do
+         let id ← lookup path "unknown dictionary implementation" (q.D.impls i)
+-          (fun id => Ty.areLegacy ts && id.target.isLegacy)
++          (fun _ => true)
+         require path "implementation type arguments fail constraints" (satAll q.satDec C ts id.tparams)
+-        checkDictsAt q C Γ (child path 0) 0 ds (substParams ts [] id.dictTys)
+-        pure (.dict id.cls (substTy ts [] id.target))
++        checkDictsAt q C Γ (child path 0) 0 ds (substParams q.atoms ts [] id.dictTys)
++        pure (.dict id.cls (substTy q.atoms ts [] id.target))
+     | .super d s => do
+         let (cl, t) ← dictView (child path 0) (← checkDict q C Γ (child path 0) d)
+         let cd ← lookup path "unknown dictionary class" (q.D.classes cl)
+@@ -120,7 +119,7 @@ end
+ 
+ def checkDicts (q : Input) (C : List TParam) (Γ : List (Option Ty))
+     (path : List Nat) (ds : List DictEv) (ts : List Ty) : Result Unit :=
+-  guardResult path (DictEvs.areLegacy ds && Ty.areLegacy ts && Γ.all (fun o => o.all Ty.isLegacy))
++  guardResult path true
+     (checkDictsAt q C Γ path 0 ds ts)
+ 
+ /-- 表示の対象型と、解決済みメソッドの純粋な String の契約を別々に検査する。 -/
+@@ -139,14 +138,14 @@ def checkDieShow (q : Input) (C : List TParam) (Γ : List (Option Ty))
+ def checkDieExit (q : Input) (C : List TParam) (path : List Nat)
+     (exit : PrimName) (t : Ty) : Result Unit := do
+   let s ← lookup path "unknown die exit primitive" (q.B.sig exit)
+-    (fun sg => sigLegacy sg.params sg.ret sg.eff [t] [])
++    (fun _ => true)
+   require path "invalid die exit primitive"
+     (decide (s.kind = .exit) && (s.opEff == some "Process.Exit") &&
+       (s.ntys == 1) && (s.neffs == 0) && namesWF s.names s.params)
+   require path "die exit type arguments are not admitted" (q.admitsDec exit C [t])
+   require path "Process.Exit effect is outside atoms" (q.atoms.contains (.name "Process.Exit"))
+   require path "die exit type mismatch"
+-    (tyEq q.atoms (fnTyCheck s.names s.params s.ret s.eff [t] [])
++    (tyEq q.atoms (fnTyCheck q.atoms s.names s.params s.ret s.eff [t] [])
+       (.fn ["code"] [.base .integer] t (singleEff q.atoms (.name "Process.Exit"))))
+ 
+ /-- 継続の番号は Γ の末尾から数えた束縛の位置 Γ.length - (k + 1)。
+@@ -178,14 +177,10 @@ def fixedEffectsR (q : Input) (path : List Nat) (step : Eff → Checking Eff) :
+       let ε' := union q ε next
+       if effEq q.atoms ε ε' then pure ε else fixedEffectsR q path step n ε'
+ 
+-/-- R15の間は、計算した型と効果にもFailがないことを確認する。 -/
++/-- 元の計算をそのまま検査し、注釈と結果の型は書き換えない。 -/
+ def guardInferred (path : List Nat) (x : Checking Inferred)
+     (inputOK : Bool := true) : Checking Inferred :=
+-  if !inputOK then throw ⟨path, "unsupported typed failure in input annotations or environment"⟩ else do
+-  let result ← x
+-  require path "unsupported typed failure in inferred type or effect"
+-    (result.1.isLegacy && Eff.isLegacy result.2)
+-  pure result
++  if inputOK then x else throw ⟨path, "invalid input annotations or environment"⟩
+ 
+ mutual
+   def checkExprR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+@@ -201,67 +196,67 @@ mutual
+         pure (a, emptyEff)
+     | .funName f ts es => do
+         let d ← lookup path "unknown function" (q.D.funs f)
+-          (fun d => sigLegacy d.params d.ret d.eff ts es)
++          (fun _ => true)
+         require path "function contract names are not well formed" (namesWF d.names d.params)
+         require path "function core names are not well formed" (namesWF d.coreNames (d.dictTys ++ d.params))
+         require path "function type arguments fail constraints" (satAll q.satDec C ts d.tparams)
+         require path "function effect argument count mismatch" (es.length == d.neffs)
+         require path "function needs dictionaries" d.dictParams.isEmpty
+-        pure (fnTyCheck d.names d.params d.ret d.eff ts es, emptyEff)
++        pure (fnTyCheck q.atoms d.names d.params d.ret d.eff ts es, emptyEff)
+     | .funDicts f ts es ds names ps => do
+         let d ← lookup path "unknown function" (q.D.funs f)
+-          (fun d => sigLegacy d.params d.ret d.eff ts es)
++          (fun _ => true)
+         require path "function contract names are not well formed" (namesWF d.names d.params)
+         require path "function core names are not well formed" (namesWF d.coreNames (d.dictTys ++ d.params))
+         require path "function type arguments fail constraints" (satAll q.satDec C ts d.tparams)
+         require path "function effect argument count mismatch" (es.length == d.neffs)
+         require path "function does not take dictionaries" (nonemptyList d.dictParams)
+         require path "function contract annotation mismatch" (names == d.names)
+-        require path "function parameter annotation mismatch" (tysEq q.atoms ps (substParams ts es d.params))
+-        checkDicts q C Γ (child path 0) ds (substParams ts [] d.dictTys)
+-        pure (fnTyCheck d.names d.params d.ret d.eff ts es, emptyEff)
++        require path "function parameter annotation mismatch" (tysEq q.atoms ps (substParams q.atoms ts es d.params))
++        checkDicts q C Γ (child path 0) ds (substParams q.atoms ts [] d.dictTys)
++        pure (fnTyCheck q.atoms d.names d.params d.ret d.eff ts es, emptyEff)
+     | .methName d m ts es ds names ps => do
+         let (cl, τ) ← dictView (child path 0) (← checkDict q C Γ (child path 0) d)
+         let cd ← lookup path "unknown class" (q.D.classes cl)
+         let ms ← lookup path "unknown method" (cd.methods m)
+-          (fun ms => sigLegacy ms.params ms.ret ms.eff (ts ++ [τ]) es)
++          (fun _ => true)
+         require path "method contract names are not well formed" (namesWF ms.names ms.params)
+         require path "method contract annotation mismatch" (names == ms.names.drop ds.length)
+         require path "method type arguments fail constraints" (satAll q.satDec C ts ms.tparams)
+         require path "method effect argument count mismatch" (es.length == ms.neffs)
+-        let params := substParams (ts ++ [τ]) es ms.params
++        let params := substParams q.atoms (ts ++ [τ]) es ms.params
+         checkDicts q C Γ (child path 1) ds (params.take ds.length)
+         require path "method parameter annotation mismatch" (tysEq q.atoms ps (params.drop ds.length))
+         require path "method still has dictionary parameters" (headNotDict ps)
+-        pure (.fn names ps (substTy (ts ++ [τ]) es ms.ret) (substEffAt 0 (ts ++ [τ]) es ms.eff), emptyEff)
++        pure (.fn names ps (substTy q.atoms (ts ++ [τ]) es ms.ret) (substEffAt q.atoms 0 (ts ++ [τ]) es ms.eff), emptyEff)
+     | .primName b ts es => do
+         let s ← lookup path "unknown primitive" (q.B.sig b)
+-          (fun sg => sigLegacy sg.params sg.ret sg.eff ts es)
++          (fun _ => true)
+         require path "primitive contract names are not well formed" (namesWF s.names s.params)
+         require path "primitive type argument count mismatch" (ts.length == s.ntys)
+         require path "primitive effect argument count mismatch" (es.length == s.neffs)
+         require path "primitive type arguments are not admitted" (q.admitsDec b C ts)
+-        pure (fnTyCheck s.names s.params s.ret s.eff ts es, emptyEff)
++        pure (fnTyCheck q.atoms s.names s.params s.ret s.eff ts es, emptyEff)
+     | .opName o ts => do
+         let od ← lookup path "unknown operation" (q.D.ops o)
+-          (fun od => sigLegacy od.params od.ret (Eff.single od.eff) ts [])
++          (fun _ => true)
+         require path "operation contract names are not well formed" (namesWF od.names od.params)
+         require path "operation type arguments fail constraints" (satAll q.satDec C ts od.tparams)
+         require path "operation effect is outside atoms" (q.atoms.contains (.name od.eff))
+-        pure (fnTyCheck od.names od.params od.ret (singleEff q.atoms (.name od.eff)) ts [], emptyEff)
++        pure (fnTyCheck q.atoms od.names od.params od.ret (singleEff q.atoms (.name od.eff)) ts [], emptyEff)
+     | .nullCon c ts => do
+         let cd ← lookup path "unknown constructor" (q.D.cons c)
+-          (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++          (fun _ => true)
+         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
+         require path "constructor takes arguments" cd.args.isEmpty
+         pure (.data cd.data ts, emptyEff)
+     | .conValue c ts names ps => do
+         let cd ← lookup path "unknown constructor" (q.D.cons c)
+-          (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++          (fun _ => true)
+         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
+         require path "constructor contract annotation mismatch" (names == q.D.constructorNames c cd)
+         require path "constructor contract names are not well formed" (namesWF names ps)
+-        require path "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams ts [] cd.args))
++        require path "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams q.atoms ts [] cd.args))
+         require path "nullary constructor is not a function" (nonemptyList ps)
+         pure (.fn names ps (.data cd.data ts) emptyEff, emptyEff)
+     | .literal l => pure (l.toConst.type, emptyEff)
+@@ -276,20 +271,20 @@ mutual
+     | .paren e => checkExprR q mode C Γ R p (child path 0) e
+     | .conCall c ts args => do
+         let cd ← lookup path "unknown constructor" (q.D.cons c)
+-          (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++          (fun _ => true)
+         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
+-        let ε ← checkTypesR q mode C Γ R (child path 0) 0 args (substParams ts [] cd.args)
++        let ε ← checkTypesR q mode C Γ R (child path 0) 0 args (substParams q.atoms ts [] cd.args)
+         pure (.data cd.data ts, ε)
+     | .record c ts positions args => do
+         let cd ← lookup path "unknown record constructor" (q.D.cons c)
+-          (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++          (fun _ => true)
+         require path "record type argument count mismatch" (ts.length == cd.ntys)
+         require path "record fields are not a permutation" (natPerm positions (List.range cd.args.length))
+-        let ε ← checkTypesR q mode C Γ R (child path 0) 0 args (fieldTypes (substParams ts [] cd.args) positions)
++        let ε ← checkTypesR q mode C Γ R (child path 0) 0 args (fieldTypes (substParams q.atoms ts [] cd.args) positions)
+         pure (.data cd.data ts, ε)
+     | .recordUpdate c ts n positions base args => do
+         let cd ← lookup path "unknown record constructor" (q.D.cons c)
+-          (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++          (fun _ => true)
+         require path "record type argument count mismatch" (ts.length == cd.ntys)
+         require path "record field count mismatch" (n == cd.args.length)
+         require path "record update is empty" (nonemptyList positions)
+@@ -297,7 +292,7 @@ mutual
+         require path "record field is outside the record" (positionsInRange positions n)
+         let a := Ty.data cd.data ts
+         let εb ← accept q C.length (child path 0) a (← checkExprR q mode C Γ R .other (child path 0) base)
+-        let εa ← checkTypesR q mode C Γ R (child path 1) 0 args (fieldTypes (substParams ts [] cd.args) positions)
++        let εa ← checkTypesR q mode C Γ R (child path 1) 0 args (fieldTypes (substParams q.atoms ts [] cd.args) positions)
+         require path "record update pattern is not exhaustive"
+           (recordUpdateExhaustive q.D q.ctors cd ts c n positions)
+         pure (a, union q εb εa)
+@@ -319,20 +314,20 @@ mutual
+             pure (r, union q εl (union q εf (union q εargs εcall)))
+         | .conCall c ts args => do
+             let cd ← lookup (child path 1) "unknown pipe constructor" (q.D.cons c)
+-              (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++              (fun _ => true)
+             require (child path 1) "constructor type argument count mismatch" (ts.length == cd.ntys)
+-            let ps := substParams ts [] cd.args
++            let ps := substParams q.atoms ts [] cd.args
+             let t ← lookup (child path 1) "pipe constructor has no first parameter" ps.head?
+             let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
+             let εargs ← checkTypesR q mode C Γ R (child (child path 1) 0) 0 args ps.tail
+             pure (.data cd.data ts, union q εl εargs)
+         | .conValue c ts names ps => do
+             let cd ← lookup (child path 1) "unknown pipe constructor" (q.D.cons c)
+-              (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++              (fun _ => true)
+             require (child path 1) "constructor type argument count mismatch" (ts.length == cd.ntys)
+             require (child path 1) "constructor contract annotation mismatch" (names == q.D.constructorNames c cd)
+             require (child path 1) "constructor contract names are not well formed" (namesWF names ps)
+-            require (child path 1) "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams ts [] cd.args))
++            require (child path 1) "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams q.atoms ts [] cd.args))
+             require (child path 1) "bare pipe constructor must be unary" (ps.length == 1)
+             let t ← lookup (child path 1) "pipe constructor has no parameter" ps.head?
+             let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
+@@ -360,7 +355,7 @@ mutual
+         pure (.fn (args.holeNames names) args.holeTypes r ε, emptyEff)
+     | .partialCon c ts args => do
+         let cd ← lookup path "unknown partial constructor" (q.D.cons c)
+-          (fun cd => Ty.areLegacy ts && Ty.areLegacy cd.args)
++          (fun _ => true)
+         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
+         require path "partial constructor has no holes" (nonemptyList args.holeTypes)
+         require path "partial constructor labels or positions are invalid" (constructorHolesOk args cd.args.length)
+@@ -368,17 +363,18 @@ mutual
+         let names := args.holeNames (positionalNames args.positions.length)
+         require path "partial constructor hole names are not well formed" (namesWF names args.holeTypes)
+         let r := Ty.data cd.data ts
+-        let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 0) 0 args (substParams ts [] cd.args)
+-        pure (.fn names args.holeTypes r εargs, emptyEff)
++        let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 0) 0 args (substParams q.atoms ts [] cd.args)
++        require path "partial constructor effect is not well formed" (cleanTys q.atoms C.length εargs.fails)
++        pure (.fn names args.holeTypes r (Eff.normWith q.atoms εargs), emptyEff)
+     | .binary o t lhs rhs => do
+         require path "binary operator type is not allowed" ((Operator.binary o).allowed t)
+         let (b, ts) ← lookup path "operator has no primitive" (q.opPrim (.binary o) t)
+         let s ← lookup path "unknown operator primitive" (q.B.sig b)
+-          (fun sg => sigLegacy sg.params sg.ret sg.eff ts [])
++          (fun _ => true)
+         require path "operator type argument count mismatch" (ts.length == s.ntys)
+         require path "operator takes effect arguments" (s.neffs == 0)
+         require path "operator type arguments are not admitted" (q.admitsDec b C ts)
+-        let (names, ps, r, ε) ← fnView path (fnTyCheck s.names s.params s.ret s.eff ts [])
++        let (names, ps, r, ε) ← fnView path (fnTyCheck q.atoms s.names s.params s.ret s.eff ts [])
+         require path "binary operator parameter names mismatch" (names == ["left", "right"])
+         require path "binary operator parameter types mismatch" (tysEq q.atoms ps [t, t])
+         acceptEff q path emptyEff ε
+@@ -390,12 +386,12 @@ mutual
+         let (b, ts) ← lookup path "negation has no primitive" (q.opPrim .neg t)
+         require path "negation has type arguments" ts.isEmpty
+         let s ← lookup path "unknown negation primitive" (q.B.sig b)
+-          (fun sg => sigLegacy sg.params sg.ret sg.eff ts [])
++          (fun _ => true)
+         require path "negation type argument count mismatch" (ts.length == s.ntys)
+         require path "negation takes effect arguments" (s.neffs == 0)
+         require path "negation type arguments are not admitted" (q.admitsDec b C ts)
+         require path "negation primitive type mismatch"
+-          (tyEq q.atoms (fnTyCheck s.names s.params s.ret s.eff ts []) (.fn ["value"] [t] t emptyEff))
++          (tyEq q.atoms (fnTyCheck q.atoms s.names s.params s.ret s.eff ts []) (.fn ["value"] [t] t emptyEff))
+         let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
+         pure (t, ε)
+     | .not e => do
+@@ -406,11 +402,11 @@ mutual
+         let εr ← accept q C.length (child path 1) (.base .boolean) (← checkExprR q mode C Γ R p (child path 1) rhs)
+         pure (.base .boolean, union q εl εr)
+     | .list a es => do
+-        require path "list element type is not well formed" (wfTy C.length a)
++        require path "list element type is not well formed" (wfTy q.atoms C.length a)
+         let ε ← checkEachR q mode C Γ R (child path 0) 0 es a
+         pure (.list a, ε)
+     | .listSpread a f before spread after => do
+-        require path "list element type is not well formed" (wfTy C.length a)
++        require path "list element type is not well formed" (wfTy q.atoms C.length a)
+         require (child path 0) "list concatenation is not a direct callee" (isDirect f)
+         let εf ← accept q C.length (child path 0) (.fn ["xs", "ys"] [.list a, .list a] (.list a) emptyEff)
+           (← checkExprR q mode C Γ R .other (child path 0) f)
+@@ -465,7 +461,7 @@ mutual
+             let ε ← accept q C.length (child path 0) r (← checkExprR q mode C Γ (some r) .tail (child path 0) e)
+             pure (r, ε)
+         | .other =>
+-            require path "return annotation is not well formed" (wfTy C.length a)
++            require path "return annotation is not well formed" (wfTy q.atoms C.length a)
+             let ε ← accept q C.length (child path 0) r (← checkExprR q mode C Γ (some r) .other (child path 0) e)
+             pure (a, ε)
+     | .tryResult retArgs ok err e => do
+@@ -563,7 +559,7 @@ mutual
+         modify fun st => { st with strictConts := keys ++ saved }
+         let _ ← checkClausesR q mode C Γ R (child path 1) cs t ε
+         modify fun st => { st with strictConts := saved }
+-        require (child path 0) "handler body result type mismatch" (cleanTy C.length t && tyLe q.atoms t0 t)
++        require (child path 0) "handler body result type mismatch" (cleanTy q.atoms C.length t && tyLe q.atoms t0 t)
+         acceptEff q (child path 0) (union q ε h) εbody
+         pure (t, ε)
+     | .resume k e => do
+@@ -577,7 +573,7 @@ mutual
+             else
+               modify fun st => { st with requests := (key, εarg) :: st.requests }
+             pure (t, ε)
+-        | _ => throw ⟨path, "resume local is not a continuation"⟩) (e.isLegacy && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++        | _ => throw ⟨path, "resume local is not a continuation"⟩) true
+ 
+   def checkBlockR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+       (R : Option Ty) (p : Position) (path : List Nat) (body : Block) : Checking Inferred :=
+@@ -605,17 +601,17 @@ mutual
+         pure (a, union q ε εs)
+     | .lastPat _ pat t e => do
+         require path "binding pattern is trivial or invalid" (nontrivial pat && patternValid pat)
+-        let _ ← lookup path "binding pattern type mismatch" (surfacePatTy q.D pat t)
++        let _ ← lookup path "binding pattern type mismatch" (surfacePatTy q.atoms q.D pat t)
+         require path "binding pattern is not exhaustive" (bindingExhaustive q.D q.ctors t pat)
+         let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
+         pure (.base .unit, ε)
+     | .bindPat _ pat t e rest => do
+         require path "binding pattern is trivial or invalid" (nontrivial pat && patternValid pat)
+-        let δ ← lookup path "binding pattern type mismatch" (surfacePatTy q.D pat t)
++        let δ ← lookup path "binding pattern type mismatch" (surfacePatTy q.atoms q.D pat t)
+         require path "binding pattern is not exhaustive" (bindingExhaustive q.D q.ctors t pat)
+         let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
+         let (a, εs) ← checkBlockR q mode C (binds δ ++ Γ) R p (child path 1) rest
+-        pure (a, union q ε εs)) (body.isLegacy && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++        pure (a, union q ε εs)) true
+ 
+   /-- 説明は外側の return と継続を隠す。内側の lambda は通常の境界を作る。 -/
+   def checkDieMessageR (q : Input) (mode : ResumeMode) (C : List TParam)
+@@ -651,14 +647,14 @@ mutual
+         let εs ← checkHoleArgsR q mode C Γ R path (index + 1) args as
+         pure (union q ε εs)
+     | .hole _ _ t args, a :: as => do
+-        require (child path index) "hole annotation type mismatch" (cleanTy C.length a && tyLe q.atoms t a)
++        require (child path index) "hole annotation type mismatch" (cleanTy q.atoms C.length a && tyLe q.atoms t a)
+         checkHoleArgsR q mode C Γ R path (index + 1) args as
+     | _, _ => throw ⟨path, "hole argument count mismatch"⟩
+ 
+   def checkArmsR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+       (R : Option Ty) (p : Position) (path : List Nat) : Arms → Ty → Ty → Checking Eff
+     | .nil, _, b => do
+-        require path "match result type is not well formed" (wfTy C.length b)
++        require path "match result type is not well formed" (wfTy q.atoms C.length b)
+         pure emptyEff
+     | .cons alts guard body rest, a, b => do
+         require path "match alternative is invalid" (alternativesValid alts)
+@@ -680,20 +676,22 @@ mutual
+     | .nil, _, _ => pure emptyEff
+     | .cons o n ntys body rest, t, ε => do
+         let sg ← lookup path "unknown handler operation" (opSig q.D.patternProgram q.B o)
+-          (fun sg => clauseLegacy sg t ε Γ R)
++          (fun _ => wfTys q.atoms C.length ε.fails)
+         require path "handler operation names are not well formed" (namesWF sg.names sg.params)
+         require path "handler operation arity mismatch" (n == sg.params.length)
+         require path "handler operation type parameter count mismatch" (ntys == sg.tparams.length)
+-        let result := shiftTy ntys 0 t
+-        let env := some (.cont sg.ret result (shiftEff ntys 0 ε)) ::
+-          (binds sg.params ++ Γ.map (Option.map (shiftTy ntys 0)))
++        let result := shiftTy q.atoms ntys 0 t
++        let env := some (.cont sg.ret result (shiftEff q.atoms ntys 0 ε)) ::
++          (binds sg.params ++ Γ.map (Option.map (shiftTy q.atoms ntys 0)))
+         let εb ← accept q (sg.tparams ++ C).length (child path 0) result
+-          (← checkBlockR q mode (sg.tparams ++ C) env (R.map (shiftTy ntys 0)) .other (child path 0) body)
++          (← checkBlockR q mode (sg.tparams ++ C) env (R.map (shiftTy q.atoms ntys 0)) .other (child path 0) body)
+         if mode == .strict || (← get).strictConts.contains (Γ.length + n) then
+-          acceptEff q (child path 0) (shiftEff ntys 0 ε) εb
++          acceptEff q (child path 0) (shiftEff q.atoms ntys 0 ε) εb
+         else pure ()
++        let εouter := substEffAt q.atoms 0 (List.replicate ntys (.base .unit)) [] εb
++        acceptEff q (child path 0) ε εouter
+         let εs ← checkClausesR q mode C Γ R (child path 1) rest t ε
+-        pure (union q εb εs)
++        pure (union q εouter εs)
+ 
+   /-- 節の型を外側に戻し、ずらし直して一致することを確かめてから結ぶ。 -/
+   def inferClauseTypesR (q : Input) (C : List TParam) (Γ : List (Option Ty))
+@@ -701,17 +699,17 @@ mutual
+     | .nil, t, _ => pure t
+     | .cons o n ntys body rest, t, ε => do
+         let sg ← lookup path "unknown handler operation" (opSig q.D.patternProgram q.B o)
+-          (fun sg => clauseLegacy sg t ε Γ R)
++          (fun _ => wfTys q.atoms C.length ε.fails)
+         require path "handler operation names are not well formed" (namesWF sg.names sg.params)
+         require path "handler operation arity mismatch" (n == sg.params.length)
+         require path "handler operation type parameter count mismatch" (ntys == sg.tparams.length)
+-        let result := shiftTy ntys 0 t
+-        let env := some (.cont sg.ret result (shiftEff ntys 0 ε)) ::
+-          (binds sg.params ++ Γ.map (Option.map (shiftTy ntys 0)))
+-        let (a, _) ← checkBlockR q .relaxed (sg.tparams ++ C) env (R.map (shiftTy ntys 0)) .other (child path 0) body
+-        let outer := substTy (List.replicate ntys (.base .unit)) [] a
++        let result := shiftTy q.atoms ntys 0 t
++        let env := some (.cont sg.ret result (shiftEff q.atoms ntys 0 ε)) ::
++          (binds sg.params ++ Γ.map (Option.map (shiftTy q.atoms ntys 0)))
++        let (a, _) ← checkBlockR q .relaxed (sg.tparams ++ C) env (R.map (shiftTy q.atoms ntys 0)) .other (child path 0) body
++        let outer := substTy q.atoms (List.replicate ntys (.base .unit)) [] a
+         require (child path 0) "handler result mentions an operation type parameter"
+-          (tyEq q.atoms (shiftTy ntys 0 outer) a)
++          (tyEq q.atoms (shiftTy q.atoms ntys 0 outer) a)
+         let t' ← join q C.length (child path 0) t outer
+         inferClauseTypesR q C Γ R (child path 1) rest t' ε
+ end
+@@ -727,37 +725,37 @@ def checkBlock (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Opt
+ 
+ def checkTypes (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+     (R : Option Ty) (path : List Nat) (es : Exprs) (ts : List Ty) : Result Eff :=
+-  guardResult path (es.isLegacy && Ty.areLegacy ts && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++  guardResult path true
+     ((checkTypesR q mode C Γ R path 0 es ts).run' {})
+ 
+ def checkEach (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+     (R : Option Ty) (path : List Nat) (es : Exprs) (a : Ty) : Result Eff :=
+-  guardResult path (es.isLegacy && a.isLegacy && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++  guardResult path true
+     ((checkEachR q mode C Γ R path 0 es a).run' {})
+ 
+ def checkHoleArgs (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+     (R : Option Ty) (path : List Nat) (args : HoleArgs) (ts : List Ty) : Result Eff :=
+-  guardResult path (args.isLegacy && Ty.areLegacy ts && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++  guardResult path true
+     ((checkHoleArgsR q mode C Γ R path 0 args ts).run' {})
+ 
+ def checkArms (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+     (R : Option Ty) (p : Position) (path : List Nat) (arms : Arms) (a b : Ty) : Result Eff :=
+-  guardResult path (arms.isLegacy && a.isLegacy && b.isLegacy && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++  guardResult path true
+     ((checkArmsR q mode C Γ R p path arms a b).run' {})
+ 
+ def checkClauses (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+     (R : Option Ty) (path : List Nat) (cs : Clauses) (t : Ty) (ε : Eff) : Result Eff :=
+-  guardResult path (cs.isLegacy && t.isLegacy && Eff.isLegacy ε && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++  guardResult path true
+     ((checkClausesR q mode C Γ R path cs t ε).run' {})
+ 
+ def inferClauseTypes (q : Input) (C : List TParam) (Γ : List (Option Ty))
+     (R : Option Ty) (path : List Nat) (cs : Clauses) (t : Ty) (ε : Eff) : Result Ty :=
+-  guardResult path (cs.isLegacy && t.isLegacy && Eff.isLegacy ε && Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy)
++  guardResult path true
+     ((inferClauseTypesR q C Γ R path cs t ε).run' {})
+ 
+ /-- 定義の宣言した戻り値型とエフェクトで本体を受け入れる。 -/
+ def checkDef (q : Input) (path : List Nat) (d : Def) : Result Unit := do
+-  require path "function contract names are not well formed" (namesWF d.names d.params && sigLegacy d.params d.ret d.eff [] [])
++  require path "function contract names are not well formed" (namesWF d.names d.params)
+   require path "function body does not exit" (lamBodyOk d.body d.ret)
+   let ε ← accept q d.tparams.length (child path 0) d.ret
+     (← checkBlock q .strict d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail (child path 0) d.body)
+@@ -788,17 +786,17 @@ def checkMethods (q : Input) (path : List Nat) (id : ImplInput) (cd : ClassDecl)
+       match cd.methods m, id.methods m with
+       | none, none => pure ()
+       | some ms, some method =>
+-          require methodPath "implementation method parameter names mismatch" (method.names == ms.names && sigLegacy ms.params ms.ret ms.eff [id.target] [])
++          require methodPath "implementation method parameter names mismatch" (method.names == ms.names)
+           require methodPath "implementation method contract names are not well formed" (namesWF ms.names ms.params)
+           let body := method.body
+-          let result := substTyAt ms.tparams.length [id.target] [] ms.ret
+-          let params := ms.params.map (substTyAt ms.tparams.length [id.target] [])
++          let result := substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret
++          let params := ms.params.map (substTyAt q.atoms ms.tparams.length [id.target] [])
+           require methodPath "implementation method body does not exit" (lamBodyOk body result)
+           let ε ← accept bodyQ (ms.tparams ++ id.tparams).length methodPath result
+             (← checkBlock bodyQ .strict (ms.tparams ++ id.tparams)
+-              (binds (id.dictTys.map (shiftTy ms.tparams.length 0) ++ params))
++              (binds (id.dictTys.map (shiftTy q.atoms ms.tparams.length 0) ++ params))
+               (some result) .tail methodPath body)
+-          acceptEff bodyQ methodPath (substEffAt ms.tparams.length [id.target] [] ms.eff) ε
++          acceptEff bodyQ methodPath (substEffAt q.atoms ms.tparams.length [id.target] [] ms.eff) ε
+       | _, _ => throw ⟨methodPath, "implementation method set mismatch"⟩
+       checkMethods q path id cd views rest (index + 1)
+ 
+@@ -824,7 +822,7 @@ def checkSuperDicts (q : Input) (path : List Nat) (id : ImplInput) :
+ def checkImpl (q : Input) (methodNames : List MethName) (superNames : List ClassName)
+     (path : List Nat) (id : ImplInput)
+     (views : MethName → CoverageView := fun _ => q.D.view) : Result Unit := do
+-  let cd ← lookup path "unknown implementation class" (q.D.classes id.cls) (fun _ => id.target.isLegacy)
++  let cd ← lookup path "unknown implementation class" (q.D.classes id.cls) (fun _ => true)
+   checkMethods q (child path 0) id cd views methodNames 0
+   checkSuperFlags (child path 1) id cd superNames 0
+   require path "superclass list does not contain all declared superclasses"
+diff --git a/formal/Benitoite/Surface/CheckPatterns.lean b/formal/Benitoite/Surface/CheckPatterns.lean
+index 149e7b40..573f7afe 100644
+--- a/formal/Benitoite/Surface/CheckPatterns.lean
++++ b/formal/Benitoite/Surface/CheckPatterns.lean
+@@ -15,8 +15,11 @@ def constPatBase : Release.Const → Option BaseTy
+   | .unit => some .unit
+   | _ => none
+ 
++def ConAtomsIn (atoms : List Atom) (P : Release.Program) : Prop :=
++  ∀ c cd, P.cons c = some cd → Tys.AtomsIn atoms cd.args
++
+ mutual
+-  def patTy (P : Release.Program) : Release.Pat → Ty → Option (List Ty)
++  def patTy (atoms : List Atom) (P : Release.Program) : Release.Pat → Ty → Option (List Ty)
+     | .wild, _ => some []
+     | .var, a => some [a]
+     | .const c, .base b =>
+@@ -27,99 +30,97 @@ mutual
+     | .range (.character _) (.character _), .base .character => some []
+     | .list before rest after, .list a => do
+         if rest.isSome || after.isEmpty then
+-          let δb ← patTys P before (List.replicate before.length a)
+-          let δa ← patTys P after (List.replicate after.length a)
++          let δb ← patTys atoms P before (List.replicate before.length a)
++          let δa ← patTys atoms P after (List.replicate after.length a)
+           pure (δb ++ restTys rest a ++ δa)
+         else none
+     | .con c ps, .data d ts => do
+         let cd ← P.cons c
+-        if cd.data == d && decide (ts.length = cd.ntys) && Ty.areLegacy ts && Ty.areLegacy cd.args then
+-          patTys P ps (substTysAt 0 ts [] cd.args)
++        if cd.data == d && decide (ts.length = cd.ntys) then
++          patTys atoms P ps (substTysAt atoms 0 ts [] cd.args)
+         else none
+     | _, _ => none
+-  def patTys (P : Release.Program) : List Release.Pat → List Ty → Option (List Ty)
++  def patTys (atoms : List Atom) (P : Release.Program) : List Release.Pat → List Ty → Option (List Ty)
+     | [], [] => some []
+     | p :: ps, a :: as => do
+-        let δ ← patTy P p a
+-        let δs ← patTys P ps as
++        let δ ← patTy atoms P p a
++        let δs ← patTys atoms P ps as
+         pure (δ ++ δs)
+     | _, _ => none
+ end
+ 
+-private theorem pat_sound (P : Release.Program) :
+-    (∀ p a δ, patTy P p a = some δ → PatTy P p a δ) ∧
+-    (∀ ps as δ, patTys P ps as = some δ → PatTys P ps as δ) := by
+-  apply patTy.mutual_induct
+-    (motive_1 := fun p a => ∀ δ, patTy P p a = some δ → PatTy P p a δ)
+-    (motive_2 := fun ps as => ∀ δ, patTys P ps as = some δ → PatTys P ps as δ)
+-  · intro a δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Wild
+-  · intro a δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Var
+-  · intro c b b' hc hb δ h
++private theorem pat_sound (atoms : List Atom) (P : Release.Program) (hp : ConAtomsIn atoms P) :
++    (∀ p a δ, a.AtomsIn atoms → patTy atoms P p a = some δ → PatTy P p a δ) ∧
++    (∀ ps as δ, Tys.AtomsIn atoms as → patTys atoms P ps as = some δ → PatTys P ps as δ) := by
++  apply patTy.mutual_induct atoms
++    (motive_1 := fun p a => ∀ δ, a.AtomsIn atoms → patTy atoms P p a = some δ → PatTy P p a δ)
++    (motive_2 := fun ps as => ∀ δ, Tys.AtomsIn atoms as → patTys atoms P ps as = some δ → PatTys P ps as δ)
++  · intro a δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Wild
++  · intro a δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Var
++  · intro c b b' hc hb δ hat h
+     have eb := eq_of_beq hb
+     subst b'
+     cases c <;> simp_all [constPatBase, patTy]
+       <;> obtain ⟨rfl, rfl⟩ := h
+       <;> exact .P_Const rfl
+-  · intro c b b' hc hb δ h; simp [patTy, hc, hb] at h
+-  · intro c b hc δ h; simp [patTy, hc] at h
+-  · intro lo hi δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeInt
+-  · intro lo hi δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeChar
+-  · intro before rest after a hr ihb iha δ h
++  · intro c b b' hc hb δ hat h; simp [patTy, hc, hb] at h
++  · intro c b hc δ hat h; simp [patTy, hc] at h
++  · intro lo hi δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeInt
++  · intro lo hi δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeChar
++  · intro before rest after a hr ihb iha δ hat h
+     simp only [patTy, hr, ↓reduceIte] at h
+     obtain ⟨δb, hb, h⟩ := Option.bind_eq_some_iff.mp h
+     obtain ⟨δa, ha, h⟩ := Option.bind_eq_some_iff.mp h
+     simp only [pure, Option.some.injEq] at h
+     subst δ
+-    apply PatTy.P_List (ihb _ hb) (iha _ ha)
++    have hat : a.AtomsIn atoms := hat
++    apply PatTy.P_List (ihb _ (tysAtoms_replicate hat _) hb) (iha _ (tysAtoms_replicate hat _) ha)
+     intro hn
+     simpa [hn] using hr
+-  · intro before rest after a hr δ h; simp [patTy, hr] at h
+-  · intro c ps d ts ih δ h
++  · intro before rest after a hr δ hat h; simp [patTy, hr] at h
++  · intro c ps d ts ih δ hat h
+     simp only [patTy] at h
+     obtain ⟨cd, hc, h⟩ := Option.bind_eq_some_iff.mp h
+     split at h
+     · rename_i hh
+-      have ⟨⟨⟨hd, hn⟩, ht⟩, ha⟩ := (Bool.and_eq_true_iff.mp hh).imp_left
+-        (fun h => (Bool.and_eq_true_iff.mp h).imp_left Bool.and_eq_true_iff.mp)
++      have ⟨hd, hn⟩ := Bool.and_eq_true_iff.mp hh
+       have ed := eq_of_beq hd
+       subst d
+       apply PatTy.P_Con hc (of_decide_eq_true hn)
+       change PatTys P ps (cd.args.map (Ty.substAt 0 ts [])) δ
+       rw [← substTysAt_eq 0 ts [] cd.args
+-        (Ty.LegacyTys.iff.mp ((Ty.areLegacy_spec ts).mp ht)) (by simp)
+-        (Ty.LegacyTys.iff.mp ((Ty.areLegacy_spec cd.args).mp ha))]
+-      apply ih cd δ; assumption
++        (tysAtoms_iff.mp hat) (by simp) (tysAtoms_iff.mp (hp _ _ hc))]
++      apply ih cd δ (substTysAt_atoms (hp _ _ hc) hat (by simp) 0)
++      assumption
+     · contradiction
+-  · intro p a hw hv hc hi hh hl hk δ h
++  · intro p a hw hv hc hi hh hl hk δ hat h
+     simp only [patTy] at h
+     contradiction
+-  · intro δ h; simp only [patTys, Option.some.injEq] at h; subst δ; exact .nil
+-  · intro p ps a as ihp ihs δ h
++  · intro δ hat h; simp only [patTys, Option.some.injEq] at h; subst δ; exact .nil
++  · intro p ps a as ihp ihs δ hat h
+     simp only [patTys] at h
+     obtain ⟨δp, hp, h⟩ := Option.bind_eq_some_iff.mp h
+     obtain ⟨δs, hs, h⟩ := Option.bind_eq_some_iff.mp h
+     simp only [pure, Option.some.injEq] at h
+     subst δ
+-    exact .cons (ihp _ hp) (ihs _ hs)
+-  · intro ps as hn hc δ h
++    exact .cons (ihp _ hat.1 hp) (ihs _ hat.2 hs)
++  · intro ps as hn hc δ hat h
+     simp only [patTys] at h
+     contradiction
+ 
+-theorem patTy_sound {P p a δ} (h : patTy P p a = some δ) : PatTy P p a δ :=
+-  (pat_sound P).1 p a δ h
++theorem patTy_sound {atoms P p a δ} (hp : ConAtomsIn atoms P) (ha : a.AtomsIn atoms)
++    (h : patTy atoms P p a = some δ) : PatTy P p a δ := (pat_sound atoms P hp).1 p a δ ha h
+ 
+-theorem patTys_sound {P ps as δ} (h : patTys P ps as = some δ) : PatTys P ps as δ :=
+-  (pat_sound P).2 ps as δ h
++theorem patTys_sound {atoms P ps as δ} (hp : ConAtomsIn atoms P) (ha : Tys.AtomsIn atoms as)
++    (h : patTys atoms P ps as = some δ) : PatTys P ps as δ := (pat_sound atoms P hp).2 ps as δ ha h
+ 
+-/-- レコードは toCore によって宣言順に並べ、省略したフィールドを wild にする。 -/
+-def surfacePatTy (D : Declarations) (p : Pattern) (a : Ty) : Option (List Ty) :=
+-  patTy D.patternProgram p.toCore a
++def surfacePatTy (atoms : List Atom) (D : Declarations) (p : Pattern) (a : Ty) : Option (List Ty) :=
++  patTy atoms D.patternProgram p.toCore a
+ 
+-theorem surfacePatTy_sound {D p a δ} (h : surfacePatTy D p a = some δ) :
+-    PatTy D.patternProgram p.toCore a δ := patTy_sound h
++theorem surfacePatTy_sound {atoms D p a δ} (hp : ConAtomsIn atoms D.patternProgram)
++    (ha : a.AtomsIn atoms) (h : surfacePatTy atoms D p a = some δ) :
++    PatTy D.patternProgram p.toCore a δ := patTy_sound hp ha h
+ 
+-def ConAtomsIn (atoms : List Atom) (P : Release.Program) : Prop :=
+-  ∀ c cd, P.cons c = some cd → Tys.AtomsIn atoms cd.args
+ 
+ mutual
+   theorem patTyped_atoms {atoms P p a δ} (hp : ConAtomsIn atoms P)
+@@ -137,7 +138,7 @@ mutual
+           (patTypedList_atoms hp ha (tysAtoms_replicate ht _))
+         cases rest with
+         | none => trivial
+-        | some r => cases r <;> simp [restTys, Tys.AtomsIn, Ty.AtomsIn, ht]
++        | some r => cases r <;> simp [restTys, Ty.SupportList, Ty.Support, ht]
+     | P_Con hc hn hs =>
+         exact patTypedList_atoms hp hs
+           (tysAtoms_map (hp _ _ hc) (fun _ h => subst_atoms h ht (by simp)))
+@@ -149,11 +150,11 @@ mutual
+ end
+ 
+ theorem patTy_atoms {atoms P p a δ} (hp : ConAtomsIn atoms P) (ha : Ty.AtomsIn atoms a)
+-    (h : patTy P p a = some δ) : Tys.AtomsIn atoms δ :=
+-  patTyped_atoms hp (patTy_sound h) ha
++    (h : patTy atoms P p a = some δ) : Tys.AtomsIn atoms δ :=
++  patTyped_atoms hp (patTy_sound hp ha h) ha
+ 
+ def checkAlt (atoms : List Atom) (P : Release.Program) (a : Ty) (δ : List Ty) (alt : Release.Alt) : Bool :=
+-  match patTy P alt.pat a with
++  match patTy atoms P alt.pat a with
+   | none => false
+   | some γ => natPerm alt.slots (List.range γ.length) &&
+       match selectSlots γ alt.slots with
+@@ -185,7 +186,7 @@ theorem checkAlts_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)
+       · intro alt hm
+         have hc := List.all_eq_true.mp hall alt hm
+         unfold checkAlt at hc
+-        cases hg : patTy P alt.pat a with
++        cases hg : patTy atoms P alt.pat a with
+         | none => simp [hg] at hc
+         | some γ =>
+             simp only [hg] at hc
+@@ -196,13 +197,13 @@ theorem checkAlts_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)
+                 have hds := tysAtoms_selectSlots (patTy_atoms hp ha hg) he
+                 have eqδ := tysEq_sound hds hd (by simpa [he] using ht)
+                 subst ds
+-                exact ⟨γ, patTy_sound hg, (natPerm_spec _ _).mp hs, he⟩
++                exact ⟨γ, patTy_sound hp ha hg, (natPerm_spec _ _).mp hs, he⟩
+ 
+ /-- 最初の選択肢の束縛型を求めてから、恒等対応と残りの並べ替えを検査する。 -/
+ def altsTy (atoms : List Atom) (P : Release.Program) (alts : List Release.Alt) (a : Ty) :
+     Option (List Ty) := do
+   let first ← alts.head?
+-  let δ ← patTy P first.pat a
++  let δ ← patTy atoms P first.pat a
+   if checkAlts atoms P alts a δ then some δ else none
+ 
+ theorem altsTy_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)
+diff --git a/formal/Benitoite/Surface/CheckPredicates.lean b/formal/Benitoite/Surface/CheckPredicates.lean
+index 9c4a2a4c..7bcb9e02 100644
+--- a/formal/Benitoite/Surface/CheckPredicates.lean
++++ b/formal/Benitoite/Surface/CheckPredicates.lean
+@@ -1,4 +1,5 @@
+ import Benitoite.Surface.CheckTools
++import Benitoite.Surface.FinitePredicates
+ 
+ /-! 表層の規則の、型付けの判断以外の前提の判定。
+ 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+@@ -36,122 +37,36 @@ theorem constructorHolesOk_spec (args : HoleArgs) (n : Nat) :
+     constructorHolesOk args n = true ↔ args.ConstructorOk n := by
+   simp [constructorHolesOk, HoleArgs.ConstructorOk]
+ 
+-mutual
+-  def wfTy (n : Nat) : Ty → Bool
+-    | .data _ ts => wfTys n ts
+-    | .list t | .reference t | .lazy t | .set t | .dict _ t => wfTy n t
+-    | .fn names ps r e => namesWF names ps && wfTys n ps && wfTy n r && Eff.isLegacy e
+-    | .tvar i => decide (i < n)
+-    | .cont b t e => wfTy n b && wfTy n t && Eff.isLegacy e
+-    | .map b t => wfTy n b && wfTy n t
+-    | .tapp i ts => decide (i < n) && wfTys n ts
+-    | _ => true
+-  def wfTys (n : Nat) : List Ty → Bool
+-    | [] => true
+-    | t :: ts => wfTy n t && wfTys n ts
+-end
+-
+-private theorem legacy_eff_wf {n e} (h : Eff.Legacy e) : Eff.WF n e ∧ Eff.Canonical e := by
+-  cases e with
+-  | mk a fs =>
+-    change fs = [] at h
+-    subst fs
+-    exact ⟨trivial, rfl⟩
+-
+-mutual
+-  theorem wfTy_spec (n : Nat) (t : Ty) : wfTy n t = true ↔ t.Legacy ∧ Ty.WF n t := by
+-    cases t <;> simp only [wfTy, Ty.WF, Ty.Legacy, wfTy_spec, wfTys_spec,
+-      namesWF_spec, Eff.isLegacy_spec, Bool.and_eq_true, decide_eq_true_eq]
+-    all_goals try { solve | simp [and_assoc, and_left_comm, and_comm] }
+-    case fn names ps r e =>
+-      constructor
+-      · rintro ⟨⟨⟨hn, ⟨hp, hwp⟩⟩, ⟨hr, hwr⟩⟩, he⟩
+-        exact ⟨⟨hp, hr, he⟩, hn, hwp, hwr, legacy_eff_wf he⟩
+-      · rintro ⟨⟨hp, hr, he⟩, hn, hwp, hwr, _⟩
+-        exact ⟨⟨⟨hn, ⟨hp, hwp⟩⟩, ⟨hr, hwr⟩⟩, he⟩
+-    case cont a b e =>
+-      constructor
+-      · rintro ⟨⟨⟨ha, hwa⟩, ⟨hb, hwb⟩⟩, he⟩
+-        exact ⟨⟨ha, hb, he⟩, hwa, hwb, legacy_eff_wf he⟩
+-      · rintro ⟨⟨ha, hb, he⟩, hwa, hwb, _⟩
+-        exact ⟨⟨⟨ha, hwa⟩, ⟨hb, hwb⟩⟩, he⟩
+-  theorem wfTys_spec (n : Nat) (ts : List Ty) : wfTys n ts = true ↔ Ty.LegacyTys ts ∧ Ty.WFList n ts := by
+-    cases ts with
+-    | nil => simp [wfTys, Ty.LegacyTys, Ty.WFList]
+-    | cons t ts => simp only [wfTys, Ty.WFList, Ty.LegacyTys, Bool.and_eq_true,
+-        wfTy_spec, wfTys_spec]; simp [and_assoc, and_left_comm]
+-end
++/-- 入力の正規化を行わず、有限支持上の判定へ接続する。 -/
++def canonicalEff := Finite.canonicalEff
++def wfTy := Finite.wfTy
++def wfTys := Finite.wfTys
++def wfEff := Finite.wfEff
++def cleanTy := Finite.cleanTy
++def cleanTys := Finite.cleanTys
++def cleanEff := Finite.cleanEff
+ 
+-mutual
+-  /-- 表層の通常の結果型。継続を型内部にも許さず、R15の旧入力を検査する。 -/
+-  def cleanTy (n : Nat) : Ty → Bool
+-    | .data _ ts => cleanTys n ts
+-    | .list t | .reference t | .lazy t | .set t | .dict _ t => cleanTy n t
+-    | .fn ns ps r e => namesWF ns ps && cleanTys n ps && cleanTy n r && Eff.isLegacy e
+-    | .tvar i => decide (i < n)
+-    | .cont _ _ _ => false
+-    | .map a b => cleanTy n a && cleanTy n b
+-    | .tapp i ts => decide (i < n) && cleanTys n ts
+-    | _ => true
+-  def cleanTys (n : Nat) : List Ty → Bool
+-    | [] => true
+-    | t :: ts => cleanTy n t && cleanTys n ts
+-end
++theorem canonicalEff_spec {atoms e} (he : Eff.AtomsIn atoms e) :
++    canonicalEff atoms e = true ↔ Eff.Canonical e := Finite.canonicalEff_spec he
+ 
+-private theorem legacy_eff_scoped {n e} (h : Eff.Legacy e) :
+-    Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e := by
+-  cases e with
+-  | mk a fs =>
+-    change fs = [] at h
+-    subst fs
+-    exact ⟨⟨fun _ _ => trivial, trivial⟩, rfl⟩
+-
+-mutual
+-  theorem cleanTy_spec (n : Nat) (t : Ty) :
+-      cleanTy n t = true ↔ t.Legacy ∧ Ty.VarsIn n (fun _ => True) t := by
+-    cases t <;> simp only [cleanTy, Ty.Legacy, Ty.VarsIn, cleanTy_spec, cleanTys_spec,
+-      Bool.and_eq_true, namesWF_spec, Eff.isLegacy_spec, decide_eq_true_eq]
+-    all_goals try { solve | simp [and_assoc, and_left_comm, and_comm] }
+-    case fn ns ps r e =>
+-      constructor
+-      · rintro ⟨⟨⟨hn, ⟨hp, hwp⟩⟩, ⟨hr, hwr⟩⟩, he⟩
+-        exact ⟨⟨hp, hr, he⟩, hn, hwp, hwr, legacy_eff_scoped he⟩
+-      · rintro ⟨⟨hp, hr, he⟩, hn, hwp, hwr, _⟩
+-        exact ⟨⟨⟨hn, ⟨hp, hwp⟩⟩, ⟨hr, hwr⟩⟩, he⟩
+-  theorem cleanTys_spec (n : Nat) (ts : List Ty) :
+-      cleanTys n ts = true ↔ Ty.LegacyTys ts ∧ Ty.VarsInList n (fun _ => True) ts := by
+-    cases ts with
+-    | nil => simp [cleanTys, Ty.LegacyTys, Ty.VarsInList]
+-    | cons t ts =>
+-      simp only [cleanTys, Ty.LegacyTys, Ty.VarsInList, Bool.and_eq_true, cleanTy_spec, cleanTys_spec]
+-      simp [and_assoc, and_left_comm]
+-end
++theorem wfTy_spec {atoms} (n : Nat) (t : Ty) (ha : t.AtomsIn atoms) :
++    wfTy atoms n t = true ↔ Ty.WF n t := Finite.wfTy_spec n t ha
+ 
+-/-- 具体化する宣言と置換像の型・効果をすべて検査する。 -/
+-def sigLegacy (ps : List Ty) (r : Ty) (e : Eff) (ts : List Ty) (es : List Eff) : Bool :=
+-  Ty.areLegacy ts && es.all Eff.isLegacy && Ty.areLegacy ps && r.isLegacy && Eff.isLegacy e
++theorem wfTys_spec {atoms} (n : Nat) (ts : List Ty) (ha : Tys.AtomsIn atoms ts) :
++    wfTys atoms n ts = true ↔ Ty.WFList n ts := Finite.wfTys_spec n ts ha
+ 
+-theorem sigLegacy_spec (ps : List Ty) (r : Ty) (e : Eff) (ts : List Ty) (es : List Eff) :
+-    sigLegacy ps r e ts es = true ↔ Ty.LegacyTys ts ∧ (∀ e ∈ es, Eff.Legacy e) ∧
+-      Ty.LegacyTys ps ∧ r.Legacy ∧ Eff.Legacy e := by
+-  simp [sigLegacy, Bool.and_eq_true, Ty.areLegacy_spec, Ty.isLegacy_spec,
+-    Eff.isLegacy_spec, List.all_eq_true, and_assoc]
++theorem wfEff_spec {atoms} (n : Nat) (e : Eff) (ha : e.AtomsIn atoms) :
++    wfEff atoms n e = true ↔ Eff.WF n e ∧ Eff.Canonical e := Finite.wfEff_spec n e ha
+ 
+-theorem optionLegacy_spec (o : Option Ty) : o.all Ty.isLegacy = true ↔
+-    ∀ t, o = some t → t.Legacy := by
+-  cases o <;> simp [Option.all, Ty.isLegacy_spec]
++theorem cleanTy_spec {atoms} (n : Nat) (t : Ty) (ha : t.AtomsIn atoms) :
++    cleanTy atoms n t = true ↔ Ty.VarsIn n (fun _ => True) t := Finite.cleanTy_spec n t ha
+ 
+-/-- 節の束縛の内側で移動する型と効果を、同じ共有表現で検査する。 -/
+-def clauseLegacy (sg : OpSig) (t : Ty) (e : Eff) (Γ : List (Option Ty)) (R : Option Ty) : Bool :=
+-  Ty.areLegacy sg.params && sg.ret.isLegacy && t.isLegacy && Eff.isLegacy e &&
+-    Γ.all (fun o => o.all Ty.isLegacy) && R.all Ty.isLegacy
++theorem cleanTys_spec {atoms} (n : Nat) (ts : List Ty) (ha : Tys.AtomsIn atoms ts) :
++    cleanTys atoms n ts = true ↔ Ty.VarsInList n (fun _ => True) ts := Finite.cleanTys_spec n ts ha
+ 
+-theorem clauseLegacy_spec (sg : OpSig) (t : Ty) (e : Eff) (Γ : List (Option Ty)) (R : Option Ty) :
+-    clauseLegacy sg t e Γ R = true ↔ Ty.LegacyTys sg.params ∧ sg.ret.Legacy ∧
+-      t.Legacy ∧ Eff.Legacy e ∧
+-      (∀ o ∈ Γ, ∀ a, o = some a → a.Legacy) ∧ (∀ a, R = some a → a.Legacy) := by
+-  simp [clauseLegacy, Bool.and_eq_true, Ty.areLegacy_spec, Ty.isLegacy_spec,
+-    Eff.isLegacy_spec, List.all_eq_true, optionLegacy_spec, and_assoc]
++theorem cleanEff_spec {atoms} (n : Nat) (e : Eff) (ha : e.AtomsIn atoms) :
++    cleanEff atoms n e = true ↔ Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e :=
++  Finite.cleanEff_spec n e ha
+ 
+ mutual
+   def exprExits : Expr → Bool
+@@ -450,7 +365,7 @@ def stringAddOk (atoms : List Atom) (B : Builtins) (op : OpPrim)
+   | some (b, ts) => match B.sig b with
+       | none => false
+       | some s => ts.isEmpty && decide (ts.length = s.ntys) && decide (s.neffs = 0) &&
+-          admitsDec b C ts && tyEq atoms (fnTyCheck s.names s.params s.ret s.eff ts [])
++          admitsDec b C ts && tyEq atoms (fnTyCheck atoms s.names s.params s.ret s.eff ts [])
+             (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty)
+ 
+ theorem stringAddOk_sound {atoms B op admitsDec C}
+@@ -468,18 +383,16 @@ theorem stringAddOk_sound {atoms B op admitsDec C}
+           rcases h with ⟨⟨⟨⟨hts, hlen⟩, heffs⟩, hadmits⟩, heq⟩
+           have hnil : ts = [] := by simpa using hts
+           subst ts
+-          have hat : Ty.AtomsIn atoms (fnTyCheck s.names s.params s.ret s.eff [] []) :=
++          have hat : Ty.AtomsIn atoms (fnTyCheck atoms s.names s.params s.ret s.eff [] []) :=
+             substTy_atoms (ha b s hs) (by trivial) (by simp)
+           have htarget : Ty.AtomsIn atoms
+               (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty) := by
+-            simp [Eff.mem, Eff.test, Ty.AtomsIn, Tys.AtomsIn, Eff.AtomsIn, Eff.empty, Eff.atoms]
++            simp [Ty.Support, Ty.SupportList, Eff.Support, Eff.empty]
+           have ht := tyEq_sound hat htarget heq
+           refine ⟨b, [], s, ho, rfl, hs, of_decide_eq_true hlen,
+             of_decide_eq_true heffs, had b C [] s hs hadmits, ?_⟩
+-          change (Ty.subst [] [] (.fn s.names s.params s.ret s.eff)) = _
+-          rw [Ty.subst, Ty.substAt_eq_rawBind]
+-          change (fnTyCheck s.names s.params s.ret s.eff [] []).norm = _
+-          rw [ht]
+-          rfl
++          rw [fnTyCheck_eq _ _ _ _ _ _ (by simp) (by simp)
++            (ha b s hs).1 (ha b s hs).2.1 (ha b s hs).2.2] at ht
++          exact ht
+ 
+ end Benitoite.Surface.CheckTools
+diff --git a/formal/Benitoite/Surface/CheckSupport.lean b/formal/Benitoite/Surface/CheckSupport.lean
+index 3908fb6c..156a1378 100644
+--- a/formal/Benitoite/Surface/CheckSupport.lean
++++ b/formal/Benitoite/Surface/CheckSupport.lean
+@@ -6,74 +6,24 @@ import Benitoite.Surface.CheckPatterns
+ namespace Benitoite.Surface.CheckTools
+ open Benitoite.Release
+ 
+-def tyJoin (atoms : List Atom) (a b : Ty) : Option Ty :=
+-  match a, b with
+-  | .fn names ps r ε, .fn otherNames qs s ε' =>
+-      if (Eff.fails ε).isEmpty && (Eff.fails ε').isEmpty && (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s then
+-        some (.fn names ps r (unionEff atoms ε ε')) else none
+-  | _, _ => if tyEq atoms a b then some a else none
+-
+-theorem tyJoin_sound {atoms a b j} (ha : Ty.AtomsIn atoms a)
+-    (hb : Ty.AtomsIn atoms b) (h : tyJoin atoms a b = some j) :
+-    Ty.Le a j ∧ Ty.Le b j := by
+-  cases a <;> cases b <;> simp only [tyJoin] at h
+-    <;> split at h <;> simp only [Option.some.injEq, reduceCtorEq] at h
+-    <;> try (subst j; exact ⟨Or.inl rfl, Or.inl (tyEq_sound ha hb ‹_›).symm⟩)
+-  rename_i names ps r ε otherNames qs s ε' hh
+-  simp only [Bool.and_eq_true_iff] at hh
+-  rcases hh with ⟨⟨⟨⟨hf, hg⟩, hn⟩, hp⟩, hr⟩
+-  have hnames := eq_of_beq hn
+-  have ep := tysEq_sound ha.1 hb.1 hp
+-  have er := tyEq_sound ha.2.1 hb.2.1 hr
+-  subst otherNames; subst qs; subst s; subst j
+-  rw [unionEff_eq ha.2.2 hb.2.2 (List.isEmpty_iff.mp hf) (List.isEmpty_iff.mp hg)]
+-  constructor
+-  · exact Or.inr ⟨names, ps, r, ε, Eff.union ε ε', rfl, rfl, ⟨fun a h => (Eff.mem_union _ _ a).mpr (Or.inl h),
+-      fun t h => (Eff.memFail_union _ _ t).mpr (Or.inl h)⟩⟩
+-  · exact Or.inr ⟨names, ps, r, ε', Eff.union ε ε', rfl, rfl, ⟨fun a h => (Eff.mem_union _ _ a).mpr (Or.inr h),
+-      fun t h => (Eff.memFail_union _ _ t).mpr (Or.inr h)⟩⟩
+-
+-theorem tyJoin_atoms {atoms a b j} (ha : Ty.AtomsIn atoms a)
+-    (h : tyJoin atoms a b = some j) : Ty.AtomsIn atoms j := by
+-  cases a <;> cases b <;> simp only [tyJoin] at h
+-    <;> split at h <;> simp only [Option.some.injEq, reduceCtorEq] at h <;> try (subst j; exact ha)
+-  subst j
+-  exact ⟨ha.1, ha.2.1, unionEff_atoms _ _ _⟩
+-
+-def diffEff (atoms : List Atom) (ε h : Eff) : Eff :=
+-  .mk (fun a => atoms.contains a && Eff.test ε a && !Eff.test h a) ε.fails
+-
+-theorem diffEff_cover {atoms ε h} (ha : Eff.AtomsIn atoms ε) :
+-    Eff.Sub ε (Eff.union (diffEff atoms ε h) h) := by
+-  constructor
+-  · intro a he
+-    have hm : atoms.contains a = true := List.elem_eq_true_of_mem (ha a he)
+-    apply (Eff.mem_union _ _ a).mpr
+-    cases hh : Eff.test h a
+-    · left
+-      change (atoms.contains a && Eff.test ε a && (Eff.test h a).not) = true
+-      rw [hm, he, hh]
+-      rfl
+-    · exact Or.inr hh
+-  · intro t ht
+-    exact (Eff.memFail_union _ _ t).mpr (Or.inl ht)
+-
+-theorem diffEff_atoms (atoms : List Atom) (ε h : Eff) :
+-    Eff.AtomsIn atoms (diffEff atoms ε h) := by
+-  intro a ha
+-  have hh : atoms.contains a = true := ((Bool.and_eq_true_iff.mp ha).1 |> Bool.and_eq_true_iff.mp).1
+-  exact List.mem_of_elem_eq_true hh
++def tyJoin := Finite.tyJoin
++
++theorem tyJoin_sound {atoms a b j} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
++    (h : tyJoin atoms a b = some j) : Ty.Le a j ∧ Ty.Le b j := Finite.tyJoin_sound ha hb h
++
++theorem tyJoin_atoms {atoms a b j} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
++    (h : tyJoin atoms a b = some j) : Ty.AtomsIn atoms j := Finite.tyJoin_support ha hb h
++
++def diffEff (_atoms : List Atom) (e h : Eff) := Finite.diffEff e h
++
++theorem diffEff_cover {atoms ε h} (_ha : Eff.AtomsIn atoms ε) :
++    Eff.Sub ε (Eff.union (diffEff atoms ε h) h) := Finite.diffEff_cover ε h
++
++theorem diffEff_atoms {atoms : List Atom} {ε h : Eff} (he : Eff.AtomsIn atoms ε) :
++    Eff.AtomsIn atoms (diffEff atoms ε h) := Finite.diffEff_support he
+ 
+ theorem diffEff_mono {atoms ε ε' h} (hh : Eff.Sub ε ε') :
+-    Eff.Sub (diffEff atoms ε h) (diffEff atoms ε' h) := by
+-  constructor
+-  · intro a ha
+-    have ⟨hmhe, hn⟩ := Bool.and_eq_true_iff.mp ha
+-    have ⟨hm, he⟩ := Bool.and_eq_true_iff.mp hmhe
+-    change (atoms.contains a && Eff.test ε' a && (Eff.test h a).not) = true
+-    rw [hm, hh.1 a he, hn]
+-    rfl
+-  · exact hh.2
++    Eff.Sub (diffEff atoms ε h) (diffEff atoms ε' h) := Finite.diffEff_mono hh
+ 
+ theorem singleEff_eq_contains {atoms : List Atom} {l : EffName}
+     (h : atoms.contains (.name l) = true) : singleEff atoms (.name l) = Eff.single l :=
+@@ -240,6 +190,6 @@ theorem OpPrimTypeArgs.atoms {atoms op o t b ts} (h : OpPrimTypeArgs op)
+   rw [h o t b ts ho]
+   cases o with
+   | neg => trivial
+-  | binary o => cases o <;> simp [Operator.typeArgs, Tys.AtomsIn, ht]
++  | binary o => cases o <;> simp [Operator.typeArgs, Ty.SupportList, ht]
+ 
+ end Benitoite.Surface
+diff --git a/formal/Benitoite/Surface/CheckTables.lean b/formal/Benitoite/Surface/CheckTables.lean
+index 133546ad..5ac46d2e 100644
+--- a/formal/Benitoite/Surface/CheckTables.lean
++++ b/formal/Benitoite/Surface/CheckTables.lean
+@@ -149,20 +149,6 @@ structure Materials where
+   trustedFuns : List (FunName × FunDecl)
+   trustedImpls : List (ImplName × ImplSig)
+ 
+-/-- L1bの間は、参照されない宣言と注釈も含めて型付きFailを拒む。 -/
+-def Materials.isLegacy (m : Materials) : Bool :=
+-  m.defs.all (fun (_, d) =>
+-    sigLegacy d.params d.ret d.eff [] [] && d.body.isLegacy) &&
+-  m.data.all (fun d => d.ctors.all (fun (_, c) => Ty.areLegacy c.args)) &&
+-  m.ops.all (fun (_, o) => Ty.areLegacy o.params && o.ret.isLegacy) &&
+-  m.classes.all (fun (_, c) => c.methods.all (fun (_, s) =>
+-    sigLegacy s.params s.ret s.eff [] [])) &&
+-  m.impls.all (fun (_, i) => i.signature.target.isLegacy &&
+-    i.supers.all (fun (_, d) => d.isLegacy) &&
+-    i.methods.all (fun (_, body) => body.body.isLegacy)) &&
+-  m.trustedFuns.all (fun (_, d) => sigLegacy d.params d.ret d.eff [] []) &&
+-  m.trustedImpls.all (fun (_, i) => i.target.isLegacy)
+-
+ /-- cons は取得関数に現れないデータ型も含む。 -/
+ def Materials.program (m : Materials) : Program :=
+   { functionViews := m.functionViews, methodViews := m.methodViews
+@@ -231,7 +217,7 @@ def checkNamed (table : String → Option α) (check : List Nat → α → Check
+ 
+ /-- 元の材料に残したメソッドの実名を含めて本体を検査する。 -/
+ def checkProgram (q : Check.Input) (m : Materials) (names : Names) : Check.Result Unit :=
+-  Check.guardResult [] m.isLegacy <| do
++  Check.guardResult [] true <| do
+     let p := m.program
+     checkNamed (fun n => (p.defs n).map (fun d => (n, d)))
+       (fun path (n, d) => Check.checkDef { q with D := q.D.withView (p.functionViews n) } path d) [0] names.defs 0
+diff --git a/formal/Benitoite/Surface/CheckTools.lean b/formal/Benitoite/Surface/CheckTools.lean
+index 6563a92c..1cc6a459 100644
+--- a/formal/Benitoite/Surface/CheckTools.lean
++++ b/formal/Benitoite/Surface/CheckTools.lean
+@@ -1,556 +1,172 @@
+-import Benitoite.Surface.Typing
++import Benitoite.Surface.FiniteTools
++import Benitoite.Release.FiniteSupport
+ import Benitoite.Release.Coverage
+-import Benitoite.Release.TypeSupport
+ import Benitoite.Release.LegacyCheck
+ 
+-/-! 判定の有限の原子集合と、カーネルで評価できる型の操作。
+-対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+--/
++/-! 検査器の再帰的な有限支持と、計算できる正規化・型操作。 -/
+ namespace Benitoite.Release
+-
+-def Eff.AtomsIn (atoms : List Atom) (ε : Eff) : Prop :=
+-  ∀ a, Eff.mem ε a → a ∈ atoms
+-
++abbrev Eff.AtomsIn (atoms : List Atom) (e : Eff) := Eff.Support (· ∈ atoms) e
+ abbrev EffR.AtomsIn := Eff.AtomsIn
+-
+-mutual
+-  def Ty.AtomsIn (atoms : List Atom) : Ty → Prop
+-    | .data _ ts | .tapp _ ts => Tys.AtomsIn atoms ts
+-    | .list t | .reference t | .lazy t | .set t | .dict _ t => t.AtomsIn atoms
+-    | .fn _ ps r ε => Tys.AtomsIn atoms ps ∧ r.AtomsIn atoms ∧ ε.AtomsIn atoms
+-    | .cont b t ε => b.AtomsIn atoms ∧ t.AtomsIn atoms ∧ ε.AtomsIn atoms
+-    | .map a b => a.AtomsIn atoms ∧ b.AtomsIn atoms
+-    | _ => True
+-  def Tys.AtomsIn (atoms : List Atom) : List Ty → Prop
+-    | [] => True
+-    | t :: ts => t.AtomsIn atoms ∧ Tys.AtomsIn atoms ts
+-end
++abbrev Ty.AtomsIn (atoms : List Atom) (t : Ty) := Ty.Support (· ∈ atoms) t
++abbrev Tys.AtomsIn (atoms : List Atom) (ts : List Ty) := Ty.SupportList (· ∈ atoms) ts
+ end Benitoite.Release
+ 
+ namespace Benitoite.Surface.CheckTools
+ open Benitoite.Release
+ 
+-def effSub (atoms : List Atom) (ε ε' : Eff) : Bool :=
+-  ε.fails.isEmpty && (ε'.fails.isEmpty && (atoms.all fun a => !Eff.test ε a || Eff.test ε' a))
+-
+-def effEq (atoms : List Atom) (ε ε' : Eff) : Bool :=
+-  ε.fails.isEmpty && ε'.fails.isEmpty && (atoms.all fun a => Eff.test ε a == Eff.test ε' a)
+-
++def effSub := Finite.effSub
++def effEq := Finite.effEq
++def tyEq := Finite.tyEq
++def tysEq := Finite.tysEq
+ def emptyEff : Eff := Eff.empty
++def singleEff (_atoms : List Atom) (a : Atom) : Eff := Eff.ofAtoms (· == a)
++def unionEff := Finite.unionEff
+ 
+-def singleEff (atoms : List Atom) (a : Atom) : Eff :=
+-  Eff.ofAtoms fun b => atoms.contains a && (b == a)
++theorem effSub_sound {atoms a b} (ha : Eff.AtomsIn atoms a) (hb : Eff.AtomsIn atoms b)
++    (h : effSub atoms a b = true) : Eff.Sub a b := Finite.effSub_sound ha hb h
+ 
+-def unionEff (atoms : List Atom) (ε ε' : Eff) : Eff :=
+-  Eff.ofAtoms fun a => atoms.contains a && (Eff.test ε a || Eff.test ε' a)
++theorem effEq_sound {atoms a b} (ha : Eff.AtomsIn atoms a) (hb : Eff.AtomsIn atoms b)
++    (h : effEq atoms a b = true) : a = b := Finite.effEq_sound ha hb h
+ 
+-theorem effSub_sound {atoms ε ε'} (ha : Eff.AtomsIn atoms ε)
+-    (h : effSub atoms ε ε' = true) : Eff.Sub ε ε' := by
+-  have ⟨hf, hrest⟩ := Bool.and_eq_true_iff.mp h
+-  have ⟨_, hh⟩ := Bool.and_eq_true_iff.mp hrest
+-  constructor
+-  · intro a he
+-    have := List.all_eq_true.mp hh a (ha a he)
+-    simpa [he] using this
+-  · intro t ht
+-    obtain ⟨x, hx, _⟩ := ht
+-    rw [List.isEmpty_iff.mp hf] at hx
+-    contradiction
+-
+-theorem effSub_legacy {atoms a b} (h : effSub atoms a b = true) :
+-    Eff.Legacy a ∧ Eff.Legacy b := by
+-  have ⟨ha, hab⟩ := Bool.and_eq_true_iff.mp h
+-  have ⟨hb, _⟩ := Bool.and_eq_true_iff.mp hab
+-  exact ⟨List.isEmpty_iff.mp ha, List.isEmpty_iff.mp hb⟩
+-
+-theorem effEq_sound {atoms ε ε'} (ha : Eff.AtomsIn atoms ε)
+-    (hb : Eff.AtomsIn atoms ε') (h : effEq atoms ε ε' = true) : ε = ε' := by
+-  have ⟨⟨hf, hg⟩, hh⟩ := Bool.and_eq_true_iff.mp h |>.imp_left Bool.and_eq_true_iff.mp
+-  apply Eff.ext_test
+-  · intro a
+-    by_cases hm : a ∈ atoms
+-    · exact eq_of_beq (List.all_eq_true.mp hh a hm)
+-    · have h₁ : Eff.test ε a = false := by
+-        cases he : Eff.test ε a
+-        · rfl
+-        · exact False.elim (hm (ha a he))
+-      have h₂ : Eff.test ε' a = false := by
+-        cases he : Eff.test ε' a
+-        · rfl
+-        · exact False.elim (hm (hb a he))
+-      rw [h₁, h₂]
+-  · rw [List.isEmpty_iff.mp hf, List.isEmpty_iff.mp hg]
++theorem tyEq_sound {atoms a b} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
++    (h : tyEq atoms a b = true) : a = b := Finite.tyEq_sound ha hb h
++
++theorem tysEq_sound {atoms a b} (ha : Tys.AtomsIn atoms a) (hb : Tys.AtomsIn atoms b)
++    (h : tysEq atoms a b = true) : a = b := (Finite.tysEq_spec ha hb).mp h
+ 
+ theorem emptyEff_atoms (atoms : List Atom) : Eff.AtomsIn atoms emptyEff := by
+-  intro a h; cases h
++  constructor
++  · intro a h; cases h
++  · trivial
+ 
+-theorem singleEff_atoms (atoms : List Atom) (a : Atom) :
++theorem singleEff_atoms (atoms : List Atom) (a : Atom) (ha : a ∈ atoms) :
+     Eff.AtomsIn atoms (singleEff atoms a) := by
+-  intro b h
+-  have ⟨ha, hb⟩ : atoms.contains a = true ∧ (b == a) = true := by simpa [singleEff, Eff.mem, Eff.test, Eff.ofAtoms, Eff.atoms] using h
+-  have : b = a := eq_of_beq hb
+-  subst b
+-  exact List.mem_of_elem_eq_true ha
+-
+-theorem singleEff_eq {atoms : List Atom} {l : EffName} (h : Atom.name l ∈ atoms) :
+-    singleEff atoms (.name l) = Eff.single l := by
+-  apply Eff.ext_test
+-  · intro a; simp [Eff.test, Eff.ofAtoms, Eff.atoms, singleEff, Eff.single, h]
+-  · rfl
+-
+-theorem unionEff_atoms (atoms : List Atom) (ε ε' : Eff) :
+-    Eff.AtomsIn atoms (unionEff atoms ε ε') := by
+-  intro a h
+-  have ⟨hm, _⟩ : atoms.contains a = true ∧ (Eff.test ε a || Eff.test ε' a) = true := by simpa [unionEff, Eff.mem, Eff.test, Eff.ofAtoms, Eff.atoms] using h
+-  exact List.mem_of_elem_eq_true hm
+-
+-theorem union_atoms {atoms ε ε'} (ha : Eff.AtomsIn atoms ε) (hb : Eff.AtomsIn atoms ε') :
+-    Eff.AtomsIn atoms (Eff.union ε ε') := by
+-  intro a h
+-  have hh := (Eff.mem_union ε ε' a).mp h
+-  rcases hh with h | h
+-  · exact ha a h
+-  · exact hb a h
+-
+-theorem unionEff_eq {atoms ε ε'} (ha : Eff.AtomsIn atoms ε) (hb : Eff.AtomsIn atoms ε')
+-    (hf : Eff.Legacy ε) (hg : Eff.Legacy ε') : unionEff atoms ε ε' = Eff.union ε ε' := by
+-  apply Eff.ext_test
+-  · intro a
+-    by_cases h : a ∈ atoms
+-    · simp [Eff.test, Eff.ofAtoms, Eff.atoms, unionEff, Eff.union, Eff.norm, h]
+-    · have he : Eff.test (Eff.union ε ε') a = false := by
+-        cases hx : Eff.test (Eff.union ε ε') a
+-        · rfl
+-        · exact False.elim (h (union_atoms ha hb a hx))
+-      simpa only [unionEff, Eff.test, Eff.ofAtoms, Eff.atoms, List.contains_eq_mem,
+-        decide_eq_false_iff_not.mpr h, Bool.false_and] using he.symm
+-  · change [] = Order.sortUnique tyCompare (Ty.normTys (ε.fails ++ ε'.fails))
+-    rw [hf, hg]
+-    rfl
+-
+-def tyConEq : TyCon → TyCon → Bool
+-  | .data a, .data b => a == b
+-  | .list, .list | .set, .set | .map, .map | .reference, .reference | .lazy, .lazy => true
+-  | _, _ => false
++  exact ⟨fun b h => (eq_of_beq h) ▸ ha, trivial⟩
+ 
+-mutual
+-  def tyEq (atoms : List Atom) : Ty → Ty → Bool
+-    | .base a, .base b => a == b
+-    | .opaque a, .opaque b => a == b
+-    | .data a ts, .data b us => (a == b) && tysEq atoms ts us
+-    | .list a, .list b | .reference a, .reference b | .lazy a, .lazy b
+-      | .set a, .set b => tyEq atoms a b
+-    | .fn names ps r ε, .fn otherNames qs s ε' => (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s && effEq atoms ε ε'
+-    | .cont b t ε, .cont b' t' ε' => tyEq atoms b b' && tyEq atoms t t' && effEq atoms ε ε'
+-    | .map a b, .map a' b' => tyEq atoms a a' && tyEq atoms b b'
+-    | .tvar i, .tvar j => i == j
+-    | .bytes, .bytes => true
+-    | .dict cl t, .dict cl' t' => (cl == cl') && tyEq atoms t t'
+-    | .tapp i ts, .tapp j us => (i == j) && tysEq atoms ts us
+-    | .ctor a, .ctor b => tyConEq a b
+-    | _, _ => false
+-  def tysEq (atoms : List Atom) : List Ty → List Ty → Bool
+-    | [], [] => true
+-    | t :: ts, u :: us => tyEq atoms t u && tysEq atoms ts us
+-    | _, _ => false
+-end
+-
+-/-- 比較に成功した両側の効果は、この移行段階ではFailを含まない。 -/
+-theorem effEq_legacy {atoms a b} (h : effEq atoms a b = true) : Eff.Legacy a ∧ Eff.Legacy b := by
+-  have hh := (Bool.and_eq_true_iff.mp h).1
+-  exact ⟨List.isEmpty_iff.mp (Bool.and_eq_true_iff.mp hh).1,
+-    List.isEmpty_iff.mp (Bool.and_eq_true_iff.mp hh).2⟩
+-
+-mutual
+-  theorem tyEq_legacy (atoms : List Atom) : (a b : Ty) →
+-      tyEq atoms a b = true → a.Legacy ∧ b.Legacy
+-    | .base _, b, h | .opaque _, b, h | .tvar _, b, h | .bytes, b, h | .ctor _, b, h => by
+-      cases b <;> simp only [tyEq] at h <;> try contradiction
+-      all_goals exact ⟨trivial, trivial⟩
+-    | .data _ ts, b, h | .tapp _ ts, b, h => by
+-      cases b <;> simp only [tyEq] at h <;> try contradiction
+-      rename_i _ us
+-      exact tysEq_legacy atoms ts us (Bool.and_eq_true_iff.mp h).2
+-    | .list t, b, h | .reference t, b, h | .lazy t, b, h | .set t, b, h => by
+-      cases b <;> simp only [tyEq] at h <;> try contradiction
+-      rename_i u
+-      exact tyEq_legacy atoms t u h
+-    | .dict _ t, b, h => by
+-      cases b <;> simp only [tyEq] at h <;> try contradiction
+-      rename_i _ u
+-      exact tyEq_legacy atoms t u (Bool.and_eq_true_iff.mp h).2
+-    | .map a b, t, h => by
+-      cases t <;> simp only [tyEq] at h <;> try contradiction
+-      rename_i u v
+-      have ha := tyEq_legacy atoms a u (Bool.and_eq_true_iff.mp h).1
+-      have hb := tyEq_legacy atoms b v (Bool.and_eq_true_iff.mp h).2
+-      exact ⟨⟨ha.1, hb.1⟩, ⟨ha.2, hb.2⟩⟩
+-    | .fn ns ps r e, t, h => by
+-      cases t <;> simp only [tyEq] at h <;> try contradiction
+-      rename_i _ qs r' e'
+-      rcases Bool.and_eq_true_iff.mp h with ⟨h, he⟩
+-      rcases Bool.and_eq_true_iff.mp h with ⟨h, hr⟩
+-      have hp := tysEq_legacy atoms ps qs (Bool.and_eq_true_iff.mp h).2
+-      have hr := tyEq_legacy atoms r r' hr
+-      have he := effEq_legacy he
+-      exact ⟨⟨hp.1, hr.1, he.1⟩, ⟨hp.2, hr.2, he.2⟩⟩
+-    | .cont a b e, t, h => by
+-      cases t <;> simp only [tyEq] at h <;> try contradiction
+-      rename_i u v _
+-      rcases Bool.and_eq_true_iff.mp h with ⟨h, he⟩
+-      have ha := tyEq_legacy atoms a u (Bool.and_eq_true_iff.mp h).1
+-      have hb := tyEq_legacy atoms b v (Bool.and_eq_true_iff.mp h).2
+-      have he := effEq_legacy he
+-      exact ⟨⟨ha.1, hb.1, he.1⟩, ⟨ha.2, hb.2, he.2⟩⟩
+-  theorem tysEq_legacy (atoms : List Atom) : (ts us : List Ty) →
+-      tysEq atoms ts us = true → Ty.LegacyTys ts ∧ Ty.LegacyTys us
+-    | [], us, h => by cases us <;> simp_all [tysEq, Ty.LegacyTys]
+-    | t :: ts, us, h => by
+-      cases us with
+-      | nil => simp [tysEq] at h
+-      | cons u us =>
+-        have ht := tyEq_legacy atoms t u (Bool.and_eq_true_iff.mp h).1
+-        have hs := tysEq_legacy atoms ts us (Bool.and_eq_true_iff.mp h).2
+-        exact ⟨⟨ht.1, hs.1⟩, ⟨ht.2, hs.2⟩⟩
+-end
+-
+-theorem tyConEq_sound {a b : TyCon} (h : tyConEq a b = true) : a = b := by
+-  cases a <;> cases b <;> simp_all [tyConEq]
+-
+-mutual
+-  theorem tyEq_soundAux (atoms : List Atom) : (a b : Ty) →
+-      Ty.AtomsIn atoms a → Ty.AtomsIn atoms b → tyEq atoms a b = true → a = b
+-    | .base _, b, _, _, h => by cases b <;> simp_all [tyEq]
+-    | .opaque _, b, _, _, h => by cases b <;> simp_all [tyEq]
+-    | .tvar _, b, _, _, h => by cases b <;> simp_all [tyEq]
+-    | .bytes, b, _, _, h => by cases b <;> simp_all [tyEq]
+-    | .ctor c, b, _, _, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        exact congrArg Ty.ctor (tyConEq_sound h)
+-    | .list a, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        exact congrArg Ty.list (tyEq_soundAux atoms _ _ ha hb h)
+-    | .reference a, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        exact congrArg Ty.reference (tyEq_soundAux atoms _ _ ha hb h)
+-    | .lazy a, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        exact congrArg Ty.lazy (tyEq_soundAux atoms _ _ ha hb h)
+-    | .set a, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        exact congrArg Ty.set (tyEq_soundAux atoms _ _ ha hb h)
+-    | .data d ts, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        have ⟨hd, ht⟩ := Bool.and_eq_true_iff.mp h
+-        have he := eq_of_beq hd
+-        have hs := tysEq_soundAux atoms _ _ ha hb ht
+-        subst_vars; rfl
+-    | .tapp i ts, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        have ⟨hi, ht⟩ := Bool.and_eq_true_iff.mp h
+-        have he := eq_of_beq hi
+-        have hs := tysEq_soundAux atoms _ _ ha hb ht
+-        subst_vars; rfl
+-    | .dict cl a, b, ha, hb, h => by
+-        cases b <;> simp only [tyEq] at h <;> try contradiction
+-        rename_i cl' a'
+-        have ⟨hc, ht⟩ := Bool.and_eq_true_iff.mp h
+-        have he := eq_of_beq hc
+-        have hs := tyEq_soundAux atoms a a' ha hb ht
+-        subst_vars; rfl
+-    | .map a b, t, ha, hb, h => by
+-        cases t <;> simp only [tyEq] at h <;> try contradiction
+-        have ⟨h₁, h₂⟩ := Bool.and_eq_true_iff.mp h
+-        have he₁ := tyEq_soundAux atoms _ _ ha.1 hb.1 h₁
+-        have he₂ := tyEq_soundAux atoms _ _ ha.2 hb.2 h₂
+-        subst_vars; rfl
+-    | .fn names ps r ε, t, ha, hb, h => by
+-        cases t <;> simp only [tyEq] at h <;> try contradiction
+-        rename_i otherNames qs s ε'
+-        simp only [Bool.and_eq_true_iff] at h
+-        rcases h with ⟨⟨⟨hn, hp⟩, hr⟩, he⟩
+-        have he₀ := eq_of_beq hn
+-        have he₁ := tysEq_soundAux atoms _ _ ha.1 hb.1 hp
+-        have he₂ := tyEq_soundAux atoms _ _ ha.2.1 hb.2.1 hr
+-        have he₃ := effEq_sound ha.2.2 hb.2.2 he
+-        subst_vars; rfl
+-    | .cont b t ε, a, ha, hb, h => by
+-        cases a <;> simp only [tyEq] at h <;> try contradiction
+-        rename_i b' t' ε'
+-        have ⟨⟨h₁, h₂⟩, he⟩ : (tyEq atoms b b' = true ∧ tyEq atoms t t' = true) ∧
+-            effEq atoms ε ε' = true := by simpa using h
+-        have he₁ := tyEq_soundAux atoms _ _ ha.1 hb.1 h₁
+-        have he₂ := tyEq_soundAux atoms _ _ ha.2.1 hb.2.1 h₂
+-        have he₃ := effEq_sound ha.2.2 hb.2.2 he
+-        subst_vars; rfl
+-  theorem tysEq_soundAux (atoms : List Atom) : (ts us : List Ty) →
+-      Tys.AtomsIn atoms ts → Tys.AtomsIn atoms us → tysEq atoms ts us = true → ts = us
+-    | [], us, _, _, h => by cases us <;> simp_all [tysEq]
+-    | t :: ts, us, ha, hb, h => by
+-        cases us with
+-        | nil => simp [tysEq] at h
+-        | cons u us =>
+-            have ⟨ht, hs⟩ := Bool.and_eq_true_iff.mp h
+-            have he₁ := tyEq_soundAux atoms t u ha.1 hb.1 ht
+-            have he₂ := tysEq_soundAux atoms ts us ha.2 hb.2 hs
+-            subst_vars; rfl
+-end
++theorem singleEff_eq {atoms : List Atom} {l : EffName} (_h : Atom.name l ∈ atoms) :
++    singleEff atoms (.name l) = Eff.single l := rfl
+ 
+-theorem tyEq_sound {atoms a b} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
+-    (h : tyEq atoms a b = true) : a = b := tyEq_soundAux atoms a b ha hb h
++theorem union_atoms {atoms a b} (ha : Eff.AtomsIn atoms a) (hb : Eff.AtomsIn atoms b) :
++    Eff.AtomsIn atoms (Eff.union a b) := Eff.norm_support _ (Finite.union_support ha hb)
++
++theorem unionEff_atoms {atoms a b} (ha : Eff.AtomsIn atoms a) (hb : Eff.AtomsIn atoms b) :
++    Eff.AtomsIn atoms (unionEff atoms a b) := Finite.unionEff_support ha hb
+ 
+-theorem tysEq_sound {atoms ts us} (ha : Tys.AtomsIn atoms ts) (hb : Tys.AtomsIn atoms us)
+-    (h : tysEq atoms ts us = true) : ts = us := tysEq_soundAux atoms ts us ha hb h
++theorem unionEff_eq {atoms a b} (ha : Eff.AtomsIn atoms a) (hb : Eff.AtomsIn atoms b) :
++    unionEff atoms a b = Eff.union a b := Finite.unionEff_eq ha hb
+ 
+-def tyLe (atoms : List Atom) (a b : Ty) : Bool :=
+-  match a, b with
+-  | .fn names ps r ε, .fn otherNames qs s ε' => (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s && effSub atoms ε ε'
+-  | _, _ => tyEq atoms a b
++def tyLe := Finite.tyLe
+ 
+ theorem tyLe_sound {atoms a b} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
+-    (h : tyLe atoms a b = true) : Ty.Le a b := by
+-  cases a <;> cases b <;> try exact Or.inl (tyEq_sound ha hb h)
+-  rename_i names ps r ε otherNames qs s ε'
+-  simp only [tyLe, Bool.and_eq_true_iff] at h
+-  rcases h with ⟨⟨⟨hn, hp⟩, hr⟩, he⟩
+-  have hnames := eq_of_beq hn
+-  have hps := tysEq_sound ha.1 hb.1 hp
+-  have hrs := tyEq_sound ha.2.1 hb.2.1 hr
+-  subst otherNames; subst qs; subst s
+-  exact Or.inr ⟨names, ps, r, ε, ε', rfl, rfl, effSub_sound ha.2.2 he⟩
+-
+-/-- 計算する入口では正規化前の操作を使う。Legacyとの一致は成功時に接続する。 -/
+-def applyToTy := Ty.rawApplyTo
+-def shiftTy := Ty.rawShift
+-def shiftTys := Ty.rawShiftTys
+-def substTyAt := Ty.rawSubstAt
+-def substEffAt := Eff.rawSubstAt
+-def shiftEff := Eff.rawShift
+-def substTysAt (c : Nat) (ts : List Ty) (es : List Eff) (as : List Ty) : List Ty :=
+-  as.map (substTyAt c ts es)
+-def substTy (ts : List Ty) (es : List Eff) (a : Ty) : Ty := substTyAt 0 ts es a
+-
+-def fnTyCheck (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
+-    (ts : List Ty) (es : List Eff) : Ty := substTy ts es (.fn names params ret eff)
+-
+-theorem applyToTy_eq (t : Ty) (args : List Ty) (h : t.Legacy) (hs : Ty.LegacyTys args) :
+-    applyToTy t args = t.applyTo args := by
+-  rw [Ty.applyTo_eq_raw_norm, Ty.norm_legacy _ (Ty.rawApplyTo_legacy t args h hs)]
+-  rfl
+-
+-theorem shiftTy_eq (k c : Nat) (a : Ty) (ha : a.Legacy) : shiftTy k c a = Ty.shift k c a :=
+-  (Ty.shift_eq_raw_of_legacy k c a ha).symm
+-
+-theorem shiftTys_eq (k c : Nat) (as : List Ty) (ha : Ty.LegacyTys as) :
+-    shiftTys k c as = as.map (Ty.shift k c) := by
+-  rw [shiftTys, Ty.rawShiftTys_eq_map]
+-  exact List.map_congr_left (fun t h => shiftTy_eq k c t (Ty.LegacyTys.iff.mp ha t h))
+-
+-theorem shiftEff_eq (k c : Nat) (e : Eff) (h : Eff.Legacy e) :
+-    shiftEff k c e = Eff.shift k c e := (Eff.shift_eq_raw_of_legacy k c e h).symm
+-
+-theorem substEffAt_eq (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff)
+-    (ht : ∀ t ∈ ts, t.Legacy) (he : ∀ f ∈ es, Eff.Legacy f) (h : Eff.Legacy e) :
+-    substEffAt c ts es e = Eff.substAt c ts es e :=
+-  (Eff.substAt_eq_raw_of_legacy c ts es ht he e h).symm
+-
+-theorem substTyAt_eq (c : Nat) (ts : List Ty) (es : List Eff) (a : Ty)
+-    (ht : ∀ t ∈ ts, t.Legacy) (he : ∀ e ∈ es, Eff.Legacy e) (ha : a.Legacy) :
+-    substTyAt c ts es a = Ty.substAt c ts es a :=
+-  (Ty.substAt_eq_raw_of_legacy c ts es ht he a ha).symm
+-
+-theorem substTysAt_eq (c : Nat) (ts : List Ty) (es : List Eff) (as : List Ty)
+-    (ht : ∀ t ∈ ts, t.Legacy) (he : ∀ e ∈ es, Eff.Legacy e) (ha : ∀ a ∈ as, a.Legacy) :
+-    substTysAt c ts es as = as.map (Ty.substAt c ts es) :=
++    (h : tyLe atoms a b = true) : Ty.Le a b := Finite.tyLe_sound ha hb h
++
++def applyToTy := Finite.applyToTy
++def shiftTy := Finite.shiftTy
++def shiftTys (atoms : List Atom) (k c : Nat) (ts : List Ty) := ts.map (shiftTy atoms k c)
++def substTyAt := Finite.substTyAt
++def substEffAt := Finite.substEffAt
++def shiftEff := Finite.shiftEff
++def substTysAt (atoms : List Atom) (c : Nat) (ts : List Ty) (es : List Eff) (as : List Ty) :=
++  as.map (substTyAt atoms c ts es)
++def substTy (atoms : List Atom) (ts : List Ty) (es : List Eff) (a : Ty) := substTyAt atoms 0 ts es a
++def fnTyCheck (atoms : List Atom) (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
++    (ts : List Ty) (es : List Eff) := substTy atoms ts es (.fn names params ret eff)
++
++theorem applyToTy_eq {atoms} (t : Ty) (args : List Ty) (h : t.AtomsIn atoms)
++    (hs : Tys.AtomsIn atoms args) : applyToTy atoms t args = t.applyTo args := Finite.applyToTy_eq h hs
++
++theorem shiftTy_eq {atoms} (k c : Nat) (a : Ty) (ha : a.AtomsIn atoms) :
++    shiftTy atoms k c a = a.shift k c := Finite.shiftTy_eq ha
++
++theorem shiftTys_eq {atoms} (k c : Nat) (as : List Ty) (ha : Tys.AtomsIn atoms as) :
++    shiftTys atoms k c as = Ty.shiftTys k c as := by
++  rw [Ty.shiftTys_eq_map]
++  exact List.map_congr_left (fun t h => shiftTy_eq k c t (Ty.SupportList.iff.mp ha t h))
++
++theorem shiftEff_eq {atoms} (k c : Nat) (e : Eff) (h : e.AtomsIn atoms) :
++    shiftEff atoms k c e = Eff.shift k c e := Finite.shiftEff_eq h
++
++theorem substEffAt_eq {atoms} (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff)
++    (ht : ∀ t ∈ ts, t.AtomsIn atoms) (he : ∀ f ∈ es, f.AtomsIn atoms) (h : e.AtomsIn atoms) :
++    substEffAt atoms c ts es e = Eff.substAt c ts es e := Finite.substEffAt_eq ht he h
++
++theorem substTyAt_eq {atoms} (c : Nat) (ts : List Ty) (es : List Eff) (a : Ty)
++    (ht : ∀ t ∈ ts, t.AtomsIn atoms) (he : ∀ e ∈ es, e.AtomsIn atoms) (ha : a.AtomsIn atoms) :
++    substTyAt atoms c ts es a = a.substAt c ts es := Finite.substTyAt_eq ht he ha
++
++theorem substTysAt_eq {atoms} (c : Nat) (ts : List Ty) (es : List Eff) (as : List Ty)
++    (ht : ∀ t ∈ ts, t.AtomsIn atoms) (he : ∀ e ∈ es, e.AtomsIn atoms) (ha : ∀ a ∈ as, a.AtomsIn atoms) :
++    substTysAt atoms c ts es as = as.map (Ty.substAt c ts es) :=
+   List.map_congr_left (fun a h => substTyAt_eq c ts es a ht he (ha a h))
+ 
+-theorem substTy_eq (ts : List Ty) (es : List Eff) (a : Ty)
+-    (ht : ∀ t ∈ ts, t.Legacy) (he : ∀ e ∈ es, Eff.Legacy e) (ha : a.Legacy) :
+-    substTy ts es a = a.subst ts es := substTyAt_eq 0 ts es a ht he ha
++theorem substTy_eq {atoms} (ts : List Ty) (es : List Eff) (a : Ty)
++    (ht : ∀ t ∈ ts, t.AtomsIn atoms) (he : ∀ e ∈ es, e.AtomsIn atoms) (ha : a.AtomsIn atoms) :
++    substTy atoms ts es a = a.subst ts es := substTyAt_eq 0 ts es a ht he ha
+ 
+-theorem fnTyCheck_eq (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
+-    (ts : List Ty) (es : List Eff) (ht : ∀ t ∈ ts, t.Legacy) (he : ∀ e ∈ es, Eff.Legacy e)
+-    (hp : Ty.LegacyTys params) (hr : ret.Legacy) (hf : Eff.Legacy eff) :
+-    fnTyCheck names params ret eff ts es = fnTy names params ret eff ts es :=
++theorem fnTyCheck_eq {atoms} (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
++    (ts : List Ty) (es : List Eff) (ht : ∀ t ∈ ts, t.AtomsIn atoms) (he : ∀ e ∈ es, e.AtomsIn atoms)
++    (hp : Tys.AtomsIn atoms params) (hr : ret.AtomsIn atoms) (hf : eff.AtomsIn atoms) :
++    fnTyCheck atoms names params ret eff ts es = fnTy names params ret eff ts es :=
+   substTy_eq ts es _ ht he ⟨hp, hr, hf⟩
+ 
+-private theorem atoms_getD {atoms ts fallback} {i : Nat} (h : Tys.AtomsIn atoms ts)
+-    (hf : Ty.AtomsIn atoms fallback) : Ty.AtomsIn atoms ((ts[i]?).getD fallback) := by
+-  induction ts generalizing i with
+-  | nil => exact hf
+-  | cons t ts ih => cases i with
+-    | zero => exact h.1
+-    | succ i => exact ih h.2
+-
+-private theorem effNorm_atoms {atoms e} (h : Eff.AtomsIn atoms e) :
+-    Eff.AtomsIn atoms (Eff.norm e) := fun a ha => h a ((Eff.mem_norm e a).mp ha)
+-
+-private theorem effRawShift_atoms {atoms e} (h : Eff.AtomsIn atoms e) (k c : Nat) :
+-    Eff.AtomsIn atoms (Eff.rawShift k c e) := by
+-  cases e
+-  exact h
+-
+-mutual
+-  private theorem norm_atomsAux {atoms} (a : Ty) (h : Ty.AtomsIn atoms a) :
+-      Ty.AtomsIn atoms a.norm := by
+-    cases a <;> simp only [Ty.norm, Ty.AtomsIn] at h ⊢
+-    all_goals first
+-      | trivial
+-      | exact norm_atomsAux _ h
+-      | exact normTys_atomsAux _ h
+-      | skip
+-    case fn ns ps r e => exact ⟨normTys_atomsAux ps h.1, norm_atomsAux r h.2.1, effNorm_atoms h.2.2⟩
+-    case cont a b e => exact ⟨norm_atomsAux a h.1, norm_atomsAux b h.2.1, effNorm_atoms h.2.2⟩
+-    case map a b => exact ⟨norm_atomsAux a h.1, norm_atomsAux b h.2⟩
+-  private theorem normTys_atomsAux {atoms} (ts : List Ty) (h : Tys.AtomsIn atoms ts) :
+-      Tys.AtomsIn atoms (Ty.normTys ts) := by
+-    cases ts with
+-    | nil => trivial
+-    | cons t ts => exact ⟨norm_atomsAux t h.1, normTys_atomsAux ts h.2⟩
+-end
+-
+-mutual
+-  private theorem shiftTy_atomsAux {atoms} (k c : Nat) : (a : Ty) →
+-      Ty.AtomsIn atoms a → Ty.AtomsIn atoms (shiftTy k c a)
+-    | .base _, _ | .opaque _, _ | .bytes, _ | .ctor _, _ => trivial
+-    | .tvar i, _ => by simp only [shiftTy, Ty.rawShift]; split <;> trivial
+-    | .data _ ts, h | .tapp _ ts, h => shiftTys_atomsAux k c ts h
+-    | .list a, h | .reference a, h | .lazy a, h | .set a, h | .dict _ a, h =>
+-        shiftTy_atomsAux k c a h
+-    | .fn names ps r _, h => ⟨shiftTys_atomsAux k c ps h.1, shiftTy_atomsAux k c r h.2.1, effRawShift_atoms h.2.2 k c⟩
+-    | .cont b t _, h => ⟨shiftTy_atomsAux k c b h.1, shiftTy_atomsAux k c t h.2.1, effRawShift_atoms h.2.2 k c⟩
+-    | .map a b, h => ⟨shiftTy_atomsAux k c a h.1, shiftTy_atomsAux k c b h.2⟩
+-  private theorem shiftTys_atomsAux {atoms} (k c : Nat) : (ts : List Ty) →
+-      Tys.AtomsIn atoms ts → Tys.AtomsIn atoms (shiftTys k c ts)
+-    | [], _ => trivial
+-    | t :: ts, h => ⟨shiftTy_atomsAux k c t h.1, shiftTys_atomsAux k c ts h.2⟩
+-end
+-
+ theorem shift_atoms {atoms a} (ha : Ty.AtomsIn atoms a) (k c : Nat) :
+-    Ty.AtomsIn atoms (a.shift k c) := by
+-  rw [Ty.shift_eq_norm_rawShift]
+-  exact norm_atomsAux _ (shiftTy_atomsAux k c a ha)
++    Ty.AtomsIn atoms (a.shift k c) := Ty.shift_support k c a ha
+ 
+-theorem applyToTy_atoms {atoms a ts} (ha : Ty.AtomsIn atoms a) (ht : Tys.AtomsIn atoms ts) :
+-    Ty.AtomsIn atoms (applyToTy a ts) := by
+-  cases a <;> try exact ha
+-  · exact ht
+-  · rename_i φ
+-    have hh : Ty.AtomsIn atoms (ts.headD (.base .unit)) := by
+-      cases ts with
+-      | nil => trivial
+-      | cons t ts => exact ht.1
+-    have ht' : Ty.AtomsIn atoms (ts.tail.headD (.base .unit)) := by
+-      cases ts with
+-      | nil => trivial
+-      | cons t ts => cases ts with
+-        | nil => trivial
+-        | cons u us => exact ht.2.1
+-    cases φ <;> simp only [applyToTy, Ty.rawApplyTo, TyCon.rawApply, Ty.AtomsIn] <;>
+-      first | exact ht | exact hh | exact ⟨hh, ht'⟩
++theorem shiftTy_atoms {atoms a} (ha : Ty.AtomsIn atoms a) (k c : Nat) :
++    Ty.AtomsIn atoms (shiftTy atoms k c a) := by
++  rw [shiftTy_eq k c a ha]; exact shift_atoms ha k c
+ 
+ theorem applyTo_atoms {atoms a ts} (ha : Ty.AtomsIn atoms a) (ht : Tys.AtomsIn atoms ts) :
+     Ty.AtomsIn atoms (a.applyTo ts) := by
+   rw [Ty.applyTo_eq_raw_norm]
+-  exact norm_atomsAux _ (applyToTy_atoms ha ht)
+-
+-private theorem rawBind_eff_atoms {atoms θ ε}
+-    (ha : Eff.AtomsIn atoms ε) (he : ∀ e ∈ θ.rows, Eff.AtomsIn atoms e) :
+-    Eff.AtomsIn atoms (Eff.rawBind θ ε) := by
+-  intro a h
+-  rw [Eff.mem_rawBind, Eff.mem_substAtoms] at h
+-  rcases h with h | ⟨i, e, hi, _, h⟩
+-  · cases a with
+-    | name _ => exact ha _ h
+-    | rho _ => exact ha _ h.2
+-  · exact he e (List.mem_of_getElem? hi) _ h
+-
+-mutual
+-  private theorem rawBind_atoms {atoms θ} (ht : ∀ i, Ty.AtomsIn atoms (θ.types i))
+-      (he : ∀ e ∈ θ.rows, Eff.AtomsIn atoms e) (a : Ty) (h : Ty.AtomsIn atoms a) :
+-      Ty.AtomsIn atoms (a.rawBind θ) := by
+-    cases a <;> simp only [Ty.rawBind, Ty.AtomsIn] at h ⊢
+-    all_goals first
+-      | trivial
+-      | exact rawBind_atoms ht he _ h
+-      | exact rawBindTys_atoms ht he _ h
+-      | skip
+-    case tvar i => exact ht i
+-    case fn ns ps r e => exact ⟨rawBindTys_atoms ht he ps h.1,
+-      rawBind_atoms ht he r h.2.1, rawBind_eff_atoms h.2.2 he⟩
+-    case cont a b e => exact ⟨rawBind_atoms ht he a h.1,
+-      rawBind_atoms ht he b h.2.1, rawBind_eff_atoms h.2.2 he⟩
+-    case map a b => exact ⟨rawBind_atoms ht he a h.1, rawBind_atoms ht he b h.2⟩
+-    case tapp i as => exact applyToTy_atoms (ht i) (rawBindTys_atoms ht he as h)
+-  private theorem rawBindTys_atoms {atoms θ} (ht : ∀ i, Ty.AtomsIn atoms (θ.types i))
+-      (he : ∀ e ∈ θ.rows, Eff.AtomsIn atoms e) (as : List Ty) (h : Tys.AtomsIn atoms as) :
+-      Tys.AtomsIn atoms (Ty.rawBindTys θ as) := by
+-    cases as with
+-    | nil => trivial
+-    | cons a as => exact ⟨rawBind_atoms ht he a h.1, rawBindTys_atoms ht he as h.2⟩
+-end
+-
+-private theorem at_atoms {atoms ts es} (ht : Tys.AtomsIn atoms ts)
+-    (he : ∀ e ∈ es, Eff.AtomsIn atoms e) (c : Nat) :
+-    (∀ i, Ty.AtomsIn atoms ((SubstEnv.at c ts es).types i)) ∧
+-    (∀ e ∈ (SubstEnv.at c ts es).rows, Eff.AtomsIn atoms e) := by
+-  constructor
+-  · intro i
+-    simp only [SubstEnv.at]
+-    split
+-    · trivial
+-    · split
+-      · exact shiftTy_atomsAux c 0 _ (atoms_getD ht (by trivial))
+-      · trivial
+-  · intro e hm
+-    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp hm
+-    exact effRawShift_atoms (he f hf) c 0
++  exact Ty.norm_support _ (Ty.rawApplyTo_support a ts ha ht)
+ 
+-theorem substTyAt_atoms {atoms a ts es} (ha : Ty.AtomsIn atoms a)
+-    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) (c : Nat) :
+-    Ty.AtomsIn atoms (substTyAt c ts es a) := by
+-  have hh := at_atoms ht he c
+-  exact rawBind_atoms hh.1 hh.2 a ha
++theorem applyToTy_atoms {atoms a ts} (ha : Ty.AtomsIn atoms a) (ht : Tys.AtomsIn atoms ts) :
++    Ty.AtomsIn atoms (applyToTy atoms a ts) := by
++  rw [applyToTy_eq a ts ha ht]; exact applyTo_atoms ha ht
+ 
+ theorem substAt_atoms {atoms a ts es} (ha : Ty.AtomsIn atoms a)
+-    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) (c : Nat) :
+-    Ty.AtomsIn atoms (a.substAt c ts es) := by
+-  rw [Ty.substAt_eq_rawBind]
+-  exact norm_atomsAux _ (substTyAt_atoms ha ht he c)
++    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, e.AtomsIn atoms) (c : Nat) :
++    Ty.AtomsIn atoms (a.substAt c ts es) := Ty.substAt_support c ts es (Ty.SupportList.iff.mp ht) he a ha
++
++theorem substTyAt_atoms {atoms a ts es} (ha : Ty.AtomsIn atoms a)
++    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, e.AtomsIn atoms) (c : Nat) :
++    Ty.AtomsIn atoms (substTyAt atoms c ts es a) := by
++  rw [substTyAt_eq c ts es a (Ty.SupportList.iff.mp ht) he ha]; exact substAt_atoms ha ht he c
+ 
+ theorem subst_atoms {atoms a ts es} (ha : Ty.AtomsIn atoms a)
+-    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) :
++    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, e.AtomsIn atoms) :
+     Ty.AtomsIn atoms (a.subst ts es) := substAt_atoms ha ht he 0
+ 
+-theorem substEffAt_atoms {atoms ts es ε} (ha : Eff.AtomsIn atoms ε)
+-    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) (c : Nat) :
+-    Eff.AtomsIn atoms (substEffAt c ts es ε) :=
+-  rawBind_eff_atoms ha (at_atoms ht he c).2
++theorem substEffAt_atoms {atoms ts es e} (ha : e.AtomsIn atoms)
++    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, e.AtomsIn atoms) (c : Nat) :
++    Eff.AtomsIn atoms (substEffAt atoms c ts es e) := by
++  rw [substEffAt_eq c ts es e (Ty.SupportList.iff.mp ht) he ha]
++  exact Eff.substAt_support c ts es (Ty.SupportList.iff.mp ht) he e ha
+ 
+-theorem substRho_atoms {atoms es ε} (ha : Eff.AtomsIn atoms ε)
+-    (he : ∀ e ∈ es, Eff.AtomsIn atoms e) : Eff.AtomsIn atoms (Eff.substRho es ε) := by
+-  intro a hh
+-  apply rawBind_eff_atoms ha (at_atoms (ts := []) (by trivial) he 0).2 a
+-  exact (Eff.mem_norm _ _).mp hh
+-
+-theorem shiftTy_atoms {atoms a} (ha : Ty.AtomsIn atoms a) (k c : Nat) :
+-    Ty.AtomsIn atoms (shiftTy k c a) := shiftTy_atomsAux k c a ha
++theorem substRho_atoms {atoms es e} (ha : Eff.AtomsIn atoms e)
++    (he : ∀ e ∈ es, e.AtomsIn atoms) : Eff.AtomsIn atoms (Eff.substRho es e) :=
++  Eff.substAt_support 0 [] es (by simp) he e ha
+ 
+ theorem substTy_atoms {atoms a ts es} (ha : Ty.AtomsIn atoms a)
+-    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) :
+-    Ty.AtomsIn atoms (substTy ts es a) := substTyAt_atoms ha ht he 0
++    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, e.AtomsIn atoms) :
++    Ty.AtomsIn atoms (substTy atoms ts es a) := substTyAt_atoms ha ht he 0
+ 
+ theorem fnTyCheck_atoms {atoms names params ret eff ts es}
+     (hp : Tys.AtomsIn atoms params) (hr : Ty.AtomsIn atoms ret) (he : Eff.AtomsIn atoms eff)
+-    (ht : Tys.AtomsIn atoms ts) (hes : ∀ e ∈ es, Eff.AtomsIn atoms e) :
+-    Ty.AtomsIn atoms (fnTyCheck names params ret eff ts es) := substTy_atoms ⟨hp, hr, he⟩ ht hes
++    (ht : Tys.AtomsIn atoms ts) (hes : ∀ e ∈ es, e.AtomsIn atoms) :
++    Ty.AtomsIn atoms (fnTyCheck atoms names params ret eff ts es) := substTy_atoms ⟨hp, hr, he⟩ ht hes
+ 
+ theorem shiftTys_atoms {atoms ts} (ht : Tys.AtomsIn atoms ts) (k c : Nat) :
+-    Tys.AtomsIn atoms (shiftTys k c ts) := shiftTys_atomsAux k c ts ht
++    Tys.AtomsIn atoms (shiftTys atoms k c ts) := by
++  apply Ty.SupportList.iff.mpr
++  intro t h
++  obtain ⟨u, hu, rfl⟩ := List.mem_map.mp h
++  exact shiftTy_atoms (Ty.SupportList.iff.mp ht u hu) k c
+ 
+ theorem substTysAt_atoms {atoms as ts es} (ha : Tys.AtomsIn atoms as)
+-    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) (c : Nat) :
+-    Tys.AtomsIn atoms (substTysAt c ts es as) := by
++    (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, e.AtomsIn atoms) (c : Nat) :
++    Tys.AtomsIn atoms (substTysAt atoms c ts es as) := by
+   induction as with
+   | nil => trivial
+   | cons a as ih => exact ⟨substTyAt_atoms ha.1 ht he c, ih ha.2⟩
+@@ -591,8 +207,8 @@ theorem satAll_sound {B satDec C ts ps} (hs : SatDecSound B satDec)
+ theorem tysAtoms_iff {atoms ts} :
+     Tys.AtomsIn atoms ts ↔ ∀ t ∈ ts, Ty.AtomsIn atoms t := by
+   induction ts with
+-  | nil => simp [Tys.AtomsIn]
+-  | cons t ts ih => simp [Tys.AtomsIn, ih]
++  | nil => simp [Ty.SupportList]
++  | cons t ts ih => simp [Ty.SupportList, ih]
+ 
+ theorem tysAtoms_getD {atoms ts fallback} {i : Nat} (h : Tys.AtomsIn atoms ts)
+     (hf : Ty.AtomsIn atoms fallback) : Ty.AtomsIn atoms ((ts[i]?).getD fallback) := by

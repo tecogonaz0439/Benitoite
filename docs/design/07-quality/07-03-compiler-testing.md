@@ -164,7 +164,7 @@ API を呼ぶテストは、本番と同じ IO の実装で実行する。標準
 
 四つの検査のどれかで処理系と Lean の結果が違うとき、Lean の手順の燃料が尽きたとき、書き出しの読み込みに失敗したときは、スクリプトは失敗する。2026-10-11 の時点で、不一致と燃料切れは 0 件である。検査の関数が型検査の誤りを見つけられることは、処理系が 0.0.2 まで受け付けていた型検査の誤り（プレースホルダの引数の中の `return`・`try`・`resume`）の例を検査の関数が拒否することで確かめる（`formal/` の `Surface/CheckCounterexamples.lean`）。
 
-【方針】書き出しのテストには `#[ignore = "formal: ..."]` を付け、`scripts/check-formal.sh` が走らせる（スクリプトの全体で約 9〜10 分。大半は脱糖の書き出し）。`--include-ignored` を与える検査（後述の長いテスト）でも走るが、そのときは書き出しが処理系の不具合なく終わることだけを確かめる。理由: 比べるには Lean のツールチェーンが要るので、Rust の普段の検査から分ける（07-04「道具と置き場所」）。
+【方針】書き出しのテストには `#[ignore = "formal: ..."]` を付け、`scripts/check-formal.sh` が走らせる（スクリプトの全体で約 9〜10 分。大半は脱糖の書き出し）。水準なしの互換指定 long/full の `--include-ignored` でも走るが、そのときは書き出しが処理系の不具合なく終わることだけを確かめる。新水準の long_only は formal の対象を選ばない。理由: 比べるには Lean のツールチェーンが要るので、Rust の普段の検査から分ける（07-04「道具と置き場所」）。
 
 ### IO の方式のテスト
 
@@ -281,18 +281,150 @@ API を呼ぶテストは、本番と同じ IO の実装で実行する。標準
 
 【方針】規約のうち道具で確かめられるものは道具で確かめ、確かめた結果を各作業の完了条件にする。
 
-【方針】各作業の完了条件に、次の検査のうち変更に関わるものが通ることを含める。検査は `scripts/check.sh` にまとめ、作業を取り込む前にこのスクリプトを通す。スクリプトは二つの段を持つ。
+【決定】検査は、作業（work）・段（stage）・改造（change）・リリース（release）の四水準で責任を分ける。水準は検査の時期を表し、単体・統合といった対象の区分とは別である。作業でも本物の部品をつないだ統合テストを行う。具体的な基準・契約・コマンド・構成・対象・担当・見込み時間・結果の保存先を、改造の計画の「検査の割り当て」に集める。[共通依頼文](../../workflow/implementation-request.md)と[実装プランの雛形](../../workflow/change-plan-template.md)を改造のディレクトリへ写して使い、`check.sh` と本節を変えるときは同じ変更で保守する。
 
-- **選んだ検査**（`scripts/check.sh`）: 基準の版（既定は `origin/san_benito`）からの変更と、作業ツリーの変更・追跡していない新しいファイルを調べ、変更したファイルの種類に応じて検査を選ぶ。文書と、検査に響かないファイル（`.gitignore`）だけの変更では検査を走らせない。言語仕様の章・付録 08-04・言語リファレンスを変えたときは、その例を読むテストだけを走らせる。処理系のソースを変えたときは、下の表の検査をすべて走らせる（長いテストと、既定の構成のライブラリのテストを除く）。`scripts/release/about.toml`・`scripts/release/about.hbs` を変えたときは、依存のライセンスの検査（`licenses`）を選ぶ。`scripts/release/` のシェルスクリプトの変更は、ほかの検査のスクリプトと同じく、走らせる検査を設計者に尋ねる。どの種類にも当たらないファイル（検査のスクリプト、ツールチェーンの設定など）を変えたときと、基準の版が見つからないときは、検査を始めずに止まり、全体の検査（`--full`）、一部の検査（`--only <検査,...>`）、検査なし（`--none`）のどれで続けるかを設計者が決める。既定の構成のライブラリのテスト（`default_lib`）は、`src/runtime/heap/` を変えたときに選ぶ。`--only default_lib` でも名指しでき、長いテストを含めずにこの検査だけを走らせる。理由: 既定の構成と `heap-verify` の構成で結果が変わりうるのは、主にヒープの表現に依るテストである。毎回走らせると検査の時間が延びるので、設計者はヒープの変更と明示の指定（`--only`・`--full`）に限ると決めた。
-- **全体の検査**（`scripts/check.sh --full`）: 下の表の検査のすべてと、長いテストを走らせる。加えて、入れ子の上限の深さで段を通すテスト（[パイプライン](../02-impl/02-01-pipeline.md)の「関数の呼び出しと処理系のスタック」）を、最適化したビルド（`--release`）でも走らせる。最適化したビルドでだけ補助の関数が展開されて枠が大きくなる退行を捕まえるためである。リリースの前と、設計者が指示したときに行う。
+理由: 作業中の局所検査、初めてつながる部品の検査、改造全体の回帰、実際の公開候補の受け入れを割り当てれば、同じ全件の反復を減らしながら必要な構成を残せる。
 
-【決定】`crates/benitoite/build.rs` は、`classify` の `crates/*` によって `rust` の検査に分類される。ビルドスクリプトのための検査名は増やさず、通常の `cargo clippy --all-targets` にも含める。`tests/build_info.rs` の独立した実ビルドと Git 状態の検査は長いテストとして ignore し、通常の `rust` では実行しない。ビルド情報の変更では必要な長いテストを名指しして実行し、全体の検査では既存の `long` の選択で実行する。
+#### 四水準の責任と例外
 
-スクリプトは、検査を始める前に、選んだ検査とそれを選んだ理由（当たったファイル）を示す。`--dry-run` を与えると、示すだけで走らせない。理由: 改造の多くは処理系の一部か文書だけを変えるので、毎回の全体の検査（既定の構成のライブラリのテストを加える前の測定で約 28 分。大半はテストと回収の強制の 2 回の全体実行）の多くは変更と関係のない確かめである。全体を通す区切りを残し、選び方の漏れもそこで見つける。
+| 水準 | 担当・確認すること | 実行する検査の集合 | 次の時期に任せるもの |
+|---|---|---|---|
+| work（作業） | 実装担当。変更した契約と入力の利用側が通ること | 途中は関係するテストのみ。Rustを変える作業の終わりに既定のlib全件・関連統合テスト・clippy・fmtを各一度。関係する生成物・仕様集計・文書例・道具の自己検査。ヒープ（heap）等の例外は下表 | examples のビルド（change で行う）、全件の特殊構成、全ターゲットのテスト、長いテストの全件、公開候補の確認 |
+| stage（段） | 取りまとめ担当。初めてつながる部品間の受け渡し | 計画で名指しした接続の検査だけ。最後の作業で同じ接続まで確認済みなら本節の条件で引用 | 作業のlib全件やlintの再実行、段数を理由にした全件検査 |
+| change（改造） | 取りまとめ担当。統合後の回帰と構成の選択漏れ | Rustの変更があれば、既定・heap-verifyのworkspace all-targets、既定の文書コメントのテスト（doctest）、heap-verify+gc-stressのlib/tests、二構成のclippy（既定はlib/tests、heap-verifyはworkspace all-targets）、fmt、規約の機械検査、生成Skillと仕様集計、長い対象のみ。道具・依存等の変更には対応する検査も行う | 公開候補の版・配布・実CLIの確認。済んだヒープ・形式化の全比較は関係状態が同じなら引用 |
+| release（リリース） | 公開の取りまとめ担当。実際の候補と証拠の一致 | 改造の検査記録との照合、候補の識別、版・同梱物・生成物・移行案内、実CLIの代表例、配布手順。最適化した構成のrelease_stackを一度 | 同じ関係状態の回帰全件の反復。タグや公開の操作は別の指示に従う |
 
-既定の構成のライブラリのテストを加えると、全体の検査にその 1 回分の時間が増える。ヒープを変えた後の検査では、クレートのビルドし直しが約 14 秒、テストの実行が約 38 秒で、合わせて約 1 分である（2026-10-12 の測定）。
+【決定】作業途中は関係するテストだけを直接実行する。作業末は `scripts/check.sh --level work --base <前の作業の取り込みのコミット> [--test <関連ターゲット> ...]` を一度実行し、計画の名指しがあれば `--only` を使う。最初の作業は計画で固定した開始版を基準にする。work が未実装の移行中だけは計画に直接のコマンドを書く。文書・シェル・Pythonだけ、またはLeanだけの作業には関係しないRustの全libを要求しない。Rustの作業末のlib全件・関連統合テスト・clippy・fmtはこの入口で各一度実行し、直接のコマンドを重ねない。
 
-【方針】大きさそのもので確かめるテスト（百万規模の構造や深い入れ子で、処理系が Rust の再帰を使わないこと・空間が一定であることを確かめるテスト）は、長いテストとして `#[ignore = "long: ..."]` を付ける。ヒープのモジュールのテストで、Miri では大きさを縮めて走らせるものは `#[cfg_attr(not(miri), ignore = "long: ...")]` とする。長いテストは、全体の検査と、ランタイム・VM・参照インタプリタ（`src/runtime/`・`src/vm/`・`src/refinterp/`）を変えたときの選んだ検査で、`--include-ignored` を与えて走らせる。理由: 長いテストは値の表現・ヒープ・VM を変えたときに価値があり、ほかの変更では結果が変わりにくい。大きさを縮めるとテストの目的を弱め、環境変数で飛ばすと通ったと表示されて見落としやすい。
+共有の型や入力を変えたら、その入力を読む側まで関連統合テストを広げる。例えばgoldenの追加はcodegen corpus・verifyの読者も、構文の移行はRust文字列中の入力も対象にする。ファイルの分類だけでは決めきれない対象と構成を計画へ補う。
+
+段の検査は、新しい接続、複数作業の相互作用、共有契約の切り替えがあるときに行う。最後の作業で同じ接続まで確認済み、独立した文書変更だけ、または直後の改造全体の検査がその接続を覆う場合は、引用元と省く理由を記す。レビューと指摘修正後の再検査は残す。失敗の修正や関係する追加変更の後は、古くなった検査だけを再実行し、初回の失敗も記録する。期待値・大きさ・ignore・時間制限を実行時間の短縮のために緩めない。
+
+| 例外の条件 | 作業時・接続時に必要な検査 | 改造末の扱い |
+|---|---|---|
+| 確保・回収・ポインタの生存・根・書き込みの障壁の不変条件を変える | 関係する既定・heap-verify、doc_default（compile_fail を含む文書テスト）、局所のgc-stress、必要な長い対象と `check-heap.sh`。次の作業の前提にする前に成功させる | 最後の関係変更に対する成功を引用できれば繰り返さない |
+| VM等で安全点を越える値の保存を変える | 場所がheap/の外でも関係するheap-verifyとgc-stress。GC本体に及ぶならcheck-heapも加える | 全件の特殊構成も一度実行する |
+| ヒープのコメント等だけを変える | 実装・入力・構成に影響しない根拠を記録し、計画に明示して絞る | パスだけを理由にMiriを反復しない |
+| 形式化の内側の規則・脱糖を変える | 処理系より先に定義・証明・01-12の写し・必要な対応表。既定の `lake build` とsorryの拒否、定義・言明・仮定のレビュー | RustとLeanが接続した区切りと最終の関係状態で `check-formal.sh` 全体。成功済みなら引用 |
+| 再帰の形・枠・最適化やビルド設定を変える | 関係するrelease_stackを名指しする | 公開するなら最終候補の構成に対応する成功をそろえる。公開しない改造ならchangeで行う |
+
+#### 入口・基準・終了状態
+
+【決定】`scripts/check.sh` の引数なしはworkである。`--level work|stage|change|release` で水準を指定し、work/changeは変更から自動選択する。stageは計画の `--only` を必須とし、releaseは分類せず、Rustの変更がなくても `release_stack` だけを自動選択する。releaseでは、版・コミット・未コミット状態・ビルド構成・同梱物で実際の候補を識別し、回帰の証拠・生成物・移行案内・実CLIの代表例・配布手順を手動で照合する。受け入れの判定者と保存先を計画に固定し、check.shの終了0だけで完了にしない。タグや公開の操作は別の明示の指示に従う。
+
+`--base` の既定は `origin/san_benito` だが、計画には完全なコミットIDを固定する。workは前の作業の取り込み、stageは段の開始、changeは改造の開始を使う。releaseは改造の開始版を表示するだけで、候補は別に識別する。自動選択は基準から現在の作業ツリーまでのステージ済み・未コミット・未追跡を含める。`git diff --name-only --no-renames <基準> --` と `git ls-files --others --exclude-standard` の重複を除き、削除と改名の旧パスも分類する。無視したファイルを入力に使うなら計画と結果へ明記する。
+
+`--test <統合テスト名>` はwork/stageで繰り返せる。tests_related・heap_local・stress_localへ同じ対象を渡し、一回のCargo呼び出しにまとめる。Rustの自動workで省略したtests_relatedは `cargo test -p benitoite --test '*'` とする。`*` は一つの引数としてCargoへ渡す。libだけに閉じる変更で統合テストを省くなら、理由と明示的な `--only` を計画へ書く。対象の存在は実行時のCargoが判断し、通常テストの件数は解析しない。
+
+| 指定 | 保つ意味・新しい制限 |
+|---|---|
+| 水準なしの `--only` | 従来の13名（rust・default_lib・long・release_stack・licenses・heap・spec_examples・reference_examples・skill・spec_coverage・skill_eval・python・formal）と実行集合を保つ。policy_selftestも名指しできる。rustは従来のfmt・両lint・heap-verifyのworkspace test・gc-stress・規約・Skill・集計。longはrustを追加してinclude-ignored。default_libは単独でも指定可能。formalはlakeだけ、heapはcheck-heapだけ |
+| 水準なしの `--full` | 従来のrust・default_lib・long・release_stack・licenses・spec_examples・spec_coverage・reference_examples・skill・skill_eval・pythonを保つ。heap・formal・check-formal全体や二構成all-targetsは追加しない。releaseの別名にはしない |
+| `--level` と `--only` | 当該水準の検査名だけを許す。名指しした検査だけを走らせ、差分の分類も分類による停止も行わない。`--base` は表示に使うだけ。部分選択と表示する。rust・long・python・skill・formal等の旧複合名は拒否 |
+| `--test` | work・stageのtests_related・heap_local・stress_localだけに使う。水準なしの旧only/fullとの併用を拒否。存在しないターゲットは実行時にCargoが失敗し、check.shは検査失敗の1を返す。dry-runでは存在を確認しない |
+| `--base` | work/changeの自動選択だけがコミットの存在を検査する。旧only/full、新水準のonly、releaseでは表示だけ |
+| `--dry-run` | 計画表示だけで、ビルド・テスト・生成をしない。停止なら水準指定の有無によらず3。旧自動選択の「停止予告を出して0」の扱いは引き継がない |
+| `--none` | 設計者が不要と判断したときの明示指定。ほかの実行指定と併用しない |
+
+【決定】指定の誤りは終了2とする。`--full` と `--level`、full/only/noneの相互併用、不正な水準、値の欠落、空のonly要素、重複した単一オプション、空・重複・不要なtest、stageのonly欠落、明示したtests_relatedや局所検査の対象欠落を含む。計画の指定を直し、設計者への選択の質問へ置き換えない。
+
+自動分類の分類不能と基準不明は、検査を始めず `== stop:` を示して終了3とし、dry-runも同じとする。該当ファイルまたは基準を示し、設計者に当該水準の `--level … --only`（停止までに選んだ単位を案内し、分類不能のファイルに必要な単位を補う）、互換の `--full`・水準なしの `--only`、`--none`のどれにするかを尋ね、その答えに従う。既に計画で名指しされた検査はその指定で進める。検査失敗と必要な道具の不在は1、選んだ検査の成功は0であり、水準全体の完了とは区別する。
+
+検査前に設計者へ種類を知らせ、計画と同じ基準・指定へ `--dry-run` を付けて確認する。長い検査・heap・全件の特殊構成は見込み時間も知らせる。dry-runはビルド・テスト・生成を行わず、水準・基準・変更数・検査名・完全なコマンド・構成・対象・理由・包含で省く検査・後の担当を表示する。分類しない指定では `changed files not classified` と表示する。見込み時間は検査ごとの固定値で、実行時も同じ選択を使う。
+
+#### 検査の実行単位と選択
+
+| 検査名 | 実行するもの・範囲 |
+|---|---|
+| fmt | `cargo fmt --all --check` |
+| lint_default | 現行と同じ `cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep`。examples・binsへ広げない |
+| lib_default | `cargo test -p benitoite --lib` |
+| tests_related | 上記の関係する統合テスト。未指定のworkは全統合ターゲット |
+| test_default_all | `cargo test --workspace --all-targets` |
+| test_heap_all | `cargo test --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify` |
+| test_stress | `cargo test --workspace --lib --tests --no-default-features --features gc-mark-sweep,heap-verify,gc-stress` |
+| doc_default | `cargo test --workspace --doc` |
+| lint_heap | `cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify,alloc-stats` |
+| source_rules | 仮置きの許可・unsafeの許可位置の既存検査 |
+| skill_generated | gen_skillによる既存の再生成照合 |
+| spec_tally | 既存のspec-coverageの自己検査と集計 |
+| spec_examples / reference_examples / skill_docs | 対応する既存の統合テスト |
+| python_syntax | 現行のtools/のPython構文検査 |
+| migrate_selftests | source-migrateの自己検査、`cargo build -p benitoite --example try_actions_inventory`、try-actions-migrateの自己検査。現行と同じ範囲とし、named-arguments-migrateの自己検査は加えない |
+| skill_eval_selftest / licenses | 現行のskill-eval自己検査／許諾の検査。LLMを呼ぶ評価は含めない |
+| long_only | heap-verify と heap-verify+gc-stress の構成ごとに一括実行し、形式化の書き出しを除外。成功件数は 1 以上 |
+| heap_local / stress_local | `--test` で名指しした統合テストだけをheap-verify／heap-verify+gc-stressで実行 |
+| heap_checks | `scripts/check-heap.sh` |
+| formal_build | sorryを拒む既定の `lake build` |
+| release_stack | 名前の前置きで測定済みスタックの対象を release で一括実行。成功件数はちょうど 10 |
+| policy_selftest | `python3 -B scripts/check/test_policy.py`。中でcheck.sh・check-heap.sh・check-formal.shの三つに `bash -n` も行う |
+
+heap_local・stress_localは `--test` を必須とする。局所のlibテストは、計画に `cargo test -p benitoite --lib --no-default-features --features gc-mark-sweep,heap-verify <フィルタ>` とgc-stressを加えた構成を直接書く。check-formal.sh全体も計画の直接のコマンドとする。
+
+| 水準 | `--only` で許す検査名 |
+|---|---|
+| work | fmt、lint_default、lint_heap、doc_default、lib_default、tests_related、source_rules、skill_generated、spec_tally、spec_examples、reference_examples、skill_docs、python_syntax、migrate_selftests、skill_eval_selftest、licenses、policy_selftest、heap_local、stress_local、heap_checks、formal_build、release_stack |
+| stage | tests_related、heap_local、stress_local、policy_selftest |
+| change | fmt、lint_default、lint_heap、test_default_all、test_heap_all、test_stress、doc_default、source_rules、skill_generated、spec_tally、spec_examples、reference_examples、skill_docs、python_syntax、migrate_selftests、skill_eval_selftest、licenses、policy_selftest、long_only、heap_checks、formal_build、release_stack |
+| release | release_stack |
+
+同じコマンド・構成・対象は一回だけ実行する。test_default_allはlib_defaultと単独のspec_examples・reference_examples・skill_docsを包含する。workのtests_relatedが全統合ターゲット、または同じ文書例ターゲットを含む場合も文書例を重ねない。省いた理由を表示し、異なるgc-stress構成は包含しない。
+
+既存のファイル分類から水準への対応は次のとおりである。複数の種類は和集合を取り、上の包含を適用する。
+
+| 既存の種類 | workの自動選択 | changeの自動選択 |
+|---|---|---|
+| rust | fmt、lint_default、lib_default、tests_related、source_rules、skill_generated、spec_tally | fmt、lint_default、lint_heap、test_default_all、test_heap_all、test_stress、doc_default、source_rules、skill_generated、spec_tally、long_only |
+| default_lib | lib_default | test_default_all |
+| long | 自動追加なし。安全点を越える値等を変えるなら、計画に局所の特殊構成を加える | long_only |
+| heap | lint_heap、doc_default、heap_checks。局所の二構成は計画に直接のCargoコマンドを書くか、対象付きのheap_local・stress_localで行う | heap_checks |
+| formal | formal_build | formal_build |
+| licenses | licenses | licenses |
+| python | python_syntax、migrate_selftests | python_syntax、migrate_selftests |
+| skill_eval | skill_eval_selftest | skill_eval_selftest |
+| spec_examples | spec_examples | spec_examples |
+| reference_examples | reference_examples | reference_examples |
+| skill | skill_generated、skill_docs | skill_generated、skill_docs |
+| spec_coverage | spec_tally | spec_tally |
+| release_stack | 自動分類では出現しない。必要な計画が名指しする | 自動選択しない。公開しない改造の計画が名指しする |
+| policy_selftest | policy_selftest | policy_selftest |
+| full（分類不能の印） | 実行前に停止 | 実行前に停止 |
+
+Rustのworkは生成元やspec印のパスを別に調べず、skill_generatedとspec_tallyを常に選ぶ。構文の章の変更はskill_generated・skill_docs・spec_examples・spec_tallyを選ぶ。lint_heapはheap/のworkで自動追加するが、他のパスでもheap-verify側の条件付きコードや構成を変えるなら計画で名指しする。
+
+`check.sh` と `scripts/check/` の自己検査・実行器・一覧・固定記録をpolicy_selftestへ分類する。`check-heap.sh` は分類不能、`check-formal.sh` はformalのままであり、説明だけの変更を自動判別しない。計画で説明だけと判断した変更は `--only policy_selftest` 等を名指しする。他の未知のscriptsやツールチェーンの設定も分類不能である。`formal/reviews/` は対象外とし、formalの自動分類と全比較は区別する。
+
+`crates/benitoite/build.rs` はcrates/*としてrustへ分類し、専用の検査名を増やさない。`tests/build_info.rs` の独立した実ビルドとGit状態の検査は長いテストとしてignoreしている。ビルド情報の変更では必要な長い対象を計画で名指しし、changeではlong_onlyで実行する。changeのlint_heapはall-targetsを含む。
+
+#### 長い対象と方針の自己検査
+
+【方針】大きさそのもので確かめるテスト（百万規模の構造や深い入れ子で、Rustの再帰を使わないこと・空間が一定であることを確かめるテスト）には `#[ignore = "long: ..."]` を付ける。Miriでだけ縮めて走らせるヒープのテストは `#[cfg_attr(not(miri), ignore = "long: ...")]` とする。大きさを縮めて通常のテストへ戻すことや、環境変数で飛ばして成功に見せることはしない。
+
+【決定】長い対象の一覧は作らない。`long_only` は heap-verify と heap-verify+gc-stress の構成ごとに、`cargo test --workspace <構成> --lib --tests -- --ignored --skip export_coverage --skip export_desugar_corpus` を一回実行する。二つの `--skip` は形式化の書き出しを除き、その実行は check-formal に任せる。libtest の並列実行を使い、各ターゲットの要約の成功件数の合計が 0 なら失敗にする。長いテストを足すときはソースに前述の ignore 属性を付けるだけでよく、別の一覧への登録は要らない。
+
+`release_stack` は `cargo test --release -p benitoite --lib -- pipeline::tests::stages_fit_the_measured_stack_ --include-ignored` で選び、成功件数がちょうど 10 であることを求める。テストの属性・名前・期待値は変えない。再帰の形・枠・最適化やビルド設定を変える作業では関係する release_stack を名指しし、公開しない改造なら change へ、公開するなら最終候補の構成へ対応する成功を割り当てる。
+
+`scripts/check/run_ignored.py` はこの一括実行と要約の件数確認だけを担う。入口は `python3 -B scripts/check/run_ignored.py --kind long|release-stack --configuration heap|stress|release` とし、long は heap/stress、release-stack は release の組み合わせだけを許す。cargo metadata とターゲットごとの列挙は呼ばない。要約の欠落、失敗・無視・測定の混入、Cargo の失敗を成功にしない。ビルドの進捗を含む標準エラーと、標準出力を逐次表示する。
+
+水準なしの旧long/fullは従来のinclude-ignoredを保ち、formalの書き出しも実行する。これをcheck-formal全体の成功とは数えない。旧fullはheap・formal・check-formal全体や二構成all-targetsを追加せず、releaseの別名にもならない。
+
+検査方針の自己検査は `scripts/check/test_policy.py` で、本物のcheck.shの入口から選択・実行・停止・失敗伝播と、実行器の選別・件数を確かめる。一時Gitリポジトリに本物のスクリプトを写し、代用はcargo・lake・check-heap.shだけとする。GitとPythonは本物を使う。旧指定の基準は `fixtures/legacy-commands.json` に固定し、後の実装から期待値を作り直さない。三つのシェルの `bash -n` もこの自己検査内で行う。構成ごとの一括実行、形式化の書き出しの除外、成功件数と失敗伝播を確かめる。
+
+#### 結果の保存と引用
+
+【決定】普通の作業は、基準のコミット、走らせたコマンド、終了状態、外側の時間、計画からのずれと申し送りだけを記す。失敗した場合は原因と修正も残す。結果を引用するときに限り、以下の全欄を記録する。自動キャッシュは作らず、担当者が関係する入力の一致を判断する。結果は改造の `<小文字作業ID>/results.md`、段・改造・公開候補の集約は `results.md` に置く。
+
+| 記録する欄 | 必要な内容 |
+|---|---|
+| 対象の状態 | 基準の完全なコミットID、対象HEAD、差分の有無とファイル一覧。別の状態へ結果を引用するときだけ、未コミット差分と未追跡入力の内容のSHA-256も保存する。HEADだけで同一としない |
+| 検査の入力 | 関係するソース、テストと入力・期待値、生成元・生成物、設定、交換器・入力の一覧（manifest）、実行する道具の版またはハッシュ |
+| 実行 | 水準、正確なコマンドと構成・ターゲット・フィルタ、ツールチェーン、対象件数・成功/失敗/無視/対象外、終了状態、外側の経過時間、環境の制限 |
+| 引用 | 元の結果の場所、以後の変更、影響しない理由、判断者と日付。引用できない場合は再実行する検査 |
+| 修正 | 初回の失敗、原因、修正、再実行。環境要因という推定を機能の成功で置き換えない |
+
+引用時はHEADと差分の有無・一覧を残し、別の状態へ引用するときは未コミット差分と未追跡入力のSHA-256も保存する。日本語訳でも実行例の抽出対象なら入力の変更である。標準ソース・Cargo設定・build.rs・文書例・生成物・期待位置・交換器・manifest等の変更が、どの検査を古くするかを確認する。影響を説明できない結果は引用しない。引用して省いた検査は計画に記し、必要な残りを `--only` で指定する。
+
+ビルドキャッシュと検査の証拠を区別し、生ログをtarget/やwork/に置いても、引用に要る状態・コマンド・件数・結論は追跡する文書へ残す。コミットだけが変わり意味上の入力が同じなら回帰の結果を引用できるが、ビルド情報・版・同梱物は実際の公開候補で確認する。
 
 | 検査 | 道具 | 確かめること |
 |---|---|---|
@@ -302,10 +434,10 @@ API を呼ぶテストは、本番と同じ IO の実装で実行する。標準
 | 言語仕様の例 | 処理系のクレートの `tests/spec_examples.rs`（後述の「言語仕様の例の検査」） | 言語仕様の例が、初回リリース版の文法の全体で読める |
 | 仕様の項目の集計 | `tools/spec-coverage/` の自己テストと本番の集計 | ゴールデンテストと仕様の節の対応を集計する道具（後述の「受け入れ例と仕様の項目の対応」）が正しく動き、テストの印が実在する節を指し、完了条件の索引に欠けがない |
 | 回収の強制 | `cargo test` を機能 `gc-stress` で実行する（後述の「ヒープとランタイムの確かめ方（初回リリース版）」） | 安全点ごとに必ず回収する設定でも、テストが通る |
-| 既定の構成の lint | `cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep` | `rust` の検査を選んだときに、`heap-verify` のない側のコードにも lint を掛ける |
-| 既定の構成のライブラリのテスト | `cargo test -p benitoite --lib --no-default-features --features gc-mark-sweep` | 既定の構成（機能 `gc-mark-sweep` だけ）でも、ライブラリのテストが通る。`--only` の名指し・全体の検査・`src/runtime/heap/` の変更で選び、長いテストは含めない |
+| 既定の構成の lint | `cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep` | work/change の `lint_default`（互換指定の `rust` も含む）で、`heap-verify` のない側のコードにも lint を掛ける |
+| 既定の構成のライブラリのテスト | `lib_default`: `cargo test -p benitoite --lib`。互換の `default_lib`: `cargo test -p benitoite --lib --no-default-features --features gc-mark-sweep` | 既定の構成（機能 `gc-mark-sweep` だけ）でも、ライブラリのテストが通る。Rust の work では `lib_default`、change では `test_default_all` に含める。旧名 `default_lib` は互換の only/full で保持し、長いテストは含めない |
 | 仮置きの許可の残り | `scripts/check.sh` の中の検査 | `todo!()` のないファイルに、`AGENTS.md` の `todo!()` の仮置きのための許可が残っていない |
-| `unsafe_code` の語の場所 | `scripts/check.sh` の `check_unsafe_allows` | `rust` の検査を選んだときに、`unsafe_code` を含むファイルが `src/runtime/heap/core.rs`・`src/runtime/heap/core/` の直下の Rust ファイル・`tests/call_allocations.rs` に限られることを確かめ、外れたファイルと当たった行番号を示す。語を単語として探すので、許す一覧の外ではコメントにもこの語を書かない。子のモジュールへの属性の継承や、`#[path]` で指定した子のファイルの場所は確かめない |
+| `unsafe_code` の語の場所 | `scripts/check.sh` の `check_unsafe_allows` | `source_rules`（互換指定では `rust`）で、`unsafe_code` を含むファイルが `src/runtime/heap/core.rs`・`src/runtime/heap/core/` の直下の Rust ファイル・`tests/call_allocations.rs` に限られることを確かめ、外れたファイルと当たった行番号を示す。語を単語として探すので、許す一覧の外ではコメントにもこの語を書かない。子のモジュールへの属性の継承や、`#[path]` で指定した子のファイルの場所は確かめない |
 | Skill の生成物 | `cargo run -p benitoite --example gen_skill` | 同梱の Agent Skill の生成物が、構文の章・標準ライブラリのソース・診断の表から作り直したものと一致する |
 | 依存のライセンス | cargo-deny の licenses の検査と許可する一覧の比較 | `scripts/release/about.toml` の `accepted` が `deny.toml` の `[licenses]` の `allow` と同じ並びであることと、依存するクレートのライセンスが、許可したライセンスの一覧に入っている（[cargo-deny](https://embarkstudios.github.io/cargo-deny/checks/licenses/index.html)） |
 
@@ -347,15 +479,15 @@ API を呼ぶテストは、本番と同じ IO の実装で実行する。標準
 
 ### ヒープとランタイムの確かめ方（初回リリース版）
 
-【決定】ヒープのモジュールの `unsafe` と、タスクとリソースの状態の扱いは、次のテストで確かめる。完了の条件の検査（`scripts/check.sh`）に入れ、nightly の Rust が要るものや時間のかかるものは、別のスクリプト（`scripts/check-heap.sh`）で行う。`check.sh` の選んだ検査は、`src/runtime/heap/` を変えたときに `check-heap.sh` も走らせる。GitHub Actions は使わない。
+【決定】ヒープのモジュールの `unsafe` と、タスクとリソースの状態の扱いは、次のテストで確かめる。検査時期は前述の四水準と例外の表に従う。ヒープの不変条件の変更は、局所の既定・heap-verify・gc-stress と必要な長い対象・`scripts/check-heap.sh` を次の作業の前提にする前に通す。VM 等で安全点を越える値を変える場合も局所の特殊構成を加える。nightly の Miri と到達可能性の長い比較は `check-heap.sh` に置く。heap/ のパスからは work/change の `heap_checks` を自動で選ぶが、コメントだけの変更は理由を記し、計画に明示して絞れる。最後の関係状態への成功を引用できれば反復しない。GitHub Actions は使わない。
 
 | 確かめること | テストの種類 |
 |---|---|
 | ヒープのモジュールと小さな VM のプログラムに未定義動作がない | Miri での単体テスト。Miri で動かせないテストは理由を添えて除く。VM のテストは、ヒープの `unsafe` のコードを VM の使い方で通す代表の形を選んだものだけを走らせ、別のスクリプトの全体を 10 分以内に収める |
 | 根の数え漏れがない | 回収の強制。安全点ごとに必ず回収する設定で、ゴールデンテストと差分テストを走らせる。長さに比例した生きている構造を持ち、安全点ごとに辿ると二次の時間になって終わらないケース（5 万要素のリストなど）は、実行器の中の一覧に名前で書いて回収の強制のビルドでだけ除き、除いた名前を示す |
 | ヒープの形が壊れていない | 機能 `heap-verify` の構成でのヒープの検証器。解放した領域を毒で埋める。値に確保の世代を持たせ、参照を作る前に生存を確かめる。文字列の対象を借りるときに UTF-8 として正しいかを確かめる |
-| 既定の構成でもライブラリのテストが通る | 機能 `gc-mark-sweep` だけ（`heap-verify` なし）のライブラリのテスト。`scripts/check.sh` の `default_lib` で走らせる |
-| 回収しない区間の外へ値を持ち出せない。別の実行のヒープの値を混ぜられない。作業用のスレッドへ値を渡せない | コンパイルの失敗のテスト。根の保存領域を通して別のヒープの値を混ぜる誤りは、保存した値のヒープの番号の比較（すべてのビルド）の単体テスト |
+| 既定の構成でもライブラリのテストが通る | 機能 `gc-mark-sweep` だけ（`heap-verify` なし）のライブラリのテスト。work の `lib_default`、change の `test_default_all` で走らせる。水準なしの互換指定では `default_lib` を保つ |
+| 回収しない区間の外へ値を持ち出せない。別の実行のヒープの値を混ぜられない。作業用のスレッドへ値を渡せない | work の heap は doc_default でコンパイルの失敗のテストも行う。根の保存領域を通して別のヒープの値を混ぜる誤りは、保存した値のヒープの番号の比較（すべてのビルド）の単体テスト |
 | 回収が、到達できる対象を残し、到達できない対象を除く | 確保・参照の書き換え・根の追加と削除を無作為に組み合わせ、独立に計算した到達可能性と比べるテスト |
 | タスクの状態とリソースの状態の組み合わせごとの遷移（[ランタイム](../02-impl/02-09-runtime.md)の「リソースの追跡」） | 段ごとの単体テスト（VM のスケジューラとランタイム）。取り消しと完了の順序を入れ替えて、返却と解放が一度ずつ行われることを確かめる |
 

@@ -1,0 +1,7 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad[effect Rest](body: function() -> Integer uses Rest) -> Unit
+  bind mapping: function(xs: List[function() -> Integer uses Failure.Fail[String], Rest], f: function(value: (function() -> Integer uses Failure.Fail[String], Rest)) -> Integer) -> List[Integer] <- List.map
+end function
+function main() -> Unit
+end function

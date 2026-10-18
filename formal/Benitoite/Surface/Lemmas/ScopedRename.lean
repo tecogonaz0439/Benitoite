@@ -21,6 +21,7 @@ mutual
     | .list elems, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.renameScoped ξ elems h
     | .op _ _, h => h
+    | .raise _ _, h => h
     | .loc _, _ => trivial
     | .mapV ks vs, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
@@ -92,6 +93,8 @@ mutual
     | .mk o a k m :: cs, h => by
         simp only [Clause.VarsInList] at h; simp only [Clause.renameList, Clause.VarsInList]
         exact ⟨Comp.VarsIn.renameScoped _ m h.1, Clause.VarsInList.renameScoped ξ cs h.2⟩
+    | .fail E m :: cs, h => by
+        exact ⟨h.1, Comp.VarsIn.renameScoped _ m h.2.1, Clause.VarsInList.renameScoped ξ cs h.2.2⟩
 end
 
 end Benitoite.Surface

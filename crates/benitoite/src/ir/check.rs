@@ -47,8 +47,11 @@ pub fn check_program(program: &CoreProgram) -> Vec<CoreTypeError> {
 
 #[derive(Clone, Default)]
 struct Env {
+    no_fail: Vec<crate::types::EffVar>,
+    failure_clauses: std::collections::BTreeSet<NodeId>,
     vars: BTreeMap<VarId, Ty>,
     dicts: BTreeMap<VarId, ClassConstraint>,
+    clause_dicts: BTreeMap<VarId, (NodeId, ClassConstraint)>,
     impl_dicts: Option<Vec<ClassConstraint>>,
     params: Vec<TypeParamInfo>,
     conts: Vec<(VarId, Ty, Ty, EffectSet)>,
@@ -195,6 +198,10 @@ impl Checker<'_> {
         match self.program.schemes.get(def.binding) {
             Some(scheme) => {
                 env.params.clone_from(&scheme.type_params);
+                env.no_fail.clone_from(&scheme.no_fail);
+                if scheme.no_fail != scheme.signature_no_fail() {
+                    self.error(def.span, "scheme NoFail disagrees with signature");
+                }
                 self.equal(
                     def.span,
                     &Ty::Fn(Box::new(FnTy {
@@ -271,7 +278,27 @@ impl Checker<'_> {
             scheme.effect_params.len(),
         );
         self.type_arguments(&scheme.type_params, &targs.tys, env, origin);
-        scheme.fn_ty().subst(&targs.tys, &targs.effects)
+        for row in &scheme.no_fail {
+            if let Some(eff) = at(&targs.effects, row.0)
+                && (!eff.failures.is_empty() || eff.vars.iter().any(|v| !env.no_fail.contains(v)))
+            {
+                self.error(
+                    origin,
+                    "NoFail effect argument contains or may contain Failure.Fail",
+                );
+            }
+        }
+        let ty = scheme.fn_ty().subst(&targs.tys, &targs.effects);
+        if !ty.failure_rows_valid(&env.no_fail) {
+            self.error(origin, "instantiated source type lacks NoFail");
+        }
+        if !ty.single_failure() {
+            self.error(
+                origin,
+                "instantiated source type has multiple failure types",
+            );
+        }
+        ty
     }
 
     /// V-Fun・V-Prim・V-Dict・C-Meth の型引数のカインドと組み込みの制約。
@@ -456,12 +483,13 @@ impl Checker<'_> {
     fn rigid_scope(&mut self, ty: &Ty, env: &Env, origin: Span) {
         match ty {
             Ty::Rigid { clause, index } => {
-                if env
-                    .clauses
-                    .get(clause)
-                    .and_then(|op| self.program.schemes.get(*op))
-                    .and_then(|s| at(&s.type_params, *index))
-                    .is_none()
+                if (env.failure_clauses.contains(clause) && *index != 0)
+                    || env
+                        .clauses
+                        .get(clause)
+                        .and_then(|op| self.program.schemes.get(*op))
+                        .and_then(|s| at(&s.type_params, *index))
+                        .is_none()
                 {
                     self.error(
                         origin,
@@ -479,6 +507,9 @@ impl Checker<'_> {
                     self.rigid_scope(t, env, origin);
                 }
                 self.rigid_scope(&f.ret, env, origin);
+                for t in &f.effects.failures {
+                    self.rigid_scope(t, env, origin);
+                }
             }
             Ty::Param(_) => {}
         }
@@ -686,7 +717,7 @@ impl Checker<'_> {
         self.effects(comp.origin, &bound.eff.union(&body.eff), &comp.eff);
     }
 
-    /// C-App。辞書は TopFn の宣言の制約にだけ対応する。
+    /// C-App。辞書は関数または操作の宣言の制約に対応する。
     fn application(
         &mut self,
         func: &CoreVal,
@@ -696,14 +727,15 @@ impl Checker<'_> {
         origin: Span,
     ) -> Option<(Ty, EffectSet)> {
         self.value(func, env);
-        let expected = if let ValKind::TopFn { def, targs } = &func.kind {
-            self.program
-                .schemes
-                .get(*def)
-                .map(|s| (s.class_constraints.as_slice(), targs.tys.as_slice()))
-        } else {
-            None
-        };
+        let expected =
+            if let ValKind::TopFn { def, targs } | ValKind::Op { op: def, targs } = &func.kind {
+                self.program
+                    .schemes
+                    .get(*def)
+                    .map(|s| (s.class_constraints.as_slice(), targs.tys.as_slice()))
+            } else {
+                None
+            };
         self.dictionary_arguments(dicts, expected, env, origin);
         match &func.ty {
             Ty::Fn(f) => {
@@ -822,6 +854,17 @@ impl Checker<'_> {
                         None
                     }
                 }
+            }
+            DictKind::Param(var) if env.clause_dicts.contains_key(var) => {
+                env.clause_dicts.get(var).map(|(clause, c)| {
+                    (
+                        c.class,
+                        TypeArg::Ty(Ty::Rigid {
+                            clause: *clause,
+                            index: c.param,
+                        }),
+                    )
+                })
             }
             DictKind::Param(var) => match env.dicts.get(var) {
                 Some(c) => self.constraint_type(*c, env, dict.origin),
@@ -1090,14 +1133,32 @@ impl Checker<'_> {
     fn handle(&mut self, handle: &Handle<Comp>, comp: &Comp, env: &Env) {
         self.computation(&handle.body, env);
         self.flow(handle.body.origin, &handle.body.ty, &comp.ty);
-        self.effects(
-            handle.body.origin,
-            &handle.body.eff,
-            &comp.eff.union(&handle.handled),
-        );
+        let failure = handle.clauses.iter().find_map(|c| c.failure_type.as_ref());
+        if let Some(error_ty) = failure {
+            if handle.clauses.len() != 1 {
+                self.error(comp.origin, "mixed failure clauses");
+            }
+            let mut rest = handle.body.eff.clone();
+            rest.failures.clear();
+            let q = env.no_fail.clone();
+            if rest.vars.iter().any(|v| !q.contains(v)) {
+                self.error(comp.origin, "failure Rest is not NoFail");
+            }
+            self.effects(handle.body.origin, &rest, &comp.eff);
+            let mut upper = rest;
+            upper.insert_failure(error_ty.clone());
+            self.effects(handle.body.origin, &handle.body.eff, &upper);
+        } else {
+            self.effects(
+                handle.body.origin,
+                &handle.body.eff,
+                &comp.eff.union(&handle.handled),
+            );
+        }
         let mut handled = EffectSet::empty();
         for op in &self.program.ops {
-            if op.effect != EffectName::Builtin(BuiltinEffectId::STATE)
+            if !op.failure
+                && op.effect != EffectName::Builtin(BuiltinEffectId::STATE)
                 && self
                     .program
                     .ops
@@ -1125,14 +1186,43 @@ impl Checker<'_> {
     /// C-Handle の節。操作の型引数は節のノード番号で区別する剛体型である。
     fn clause(&mut self, clause: &Clause<Comp>, comp: &Comp, env: &Env) {
         let mut inner = env.clone();
+        if let Some(t) = &clause.failure_type {
+            self.rigid_scope(t, env, clause.span);
+        }
         inner.clauses.insert(clause.node, clause.op);
+        if clause.failure_type.is_some() {
+            inner.failure_clauses.insert(clause.node);
+        }
         if let Some(s) = self.program.schemes.get(clause.op) {
+            let actual: Vec<_> = clause.dict_params.iter().map(|p| p.constraint).collect();
+            if actual != s.class_constraints {
+                self.error(
+                    clause.span,
+                    "clause dictionaries disagree with operation constraints",
+                );
+            }
+            for p in &clause.dict_params {
+                if inner.dicts.contains_key(&p.var)
+                    || inner.clause_dicts.contains_key(&p.var)
+                    || inner.vars.contains_key(&p.var)
+                {
+                    self.error(clause.span, "clause dictionary variable is already bound");
+                }
+                inner
+                    .clause_dicts
+                    .insert(p.var, (clause.node, p.constraint));
+            }
             let tys: Vec<_> = s
                 .type_params
                 .iter()
                 .enumerate()
                 .filter_map(|(i, _)| {
                     u32::try_from(i).ok().map(|index| {
+                        if index == 1
+                            && let Some(t) = &clause.failure_type
+                        {
+                            return TypeArg::Ty(t.clone());
+                        }
                         TypeArg::Ty(Ty::Rigid {
                             clause: clause.node,
                             index,
@@ -1159,12 +1249,23 @@ impl Checker<'_> {
         for p in &clause.params {
             inner.vars.insert(p.id, p.ty.clone());
         }
-        inner.conts.push((
-            clause.cont.id,
-            clause.cont.arg.clone(),
-            comp.ty.clone(),
-            comp.eff.clone(),
-        ));
+        if clause.failure_type.is_none() {
+            inner.conts.push((
+                clause.cont.id,
+                clause.cont.arg.clone(),
+                comp.ty.clone(),
+                comp.eff.clone(),
+            ));
+        }
+        let is_failure = self
+            .program
+            .ops
+            .iter()
+            .find(|o| o.binding == clause.op)
+            .is_some_and(|o| o.failure);
+        if is_failure != clause.failure_type.is_some() {
+            self.error(clause.span, "clause kind disagrees with operation");
+        }
         self.computation(&clause.body, &inner);
         self.flow(clause.body.origin, &clause.body.ty, &comp.ty);
         self.effects(clause.body.origin, &clause.body.eff, &comp.eff);
@@ -1440,6 +1541,7 @@ mod tests {
     }
     fn scheme(params: Vec<Ty>, ret: Ty, effects: EffectSet) -> Scheme {
         Scheme {
+            no_fail: vec![],
             param_names: (1..=params.len()).map(|i| format!("arg{i}")).collect(),
             type_params: vec![],
             effect_params: vec![],
@@ -1478,6 +1580,7 @@ mod tests {
         p.schemes.insert(
             d.binding,
             Scheme {
+                no_fail: vec![],
                 type_params: d
                     .type_params
                     .iter()
@@ -2007,6 +2110,7 @@ mod tests {
         }
         p.schemes.insert(OP, s);
         p.ops.push(OpDef {
+            failure: false,
             param_names: (1..=1).map(|i| format!("arg{i}")).collect(),
             binding: OP,
             effect: EffectName::User(BindingId(42)),
@@ -2054,9 +2158,11 @@ mod tests {
             14,
         );
         let clause = Clause {
+            failure_type: None,
             id: BodyId(1),
             node: CLAUSE,
             op: OP,
+            dict_params: vec![],
             params: vec![var(1, arg.clone())],
             cont: ContVar { id: VarId(2), arg },
             tail_resumptive: true,
@@ -2091,6 +2197,148 @@ mod tests {
             panic!()
         };
         h
+    }
+
+    #[test]
+    fn operation_clause_dictionary_count_order_type_and_scope_are_checked() {
+        use crate::ir::desugar::test_support::desugar_files;
+        let (_, _, _, p) = desugar_files(
+            &[(
+                "main.bnt",
+                r#"
+import Benitoite.Trait
+effect Render
+ function render[T: Trait.Show & Trait.Order](value: T) -> String
+end effect
+function inspect() -> String
+ return handle render(42) with
+ case render(value) -> resume(Trait.Show.show(value))
+ end handle
+end function
+"#,
+            )],
+            false,
+        );
+        good(&p);
+        fn clause(p: &mut CoreProgram) -> &mut Clause<Comp> {
+            let body = &mut p
+                .defs
+                .iter_mut()
+                .find(|d| d.name.ends_with("inspect"))
+                .unwrap()
+                .body;
+            let CompKind::Handle(h) = &mut body.kind else {
+                panic!("expected handle")
+            };
+            &mut h.clauses[0]
+        }
+        for mutation in 0..6 {
+            let mut broken = p.clone();
+            let c = clause(&mut broken);
+            match mutation {
+                0 => {
+                    c.dict_params.pop();
+                }
+                1 => c.dict_params.push(c.dict_params[0].clone()),
+                2 => c.dict_params.swap(0, 1),
+                3 => c.dict_params[0].constraint.param = 10,
+                4 => c.node = NodeId(u32::MAX),
+                5 => c.dict_params[1].var = c.dict_params[0].var,
+                _ => unreachable!(),
+            }
+            assert!(!check_program(&broken).is_empty(), "mutation {mutation}");
+        }
+    }
+
+    // 関門: 表層の診断を経由せず、固定 E と非再開性の改変を独立に拒否する。
+    // golden の正例だけでは型付き表から IR を壊す退行を捕まえられない。
+    #[test]
+    fn failure_clause_error_type_kind_and_unavailable_continuation_are_checked() {
+        use crate::ir::desugar::test_support::desugar_files;
+        let (_, _, _, p) = desugar_files(
+            &[(
+                "main.bnt",
+                r#"
+import Benitoite.Unofficial.Failure
+function inspect() -> Integer
+ return handle Failure.raise(error: "error") with
+ case Failure.raise(error) -> String.characterCount(error)
+ end handle
+end function
+"#,
+            )],
+            false,
+        );
+        good(&p);
+        fn clause(p: &mut CoreProgram) -> &mut Clause<Comp> {
+            let body = &mut p
+                .defs
+                .iter_mut()
+                .find(|d| d.name.ends_with("inspect"))
+                .unwrap()
+                .body;
+            let CompKind::Handle(h) = &mut body.kind else {
+                panic!("expected handle");
+            };
+            &mut h.clauses[0]
+        }
+        for mutation in 0..4 {
+            let mut broken = p.clone();
+            let c = clause(&mut broken);
+            match mutation {
+                0 => c.failure_type = None,
+                1 => c.failure_type = Some(int()),
+                2 => {
+                    c.body.kind = CompKind::Resume {
+                        cont: c.cont.id,
+                        value: integer(13),
+                    }
+                }
+                3 => {
+                    c.failure_type = Some(Ty::Rigid {
+                        clause: c.node,
+                        index: 0,
+                    })
+                }
+                _ => unreachable!(),
+            }
+            assert!(!check_program(&broken).is_empty(), "mutation {mutation}");
+        }
+    }
+
+    // 脱糖が本体の残りの効果を handle から落としても独立検査で拒否する。
+    #[test]
+    fn failure_handle_preserves_the_remaining_body_effects() {
+        use crate::ir::desugar::test_support::desugar_files;
+        let (_, _, _, mut p) = desugar_files(
+            &[(
+                "main.bnt",
+                r#"
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+function inspect() -> Integer uses Console.Write
+ return handle
+ Console.writeLine("body")
+ Failure.raise(error: "error")
+ with
+ case Failure.raise(error) -> String.characterCount(error)
+ end handle
+end function
+"#,
+            )],
+            false,
+        );
+        good(&p);
+        let body = &mut p
+            .defs
+            .iter_mut()
+            .find(|d| d.name.ends_with("inspect"))
+            .unwrap()
+            .body;
+        assert!(matches!(body.kind, CompKind::Handle(_)));
+        assert!(!body.eff.names.is_empty());
+        body.eff.names.clear();
+        assert!(!check_program(&p).is_empty());
     }
 
     #[test]
@@ -2198,9 +2446,11 @@ mod tests {
             id: BodyId(8),
             body: outer_resume.clone(),
             clauses: vec![Clause {
+                failure_type: None,
                 id: BodyId(9),
                 node: NodeId(51),
                 op: OP,
+                dict_params: vec![],
                 params: vec![var(6, int())],
                 cont: ContVar {
                     id: VarId(7),
@@ -2251,6 +2501,7 @@ mod tests {
         p.schemes.insert(
             OP,
             Scheme {
+                no_fail: vec![],
                 type_params: vec![param(ParamKind::Value, None)],
                 ..p.schemes.get(OP).unwrap().clone()
             },
@@ -2427,6 +2678,7 @@ mod tests {
         p.schemes.insert(
             method.binding,
             Scheme {
+                no_fail: vec![],
                 type_params: vec![param(ParamKind::Value, None), param(ParamKind::Value, None)],
                 class_constraints: vec![constraint, own],
                 ..scheme(
@@ -2477,6 +2729,7 @@ mod tests {
         p.schemes.insert(
             super_option.binding,
             Scheme {
+                no_fail: vec![],
                 type_params: vec![param(ParamKind::Value, None)],
                 class_constraints: vec![constraint],
                 ..scheme(
@@ -2725,6 +2978,7 @@ mod tests {
         p.schemes.insert(
             m.binding,
             Scheme {
+                no_fail: vec![],
                 type_params: vec![param(ParamKind::Value, None)],
                 ..scheme(
                     m.params.iter().map(|v| v.ty.clone()).collect(),
@@ -3179,12 +3433,14 @@ mod tests {
                 vec![],
                 int(),
                 EffectSet {
+                    failures: vec![],
                     names: vec![],
                     vars: vec![crate::types::EffVar(0)],
                 },
             )],
             int(),
             EffectSet {
+                failures: vec![],
                 names: vec![],
                 vars: vec![crate::types::EffVar(0)],
             },
@@ -3215,6 +3471,7 @@ mod tests {
         good(&p);
         let mut broken = p;
         broken.defs[0].body.eff = EffectSet {
+            failures: vec![],
             names: vec![],
             vars: vec![crate::types::EffVar(1)],
         };
@@ -3229,6 +3486,7 @@ mod tests {
         let mut p = handled_program(false);
         let effect_name = EffectName::User(BindingId(42));
         p.ops.push(OpDef {
+            failure: false,
             param_names: Vec::new(),
             binding: BindingId(41),
             effect: effect_name,
@@ -3322,6 +3580,7 @@ mod tests {
         p.schemes.insert(
             method.binding,
             Scheme {
+                no_fail: vec![],
                 type_params: vec![param(ParamKind::Value, Some(BuiltinConstraint::Key))],
                 ..scheme(vec![target.clone()], target.clone(), EffectSet::empty())
             },

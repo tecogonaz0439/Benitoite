@@ -1,0 +1,15 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Trait
+import Benitoite.Unofficial.Failure
+
+function choose[T: Trait.Show, effect Rest](body: function() -> T uses Failure.Fail[String], Rest, other: function() -> T uses Rest) -> T uses Rest
+  return other()
+end function
+
+function bad() -> Integer uses Failure.Fail[Integer]
+  bind f <- choose
+  return f(body: lambda() return 1 end lambda, other: lambda() return Failure.raise(error: 42) end lambda)
+end function
+
+function main() -> Unit
+end function

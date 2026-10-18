@@ -1,0 +1,17 @@
+//! Typed, non-resumable failures. Import Benitoite.Unofficial.Failure explicitly.
+
+/// Returns the success value, or raises the original error without requiring Show.
+public function fromResult[T, E](result: Result[T, E]) -> T uses Fail[E]
+  return match result with
+    case Result.Ok(value) -> value
+    case Result.Error(error) -> raise(error)
+  end match
+end function
+
+/// Runs body once, returning Ok on success or Error when it raises a failure.
+/// Rest excludes Fail; other effects and runtime stops keep their usual behavior.
+public function toResult[T, E, effect Rest](body: function() -> T uses Fail[E], Rest) -> Result[T, E] uses Rest
+  return handle Result.Ok(body()) with
+    case raise(error) -> Result.Error(error)
+  end handle
+end function

@@ -806,6 +806,7 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
         EntryKind::Declared | EntryKind::EffectOp => return None,
     };
     Some(Scheme {
+        no_fail: vec![],
         param_names: param_names.into_iter().map(String::from).collect(),
         type_params,
         effect_params: Vec::new(),

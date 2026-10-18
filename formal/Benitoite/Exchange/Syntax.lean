@@ -6,33 +6,87 @@ import Benitoite.Surface.Desugar
 namespace Benitoite.Exchange
 open Lean
 
-inductive Atom where
-  | name (value : String)
-  | rho (index : Nat)
-  deriving BEq, ToJson, FromJson, Repr
-abbrev Eff := List Atom
-
 inductive TyCon where
   | data (name : String)
   | list | set | map | reference | lazyT
   deriving BEq, ToJson, FromJson, Repr
 
-inductive Ty where
-  | base (name : String)
-  | opaque (name : String)
-  | data (name : String) (args : List Ty)
-  | list (elem : Ty)
-  | fn (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
-  | tvar (index : Nat)
-  | reference (elem : Ty)
-  | lazyT (elem : Ty)
-  | map (key value : Ty)
-  | set (elem : Ty)
-  | bytes
-  | dict (cls : String) (arg : Ty)
-  | tapp (index : Nat) (args : List Ty)
-  | ctor (head : TyCon)
-  deriving BEq, ToJson, FromJson, Repr
+mutual
+  inductive Atom where
+    | name (value : String)
+    | rho (index : Nat)
+    | fail (error : Ty)
+  inductive Ty where
+    | base (name : String)
+    | opaque (name : String)
+    | data (name : String) (args : List Ty)
+    | list (elem : Ty)
+    | fn (names : List String) (params : List Ty) (ret : Ty) (eff : List Atom)
+    | tvar (index : Nat)
+    | reference (elem : Ty)
+    | lazyT (elem : Ty)
+    | map (key value : Ty)
+    | set (elem : Ty)
+    | bytes
+    | dict (cls : String) (arg : Ty)
+    | tapp (index : Nat) (args : List Ty)
+    | ctor (head : TyCon)
+
+
+end
+deriving instance BEq, Repr for Atom, Ty
+abbrev Eff := List Atom
+
+mutual
+  partial def encodeAtom : Atom → Json
+    | .name n => Json.mkObj [("name", Json.mkObj [("value", toJson n)])]
+    | .rho i => Json.mkObj [("rho", Json.mkObj [("index", toJson i)])]
+    | .fail t => Json.mkObj [("kind", toJson "fail"), ("error", encodeTy t)]
+  partial def encodeTy : Ty → Json
+    | .base x0 => Json.mkObj [("base", Json.mkObj [("name", toJson x0)])]
+    | .opaque x0 => Json.mkObj [("opaque", Json.mkObj [("name", toJson x0)])]
+    | .data x0 x1 => Json.mkObj [("data", Json.mkObj [("name", toJson x0), ("args", Json.arr (x1.map encodeTy).toArray)])]
+    | .list x0 => Json.mkObj [("list", Json.mkObj [("elem", encodeTy x0)])]
+    | .fn x0 x1 x2 x3 => Json.mkObj [("fn", Json.mkObj [("names", toJson x0), ("params", Json.arr (x1.map encodeTy).toArray), ("ret", encodeTy x2), ("eff", Json.arr (x3.map encodeAtom).toArray)])]
+    | .tvar x0 => Json.mkObj [("tvar", Json.mkObj [("index", toJson x0)])]
+    | .reference x0 => Json.mkObj [("reference", Json.mkObj [("elem", encodeTy x0)])]
+    | .lazyT x0 => Json.mkObj [("lazyT", Json.mkObj [("elem", encodeTy x0)])]
+    | .map x0 x1 => Json.mkObj [("map", Json.mkObj [("key", encodeTy x0), ("value", encodeTy x1)])]
+    | .set x0 => Json.mkObj [("set", Json.mkObj [("elem", encodeTy x0)])]
+    | .bytes => toJson "bytes"
+    | .dict x0 x1 => Json.mkObj [("dict", Json.mkObj [("cls", toJson x0), ("arg", encodeTy x1)])]
+    | .tapp x0 x1 => Json.mkObj [("tapp", Json.mkObj [("index", toJson x0), ("args", Json.arr (x1.map encodeTy).toArray)])]
+    | .ctor x0 => Json.mkObj [("ctor", Json.mkObj [("head", toJson x0)])]
+end
+mutual
+  partial def decodeAtom (j : Json) : Except String Atom := do
+    if let .ok k := j.getObjVal? "kind" then
+      if k != toJson "fail" || (← j.getObj?).toArray.size != 2 then throw "invalid Fail atom"
+      return .fail (← decodeTy (← j.getObjVal? "error"))
+    if let .ok o := j.getObjVal? "name" then return .name (← o.getObjValAs? String "value")
+    if let .ok o := j.getObjVal? "rho" then return .rho (← o.getObjValAs? Nat "index")
+    throw "unknown effect atom"
+  partial def decodeTy (j : Json) : Except String Ty := do
+    if let .ok o := j.getObjVal? "base" then return .base (← fromJson? (← o.getObjVal? "name"))
+    if let .ok o := j.getObjVal? "opaque" then return .opaque (← fromJson? (← o.getObjVal? "name"))
+    if let .ok o := j.getObjVal? "data" then return .data (← fromJson? (← o.getObjVal? "name")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeTy)
+    if let .ok o := j.getObjVal? "list" then return .list (← decodeTy (← o.getObjVal? "elem"))
+    if let .ok o := j.getObjVal? "fn" then return .fn (← fromJson? (← o.getObjVal? "names")) (← (← (← o.getObjVal? "params").getArr?).toList.mapM decodeTy) (← decodeTy (← o.getObjVal? "ret")) (← (← (← o.getObjVal? "eff").getArr?).toList.mapM decodeAtom)
+    if let .ok o := j.getObjVal? "tvar" then return .tvar (← fromJson? (← o.getObjVal? "index"))
+    if let .ok o := j.getObjVal? "reference" then return .reference (← decodeTy (← o.getObjVal? "elem"))
+    if let .ok o := j.getObjVal? "lazyT" then return .lazyT (← decodeTy (← o.getObjVal? "elem"))
+    if let .ok o := j.getObjVal? "map" then return .map (← decodeTy (← o.getObjVal? "key")) (← decodeTy (← o.getObjVal? "value"))
+    if let .ok o := j.getObjVal? "set" then return .set (← decodeTy (← o.getObjVal? "elem"))
+    if j == toJson "bytes" then return .bytes
+    if let .ok o := j.getObjVal? "dict" then return .dict (← fromJson? (← o.getObjVal? "cls")) (← decodeTy (← o.getObjVal? "arg"))
+    if let .ok o := j.getObjVal? "tapp" then return .tapp (← fromJson? (← o.getObjVal? "index")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeTy)
+    if let .ok o := j.getObjVal? "ctor" then return .ctor (← fromJson? (← o.getObjVal? "head"))
+    throw "unknown type constructor"
+end
+instance : ToJson Atom := ⟨encodeAtom⟩
+instance : FromJson Atom := ⟨decodeAtom⟩
+instance : ToJson Ty := ⟨encodeTy⟩
+instance : FromJson Ty := ⟨decodeTy⟩
 
 inductive Const where
   | integer (value : Int)
@@ -76,11 +130,13 @@ structure Alternative where
 inductive OpRef where
   | user (name : String)
   | prim (name : String)
+  | fail
   deriving BEq, ToJson, FromJson, Repr
 
 inductive DictEv where
   | impl (name : String) (tys : List Ty) (args : List DictEv)
   | local (index : Nat)
+  | clause (outer arity dictCount constraint depth : Nat)
   | super (dict : DictEv) (cls : String)
   deriving ToJson, FromJson, Repr
 
@@ -101,6 +157,9 @@ mutual
         (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
     | primName (name : String) (tys : List Ty) (effs : List Eff)
     | opName (name : String) (tys : List Ty)
+    | opDicts (name : String) (tys : List Ty) (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
+    | raise (result error : Ty)
+    | handleFail (error result : Ty) (body clause : Block)
     | nullCon (name : String) (tys : List Ty)
     | conValue (name : String) (tys : List Ty) (names : List String) (params : List Ty)
     | literal (value : Const)
@@ -149,7 +208,7 @@ mutual
     | handleE (body : Block) (clauses : List SurfaceClause)
     | resume (index : Nat) (inner : Expr)
   inductive SurfaceClause where
-    | mk (op : OpRef) (arity ntys : Nat) (body : Block)
+    | mk (op : OpRef) (arity ntys : Nat) (body : Block) (dictCount : Nat) (failureType : Option Ty)
   inductive HoleArg where
     | expr (label : Option String) (position : Nat) (inner : Expr)
     | hole (label : Option String) (position : Nat) (ty : Ty)
@@ -218,8 +277,11 @@ mutual
     | .opName name tys => Json.mkObj [("opName", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
     | .handleE body clauses => Json.mkObj [("handleE", Json.mkObj [("body", encodeBlock body), ("clauses", Json.arr (clauses.map encodeSurfaceClause).toArray)])]
     | .resume index inner => Json.mkObj [("resume", Json.mkObj [("index", toJson index), ("inner", encodeExpr inner)])]
+    | .raise result error => Json.mkObj [("raise", Json.mkObj [("result", toJson result), ("error", toJson error)])]
+    | .opDicts name tys dicts names params eff => Json.mkObj [("opDicts", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("dicts", toJson dicts), ("names", toJson names), ("params", toJson params), ("eff", toJson eff)])]
+    | .handleFail error result body clause => Json.mkObj [("handleFail", Json.mkObj [("error", toJson error), ("result", toJson result), ("body", encodeBlock body), ("clause", encodeBlock clause)])]
   partial def encodeSurfaceClause : SurfaceClause → Json
-    | .mk op arity ntys body => Json.mkObj [("op", toJson op), ("arity", toJson arity), ("ntys", toJson ntys), ("body", encodeBlock body)]
+    | .mk op arity ntys body dictCount failureType => Json.mkObj [("op", toJson op), ("arity", toJson arity), ("ntys", toJson ntys), ("dictCount", toJson dictCount), ("failureType", toJson failureType), ("body", encodeBlock body)]
   partial def encodeHoleArg : HoleArg → Json
     | .expr label position inner => Json.mkObj [("expr", Json.mkObj [("label", toJson label), ("position", toJson position), ("inner", encodeExpr inner)])]
     | .hole label position ty => Json.mkObj [("hole", Json.mkObj [("label", toJson label), ("position", toJson position), ("ty", toJson ty)])]
@@ -252,9 +314,26 @@ def checkTryFields (j : Json) : Except String Unit := do
       for (key, _) in obj.toArray do
         if !fields.contains key then throw s!"unexpected {tag} field: {key}"
 
+/-- 新しい式の情報を別のタグや余分な型引数の欄として読み捨てない。 -/
+def checkBatch2ExprFields (j : Json) : Except String Unit := do
+  for (tag, fields) in [("raise", ["result", "error"]),
+      ("handleFail", ["error", "result", "body", "clause"]),
+      ("opDicts", ["name", "tys", "dicts", "names", "params", "eff"])] do
+    if let .ok payload := j.getObjVal? tag then
+      if (← j.getObj?).toArray.size != 1 then throw "ambiguous batch2 expression"
+      let obj ← payload.getObj?
+      for (key, _) in obj.toArray do
+        if !fields.contains key then throw s!"unexpected {tag} field: {key}"
+      for key in fields do
+        if !obj.contains key then throw s!"missing {tag} field: {key}"
+
 mutual
   partial def decodeExpr (j : Json) : Except String Expr := do
     checkTryFields j
+    checkBatch2ExprFields j
+    if let .ok o := j.getObjVal? "raise" then return .raise (← o.getObjValAs? Ty "result") (← o.getObjValAs? Ty "error")
+    if let .ok o := j.getObjVal? "opDicts" then return .opDicts (← o.getObjValAs? String "name") (← o.getObjValAs? (List Ty) "tys") (← o.getObjValAs? (List DictEv) "dicts") (← o.getObjValAs? (List String) "names") (← o.getObjValAs? (List Ty) "params") (← o.getObjValAs? Eff "eff")
+    if let .ok o := j.getObjVal? "handleFail" then return .handleFail (← o.getObjValAs? Ty "error") (← o.getObjValAs? Ty "result") (← decodeBlock (← o.getObjVal? "body")) (← decodeBlock (← o.getObjVal? "clause"))
     if let .ok o := j.getObjVal? "constName" then
       return .constName (← fromJson? (← o.getObjVal? "name"))
     if let .ok o := j.getObjVal? "funDicts" then
@@ -356,7 +435,7 @@ mutual
       return .resume (← fromJson? (← o.getObjVal? "index")) (← decodeExpr (← o.getObjVal? "inner"))
     throw "unknown Expr constructor"
   partial def decodeSurfaceClause (j : Json) : Except String SurfaceClause := do
-    return .mk (← fromJson? (← j.getObjVal? "op")) (← fromJson? (← j.getObjVal? "arity")) (← fromJson? (← j.getObjVal? "ntys")) (← decodeBlock (← j.getObjVal? "body"))
+    return .mk (← fromJson? (← j.getObjVal? "op")) (← fromJson? (← j.getObjVal? "arity")) (← fromJson? (← j.getObjVal? "ntys")) (← decodeBlock (← j.getObjVal? "body")) (← j.getObjValAs? Nat "dictCount") (← j.getObjValAs? (Option Ty) "failureType")
   partial def decodeHoleArg (j : Json) : Except String HoleArg := do
     if let .ok o := j.getObjVal? "expr" then
       return .expr (← fromJson? (← o.getObjVal? "label")) (← fromJson? (← o.getObjVal? "position")) (← decodeExpr (← o.getObjVal? "inner"))
@@ -404,6 +483,7 @@ mutual
     | fnRef (name : String) (tys : List Ty) (effs : List Eff)
     | prim (name : String) (tys : List Ty) (effs : List Eff)
     | op (name : String) (tys : List Ty)
+    | raise (result error : Ty)
     | lam (names : List String) (params : List Ty) (body : Comp)
     | con (name : String) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
@@ -426,7 +506,7 @@ mutual
   inductive CoreArm where
     | mk (alts : List Alternative) (guard : Option Comp) (body : Comp)
   inductive CoreClause where
-    | mk (op : OpRef) (arity ntys : Nat) (body : Comp)
+    | mk (op : OpRef) (arity ntys : Nat) (body : Comp) (dictCount : Nat) (failureType : Option Ty)
 end
 deriving instance BEq for Val, Comp, CoreArm, CoreClause
 mutual
@@ -442,6 +522,7 @@ mutual
     | .list elems => Json.mkObj [("list", Json.mkObj [("elems", Json.arr (elems.map encodeVal).toArray)])]
     | .unsupported name => Json.mkObj [("unsupported", Json.mkObj [("name", toJson name)])]
     | .op name tys => Json.mkObj [("op", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
+    | .raise result error => Json.mkObj [("raise", Json.mkObj [("result", toJson result), ("error", toJson error)])]
   partial def encodeComp : Comp → Json
     | .meth dict name tys effs args => Json.mkObj [("meth", Json.mkObj [("dict", encodeVal dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .ret value => Json.mkObj [("ret", Json.mkObj [("value", encodeVal value)])]
@@ -458,10 +539,12 @@ mutual
   partial def encodeCoreArm : CoreArm → Json
     | .mk alts guard body => Json.mkObj [("mk", Json.mkObj [("alts", toJson alts), ("guard", guard.map encodeComp |>.getD Json.null), ("body", encodeComp body)])]
   partial def encodeCoreClause : CoreClause → Json
-    | .mk op arity ntys body => Json.mkObj [("op", toJson op), ("arity", toJson arity), ("ntys", toJson ntys), ("body", encodeComp body)]
+    | .mk op arity ntys body dictCount failureType => Json.mkObj [("op", toJson op), ("arity", toJson arity), ("ntys", toJson ntys), ("dictCount", toJson dictCount), ("failureType", toJson failureType), ("body", encodeComp body)]
 end
 mutual
   partial def decodeVal (j : Json) : Except String Val := do
+    checkBatch2ExprFields j
+    if let .ok o := j.getObjVal? "raise" then return .raise (← o.getObjValAs? Ty "result") (← o.getObjValAs? Ty "error")
     if let .ok o := j.getObjVal? "dict" then
       return .dict (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeVal)
     if let .ok o := j.getObjVal? "super" then
@@ -516,16 +599,22 @@ mutual
     let g ← o.getObjVal? "guard"
     return .mk (← fromJson? (← o.getObjVal? "alts")) (← if g == Json.null then pure none else some <$> decodeComp g) (← decodeComp (← o.getObjVal? "body"))
   partial def decodeCoreClause (j : Json) : Except String CoreClause := do
-    return .mk (← fromJson? (← j.getObjVal? "op")) (← fromJson? (← j.getObjVal? "arity")) (← fromJson? (← j.getObjVal? "ntys")) (← decodeComp (← j.getObjVal? "body"))
+    return .mk (← fromJson? (← j.getObjVal? "op")) (← fromJson? (← j.getObjVal? "arity")) (← fromJson? (← j.getObjVal? "ntys")) (← decodeComp (← j.getObjVal? "body")) (← j.getObjValAs? Nat "dictCount") (← j.getObjValAs? (Option Ty) "failureType")
 end
 instance : ToJson Val := ⟨encodeVal⟩
 instance : FromJson Val := ⟨decodeVal⟩
 instance : ToJson Comp := ⟨encodeComp⟩
 instance : FromJson Comp := ⟨decodeComp⟩
 
+/-- 宣言順の行パラメータ。NoFail はシグネチャから再計算して照合する。 -/
+structure EffParam where
+  noFail : Bool
+  deriving BEq, ToJson, FromJson
+
 structure Header where
   tparams : List (Bool × Bool)
   neffs : Nat
+  effParams : List EffParam
   names : List String
   params : List Ty
   ret : Ty
@@ -565,6 +654,8 @@ structure Definition where
   scope : Scope
   deriving ToJson, FromJson
 structure OpEntry where
+  dictParams : List (String × Nat)
+  effectKind : String
   name : String
   eff : String
   header : Header
@@ -575,6 +666,7 @@ structure EffectEntry where
   deriving ToJson, FromJson
 /-- 組み込みの操作は利用者の表に含めず、節の束縛数の検査に必要な部分だけ持つ。 -/
 structure PrimOpEntry where
+  effectKind : String
   names : List String
   name : String
   arity : Nat

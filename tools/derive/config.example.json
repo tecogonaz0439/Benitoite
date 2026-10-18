@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "targets": [{
+    "source": "People.bnt",
+    "type": "People.Person",
+    "region": "person",
+    "json": {"encode": "encodePerson", "decode": "decodePerson", "keys": {}},
+    "property": {"generator": "genPerson", "shrinker": "shrinkPerson"},
+    "fields": {}
+  }]
+}

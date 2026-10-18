@@ -1,0 +1,13 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+effect Other
+ function op() -> Integer
+end effect
+function bad() -> Integer
+ return handle Failure.raise(error: "bad") with
+ case Failure.raise(error) -> 1
+ case op() -> 2
+ end handle
+end function
+function main() -> Unit
+end function

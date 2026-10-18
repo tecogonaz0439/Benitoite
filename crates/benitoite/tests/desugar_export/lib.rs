@@ -1,4 +1,4 @@
-//! 本番の構文受理前に、実際の交換器を独立した corpus 10 と照合する
+//! 実際の交換器を旧版の独立した corpus 10 と照合する
 //! （設計書 07-04「01-12 との対応」）。
 // テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
 #![allow(
@@ -127,7 +127,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         let path = directory.join("corpus.json");
         stream.finish(
             &path,
-            json!({"version":10,"operators":exchange::operators()}),
+            json!({"version":11,"operators":exchange::operators()}),
         );
         let written: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         std::fs::remove_file(path).unwrap();
@@ -196,7 +196,12 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         }
         let mut actual = actual.clone();
         rename(&mut actual, &names);
-        let expected = &fixture["inputs"][0]["definitions"][index]["scope"]["inScope"];
+        let mut expected = fixture["inputs"][0]["definitions"][index]["scope"]["inScope"].clone();
+        // 旧版の独立入力の意味を保ち、新版の必須の空の行条件だけを補う。
+        for layer in ["surface", "core"] {
+            assert_eq!(expected[layer]["header"]["neffs"], 0);
+            expected[layer]["header"]["effParams"] = json!([]);
+        }
         // 所属と view は実ソースの読み込み結果。独立入力の架空の所属とは比較しない。
         for key in ["header", "dictParams"] {
             assert_eq!(

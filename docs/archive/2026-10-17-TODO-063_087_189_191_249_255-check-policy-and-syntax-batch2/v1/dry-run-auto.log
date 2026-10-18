@@ -1,0 +1,21 @@
+== plan: level work against 443e1faff532a66352986150d3f36e8e72be3319 (94 changed file(s))
+   [fmt] because of Cargo.lock (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of Cargo.lock (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep
+   [lib_default] because of Cargo.lock (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of Cargo.lock (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of Cargo.lock (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of Cargo.lock (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of Cargo.lock (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [licenses] because of Cargo.lock (estimate: seconds to a few min)
+      command: check_licenses (Python compares deny.toml and scripts/release/about.toml; cargo deny --version; cargo deny check licenses)
+   omitted: spec_examples reference_examples skill_docs (included by tests_related, default configuration)
+   later: stage checks named connections; change covers full regression; release checks the candidate

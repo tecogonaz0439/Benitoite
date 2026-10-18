@@ -1,0 +1,44 @@
+{
+  "fuzzOnly": [
+    [
+      "arbitrary",
+      "1.4.2"
+    ],
+    [
+      "benitoite-fuzz",
+      "0.0.0"
+    ],
+    [
+      "jobserver",
+      "0.1.35"
+    ],
+    [
+      "libfuzzer-sys",
+      "0.4.13"
+    ]
+  ],
+  "oldFuzzOnlyPresent": [
+    [
+      "arbitrary",
+      "1.4.2",
+      true
+    ],
+    [
+      "benitoite-fuzz",
+      "0.0.0",
+      true
+    ],
+    [
+      "jobserver",
+      "0.1.35",
+      true
+    ],
+    [
+      "libfuzzer-sys",
+      "0.4.13",
+      true
+    ]
+  ],
+  "sharedPackagesUseRootVersions": true,
+  "rootDependencyChanges": "only benitoite version"
+}

@@ -1,0 +1,70 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-e161a4b531f92164)
+
+running 26 tests
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test decision_tree_limit_is_reported_only_when_compiling ... ok
+test main_check_reports_failures_without_execution ... ok
+test main_check_reports_warnings_without_execution ... ok
+test main_check_reports_sources_without_execution ... ok
+test cli_process_contracts ... ok
+test skill_document_output_failures_exit_one ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test skill_documents_need_no_writable_directory ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test tool_panics_are_internal_reports ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test main_check_reports_contracts_without_execution ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test main_check_reports_shell_without_execution ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test expanded_type_limits ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.74s
+
+     Running tests/fmt_command.rs (target/debug/deps/fmt_command-0a8715614d4e75af)
+
+running 15 tests
+test check_escapes_terminal_controls_in_the_file_name ... ok
+test fmt_rejects_a_fifo_without_blocking ... ok
+test check_reports_without_rewriting ... ok
+test execute_permission_is_kept ... ok
+test a_link_given_directly_rewrites_its_target_and_keeps_the_link ... ok
+test directory_walk_formats_package_settings ... ok
+test rewrites_changed_files_and_leaves_canonical_files_untouched ... ok
+test directory_expands_to_sorted_bnt_files_only ... ok
+test unwritable_directory_keeps_the_original_and_leaves_no_temp_file ... ok
+test syntax_errors_and_unreadable_files_do_not_stop_other_files ... ok
+test unreadable_directory_is_reported_and_other_paths_continue ... ok
+test usage_errors_have_two_lines_and_exit_two ... ok
+test json_diagnostics_are_one_object_per_line ... ok
+test fmt_refuses_read_only_and_hard_linked_targets_but_check_does_not ... ok
+test saves_short_lambdas_on_their_original_line ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/http_descriptor_exhaustion.rs (target/debug/deps/http_descriptor_exhaustion-769fcb3f0e4a43cd)
+
+running 1 test
+test descriptor_exhaustion_preserves_server_and_recovers_in_both_modes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s
+
+     Running tests/http_exchange_release.rs (target/debug/deps/http_exchange_release-e384ab8d799124ed)
+
+running 3 tests
+test one_sigint_after_partial_response_finishes ... ok
+test runtime_error_after_partial_response_finishes ... ok
+test cancelled_responses_release_and_leave_file_workers_available ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+

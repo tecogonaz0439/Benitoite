@@ -1,4 +1,4 @@
-import Benitoite.Release.Typing
+import Benitoite.Release.TypeVariables
 
 /-!
 # 型とエフェクトの変数の範囲（段階 B）
@@ -14,36 +14,6 @@ E-Fun と E-Op が閉じた型だけを置き換えることを、この条件�
 
 namespace Benitoite.Release
 
-def Eff.RhosIn (pe : Nat → Prop) (ε : Eff) : Prop :=
-  ∀ i, ε (.rho i) = true → pe i
-
-mutual
-  /-- 型の中の型の変数の番号が `n` より小さく、エフェクト変数の番号が `pe` を満たし、継続の型を含まない
-  （項の中に書ける型である）。 -/
-  def Ty.VarsIn (n : Nat) (pe : Nat → Prop) : Ty → Prop
-    | .base _ => True
-    | .opaque _ => True
-    | .data _ args => Ty.VarsInList n pe args
-    | .list a => Ty.VarsIn n pe a
-    | .fn names params ret eff =>
-        NamesWF names params ∧ Ty.VarsInList n pe params ∧ Ty.VarsIn n pe ret ∧ Eff.RhosIn pe eff
-    | .tvar i => i < n
-    | .reference a => Ty.VarsIn n pe a
-    | .lazy a => Ty.VarsIn n pe a
-    -- 継続の型は、項に書く型に含めない（01-12「ハンドラ」）。
-    | .cont _ _ _ => False
-    | .map a b => Ty.VarsIn n pe a ∧ Ty.VarsIn n pe b
-    | .set a => Ty.VarsIn n pe a
-    | .bytes => True
-    | .dict _ τ => Ty.VarsIn n pe τ
-    | .tapp i args => i < n ∧ Ty.VarsInList n pe args
-    | .ctor _ => True
-
-  def Ty.VarsInList (n : Nat) (pe : Nat → Prop) : List Ty → Prop
-    | [] => True
-    | a :: as => Ty.VarsIn n pe a ∧ Ty.VarsInList n pe as
-end
-
 def Eff.RhosInList (pe : Nat → Prop) : List Eff → Prop
   | [] => True
   | e :: es => Eff.RhosIn pe e ∧ Eff.RhosInList pe es
@@ -52,12 +22,13 @@ mutual
   def Val.VarsIn (n : Nat) (pe : Nat → Prop) : Val → Prop
     | .var _ => True
     | .const _ => True
-    | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs
-    | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs
+    | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
+    | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
     | .lam names params body => NamesWF names params ∧ Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body
     | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args
     | .list elems => Val.VarsInList n pe elems
     | .op _ tys => Ty.VarsInList n pe tys
+    | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
     | .loc _ => True
     | .mapV ks vs => Val.VarsInList n pe ks ∧ Val.VarsInList n pe vs
     | .setV elems => Val.VarsInList n pe elems
@@ -81,7 +52,7 @@ mutual
     | .handle m h => Comp.VarsIn n pe m ∧ Clause.VarsInList n pe h
     | .resume k v => Val.VarsIn n pe k ∧ Val.VarsIn n pe v
     | .meth d _ tys effs args =>
-        Val.VarsIn n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs ∧ Val.VarsInList n pe args
+        Val.VarsIn n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInList n pe args
 
   def Arm.VarsInList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
     | [] => True
@@ -93,6 +64,7 @@ mutual
   def Clause.VarsInList (n : Nat) (pe : Nat → Prop) : List Clause → Prop
     | [] => True
     | .mk _ _ k m :: cs => Comp.VarsIn (n + k) pe m ∧ Clause.VarsInList n pe cs
+    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsIn (n + 1) pe m ∧ Clause.VarsInList n pe cs
 end
 
 /-! ## 宣言の変数の範囲 -/
@@ -102,7 +74,7 @@ end
 def Def.Scoped (d : Def) : Prop :=
   NamesWF d.names d.params ∧
     Ty.VarsInList d.ntys (· < d.neffs) d.params ∧ Ty.VarsIn d.ntys (· < d.neffs) d.ret ∧
-    Eff.RhosIn (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body
+    Eff.VarsIn d.ntys (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body
 
 def ConDecl.Scoped (cd : ConDecl) : Prop :=
   Ty.VarsInList cd.ntys (fun _ => False) cd.args
@@ -115,14 +87,14 @@ def OpDecl.Scoped (od : OpDecl) : Prop :=
 def PrimSig.Scoped (s : PrimSig) : Prop :=
   NamesWF s.names s.params ∧
     Ty.VarsInList s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn s.ntys (· < s.neffs) s.ret ∧
-    Eff.RhosIn (· < s.neffs) s.eff
+    Eff.VarsIn s.ntys (· < s.neffs) s.eff
 
 /-- メソッドの型は、メソッドの型パラメータ（番号 `0..g-1`）と型クラスの引数（番号 g）と、メソッドのエフェクト変数
 だけを使う。 -/
 def MethSig.Scoped (ms : MethSig) : Prop :=
   NamesWF ms.names ms.params ∧
     Ty.VarsInList (ms.tparams.length + 1) (· < ms.neffs) ms.params ∧
-    Ty.VarsIn (ms.tparams.length + 1) (· < ms.neffs) ms.ret ∧ Eff.RhosIn (· < ms.neffs) ms.eff
+    Ty.VarsIn (ms.tparams.length + 1) (· < ms.neffs) ms.ret ∧ Eff.VarsIn (ms.tparams.length + 1) (· < ms.neffs) ms.eff
 
 def ClassDecl.Scoped (cd : ClassDecl) : Prop :=
   ∀ m ms, cd.methods m = some ms → ms.Scoped

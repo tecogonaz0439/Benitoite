@@ -176,6 +176,11 @@ const BREAKING_CHANGES: &[BreakingChange] = &[
         summary: text::LOADER_ENVIRONMENT_CHANGE,
         help: text::LOADER_ENVIRONMENT_MIGRATION,
     },
+    BreakingChange {
+        version: Version(0, 0, 8),
+        summary: text::CHARACTER_COVERAGE_CHANGE,
+        help: text::CHARACTER_COVERAGE_MIGRATION,
+    },
 ];
 
 pub(crate) use crate::syntax::header::keyword;
@@ -487,16 +492,19 @@ mod tests {
             notes[0],
             notes[1],
             "0.0.7: Command.environment rejects names starting with DYLD_ or LD_ (ASCII case-insensitive), including build-tool variables such as LD_RUN_PATH",
+            "0.0.8: Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable",
         ];
         let helps = [
             helps[0],
             helps[1],
             "review explicit settings of DYLD_ and LD_ variables, including LD_RUN_PATH used by build tools; run and runAttached return IOErrorKind.InvalidInput before starting a child; inherited variables are unchanged; update the language declaration to the current version after reviewing the script, update dependency hashes, and see CHANGELOG.md for migration details",
+            "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md",
         ];
-        let change_versions = ["0.0.5", "0.0.6", "0.0.7"];
+        let change_versions = ["0.0.5", "0.0.6", "0.0.7", "0.0.8"];
         for (current_text, current, end) in [
             ("0.0.6", Version(0, 0, 6), 2),
             ("0.0.7", Version(0, 0, 7), 3),
+            ("0.0.8", Version(0, 0, 8), 4),
         ] {
             for (version, first) in [
                 ("0.0.0", 0),
@@ -505,7 +513,8 @@ mod tests {
                 ("0.0.5", 1),
                 ("0.0.6", 2),
                 ("0.0.7", 3),
-                ("0.0.8", 3),
+                ("0.0.8", 4),
+                ("0.0.9", 4),
             ] {
                 let (out, _) = parse_source(&format!("language \"{version}\""), SourceKind::User);
                 let HeaderItem::Language(decl) = &out.module.header[0] else {

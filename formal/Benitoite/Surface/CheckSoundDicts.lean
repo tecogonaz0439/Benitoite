@@ -15,14 +15,15 @@ def ImplNamesComplete (q : Input) (id : ImplInput)
 /-- 一つのメソッドの成功経路。型付けの証明はブロックの契約に任せる。 -/
 def MethodChecked (q : Input) (id : ImplInput) (ms : MethSig) (method : MethodInput) : Prop :=
   method.names = ms.names ∧ NamesWF ms.names ms.params ∧
+  (rowsTysCheck q.atoms ms.neffs ms.params && rowsTyCheck q.atoms ms.neffs ms.ret && rowsEffCheck q.atoms ms.neffs ms.eff) = true ∧
   ∃ path a ε out,
-    lamBodyOk method.body (substTyAt ms.tparams.length [id.target] [] ms.ret) = true ∧
-    checkBlock q .strict (ms.tparams ++ id.tparams)
-      (binds (id.dictTys.map (shiftTy ms.tparams.length 0) ++
-        ms.params.map (substTyAt ms.tparams.length [id.target] [])))
-      (some (substTyAt ms.tparams.length [id.target] [] ms.ret)) .tail path method.body = .ok (a, ε) ∧
-    accept q path (substTyAt ms.tparams.length [id.target] [] ms.ret) (a, ε) = .ok out ∧
-    acceptEff q path ms.eff out = .ok ()
+    lamBodyOk method.body (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret) = true ∧
+    checkBlockQ { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } .strict (ms.tparams ++ id.tparams)
+      (binds (id.dictTys.map (shiftTy q.atoms ms.tparams.length 0) ++
+        ms.params.map (substTyAt q.atoms ms.tparams.length [id.target] [])))
+      (some (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret)) .tail path method.body = .ok (a, ε) ∧
+    accept { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } (ms.tparams ++ id.tparams).length path (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret) (a, ε) = .ok out ∧
+    acceptEff { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } path (substEffAt q.atoms ms.tparams.length [id.target] [] ms.eff) out = .ok ()
 
 theorem checkMethods_entry {q path id cd names index views}
     (h : checkMethods q path id cd views names index = .ok ()) :
@@ -49,6 +50,7 @@ theorem checkMethods_entry {q path id cd names index views}
                 simp only [hms, hbody] at h
                 obtain ⟨uNames, hNames, h⟩ := bind_ok h
                 obtain ⟨uWF, hWF, h⟩ := bind_ok h
+                obtain ⟨uRows, hRows, h⟩ := bind_ok h
                 obtain ⟨v, hv, h⟩ := bind_ok h
                 obtain ⟨⟨a, ε⟩, hb, h⟩ := bind_ok h
                 obtain ⟨out, ha, h⟩ := bind_ok h
@@ -58,7 +60,7 @@ theorem checkMethods_entry {q path id cd names index views}
                 have eqms : ms = ms' := by simpa [hms] using he
                 subst ms'
                 refine ⟨body, rfl, eq_of_beq (require_ok hNames).1,
-                  (namesWF_spec _ _).mp (require_ok hWF).1, child path index, a, ε, out, (require_ok hv).1, hb, ha, ?_⟩
+                  (namesWF_spec _ _).mp (require_ok hWF).1, (require_ok hRows).1, child path index, a, ε, out, (require_ok hv).1, hb, ha, ?_⟩
                 cases u; exact hf
       intro k hk
       rcases List.mem_cons.mp hk with rfl | hk
@@ -119,7 +121,7 @@ theorem checkImpl_contracts {q methods supers path id views}
 
 /-- 有限の名前一覧の成功を、一覧外の空欄の契約と合わせて全称判断へ戻す。 -/
 theorem checkImpl_of_checker {q methods supers path id views}
-    (hs : ∀ view, CheckerSoundness ({ q with D := q.D.withView view } : Input))
+    (hs : ∀ view rows, CheckerSoundness ({ q with D := q.D.withView view, noFailRows := rows } : Input))
     (hq : q.Sound) (hi : id.decl.AtomsIn q.atoms) (hn : ImplNamesComplete q id methods supers)
     (h : checkImpl q methods supers path id views = .ok ()) :
     ImplDecl.WellTyped q.D q.B q.opPrim id.decl views := by
@@ -149,7 +151,7 @@ theorem checkImpl_of_checker {q methods supers path id views}
       · exact hmem
       · have he := hn.1 cd hcd m hmem
         rw [hms] at he; contradiction
-    obtain ⟨method, hm, hNames, hWF, path', a, ε, out, hExit, hBlock, hAccept, hEff⟩ :=
+    obtain ⟨method, hm, hNames, hWF, hRows, path', a, ε, out, hExit, hBlock, hAccept, hEff⟩ :=
       (methodEntry m hmem).2 ms hms
     have hb : id.decl.methods m = some method.body := by simp [ImplInput.decl, hm]
     have msAtoms := hq.declarations.2.2.2.1 id.cls cd m ms hcd hms
@@ -160,17 +162,37 @@ theorem checkImpl_of_checker {q methods supers path id views}
         ⟨hi.1, trivial⟩ (by simp) ms.tparams.length)
     have dictAtoms := tysAtoms_map hi.2.1
       (fun _ h => shiftTy_atoms h ms.tparams.length 0)
-    have hb' := checkBlock_of_mutual (hs (views m)).surface (hq.withView (views m))
+    have hb' := checkBlock_of_mutual (hs (views m) (signatureQ ms.neffs ms.params ms.ret ms.eff)).surface
+      ((hq.withView (views m)).withNoFailRows (signatureQ ms.neffs ms.params ms.ret ms.eff))
       (hi.2.2.2 m method.body hb)
       (Env.atoms_binds (tysAtoms_append dictAtoms paramsAtoms))
       (fun t ht => by cases ht; exact resultAtoms) hBlock
-    have typed := accept_block_eff hb'.1 hb'.2.1 resultAtoms hb'.2.2 hAccept hEff
+    have hts : ∀ t ∈ [id.target], t.AtomsIn q.atoms := by
+      intro t ht; simp only [List.mem_singleton] at ht; subst t; exact hi.1
+    have hretEq := substTyAt_eq ms.tparams.length [id.target] [] ms.ret hts (by simp) msAtoms.2.1
+    have hparamsEq := substTysAt_eq ms.tparams.length [id.target] [] ms.params hts (by simp)
+      (tysAtoms_iff.mp msAtoms.1)
+    simp only [substTysAt] at hparamsEq
+    have heffEq := substEffAt_eq ms.tparams.length [id.target] [] ms.eff hts (by simp) msAtoms.2.2
+    have hdictsEq : id.dictTys.map (shiftTy q.atoms ms.tparams.length 0) =
+        id.dictTys.map (Ty.shift ms.tparams.length 0) :=
+      List.map_congr_left (fun t ht => shiftTy_eq ms.tparams.length 0 t (tysAtoms_iff.mp hi.2.1 t ht))
+    have effectAtoms := substEffAt_atoms msAtoms.2.2 (atoms := q.atoms)
+      (ts := [id.target]) (es := []) ⟨hi.1, trivial⟩ (by simp) ms.tparams.length
+    have hqs : NoFailCtxOf (signatureQ ms.neffs ms.params ms.ret ms.eff) = Qsig ms.params ms.ret ms.eff := by
+      simp only [Bool.and_eq_true] at hRows
+      funext i
+      exact propext (signatureQ_scoped
+        ((rowsTysCheck_spec ms.neffs ms.params msAtoms.1).mp hRows.1.1)
+        ((rowsTyCheck_spec ms.neffs ms.ret msAtoms.2.1).mp hRows.1.2)
+        ((rowsEffCheck_spec ms.neffs ms.eff msAtoms.2.2).mp hRows.2) i)
+    have typed := accept_block_eff hb'.1 hb'.2.1 resultAtoms hb'.2.2 effectAtoms hAccept hEff
     refine ⟨method.body, hb, ?_, ?_⟩
-    · simpa only [substTyAt_eq, ImplDecl.methTy, ImplInput.decl] using (lamBodyOk_spec _ _).mp hExit
-    · simpa only [substTyAt_fun_eq, shiftTy_fun_eq, methTy_fun_eq, ImplInput.decl] using typed
+    · simpa only [hretEq, ImplDecl.methTy, ImplInput.decl] using (lamBodyOk_spec _ _).mp hExit
+    · simpa only [hqs, hretEq, hparamsEq, hdictsEq, heffEq, methTy_fun_eq, ImplDecl.methTy, ImplInput.decl] using typed
   · intro s hmem
     obtain ⟨d, dictPath, a, hds, ha, he⟩ := checkSuperDicts_entry hd s hmem
-    have ht := checkDict_of_dictionary (hs q.D.view).dictionaries (hq.withView q.D.view)
+    have ht := checkDict_of_dictionary (hs q.D.view q.noFailRows).dictionaries ((hq.withView q.D.view).withNoFailRows q.noFailRows)
       (hi.2.2.1 s d hds)
       (Env.atoms_binds hi.2.1) ha
     have eqTy := tyEq_sound ht.2 (b := .dict s id.target) hi.1 he

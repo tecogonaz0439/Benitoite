@@ -164,7 +164,8 @@ fn contains_param(ty: &Ty) -> bool {
         Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => true,
         Ty::Con(_, a) => a.iter().any(contains_param),
         Ty::Fn(f) => {
-            f.params.iter().any(contains_param)
+            f.effects.failures.iter().any(contains_param)
+                || f.params.iter().any(contains_param)
                 || contains_param(&f.ret)
                 || !f.effects.vars.is_empty()
         }

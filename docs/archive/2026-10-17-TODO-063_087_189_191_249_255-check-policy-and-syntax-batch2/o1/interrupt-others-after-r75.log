@@ -1,0 +1,14 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/interrupt_process.rs (target/debug/deps/interrupt_process-0e781653be498686)
+
+running 7 tests
+test sigterm_interrupts_timers_in_parent_and_child_tasks ... ok
+test sigint_interrupts_stdin_and_preserves_output_after_the_ready_line ... ok
+test sigint_interrupts_with_an_open_reader ... ok
+test sigint_interrupts_external_wasm_without_a_trap_report ... ok
+test second_sigint_terminates_without_waiting_for_blocked_stdout ... ok
+test sigint_interrupts_tail_recursive_computation ... ok
+test sigint_interrupts_regex_find_all_between_matches ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.77s
+

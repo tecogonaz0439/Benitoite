@@ -4,20 +4,18 @@ import Benitoite.Surface.CheckTables
 namespace Benitoite.Exchange
 open Lean
 
-def Atom.toRelease : Atom → Benitoite.Release.Atom
-  | .name s => .name s
-  | .rho i => .rho i
-
-def Eff.toRelease (e : Eff) : Benitoite.Release.Eff := fun a => e.any (fun b => b.toRelease == a)
-
-/-- 脱糖は原子を新しく作らない。入力に現れた有限の原子だけを調べる。 -/
-def fromEff (atoms : Eff) (e : Benitoite.Release.Eff) : Eff := atoms.filter (fun a => e a.toRelease)
+/-- Fail は名前の原子と区別し、支持はエラー型の内部まで収集する。 -/
+def Atom.toRelease : Atom → Option Benitoite.Release.Atom
+  | .name s => some (.name s)
+  | .rho i => some (.rho i)
+  | .fail _ => none
 
 partial def collectAtoms : Json → Eff
   | .arr xs => xs.toList.flatMap collectAtoms
   | j@(.obj xs) => match (fromJson? j : Except String Atom) with
-      | .ok a => [a]
-      | .error _ => xs.toArray.toList.flatMap (fun (_, v) => collectAtoms v)
+      | .ok (.name n) => [.name n]
+      | .ok (.rho i) => [.rho i]
+      | _ => xs.toArray.toList.flatMap (fun (_, v) => collectAtoms v)
   | _ => []
 
 def baseTy : String → Except String Benitoite.Release.BaseTy
@@ -43,20 +41,6 @@ def baseName : Benitoite.Release.BaseTy → String
   | .unsignedInteger16 => "UnsignedInteger16" | .unsignedInteger32 => "UnsignedInteger32"
   | .unsignedInteger64 => "UnsignedInteger64" | .float32 => "Float32"
 
-/-- 比較ではエフェクトの順序と基本型の別名だけを揃える。ほかの並びは保つ。 -/
-partial def canonicalJson (atoms : Eff) : Json → Json
-  | .arr xs =>
-      match (xs.toList.mapM (fromJson? · : Json → Except String Atom)) with
-      | .ok es => toJson (atoms.filter (fun a => es.contains a))
-      | .error _ => .arr (xs.map (canonicalJson atoms))
-  | j@(.obj xs) =>
-      match (j.getObjVal? "base").bind (fun b => b.getObjValAs? String "name") with
-      | .ok n => match baseTy n with
-          | .ok t => toJson (Ty.base (baseName t))
-          | .error _ => j
-      | _ => Json.mkObj (xs.toArray.toList.map (fun (k, v) => (k, canonicalJson atoms v)))
-  | j => j
-
 def TyCon.toRelease : TyCon → Benitoite.Release.TyCon
   | .data n => .data n | .list => .list | .set => .set | .map => .map
   | .reference => .reference | .lazyT => .lazy
@@ -70,40 +54,78 @@ def checkNames (names : List String) (arity : Nat) : Except String Unit := do
   if names.length != arity || names.eraseDups != names then
     throw "invalid parameter names"
 
-partial def Ty.toRelease : Ty → Except String Benitoite.Release.Ty
-  | .base n => return .base (← baseTy n)
-  | .opaque n => return .opaque n
-  | .data n ts => return .data n (← ts.mapM Ty.toRelease)
-  | .list t => return .list (← t.toRelease)
-  | .fn names ps r e => do
-      checkNames names ps.length
-      return .fn names (← ps.mapM Ty.toRelease) (← r.toRelease) e.toRelease
-  | .tvar i => return .tvar i
-  | .reference t => return .reference (← t.toRelease)
-  | .lazyT t => return .lazy (← t.toRelease)
-  | .map k v => return .map (← k.toRelease) (← v.toRelease)
-  | .set t => return .set (← t.toRelease)
-  | .bytes => return .bytes
-  | .dict cl t => return .dict cl (← t.toRelease)
-  | .tapp i ts => return .tapp i (← ts.mapM Ty.toRelease)
-  | .ctor h => return .ctor h.toRelease
+mutual
+  partial def Ty.toRelease : Ty → Except String Benitoite.Release.Ty
+    | .base n => return .base (← baseTy n)
+    | .opaque n => return .opaque n
+    | .data n ts => return .data n (← ts.mapM Ty.toRelease)
+    | .list t => return .list (← t.toRelease)
+    | .fn names ps r e => do
+        checkNames names ps.length
+        return .fn names (← ps.mapM Ty.toRelease) (← r.toRelease) (← Eff.toRelease e)
+    | .tvar i => return .tvar i
+    | .reference t => return .reference (← t.toRelease)
+    | .lazyT t => return .lazy (← t.toRelease)
+    | .map k v => return .map (← k.toRelease) (← v.toRelease)
+    | .set t => return .set (← t.toRelease)
+    | .bytes => return .bytes
+    | .dict cl t => return .dict cl (← t.toRelease)
+    | .tapp i ts => return .tapp i (← ts.mapM Ty.toRelease)
+    | .ctor h => return .ctor h.toRelease
 
-partial def fromTy (atoms : Eff) : Benitoite.Release.Ty → Except String Ty
-  | .base t => return .base (baseName t)
-  | .opaque n => return .opaque n
-  | .data n ts => return .data n (← ts.mapM (fromTy atoms))
-  | .list t => return .list (← fromTy atoms t)
-  | .fn names ps r e => return .fn names (← ps.mapM (fromTy atoms)) (← fromTy atoms r) (fromEff atoms e)
-  | .tvar i => return .tvar i
-  | .reference t => return .reference (← fromTy atoms t)
-  | .lazy t => return .lazyT (← fromTy atoms t)
-  | .map k v => return .map (← fromTy atoms k) (← fromTy atoms v)
-  | .set t => return .set (← fromTy atoms t)
-  | .bytes => return .bytes
-  | .dict cl t => return .dict cl (← fromTy atoms t)
-  | .tapp i ts => return .tapp i (← ts.mapM (fromTy atoms))
-  | .ctor h => return .ctor (fromTyCon h)
-  | _ => throw "unsupported Release type"
+  partial def Eff.toRelease (e : Eff) : Except String Benitoite.Release.Eff := do
+    let atoms := (collectAtoms (toJson e)).filterMap Atom.toRelease
+    let names := e.filterMap Atom.toRelease
+    let fails ← e.filterMap (fun a => match a with | .fail t => some t | _ => none) |>.mapM Ty.toRelease
+    return Benitoite.Release.Eff.normWith atoms
+      ⟨(fun a => names.contains a), fails⟩
+end
+
+mutual
+  partial def fromTy (atoms : Eff) : Benitoite.Release.Ty → Except String Ty
+    | .base t => return .base (baseName t)
+    | .opaque n => return .opaque n
+    | .data n ts => return .data n (← ts.mapM (fromTy atoms))
+    | .list t => return .list (← fromTy atoms t)
+    | .fn names ps r e => return .fn names (← ps.mapM (fromTy atoms)) (← fromTy atoms r) (← fromEff atoms e)
+    | .tvar i => return .tvar i
+    | .reference t => return .reference (← fromTy atoms t)
+    | .lazy t => return .lazyT (← fromTy atoms t)
+    | .map k v => return .map (← fromTy atoms k) (← fromTy atoms v)
+    | .set t => return .set (← fromTy atoms t)
+    | .bytes => return .bytes
+    | .dict cl t => return .dict cl (← fromTy atoms t)
+    | .tapp i ts => return .tapp i (← ts.mapM (fromTy atoms))
+    | .ctor h => return .ctor (fromTyCon h)
+    | _ => throw "unsupported Release type"
+
+  partial def fromEff (atoms : Eff) (e : Benitoite.Release.Eff) : Except String Eff := do
+    let names := atoms.filter fun a => a.toRelease.any (Benitoite.Release.Eff.test e)
+    let names := (names.mergeSort fun a b => decide ((a.toRelease.map (·.code)).getD 0 ≤
+      (b.toRelease.map (·.code)).getD 0)).eraseDups
+    return names ++ (← e.fails.mapM (fun t => Atom.fail <$> fromTy atoms t))
+end
+
+/-- 両辺を同じ Lean の読者で正規化する。Rust に内部の符号順を要求しない。 -/
+def normalizeEff (e : Eff) : Except String Eff := do
+  fromEff (collectAtoms (toJson e)) (← e.toRelease)
+
+/-- 比較では各エフェクトの列自体を正規化し、支持の一覧で要素を切り捨てない。
+基本型の別名も揃えるが、契約名・引数・節などの並びは保つ。 -/
+partial def canonicalJson : Json → Json
+  | .arr xs =>
+      match (xs.toList.mapM (fromJson? · : Json → Except String Atom)) with
+      | .ok es => match normalizeEff es with
+          | .ok normalized => toJson normalized
+          | .error _ => .arr (xs.map canonicalJson)
+      | .error _ => .arr (xs.map canonicalJson)
+  | j@(.obj xs) =>
+      match (j.getObjVal? "base").bind (fun b => b.getObjValAs? String "name") with
+      | .ok n => match baseTy n with
+          | .ok t => toJson (Ty.base (baseName t))
+          | .error _ => j
+      | _ => Json.mkObj (xs.toArray.toList.map (fun (k, v) => (k, canonicalJson v)))
+  | j => j
 
 /-! 契約名とソース順を保持する独立した交換の入口。
 設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
@@ -224,14 +246,16 @@ def makeOpPrim (atoms : Eff) (entries : List OperatorEntry) : Benitoite.Surface.
     else none)
 
 def OpRef.toRelease : OpRef → Benitoite.Release.OpRef
-  | .user n => .user n | .prim n => .prim n
+  | .user n => .user n | .prim n => .prim n | .fail => .fail
 
-def fromOpRef : Benitoite.Release.OpRef → OpRef
-  | .user n => .user n | .prim n => .prim n
+def fromOpRef : Benitoite.Release.OpRef → Except String OpRef
+  | .user n => pure (.user n) | .prim n => pure (.prim n)
+  | .fail => pure .fail
 
 partial def DictEv.toSurface : DictEv → Except String Benitoite.Surface.DictEv
   | .impl n ts ds => return .impl n (← ts.mapM Ty.toRelease) (← ds.mapM DictEv.toSurface)
   | .local i => return .local i
+  | .clause outer arity count i depth => return .clause ⟨outer, arity, count⟩ i depth
   | .super d cl => return .super (← d.toSurface) cl
 
 def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.InterpPart
@@ -251,11 +275,14 @@ mutual
           | throw s!"missing expanded constant: {name}"
         return e
     | .local i => return .local i
-    | .funDicts n ts es ds names ps _ => return .funDicts n (← ts.mapM Ty.toRelease) (es.map Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
-    | .methName d n ts es ds names ps _ => return .methName (← d.toSurface) n (← ts.mapM Ty.toRelease) (es.map Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
+    | .funDicts n ts es ds names ps _ => return .funDicts n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
+    | .methName d n ts es ds names ps _ => return .methName (← d.toSurface) n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
+    | .opDicts n ts ds names ps _ => return .opDicts n (← ts.mapM Ty.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
+    | .raise r e => return .raise (← r.toRelease) (← e.toRelease)
+    | .handleFail e r b c => return .handleFail (← e.toRelease) (← r.toRelease) (← b.toSurface constants) (← c.toSurface constants)
     | .opName n ts => return .opName n (← ts.mapM Ty.toRelease)
-    | .funName n ts es => return .funName n (← ts.mapM Ty.toRelease) (es.map Eff.toRelease)
-    | .primName n ts es => return .primName n (← ts.mapM Ty.toRelease) (es.map Eff.toRelease)
+    | .funName n ts es => return .funName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
+    | .primName n ts es => return .primName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
     | .nullCon n ts => return .nullCon n (← ts.mapM Ty.toRelease)
     | .conValue n ts names ps => return .conValue n (← ts.mapM Ty.toRelease) names (← ps.mapM Ty.toRelease)
     | .literal c => match c with
@@ -301,7 +328,7 @@ mutual
     | .conCall n ts es => return .conCall n (← ts.mapM Ty.toRelease) (← toExprs constants es)
     | .call f labels positions es => return .call (← f.toSurface constants) labels positions (← toExprs constants es)
     | .pipe a b => return .pipe (← a.toSurface constants) (← b.toSurface constants)
-    | .partialCall f names es r e => return .partialCall (← f.toSurface constants) names (← toHoles constants es) (← r.toRelease) e.toRelease
+    | .partialCall f names es r e => return .partialCall (← f.toSurface constants) names (← toHoles constants es) (← r.toRelease) (← e.toRelease)
     | .partialCon n ts es => return .partialCon n (← ts.mapM Ty.toRelease) (← toHoles constants es)
     | .binary op t a b => return .binary (← binOp op) (← t.toRelease) (← a.toSurface constants) (← b.toSurface constants)
     | .neg t e => return .neg (← t.toRelease) (← e.toSurface constants)
@@ -322,7 +349,7 @@ mutual
         if converted.any (fun f => (Benitoite.Surface.directCallee f).isNone) then
           throw "indirect interpolation converter"
         return .interpolation ps (← toExprs constants es) (← toExprs constants fs)
-    | .lam names ps r e b => return .lam names (← ps.mapM Ty.toRelease) (← r.toRelease) e.toRelease (← b.toSurface constants)
+    | .lam names ps r e b => return .lam names (← ps.mapM Ty.toRelease) (← r.toRelease) (← e.toRelease) (← b.toSurface constants)
     | .ite c y n => return .ite (← c.toSurface constants) (← y.toSurface constants) (← n.toSurface constants)
     | .elseIf c y n => return .elseIf (← c.toSurface constants) (← y.toSurface constants) (← n.toSurface constants)
     | .ifOnly c y => return .ifOnly (← c.toSurface constants) (← y.toSurface constants)
@@ -344,7 +371,9 @@ mutual
     | .resume k e => return .resume k (← e.toSurface constants)
   partial def toClauses (constants : List (String × Benitoite.Surface.Expr) := []) : List SurfaceClause → Except String Benitoite.Surface.Clauses
     | [] => return .nil
-    | .mk op arity ntys b :: cs => return .cons op.toRelease arity ntys (← b.toSurface constants) (← toClauses constants cs)
+    | .mk op arity ntys b count failure :: cs => do
+        if failure.isSome || op == .fail then throw "Fail requires handleFail"
+        return .cons op.toRelease arity ntys (← b.toSurface constants) (← toClauses constants cs) count
   partial def toExprs (constants : List (String × Benitoite.Surface.Expr) := []) : List Expr → Except String Benitoite.Surface.Exprs
     | [] => return .nil
     | e :: es => return .cons (← e.toSurface constants) (← toExprs constants es)
@@ -408,39 +437,41 @@ def Input.constantCache (input : Input) : Except String (List (String × Benitoi
   return state.cache
 
 mutual
-  partial def fromVal (atoms : Eff) : Benitoite.Release.Val → Except String Val
+  partial def fromVal (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Val → Except String Val
     | .var i => return .var i
-    | .dict n ts ds => return .dict n (← ts.mapM (fromTy atoms)) (← ds.mapM (fromVal atoms))
-    | .super d cl => return .super (← fromVal atoms d) cl
+    | .raise r e => return .raise (← fromTy atoms r) (← fromTy atoms e)
+    | .dict n ts ds => return .dict n (← ts.mapM (fromTy atoms)) (← ds.mapM (fromVal atoms dictCounts))
+    | .super d cl => return .super (← fromVal atoms dictCounts d) cl
     | .op n ts => return .op n (← ts.mapM (fromTy atoms))
     | .const c => return .const (← fromConst c)
-    | .fnRef n ts es => return .fnRef n (← ts.mapM (fromTy atoms)) (es.map (fromEff atoms))
-    | .prim n ts es => return .prim n (← ts.mapM (fromTy atoms)) (es.map (fromEff atoms))
-    | .lam names ps b => return .lam names (← ps.mapM (fromTy atoms)) (← fromComp atoms b)
-    | .con n ts vs => return .con n (← ts.mapM (fromTy atoms)) (← vs.mapM (fromVal atoms))
-    | .list vs => return .list (← vs.mapM (fromVal atoms))
+    | .fnRef n ts es => return .fnRef n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms))
+    | .prim n ts es => return .prim n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms))
+    | .lam names ps b => return .lam names (← ps.mapM (fromTy atoms)) (← fromComp atoms dictCounts b)
+    | .con n ts vs => return .con n (← ts.mapM (fromTy atoms)) (← vs.mapM (fromVal atoms dictCounts))
+    | .list vs => return .list (← vs.mapM (fromVal atoms dictCounts))
     | _ => return .unsupported "Release.Val"
-  partial def fromComp (atoms : Eff) : Benitoite.Release.Comp → Except String Comp
-    | .ret v => return .ret (← fromVal atoms v)
-    | .meth d n ts es vs => return .meth (← fromVal atoms d) n (← ts.mapM (fromTy atoms)) (es.map (fromEff atoms)) (← vs.mapM (fromVal atoms))
-    | .letIn m n => return .letIn (← fromComp atoms m) (← fromComp atoms n)
-    | .app f vs => return .app (← fromVal atoms f) (← vs.mapM (fromVal atoms))
-    | .ite v m n => return .ite (← fromVal atoms v) (← fromComp atoms m) (← fromComp atoms n)
+  partial def fromComp (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Comp → Except String Comp
+    | .ret v => return .ret (← fromVal atoms dictCounts v)
+    | .meth d n ts es vs => return .meth (← fromVal atoms dictCounts d) n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms)) (← vs.mapM (fromVal atoms dictCounts))
+    | .letIn m n => return .letIn (← fromComp atoms dictCounts m) (← fromComp atoms dictCounts n)
+    | .app f vs => return .app (← fromVal atoms dictCounts f) (← vs.mapM (fromVal atoms dictCounts))
+    | .ite v m n => return .ite (← fromVal atoms dictCounts v) (← fromComp atoms dictCounts m) (← fromComp atoms dictCounts n)
     | .match v arms => do
         let as ← arms.mapM fun
           | .mk alts guard body => do
               let alts ← alts.mapM fun a => do
                 pure ({ pat := ← fromPattern a.pat, slots := a.slots } : Alternative)
-              return CoreArm.mk alts (← guard.mapM (fromComp atoms)) (← fromComp atoms body)
-        return .matchC (← fromVal atoms v) as
-    | .escape v => return .escape (← fromVal atoms v)
-    | .use v b => return .use (← fromVal atoms v) (← fromComp atoms b)
-    | .lazyC b => return .lazyC (← fromComp atoms b)
-    | .handle b cs => return .handle (← fromComp atoms b) (← cs.mapM (fromClause atoms))
-    | .resume (.var k) v => return .resume k (← fromVal atoms v)
+              return CoreArm.mk alts (← guard.mapM (fromComp atoms dictCounts)) (← fromComp atoms dictCounts body)
+        return .matchC (← fromVal atoms dictCounts v) as
+    | .escape v => return .escape (← fromVal atoms dictCounts v)
+    | .use v b => return .use (← fromVal atoms dictCounts v) (← fromComp atoms dictCounts b)
+    | .lazyC b => return .lazyC (← fromComp atoms dictCounts b)
+    | .handle b cs => return .handle (← fromComp atoms dictCounts b) (← cs.mapM (fromClause atoms dictCounts))
+    | .resume (.var k) v => return .resume k (← fromVal atoms dictCounts v)
     | _ => return .unsupported "Release.Comp"
-  partial def fromClause (atoms : Eff) : Benitoite.Release.Clause → Except String CoreClause
-    | .mk op arity ntys b => return .mk (fromOpRef op) arity ntys (← fromComp atoms b)
+  partial def fromClause (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Clause → Except String CoreClause
+    | .mk op arity ntys b => return .mk (← fromOpRef op) arity ntys (← fromComp atoms dictCounts b) (match op with | .user n => dictCounts n | _ => 0) none
+    | .fail e b => return .mk .fail 1 1 (← fromComp atoms dictCounts b) 0 (some (← fromTy atoms e))
 end
 
 /-! 契約名とソース順を保持する独立した交換の入口。
@@ -472,7 +503,10 @@ mutual
     | .withE _ e b => e.lambdaEffects constants ++ b.lambdaEffects constants
     | .lazyE b => b.lambdaEffects constants
     | .resume _ e => e.lambdaEffects constants
-    | .handleE b cs => b.lambdaEffects constants ++ cs.flatMap (fun (.mk _ _ _ b) => b.lambdaEffects constants)
+    | .opDicts _ _ _ _ _ e => [e]
+    | .raise .. => []
+    | .handleFail _ _ b c => b.lambdaEffects constants ++ c.lambdaEffects constants
+    | .handleE b cs => b.lambdaEffects constants ++ cs.flatMap (fun (.mk _ _ _ b _ _) => b.lambdaEffects constants)
     | .ite c y n => c.lambdaEffects constants ++ y.lambdaEffects constants ++ n.lambdaEffects constants
     | .elseIf c y n => c.lambdaEffects constants ++ y.lambdaEffects constants ++ n.lambdaEffects constants
     | .ifOnly c y => c.lambdaEffects constants ++ y.lambdaEffects constants
@@ -481,7 +515,7 @@ mutual
   /-- 裸の辞書付きの名前は CallHead になり、値化のラムダを作らない。
   paren はこの分岐に含めず、内側の値化のエフェクトを保持する。 -/
   partial def Expr.headLambdaEffects (constants : List ConstantEntry := []) : Expr → List Eff
-    | .funDicts .. | .methName .. => []
+    | .funDicts .. | .methName .. | .opDicts .. => []
     | e => e.lambdaEffects constants
   partial def holesEffects (constants : List ConstantEntry := []) (es : List HoleArg) : List Eff := es.flatMap fun
     | .expr _ _ e => e.lambdaEffects constants | .hole _ _ _ => []
@@ -491,7 +525,21 @@ mutual
     | .bind _ _ e b | .discard e b | .seq e b | .bindPat _ _ _ e b => e.lambdaEffects constants ++ b.lambdaEffects constants
 end
 
+/-- NoFail は本体から補わず、交換された宣言の型から独立に再計算する。 -/
+def Header.validateNoFail (h : Header) : Except String Unit := do
+  let ps ← h.params.mapM Ty.toRelease
+  let r ← h.ret.toRelease
+  let e ← h.eff.toRelease
+  let atoms := (collectAtoms (toJson h)).filterMap Atom.toRelease
+  if !(Benitoite.Surface.CheckTools.rowsTysCheck atoms h.neffs ps &&
+      Benitoite.Surface.CheckTools.rowsTyCheck atoms h.neffs r &&
+      Benitoite.Surface.CheckTools.rowsEffCheck atoms h.neffs e) then
+    throw "effect row index outside declaration"
+  if h.effParams.map (·.noFail) != Benitoite.Surface.CheckTools.signatureQ h.neffs ps r e then
+    throw "NoFail signature mismatch"
+
 def SurfaceDef.toSurface (d : SurfaceDef) (constants : List (String × Benitoite.Surface.Expr) := []) : Except String Benitoite.Surface.Def := do
+  d.header.validateNoFail
   checkNames d.header.names d.header.params.length
   return {
     tparams := d.header.tparams.map (fun (e, k) => ⟨e, k⟩)
@@ -500,14 +548,18 @@ def SurfaceDef.toSurface (d : SurfaceDef) (constants : List (String × Benitoite
     names := d.header.names
     params := ← d.header.params.mapM Ty.toRelease
     ret := ← d.header.ret.toRelease
-    eff := d.header.eff.toRelease
+    eff := ← d.header.eff.toRelease
     body := ← d.body.toSurface constants }
 
 def OpEntry.toRelease (o : OpEntry) : Except String Benitoite.Release.OpDecl := do
+  o.header.validateNoFail
   checkNames o.header.names o.header.params.length
+  if o.effectKind != "ordinary" then throw "user operation must be ordinary"
+  if o.dictParams.any (fun p => p.2 >= o.header.tparams.length) then throw "operation dictionary type index out of range"
   if o.header.neffs != 0 then throw "operation declares effect parameters"
   return {
     eff := o.eff
+    dictParams := o.dictParams
     tparams := o.header.tparams.map (fun (e, k) => ⟨e, k⟩)
     names := o.header.names
     params := ← o.header.params.mapM Ty.toRelease
@@ -527,6 +579,7 @@ def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Pro
   let ops ← input.ops.mapM (fun o => do return (o.name, ← o.toRelease))
   let classes ← input.classes.mapM (fun cl => do
     let methods ← cl.methods.mapM (fun m => do
+      m.header.validateNoFail
       checkNames m.header.names m.header.params.length
       let sg : Benitoite.Release.MethSig := {
         tparams := m.header.tparams.map (fun (e,k) => ⟨e,k⟩)
@@ -534,7 +587,7 @@ def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Pro
         names := m.header.names
         params := ← m.header.params.mapM Ty.toRelease
         ret := ← m.header.ret.toRelease
-        eff := m.header.eff.toRelease }
+        eff := ← m.header.eff.toRelease }
       return (m.name, sg))
     let decl : Benitoite.Release.ClassDecl := {
       supers := cl.supers
@@ -588,19 +641,27 @@ partial def validateClauses (program : Benitoite.Surface.Program)
     (prims : List PrimOpEntry) : Json → Except String Unit
   | .arr xs => xs.toList.forM (validateClauses program prims)
   | j@(.obj xs) => do
+      if let .ok o := j.getObjVal? "opDicts" then
+        let name ← o.getObjValAs? String "name"
+        let some od := program.ops name | throw s!"missing operation: {name}"
+        let e ← o.getObjValAs? Eff "eff"
+        if canonicalJson (toJson e) != toJson ([Atom.name od.eff]) then
+          throw "operation latent effect mismatch"
       if let .ok h := j.getObjVal? "handleE" then
         let cs ← (← h.getObjVal? "clauses").getArr?
         for c in cs do
-          let .mk op arity ntys _ ← decodeSurfaceClause c
-          let (expectedArity, expectedNtys) ← match op with
+          let .mk op arity ntys _ count failure ← decodeSurfaceClause c
+          if failure.isSome || op == .fail then throw "Fail requires handleFail"
+          let (expectedArity, expectedNtys, expectedDicts) ← match op with
             | .user n => do
                 let some od := program.ops n | throw s!"missing operation: {n}"
-                pure (od.params.length, od.tparams.length)
+                pure (od.valueParams.length, od.tparams.length, od.dictParams.length)
             | .prim n => do
                 let some od := prims.find? (fun p => p.name == n) | throw s!"missing primitive operation: {n}"
                 checkNames od.names od.arity
-                pure (od.arity, od.ntys)
-          if arity != expectedArity || ntys != expectedNtys then
+                pure (od.arity, od.ntys, 0)
+            | .fail => throw "Fail requires handleFail"
+          if arity != expectedArity || ntys != expectedNtys || count != expectedDicts then
             throw s!"clause signature mismatch: {toJson op}, arity={arity}/{expectedArity}, ntys={ntys}/{expectedNtys}"
       xs.toArray.toList.forM (fun (_, v) => validateClauses program prims v)
   | _ => pure ()
@@ -610,17 +671,19 @@ def fromHeader (atoms : Eff) (ts : List Benitoite.Release.TParam) (neffs : Nat)
   return {
     tparams := ts.map (fun p => (p.equality, p.key))
     neffs := neffs
+    effParams := (Benitoite.Surface.CheckTools.signatureQ neffs ps r e).map EffParam.mk
     names := names
     params := ← ps.mapM (fromTy atoms)
     ret := ← fromTy atoms r
-    eff := fromEff atoms e }
+    eff := ← fromEff atoms e }
 
 /-- 実装メソッドの頭は型クラス宣言から導く。上位辞書は実装ごとの一単位で比較する。 -/
 def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Surface.Program)
     (d : SurfaceDef) (constants : List (String × Benitoite.Surface.Expr))
     (table : List ConstantEntry) : Except String CoreDef := do
   let opPrim := makeOpPrim atoms entries
-  let lambdaEffects := (d.body.lambdaEffects table).map (fun e => fromEff atoms e.toRelease)
+  let dictCounts := fun n => ((program.ops n).map (·.dictParams.length)).getD 0
+  let lambdaEffects ← (d.body.lambdaEffects table).mapM (fun e => do fromEff atoms (← e.toRelease))
   if let some name := d.implementation then
     let some id := program.impls name | throw s!"missing implementation: {name}"
     let some cl := program.classes id.cls | throw s!"missing class: {id.cls}"
@@ -630,13 +693,15 @@ def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Su
       let decl := { id with methods := fun n => if n == m then some body else none }
       let result := Benitoite.Surface.desugarImpl opPrim decl
       let some core := result.methods m | throw "missing desugared method"
+      let methodTy := Benitoite.Surface.CheckTools.substTyAt (atoms.filterMap Atom.toRelease) ms.tparams.length [id.target] []
+      let methodEff := Benitoite.Surface.CheckTools.substEffAt (atoms.filterMap Atom.toRelease) ms.tparams.length [id.target] [] ms.eff
       let header ← fromHeader atoms (ms.tparams ++ id.tparams) ms.neffs ms.names
-        (ms.params.map (id.methTy ms)) (id.methTy ms ms.ret) ms.eff
+        (ms.params.map methodTy) (methodTy ms.ret) methodEff
       let surfaceHeader ← fromHeader atoms (← d.toSurface constants).tparams d.header.neffs (← d.toSurface constants).coreNames
-        ((← d.toSurface constants).dictTys ++ (← d.toSurface constants).params) (← d.header.ret.toRelease) d.header.eff.toRelease
-      if canonicalJson atoms (toJson header) != canonicalJson atoms (toJson surfaceHeader) then
+        ((← d.toSurface constants).dictTys ++ (← d.toSurface constants).params) (← d.header.ret.toRelease) (← d.header.eff.toRelease)
+      if canonicalJson (toJson header) != canonicalJson (toJson surfaceHeader) then
         throw s!"implementation method signature mismatch: {name}/{m}"
-      return { header := header, body := ← fromComp atoms core, lambdaEffects := lambdaEffects, supers := [] }
+      return { header := header, body := ← fromComp atoms dictCounts core, lambdaEffects := lambdaEffects, supers := [] }
     else
       if d.supers.map Prod.fst != cl.supers then throw "implementation supers do not match class declaration"
       let supers ← d.supers.mapM (fun (n,e) => do return (n, ← e.toSurface))
@@ -644,14 +709,14 @@ def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Su
       let result := Benitoite.Surface.desugarImpl opPrim decl
       let converted ← d.supers.mapM (fun (n,_) => do
         let some v := result.supers n | throw "missing desugared superclass"
-        return (n, ← fromVal atoms v))
+        return (n, ← fromVal atoms dictCounts v))
       let header ← fromHeader atoms result.tparams 0 [] [] (.base .unit) Benitoite.Release.Eff.empty
       return { header := header, body := .ret (.const .unit), lambdaEffects := [], supers := converted }
   else
     let result := Benitoite.Surface.desugarDef opPrim (← d.toSurface constants)
     return {
       header := ← fromHeader atoms result.tparams result.neffs result.names result.params result.ret result.eff
-      body := ← fromComp atoms result.body
+      body := ← fromComp atoms dictCounts result.body
       lambdaEffects := lambdaEffects
       supers := [] }
 /-- Program.lookupFun と desugarProgram の経路を通して取得関数を比較する。 -/
@@ -662,13 +727,14 @@ def desugarAccessor (atoms : Eff) (entries : List OperatorEntry)
   if c != con || index != k then throw "accessor table mismatch"
   let some cd := program.cons con | throw "missing record constructor"
   if cd.data != decl.data || cd.ntys != decl.ntys ||
-      canonicalJson atoms (toJson (← cd.args.mapM (fromTy atoms))) !=
-        canonicalJson atoms (toJson decl.args) then throw "record constructor table mismatch"
+      canonicalJson (toJson (← cd.args.mapM (fromTy atoms))) !=
+        canonicalJson (toJson decl.args) then throw "record constructor table mismatch"
+  let dictCounts := fun n => ((program.ops n).map (·.dictParams.length)).getD 0
   let result := Benitoite.Surface.desugarProgram (makeOpPrim atoms entries) program
   let some d := result.defs name | throw "missing desugared accessor"
   return {
     header := ← fromHeader atoms d.tparams d.neffs d.names d.params d.ret d.eff
-    body := ← fromComp atoms d.body
+    body := ← fromComp atoms dictCounts d.body
     lambdaEffects := []
     supers := [] }
 end Benitoite.Exchange

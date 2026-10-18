@@ -16,6 +16,7 @@ structure BuiltinEntry where
   name : String
   tparams : List PrimConstraint
   neffs : Nat
+  effParams : List EffParam
   names : List String
   params : List Ty
   ret : Ty
@@ -96,8 +97,9 @@ partial def Ty.hasOpaqueArguments : Ty → Except String Bool
       return !ts.isEmpty
   | .data _ ts | .tapp _ ts => do
       return (← ts.mapM Ty.hasOpaqueArguments).any id
-  | .fn _ ps r _ => do
-      return (← r.hasOpaqueArguments) || (← ps.mapM Ty.hasOpaqueArguments).any id
+  | .fn _ ps r e => do
+      let fs := e.filterMap fun a => match a with | .fail t => some t | _ => none
+      return (← r.hasOpaqueArguments) || (← (ps ++ fs).mapM Ty.hasOpaqueArguments).any id
   | .list t | .reference t | .lazyT t | .set t | .dict _ t => t.hasOpaqueArguments
   | .map k v => do return (← k.hasOpaqueArguments) || (← v.hasOpaqueArguments)
   | _ => pure false
@@ -114,7 +116,10 @@ partial def Ty.checkDataNames (ds : List DataEntry) : Ty → Except String Unit
   | .ctor (.data n) =>
       if ds.any (fun d => d.name == n) then pure () else throw s!"missing data constructor type: {n}"
   | .tapp _ ts => ts.forM (Ty.checkDataNames ds)
-  | .fn _ ps r _ => do ps.forM (Ty.checkDataNames ds); r.checkDataNames ds
+  | .fn _ ps r e => do
+      ps.forM (Ty.checkDataNames ds)
+      r.checkDataNames ds
+      (e.filterMap fun a => match a with | .fail t => some t | _ => none).forM (Ty.checkDataNames ds)
   | .list t | .reference t | .lazyT t | .set t | .dict _ t => t.checkDataNames ds
   | .map k v => do k.checkDataNames ds; v.checkDataNames ds
   | _ => pure ()
@@ -122,6 +127,8 @@ partial def Ty.checkDataNames (ds : List DataEntry) : Ty → Except String Unit
 /-- 対象外の印を信頼して、変換できない型を黙って通さない。 -/
 def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := do
   checkNames b.names b.params.length
+  let h : Header := ⟨b.tparams.map (fun c => (c.equality,c.key)), b.neffs, b.effParams, b.names, b.params, b.ret, b.eff⟩
+  h.validateNoFail
   if !b.classConstraints.isEmpty then throw s!"typeclass constraints: {b.name}"
   if (← b.hasOpaqueArguments) then throw s!"opaque type arguments: {b.name}"
   return {
@@ -130,7 +137,7 @@ def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := d
     neffs := b.neffs
     params := ← b.params.mapM Ty.toRelease
     ret := ← b.ret.toRelease
-    eff := b.eff.toRelease
+    eff := ← b.eff.toRelease
     kind := ← primKind b.kind
     opEff := b.opEff }
 

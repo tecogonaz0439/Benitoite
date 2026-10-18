@@ -31,12 +31,13 @@ structure StdlibCorpus where
   deriving ToJson, FromJson
 
 def FunEntry.convert (f : FunEntry) : Except String Benitoite.Surface.FunDecl := do
+  f.header.validateNoFail
   checkNames f.header.names f.header.params.length
   return {
     tparams := f.header.tparams.map (fun (e,k) => ⟨e,k⟩)
     neffs := f.header.neffs, names := f.header.names, params := ← f.header.params.mapM Ty.toRelease
     ret := ← f.header.ret.toRelease
-    eff := f.header.eff.toRelease, dictParams := f.dictParams }
+    eff := ← f.header.eff.toRelease, dictParams := f.dictParams }
 
 def ImplEntry.convert (i : ImplEntry) : Except String Benitoite.Surface.ImplSig := do
   return {
@@ -46,12 +47,13 @@ def ImplEntry.convert (i : ImplEntry) : Except String Benitoite.Surface.ImplSig 
 
 def ClassEntry.convert (c : ClassEntry) : Except String ClassMaterial := do
   let methods ← c.methods.mapM fun m => do
+    m.header.validateNoFail
     checkNames m.header.names m.header.params.length
     let sg : Benitoite.Release.MethSig := {
       tparams := m.header.tparams.map (fun (e,k) => ⟨e,k⟩), neffs := m.header.neffs
       names := m.header.names
       params := ← m.header.params.mapM Ty.toRelease
-      ret := ← m.header.ret.toRelease, eff := m.header.eff.toRelease }
+      ret := ← m.header.ret.toRelease, eff := ← m.header.eff.toRelease }
     return (m.name, sg)
   return ⟨c.supers, methods⟩
 
@@ -92,6 +94,9 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
   if !input.dataTypes.isEmpty && input.dataTypes != b.dataDecls.map DataEntry.info then
     throw "corpus/builtin data type metadata mismatch"
   -- 新版の空表を旧版と混同しない検査は JSON の入口で行う。
+  let operations ← input.operationProgram
+  -- 型付けへ変換すると使わなくなる交換専用の注釈も、境界で検査する。
+  validateClauses operations input.primOps (toJson input)
   let atoms := atomsFor input b s operators
   let cache ← input.constantCache
   let ordinary := input.definitions.filterMap fun d => match d.scope with
@@ -115,7 +120,7 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
       checkNames decl.fields decl.args.length
       let actualFields := b.dataDecls.flatMap (fun d => d.ctors) |>.find? (fun c => c.name == con)
       if actualFields.bind (·.fields) != some decl.fields then throw "record fields mismatch"
-      return (k < cd.args.length) && recordOk (atoms.map Atom.toRelease) data con cd
+      return (k < cd.args.length) && recordOk (atoms.filterMap Atom.toRelease) data con cd
   let ops ← input.ops.mapM fun o => do return (o.name, ← o.toRelease)
   let classes ← input.classes.mapM fun c => do return (c.name, ← ClassEntry.convert c)
   -- sidecar の実装は元の表のシグネチャと一致しなければならない。
@@ -170,7 +175,7 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
   let entries := primEntries S raw
   let B := builtins S entries b.toBuiltinMaterial
   let q := m.input B (Benitoite.Release.satB S) (admitsDec S entries)
-    (makeOpPrim atoms operators) (atoms.map Atom.toRelease)
+    (makeOpPrim atoms operators) (atoms.filterMap Atom.toRelease)
   return ⟨m, q, constructorsOk m, recordChecks.all id,
     implNamesOk m m.names.methods m.names.supers, outside⟩
 end Benitoite.Exchange.CheckInput

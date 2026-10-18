@@ -113,7 +113,7 @@ theorem selectSlots_isSome_of_lt {α : Type} {xs : List α} {slots : List Nat}
       simp only [selectSlots, List.getElem?_eq_getElem hi]
       cases he : selectSlots xs slots <;> simp_all
 
-theorem HasTypeArms.slotsOk {P : Program} {B : Builtins} {Ψ C Γ R arms a b ε}
+theorem HasTypeArmsQ.slotsOk {P : Program} {B : Builtins} {Ψ C Γ R arms a b ε}
     (h : HasTypeArms P B Ψ C Γ R arms a b ε) : SlotsOk arms := by
   intro arm harm alt halt v ws hm
   obtain ⟨δ, ha, _, _⟩ := h.mem harm
@@ -233,5 +233,18 @@ theorem checkMatch_unreachable_runtime_of_C_Match
     (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
     ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
   checkMatchWithView_unreachable_runtime_of_C_Match ctors closedView i j _hv ha _hex hc h
+
+/-- 文字全域の後の分岐は、判定から実行時の非選択の系へ直接接続できる。 -/
+example (c : Char) :
+    ¬ RuntimeSelected [CoverageExamples.plain [CoverageExamples.chars 0 0x10FFFF],
+      CoverageExamples.plain [.wild]] 1 0 (.const (.character c)) := by
+  apply checkMatch_unreachable_runtime CoverageExamples.program CoverageExamples.ctors
+    (.base .character) _ 1 0 CoverageExamples.ctors_complete
+  · intro arm ha alt halt v ws hm
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
+    rcases ha with rfl | rfl <;> simp [CoverageExamples.plain, Arm.alts] at halt <;>
+      subst alt <;> rfl
+  · decide
+  · exact .const (c := .character c)
 
 end Benitoite.Release

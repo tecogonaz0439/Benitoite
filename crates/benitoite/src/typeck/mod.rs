@@ -77,8 +77,10 @@ pub enum TryActionInfo {
 }
 
 /// `handle` の節一つの型検査の結果。
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct ClauseInfo {
+    /// 非再開の Fail 節で固定したエラー型。
+    pub failure_type: Option<Ty>,
     /// 節の操作の束縛の番号（`Op` の束縛。組み込みのエフェクトの操作は、名前解決の `builtin_ops` で組み込みの関数の項目を引ける）
     pub op: BindingId,
     /// 末尾で再開する節か（02-05「書く位置の検査」）
@@ -156,6 +158,7 @@ mod calls;
 mod consts;
 mod context;
 mod decls;
+pub(crate) use decls::declarations as collect_declarations;
 mod effects;
 mod external;
 mod generate;

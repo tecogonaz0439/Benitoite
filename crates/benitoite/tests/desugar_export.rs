@@ -14,6 +14,9 @@ pub mod generator;
 #[path = "desugar_export/named.rs"]
 mod named;
 
+#[path = "operation_dictionaries/mod.rs"]
+mod operation_dictionaries;
+
 use benitoite::pipeline::{self, CheckOptions};
 use serde_json::{Value, json};
 use std::fs;
@@ -143,7 +146,7 @@ fn export_width_smoke() {
     write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
     fs::write(
         output.join("coverage.json"),
-        exchange::to_vec(&json!({"version":3,"inputs":coverage_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":coverage_inputs})).unwrap(),
     )
     .unwrap();
     // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
@@ -326,7 +329,7 @@ fn write_exchange(
     stdlib_inputs: Vec<Value>,
     annotations: std::collections::BTreeMap<String, [usize; 2]>,
 ) -> Value {
-    let corpus = json!({"version":10,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    let corpus = json!({"version":11,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
         exchange::to_vec(&corpus).unwrap(),
@@ -335,12 +338,12 @@ fn write_exchange(
     // 新しい契約名を型表にも保持する。
     fs::write(
         output.join("builtins.json"),
-        exchange::to_vec(&json!({"version":3,"inputs":builtin_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":builtin_inputs})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("stdlib-decls.json"),
-        exchange::to_vec(&json!({"version":3,"inputs":stdlib_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":stdlib_inputs})).unwrap(),
     )
     .unwrap();
     corpus
@@ -426,19 +429,19 @@ impl CorpusStream {
     fn finish(self, output: &Path, stem: &str) {
         self.inputs.finish(
             &output.join(format!("{stem}-corpus.json")),
-            json!({"version":10,"operators":exchange::operators(),"annotations":self.annotations}),
+            json!({"version":11,"operators":exchange::operators(),"annotations":self.annotations}),
         );
         self.builtins.finish(
             &output.join(format!("{stem}-builtins.json")),
-            json!({"version":3}),
+            json!({"version":4}),
         );
         self.declarations.finish(
             &output.join(format!("{stem}-stdlib.json")),
-            json!({"version":3}),
+            json!({"version":4}),
         );
         self.coverage.finish(
             &output.join(format!("{stem}-coverage.json")),
-            json!({"version":3}),
+            json!({"version":4}),
         );
     }
 }
@@ -750,7 +753,7 @@ fn export_named_types_smoke() {
     let expected = json!({"fn":{"names":["value"],"params":[integer],"ret":integer,"eff":[]}});
     assert_eq!(ty, expected);
     assert_eq!(exchange::named_type(&p, &scheme.ret), expected);
-    let header = |ty: Value| json!({"tparams":[],"neffs":0,"names":["callback"],"params":[ty],"ret":ty,"eff":[]});
+    let header = |ty: Value| json!({"tparams":[],"neffs":0,"effParams":[],"names":["callback"],"params":[ty],"ret":ty,"eff":[]});
     let surface = json!({"package":"root","header":header(ty.clone()),"dictParams":[],"body":{"last":{"expr":{"returnE":{"ret":ty,"inner":{"local":{"index":0}}}}}},"implementation":null,"method":null,"supers":[]});
     // この期待コアは脱糖の出力を使わず、独立した型と変数の規則から書く。
     let core = json!({"header":header(expected),"body":{"ret":{"value":{"var":{"index":0}}}},"lambdaEffects":[],"supers":[]});
@@ -762,7 +765,7 @@ fn export_named_types_smoke() {
     );
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":10,"operators":exchange::operators(),
+    let corpus = json!({"version":11,"operators":exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-types-corpus.json"),
@@ -809,7 +812,7 @@ fn export_named_declarations_smoke() {
     let mut input = named::input("named-declarations", definitions);
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":10,"operators":exchange::operators(),
+    let corpus = json!({"version":11,"operators":exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-declarations-corpus.json"),
@@ -817,4 +820,330 @@ fn export_named_declarations_smoke() {
     )
     .unwrap();
     named::write_tables(&output, "named-declarations", &p, &corpus["inputs"][0]);
+}
+
+// 関門: 実ソースの辞書の全呼び出しを11/4の五形式へ渡す。
+// 対象外と空の比較は失敗にし、独立したLeanの六入口が結果を照合する。
+#[test]
+fn export_batch2_op() {
+    let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target/formal-batch2-op");
+    fs::create_dir_all(&output).unwrap();
+    let stdlib = exchange::complete_stdlib();
+    let mut export = named::Export::new();
+    for &(name, declarations, expression, expected) in operation_dictionaries::CASES {
+        let source = operation_dictionaries::source(declarations, expression, expected)
+            + "\nfunction coverage(value: Integer) -> Integer\n return match value with case _ -> 0 end match\nend function\n";
+        let checked = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count(),
+            0,
+            "{name}: {:?}",
+            checked.diagnostics
+        );
+        let program = checked.program.as_ref().unwrap();
+        export.push("golden", name, program, &stdlib);
+        let input = export.inputs.last().unwrap();
+        assert_eq!(input["excluded"], json!([]));
+        let definitions = input["definitions"].as_array().unwrap();
+        assert!(definitions.len() >= 2, "{name}: empty comparison");
+        for definition in definitions {
+            assert!(
+                definition["scope"].get("inScope").is_some(),
+                "{name}: {definition}"
+            );
+        }
+        fs::write(output.join(format!("{name}.bnt")), source).unwrap();
+    }
+    write_batch2(&output, export);
+}
+
+// 全域の束縛とサロゲート前後の範囲を、実ソースから六入口へ接続する。
+#[test]
+fn export_batch2_character() {
+    let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target/formal-batch2-character");
+    fs::create_dir_all(&output).unwrap();
+    let source = include_str!("../testdata/patterns/p1-character-domain.bnt");
+    let checked = pipeline::check_text(
+        "character-domain",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let mut export = named::Export::new();
+    export.push(
+        "golden",
+        "character-domain",
+        checked.program.as_ref().unwrap(),
+        &exchange::complete_stdlib(),
+    );
+    assert_eq!(export.inputs[0]["excluded"], json!([]));
+    let definitions = export.inputs[0]["definitions"].as_array().unwrap();
+    assert_eq!(definitions.len(), 4);
+    assert_eq!(
+        definitions
+            .iter()
+            .map(|definition| definition["name"]
+                .as_str()
+                .unwrap()
+                .split_once(" (")
+                .unwrap()
+                .0)
+            .collect::<Vec<_>>(),
+        vec![
+            "classify",
+            "correlatedBoolean",
+            "correlatedCharacter",
+            "main"
+        ]
+    );
+    write_batch2(&output, export);
+    // 独立の文字全域の入力と同じ形を、本番の判定 API で書き出す。
+    let ty = benitoite::types::Ty::Con(
+        benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+        vec![],
+    );
+    write_batch2_coverage(&output, &ty, json!({"kind":"character","args":[]}));
+    fs::write(output.join("character-domain.bnt"), source).unwrap();
+}
+
+fn write_batch2(output: &Path, export: named::Export) {
+    let annotations = export_annotations(&export.inputs);
+    write_exchange(
+        output,
+        export.inputs,
+        export.tables,
+        export.declarations,
+        annotations,
+    );
+    fs::rename(output.join("stdlib-decls.json"), output.join("stdlib.json")).unwrap();
+    let coverage = json!({"version":4,"inputs":export.coverage});
+    fs::write(
+        output.join("coverage-program.json"),
+        exchange::to_vec(&coverage).unwrap(),
+    )
+    .unwrap();
+    let ty = benitoite::types::Ty::Con(
+        benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::INTEGER),
+        vec![],
+    );
+    write_batch2_coverage(output, &ty, json!({"kind":"integer","args":[]}));
+}
+
+fn write_batch2_coverage(output: &Path, ty: &benitoite::types::Ty, ty_json: Value) {
+    // 単独の網羅性とプログラム内の網羅性は異なる交換形式である。
+    use benitoite::typeck::patterns::{
+        ArmPats, CoverageView, MatchIssue, Pat, check_binding, check_match,
+    };
+    use benitoite::types::AdtTable;
+    let table = AdtTable::default();
+    let view = CoverageView::new();
+    let pattern = if ty
+        == &benitoite::types::Ty::Con(
+            benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+            vec![],
+        ) {
+        Pat::CharacterRange('\0', '\u{10ffff}')
+    } else {
+        Pat::Wild
+    };
+    let pattern_json = if matches!(pattern, Pat::CharacterRange(..)) {
+        json!({"kind":"characterRange","lo":0,"hi":0x10ffff})
+    } else {
+        json!({"kind":"wild"})
+    };
+    let checked = check_match(
+        ty,
+        &[ArmPats {
+            alts: vec![pattern.clone()],
+            guarded: false,
+        }],
+        &table,
+        &view,
+    )
+    .unwrap();
+    let binding = check_binding(ty, &pattern, &table, &view).unwrap();
+    let mut uncovered = None;
+    let mut unreachable = Vec::new();
+    for issue in checked.issues {
+        match issue {
+            MatchIssue::NonExhaustive { witness, .. } => uncovered = Some(witness),
+            MatchIssue::Unreachable {
+                arm,
+                alt,
+                covered_by,
+            } => unreachable.push(json!({"arm":arm,"alt":alt,"coveredBy":covered_by})),
+        }
+    }
+    let cases = [
+        json!({"name":"batch2-result-coverage","decls":[],"package":"root","coverageView":[],
+        "ty":ty_json,"arms":[{"guarded":false,"alts":[pattern_json.clone()]}],
+        "pattern":pattern_json,"expected":{"exhaustive":uncovered.is_none(),"uncovered":uncovered,"unreachable":unreachable},
+        "irrefutable":binding.witness.is_none(),"irrefutableWitness":binding.witness}),
+    ];
+    fs::write(
+        output.join("coverage.json"),
+        exchange::to_vec(&json!({"version":4,"seedXor":0,"randomCases":0,
+        "boundaryCases":cases.len(),"kinds":{},"cases":cases}))
+        .unwrap(),
+    )
+    .unwrap();
+}
+
+// 関門: Fail の型・節・署名由来の Q を実ソースから独立の Lean 検査へ渡す。
+// VM の成功だけでは交換の欠落を検出できず、既存の書き出しを用いる。
+#[test]
+fn export_batch2_failure() {
+    let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target/formal-batch2-failure");
+    fs::create_dir_all(&output).unwrap();
+    let stdlib = exchange::complete_stdlib();
+    let mut export = named::Export::new();
+    let mut coverage_type = None;
+    for (name, source) in [
+        (
+            "failure-polymorphic",
+            r#"import Benitoite.Unofficial.Failure
+function raiseValue[T, E](error: E) -> T uses Failure.Fail[E]
+  return Failure.raise(error)
+end function
+function capture[T, E, effect Rest](body: function() -> T uses Failure.Fail[E], Rest) -> Result[T, E] uses Rest
+  return Failure.toResult(body: body)
+end function
+function nested(value: Integer) -> Result[Integer, String]
+  return Failure.toResult(body: lambda() return Failure.fromResult(Result.Ok(value)) end lambda)
+end function
+function coverage(value: function(input: Integer) -> Integer uses Failure.Fail[String]) -> Integer
+  return match value with case _ -> 0 end match
+end function
+"#,
+        ),
+        (
+            "failure-handlers",
+            r#"import Benitoite.Unofficial.Failure
+function translated() -> Integer uses Failure.Fail[Integer]
+  return handle Failure.raise("inner") with
+    case Failure.raise(error) -> Failure.raise(String.characterCount(error))
+  end handle
+end function
+function capture[E](body: function() -> Integer uses Failure.Fail[E]) -> Result[Integer, E]
+  return handle Result.Ok(body()) with
+    case Failure.raise(error) -> Result.Error(error)
+  end handle
+end function
+function latent(body: function() -> Integer uses Failure.Fail[String]) -> function() -> Integer uses Failure.Fail[String]
+  return body
+end function
+function nestedType(body: function() -> Integer uses Failure.Fail[function() -> String uses Failure.Fail[Integer]]) -> Integer uses Failure.Fail[function() -> String uses Failure.Fail[Integer]]
+  return body()
+end function
+"#,
+        ),
+        (
+            "failure-values",
+            r#"import Benitoite.Unofficial.Failure
+trait Attempt[T]
+  function attempt[effect Rest](value: T, body: function() -> Integer uses Failure.Fail[String], Rest) -> Result[Integer, String] uses Rest
+end trait
+implement Attempt[Integer]
+  function attempt[effect Rest](value: Integer, body: function() -> Integer uses Failure.Fail[String], Rest) -> Result[Integer, String] uses Rest
+    return Failure.toResult(body: body)
+  end function
+end implement
+function throughMethod[effect Rest](body: function() -> Integer uses Failure.Fail[String], Rest) -> Result[Integer, String] uses Rest
+  return Attempt.attempt(value: 0, body: body)
+end function
+function partial(error: String) -> Integer uses Failure.Fail[String]
+  bind fail: function(error: String) -> Integer uses Failure.Fail[String] <- Failure.raise(error: _)
+  return error |> fail
+end function
+function pipe(error: String) -> Integer uses Failure.Fail[String]
+  return error |> Failure.raise
+end function
+"#,
+        ),
+        (
+            "failure-nofail",
+            r#"import Benitoite.Unofficial.Failure
+function capture[effect Rest](body: function() -> Integer uses Failure.Fail[String], Rest) -> Result[Integer, String] uses Rest
+  return Failure.toResult(body: body)
+end function
+"#,
+        ),
+    ] {
+        let checked = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count(),
+            0,
+            "{name}: {:?}",
+            checked.diagnostics
+        );
+        let program = checked.program.as_ref().unwrap();
+        if name == "failure-polymorphic" {
+            let ty = program
+                .types
+                .decl_types
+                .iter()
+                .find(|(id, _)| program.resolved.bindings.get(*id).unwrap().name == "coverage")
+                .unwrap()
+                .1
+                .params[0]
+                .clone();
+            let encoded = exchange::named_type(program, &ty);
+            let integer = json!({"kind":"integer","args":[]});
+            let function = &encoded["fn"];
+            assert_eq!(function["names"], json!(["input"]));
+            coverage_type = Some((
+                ty,
+                json!({"kind":"function","names":function["names"],
+                "params":[integer],"ret":integer,"eff":function["eff"]}),
+            ));
+        }
+        export.push("golden", name, program, &stdlib);
+        let input = export.inputs.last().unwrap();
+        assert_eq!(input["excluded"], json!([]));
+        assert!(!input["definitions"].as_array().unwrap().is_empty());
+        for definition in input["definitions"].as_array().unwrap() {
+            assert!(
+                definition["scope"].get("inScope").is_some(),
+                "{name}: {definition}"
+            );
+        }
+        fs::write(output.join(format!("{name}.bnt")), source).unwrap();
+        if name == "failure-nofail" {
+            let rejected_source = source.replace("uses Failure.Fail[String], Rest", "uses Rest");
+            let rejected = pipeline::check_text(
+                "failure-nofail-rejected",
+                rejected_source.as_bytes(),
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+            );
+            assert_eq!(rejected.error_count(), 1, "{:?}", rejected.diagnostics);
+            assert_eq!(
+                rejected.diagnostics[0].code,
+                Some(benitoite::diag::DiagCode::E0515)
+            );
+            fs::write(output.join("failure-nofail-rejected.bnt"), rejected_source).unwrap();
+        }
+    }
+    write_batch2(&output, export);
+    let (ty, ty_json) = coverage_type.unwrap();
+    write_batch2_coverage(&output, &ty, ty_json);
 }

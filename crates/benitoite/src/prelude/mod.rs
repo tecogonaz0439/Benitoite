@@ -319,4 +319,22 @@ pub const STDLIB: &[StdlibModuleSource] = &[
         unofficial: false,
         text: include_str!("stdlib/Float64.bnt"),
     },
+    StdlibModuleSource {
+        path: &["Failure"],
+        prelude: false,
+        unofficial: true,
+        text: include_str!("stdlib/Failure.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["Json", "Codec"],
+        prelude: false,
+        unofficial: true,
+        text: include_str!("stdlib/Json/Codec.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["Test", "Property"],
+        prelude: false,
+        unofficial: true,
+        text: include_str!("stdlib/Test/Property.bnt"),
+    },
 ];

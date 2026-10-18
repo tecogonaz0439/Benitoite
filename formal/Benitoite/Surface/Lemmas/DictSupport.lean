@@ -5,6 +5,7 @@ import Benitoite.Release.Lemmas.Rename
 namespace Benitoite.Surface
 open Benitoite.Release
 
+
 mutual
   /-- 継続を隠しても、局所の辞書は同じ番号に残る。 -/
   theorem DictEv.HasType.hide {D B C Γ d a} (h : DictEv.HasType D B C Γ d a) :
@@ -12,6 +13,9 @@ mutual
     match h with
     | .impl hd ht hs => exact .impl hd ht (DictEv.HasTypes.hide hs)
     | .local hi => exact .local (hideConts_get.mpr ⟨hi, by intro b t ε he; cases he⟩)
+    | .clause hi hl hv =>
+        exact .clause hi (by simpa [hideConts] using hl)
+          (hideConts_get.mpr ⟨hv, by intro b t ε he; cases he⟩)
     | .super hd hc hs => exact .super (DictEv.HasType.hide hd) hc hs
 
   theorem DictEv.HasTypes.hide {D B C Γ ds as} (h : DictEv.HasTypes D B C Γ ds as) :

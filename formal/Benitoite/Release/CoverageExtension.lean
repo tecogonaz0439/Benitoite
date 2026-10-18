@@ -55,7 +55,10 @@ theorem shapes_extension_cover {P Q : Program} {ctors ctors' : DataName → List
       subst old
       let fields := substTys ts cd.args
       have hf : conFields P cd.data ts c = some fields := by simp [conFields, hp, hn, fields]
-      have hi : InhabitsAll Q fields xs := by simpa [fields, substTys_eq] using hx
+      have hi : InhabitsAll Q fields xs := by
+        apply inhabitsAll_erase_transfer hx
+        simp only [fields, substTys, eraseTys_map, List.map_map]
+        exact List.map_congr_left (fun a _ => erase_subst_raw ts a)
       have hs : Shape.con c fields ∈ shapesWithView P ctors view (.data cd.data ts) column := by
         apply mem_shapesWithView
         exact List.mem_map.mpr ⟨c, hc c cd hp, by simp [hf]⟩

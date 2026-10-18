@@ -439,7 +439,13 @@ impl<'p> Machine<'p> {
         self.stack.truncate(n);
         let location = self.allocate(Store::Cont(captured));
         self.stack.push(Frame::Drop(location));
-        env.bind(clause.params.iter().map(|p| p.id), args)?;
+        let params: Vec<_> = clause
+            .dict_params
+            .iter()
+            .map(|p| p.var)
+            .chain(clause.params.iter().map(|p| p.id))
+            .collect();
+        env.bind(params.into_iter(), args)?;
         env.set(clause.cont.id, Value::Location(location))?;
         let body = self
             .index
@@ -668,7 +674,7 @@ impl<'p> Machine<'p> {
                         Ok(State::Eval(body, env))
                     }
                     FunctionCode::Op(op) => self
-                        .operation(op, args)?
+                        .operation(op, dicts.into_iter().chain(args).collect())?
                         .ok_or_else(|| fault("unhandled user operation")),
                     FunctionCode::Builtin(id, info) => {
                         self.builtin(id, info, args, origin, exit_report, io)

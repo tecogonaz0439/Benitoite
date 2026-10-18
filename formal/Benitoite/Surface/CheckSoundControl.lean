@@ -7,14 +7,69 @@ import Benitoite.Surface.CheckSoundDie
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
+theorem raise_case {q t E} : CaseSound q (.expr (.raise t E)) := by
+  intro ih C Γ R p path s s' a ε hq he hΓ hR h
+  simp only [Expr.AtomsIn] at he
+  have h := guardInferred_ok h
+  obtain ⟨u, hu, h⟩ := checking_lift_bind_ok h
+  obtain ⟨eq, _⟩ := checking_pure_ok h
+  cases eq
+  have hw := Bool.and_eq_true_iff.mp (require_ok hu).1
+  rw [singleFailure_eq he.2]
+  exact ⟨.E_Raise ((wfTy_spec _ _ he.1).mp hw.1) ((wfTy_spec _ _ he.2).mp hw.2),
+    ⟨⟨he.2, trivial⟩, he.1, by simpa only [singleFailure_eq he.2] using singleFailure_atoms he.2⟩,
+    emptyEff_atoms _⟩
+
+theorem handleFail_case {q E t body clause} : CaseSound q (.expr (.handleFail E t body clause)) := by
+  intro ih
+  have ihb : BlockSound q body := ih (.block body) (by simp [CheckNode.size]; omega)
+  have ihc : BlockSound q clause := ih (.block clause) (by simp [CheckNode.size]; omega)
+  intro C Γ R p path s s' a ε hq he hΓ hR h
+  simp only [Expr.AtomsIn] at he
+  have h := guardInferred_ok h
+  obtain ⟨u, hw, h⟩ := checking_lift_bind_ok h
+  have hw := Bool.and_eq_true_iff.mp (require_ok hw).1
+  obtain ⟨eb, mid, hb, heb, h, ht⟩ := checking_accept_block_ok
+    (fun _ _ _ _ hc => ihb _ _ _ _ _ _ _ _ _ hq he.2.2.1 hΓ hR hc) he.2.1 h
+  obtain ⟨u, hnf, h⟩ := checking_lift_bind_ok h
+  obtain ⟨u, hsub, h⟩ := checking_lift_bind_ok h
+  have henv := failureEnv_atoms he.1 hΓ
+  obtain ⟨eh, mid', hc, heh, h, htc⟩ := checking_accept_block_ok
+    (fun _ _ _ _ hc => ihc _ _ _ _ _ _ _ _ _ hq he.2.2.2 henv (returnAtoms_shift hR 1) hc)
+    (shiftTy_atoms he.2.1 1 0) h
+  let ec := substEffAt q.atoms 0 [.base .unit] [] eh
+  have hec : ec.AtomsIn q.atoms := substEffAt_atoms (ts := [.base .unit]) (es := []) heh ⟨trivial, trivial⟩ (by simp) 0
+  obtain ⟨u, hesc, h⟩ := checking_lift_bind_ok h
+  have hesc := Bool.and_eq_true_iff.mp (require_ok hesc).1
+  have hshift := effEq_sound (by rw [shiftEff_eq 1 0 ec hec]; exact Eff.shift_support 1 0 ec hec) heh hesc.2
+  have hRest := remainingEffect_atoms heb
+  obtain ⟨eq, _⟩ := checking_pure_ok h
+  cases eq
+  refine ⟨?_, he.2.1, union_atoms hRest hec⟩
+  rw [union_eq hRest hec]
+  apply HasTypeQ.E_HandleFail hb
+  · have hs := acceptEff_sound heb (union_atoms (singleFailure_atoms he.1) hRest) hsub
+    rw [union_eq (singleFailure_atoms he.1) hRest, singleFailure_eq he.1] at hs
+    exact hs
+  · apply (noFailCheck_spec (effect_top_support hRest)).mp (require_ok hnf).1
+  · exact Ty.VarsIn.wf _ ((cleanTy_spec _ _ he.1).mp hw.1)
+  · exact Ty.VarsIn.wf _ ht
+  · exact effect_wf_check hec hesc.1
+  · have hshift' : eh = Eff.shift 1 0 ec := by
+      rw [shiftEff_eq 1 0 ec hec] at hshift; exact hshift.symm
+    simpa only [shiftTy_eq 1 0 E he.1, shiftTy_eq 1 0 t he.2.1,
+      shiftEnv_eq 1 Γ (fun o ho t ht => by cases ht; exact hΓ t ho),
+      shiftReturn_eq 1 R hR, hshift'] using hc
+
 theorem lam_case {q names ps r eff body} : CaseSound q (.expr (.lam names ps r eff body)) := by
   intro ih
   have ihb := lam_case_ih ih
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨uNames, hnames, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, hexit, h⟩ := checking_lift_bind_ok h
-  obtain ⟨εb, mid, hb, hbAtoms, h⟩ := checking_accept_block_ok
+  obtain ⟨εb, mid, hb, hbAtoms, h, hbAtomsClean⟩ := checking_accept_block_ok
     (fun _ _ _ _ h => ihb _ _ _ _ _ _ _ _ _ hq he.2.2.2
       (Env.atoms_append (Env.atoms_binds he.1) (Env.atoms_hideConts hΓ))
       (fun t ht => by cases ht; exact he.2.1) h) he.2.1 h
@@ -22,7 +77,7 @@ theorem lam_case {q names ps r eff body} : CaseSound q (.expr (.lam names ps r e
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
   exact ⟨.E_Lam ((namesWF_spec _ _).mp (require_ok hnames).1) ((lamBodyOk_spec _ _).mp (require_ok hexit).1)
-    (.B_Sub hb (Or.inl rfl) (acceptEff_sound hbAtoms heff)),
+    (.B_Sub hb (Or.inl rfl) (acceptEff_sound hbAtoms he.2.2.1 heff) hbAtomsClean),
     ⟨he.1, he.2.1, he.2.2.1⟩, emptyEff_atoms _⟩
 
 theorem ite_case {q cond yes no} : CaseSound q (.expr (.ite cond yes no)) := by
@@ -31,8 +86,10 @@ theorem ite_case {q cond yes no} : CaseSound q (.expr (.ite cond yes no)) := by
   have ihy : BlockSound q yes := ih (.block yes) (by simp [CheckNode.size] <;> omega)
   have ihn : BlockSound q no := ih (.block no) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have hSingle := (guardInferred_result h).2
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
-  obtain ⟨εc, mid, hc, hcAtoms, h⟩ := checking_accept_expr_ok
+  obtain ⟨εc, mid, hc, hcAtoms, h, hcAtomsClean⟩ := checking_accept_expr_ok
     (fun _ _ _ _ h => ihc _ _ _ _ _ _ _ _ _ hq he.1 hΓ hR h) (by trivial) h
   obtain ⟨⟨ay, εy⟩, mid', hy, h⟩ := checking_bind_ok h
   obtain ⟨⟨an, εn⟩, mid'', hn, h⟩ := checking_bind_ok h
@@ -42,9 +99,13 @@ theorem ite_case {q cond yes no} : CaseSound q (.expr (.ite cond yes no)) := by
   have hjoin := join_sound ys.2.1 ns.2.1 hj
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨?_, join_atoms ys.2.1 hj, union_atoms _ _ _⟩
-  rw [union_eq hcAtoms (union_atoms _ _ _), union_eq ys.2.2 ns.2.2]
-  exact .E_If hc (.B_Sub ys.1 hjoin.1 (fun _ h => h)) (.B_Sub ns.1 hjoin.2 (fun _ h => h))
+  have hSafe : SingleTy (NoFailCtxOf q.noFailRows) a ∧ SingleEff (NoFailCtxOf q.noFailRows) (union q εc (union q εy εn)) :=
+    ⟨(singleTyCheck_spec _ (join_atoms ys.2.1 ns.2.1 hj)).mp hSingle.1,
+      (singleEffCheck_spec _ (union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2))).mp hSingle.2⟩
+  refine ⟨?_, join_atoms ys.2.1 ns.2.1 hj, union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2)⟩
+  rw [union_eq hcAtoms (union_atoms ys.2.2 ns.2.2), union_eq ys.2.2 ns.2.2] at hSafe ⊢
+  apply HasTypeQ.E_If hc (.B_Sub ys.1 hjoin.1 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj)) (.B_Sub ns.1 hjoin.2 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj))
+  exact hSafe
 
 theorem elseIf_case {q cond yes no} : CaseSound q (.expr (.elseIf cond yes no)) := by
   intro ih
@@ -52,9 +113,11 @@ theorem elseIf_case {q cond yes no} : CaseSound q (.expr (.elseIf cond yes no)) 
   have ihy : BlockSound q yes := ih (.block yes) (by simp [CheckNode.size] <;> omega)
   have ihn : ExprSound q no := ih (.expr no) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have hSingle := (guardInferred_result h).2
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨u, hisIf, h⟩ := checking_lift_bind_ok h
-  obtain ⟨εc, mid, hc, hcAtoms, h⟩ := checking_accept_expr_ok
+  obtain ⟨εc, mid, hc, hcAtoms, h, hcAtomsClean⟩ := checking_accept_expr_ok
     (fun _ _ _ _ h => ihc _ _ _ _ _ _ _ _ _ hq he.1 hΓ hR h) (by trivial) h
   obtain ⟨⟨ay, εy⟩, mid', hy, h⟩ := checking_bind_ok h
   obtain ⟨⟨an, εn⟩, mid'', hn, h⟩ := checking_bind_ok h
@@ -64,24 +127,29 @@ theorem elseIf_case {q cond yes no} : CaseSound q (.expr (.elseIf cond yes no)) 
   have hjoin := join_sound ys.2.1 ns.2.1 hj
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨?_, join_atoms ys.2.1 hj, union_atoms _ _ _⟩
-  rw [union_eq hcAtoms (union_atoms _ _ _), union_eq ys.2.2 ns.2.2]
-  exact .E_ElseIf hc (.B_Sub ys.1 hjoin.1 (fun _ h => h))
-    (.E_Sub ns.1 hjoin.2 (fun _ h => h)) ((isIf_spec _).mp (require_ok hisIf).1)
+  have hSafe : SingleTy (NoFailCtxOf q.noFailRows) a ∧ SingleEff (NoFailCtxOf q.noFailRows) (union q εc (union q εy εn)) :=
+    ⟨(singleTyCheck_spec _ (join_atoms ys.2.1 ns.2.1 hj)).mp hSingle.1,
+      (singleEffCheck_spec _ (union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2))).mp hSingle.2⟩
+  refine ⟨?_, join_atoms ys.2.1 ns.2.1 hj, union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2)⟩
+  rw [union_eq hcAtoms (union_atoms ys.2.2 ns.2.2), union_eq ys.2.2 ns.2.2] at hSafe ⊢
+  apply HasTypeQ.E_ElseIf hc (.B_Sub ys.1 hjoin.1 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj))
+    (.E_Sub ns.1 hjoin.2 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj)) ((isIf_spec _).mp (require_ok hisIf).1)
+  exact hSafe
 
 theorem ifOnly_case {q cond yes} : CaseSound q (.expr (.ifOnly cond yes)) := by
   intro ih
   have ihc : ExprSound q cond := ih (.expr cond) (by simp [CheckNode.size] <;> omega)
   have ihy : BlockSound q yes := ih (.block yes) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
-  obtain ⟨εc, mid, hc, hcAtoms, h⟩ := checking_accept_expr_ok
+  obtain ⟨εc, mid, hc, hcAtoms, h, hcAtomsClean⟩ := checking_accept_expr_ok
     (fun _ _ _ _ h => ihc _ _ _ _ _ _ _ _ _ hq he.1 hΓ hR h) (by trivial) h
-  obtain ⟨εy, mid', hy, hyAtoms, h⟩ := checking_accept_block_ok
+  obtain ⟨εy, mid', hy, hyAtoms, h, hyAtomsClean⟩ := checking_accept_block_ok
     (fun _ _ _ _ h => ihy _ _ _ _ _ _ _ _ _ hq he.2 hΓ hR h) (by trivial) h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨?_, by trivial, union_atoms _ _ _⟩
+  refine ⟨?_, by trivial, union_atoms hcAtoms hyAtoms⟩
   rw [union_eq hcAtoms hyAtoms]
   exact .E_IfOnly hc hy
 
@@ -89,6 +157,7 @@ theorem return_case {q t e} : CaseSound q (.expr (.returnE t e)) := by
   intro ih
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨r, hr, h⟩ := checking_lift_bind_ok h
   have hreq := lookup_ok hr
@@ -96,35 +165,36 @@ theorem return_case {q t e} : CaseSound q (.expr (.returnE t e)) := by
   rw [hreq]
   cases p with
   | tail =>
-    obtain ⟨εe, mid, ht, htAtoms, h⟩ := checking_accept_expr_ok
+    obtain ⟨εe, mid, ht, htAtoms, h, htAtomsClean⟩ := checking_accept_expr_ok
       (fun _ _ _ _ h => ihe _ _ _ _ _ _ _ _ _ hq he.2 hΓ (fun t ht => by cases ht; exact hrAtoms) h) hrAtoms h
     obtain ⟨eq, _⟩ := checking_pure_ok h
     cases eq
     exact ⟨.E_ReturnTail ht, hrAtoms, htAtoms⟩
   | other =>
     obtain ⟨u, hwf, h⟩ := checking_lift_bind_ok h
-    obtain ⟨εe, mid, ht, htAtoms, h⟩ := checking_accept_expr_ok
+    obtain ⟨εe, mid, ht, htAtoms, h, htAtomsClean⟩ := checking_accept_expr_ok
       (fun _ _ _ _ h => ihe _ _ _ _ _ _ _ _ _ hq he.2 hΓ (fun t ht => by cases ht; exact hrAtoms) h) hrAtoms h
     obtain ⟨eq, _⟩ := checking_pure_ok h
     cases eq
-    exact ⟨.E_ReturnOther ((wfTy_spec _ _).mp (require_ok hwf).1) ht, he.1, htAtoms⟩
+    exact ⟨.E_ReturnOther ((wfTy_spec _ _ he.1).mp (require_ok hwf).1) ht, he.1, htAtoms⟩
 
 theorem with_case {q o e body} : CaseSound q (.expr (.withE o e body)) := by
   intro ih
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   have ihb : BlockSound q body := ih (.block body) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨u1, hresource, h⟩ := checking_lift_bind_ok h
   obtain ⟨u2, hstate, h⟩ := checking_lift_bind_ok h
-  obtain ⟨εe, mid, ht, htAtoms, h⟩ := checking_accept_expr_ok
+  obtain ⟨εe, mid, ht, htAtoms, h, htAtomsClean⟩ := checking_accept_expr_ok
     (fun _ _ _ _ h => ihe _ _ _ _ _ _ _ _ _ hq he.1 hΓ hR h) (by trivial) h
   obtain ⟨⟨ab, εb⟩, mid', hb, h⟩ := checking_bind_ok h
   have bs := ihb _ _ _ _ _ _ _ _ _ hq he.2 (Env.atoms_cons hΓ (by trivial)) hR hb
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨?_, bs.2.1, union_atoms _ _ _⟩
-  rw [union_eq htAtoms (union_atoms _ _ _), union_eq bs.2.2 (singleEff_atoms _ _),
+  refine ⟨?_, bs.2.1, union_atoms htAtoms (union_atoms bs.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1)))⟩
+  rw [union_eq htAtoms (union_atoms bs.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1))), union_eq bs.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1)),
     singleEff_eq_contains (require_ok hstate).1]
   exact .E_With (require_ok hresource).1 ht bs.1
 
@@ -132,6 +202,7 @@ theorem lazy_case {q body} : CaseSound q (.expr (.lazyE body)) := by
   intro ih
   have ihb : BlockSound q body := ih (.block body) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨⟨ab, εb⟩, mid, hb, h⟩ := checking_bind_ok h
   obtain ⟨u, heff, h⟩ := checking_lift_bind_ok h
@@ -139,20 +210,22 @@ theorem lazy_case {q body} : CaseSound q (.expr (.lazyE body)) := by
     (fun _ ht => by cases ht) hb
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  exact ⟨.E_Lazy (.B_Sub bs.1 (Or.inl rfl) (acceptEff_sound bs.2.2 heff)),
-    bs.2.1, emptyEff_atoms _⟩
+  have hempty := eff_eq_empty_of_sub (acceptEff_sound bs.2.2 (emptyEff_atoms _) heff)
+  rw [hempty] at bs
+  exact ⟨.E_Lazy bs.1, bs.2.1, emptyEff_atoms _⟩
 
 theorem resume_case {q k e} : CaseSound q (.expr (.resume k e)) := by
   intro ih
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨t, ht, h⟩ := checking_lift_bind_ok h
   have localEq := lookup_local_ok ht
   have localAtoms := Env.atoms_get hΓ localEq
   cases t <;> try contradiction
   case cont b result eff =>
-    obtain ⟨εe, mid, heTyped, heAtoms, h⟩ := checking_accept_expr_ok
+    obtain ⟨εe, mid, heTyped, heAtoms, h, heAtomsClean⟩ := checking_accept_expr_ok
       (fun _ _ _ _ h => ihe _ _ _ _ _ _ _ _ _ hq he hΓ hR h) localAtoms.1 h
     obtain ⟨st, mid2, hget, h⟩ := checking_bind_ok h
     change (do
@@ -161,7 +234,7 @@ theorem resume_case {q k e} : CaseSound q (.expr (.resume k e)) := by
     obtain ⟨u, heff, h⟩ := checking_lift_bind_ok h
     obtain ⟨eq, _⟩ := checking_pure_ok h
     cases eq
-    exact ⟨.E_Resume localEq (.E_Sub heTyped (Or.inl rfl) (acceptEff_sound heAtoms heff)),
+    exact ⟨.E_Resume localEq (.E_Sub heTyped (Or.inl rfl) (acceptEff_sound heAtoms localAtoms.2.2 heff) heAtomsClean),
       localAtoms.2.1, localAtoms.2.2⟩
 
 theorem clauses_nil_case {q} : CaseSound q (.clauses .nil) := by
@@ -170,10 +243,10 @@ theorem clauses_nil_case {q} : CaseSound q (.clauses .nil) := by
   intro C Γ R path t ε s s' actual hq hc hΓ hR ht hε h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  exact ⟨.nil, (fun _ h => by cases h), emptyEff_atoms _⟩
+  exact ⟨.nil, Eff.empty_sub _, emptyEff_atoms _⟩
 
-theorem clauses_cons_case {q o n ntys body rest} :
-    CaseSound q (.clauses (.cons o n ntys body rest)) := by
+theorem clauses_cons_case {q o n ntys body rest ndicts} :
+    CaseSound q (.clauses (.cons o n ntys body rest ndicts)) := by
   intro ih
   obtain ⟨ihb, ihr⟩ := clauses_case_ih ih
   refine ⟨?_, clauseTypesAtoms q _⟩
@@ -183,43 +256,63 @@ theorem clauses_cons_case {q o n ntys body rest} :
   obtain ⟨uNames, hnames, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, hn, h⟩ := checking_lift_bind_ok h
   obtain ⟨u2, hntys, h⟩ := checking_lift_bind_ok h
+  have hvalid := lookup_valid hsg
+  have hwf : Eff.WF C.length ε := wfFails_sound hε hvalid
   have sgAtoms := opSig_atoms hq.declarations hq.builtins (lookup_ok hsg)
-  obtain ⟨εb, mid, hb, hbAtoms, h⟩ := checking_accept_block_ok
+  obtain ⟨εb, mid, hb, hbAtoms, h, hbAtomsClean⟩ := checking_accept_block_ok
     (fun _ _ _ _ h => ihb _ _ _ _ _ _ _ _ _ hq hc.1
       (clauseEnv_atoms sgAtoms.1 sgAtoms.2 ht hε hΓ) (returnAtoms_shift hR ntys) h)
     (shiftTy_atoms ht ntys 0) h
   obtain ⟨st, mid2, hget, h⟩ := checking_bind_ok h
   change (do
-    acceptEff q (child path 0) ε εb
+    acceptEff q (child path 0) (shiftEff q.atoms ntys 0 ε) εb
+    let εouter := substEffAt q.atoms 0 (List.replicate ntys (.base .unit)) [] εb
+    acceptEff q (child path 0) ε εouter
     let εs ← checkClausesR q .strict C Γ R (child path 1) rest t ε
-    pure (union q εb εs) : Checking Eff) mid2 = .ok (actual, s') at h
+    pure (union q εouter εs) : Checking Eff) mid2 = .ok (actual, s') at h
   obtain ⟨u3, heff, h⟩ := checking_lift_bind_ok h
+  obtain ⟨u4, houter, h⟩ := checking_lift_bind_ok h
   obtain ⟨εr, mid', hr, h⟩ := checking_bind_ok h
   have rs := ihr.1 _ _ _ _ _ _ _ _ _ hq hc.2 hΓ hR ht hε hr
-  have hbSub := acceptEff_sound hbAtoms heff
+  have shiftedAtoms : (shiftEff q.atoms ntys 0 ε).AtomsIn q.atoms := by
+    rw [shiftEff_eq ntys 0 ε hε]; exact Eff.shift_support ntys 0 ε hε
+  have hbSub := acceptEff_sound hbAtoms shiftedAtoms heff
+  have outerAtoms := substEffAt_atoms (es := ([] : List Eff)) hbAtoms
+    (tysAtoms_replicate (show Ty.AtomsIn q.atoms (.base .unit) from trivial) ntys) (by simp) 0
+  have outerSub := acceptEff_sound outerAtoms hε houter
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨.cons (lookup_ok hsg) ((namesWF_spec _ _).mp (require_ok hnames).1) (by simpa using (require_ok hn).1)
-    (by simpa using (require_ok hntys).1) ?_ rs.1, ?_, union_atoms _ _ _⟩
-  · simpa only [shiftTy_eq, shiftTy_fun_eq, shiftEnv] using
-      (HasBlock.B_Sub hb (Or.inl rfl) hbSub)
-  · rw [union_eq hbAtoms rs.2.2]
-    intro x hx
-    cases Bool.or_eq_true_iff.mp hx with
-    | inl hx => exact hbSub x hx
-    | inr hx => exact rs.2.1 x hx
+  refine ⟨.cons (lookup_ok hsg) ((namesWF_spec _ _).mp (require_ok hnames).1)
+    (by simpa using (require_ok hn).1) (by simpa using (require_ok hntys).1) hwf ?_ rs.1,
+    ?_, union_atoms outerAtoms rs.2.2⟩
+  · simpa only [shiftTy_eq ntys 0 t ht, shiftEff_eq ntys 0 ε hε,
+      shiftEnv_eq ntys Γ (fun o ho t he => hΓ t (he ▸ ho)), shiftReturn_eq ntys R hR]
+      using (HasBlock.B_Sub hb (Or.inl rfl) hbSub hbAtomsClean)
+  · rw [union_eq outerAtoms rs.2.2]
+    constructor
+    · intro x hx
+      rcases (Eff.mem_union _ _ _).mp hx with hx | hx
+      · exact outerSub.1 x hx
+      · exact rs.2.1.1 x hx
+    · intro t ht
+      rcases (Eff.memFail_union _ _ _).mp ht with ht | ht
+      · exact outerSub.2 t ht
+      · exact rs.2.1.2 t ht
 
 theorem handle_case {q body cs} : CaseSound q (.expr (.handleE body cs)) := by
   intro ih
   obtain ⟨ihb, ihcs⟩ := handle_case_ih ih
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨⟨t0, εbody⟩, mid, hb, h⟩ := checking_bind_ok h
   have bs := ihb _ _ _ _ _ _ _ _ _ hq he.1 hΓ hR hb
   obtain ⟨⟨t, st⟩, hinfer, h⟩ := checking_lift_bind_ok h
-  have tAtoms := ihcs.2 _ _ _ _ _ _ _ _ _ bs.2.1 hinfer
+  have initialAtoms := diffEff_atoms (h := handled q.D.patternProgram q.B cs.skeleton) bs.2.2
+  have tAtoms := ihcs.2 C Γ R (child path 1) t0 _ {} st t hq he.2 hΓ hR bs.2.1 initialAtoms (requests_atoms_nil _) hinfer
   obtain ⟨eff, mid', hfixed, h⟩ := checking_bind_ok h
-  have effAtoms := fixedEffectsR_atoms (diffEff_atoms _ _ _) hfixed
+  have effAtoms := fixedEffectsR_atoms initialAtoms
+    (fun e s s' out heff hs => handlerStep_atoms hq he.2 hΓ hR tAtoms heff hs) hfixed
   -- 反復の最初の節検査と要求の転記も成功している。型付けは後の厳密な検査を使う。
   obtain ⟨next, iterationState, hstep, hremaining⟩ := checking_bind_ok hfixed
   obtain ⟨⟨clauseEffect, requestState⟩, hrelaxed, hstep⟩ := checking_lift_bind_ok hstep
@@ -234,8 +327,8 @@ theorem handle_case {q body cs} : CaseSound q (.expr (.handleE body cs)) := by
   obtain ⟨u4, heff, h⟩ := checking_lift_bind_ok h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  exact ⟨.E_Handle (.B_Sub bs.1 (tyLe_sound bs.2.1 tAtoms (require_ok htype).1)
-    (fun _ h => h)) (acceptEff_handled_sound bs.2.2 heff) css.1, tAtoms, effAtoms⟩
+  exact ⟨.E_Handle (.B_Sub bs.1 (tyLe_sound bs.2.1 tAtoms (Bool.and_eq_true_iff.mp (require_ok htype).1).2)
+    (Eff.Sub.refl _) ((cleanTy_spec _ _ tAtoms).mp (Bool.and_eq_true_iff.mp (require_ok htype).1).1)) (acceptEff_handled_sound bs.2.2 effAtoms heff) css.1, tAtoms, effAtoms⟩
 
 theorem list_length_one {α : Type} {xs : List α} (h : xs.length = 1) :
     ∃ x, xs = [x] := by
@@ -259,6 +352,7 @@ theorem tryOption_case {q retArgs someCon noneCon e} :
   intro ih
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨cds, hs, h⟩ := checking_lift_bind_ok h
   obtain ⟨cdn, hn, h⟩ := checking_lift_bind_ok h
@@ -304,6 +398,7 @@ theorem tryResult_case {q retArgs ok err e} :
   intro ih
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨cdo, ho, h⟩ := checking_lift_bind_ok h
   obtain ⟨cde, hec, h⟩ := checking_lift_bind_ok h
@@ -363,8 +458,11 @@ theorem checkCasesSound (q : Input) : CheckCasesSound q := by
     | constE => exact const_case
     | funName => exact funName_case
     | funDicts => exact funDicts_case
+    | opDicts => exact opDicts_case
     | methName => exact methName_case
     | primName => exact primName_case
+    | raise => exact raise_case
+    | handleFail => exact handleFail_case
     | opName => exact opName_case
     | nullCon => exact nullCon_case
     | conValue => exact conValue_case

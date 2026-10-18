@@ -808,7 +808,7 @@ fn export_named_coverage() {
         dir.starts_with(&repo) && dir != repo,
         "output directory must be inside the repository"
     );
-    fs::write(dir.join("named-corpus.json"), serde_json::to_vec_pretty(&json!({"version":3,"seedXor":0,"randomCases":0,"boundaryCases":cases.len(),"kinds":{},"cases":cases})).unwrap()).unwrap();
+    fs::write(dir.join("named-corpus.json"), serde_json::to_vec_pretty(&json!({"version":4,"seedXor":0,"randomCases":0,"boundaryCases":cases.len(),"kinds":{},"cases":cases})).unwrap()).unwrap();
 }
 
 // 関門: 六入口の独立した網羅性入力にもソース由来の属性と未使用の宣言を残す。
@@ -972,7 +972,7 @@ fn export_coverage() {
         budget.stopped, 0,
         "coverage export must stay within the work budget"
     );
-    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":3,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
+    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":4,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
     let bytes = serde_json::to_vec(&corpus).unwrap();
     let roundtrip: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(roundtrip, corpus, "JSON must preserve i64 boundaries");
@@ -982,7 +982,7 @@ fn export_coverage() {
         "view coverage must stay within the work budget"
     );
     let future_boundary_count = future_cases.len() - RANDOM_CASES;
-    fs::write(dir.join("future-corpus.json"), serde_json::to_vec(&json!({"version":3,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":future_boundary_count,"kinds":{},"cases":future_cases,"budget":{"stopped":future_budget.stopped,"maxWork":future_budget.max_work}})).unwrap()).unwrap();
+    fs::write(dir.join("future-corpus.json"), serde_json::to_vec(&json!({"version":4,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":future_boundary_count,"kinds":{},"cases":future_cases,"budget":{"stopped":future_budget.stopped,"maxWork":future_budget.max_work}})).unwrap()).unwrap();
     println!(
         "coverage export: {} cases ({} boundary, {} random), {:.3}s, budget stopped: {}, max work per check: {}",
         cases.len(),

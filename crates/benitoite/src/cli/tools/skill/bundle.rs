@@ -70,6 +70,10 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/Encoding.md"),
     },
     SkillFile {
+        path: "references/stdlib/Failure.md",
+        text: include_str!("../../../../skill/references/stdlib/Failure.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Float.md",
         text: include_str!("../../../../skill/references/stdlib/Float.md"),
     },
@@ -136,6 +140,10 @@ pub const FILES: &[SkillFile] = &[
     SkillFile {
         path: "references/stdlib/Integer8.md",
         text: include_str!("../../../../skill/references/stdlib/Integer8.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Json.Codec.md",
+        text: include_str!("../../../../skill/references/stdlib/Json.Codec.md"),
     },
     SkillFile {
         path: "references/stdlib/Json.md",
@@ -208,6 +216,10 @@ pub const FILES: &[SkillFile] = &[
     SkillFile {
         path: "references/stdlib/TaskGroup.md",
         text: include_str!("../../../../skill/references/stdlib/TaskGroup.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Test.Property.md",
+        text: include_str!("../../../../skill/references/stdlib/Test.Property.md"),
     },
     SkillFile {
         path: "references/stdlib/Time.md",

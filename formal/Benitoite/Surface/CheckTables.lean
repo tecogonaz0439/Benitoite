@@ -203,7 +203,7 @@ def Materials.names (m : Materials) : Names :=
 
 def Materials.input (m : Materials) (B : Builtins) (sat : SatDec) (admits : AdmitsDec)
     (op : OpPrim) (atoms : List Atom) : Check.Input :=
-  ⟨m.declarations, B, sat, admits, op, dataConstructors m.data, atoms⟩
+  ⟨m.declarations, B, sat, admits, op, dataConstructors m.data, atoms, []⟩
 
 /-- 各位置を検査し、最初の失敗の元の経路を返す。 -/
 def checkNamed (table : String → Option α) (check : List Nat → α → Check.Result Unit)
@@ -216,14 +216,15 @@ def checkNamed (table : String → Option α) (check : List Nat → α → Check
     checkNamed table check path ns (index + 1)
 
 /-- 元の材料に残したメソッドの実名を含めて本体を検査する。 -/
-def checkProgram (q : Check.Input) (m : Materials) (names : Names) : Check.Result Unit := do
-  let p := m.program
-  checkNamed (fun n => (p.defs n).map (fun d => (n, d)))
-    (fun path (n, d) => Check.checkDef { q with D := q.D.withView (p.functionViews n) } path d) [0] names.defs 0
-  checkNamed (fun n => (lookup (m.impls.map fun (n,i) => (n,i.input)) n).map (fun id => (n, id)))
-    (fun path (n, id) => Check.checkImpl q names.methods names.supers path id (p.methodViews n)) [1] names.impls 0
-  -- 操作の並びの値ではなく名前を使って、組み込みの表との重なりを調べる。
-  checkNamed (fun n => (p.effects n).map (fun _ => n))
-    (fun path n => Check.require path "effect name overlaps a builtin effect" (q.B.effects n).isNone)
-    [2] names.effects 0
+def checkProgram (q : Check.Input) (m : Materials) (names : Names) : Check.Result Unit :=
+  Check.guardResult [] true <| do
+    let p := m.program
+    checkNamed (fun n => (p.defs n).map (fun d => (n, d)))
+      (fun path (n, d) => Check.checkDef { q with D := q.D.withView (p.functionViews n) } path d) [0] names.defs 0
+    checkNamed (fun n => (lookup (m.impls.map fun (n,i) => (n,i.input)) n).map (fun id => (n, id)))
+      (fun path (n, id) => Check.checkImpl q names.methods names.supers path id (p.methodViews n)) [1] names.impls 0
+    -- 操作の並びの値ではなく名前を使って、組み込みの表との重なりを調べる。
+    checkNamed (fun n => (p.effects n).map (fun _ => n))
+      (fun path n => Check.require path "effect name overlaps a builtin effect" (q.B.effects n).isNone)
+      [2] names.effects 0
 end Benitoite.Surface.CheckTables

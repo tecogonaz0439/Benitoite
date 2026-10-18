@@ -267,6 +267,26 @@ impl<'a> Resolver<'a> {
                         .or_default()
                         .insert(name.into(), id);
                 }
+                let failure = crate::types::builtin::FAILURE;
+                if path == [failure.module] {
+                    let effect = self.table_binding(module.id, failure.effect, BindingKind::Effect);
+                    let op = self.table_binding(
+                        module.id,
+                        failure.operation,
+                        BindingKind::Op { effect, index: 0 },
+                    );
+                    for (name, id) in [(failure.effect, effect), (failure.operation, op)] {
+                        self.top
+                            .entry(module.id)
+                            .or_default()
+                            .insert(name.into(), id);
+                        self.out
+                            .exports
+                            .entry(module.id)
+                            .or_default()
+                            .insert(name.into(), id);
+                    }
+                }
                 if path == ["IO"] {
                     let id = self.table_binding(
                         module.id,

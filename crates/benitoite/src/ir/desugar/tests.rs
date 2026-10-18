@@ -1198,6 +1198,7 @@ fn declaration_ids(body: &Comp) -> (Vec<VarId>, Vec<BodyId>) {
                 bodies.push(h.id);
                 for c in &h.clauses {
                     bodies.push(c.id);
+                    vars.extend(c.dict_params.iter().map(|v| v.var));
                     vars.extend(c.params.iter().map(|v| v.id));
                     vars.push(c.cont.id);
                 }

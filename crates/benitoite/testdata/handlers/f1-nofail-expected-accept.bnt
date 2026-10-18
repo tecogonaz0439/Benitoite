@@ -1,0 +1,7 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad[effect Rest](body: function() -> Integer uses Rest) -> Unit
+  bind f: function() -> Integer uses Failure.Fail[String], Rest <- lambda() return 1 end lambda
+end function
+function main() -> Unit
+end function

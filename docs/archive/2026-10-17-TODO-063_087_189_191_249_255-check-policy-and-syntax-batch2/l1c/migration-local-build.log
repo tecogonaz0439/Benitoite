@@ -1,0 +1,1245 @@
+✔ [50/54] Built Benitoite.Surface.CheckPatterns (551ms)
+✔ [51/54] Built Benitoite.Surface.CheckSupport (3.2s)
+✔ [52/54] Built Benitoite.Surface.Check (1.1s)
+✔ [53/54] Built Benitoite.Surface.CheckTables (489ms)
+✖ [54/54] Building Benitoite.Surface.CheckLemmas (756ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/CheckLemmas.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckLemmas.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckLemmas.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckLemmas.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckLemmas.setup.json --json
+error: Benitoite/Surface/CheckLemmas.lean:85:34: Invalid field `mp`: The environment does not contain `Function.mp`, so it is not possible to project the field `mp` from an expression
+  cleanTy_spec n expected
+of type
+  Ty.AtomsIn ?m.36 expected → (cleanTy ?m.36 n expected = true ↔ Ty.VarsIn n (fun x => True) expected)
+error: Benitoite/Surface/CheckLemmas.lean:98:2: Unknown identifier `effSub_legacy`
+error: Benitoite/Surface/CheckLemmas.lean:102:18: Application type mismatch: The argument
+  acceptEff_ok h
+has type
+  effSub q.atoms actual expected = true
+but is expected to have type
+  Eff.AtomsIn q.atoms ?m.14
+in the application
+  effSub_sound ha (acceptEff_ok h)
+error: Benitoite/Surface/CheckLemmas.lean:109:21: Invalid field `mp`: The environment does not contain `Function.mp`, so it is not possible to project the field `mp` from an expression
+  cleanTy_spec n j
+of type
+  Ty.AtomsIn ?m.13 j → (cleanTy ?m.13 n j = true ↔ Ty.VarsIn n (fun x => True) j)
+error: Benitoite/Surface/CheckLemmas.lean:112:75: Application type mismatch: The argument
+  join_ok h
+has type
+  tyJoin q.atoms a b = some j
+but is expected to have type
+  Ty.AtomsIn q.atoms ?m.15
+in the application
+  tyJoin_atoms ha (join_ok h)
+error: Benitoite/Surface/CheckLemmas.lean:124:40: Type mismatch
+  Ty.fn otherNames qs t δ
+has type
+  Ty
+but is expected to have type
+  List Eff → Ty
+error: Benitoite/Surface/CheckLemmas.lean:125:43: Application type mismatch: The argument
+  names
+has type
+  List Atom
+but is expected to have type
+  List String
+in the application
+  NamesWF names
+error: Benitoite/Surface/CheckLemmas.lean:126:23: Application type mismatch: The argument
+  h
+has type
+  fnTyCheck names ps r ε ts es = ?m.12
+but is expected to have type
+  Ty.fn ?m.18 ?m.19 ?m.20 ?m.21 = Ty.fn ?m.22 ?m.23 ?m.24 ?m.25
+in the application
+  Ty.fn.inj h
+error: Benitoite/Surface/CheckLemmas.lean:125:55: unsolved goals
+names : List Atom
+ps : List String
+r : List Ty
+ε : Ty
+ts : Eff
+es : List Ty
+otherNames : List String
+qs : List Ty
+t : Ty
+δ : EffR
+h : fnTyCheck names ps r ε ts es = ?m.12
+hn : NamesWF otherNames qs
+⊢ NamesWF sorry sorry
+error: Benitoite/Surface/CheckLemmas.lean:123:8: (kernel) declaration has metavariables 'Benitoite.Surface.Check.fnTyCheck_namesWF'
+error: Benitoite/Surface/CheckLemmas.lean:171:4: Tactic `contradiction` failed
+
+case isTrue
+path : List Nat
+x : Checking Inferred
+inputOK : Bool
+s s' : CheckState
+result : Inferred
+h✝ : inputOK = true
+h : x s = Except.ok (result, s')
+⊢ x s = Except.ok (result, s')
+error: Benitoite/Surface/CheckLemmas.lean:173:47: Application type mismatch: The argument
+  h
+has type
+  throw { path := path, reason := "invalid input annotations or environment" } s = Except.ok (result, s')
+but is expected to have type
+  (?m.47 >>= ?m.48) ?m.49 = Except.ok (?m.51, ?m.50)
+in the application
+  checking_bind_ok h
+error: Benitoite/Surface/CheckLemmas.lean:185:4: Tactic `contradiction` failed
+
+case isTrue
+path : List Nat
+x : Checking Inferred
+inputOK : Bool
+s s' : CheckState
+result : Inferred
+h✝ : inputOK = true
+h : x s = Except.ok (result, s')
+⊢ result.fst.Legacy ∧ result.snd.Legacy
+error: Benitoite/Surface/CheckLemmas.lean:187:46: Application type mismatch: The argument
+  h
+has type
+  throw { path := path, reason := "invalid input annotations or environment" } s = Except.ok (result, s')
+but is expected to have type
+  (?m.44 >>= ?m.45) ?m.46 = Except.ok (?m.48, ?m.47)
+in the application
+  checking_bind_ok h
+error: Benitoite/Surface/CheckLemmas.lean:215:4: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case cons.cons.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+path : List Nat
+index : Nat
+s s' : CheckState
+head✝¹ : Expr
+tail✝¹ : Exprs
+head✝ : Ty
+tail✝ : List Ty
+v✝¹ : Inferred
+mid✝¹ : CheckState
+hv✝¹ : checkExprR q mode C Γ R Position.other (child path index) head✝¹ s = Except.ok (v✝¹, mid✝¹)
+v✝ : Eff
+mid✝ : CheckState
+hv✝ : liftM (accept q C.length (child path index) head✝ v✝¹) mid✝¹ = Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkTypesR q mode C Γ R path (index + 1) tail✝¹ tail✝ mid✝ = Except.ok (v, mid)
+h✝² : checkTypesR q mode C Γ R path index (Exprs.cons head✝¹ tail✝¹) (head✝ :: tail✝) s = Except.ok (union q v✝ v, s')
+h✝¹ :
+  (liftM (accept q C.length (child path index) head✝ v✝¹) >>= fun ε => do
+        let εs ← checkTypesR q mode C Γ R path (index + 1) tail✝¹ tail✝
+        pure (union q ε εs))
+      mid✝¹ =
+    Except.ok (union q v✝ v, s')
+h✝ :
+  (checkTypesR q mode C Γ R path (index + 1) tail✝¹ tail✝ >>= fun εs => pure (union q v✝ εs)) mid✝ =
+    Except.ok (union q v✝ v, s')
+h : pure (union q v✝ v) mid = Except.ok (union q v✝ v, s')
+⊢ (union q v✝ v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:224:4: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case cons.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+path : List Nat
+index : Nat
+a : Ty
+s s' : CheckState
+head✝ : Expr
+tail✝ : Exprs
+v✝¹ : Inferred
+mid✝¹ : CheckState
+hv✝¹ : checkExprR q mode C Γ R Position.other (child path index) head✝ s = Except.ok (v✝¹, mid✝¹)
+v✝ : Eff
+mid✝ : CheckState
+hv✝ : liftM (accept q C.length (child path index) a v✝¹) mid✝¹ = Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkEachR q mode C Γ R path (index + 1) tail✝ a mid✝ = Except.ok (v, mid)
+h✝² : checkEachR q mode C Γ R path index (Exprs.cons head✝ tail✝) a s = Except.ok (union q v✝ v, s')
+h✝¹ :
+  (liftM (accept q C.length (child path index) a v✝¹) >>= fun ε => do
+        let εs ← checkEachR q mode C Γ R path (index + 1) tail✝ a
+        pure (union q ε εs))
+      mid✝¹ =
+    Except.ok (union q v✝ v, s')
+h✝ :
+  (checkEachR q mode C Γ R path (index + 1) tail✝ a >>= fun εs => pure (union q v✝ εs)) mid✝ =
+    Except.ok (union q v✝ v, s')
+h : pure (union q v✝ v) mid = Except.ok (union q v✝ v, s')
+⊢ (union q v✝ v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:239:4: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case expr.cons.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+path : List Nat
+index : Nat
+s s' : CheckState
+label : Option String
+position : Nat
+e : Expr
+rest : HoleArgs
+head✝ : Ty
+tail✝ : List Ty
+v✝¹ : Inferred
+mid✝¹ : CheckState
+hv✝¹ : checkExprR q mode C Γ R Position.other (child path index) e s = Except.ok (v✝¹, mid✝¹)
+v✝ : Eff
+mid✝ : CheckState
+hv✝ : liftM (accept q C.length (child path index) head✝ v✝¹) mid✝¹ = Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkHoleArgsR q mode C Γ R path (index + 1) rest tail✝ mid✝ = Except.ok (v, mid)
+h✝² :
+  checkHoleArgsR q mode C Γ R path index (HoleArgs.expr label position e rest) (head✝ :: tail✝) s =
+    Except.ok (union q v✝ v, s')
+h✝¹ :
+  (liftM (accept q C.length (child path index) head✝ v✝¹) >>= fun ε => do
+        let εs ← checkHoleArgsR q mode C Γ R path (index + 1) rest tail✝
+        pure (union q ε εs))
+      mid✝¹ =
+    Except.ok (union q v✝ v, s')
+h✝ :
+  (checkHoleArgsR q mode C Γ R path (index + 1) rest tail✝ >>= fun εs => pure (union q v✝ εs)) mid✝ =
+    Except.ok (union q v✝ v, s')
+h : pure (union q v✝ v) mid = Except.ok (union q v✝ v, s')
+⊢ (union q v✝ v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:260:6: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case cons.none.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+p : Position
+path : List Nat
+a b : Ty
+s s' : CheckState
+alts : List Alternative
+body : Block
+rest : Arms
+v✝³ : Unit
+mid✝³ : CheckState
+hv✝³ : liftM (require path "match alternative is invalid" (alternativesValid alts)) s = Except.ok (v✝³, mid✝³)
+v✝² : List Ty
+mid✝² : CheckState
+hv✝² :
+  liftM
+      (lookup path "match alternatives have inconsistent bindings"
+        (altsTy q.atoms q.D.patternProgram (Alternative.toCoreList alts) a))
+      mid✝³ =
+    Except.ok (v✝², mid✝²)
+v✝¹ : Inferred
+mid✝¹ : CheckState
+hv✝¹ : checkBlockR q mode C (binds v✝² ++ Γ) R p (child path 1) body mid✝² = Except.ok (v✝¹, mid✝¹)
+v✝ : Eff
+mid✝ : CheckState
+hv✝ : liftM (accept q C.length (child path 1) b v✝¹) mid✝¹ = Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkArmsR q mode C Γ R p (child path 2) rest a b mid✝ = Except.ok (v, mid)
+h✝⁴ : checkArmsR q mode C Γ R p path (Arms.cons alts none body rest) a b s = Except.ok (union q v✝ v, s')
+h✝³ :
+  (liftM
+          (lookup path "match alternatives have inconsistent bindings"
+            (altsTy q.atoms q.D.patternProgram (Alternative.toCoreList alts) a)) >>=
+        fun δ =>
+        have env := binds δ ++ Γ;
+        have __do_jp := fun __r => do
+          let __do_lift ← checkBlockR q mode C env R p (child path 1) body
+          let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+          let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+          pure (union q ε εs);
+        match none with
+        | none => __do_jp ()
+        | some g => do
+          let __do_lift ← checkExprR q mode C (hideConts env) none Position.other (child path 0) g
+          let εg ← liftM (accept q C.length (child path 0) (Ty.base BaseTy.boolean) __do_lift)
+          let __r ← liftM (acceptEff q (child path 0) emptyEff εg)
+          __do_jp __r)
+      mid✝³ =
+    Except.ok (union q v✝ v, s')
+h✝² :
+  (have env := binds v✝² ++ Γ;
+      have __do_jp := fun __r => do
+        let __do_lift ← checkBlockR q mode C env R p (child path 1) body
+        let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+        let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+        pure (union q ε εs);
+      match none with
+      | none => __do_jp ()
+      | some g => do
+        let __do_lift ← checkExprR q mode C (hideConts env) none Position.other (child path 0) g
+        let εg ← liftM (accept q C.length (child path 0) (Ty.base BaseTy.boolean) __do_lift)
+        let __r ← liftM (acceptEff q (child path 0) emptyEff εg)
+        __do_jp __r)
+      mid✝² =
+    Except.ok (union q v✝ v, s')
+h✝¹ :
+  (liftM (accept q C.length (child path 1) b v✝¹) >>= fun ε => do
+        let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+        pure (union q ε εs))
+      mid✝¹ =
+    Except.ok (union q v✝ v, s')
+h✝ :
+  (checkArmsR q mode C Γ R p (child path 2) rest a b >>= fun εs => pure (union q v✝ εs)) mid✝ =
+    Except.ok (union q v✝ v, s')
+h : pure (union q v✝ v) mid = Except.ok (union q v✝ v, s')
+⊢ (union q v✝ v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:260:6: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case cons.some.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+p : Position
+path : List Nat
+a b : Ty
+s s' : CheckState
+alts : List Alternative
+body : Block
+rest : Arms
+val✝ : Expr
+v✝⁶ : Unit
+mid✝⁶ : CheckState
+hv✝⁶ : liftM (require path "match alternative is invalid" (alternativesValid alts)) s = Except.ok (v✝⁶, mid✝⁶)
+v✝⁵ : List Ty
+mid✝⁵ : CheckState
+hv✝⁵ :
+  liftM
+      (lookup path "match alternatives have inconsistent bindings"
+        (altsTy q.atoms q.D.patternProgram (Alternative.toCoreList alts) a))
+      mid✝⁶ =
+    Except.ok (v✝⁵, mid✝⁵)
+v✝⁴ : Inferred
+mid✝⁴ : CheckState
+hv✝⁴ :
+  checkExprR q mode C (hideConts (binds v✝⁵ ++ Γ)) none Position.other (child path 0) val✝ mid✝⁵ =
+    Except.ok (v✝⁴, mid✝⁴)
+v✝³ : Eff
+mid✝³ : CheckState
+hv✝³ : liftM (accept q C.length (child path 0) (Ty.base BaseTy.boolean) v✝⁴) mid✝⁴ = Except.ok (v✝³, mid✝³)
+v✝² : Unit
+mid✝² : CheckState
+hv✝² : liftM (acceptEff q (child path 0) emptyEff v✝³) mid✝³ = Except.ok (v✝², mid✝²)
+v✝¹ : Inferred
+mid✝¹ : CheckState
+hv✝¹ : checkBlockR q mode C (binds v✝⁵ ++ Γ) R p (child path 1) body mid✝² = Except.ok (v✝¹, mid✝¹)
+v✝ : Eff
+mid✝ : CheckState
+hv✝ : liftM (accept q C.length (child path 1) b v✝¹) mid✝¹ = Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkArmsR q mode C Γ R p (child path 2) rest a b mid✝ = Except.ok (v, mid)
+h✝⁷ : checkArmsR q mode C Γ R p path (Arms.cons alts (some val✝) body rest) a b s = Except.ok (union q v✝ v, s')
+h✝⁶ :
+  (liftM
+          (lookup path "match alternatives have inconsistent bindings"
+            (altsTy q.atoms q.D.patternProgram (Alternative.toCoreList alts) a)) >>=
+        fun δ =>
+        have env := binds δ ++ Γ;
+        have __do_jp := fun __r => do
+          let __do_lift ← checkBlockR q mode C env R p (child path 1) body
+          let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+          let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+          pure (union q ε εs);
+        match some val✝ with
+        | none => __do_jp ()
+        | some g => do
+          let __do_lift ← checkExprR q mode C (hideConts env) none Position.other (child path 0) g
+          let εg ← liftM (accept q C.length (child path 0) (Ty.base BaseTy.boolean) __do_lift)
+          let __r ← liftM (acceptEff q (child path 0) emptyEff εg)
+          __do_jp __r)
+      mid✝⁶ =
+    Except.ok (union q v✝ v, s')
+h✝⁵ :
+  (have env := binds v✝⁵ ++ Γ;
+      have __do_jp := fun __r => do
+        let __do_lift ← checkBlockR q mode C env R p (child path 1) body
+        let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+        let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+        pure (union q ε εs);
+      match some val✝ with
+      | none => __do_jp ()
+      | some g => do
+        let __do_lift ← checkExprR q mode C (hideConts env) none Position.other (child path 0) g
+        let εg ← liftM (accept q C.length (child path 0) (Ty.base BaseTy.boolean) __do_lift)
+        let __r ← liftM (acceptEff q (child path 0) emptyEff εg)
+        __do_jp __r)
+      mid✝⁵ =
+    Except.ok (union q v✝ v, s')
+h✝⁴ :
+  (liftM (accept q C.length (child path 0) (Ty.base BaseTy.boolean) v✝⁴) >>= fun εg => do
+        let __r ← liftM (acceptEff q (child path 0) emptyEff εg)
+        (fun __r => do
+              let __do_lift ← checkBlockR q mode C (binds v✝⁵ ++ Γ) R p (child path 1) body
+              let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+              let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+              pure (union q ε εs))
+            __r)
+      mid✝⁴ =
+    Except.ok (union q v✝ v, s')
+h✝³ :
+  (liftM (acceptEff q (child path 0) emptyEff v✝³) >>= fun __r =>
+        (fun __r => do
+            let __do_lift ← checkBlockR q mode C (binds v✝⁵ ++ Γ) R p (child path 1) body
+            let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+            let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+            pure (union q ε εs))
+          __r)
+      mid✝³ =
+    Except.ok (union q v✝ v, s')
+h✝² :
+  (fun __r => do
+        let __do_lift ← checkBlockR q mode C (binds v✝⁵ ++ Γ) R p (child path 1) body
+        let ε ← liftM (accept q C.length (child path 1) b __do_lift)
+        let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+        pure (union q ε εs))
+      v✝² mid✝² =
+    Except.ok (union q v✝ v, s')
+h✝¹ :
+  (liftM (accept q C.length (child path 1) b v✝¹) >>= fun ε => do
+        let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+        pure (union q ε εs))
+      mid✝¹ =
+    Except.ok (union q v✝ v, s')
+h✝ :
+  (checkArmsR q mode C Γ R p (child path 2) rest a b >>= fun εs => pure (union q v✝ εs)) mid✝ =
+    Except.ok (union q v✝ v, s')
+h : pure (union q v✝ v) mid = Except.ok (union q v✝ v, s')
+⊢ (union q v✝ v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:272:6: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case cons.isTrue.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+path : List Nat
+t : Ty
+ε : Eff
+s s' : CheckState
+op✝ : OpRef
+arity✝ ntys✝ : Nat
+body✝ : Block
+rest✝ : Clauses
+v✝⁸ : OpSig
+mid✝⁸ : CheckState
+hv✝⁸ :
+  liftM
+      (lookup path "unknown handler operation" (opSig q.D.patternProgram q.B op✝) fun x =>
+        wfTys q.atoms C.length ε.fails)
+      s =
+    Except.ok (v✝⁸, mid✝⁸)
+v✝⁷ : Unit
+mid✝⁷ : CheckState
+hv✝⁷ :
+  liftM (require path "handler operation names are not well formed" (namesWF v✝⁸.names v✝⁸.params)) mid✝⁸ =
+    Except.ok (v✝⁷, mid✝⁷)
+v✝⁶ : Unit
+mid✝⁶ : CheckState
+hv✝⁶ :
+  liftM (require path "handler operation arity mismatch" (arity✝ == v✝⁸.params.length)) mid✝⁷ = Except.ok (v✝⁶, mid✝⁶)
+v✝⁵ : Unit
+mid✝⁵ : CheckState
+hv✝⁵ :
+  liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁸.tparams.length)) mid✝⁶ =
+    Except.ok (v✝⁵, mid✝⁵)
+v✝⁴ : Inferred
+mid✝⁴ : CheckState
+hv✝⁴ :
+  checkBlockR q mode (v✝⁸.tparams ++ C)
+      (some (v✝⁸.ret.cont (shiftTy q.atoms ntys✝ 0 t) (shiftEff q.atoms ntys✝ 0 ε)) ::
+        (binds v✝⁸.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ))
+      (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other (child path 0) body✝ mid✝⁵ =
+    Except.ok (v✝⁴, mid✝⁴)
+v✝³ : Eff
+mid✝³ : CheckState
+hv✝³ :
+  liftM (accept q (v✝⁸.tparams ++ C).length (child path 0) (shiftTy q.atoms ntys✝ 0 t) v✝⁴) mid✝⁴ =
+    Except.ok (v✝³, mid✝³)
+v✝² mid✝² : CheckState
+hv✝² : get mid✝³ = Except.ok (v✝², mid✝²)
+h✝¹⁰ : (mode == ResumeMode.strict || v✝².strictConts.contains (Γ.length + arity✝)) = true
+v✝¹ : Unit
+mid✝¹ : CheckState
+hv✝¹ : liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) v✝³) mid✝² = Except.ok (v✝¹, mid✝¹)
+v✝ : Unit
+mid✝ : CheckState
+hv✝ :
+  liftM (acceptEff q (child path 0) ε (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³))
+      mid✝¹ =
+    Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkClausesR q mode C Γ R (child path 1) rest✝ t ε mid✝ = Except.ok (v, mid)
+h✝⁹ :
+  checkClausesR q mode C Γ R path (Clauses.cons op✝ arity✝ ntys✝ body✝ rest✝) t ε s =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝⁸ :
+  (liftM (require path "handler operation names are not well formed" (namesWF v✝⁸.names v✝⁸.params)) >>= fun __r => do
+        liftM (require path "handler operation arity mismatch" (arity✝ == v✝⁸.params.length))
+        liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁸.tparams.length))
+        have result : Ty := shiftTy q.atoms ntys✝ 0 t
+        have env : List (Option Ty) :=
+          some (v✝⁸.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+            (binds v✝⁸.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ)
+        let __do_lift ←
+          checkBlockR q mode (v✝⁸.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other
+              (child path 0) body✝
+        let εb ← liftM (accept q (v✝⁸.tparams ++ C).length (child path 0) result __do_lift)
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁸ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝⁷ :
+  (liftM (require path "handler operation arity mismatch" (arity✝ == v✝⁸.params.length)) >>= fun __r => do
+        liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁸.tparams.length))
+        have result : Ty := shiftTy q.atoms ntys✝ 0 t
+        have env : List (Option Ty) :=
+          some (v✝⁸.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+            (binds v✝⁸.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ)
+        let __do_lift ←
+          checkBlockR q mode (v✝⁸.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other
+              (child path 0) body✝
+        let εb ← liftM (accept q (v✝⁸.tparams ++ C).length (child path 0) result __do_lift)
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁷ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝⁶ :
+  (liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁸.tparams.length)) >>= fun __r =>
+        have result := shiftTy q.atoms ntys✝ 0 t;
+        have env :=
+          some (v✝⁸.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+            (binds v✝⁸.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ);
+        do
+        let __do_lift ←
+          checkBlockR q mode (v✝⁸.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other
+              (child path 0) body✝
+        let εb ← liftM (accept q (v✝⁸.tparams ++ C).length (child path 0) result __do_lift)
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁶ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝⁵ :
+  (have result := shiftTy q.atoms ntys✝ 0 t;
+      have env :=
+        some (v✝⁸.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+          (binds v✝⁸.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ);
+      do
+      let __do_lift ←
+        checkBlockR q mode (v✝⁸.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other (child path 0)
+            body✝
+      let εb ← liftM (accept q (v✝⁸.tparams ++ C).length (child path 0) result __do_lift)
+      let __do_lift ← get
+      have __do_jp : Unit → Checking Eff := fun __r =>
+        have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+        do
+        liftM (acceptEff q (child path 0) ε εouter)
+        let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+        pure (union q εouter εs)
+      if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+          let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+          __do_jp __r
+        else __do_jp ())
+      mid✝⁵ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝⁴ :
+  (liftM (accept q (v✝⁸.tparams ++ C).length (child path 0) (shiftTy q.atoms ntys✝ 0 t) v✝⁴) >>= fun εb => do
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁴ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝³ :
+  (get >>= fun __do_lift =>
+        have __do_jp := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs);
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+          let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) v✝³)
+          __do_jp __r
+        else __do_jp ())
+      mid✝³ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝² :
+  (have __do_jp := fun __r =>
+        have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³;
+        do
+        liftM (acceptEff q (child path 0) ε εouter)
+        let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+        pure (union q εouter εs);
+      do
+      let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) v✝³)
+      __do_jp __r)
+      mid✝² =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝¹ :
+  (fun __r =>
+        have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³;
+        do
+        liftM (acceptEff q (child path 0) ε εouter)
+        let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+        pure (union q εouter εs))
+      v✝¹ mid✝¹ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h✝ :
+  (checkClausesR q mode C Γ R (child path 1) rest✝ t ε >>= fun εs =>
+        pure (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) εs))
+      mid✝ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+h :
+  pure (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v) mid =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v, s')
+⊢ (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝³) v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:272:6: Tactic `rfl` failed: Expected the goal to be a binary relation
+
+Hint: Reflexivity tactics can only be used on goals of the form `x ~ x` or `R x x`
+
+case cons.isFalse.refl
+q : Input
+mode : ResumeMode
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+path : List Nat
+t : Ty
+ε : Eff
+s s' : CheckState
+op✝ : OpRef
+arity✝ ntys✝ : Nat
+body✝ : Block
+rest✝ : Clauses
+v✝⁷ : OpSig
+mid✝⁷ : CheckState
+hv✝⁷ :
+  liftM
+      (lookup path "unknown handler operation" (opSig q.D.patternProgram q.B op✝) fun x =>
+        wfTys q.atoms C.length ε.fails)
+      s =
+    Except.ok (v✝⁷, mid✝⁷)
+v✝⁶ : Unit
+mid✝⁶ : CheckState
+hv✝⁶ :
+  liftM (require path "handler operation names are not well formed" (namesWF v✝⁷.names v✝⁷.params)) mid✝⁷ =
+    Except.ok (v✝⁶, mid✝⁶)
+v✝⁵ : Unit
+mid✝⁵ : CheckState
+hv✝⁵ :
+  liftM (require path "handler operation arity mismatch" (arity✝ == v✝⁷.params.length)) mid✝⁶ = Except.ok (v✝⁵, mid✝⁵)
+v✝⁴ : Unit
+mid✝⁴ : CheckState
+hv✝⁴ :
+  liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁷.tparams.length)) mid✝⁵ =
+    Except.ok (v✝⁴, mid✝⁴)
+v✝³ : Inferred
+mid✝³ : CheckState
+hv✝³ :
+  checkBlockR q mode (v✝⁷.tparams ++ C)
+      (some (v✝⁷.ret.cont (shiftTy q.atoms ntys✝ 0 t) (shiftEff q.atoms ntys✝ 0 ε)) ::
+        (binds v✝⁷.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ))
+      (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other (child path 0) body✝ mid✝⁴ =
+    Except.ok (v✝³, mid✝³)
+v✝² : Eff
+mid✝² : CheckState
+hv✝² :
+  liftM (accept q (v✝⁷.tparams ++ C).length (child path 0) (shiftTy q.atoms ntys✝ 0 t) v✝³) mid✝³ =
+    Except.ok (v✝², mid✝²)
+v✝¹ mid✝¹ : CheckState
+hv✝¹ : get mid✝² = Except.ok (v✝¹, mid✝¹)
+h✝⁹ : ¬(mode == ResumeMode.strict || v✝¹.strictConts.contains (Γ.length + arity✝)) = true
+v✝ : Unit
+mid✝ : CheckState
+hv✝ :
+  liftM (acceptEff q (child path 0) ε (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²))
+      mid✝¹ =
+    Except.ok (v✝, mid✝)
+v : Eff
+mid : CheckState
+hv : checkClausesR q mode C Γ R (child path 1) rest✝ t ε mid✝ = Except.ok (v, mid)
+h✝⁸ :
+  checkClausesR q mode C Γ R path (Clauses.cons op✝ arity✝ ntys✝ body✝ rest✝) t ε s =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝⁷ :
+  (liftM (require path "handler operation names are not well formed" (namesWF v✝⁷.names v✝⁷.params)) >>= fun __r => do
+        liftM (require path "handler operation arity mismatch" (arity✝ == v✝⁷.params.length))
+        liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁷.tparams.length))
+        have result : Ty := shiftTy q.atoms ntys✝ 0 t
+        have env : List (Option Ty) :=
+          some (v✝⁷.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+            (binds v✝⁷.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ)
+        let __do_lift ←
+          checkBlockR q mode (v✝⁷.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other
+              (child path 0) body✝
+        let εb ← liftM (accept q (v✝⁷.tparams ++ C).length (child path 0) result __do_lift)
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁷ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝⁶ :
+  (liftM (require path "handler operation arity mismatch" (arity✝ == v✝⁷.params.length)) >>= fun __r => do
+        liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁷.tparams.length))
+        have result : Ty := shiftTy q.atoms ntys✝ 0 t
+        have env : List (Option Ty) :=
+          some (v✝⁷.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+            (binds v✝⁷.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ)
+        let __do_lift ←
+          checkBlockR q mode (v✝⁷.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other
+              (child path 0) body✝
+        let εb ← liftM (accept q (v✝⁷.tparams ++ C).length (child path 0) result __do_lift)
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁶ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝⁵ :
+  (liftM (require path "handler operation type parameter count mismatch" (ntys✝ == v✝⁷.tparams.length)) >>= fun __r =>
+        have result := shiftTy q.atoms ntys✝ 0 t;
+        have env :=
+          some (v✝⁷.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+            (binds v✝⁷.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ);
+        do
+        let __do_lift ←
+          checkBlockR q mode (v✝⁷.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other
+              (child path 0) body✝
+        let εb ← liftM (accept q (v✝⁷.tparams ++ C).length (child path 0) result __do_lift)
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝⁵ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝⁴ :
+  (have result := shiftTy q.atoms ntys✝ 0 t;
+      have env :=
+        some (v✝⁷.ret.cont result (shiftEff q.atoms ntys✝ 0 ε)) ::
+          (binds v✝⁷.params ++ List.map (Option.map (shiftTy q.atoms ntys✝ 0)) Γ);
+      do
+      let __do_lift ←
+        checkBlockR q mode (v✝⁷.tparams ++ C) env (Option.map (shiftTy q.atoms ntys✝ 0) R) Position.other (child path 0)
+            body✝
+      let εb ← liftM (accept q (v✝⁷.tparams ++ C).length (child path 0) result __do_lift)
+      let __do_lift ← get
+      have __do_jp : Unit → Checking Eff := fun __r =>
+        have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+        do
+        liftM (acceptEff q (child path 0) ε εouter)
+        let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+        pure (union q εouter εs)
+      if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+          let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+          __do_jp __r
+        else __do_jp ())
+      mid✝⁴ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝³ :
+  (liftM (accept q (v✝⁷.tparams ++ C).length (child path 0) (shiftTy q.atoms ntys✝ 0 t) v✝³) >>= fun εb => do
+        let __do_lift ← get
+        have __do_jp : Unit → Checking Eff := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] εb;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs)
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+            let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) εb)
+            __do_jp __r
+          else __do_jp ())
+      mid✝³ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝² :
+  (get >>= fun __do_lift =>
+        have __do_jp := fun __r =>
+          have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²;
+          do
+          liftM (acceptEff q (child path 0) ε εouter)
+          let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+          pure (union q εouter εs);
+        if (mode == ResumeMode.strict || __do_lift.strictConts.contains (Γ.length + arity✝)) = true then do
+          let __r ← liftM (acceptEff q (child path 0) (shiftEff q.atoms ntys✝ 0 ε) v✝²)
+          __do_jp __r
+        else __do_jp ())
+      mid✝² =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝¹ :
+  (have __do_jp := fun __r =>
+        have εouter := substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²;
+        do
+        liftM (acceptEff q (child path 0) ε εouter)
+        let εs ← checkClausesR q mode C Γ R (child path 1) rest✝ t ε
+        pure (union q εouter εs);
+      __do_jp ())
+      mid✝¹ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h✝ :
+  (checkClausesR q mode C Γ R (child path 1) rest✝ t ε >>= fun εs =>
+        pure (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) εs))
+      mid✝ =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+h :
+  pure (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v) mid =
+    Except.ok (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v, s')
+⊢ (union q (substEffAt q.atoms 0 (List.replicate ntys✝ (Ty.base BaseTy.unit)) [] v✝²) v).Legacy
+error: Benitoite/Surface/CheckLemmas.lean:308:30: Type mismatch
+  some δ
+has type
+  Option ?m.5
+but is expected to have type
+  Ty → Option (List Ty)
+error: Benitoite/Surface/CheckLemmas.lean:307:51: Invalid field `AtomsIn`: The environment does not contain `List.AtomsIn`, so it is not possible to project the field `AtomsIn` from an expression
+  D
+of type `List Atom`
+error: Benitoite/Surface/CheckLemmas.lean:307:74: Invalid field `AtomsIn`: The environment does not contain `Benitoite.Surface.Pattern.AtomsIn`, so it is not possible to project the field `AtomsIn` from an expression
+  a
+of type `Pattern`
+error: Benitoite/Surface/CheckLemmas.lean:327:2: Function expected at
+  unionEff_atoms ?m.4 ?m.5
+but this term has type
+  Eff.AtomsIn ?m.1 (unionEff ?m.1 ?m.2 ?m.3)
+
+Note: Expected a function because this term is being applied to the argument
+  _
+error: Benitoite/Surface/CheckLemmas.lean:331:35: Function expected at
+  unionEff_eq ha hb
+but this term has type
+  unionEff q.atoms a b = a.union b
+
+Note: Expected a function because this term is being applied to the argument
+  hla
+error: Benitoite/Surface/CheckLemmas.lean:334:35: Function expected at
+  hb
+but this term has type
+  Eff.AtomsIn atoms b
+
+Note: Expected a function because this term is being applied to the argument
+  x
+error: Benitoite/Surface/CheckLemmas.lean:346:4: 'change' tactic failed, pattern
+  (q.atoms.contains x && (a.test x || b.test x)) = true
+is not definitionally equal to target
+  (union q a b).mem x
+error: Benitoite/Surface/CheckLemmas.lean:356:4: 'change' tactic failed, pattern
+  (q.atoms.contains x && (a.test x || b.test x)) = true
+is not definitionally equal to target
+  (union q a b).mem x
+error: Benitoite/Surface/CheckLemmas.lean:365:47: Application type mismatch: The argument
+  hx
+has type
+  (union q a b).mem x
+but is expected to have type
+  (?m.10 && ?m.11) = true
+in the application
+  Bool.and_eq_true_iff.mp hx
+error: Benitoite/Surface/CheckLemmas.lean:367:4: Dependent elimination failed: Failed to solve equation
+  Order.sortUnique (tyCompareWith q.atoms) (Ty.normTysWith q.atoms (a.fails ++ b.fails)) = x :: as✝
+error: Benitoite/Surface/CheckLemmas.lean:417:11: Application type mismatch: The argument
+  shiftTy k c a
+has type
+  Ty → Ty
+but is expected to have type
+  Ty
+in the application
+  P (shiftTy k c a)
+error: Benitoite/Surface/CheckLemmas.lean:417:35: Invalid field `shift`: The environment does not contain `Nat.shift`, so it is not possible to project the field `shift` from an expression
+  a
+of type `Nat`
+error: Benitoite/Surface/CheckLemmas.lean:416:53: Invalid field `Legacy`: The environment does not contain `Nat.Legacy`, so it is not possible to project the field `Legacy` from an expression
+  a
+of type `Nat`
+error: Benitoite/Surface/CheckLemmas.lean:418:25: Application type mismatch: The argument
+  k
+has type
+  List Atom
+but is expected to have type
+  Nat
+in the application
+  shiftTy_eq k
+error: Benitoite/Surface/CheckLemmas.lean:422:11: Application type mismatch: The argument
+  substTyAt c ts es a
+has type
+  Ty → Ty
+but is expected to have type
+  Ty
+in the application
+  P (substTyAt c ts es a)
+error: Benitoite/Surface/CheckLemmas.lean:422:41: Invalid field `substAt`: The environment does not contain `List.substAt`, so it is not possible to project the field `substAt` from an expression
+  a
+of type `List Eff`
+error: Benitoite/Surface/CheckLemmas.lean:421:10: failed to synthesize instance of type class
+  Membership ?m.5 Nat
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Surface/CheckLemmas.lean:421:36: failed to synthesize instance of type class
+  Membership Eff (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Surface/CheckLemmas.lean:421:68: Invalid field `Legacy`: The environment does not contain `List.Legacy`, so it is not possible to project the field `Legacy` from an expression
+  a
+of type `List Eff`
+error: Benitoite/Surface/CheckLemmas.lean:421:20: Invalid field notation: Type of
+  t
+is not known; cannot resolve field `Legacy`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Eff.Legacy`
+  • `Ty.Legacy`
+error: Benitoite/Surface/CheckLemmas.lean:427:11: Application type mismatch: The argument
+  substTy ts es a
+has type
+  Ty → Ty
+but is expected to have type
+  Ty
+in the application
+  P (substTy ts es a)
+error: Benitoite/Surface/CheckLemmas.lean:427:37: Invalid field `subst`: The environment does not contain `List.subst`, so it is not possible to project the field `subst` from an expression
+  a
+of type `List Eff`
+error: Benitoite/Surface/CheckLemmas.lean:426:22: Invalid field `Legacy`: The environment does not contain `Benitoite.Release.Atom.Legacy`, so it is not possible to project the field `Legacy` from an expression
+  t
+of type `Atom`
+error: Benitoite/Surface/CheckLemmas.lean:426:36: failed to synthesize instance of type class
+  Membership Eff (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Surface/CheckLemmas.lean:426:68: Invalid field `Legacy`: The environment does not contain `List.Legacy`, so it is not possible to project the field `Legacy` from an expression
+  a
+of type `List Eff`
+error: Benitoite/Surface/CheckLemmas.lean:433:28: Application type mismatch: The argument
+  ps
+has type
+  List Ty
+but is expected to have type
+  List String
+in the application
+  fnTyCheck names ps
+error: Benitoite/Surface/CheckLemmas.lean:433:53: Application type mismatch: The argument
+  names
+has type
+  List Atom
+but is expected to have type
+  List String
+in the application
+  fnTy names
+error: Benitoite/Surface/CheckLemmas.lean:431:10: failed to synthesize instance of type class
+  Membership ?m.7 Eff
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Surface/CheckLemmas.lean:431:36: failed to synthesize instance of type class
+  Membership Eff (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Surface/CheckLemmas.lean:432:35: Invalid field `Legacy`: The environment does not contain `List.Legacy`, so it is not possible to project the field `Legacy` from an expression
+  r
+of type `List Ty`
+error: Benitoite/Surface/CheckLemmas.lean:431:20: Invalid field notation: Type of
+  t
+is not known; cannot resolve field `Legacy`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Eff.Legacy`
+  • `Ty.Legacy`
+error: Benitoite/Surface/CheckLemmas.lean:438:16: Application type mismatch: The argument
+  ts
+has type
+  List Ty
+but is expected to have type
+  List Atom
+in the application
+  substParams ts
+error: Benitoite/Surface/CheckLemmas.lean:438:27: Type mismatch
+  List.map (Ty.subst ts es) ps
+has type
+  List Ty
+but is expected to have type
+  List Ty → List Ty
+error: Benitoite/Surface/CheckLemmas.lean:438:79: Application type mismatch: The argument
+  ht
+has type
+  ∀ (t : Ty), t ∈ ts → t.Legacy
+but is expected to have type
+  ∀ (t : Ty), t ∈ ts → Ty.AtomsIn ?m.16 t
+in the application
+  substTysAt_eq 0 ts es ps ht
+error: Benitoite/Surface/CheckLemmas.lean:443:31: Application type mismatch: The argument
+  n
+has type
+  Nat
+but is expected to have type
+  List Atom
+in the application
+  shiftTy n
+error: Benitoite/Surface/CheckLemmas.lean:443:39: Type mismatch
+  shiftEnv n Γ
+has type
+  List (Option Ty)
+but is expected to have type
+  List (Option (Ty → Ty))
+error: Benitoite/Surface/CheckLemmas.lean:452:19: Application type mismatch: The argument
+  n
+has type
+  Nat
+but is expected to have type
+  List Atom
+in the application
+  shiftTy n
+error: Benitoite/Surface/CheckLemmas.lean:452:26: Type mismatch
+  Option.map (Ty.shift n 0) R
+has type
+  Option Ty
+but is expected to have type
+  Option (Ty → Ty)
+error: Benitoite/Surface/CheckLemmas.lean:454:12: Tactic `rfl` failed: The left-hand side
+  true
+is not definitionally equal to the right-hand side
+  Function.const Lean.Name ()
+    `Benitoite.Surface.CheckLemmas.452.4.452.46.4.46._sorry._@.Benitoite.Surface.CheckLemmas.2866443875._hygCtx._hyg.33
+
+case none
+n : Nat
+R : Option Ty
+hR : ∀ (t : Ty), R = some t → t.Legacy
+hr : R = none
+⊢ sorry
+error: Benitoite/Surface/CheckLemmas.lean:455:52: Application type mismatch: The argument
+  hR t hr
+has type
+  t.Legacy
+but is expected to have type
+  Ty.AtomsIn ?m.54 t
+in the application
+  shiftTy_eq n 0 t (hR t hr)
+error: Benitoite/Surface/CheckLemmas.lean:457:80: Application type mismatch: The argument
+  k
+has type
+  Nat
+but is expected to have type
+  List Atom
+in the application
+  shiftEff k
+error: Benitoite/Surface/CheckLemmas.lean:457:88: Type mismatch
+  e
+has type
+  Eff
+but is expected to have type
+  Eff → Eff
+error: Benitoite/Surface/CheckLemmas.lean:462:4: Tactic `rfl` failed: The left-hand side
+  true
+is not definitionally equal to the right-hand side
+  Function.const Lean.Name ()
+    `Benitoite.Surface.CheckLemmas.457.71.457.89.71.89._sorry._@.Benitoite.Surface.CheckLemmas.4157674687._hygCtx._hyg.18
+
+case mk
+k c : Nat
+a : Atom → Bool
+⊢ sorry
+error: Benitoite/Surface/CheckLemmas.lean:530:38: Application type mismatch: The argument
+  n
+has type
+  Nat
+but is expected to have type
+  List Atom
+in the application
+  shiftTy n
+error: Benitoite/Surface/CheckLemmas.lean:541:44: Application type mismatch: The argument
+  shiftTy ntys 0 t
+has type
+  Ty → Ty
+but is expected to have type
+  Ty
+in the application
+  sg.ret.cont (shiftTy ntys 0 t)
+error: Benitoite/Surface/CheckLemmas.lean:542:26: Application type mismatch: The argument
+  Γ
+has type
+  List (Option Ty)
+but is expected to have type
+  List (Option Nat)
+in the application
+  List.map (Option.map (shiftTy ntys 0)) Γ
+error: Benitoite/Surface/CheckLemmas.lean:540:12: Invalid field `AtomsIn`: The environment does not contain `Nat.AtomsIn`, so it is not possible to project the field `AtomsIn` from an expression
+  t
+of type `Nat`
+error: Benitoite/Surface/CheckLemmas.lean:540:37: Invalid field `AtomsIn`: The environment does not contain `Nat.AtomsIn`, so it is not possible to project the field `AtomsIn` from an expression
+  ε
+of type `Nat`
+error: Benitoite/Surface/CheckLemmas.lean:542:7: failed to synthesize instance of type class
+  HAppend (List (Option Ty)) (List (Option (Ty → Ty))) ?m.21
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Surface/CheckLemmas.lean:558:35: Application type mismatch: The argument
+  ts
+has type
+  List Ty
+but is expected to have type
+  List Atom
+in the application
+  substParams ts
+error: Benitoite/Surface/CheckLemmas.lean:558:71: Application type mismatch: The argument
+  he
+has type
+  ∀ (e : Ty), e ∈ es → Ty.AtomsIn atoms e
+but is expected to have type
+  ∀ (e : Eff), e ∈ ?m.16 → Eff.AtomsIn atoms e
+in the application
+  substTysAt_atoms hp ht he
+error: Benitoite/Surface/CheckLemmas.lean:565:12: Application type mismatch: The argument
+  k
+has type
+  Nat
+but is expected to have type
+  List Atom
+in the application
+  shiftTy k
+error: Benitoite/Surface/CheckLemmas.lean:565:20: Type mismatch
+  Ty.shift k c a
+has type
+  Ty
+but is expected to have type
+  Ty → Ty
+error: Benitoite/Surface/CheckLemmas.lean:565:55: Application type mismatch: The argument
+  ha
+has type
+  a.Legacy
+but is expected to have type
+  Ty.AtomsIn ?m.2 a
+in the application
+  shiftTy_eq k c a ha
+error: Benitoite/Surface/CheckLemmas.lean:569:14: Application type mismatch: The argument
+  c
+has type
+  Nat
+but is expected to have type
+  List Atom
+in the application
+  substTyAt c
+error: Benitoite/Surface/CheckLemmas.lean:569:26: Type mismatch
+  Ty.substAt c ts es a
+has type
+  Ty
+but is expected to have type
+  Ty → Ty
+error: Benitoite/Surface/CheckLemmas.lean:569:73: Application type mismatch: The argument
+  ht
+has type
+  ∀ (t : Ty), t ∈ ts → t.Legacy
+but is expected to have type
+  ∀ (t : Ty), t ∈ ts → Ty.AtomsIn ?m.10 t
+in the application
+  substTyAt_eq c ts es a ht
+error: Benitoite/Surface/CheckLemmas.lean:573:12: Application type mismatch: The argument
+  ts
+has type
+  List Ty
+but is expected to have type
+  List Atom
+in the application
+  substTy ts
+error: Benitoite/Surface/CheckLemmas.lean:573:22: Type mismatch
+  Ty.subst ts es a
+has type
+  Ty
+but is expected to have type
+  Ty → Ty
+error: Benitoite/Surface/CheckLemmas.lean:573:61: Application type mismatch: The argument
+  ht
+has type
+  ∀ (t : Ty), t ∈ ts → t.Legacy
+but is expected to have type
+  ∀ (t : Ty), t ∈ ts → Ty.AtomsIn ?m.10 t
+in the application
+  substTy_eq ts es a ht
+Some required targets logged failures:
+- Benitoite.Surface.CheckLemmas
+error: build failed
+real 5.72
+user 7.71
+sys 0.95

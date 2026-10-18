@@ -105,11 +105,12 @@ pub(super) fn program(
                     .ok_or_else(|| error("empty operation module path"))?,
             };
             out.ops.push(OpDef {
+                failure: Some(*id) == resolved.stdlib("Benitoite.Failure.raise"),
                 param_names: s.param_names.clone(),
                 binding: *id,
                 effect: effect.name,
                 name: format!("{prefix}.{}", b.name),
-                arity: number(s.params.len())?,
+                arity: number(s.class_constraints.len().saturating_add(s.params.len()))?,
                 builtin: resolved.builtin_ops.get(*id).copied(),
             });
         }
@@ -418,6 +419,7 @@ fn implementation(
         .ok_or_else(|| error("missing implementation class"))?;
     let name = format!("{}[{target}]", class.name);
     let scheme = Scheme {
+        no_fail: vec![],
         param_names: Vec::new(),
         type_params: info.type_params.clone(),
         class_constraints: info.class_constraints.clone(),

@@ -1,0 +1,10 @@
+// spec: 01-06 型付きの失敗と行の条件
+import Benitoite.Unofficial.Failure
+
+function convert[effect Rest](body: function() -> Integer uses Rest) -> Result[Integer, String] uses Rest
+  return Failure.toResult(body)
+end function
+
+function main() -> Unit
+  ()
+end function

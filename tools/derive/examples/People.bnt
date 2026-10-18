@@ -1,0 +1,150 @@
+//! Regenerate, run derive check, then check/test the codecs and record properties.
+
+import Address
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.Test.Property
+import Benitoite.Unofficial.IO.Random
+
+public record Person
+  displayName: String
+  address: Address.Address
+  nickname: Option[String]
+  scores: List[Map[String, Float]]
+  active: Boolean
+  count: Integer
+end record
+
+function main() -> Unit
+  ()
+end function
+
+@test
+function jsonRoundtrip() -> Unit uses Assert.Check
+  bind person <- Person(displayName: "Ada", address: Address.Address(city: "京都"), nickname: Option.None, scores: [Map.fromList([Pair("math", 1.5)])], active: true, count: 42)
+  Assert.equal(actual: Result.andThen(r: encodePerson(person), f: decodePerson), expected: Result.Ok(person))
+  bind missing <- Json.Value.Object(Map.fromList([Pair("display_name", Json.Value.String("Ada")), Pair("address", Json.Value.Object(Map.fromList([Pair("city", Json.Value.String("京都"))]))), Pair("scores", Json.Value.Array([])), Pair("active", Json.Value.Boolean(true)), Pair("count", Json.Value.Integer(42))]))
+  Assert.equal(actual: decodePerson(missing), expected: Result.Ok(Person(..person, scores: [])))
+  bind invalid <- Person(..person, scores: [Map.fromList([Pair("math", 1.0 / 0.0)])])
+  bind path <- match encodePerson(invalid) with
+    case Result.Error(error) -> Codec.ConversionError.path(error)
+    case Result.Ok(_) -> []
+  end match
+  Assert.equal(actual: path, expected: [Codec.PathPart.Field("scores"), Codec.PathPart.Index(0), Codec.PathPart.Key("math")])
+end function
+
+/// The generated functions are ordinary values, tried by one ordinary test.
+@test
+function generatedJsonRoundtrip() -> Result[Unit, String]
+  bind config <- Property.Config(seed: 17, trials: 60, size: 3, maxShrinks: 100)
+  bind outcome <- Property.check(config: config, gen: genPerson(), shrinker: shrinkPerson(), property: lambda(value)
+    return match Result.andThen(r: encodePerson(value), f: decodePerson) with
+      case Result.Ok(decoded) -> if decoded = value then Result.Ok(()) else Result.Error("record roundtrip differs") end if
+      case Result.Error(error) -> Result.Error(Codec.ConversionError.reason(error))
+    end match
+  end lambda)
+  return match outcome with
+    case Result.Ok(_) -> Result.Ok(())
+    case Result.Error(failure) -> Result.Error(Property.formatFailure(failure: failure, show: showPerson))
+  end match
+end function
+
+function showPerson(value: Person) -> String
+  return match encodePerson(value) with
+    case Result.Ok(encoded) -> Json.stringify(encoded)
+    case Result.Error(error) -> Codec.ConversionError.reason(error)
+  end match
+end function
+
+/// Selects typed failure only at the application boundary; the codec stays pure.
+public function requirePerson(value: Json.Value) -> Person uses Failure.Fail[Codec.ConversionError]
+  return Failure.fromResult(decodePerson(value))
+end function
+// benitoite-derive:begin person
+/// Encodes Person in declaration order, returning the first relative conversion failure.
+public function encodePerson(value: Person) -> Result[Json.Value, Codec.ConversionError]
+  bind deriveField0 <- try Result.mapError(r: (Codec.encodeString)(Person.displayName(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("display_name"), error: error) end lambda)
+  bind deriveField1 <- try Result.mapError(r: (Address.encodeAddress)(Person.address(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("address"), error: error) end lambda)
+  bind deriveField2 <- try Result.mapError(r: (Codec.encodeOption(value: _, encode: Codec.encodeString))(Person.nickname(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("nickname"), error: error) end lambda)
+  bind deriveField3 <- try Result.mapError(r: (Codec.encodeList(value: _, encode: Codec.encodeMap(value: _, encode: Codec.encodeFloat)))(Person.scores(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("scores"), error: error) end lambda)
+  bind deriveField4 <- try Result.mapError(r: (Codec.encodeBoolean)(Person.active(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("active"), error: error) end lambda)
+  bind deriveField5 <- try Result.mapError(r: (Codec.encodeInteger)(Person.count(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("count"), error: error) end lambda)
+  return Result.Ok(Json.Value.Object(Map.fromList([Pair("display_name", deriveField0), Pair("address", deriveField1), Pair("nickname", deriveField2), Pair("scores", deriveField3), Pair("active", deriveField4), Pair("count", deriveField5)])))
+end function
+
+/// Decodes Person in declaration order, then rejects the first extra key.
+public function decodePerson(value: Json.Value) -> Result[Person, Codec.ConversionError]
+  bind deriveMembers <- try Codec.decodeObject(value)
+  bind deriveField0 <- try Codec.decodeField(members: deriveMembers, key: "display_name", decode: Codec.decodeString, decodeMissing: Codec.missing)
+  bind deriveField1 <- try Codec.decodeField(members: deriveMembers, key: "address", decode: Address.decodeAddress, decodeMissing: Codec.missing)
+  bind deriveField2 <- try Codec.decodeField(members: deriveMembers, key: "nickname", decode: Codec.decodeOption(value: _, decode: Codec.decodeString), decodeMissing: lambda() return Result.Ok(Option.None) end lambda)
+  bind deriveField3 <- try Codec.decodeField(members: deriveMembers, key: "scores", decode: Codec.decodeList(value: _, decode: Codec.decodeMap(value: _, decode: Codec.decodeFloat)), decodeMissing: Codec.missing)
+  bind deriveField4 <- try Codec.decodeField(members: deriveMembers, key: "active", decode: Codec.decodeBoolean, decodeMissing: Codec.missing)
+  bind deriveField5 <- try Codec.decodeField(members: deriveMembers, key: "count", decode: Codec.decodeInteger, decodeMissing: Codec.missing)
+  bind _ <- try Codec.rejectExtra(members: deriveMembers, keys: ["display_name", "address", "nickname", "scores", "active", "count"])
+  return Result.Ok(Person(displayName: deriveField0, address: deriveField1, nickname: deriveField2, scores: deriveField3, active: deriveField4, count: deriveField5))
+end function
+
+function derive_shrinkPerson_0(original: Person, value: String) -> Person
+  return Person(..original, displayName: value)
+end function
+
+function derive_shrinkPerson_1(original: Person, value: Address.Address) -> Person
+  return Person(..original, address: value)
+end function
+
+function derive_shrinkPerson_2(original: Person, value: Option[String]) -> Person
+  return Person(..original, nickname: value)
+end function
+
+function derive_shrinkPerson_3(original: Person, value: List[Map[String, Float]]) -> Person
+  return Person(..original, scores: value)
+end function
+
+function derive_shrinkPerson_4(original: Person, value: Boolean) -> Person
+  return Person(..original, active: value)
+end function
+
+function derive_shrinkPerson_5(original: Person, value: Integer) -> Person
+  return Person(..original, count: value)
+end function
+
+/// Generates Person in field order with the same size and successive random states.
+public function genPerson() -> Property.Gen[Person]
+  bind deriveRun0 <- Property.Gen.run(Property.string())
+  bind deriveRun1 <- Property.Gen.run(Address.genAddress())
+  bind deriveRun2 <- Property.Gen.run(Property.option(element: Property.string()))
+  bind deriveRun3 <- Property.Gen.run(Property.list(element: Property.stringMap(value: Property.float())))
+  bind deriveRun4 <- Property.Gen.run(Property.boolean())
+  bind deriveRun5 <- Property.Gen.run(Result.unwrapOr(r: Property.integer(low: -9223372036854775808, high: 9223372036854775807), fallback: Property.constant(0)))
+  return Property.Gen(run: lambda(generator: Random.Generator, size: Integer)
+    bind derivePair0 <- deriveRun0(generator: generator, size: size)
+    bind derivePair1 <- deriveRun1(generator: Pair.second(derivePair0), size: size)
+    bind derivePair2 <- deriveRun2(generator: Pair.second(derivePair1), size: size)
+    bind derivePair3 <- deriveRun3(generator: Pair.second(derivePair2), size: size)
+    bind derivePair4 <- deriveRun4(generator: Pair.second(derivePair3), size: size)
+    bind derivePair5 <- deriveRun5(generator: Pair.second(derivePair4), size: size)
+    return Pair(Person(displayName: Pair.first(derivePair0), address: Pair.first(derivePair1), nickname: Pair.first(derivePair2), scores: Pair.first(derivePair3), active: Pair.first(derivePair4), count: Pair.first(derivePair5)), Pair.second(derivePair5))
+  end lambda)
+end function
+
+/// Shrinks one field at a time in declaration order; cross-field conditions require a custom shrinker.
+public function shrinkPerson() -> Property.Shrinker[Person]
+  bind deriveShrink0 <- Property.Shrinker.candidates(Property.shrinkString())
+  bind deriveShrink1 <- Property.Shrinker.candidates(Address.shrinkAddress())
+  bind deriveShrink2 <- Property.Shrinker.candidates(Property.shrinkOption(element: Property.shrinkString()))
+  bind deriveShrink3 <- Property.Shrinker.candidates(Property.shrinkList(element: Property.shrinkStringMap(value: Property.shrinkFloat())))
+  bind deriveShrink4 <- Property.Shrinker.candidates(Property.shrinkBoolean())
+  bind deriveShrink5 <- Property.Shrinker.candidates(Property.shrinkInteger())
+  return Property.Shrinker(candidates: lambda(value: Person)
+    bind deriveCandidates0 <- List.concatenate(xs: [], ys: List.map(xs: deriveShrink0(Person.displayName(value)), f: derive_shrinkPerson_0(original: value, value: _)))
+    bind deriveCandidates1 <- List.concatenate(xs: deriveCandidates0, ys: List.map(xs: deriveShrink1(Person.address(value)), f: derive_shrinkPerson_1(original: value, value: _)))
+    bind deriveCandidates2 <- List.concatenate(xs: deriveCandidates1, ys: List.map(xs: deriveShrink2(Person.nickname(value)), f: derive_shrinkPerson_2(original: value, value: _)))
+    bind deriveCandidates3 <- List.concatenate(xs: deriveCandidates2, ys: List.map(xs: deriveShrink3(Person.scores(value)), f: derive_shrinkPerson_3(original: value, value: _)))
+    bind deriveCandidates4 <- List.concatenate(xs: deriveCandidates3, ys: List.map(xs: deriveShrink4(Person.active(value)), f: derive_shrinkPerson_4(original: value, value: _)))
+    bind deriveCandidates5 <- List.concatenate(xs: deriveCandidates4, ys: List.map(xs: deriveShrink5(Person.count(value)), f: derive_shrinkPerson_5(original: value, value: _)))
+    return deriveCandidates5
+  end lambda)
+end function
+// benitoite-derive:end person

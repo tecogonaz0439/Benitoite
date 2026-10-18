@@ -1,0 +1,146 @@
+✖ [49/59] Building Benitoite.Surface.CheckLemmas (369ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/CheckLemmas.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckLemmas.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckLemmas.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckLemmas.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckLemmas.setup.json --json
+error: Benitoite/Surface/CheckLemmas.lean:90:2: Type mismatch: After simplification, term
+  hn
+ has type
+  names.length = (Ty.rawBindTys (SubstEnv.at 0 ts es) ps).length ∧ names.Nodup
+but is expected to have type
+  names.length = ps.length ∧ names.Nodup
+error: Benitoite/Surface/CheckLemmas.lean:167:35: Type mismatch
+  unionEff_eq ha hb
+has type
+  a.Legacy → b.Legacy → unionEff q.atoms a b = a.union b
+but is expected to have type
+  union q a b = a.union b
+error: Benitoite/Surface/CheckLemmas.lean:170:41: Function expected at
+  h
+but this term has type
+  a.Sub b
+
+Note: Expected a function because this term is being applied to the argument
+  x
+error: Benitoite/Surface/CheckLemmas.lean:178:8: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+q : Input
+a b : Eff
+ha : Eff.AtomsIn q.atoms a
+⊢ a.Sub (union q a b)
+error: Benitoite/Surface/CheckLemmas.lean:182:8: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+q : Input
+a b : Eff
+hb : Eff.AtomsIn q.atoms b
+⊢ b.Sub (union q a b)
+error: Benitoite/Surface/CheckLemmas.lean:187:8: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+q : Input
+a b : Eff
+⊢ (union q a b).Sub (a.union b)
+error: Benitoite/Surface/CheckLemmas.lean:192:14: Function expected at
+  union_sub_union q a b
+but this term has type
+  (union q a b).Sub (a.union b)
+
+Note: Expected a function because this term is being applied to the argument
+  x
+error: Benitoite/Surface/CheckLemmas.lean:206:22: Application type mismatch: The argument
+  fun x h => h
+has type
+  (x : ?m.67) → ?m.69 x → ?m.69 x
+but is expected to have type
+  ε.Sub (a, ε).snd
+in the application
+  HasType.E_Sub ht hle fun x h => h
+error: Benitoite/Surface/CheckLemmas.lean:215:22: Application type mismatch: The argument
+  fun x h => h
+has type
+  (x : ?m.67) → ?m.69 x → ?m.69 x
+but is expected to have type
+  ε.Sub (a, ε).snd
+in the application
+  HasBlock.B_Sub ht hle fun x h => h
+error: Benitoite/Surface/CheckLemmas.lean:237:2: Type mismatch: After simplification, term
+  h
+ has type
+  P (shiftTy k c a)
+but is expected to have type
+  P (Ty.shift k c a)
+error: Benitoite/Surface/CheckLemmas.lean:240:32: Type mismatch: After simplification, term
+  h
+ has type
+  P (substTyAt c ts es a)
+but is expected to have type
+  P (Ty.substAt c ts es a)
+error: Benitoite/Surface/CheckLemmas.lean:243:28: Type mismatch: After simplification, term
+  h
+ has type
+  P (substTy ts es a)
+but is expected to have type
+  P (Ty.subst ts es a)
+error: Benitoite/Surface/CheckLemmas.lean:246:38: Type mismatch: After simplification, term
+  h
+ has type
+  P (fnTyCheck names ps r ε ts es)
+but is expected to have type
+  P (fnTy names ps r ε ts es)
+error: Benitoite/Surface/CheckLemmas.lean:249:54: Type mismatch
+  substTysAt_eq 0 ts es ps
+has type
+  (∀ (t : Ty), t ∈ ts → t.Legacy) →
+    (∀ (e : Eff), e ∈ es → e.Legacy) →
+      (∀ (a : Ty), a ∈ ps → a.Legacy) → substTysAt 0 ts es ps = List.map (Ty.substAt 0 ts es) ps
+but is expected to have type
+  substParams ts es ps = List.map (Ty.subst ts es) ps
+error: Benitoite/Surface/CheckLemmas.lean:253:49: Application type mismatch: The argument
+  shiftTy_eq n 0
+has type
+  ∀ (a : Ty), a.Legacy → shiftTy n 0 a = Ty.shift n 0 a
+but is expected to have type
+  ∀ (x : Ty), shiftTy n 0 x = Ty.shift n 0 x
+in the application
+  funext (shiftTy_eq n 0)
+error: Benitoite/Surface/CheckLemmas.lean:348:9: Application type mismatch: The argument
+  shiftTy_eq k c
+has type
+  ∀ (a : Ty), a.Legacy → shiftTy k c a = Ty.shift k c a
+but is expected to have type
+  ∀ (x : Ty), shiftTy k c x = Ty.shift k c x
+in the application
+  funext (shiftTy_eq k c)
+error: Benitoite/Surface/CheckLemmas.lean:351:53: Application type mismatch: The argument
+  substTyAt_eq c ts es
+has type
+  ∀ (a : Ty),
+    (∀ (t : Ty), t ∈ ts → t.Legacy) →
+      (∀ (e : Eff), e ∈ es → e.Legacy) → a.Legacy → substTyAt c ts es a = Ty.substAt c ts es a
+but is expected to have type
+  ∀ (x : Ty), substTyAt c ts es x = Ty.substAt c ts es x
+in the application
+  funext (substTyAt_eq c ts es)
+error: Benitoite/Surface/CheckLemmas.lean:354:45: Application type mismatch: The argument
+  substTy_eq ts es
+has type
+  ∀ (a : Ty),
+    (∀ (t : Ty), t ∈ ts → t.Legacy) → (∀ (e : Eff), e ∈ es → e.Legacy) → a.Legacy → substTy ts es a = Ty.subst ts es a
+but is expected to have type
+  ∀ (x : Ty), substTy ts es x = Ty.subst ts es x
+in the application
+  funext (substTy_eq ts es)
+error: Benitoite/Surface/CheckLemmas.lean:409:23: Function expected at
+  h
+but this term has type
+  ε.Sub Eff.empty
+
+Note: Expected a function because this term is being applied to the argument
+  a
+error: Benitoite/Surface/CheckLemmas.lean:405:83: unsolved goals
+case hf
+ε : Eff
+h : ε.Sub Eff.empty
+⊢ ε.fails = Eff.empty.fails
+Some required targets logged failures:
+- Benitoite.Surface.CheckLemmas
+error: build failed
+real 0.46
+user 0.54
+sys 0.18

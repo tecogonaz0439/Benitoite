@@ -15,11 +15,26 @@ structure CoverageTypeDisplay where
   typeName : String
   isRecord : Bool
 
+/-- 文字区間の下端を実在の文字に戻す。不正な区間は表示用の値にしない。 -/
+def CoverageWitness.characterValue (lo hi : Int) : Option Char :=
+  if 0 ≤ lo ∧ lo ≤ hi ∧ lo < 0x110000 ∧ (lo < 0xD800 ∨ 0xE000 ≤ lo) then
+    some (Char.ofNat lo.toNat) else none
+
+/-- ASCIIの可視文字はリテラル、それ以外は小文字のUnicodeエスケープで示す。 -/
+def CoverageWitness.showCharacter (c : Char) : String :=
+  let body := if c = '\n' then "\\n" else if c = '\r' then "\\r" else if c = '\t' then "\\t"
+    else if c = '\\' then "\\\\" else if c = '\'' then "\\'"
+    else if 0x20 ≤ c.toNat ∧ c.toNat ≤ 0x7E then String.singleton c
+    else "\\u{" ++ String.ofList (Nat.toDigits 16 c.toNat) ++ "}"
+  "'" ++ body ++ "'"
+
 mutual
   /-- 型の表示表から将来の形の型名も表示する入口（設計書 02-05「本体の後の検査」）。 -/
   def CoverageWitness.showWithTypes (table : ConName → Option CoverageDisplay)
       (types : DataName → Option CoverageTypeDisplay) : CoverageWitness → String
-    | .wild | .other | .interval _ _ _ | .string _ | .invalidCon _ => "_"
+    | .wild | .other | .interval false _ _ | .string _ | .invalidCon _ => "_"
+    | .interval true lo hi =>
+        ((CoverageWitness.characterValue lo hi).map CoverageWitness.showCharacter).getD "_"
     | .future d =>
         match types d with
         | none => "_"
@@ -97,5 +112,38 @@ example : showWitnessesWithTypes displayExample typeDisplayExample
      "Option.Some(<future constructor of IOErrorKind>)",
      "Record(first: <future shape of ParseError>, last: [<future constructor of IOErrorKind>])",
      "[<future shape of ParseError>, ..]"] := by decide
+
+/-- 判定が返した文字を独立した期待値と比べ、元の分岐に照合しないことを確認する。 -/
+example : ([
+    ([CoverageExamples.chars 97 122], (0 : Int), "'\\u{0}'"),
+    ([CoverageExamples.chars 0 96, CoverageExamples.chars 98 0x10FFFF], 97, "'a'"),
+    ([CoverageExamples.chars 0 0xD7FF, CoverageExamples.chars 0xE001 0x10FFFF], 0xE000, "'\\u{e000}'"),
+    ([CoverageExamples.chars 0 0x10FFFE], 0x10FFFF, "'\\u{10ffff}'")]
+    : List (List Pat × Int × String)).all (fun (ps, expected, text) =>
+      match (checkMatch CoverageExamples.program CoverageExamples.ctors (.base .character)
+        (ps.map fun p => CoverageExamples.plain [p])).uncovered with
+      | some (.interval true lo hi) =>
+          lo == expected && (CoverageWitness.interval true lo hi).show displayExample == text &&
+            match CoverageWitness.characterValue lo hi with
+            | none => false
+            | some c => ps.all fun p => (Pat.matchVal p (.const (.character c))).isNone
+      | _ => false) = true := by decide
+
+/-- 入れ子の反例でも、表示した文字と構成子の組合せは元の全分岐に照合しない。 -/
+example : (let ps : List Pat := [.con "L" [CoverageExamples.chars 1 0x10FFFF], .con "R" [.wild]]
+    let table := fun c => if c == "L" then some ⟨"Choice", "L", false, none⟩ else displayExample c
+    match (checkMatch CoverageExamples.program CoverageExamples.ctors
+      (.data "Choice" [.base .character]) (ps.map fun p => CoverageExamples.plain [p])).uncovered with
+    | some (.con "L" [.interval true lo hi]) =>
+        (CoverageWitness.con "L" [.interval true lo hi]).show table == "Choice.L('\\u{0}')" &&
+          lo == 0 && match CoverageWitness.characterValue lo hi with
+          | none => false
+          | some c => ps.all (fun p => (Pat.matchVal p (.con "L" [] [.const (.character c)])).isNone)
+    | _ => false) = true := by decide
+
+example : (['a', '\n', '\r', '\t', '\\', '\'', Char.ofNat 0, Char.ofNat 0xD7FF,
+    Char.ofNat 0xE000, Char.ofNat 0x10FFFF] : List Char).map CoverageWitness.showCharacter =
+    ["'a'", "'\\n'", "'\\r'", "'\\t'", "'\\\\'", "'\\''", "'\\u{0}'", "'\\u{d7ff}'",
+     "'\\u{e000}'", "'\\u{10ffff}'"] := by decide
 
 end Benitoite.Release

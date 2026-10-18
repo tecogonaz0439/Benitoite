@@ -1,0 +1,891 @@
+{
+  "source_commit": "1294ba9706e17ce3b6613bbe6040924d740a4648",
+  "source_check_sha256": "c2fa6c973abf253df60b7ef365d2b8e22a53d1bd9b9059da9dcfd689317e747c",
+  "notes": [
+    "Captured before changing check.sh; never regenerate from a later implementation.",
+    "Only cargo, lake and check-heap.sh are substituted; git and Python tools are real.",
+    "skill_eval and python stop with exit 1: the minimal repository lacks skill-eval task inputs and real Rust helper binaries.",
+    "full reaches skill_eval and stops there; later units are also recorded separately with --only.",
+    "The legacy missing-base automatic path exits 1 from an unset count variable, including dry-run.",
+    "Observable check headings and Python tool commands were projected from the original capture; internal shell helper names are not assertions."
+  ],
+  "cases": {
+    "only-rust": {
+      "exit": 0,
+      "plan": "== plan: only rust\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,alloc-stats"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--tests",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify",
+          "--"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,gc-stress",
+          "--lib",
+          "--tests",
+          "--"
+        ],
+        [
+          "cargo",
+          "run",
+          "-q",
+          "-p",
+          "benitoite",
+          "--example",
+          "gen_skill"
+        ]
+      ],
+      "checks": [
+        "format",
+        "lint (mark-sweep)",
+        "lint (default configuration)",
+        "test (mark-sweep)",
+        "gc-stress (mark-sweep)",
+        "leftover placeholder allows",
+        "unsafe_code locations",
+        "generated Skill files",
+        "spec coverage tool",
+        "spec coverage"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py",
+          "--self-test"
+        ],
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py"
+        ]
+      ]
+    },
+    "only-rust-dry": {
+      "exit": 0,
+      "plan": "== plan: only rust\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-default_lib": {
+      "exit": 0,
+      "plan": "== plan: only default_lib\n   [default_lib] library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests) because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ]
+      ],
+      "checks": [
+        "lib tests (default configuration)"
+      ],
+      "python_commands": []
+    },
+    "only-default_lib-dry": {
+      "exit": 0,
+      "plan": "== plan: only default_lib\n   [default_lib] library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests) because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-long": {
+      "exit": 0,
+      "plan": "== plan: only long\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of --only long\n   [long] long tests (#[ignore = \"long: ...\"], ~15 min more)      because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,alloc-stats"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--tests",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,gc-stress",
+          "--lib",
+          "--tests",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "run",
+          "-q",
+          "-p",
+          "benitoite",
+          "--example",
+          "gen_skill"
+        ]
+      ],
+      "checks": [
+        "format",
+        "lint (mark-sweep)",
+        "lint (default configuration)",
+        "test (mark-sweep)",
+        "gc-stress (mark-sweep)",
+        "leftover placeholder allows",
+        "unsafe_code locations",
+        "generated Skill files",
+        "spec coverage tool",
+        "spec coverage"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py",
+          "--self-test"
+        ],
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py"
+        ]
+      ]
+    },
+    "only-long-dry": {
+      "exit": 0,
+      "plan": "== plan: only long\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of --only long\n   [long] long tests (#[ignore = \"long: ...\"], ~15 min more)      because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-release_stack": {
+      "exit": 0,
+      "plan": "== plan: only release_stack\n   [release_stack] release measured-stack stage tests (~5 min more) because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "test",
+          "--release",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--",
+          "pipeline::tests::stages_fit_the_measured_stack_",
+          "--include-ignored"
+        ]
+      ],
+      "checks": [
+        "release measured-stack tests"
+      ],
+      "python_commands": []
+    },
+    "only-release_stack-dry": {
+      "exit": 0,
+      "plan": "== plan: only release_stack\n   [release_stack] release measured-stack stage tests (~5 min more) because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-licenses": {
+      "exit": 0,
+      "plan": "== plan: only licenses\n   [licenses] licenses                                            because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "deny",
+          "--version"
+        ],
+        [
+          "cargo",
+          "deny",
+          "check",
+          "licenses"
+        ]
+      ],
+      "checks": [
+        "licenses"
+      ],
+      "python_commands": []
+    },
+    "only-licenses-dry": {
+      "exit": 0,
+      "plan": "== plan: only licenses\n   [licenses] licenses                                            because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-heap": {
+      "exit": 0,
+      "plan": "== plan: only heap\n   [heap] scripts/check-heap.sh (nightly Miri, ~10 min)           because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "check-heap.sh"
+        ]
+      ],
+      "checks": [
+        "heap checks"
+      ],
+      "python_commands": []
+    },
+    "only-heap-dry": {
+      "exit": 0,
+      "plan": "== plan: only heap\n   [heap] scripts/check-heap.sh (nightly Miri, ~10 min)           because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-spec_examples": {
+      "exit": 0,
+      "plan": "== plan: only spec_examples\n   [spec_examples] spec examples                                  because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "test",
+          "-q",
+          "-p",
+          "benitoite",
+          "--test",
+          "spec_examples"
+        ]
+      ],
+      "checks": [
+        "spec examples"
+      ],
+      "python_commands": []
+    },
+    "only-spec_examples-dry": {
+      "exit": 0,
+      "plan": "== plan: only spec_examples\n   [spec_examples] spec examples                                  because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-reference_examples": {
+      "exit": 0,
+      "plan": "== plan: only reference_examples\n   [reference_examples] reference examples                        because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "test",
+          "-q",
+          "-p",
+          "benitoite",
+          "--test",
+          "reference_examples"
+        ]
+      ],
+      "checks": [
+        "reference examples"
+      ],
+      "python_commands": []
+    },
+    "only-reference_examples-dry": {
+      "exit": 0,
+      "plan": "== plan: only reference_examples\n   [reference_examples] reference examples                        because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-skill": {
+      "exit": 0,
+      "plan": "== plan: only skill\n   [skill] generated Skill files                                  because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "test",
+          "-q",
+          "-p",
+          "benitoite",
+          "--test",
+          "skill_docs"
+        ],
+        [
+          "cargo",
+          "run",
+          "-q",
+          "-p",
+          "benitoite",
+          "--example",
+          "gen_skill"
+        ]
+      ],
+      "checks": [
+        "skill docs",
+        "generated Skill files"
+      ],
+      "python_commands": []
+    },
+    "only-skill-dry": {
+      "exit": 0,
+      "plan": "== plan: only skill\n   [skill] generated Skill files                                  because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-spec_coverage": {
+      "exit": 0,
+      "plan": "== plan: only spec_coverage\n   [spec_coverage] spec coverage (self-test and tally)            because of --only",
+      "stops": [],
+      "calls": [],
+      "checks": [
+        "spec coverage tool",
+        "spec coverage"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py",
+          "--self-test"
+        ],
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py"
+        ]
+      ]
+    },
+    "only-spec_coverage-dry": {
+      "exit": 0,
+      "plan": "== plan: only spec_coverage\n   [spec_coverage] spec coverage (self-test and tally)            because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-skill_eval": {
+      "exit": 1,
+      "plan": "== plan: only skill_eval\n   [skill_eval] skill-eval self-test                              because of --only",
+      "stops": [],
+      "calls": [],
+      "checks": [
+        "skill-eval self-test"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/skill-eval/skill_eval.py",
+          "--self-test"
+        ]
+      ]
+    },
+    "only-skill_eval-dry": {
+      "exit": 0,
+      "plan": "== plan: only skill_eval\n   [skill_eval] skill-eval self-test                              because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-python": {
+      "exit": 1,
+      "plan": "== plan: only python\n   [python] Python tools compile, source-migrate and try-actions-migrate self-tests because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "build",
+          "-p",
+          "benitoite",
+          "--example",
+          "try_actions_inventory"
+        ]
+      ],
+      "checks": [
+        "Python tools compile",
+        "source-migrate self-test",
+        "try-actions inventory helper",
+        "try-actions-migrate self-test"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "-B",
+          "tools/source-migrate/test_source_migrate.py"
+        ],
+        [
+          "python3",
+          "-B",
+          "tools/try-actions-migrate/test_migrate.py"
+        ]
+      ]
+    },
+    "only-python-dry": {
+      "exit": 0,
+      "plan": "== plan: only python\n   [python] Python tools compile, source-migrate and try-actions-migrate self-tests because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "only-formal": {
+      "exit": 0,
+      "plan": "== plan: only formal\n   [formal] lake build in formal/                                 because of --only",
+      "stops": [],
+      "calls": [
+        [
+          "lake",
+          "build"
+        ]
+      ],
+      "checks": [
+        "formal (lake build)"
+      ],
+      "python_commands": []
+    },
+    "only-formal-dry": {
+      "exit": 0,
+      "plan": "== plan: only formal\n   [formal] lake build in formal/                                 because of --only\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "full": {
+      "exit": 1,
+      "plan": "== plan: full check (requested with --full)\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of full check\n   [default_lib] library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests) because of full check\n   [long] long tests (#[ignore = \"long: ...\"], ~15 min more)      because of full check\n   [release_stack] release measured-stack stage tests (~5 min more) because of full check\n   [licenses] licenses                                            because of full check\n   [spec_examples] spec examples                                  because of full check\n   [reference_examples] reference examples                        because of full check\n   [skill] generated Skill files                                  because of full check\n   [spec_coverage] spec coverage (self-test and tally)            because of full check\n   [skill_eval] skill-eval self-test                              because of full check\n   [python] Python tools compile, source-migrate and try-actions-migrate self-tests because of full check",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,alloc-stats"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--tests",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,gc-stress",
+          "--lib",
+          "--tests",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "test",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "run",
+          "-q",
+          "-p",
+          "benitoite",
+          "--example",
+          "gen_skill"
+        ]
+      ],
+      "checks": [
+        "format",
+        "lint (mark-sweep)",
+        "lint (default configuration)",
+        "test (mark-sweep)",
+        "gc-stress (mark-sweep)",
+        "leftover placeholder allows",
+        "unsafe_code locations",
+        "lib tests (default configuration)",
+        "generated Skill files",
+        "spec coverage tool",
+        "spec coverage",
+        "skill-eval self-test"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py",
+          "--self-test"
+        ],
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py"
+        ],
+        [
+          "python3",
+          "tools/skill-eval/skill_eval.py",
+          "--self-test"
+        ]
+      ]
+    },
+    "full-dry": {
+      "exit": 0,
+      "plan": "== plan: full check (requested with --full)\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of full check\n   [default_lib] library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests) because of full check\n   [long] long tests (#[ignore = \"long: ...\"], ~15 min more)      because of full check\n   [release_stack] release measured-stack stage tests (~5 min more) because of full check\n   [licenses] licenses                                            because of full check\n   [spec_examples] spec examples                                  because of full check\n   [reference_examples] reference examples                        because of full check\n   [skill] generated Skill files                                  because of full check\n   [spec_coverage] spec coverage (self-test and tally)            because of full check\n   [skill_eval] skill-eval self-test                              because of full check\n   [python] Python tools compile, source-migrate and try-actions-migrate self-tests because of full check\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-documents": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))\n   nothing to check: only documents changed\nall checks passed\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-documents-dry": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))\n   nothing to check: only documents changed\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-rust": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of crates/benitoite/src/new.rs",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,alloc-stats"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--tests",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify",
+          "--"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,gc-stress",
+          "--lib",
+          "--tests",
+          "--"
+        ],
+        [
+          "cargo",
+          "run",
+          "-q",
+          "-p",
+          "benitoite",
+          "--example",
+          "gen_skill"
+        ]
+      ],
+      "checks": [
+        "format",
+        "lint (mark-sweep)",
+        "lint (default configuration)",
+        "test (mark-sweep)",
+        "gc-stress (mark-sweep)",
+        "leftover placeholder allows",
+        "unsafe_code locations",
+        "generated Skill files",
+        "spec coverage tool",
+        "spec coverage"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py",
+          "--self-test"
+        ],
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py"
+        ]
+      ]
+    },
+    "auto-rust-dry": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of crates/benitoite/src/new.rs\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-heap": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of crates/benitoite/src/runtime/heap/new.rs\n   [default_lib] library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests) because of crates/benitoite/src/runtime/heap/new.rs\n   [long] long tests (#[ignore = \"long: ...\"], ~15 min more)      because of crates/benitoite/src/runtime/heap/new.rs\n   [heap] scripts/check-heap.sh (nightly Miri, ~10 min)           because of crates/benitoite/src/runtime/heap/new.rs",
+      "stops": [],
+      "calls": [
+        [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,alloc-stats"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--tests",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep,heap-verify,gc-stress",
+          "--lib",
+          "--tests",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "test",
+          "-p",
+          "benitoite",
+          "--lib",
+          "--no-default-features",
+          "--features",
+          "gc-mark-sweep"
+        ],
+        [
+          "cargo",
+          "run",
+          "-q",
+          "-p",
+          "benitoite",
+          "--example",
+          "gen_skill"
+        ],
+        [
+          "check-heap.sh"
+        ]
+      ],
+      "checks": [
+        "format",
+        "lint (mark-sweep)",
+        "lint (default configuration)",
+        "test (mark-sweep)",
+        "gc-stress (mark-sweep)",
+        "leftover placeholder allows",
+        "unsafe_code locations",
+        "lib tests (default configuration)",
+        "generated Skill files",
+        "spec coverage tool",
+        "spec coverage",
+        "heap checks"
+      ],
+      "python_commands": [
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py",
+          "--self-test"
+        ],
+        [
+          "python3",
+          "tools/spec-coverage/spec_coverage.py"
+        ]
+      ]
+    },
+    "auto-heap-dry": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))\n   [rust] format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill because of crates/benitoite/src/runtime/heap/new.rs\n   [default_lib] library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests) because of crates/benitoite/src/runtime/heap/new.rs\n   [long] long tests (#[ignore = \"long: ...\"], ~15 min more)      because of crates/benitoite/src/runtime/heap/new.rs\n   [heap] scripts/check-heap.sh (nightly Miri, ~10 min)           because of crates/benitoite/src/runtime/heap/new.rs\n",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-unclassified": {
+      "exit": 3,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))",
+      "stops": [
+        "== stop: files outside every kind: unknown.input"
+      ],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-unclassified-dry": {
+      "exit": 0,
+      "plan": "== plan: selected checks against <BASE> (1 changed file(s))",
+      "stops": [
+        "== stop: files outside every kind: unknown.input"
+      ],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-missing-base": {
+      "exit": 1,
+      "plan": "",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    },
+    "auto-missing-base-dry": {
+      "exit": 1,
+      "plan": "",
+      "stops": [],
+      "calls": [],
+      "checks": [],
+      "python_commands": []
+    }
+  }
+}

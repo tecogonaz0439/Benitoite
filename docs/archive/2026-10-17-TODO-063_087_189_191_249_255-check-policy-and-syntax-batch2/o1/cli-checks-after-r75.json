@@ -1,0 +1,37 @@
+[
+  {
+    "name": "cli-after-r75",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "cli_process",
+      "--test",
+      "fmt_command",
+      "--test",
+      "http_descriptor_exhaustion",
+      "--test",
+      "http_exchange_release"
+    ],
+    "exit": 0,
+    "seconds": 9.797
+  },
+  {
+    "name": "interrupt-others-after-r75",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "interrupt_process",
+      "--",
+      "--skip",
+      "sigint_at_sort_end_"
+    ],
+    "exit": 0,
+    "seconds": 1.881
+  }
+]

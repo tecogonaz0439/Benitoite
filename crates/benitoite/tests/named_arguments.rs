@@ -329,38 +329,55 @@ fn class_implementations_require_declaration_names_in_order() {
 
 #[test]
 fn operations_use_declared_names_and_handlers_bind_independent_local_names() {
-    for (arguments, expected) in [
-        ("right: 2, left: 1", vec![]),
-        ("localRight: 2, left: 1", vec![C::E0451]),
-        ("right: false, left: 1", vec![C::E0401]),
-        ("left: 1", vec![C::E0453]),
-        ("right: 2, right: 1", vec![C::E0452]),
+    for (imports, signature, setup, callee, clause) in [
+        (
+            "",
+            "function select(left: Integer, right: Integer) -> Integer",
+            "",
+            "select",
+            "resume(localLeft * 10 + localRight)",
+        ),
+        (
+            "import Benitoite.Trait\n",
+            "function select[T: Trait.Show](left: T, right: T) -> Integer",
+            "bind target: function(left: Integer, right: Integer) -> Integer uses Select <- select\n",
+            "target",
+            "resume(String.characterCount(Trait.Show.show(localLeft)) + String.characterCount(Trait.Show.show(localRight)))",
+        ),
     ] {
-        let source = format!(
-            "effect Select\n function select(left: Integer, right: Integer) -> Integer\nend effect\nfunction main() -> Unit\n bind answer <- handle select({arguments}) with\n case select(localLeft, localRight) -> resume(localLeft * 10 + localRight)\n end handle\n ()\nend function"
-        );
-        let result = pipeline::check_text(
-            "named-operations.bnt",
-            source.as_bytes(),
-            CheckOptions {
-                require_main: true,
-                deny_warnings: false,
-            },
-        );
-        assert_eq!(
-            result
-                .diagnostics
-                .iter()
-                .filter(|d| d.is_error())
-                .filter_map(|d| d.code)
-                .collect::<Vec<_>>(),
-            expected,
-            "{arguments}: {:?}",
-            result.diagnostics
-        );
-        assert_eq!(result.program.is_some(), expected.is_empty());
-        if let Some(p) = result.program {
-            assert!(pipeline::desugar_checked(&p).is_ok());
+        for (arguments, expected) in [
+            ("right: 2, left: 1", vec![]),
+            ("localRight: 2, left: 1", vec![C::E0451]),
+            ("right: false, left: 1", vec![C::E0401]),
+            ("left: 1", vec![C::E0453]),
+            ("right: 2, right: 1", vec![C::E0452]),
+        ] {
+            let source = format!(
+                "{imports}effect Select\n {signature}\nend effect\nfunction main() -> Unit\n {setup}bind answer <- handle {callee}({arguments}) with\n case select(localLeft, localRight) -> {clause}\n end handle\n ()\nend function"
+            );
+            let result = pipeline::check_text(
+                "named-operations.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: true,
+                    deny_warnings: false,
+                },
+            );
+            assert_eq!(
+                result
+                    .diagnostics
+                    .iter()
+                    .filter(|d| d.is_error())
+                    .filter_map(|d| d.code)
+                    .collect::<Vec<_>>(),
+                expected,
+                "{arguments}: {:?}",
+                result.diagnostics
+            );
+            assert_eq!(result.program.is_some(), expected.is_empty());
+            if let Some(p) = result.program {
+                assert!(pipeline::desugar_checked(&p).is_ok());
+            }
         }
     }
 }

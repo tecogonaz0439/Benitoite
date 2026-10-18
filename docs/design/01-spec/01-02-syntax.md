@@ -451,7 +451,7 @@ end function
 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
 
 ```text
-language "0.0.7"
+language "0.0.8"
 
 dependency Textkit
   path "../packages/textkit"
@@ -639,7 +639,7 @@ WithBind    = LowerIdent "=" Expr .
 
 ### パターンの拡張（初回リリース版）
 
-【決定】`match` の分岐には、コンマで区切って複数のパターン（選択肢）を並べ、パターンの後に `if 条件` のガードを書ける（`case 1, 2 -> …`、`case n if n > 0 -> …`）。パターンには、範囲とリストのパターンを書ける。意味と網羅性の規則は[代数的データ型とパターンマッチ](01-05-data-types.md)の「パターンの拡張（初回リリース版）」で定める。
+【決定】`match` の分岐には、コンマで区切って複数のパターン（選択肢）を並べ、パターンの後に `if 条件` のガードを書ける（`case 1, 2 -> …`、`case n if n > 0 -> …`）。パターンには、範囲とリストのパターンを書ける。意味と網羅性の規則は[代数的データ型とパターンマッチ](01-05-data-types.md)の「パターンの拡張（初回リリース版）」で定める。文字の全域を覆う範囲は、`bind`・`shadow` の必ず照合するパターンの一部にも書ける。束縛の文にコンマの選択肢は書けない。
 
 ```text
 Arm         = "case" Pattern { "," Pattern } [ "if" Expr ] "->" ArmBody .
@@ -692,10 +692,14 @@ HandleExpr  = "handle" Body "with" [ NL ] HandleArm { NL HandleArm } [ NL ] "end
 HandleArm   = "case" OpName "(" CommaList(OpParam) ")" "->" ArmBody .
 OpName      = { UpperIdent "." } LowerIdent .
 OpParam     = LowerIdent | "_" .
-Uses        = "uses" QualUpper { "," QualUpper } .
+Uses        = "uses" EffectRef { "," EffectRef } .
+EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
 ```
 
-- 操作の宣言には `uses` を書けない。操作の型パラメータの並びに、エフェクト変数と型構成子を表す型パラメータ（`F[_]`）は宣言できない。操作の型パラメータの制約には、組み込みの制約（`equality`・`key`）だけを書ける。
+- 標準の `Failure.Fail[E]` だけが値の型引数を一つ取る。`import Benitoite.Unofficial.Failure` で明示的に取り込み、`uses Failure.Fail[E]` と書く。一般の `effect L[E]` は宣言できない。他のエフェクトへの型引数と、Fail の型引数の省略・過不足は E0513 とする。
+- 二つ目以降の型引数付きエフェクト参照は、モジュール名で修飾する。修飾のない `uses A, List[Integer]` は、従来どおり関数型を括弧で囲む E0209 の修正案を出す。
+- Fail の節は `case Failure.raise(error) -> ...` と書く。節から handle 全体の結果を返し、`resume` は書けない（E0516）。普通の操作の節と混ぜた場合は E0518 とし、handle を入れ子にする修正案を示す。
+- 操作の宣言には `uses` を書けない。操作の型パラメータの並びに、エフェクト変数と型構成子を表す型パラメータ（`F[_]`）は宣言できない。操作の値の型パラメータには、組み込みの制約（`equality`・`key`）と型クラスの制約を書ける。複数の制約は関数と同じく `&` でつなぐ。
 - `handle` の本体は、節の並びを始める `with` までである。節の本体は、`match` の分岐と同じく、次の `case` か `end handle` までであり、節の値は最後の式の値である。
 - `case` の後には、操作の名前を、式の中で操作を呼ぶときと同じ形で書く。同じモジュールで宣言したエフェクトの操作は修飾せずに（`case write(message) ->`）、ほかのモジュールの操作はモジュールの名前で修飾して（`case Logging.write(message) ->`、`case Console.writeLine(s) ->`）書く。続けて、引数の数だけ名前か `_` を並べる。パターンは書けない。一つの `handle` に、同じ操作の節を二つ書くと誤りとする。
 - `resume` は、`handle` の節の中に直接書く。節の中のラムダの中、`lazy` の本体の中、`match` のガードの中、プレースホルダを含む呼び出しの呼ばれる関数とプレースホルダでない引数の中、節の外に書くと誤りとする。ガードやプレースホルダの引数の中に書いた `handle` の節の中には、その節の `resume` を書ける。
@@ -900,7 +904,8 @@ FnTypeParam = "effect" UpperIdent
 Constraint  = QualUpper | LowerIdent .
 TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 Param       = LowerIdent ":" Type .
-Uses        = "uses" QualUpper { "," QualUpper } .
+Uses        = "uses" EffectRef { "," EffectRef } .
+EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
 
 (* 定数の宣言 *)
 ConstDecl   = "const" LowerIdent ":" Type "=" Expr .

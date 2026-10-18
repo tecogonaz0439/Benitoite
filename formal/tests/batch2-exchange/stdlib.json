@@ -1,0 +1,37 @@
+{
+  "version": 4,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-batch2",
+      "functions": [
+        {
+          "name": "stdlib:identity",
+          "header": {
+            "tparams": [],
+            "neffs": 0,
+            "names": [
+              "value"
+            ],
+            "params": [
+              {
+                "base": {
+                  "name": "Integer"
+                }
+              }
+            ],
+            "ret": {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            "eff": [],
+            "effParams": []
+          },
+          "dictParams": []
+        }
+      ],
+      "impls": []
+    }
+  ]
+}

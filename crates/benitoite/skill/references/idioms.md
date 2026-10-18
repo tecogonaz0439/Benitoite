@@ -111,6 +111,23 @@ not a port: http
 
 Use `Process.exit(code)` (effect `Process.Exit`) only when a specific exit code is needed.
 
+Import `Benitoite.Unofficial.Failure` to use typed failures. `Failure.fromResult(result)`
+returns Ok's value or raises the original error. `Failure.toResult(body)` calls body
+once and returns `Result[T, E]`, keeping effects other than `Failure.Fail[E]`.
+The callback's remaining row must exclude Fail; this condition comes from the
+signature. Neither conversion requires Show or equality. Annotate the result binding
+or callback type if E cannot be inferred; function calls have no explicit type arguments.
+
+Place toResult outside List.map to stop the entire map at the first raised failure.
+Its non-resumable clause skips the remaining computation and releases nested with
+scopes from inner to outer, once each. Release failures remain runtime errors.
+A normal return or try from the callback returns to toResult, which wraps that value
+in Ok, including a returned Result. Put toResult inside each child task to return a
+Result through Task.all/allOk; a child cannot use a parent's non-resumable handler
+(R0502). Handle a failure inside a lazy body to cache a Result; an unhandled Fail
+makes that body impure (E0503). The conversions do not catch die, Process.Exit,
+runtime errors, resource limits, interruption, cancellation, or external traps.
+
 ## Calls, callback contracts, holes, and pipes
 
 For an ordinary call with two or more parameters, label every argument with its declared name. A one-parameter call may omit its label; a zero-parameter call uses `f()`. Labels can appear in any order. The callee is evaluated first, then each argument once in source order.
@@ -581,13 +598,15 @@ end function
 total 12
 ```
 
+Character ranges covering all Unicode scalars need no catch-all: use `case '\u{0}'..'\u{10ffff}' ->`, or split at `'\u{d7ff}'` and `'\u{e000}'`. This also applies inside records, constructors and lists, and to a full-range `bind` pattern. A following catch-all is unreachable (`E0602`); a redundant comma alternative uses `E0608`. Guards do not establish coverage, and Integer ranges still require a catch-all. A non-exhaustive character match reports a concrete missing scalar, such as `'\u{0}'` when only `'a'` is covered.
+
 ## Records and data types
 
 A record has named fields. Read a field with `Type.field(value)`; make a changed copy with `Type(..value, field: new)`. A data type lists its constructors, which are always written with the type name.
 
 Use the argument-free `@extensible` attribute on a data or record declaration when external patterns must also cover future shapes. Put it before `public` or `public(package)` if present. Inside its defining package, listing the current constructors can be exhaustive. Outside it, include an unguarded `case other ->` or `case _ ->`; a known constructor named `Other` does not cover future shapes. Guards do not count toward exhaustiveness. The rule applies through aliases and inside `Result`, `Option`, lists, and record fields. The package boundary is the same as for `public(package)`; a different module in the same package is still internal.
 
-The four standard failure types `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError` have this attribute. `Result` and `Option` remain closed; `Result.Error(error)` binds the whole error without decomposing it. For the two ParseError records, prefer `Json.ParseError.message(error)` or `Csv.ParseError.message(error)` to destructuring. A record pattern with `..` covers only the current shape, so an external `match` needs another variable or `_` branch (`E0601`), and a destructuring `bind` or `shadow` is rejected (`E0607`). Construction, updates, and getters still use the declared fields. The attribute does not promise compatibility for adding record fields.
+The standard failure types `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, `Json.Codec.ConversionError`, and `Csv.ParseError` have this attribute. `Result` and `Option` remain closed; `Result.Error(error)` binds the whole error without decomposing it. For the two ParseError records, prefer `Json.ParseError.message(error)` or `Csv.ParseError.message(error)` to destructuring. A record pattern with `..` covers only the current shape, so an external `match` needs another variable or `_` branch (`E0601`), and a destructuring `bind` or `shadow` is rejected (`E0607`). Construction, updates, and getters still use the declared fields. The attribute does not promise compatibility for adding record fields.
 
 Adding constructors to extensible data preserves external pattern exhaustiveness, but can change results, including by reclassifying a value formerly represented by `Other`. Removing or renaming constructors, or changing their fields, is outside this guarantee. Adding the attribute to a closed type can reject existing external patterns; removing it commits to a closed set and can make a branch unreachable. It does not let callers add constructors or change runtime tags, ABI, equality, or key constraints. WIT matching remains exact; the attribute does not allow unknown external tags.
 

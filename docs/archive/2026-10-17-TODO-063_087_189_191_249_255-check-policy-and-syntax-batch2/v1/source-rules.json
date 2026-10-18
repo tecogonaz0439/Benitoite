@@ -1,0 +1,9 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "set -euo pipefail\ncheck_placeholder_allows() {\n    local source_file source_files grep_status\n    local failed=0\n\n    source_files=\"$(grep -rlF --include='*.rs' '#![allow(clippy::todo, unused_variables)]' crates/benitoite/src/)\" || {\n        grep_status=$?\n        [ \"$grep_status\" -eq 1 ] || return 1\n    }\n    while IFS= read -r source_file; do\n        [ -n \"$source_file\" ] || continue\n        if grep -Fq 'todo!(' \"$source_file\"; then\n            continue\n        else\n            grep_status=$?\n            [ \"$grep_status\" -eq 1 ] || return 1\n            printf 'leftover placeholder allow: %s\\n' \"$source_file\" >&2\n            failed=1\n        fi\n    done <<< \"$source_files\"\n\n    return \"$failed\"\n}\n\n# 複数行の属性と追跡していないファイルも調べるため、属性の形によらず単語で探す。\ncheck_unsafe_allows() {\n    local source_file source_files grep_status\n    local failed=0\n\n    source_files=\"$(grep -rlw --include='*.rs' unsafe_code crates/)\" || {\n        grep_status=$?\n        [ \"$grep_status\" -eq 1 ] || return 1\n    }\n    while IFS= read -r source_file; do\n        [ -n \"$source_file\" ] || continue\n        case \"$source_file\" in\n            crates/benitoite/src/runtime/heap/core.rs|crates/benitoite/tests/call_allocations.rs)\n                continue ;;\n            crates/benitoite/src/runtime/heap/core/*/*)\n                ;;\n            crates/benitoite/src/runtime/heap/core/*.rs)\n                continue ;;\n        esac\n        printf 'unsafe_code outside the allowed files: %s\\n' \"$source_file\" >&2\n        grep -Hnw -- unsafe_code \"$source_file\" >&2 || failed=1\n        failed=1\n    done <<< \"$source_files\"\n\n    return \"$failed\"\n}\n\n# 生成物（Skill の references と bundle.rs）を作り直し、追跡しているファイルが変わらないことを確かめる。\n\ncheck_placeholder_allows\ncheck_unsafe_allows\n"
+  ],
+  "exit": 0,
+  "seconds": 0.145
+}

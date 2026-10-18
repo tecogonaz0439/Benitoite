@@ -1392,14 +1392,14 @@ fn check_does_not_run_user_code_or_write_result_lines() {
 fn check_report_and_execution_select_the_same_entries_and_functions() {
     use serde_json::{Value, json};
     let dir = Directory::new("selection-parity");
-    dir.write("suite/package.bnt", "language \"0.0.7\"\n");
+    dir.write("suite/package.bnt", "language \"0.0.8\"\n");
     dir.write("suite/Lib/Text.bnt", "public function message() -> String\n  return \"hello\"\nend function\n@test\nfunction libTest() -> Unit\nend function\n");
     dir.write("suite/tests.bnt", "import Lib.Text\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n");
     dir.write(
         "suite/none.bnt",
         "function helper() -> Unit\nend function\n",
     );
-    dir.write("suite/deps/package.bnt", "language \"0.0.7\"\n");
+    dir.write("suite/deps/package.bnt", "language \"0.0.8\"\n");
     dir.write(
         "suite/deps/tests.bnt",
         "@test\nfunction packageTest() -> Unit\nend function\n",
@@ -1902,7 +1902,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.7\"\n");
+    dir.write("package.bnt", "language \"0.0.8\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -1913,7 +1913,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.7\"\npackage Textkit\nend package\n",
+        "language \"0.0.8\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -2302,5 +2302,109 @@ fn check_report_preserves_warning_promotion_and_program_shell_scope() {
     assert_eq!(
         report["aggregateEffects"]["expanded"],
         serde_json::json!([])
+    );
+}
+
+// 関門: @test の未処理の Fail と、処理済みの非実行報告を CLI で区別する。
+// 既存の IO の表は型付き Fail の脱落を検出せず、本番の差し込み口は不要である。
+#[test]
+fn failure_entry_contracts_are_checked_before_test_execution() {
+    use serde_json::{Value, json};
+    let dir = Directory::new("failure-entry");
+    let rejected = dir.write("unhandled.bnt", "import Benitoite.Unofficial.Failure\n@test\nfunction unhandled() -> Unit uses Failure.Fail[String]\n  Failure.raise(\"stop\")\nend function\n");
+    for options in [vec!["--diagnostics=json"], vec!["--check", "--report=json"]] {
+        let mut args = options.clone();
+        args.push(&rejected);
+        let out = run(&dir, &args);
+        assert_eq!(out.exit, 2, "{} {}", out.stdout, out.stderr);
+        if options.contains(&"--check") {
+            let report: Value = serde_json::from_str(&out.stdout).unwrap();
+            assert_eq!(report["schemaVersion"], 1);
+            assert_eq!(report["kind"], "testCheckReport");
+            assert_eq!(report["status"], "checkError");
+            assert_eq!(report["executed"], false);
+            assert_eq!(report["aggregateEffects"], Value::Null);
+            assert_eq!(report["diagnostics"][0]["code"], "E0506");
+            assert_eq!(out.stderr, "");
+        } else {
+            let summary: Value = serde_json::from_str(&out.stdout).unwrap();
+            assert_eq!(summary["kind"], "testSummary");
+            assert_eq!(summary["filesNotRun"], 1);
+            assert_eq!(summary["passed"], 0);
+            assert_eq!(summary["failed"], 0);
+            let diagnostic: Value = serde_json::from_str(&out.stderr).unwrap();
+            assert_eq!(diagnostic["code"], "E0506");
+        }
+    }
+    let accepted = dir.write("handled.bnt", "import Benitoite.Unofficial.Failure\n@test\nfunction handled() -> Unit uses Assert.Check\n  bind result: Result[Unit, String] <- Failure.toResult(body: lambda() return Failure.raise(\"stop\") end lambda)\n  Assert.fail(\"must not execute\")\nend function\n");
+    let out = run(&dir, &["--check", "--report=json", &accepted]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert_eq!(out.stderr, "");
+    let report: Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["schemaVersion"], 1);
+    assert_eq!(report["kind"], "testCheckReport");
+    assert_eq!(report["executed"], false);
+    assert_eq!(
+        report["targets"][0]["tests"][0]["effects"]["expanded"],
+        json!(["Assert.Check"])
+    );
+    assert_eq!(
+        report["aggregateEffects"]["expanded"],
+        json!(["Assert.Check"])
+    );
+}
+
+// 作成時の関門: property_library が守る入力と候補の規則と分け、
+// 新しい通常のソースが @test 一件の結果と非実行の検査へ接続することを守る。
+#[test]
+fn property_results_use_ordinary_test_reports_and_check_never_runs_callbacks() {
+    use serde_json::{Value, json};
+    let dir = Directory::new("property");
+    let file = dir.write(
+        "property.bnt",
+        r#"
+import Benitoite.Unofficial.Test.Property
+@test
+function falsified() -> Result[Unit, String]
+  bind result <- Property.check(config: Property.Config(seed: 17, trials: 1, size: 0, maxShrinks: 0), gen: Property.constant(8), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("bad:" + Integer.toString(value)) end lambda)
+  return match result with
+    case Result.Ok(_) -> Result.Ok(())
+    case Result.Error(failure) -> Result.Error(Property.formatFailure(failure: failure, show: lambda(value) return Integer.toString(value) end lambda))
+  end match
+end function
+@test
+function crashes() -> Unit
+  bind result <- Property.check(config: Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 1), gen: Property.Gen(run: lambda(generator, size) return Pair(1 div size, generator) end lambda), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("not reached") end lambda)
+  return ()
+end function
+"#,
+    );
+    let inspected = run(&dir, &["--check", "--diagnostics=json", &file]);
+    assert_eq!(inspected.exit, 0, "{}", inspected.stderr);
+    assert!(inspected.stdout.is_empty());
+    assert!(inspected.stderr.is_empty());
+    let executed = run(&dir, &["--diagnostics=json", &file]);
+    assert_eq!(executed.exit, 1, "{}", executed.stderr);
+    assert!(executed.stderr.is_empty(), "{}", executed.stderr);
+    let lines: Vec<Value> = executed
+        .stdout
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(lines.len(), 3, "{}", executed.stdout);
+    assert_eq!(lines[0]["outcome"], "failed");
+    assert_eq!(lines[0]["failure"]["reason"], "error");
+    assert!(
+        lines[0]["failure"]["message"]
+            .as_str()
+            .unwrap()
+            .contains("original: 8\noriginal message: bad:8\nreduced: 8\nmessage: bad:8")
+    );
+    assert_eq!(lines[1]["outcome"], "failed");
+    assert_eq!(lines[1]["failure"]["reason"], "runtime");
+    assert_eq!(lines[1]["failure"]["code"], "R0101");
+    assert_eq!(
+        lines[2],
+        json!({"kind":"testSummary","passed":0,"failed":2,"filesNotRun":0,"interrupted":false})
     );
 }

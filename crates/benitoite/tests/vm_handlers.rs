@@ -3,6 +3,12 @@
 // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::indexing_slicing)]
 
+#[path = "operation_dictionaries/mod.rs"]
+mod operation_dictionaries;
+
+#[path = "typed_failure/mod.rs"]
+mod typed_failure;
+
 use benitoite::runtime::heap::HeapConfig;
 use benitoite::runtime::io::services::RunInput;
 use benitoite::vm::{ExecMode, VmConfig};
@@ -14,8 +20,43 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
     use benitoite::pipeline::{self, CheckOptions};
     use benitoite::runtime::run::{self, NoInterrupt, OutputTarget, RunEnv, StdinSource};
     use std::sync::{Arc, Mutex};
-    let declarations = "effect Test\n function ask(n: Integer) -> Integer\nend effect\n";
+    let declarations = "import Benitoite.Unofficial.Failure\neffect Test\n function ask(n: Integer) -> Integer\nend effect\n";
     let cases = [
+        (
+            "constrained operation dictionaries",
+            "effect Render\n function render[T: Trait.Show](value: T) -> String\nend effect\n",
+            "handle\n String.characterCount(render(42)) + String.characterCount(render(\"abc\"))\nwith\n case render(value) -> resume(Trait.Show.show(value))\nend handle",
+            7,
+            None,
+        ),
+        (
+            "constrained operation value",
+            "effect Render\n function render[T: Trait.Show](value: T) -> String\nend effect\n",
+            "handle\n bind show: function(value: Integer) -> String uses Render <- render\n String.characterCount(show(42))\nwith\n case render(value) -> resume(Trait.Show.show(value))\nend handle",
+            2,
+            None,
+        ),
+        (
+            "multiple operation classes",
+            "effect Render\n function render[T: Trait.Show & Trait.Order](value: T) -> String\nend effect\n",
+            "handle\n String.characterCount(render(42)) + String.characterCount(render(\"abc\"))\nwith\n case render(value) ->\n if Trait.Order.compare(x: value, y: value) = Trait.Ordering.Equal then resume(Trait.Show.show(value)) else resume(\"bad\") end if\nend handle",
+            7,
+            None,
+        ),
+        (
+            "operation superclass dictionary",
+            "effect Combine\n function combine[T: Trait.Monoid](left: T, right: T) -> T\nend effect\n",
+            "String.characterCount(handle\n combine(left: \"ab\", right: \"c\")\nwith\n case combine(left, right) -> resume(Trait.Semigroup.combine(x: left, y: right))\nend handle)",
+            3,
+            None,
+        ),
+        (
+            "operation dictionary with heap captures",
+            "effect Render\n function render[T: Trait.Show](value: T) -> String\nend effect\n",
+            "handle\n String.characterCount(render([42, 7])) + String.characterCount(render([8]))\nwith\n case render(value) ->\n bind show <- lambda() return Trait.Show.show(value) end lambda\n bind pad <- String.repeat(s: \"x\", n: 100)\n bind rest <- resume(show())\n rest + String.characterCount(show()) + String.characterCount(pad)\nend handle",
+            220,
+            None,
+        ),
         (
             "call result across handle",
             "function word() -> String\n return \"hello\" + \"!\"\nend function\nfunction across() -> Integer\n bind text <- word()\n bind n <- handle\n ask(1)\n with\n case ask(i) -> resume(i)\n end handle\n return String.characterCount(text) + n\nend function\n",
@@ -150,9 +191,32 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
             None,
         ),
     ];
-    for (name, extra, expression, expected, failure) in cases {
-        let source = format!(
-            "{declarations}\n{extra}\nfunction main() -> Result[Unit, String]\n bind answer <- {expression}\n return if answer = {expected} then Result.Ok(()) else Result.Error(\"wrong value\") end if\nend function\n"
+    for (name, extra, expression, expected, failure, wrap) in
+        cases
+            .into_iter()
+            .map(|(name, extra, expression, expected, failure)| {
+                (name, extra, expression, expected, failure, false)
+            })
+            .chain(operation_dictionaries::CASES.iter().map(
+                |&(name, extra, expression, expected)| {
+                    (name, extra, expression, expected, None, true)
+                },
+            ))
+            .chain(typed_failure::CASES.iter().map(
+                |&(name, extra, expression, expected, failure)| {
+                    (name, extra, expression, expected, failure, true)
+                },
+            ))
+    {
+        let expression = if wrap {
+            format!("if true then\n{expression}\nelse 0 end if")
+        } else {
+            expression.to_owned()
+        };
+        let source = operation_dictionaries::source(
+            &format!("{declarations}\n{extra}"),
+            &expression,
+            expected,
         );
         let checked = pipeline::check_text(
             "handlers.bnt",
@@ -169,7 +233,10 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
             checked.diagnostics
         );
         let core = pipeline::desugar_checked(&checked.program.unwrap()).unwrap();
+        let errors = benitoite::ir::check::check_program(&core);
+        assert!(errors.is_empty(), "{name}: {errors:?}");
         let p = pipeline::compile(&core, checked.sources).unwrap();
+        assert!(benitoite::bytecode::verify::verify(&p).is_ok(), "{name}");
         for mode in [ExecMode::Direct, ExecMode::Request] {
             let env = RunEnv {
                 input: RunInput {
@@ -202,5 +269,97 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
                 assert!(end.main_error.is_none(), "{name}: {end:?}");
             }
         }
+    }
+}
+
+// 関門: 解放を待つ安全点を越えて元のエラーを保ち、内側から一度ずつ転送する。
+// IO の順序のテストとは別に、局所の heap-verify/gc-stress でもこの経路を検査する。
+#[test]
+fn typed_failure_retains_error_across_nested_writer_release() {
+    use benitoite::pipeline::{self, CheckOptions};
+    use benitoite::runtime::run::{self, NoInterrupt, OutputTarget, RunEnv, StdinSource};
+    use std::sync::{Arc, Mutex};
+    for (action, expected) in [
+        (
+            "bind _ <- Failure.raise(error)\n Console.writeLine(\"unreachable\")\n Result.Ok(1 div 0)",
+            "Result.Error(String.repeat(s: \"original\", n: 20))",
+        ),
+        ("return Result.Ok(7)", "Result.Ok(Result.Ok(7))"),
+        (
+            "bind _ <- try Result.Error(\"early\") or return\n Result.Ok(1 div 0)",
+            "Result.Ok(Result.Error(\"early\"))",
+        ),
+    ] {
+        let source = r#"
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.IO.Console
+function main() -> Result[Unit, String] uses File.Write, State, Process.Exit, Console.Write
+ bind caught: Result[Result[Integer, String], String] <- Failure.toResult(body: lambda()
+  return with outer = try File.openWriter(path: "release.txt", mode: File.WriteMode.Append) or die do
+   bind _ <- try File.write(writer: outer, text: "outer") or die
+   with inner = try File.openWriter(path: "release.txt", mode: File.WriteMode.Append) or die do
+    bind _ <- try File.write(writer: inner, text: "inner") or die
+    bind error <- String.repeat(s: "original", n: 20)
+    ACTION
+   end with
+  end with
+ end lambda)
+ return if caught = EXPECTED then Result.Ok(()) else Result.Error("wrong error") end if
+end function
+"#.replace("ACTION", action).replace("EXPECTED", expected);
+        let checked = pipeline::check_text(
+            "release.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        let core = pipeline::desugar_checked(checked.program.as_ref().unwrap()).unwrap();
+        assert!(benitoite::ir::check::check_program(&core).is_empty());
+        let program = pipeline::compile(&core, checked.sources).unwrap();
+        let directory = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join(format!("../../target/f2-release-{}", std::process::id()));
+        std::fs::create_dir(&directory).unwrap();
+        for mode in [ExecMode::Direct, ExecMode::Request] {
+            let stdout = Arc::new(Mutex::new(Vec::new()));
+            let stderr = Arc::new(Mutex::new(Vec::new()));
+            let end = run::run_program(
+                &program,
+                RunEnv {
+                    input: RunInput {
+                        arguments: vec![],
+                        working_directory: directory.clone(),
+                        script_directory: directory.clone(),
+                    },
+                    stdin: StdinSource::Empty,
+                    stdout: OutputTarget::Capture(Arc::clone(&stdout)),
+                    stderr: OutputTarget::Capture(Arc::clone(&stderr)),
+                    interrupt: Box::new(NoInterrupt),
+                    parts: None,
+                    mode,
+                    vm: VmConfig::default(),
+                    heap: HeapConfig {
+                        stress: true,
+                        ..HeapConfig::default()
+                    },
+                    dev_panic_after_first_write: false,
+                },
+            );
+            assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+            assert!(end.main_error.is_none(), "{end:?}");
+            assert!(end.reports.is_empty(), "{end:?}");
+            assert!(stdout.lock().unwrap().is_empty());
+            assert!(stderr.lock().unwrap().is_empty());
+            assert_eq!(
+                std::fs::read(directory.join("release.txt")).unwrap(),
+                b"innerouter"
+            );
+            std::fs::remove_file(directory.join("release.txt")).unwrap();
+        }
+        std::fs::remove_dir(directory).unwrap();
     }
 }

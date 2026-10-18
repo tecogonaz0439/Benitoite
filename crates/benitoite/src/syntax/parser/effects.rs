@@ -70,21 +70,6 @@ fn push_op(p: &mut Parser, depth: u32, out: &mut Vec<OpSig>) -> PResult<()> {
         );
         false
     });
-    for param in &mut sig.type_params {
-        param.constraints.retain(|constraint| {
-            let ConstraintRef::Class(class) = constraint else {
-                return true;
-            };
-            p.suppressed = false;
-            p.report(
-                DiagBuilder::new(DiagCode::E0510)
-                    .primary(class.span)
-                    .help("trait_constraint")
-                    .build(),
-            );
-            false
-        });
-    }
     if let Some(uses) = sig.uses {
         p.suppressed = false;
         p.report(
@@ -608,62 +593,58 @@ mod tests {
         e
     }
     #[test]
-    fn operation_type_parameters_reject_constructors_and_traits_but_keep_builtin_bounds() {
-        for (sig, key, location) in [
-            ("make[F[_]]() -> F[Integer]", "type_ctor", "F[_]"),
-            (
-                "show[T: Trait.Show](x: T) -> String",
-                "trait_constraint",
-                "Trait.Show",
-            ),
-        ] {
-            let src = format!(
-                "effect Make\n function {sig}\n function next[T: key](x: T) -> T\nend effect\nfunction after() -> Unit\n ()\nend function\n"
-            );
-            let out = user(&src);
-            assert_eq!(codes(&out), [DiagCode::E0510], "{:#?}", out.diagnostics);
-            let d = &out.diagnostics[0];
-            assert_eq!(
-                d.primary.as_ref().unwrap().span.start,
-                position(&src, location).unwrap()
-            );
-            assert!(d.helps[0].message.contains(if key == "type_ctor" {
-                "type constructor parameters"
-            } else {
-                "not a trait"
-            }));
-            let Item::Effect(e) = &out.module.decls[0].item else {
-                panic!()
-            };
-            assert_eq!(e.ops.len(), 2);
-            if key == "type_ctor" {
-                assert!(e.ops[0].type_params.is_empty());
-            } else {
-                assert!(e.ops[0].type_params[0].constraints.is_empty());
-            }
-            assert!(matches!(
-                e.ops[1].type_params[0].constraints[0],
-                ConstraintRef::Builtin {
-                    kind: crate::types::BuiltinConstraint::Key,
-                    ..
-                }
-            ));
-            assert!(matches!(&out.module.decls[1].item, Item::Fn(f) if f.name.text == "after"));
-        }
-        let out = user(
-            "effect Compare\n function same[T: equality & Trait.Show](a: T, b: T) -> Boolean\nend effect\n",
+    fn operation_type_parameters_reject_constructors_and_keep_class_and_builtin_bounds() {
+        let src = "effect Make\n function make[F[_]]() -> F[Integer]\n function next[T: key](x: T) -> T\nend effect\nfunction after() -> Unit\n ()\nend function\n";
+        let out = user(src);
+        assert_eq!(codes(&out), [DiagCode::E0510], "{:#?}", out.diagnostics);
+        let d = &out.diagnostics[0];
+        assert_eq!(
+            d.primary.as_ref().unwrap().span.start,
+            position(src, "F[_]").unwrap()
         );
-        assert_eq!(codes(&out), [DiagCode::E0510]);
+        assert!(d.helps[0].message.contains("type constructor parameters"));
         let Item::Effect(e) = &out.module.decls[0].item else {
             panic!()
         };
+        assert_eq!(e.ops.len(), 2);
+        assert!(e.ops[0].type_params.is_empty());
         assert!(matches!(
-            e.ops[0].type_params[0].constraints.as_slice(),
-            [ConstraintRef::Builtin {
-                kind: crate::types::BuiltinConstraint::Equality,
+            e.ops[1].type_params[0].constraints[0],
+            ConstraintRef::Builtin {
+                kind: crate::types::BuiltinConstraint::Key,
                 ..
-            }]
+            }
         ));
+        assert!(matches!(&out.module.decls[1].item, Item::Fn(f) if f.name.text == "after"));
+        for (sig, builtin) in [
+            ("show[T: Trait.Show](x: T) -> String", false),
+            (
+                "same[T: equality & Trait.Show](a: T, b: T) -> Boolean",
+                true,
+            ),
+        ] {
+            let src = format!("effect Compare\n function {sig}\nend effect\n");
+            let out = user(&src);
+            assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+            let Item::Effect(e) = &out.module.decls[0].item else {
+                panic!()
+            };
+            let constraints = &e.ops[0].type_params[0].constraints;
+            if builtin {
+                assert!(matches!(
+                    constraints.as_slice(),
+                    [
+                        ConstraintRef::Builtin {
+                            kind: crate::types::BuiltinConstraint::Equality,
+                            ..
+                        },
+                        ConstraintRef::Class(_)
+                    ]
+                ));
+            } else {
+                assert!(matches!(constraints.as_slice(), [ConstraintRef::Class(_)]));
+            }
+        }
     }
     #[test]
     fn log_example_and_operation_restrictions() {

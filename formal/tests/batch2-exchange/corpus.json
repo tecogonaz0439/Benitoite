@@ -1,0 +1,1514 @@
+{
+  "version": 11,
+  "operators": [
+    {
+      "op": "eq",
+      "operand": null,
+      "name": "%eq"
+    }
+  ],
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-batch2",
+      "excluded": [],
+      "definitions": [
+        {
+          "name": "implementation (fn:8)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "x"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "local": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": "ShowInt",
+                "method": "show",
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "x"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "var": {
+                        "index": 0
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "batch2 (fn:101)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "kind": "fail",
+                      "error": {
+                        "base": {
+                          "name": "String"
+                        }
+                      }
+                    }
+                  ],
+                  "effParams": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "raise": {
+                                "result": {
+                                  "base": {
+                                    "name": "Integer"
+                                  }
+                                },
+                                "error": {
+                                  "base": {
+                                    "name": "String"
+                                  }
+                                }
+                              }
+                            },
+                            "labels": [
+                              null
+                            ],
+                            "positions": [
+                              0
+                            ],
+                            "args": [
+                              {
+                                "literal": {
+                                  "value": {
+                                    "string": {
+                                      "value": "bad"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "package": "author",
+                "coverageView": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "kind": "fail",
+                      "error": {
+                        "base": {
+                          "name": "String"
+                        }
+                      }
+                    }
+                  ],
+                  "effParams": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "raise": {
+                            "result": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "error": {
+                              "base": {
+                                "name": "String"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "bad"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "var": {
+                                "index": 1
+                              }
+                            },
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "batch2 (fn:102)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "handleFail": {
+                            "error": {
+                              "base": {
+                                "name": "String"
+                              }
+                            },
+                            "result": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "body": {
+                              "last": {
+                                "expr": {
+                                  "call": {
+                                    "callee": {
+                                      "raise": {
+                                        "result": {
+                                          "base": {
+                                            "name": "Integer"
+                                          }
+                                        },
+                                        "error": {
+                                          "base": {
+                                            "name": "String"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "labels": [
+                                      null
+                                    ],
+                                    "positions": [
+                                      0
+                                    ],
+                                    "args": [
+                                      {
+                                        "literal": {
+                                          "value": {
+                                            "string": {
+                                              "value": "bad"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "clause": {
+                              "last": {
+                                "expr": {
+                                  "literal": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 7
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "package": "author",
+                "coverageView": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "handle": {
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "raise": {
+                                "result": {
+                                  "base": {
+                                    "name": "Integer"
+                                  }
+                                },
+                                "error": {
+                                  "base": {
+                                    "name": "String"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "string": {
+                                        "value": "bad"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "clauses": [
+                      {
+                        "op": "fail",
+                        "arity": 1,
+                        "ntys": 1,
+                        "dictCount": 0,
+                        "failureType": {
+                          "base": {
+                            "name": "String"
+                          }
+                        },
+                        "body": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "integer": {
+                                    "value": 7
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "batch2 (fn:103)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 1,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "kind": "fail",
+                      "error": {
+                        "base": {
+                          "name": "String"
+                        }
+                      }
+                    },
+                    {
+                      "rho": {
+                        "index": 0
+                      }
+                    }
+                  ],
+                  "effParams": [
+                    {
+                      "noFail": true
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "literal": {
+                            "value": {
+                              "integer": {
+                                "value": 7
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "package": "author",
+                "coverageView": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 1,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "kind": "fail",
+                      "error": {
+                        "base": {
+                          "name": "String"
+                        }
+                      }
+                    },
+                    {
+                      "rho": {
+                        "index": 0
+                      }
+                    }
+                  ],
+                  "effParams": [
+                    {
+                      "noFail": true
+                    }
+                  ]
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": {
+                          "integer": {
+                            "value": 7
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "batch2 (fn:104)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Echo"
+                      }
+                    }
+                  ],
+                  "effParams": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "opDicts": {
+                                "name": "echo",
+                                "tys": [
+                                  {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                ],
+                                "dicts": [
+                                  {
+                                    "impl": {
+                                      "name": "ShowInt",
+                                      "tys": [],
+                                      "args": []
+                                    }
+                                  }
+                                ],
+                                "names": [
+                                  "value"
+                                ],
+                                "params": [
+                                  {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                ],
+                                "eff": [
+                                  {
+                                    "name": {
+                                      "value": "Echo"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "labels": [
+                              null
+                            ],
+                            "positions": [
+                              0
+                            ],
+                            "args": [
+                              {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 3
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "package": "author",
+                "coverageView": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Echo"
+                      }
+                    }
+                  ],
+                  "effParams": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": {
+                              "integer": {
+                                "value": 3
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "app": {
+                        "callee": {
+                          "op": {
+                            "name": "echo",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "args": [
+                          {
+                            "dict": {
+                              "name": "ShowInt",
+                              "tys": [],
+                              "args": []
+                            }
+                          },
+                          {
+                            "var": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "batch2 (fn:105)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": [
+                        {
+                          "name": {
+                            "value": "Echo"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": [
+                              {
+                                "name": {
+                                  "value": "Echo"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "inner": {
+                          "opDicts": {
+                            "name": "echo",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "dicts": [
+                              {
+                                "impl": {
+                                  "name": "ShowInt",
+                                  "tys": [],
+                                  "args": []
+                                }
+                              }
+                            ],
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "eff": [
+                              {
+                                "name": {
+                                  "value": "Echo"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "package": "author",
+                "coverageView": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": [
+                        {
+                          "name": {
+                            "value": "Echo"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "value"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "op": {
+                                "name": "echo",
+                                "tys": [
+                                  {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "args": [
+                              {
+                                "dict": {
+                                  "name": "ShowInt",
+                                  "tys": [],
+                                  "args": []
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  [
+                    {
+                      "name": {
+                        "value": "Echo"
+                      }
+                    }
+                  ]
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "handler (fn:106)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "handleE": {
+                            "body": {
+                              "last": {
+                                "expr": {
+                                  "call": {
+                                    "callee": {
+                                      "opDicts": {
+                                        "name": "echo",
+                                        "tys": [
+                                          {
+                                            "base": {
+                                              "name": "Integer"
+                                            }
+                                          }
+                                        ],
+                                        "dicts": [
+                                          {
+                                            "impl": {
+                                              "name": "ShowInt",
+                                              "tys": [],
+                                              "args": []
+                                            }
+                                          }
+                                        ],
+                                        "names": [
+                                          "value"
+                                        ],
+                                        "params": [
+                                          {
+                                            "base": {
+                                              "name": "Integer"
+                                            }
+                                          }
+                                        ],
+                                        "eff": [
+                                          {
+                                            "name": {
+                                              "value": "Echo"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "labels": [
+                                      null
+                                    ],
+                                    "positions": [
+                                      0
+                                    ],
+                                    "args": [
+                                      {
+                                        "literal": {
+                                          "value": {
+                                            "integer": {
+                                              "value": 3
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "clauses": [
+                              {
+                                "op": {
+                                  "user": {
+                                    "name": "echo"
+                                  }
+                                },
+                                "arity": 1,
+                                "ntys": 1,
+                                "dictCount": 1,
+                                "failureType": null,
+                                "body": {
+                                  "discard": {
+                                    "expr": {
+                                      "opDicts": {
+                                        "name": "echo",
+                                        "tys": [
+                                          {
+                                            "tvar": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ],
+                                        "dicts": [
+                                          {
+                                            "clause": {
+                                              "outer": 0,
+                                              "arity": 1,
+                                              "dictCount": 1,
+                                              "constraint": 0,
+                                              "depth": 0
+                                            }
+                                          }
+                                        ],
+                                        "names": [
+                                          "value"
+                                        ],
+                                        "params": [
+                                          {
+                                            "tvar": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ],
+                                        "eff": [
+                                          {
+                                            "name": {
+                                              "value": "Echo"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "rest": {
+                                      "last": {
+                                        "expr": {
+                                          "resume": {
+                                            "index": 0,
+                                            "inner": {
+                                              "local": {
+                                                "index": 1
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "package": "author",
+                "coverageView": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [],
+                  "effParams": []
+                },
+                "body": {
+                  "handle": {
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "integer": {
+                                    "value": 3
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "op": {
+                                "name": "echo",
+                                "tys": [
+                                  {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "args": [
+                              {
+                                "dict": {
+                                  "name": "ShowInt",
+                                  "tys": [],
+                                  "args": []
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "clauses": [
+                      {
+                        "op": {
+                          "user": {
+                            "name": "echo"
+                          }
+                        },
+                        "arity": 2,
+                        "ntys": 1,
+                        "dictCount": 1,
+                        "failureType": null,
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "lam": {
+                                    "names": [
+                                      "value"
+                                    ],
+                                    "params": [
+                                      {
+                                        "tvar": {
+                                          "index": 0
+                                        }
+                                      }
+                                    ],
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "op": {
+                                            "name": "echo",
+                                            "tys": [
+                                              {
+                                                "tvar": {
+                                                  "index": 0
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "var": {
+                                        "index": 2
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "resume": {
+                                    "index": 2,
+                                    "value": {
+                                      "var": {
+                                        "index": 0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "lambdaEffects": [
+                  [
+                    {
+                      "name": {
+                        "value": "Echo"
+                      }
+                    }
+                  ]
+                ],
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "constants": [],
+      "ops": [
+        {
+          "name": "ask",
+          "eff": "Ask",
+          "header": {
+            "tparams": [],
+            "neffs": 0,
+            "names": [
+              "question"
+            ],
+            "params": [
+              {
+                "base": {
+                  "name": "Integer"
+                }
+              }
+            ],
+            "ret": {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            "eff": [
+              {
+                "name": {
+                  "value": "Ask"
+                }
+              }
+            ],
+            "effParams": []
+          },
+          "dictParams": [],
+          "effectKind": "ordinary"
+        },
+        {
+          "name": "echo",
+          "eff": "Echo",
+          "effectKind": "ordinary",
+          "dictParams": [
+            [
+              "Show",
+              0
+            ]
+          ],
+          "header": {
+            "tparams": [
+              [
+                false,
+                false
+              ]
+            ],
+            "neffs": 0,
+            "names": [
+              "%dict1",
+              "value"
+            ],
+            "params": [
+              {
+                "dict": {
+                  "cls": "Show",
+                  "arg": {
+                    "tvar": {
+                      "index": 0
+                    }
+                  }
+                }
+              },
+              {
+                "tvar": {
+                  "index": 0
+                }
+              }
+            ],
+            "ret": {
+              "tvar": {
+                "index": 0
+              }
+            },
+            "eff": [
+              {
+                "name": {
+                  "value": "Echo"
+                }
+              }
+            ],
+            "effParams": []
+          }
+        }
+      ],
+      "effects": [
+        {
+          "name": "Ask",
+          "ops": [
+            "ask"
+          ]
+        },
+        {
+          "name": "Echo",
+          "ops": [
+            "echo"
+          ]
+        }
+      ],
+      "primOps": [
+        {
+          "name": "Console.writeLine",
+          "names": [
+            "text"
+          ],
+          "arity": 1,
+          "ntys": 0,
+          "effectKind": "ordinary"
+        }
+      ],
+      "classes": [
+        {
+          "name": "Show",
+          "supers": [],
+          "methods": [
+            {
+              "name": "show",
+              "header": {
+                "tparams": [],
+                "neffs": 0,
+                "names": [
+                  "x"
+                ],
+                "params": [
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "eff": [],
+                "effParams": []
+              }
+            }
+          ]
+        }
+      ],
+      "impls": [
+        {
+          "name": "ShowInt",
+          "tparams": [],
+          "dictParams": [],
+          "cls": "Show",
+          "target": {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        }
+      ],
+      "dataTypes": [
+        {
+          "name": "PosPair",
+          "typeName": "PosPair",
+          "isRecord": false,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Pair",
+          "typeName": "Pair",
+          "isRecord": true,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ]
+    }
+  ],
+  "annotations": {
+    "tailMatch": [
+      0,
+      0
+    ]
+  }
+}

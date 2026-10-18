@@ -1204,6 +1204,11 @@ impl Resolver<'_> {
     pub(super) fn uses(&mut self, ctx: &mut Ctx, uses: &UsesList, fn_span: Option<Span>) {
         let mut prefix_valid = true;
         for (index, effect) in uses.effects.iter().enumerate() {
+            if let Some(args) = &effect.args {
+                for ty in args {
+                    self.ty(ctx, ty);
+                }
+            }
             let Some(id) = self.raw_name(ctx, effect.id, &effect.path, Position::Effect) else {
                 prefix_valid = false;
                 continue;

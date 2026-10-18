@@ -68,6 +68,27 @@ lake env lean /tmp/axioms.lean
 
 段階 E1（網羅性の判定の手順）は 2026-10-10 に完了した。`Release/Coverage.lean` が 02-05「本体の後の検査」の有用性の手順を定義し、補題 U（`useful_none_sound`）と、その系の網羅性（`checkMatch_exhaustive_sound`）・必ず照合するパターン（`irrefutable_sound`）・選ばれない選択肢（`checkMatch_unreachable_sound`）を証明する。`Release/Lemmas/CoverageRuntime.lean` は、選ばれない選択肢を実行の規則の照合に結ぶ系（`checkMatch_unreachable_runtime`・`checkMatch_unreachable_runtime_of_C_Match`）を証明する。手順は、同じ分岐の左の選択肢を分岐のガードの有無によらず前の行に数える（処理系も同じ）。段階 E2（型検査の出力の検査）も 2026-10-10 に完了した。`Surface/Check.lean` が表層の型付けを計算する検査の関数を定義し、`Surface/CheckSound.lean` が健全性の 11 件を、`Surface/CheckProgramSound.lean` がプログラム全体の検査の健全性（`checkProgram_sound`・`checkProgram_empty`）を証明する。段階 E の定理に `sorry` はなく、使う公理は段階 B と同じである。段階 B・C の定義と定理は変えていない。
 
+Releaseの効果は名前・行の関数と失敗型の列を持つ表現Bへ移行した。内部の正規形を型とストアの整形式で要求し、既存の主要定理と検査器の健全性の言明を保つ。検査器はFail内部までの有限支持を使い、Legacyでない型も受け付ける。入力の注釈は正規化せず、計算した型だけを正規化する。六実行ファイルは計算できる写しを使い、数学上のRelease.step/runのnoncomputableな定義には依存しない。対応と保証の範囲は07-04「01-12との対応」に記す。
+
+交換の読者はcorpus 8・9・10・11、builtins・stdlib・coverage・coverage-programの各2・3・4を受理する。旧版に後の版の情報を混ぜた場合の拒否と、対象外の分類を保つ。名前・行の効果は集合として読み、型内部も同じ読者で変換する。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側で原子の符号順へ整列して重複を除く。比較は両辺の列自体を正規化し、支持の一覧にない要素を捨てない。契約名・引数・節の並びは保持する。Rust側に同じ符号や列順を要求しない。
+
+旧形式の独立入力は次の四つで検査する。`test_named_exchange.py` はcorpus 8/9/10と他四形式2/3の六入口で、型内部の複数の名前・行の順序と重複に依存しない結果、脱糖の不一致と固定順序の書き戻しも確認する。
+
+```sh
+python3 -B formal/tests/test_named_exchange.py
+python3 -B formal/tests/test_extensible_exchange.py
+python3 -B formal/tests/test_try_exchange.py
+python3 -B formal/tests/test_width_exchange.py
+```
+
+交換11/4は、型内部まで再帰するFailの原子、辞書付き操作、節の辞書の所属、非再開のFail節を読む。Headerと組み込み宣言のeffParamsはneffsと同数の `{"noFail": Bool}` を持つ。NoFailは署名から再計算して照合し、新版の必須欄を補完しない。旧版は新しい情報がない場合だけ、辞書0・通常節・Failなし・noFail=falseで読む。通常の効果の集合とFailの型列はLean側で正規化し、Rustへ同じ符号や並びを要求しない。
+
+```sh
+python3 -B formal/tests/test_batch2_exchange.py
+```
+
+この独立入力は七定義と、Failを含む型・文字全域を六入口で検査する。`--rust-dir target/formal-batch2-op` または `--rust-dir target/formal-batch2-failure` は、局所Rust出力の五形式（corpus.json・builtins.json・stdlib.json・coverage.json・coverage-program.json）を追加で読む。ファイル不在・旧版・空の比較を成功扱いせず、Cargoを起動しない。Rustの通常出力は11/4であり、辞書付き操作の実ソースは `export_batch2_op` が `target/formal-batch2-op/` へ五形式を出力する。通常節はfailureType=null、行のnoFail=falseであり、Failの原子はまだ出力しない。独立したFailの入力の成功を、Rustの型付きの失敗の比較の証拠には使わない。
+
 ## 構成
 
 | ファイル | 内容 | 01-12 の節 |
@@ -91,8 +112,18 @@ lake env lean /tmp/axioms.lean
 
 | ファイル | 内容 | 01-12 の節 |
 |---|---|---|
-| `Benitoite/Release/Syntax.lean` | 型・値・計算・節・定義・宣言（型の変数は内側から数えた番号） | 構文、初回リリース版の拡張 |
+| `Benitoite/Release/Atom.lean` / `Types.lean` | 名前と行の原子、共有する型・エフェクト（型の変数は内側から数えた番号） | 構文、初回リリース版の拡張 |
+| `Benitoite/Release/Normalize.lean` / `TypeShift.lean` / `Effect.lean` | 型・効果の相互再帰による正規形、Fail内部の移動、名前・行とFailの両方の包含 | 同上 |
+| `Benitoite/Release/TypeSubst.lean` / `TypeSubstLemmas.lean` / `TypeComposition.lean` / `TypeCongruence.lean` | 正規化する型・行の同時代入と一般の合成、範囲内の像の一致による等式 | 同上 |
+| `Benitoite/Release/TypeBounds.lean` / `TypeRows.lean` / `TypeVariables.lean` / `TypeRegularity.lean` / `TypeScopedSubst.lean` | Fail内部の整形式・型と行の範囲、内部のCanonical、正規化・代入の保存 | 同上 |
+| `Benitoite/Release/TypeSupport.lean` / `LegacyCheck.lean` | 再帰的な支持と保存、Failのない旧形式の計算できる判定 | 同上 |
+| `Benitoite/Release/Order/FiniteAtoms.lean` / `Finite.lean` / `FiniteSupport.lean` | 再帰的な有限支持で計算する比較・正規化と数学上の定義との一致、支持の収集と保存・反映 | 07-04「01-12 との対応」 |
+| `Benitoite/Release/CoverageTypes.lean` / `Lemmas/VariableBind.lean` | 網羅性の計算用代入と数学上の型の所属の接続、型と行の像の範囲の保存 | 同上 |
+| `Benitoite/Release/Syntax.lean` | 値・計算・節・定義・宣言。共有型とその順序を読み込む | 構文、初回リリース版の拡張 |
+| `Benitoite/Release/Order/Atoms.lean` / `Labels.lean` / `Tree.lean` / `Types.lean` | 原子の関数の固定順序、ラベル付きの木への単射、共有型と型列の構造再帰による辞書式比較と全順序の証明 | 07-04「01-12 との対応」 |
+| `Benitoite/Release/Order/SortUnique.lean` / `Shift.lean` | 挿入ソートによる整列・重複除去とその一意性、型変数の移動が型の比較と整列を保つこと | 同上 |
 | `Benitoite/Release/Subst.lean` | 型の番号のずらしと置き換え、値の置き換え、パターンの照合（範囲とリストを含む）、分岐の選択肢の照合 `firstAlt` と束縛の並べ替え `selectSlots`、網羅性に数えるパターン `unguardedPats` | 構文、実行の規則 |
+| `Benitoite/Release/SubstEnv.lean` | 範囲外を恒等像で補った行の一般の合成、型と行の同時代入と合成、既存の cutoff 付き代入・移動との一致 | 同上 |
 | `Benitoite/Release/Typing.lean` | 組み込みの関数の型と制約、操作の型、型の正しさ、値・計算・節の型付け（選択肢の型付け `AltsTy`、分岐の型付け `HasTypeArms`） | 型付け規則、初回リリース版の拡張 |
 | `Benitoite/Release/WellFormed.lean` | 型とエフェクトの変数の範囲、宣言の範囲 | （番号で表したために要る条件） |
 | `Benitoite/Release/Semantics.lean` | 状態（照合の途中の状態 `matchRun` を含む）・遷移・遷移を計算する関数、継続（ガードの枠 `guardF`）・ストア・状態の型付け | 実行の規則、確かめる性質 |
@@ -137,9 +168,11 @@ lake env lean /tmp/axioms.lean
 | `Benitoite/Release/CoverageShow.lean` | 反例を処理系の診断と同じ文字列にする関数と例 | |
 | `Benitoite/Release/Lemmas/CoverageRuntime.lean` | 選ばれない選択肢を、実行の規則の照合（`firstAlt` と分岐の順）に結ぶ系 | 実行の規則の `match` |
 | `Benitoite/Release/BuiltinTable.lean` | 宣言から等値の型・鍵の型の要約を求める計算と、組み込みの制約の判定 | （01-06 の組み込みの制約） |
+| `Benitoite/Surface/FiniteTools.lean` / `FinitePredicates.lean` / `FiniteExamples.lean` | 一般のFailを扱う計算用の型操作・包含・型の結び・整形式と範囲の判定、その保証と計算例。検査器全体と六実行ファイルへ接続済み | 同上 |
 | `Benitoite/Surface/Check.lean` | 表層の型付けを計算する検査の関数（最小の型とエフェクト、失敗の箇所と理由） | 型の情報を付けた表層の構文と型付け |
 | `Benitoite/Surface/CheckTools.lean` / `CheckSupport.lean` | 原子の有限の集合の上のエフェクトの包含と型の等しさの判定、型の結び、エフェクトの差、原子の集合の前提 | |
 | `Benitoite/Surface/CheckPatterns.lean` / `CheckPredicates.lean` | パターンの束縛の型の計算と網羅性の判定の包み、型付けの判断以外の前提の判定 | |
+| `Benitoite/Surface/CheckComputeAtoms.lean` / `CheckComputeCases.lean` / `CheckComputeCalls.lean` / `CheckComputeControl.lean` / `CheckComputePipe.lean` / `CheckComputeSound.lean` | strict・relaxedの計算結果と継続への要求の再帰的な支持保存。型付けとは独立に証明する | |
 | `Benitoite/Surface/CheckInduction.lean` / `CheckLemmas.lean` | 健全性の相互帰納法の契約と、成功した検査の分解の補題 | |
 | `Benitoite/Surface/CheckSoundBasicExpr.lean` / `CheckSoundCalls.lean` / `CheckSoundCollections.lean` / `CheckSoundControl.lean` / `CheckSoundDicts.lean` / `CheckSoundSequence.lean` | 構文の場合ごとの健全性の証明 | |
 | `Benitoite/Surface/CheckSound.lean` | 検査の関数の健全性の 11 件 | |

@@ -19,10 +19,10 @@ mutual
     | .const _, _ => trivial
     | .fnRef _ _ es, h => by
         simp only [Val.VarsIn] at h ⊢
-        exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.RhosInList.true es⟩
+        exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) es h.2⟩
     | .prim _ _ es, h => by
         simp only [Val.VarsIn] at h ⊢
-        exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.RhosInList.true es⟩
+        exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) es h.2⟩
     | .lam _ _ body, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨h.1, Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.2.1, Comp.VarsIn.toTrue body h.2.2⟩
@@ -32,6 +32,9 @@ mutual
     | .list elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.toTrue elems h
     | .op _ _, h => by
         simp only [Val.VarsIn] at h ⊢; exact Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h
+    | .raise T E, h => by
+        exact ⟨Ty.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) T h.1,
+          Ty.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) E h.2⟩
     | .loc _, _ => trivial
     | .mapV ks vs, h => by
         simp only [Val.VarsIn] at h ⊢; exact ⟨Val.VarsInList.toTrue ks h.1, Val.VarsInList.toTrue vs h.2⟩
@@ -71,7 +74,7 @@ mutual
     | .meth d _ _ es args, h => by
         simp only [Comp.VarsIn] at h ⊢
         exact ⟨Val.VarsIn.toTrue d h.1, Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.2.1,
-          Eff.RhosInList.true es, Val.VarsInList.toTrue args h.2.2.2⟩
+          Eff.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) es h.2.2.1, Val.VarsInList.toTrue args h.2.2.2⟩
 
   theorem Arm.VarsInList.toTrue {n : Nat} {pe : Nat → Prop} : (arms : List Arm) →
       Arm.VarsInList n pe arms → Arm.VarsInList n (fun _ => True) arms
@@ -90,17 +93,20 @@ mutual
     | .mk _ _ _ m :: cs, h => by
         simp only [Clause.VarsInList] at h ⊢
         exact ⟨Comp.VarsIn.toTrue m h.1, Clause.VarsInList.toTrue cs h.2⟩
+    | .fail E m :: cs, h => by
+        exact ⟨Ty.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) E h.1,
+          Comp.VarsIn.toTrue m h.2.1, Clause.VarsInList.toTrue cs h.2.2⟩
 end
 
 /-- 閉じた値の並びの型は、型の変数を含まない。 -/
-theorem HasTypeVs.wf_all (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ} (hΨ : StoreTy.WF Ψ) :
+theorem HasTypeVsQ.wf_all (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ} (hΨ : StoreTy.WF Ψ) :
     {ws : List Val} → {as : List Ty} → HasTypeVs P B Ψ [] [] ws as →
     Val.VarsInList 0 (fun _ => True) ws → ∀ x ∈ as, Ty.WF 0 x
   | _, _, .nil, _, x, hx => by simp at hx
   | _, _, .cons hv hvs, hc, x, hx => by
       rcases List.mem_cons.mp hx with rfl | hx
-      · exact HasTypeV.wf hwf hb hv (envWF_nil 0) hΨ hc.1
-      · exact HasTypeVs.wf_all hwf hb hΨ hvs hc.2 x hx
+      · exact HasTypeVQ.wf hwf hb hv (envWF_nil 0) hΨ hc.1
+      · exact HasTypeVsQ.wf_all hwf hb hΨ hvs hc.2 x hx
 
 theorem envWF_single {a : Ty} (h : Ty.WF 0 a) : EnvWF 0 [some a] := by
   intro i x hx
@@ -133,10 +139,10 @@ theorem stE_exit {Eb n rs Ψ R a b ε k σ} (hσ : StoreOk P B Ψ σ) (hk : Cont
     (hkc : Cont.Closed k) (hσc : Store.Closed σ) : StateTyE P B Eb (.exit n rs k σ) :=
   ⟨Ψ, R, a, b, ε, hσ, hk, hkc, hσc⟩
 
-theorem stE_ret {Eb Ψ R a a' b ε v k σ} (hσ : StoreOk P B Ψ σ) (hv : HasTypeV P B Ψ [] [] v a')
+theorem stE_ret {Eb Ψ R a a' b ε v k σ} (ha : Ty.WF 0 a) (hσ : StoreOk P B Ψ σ) (hv : HasTypeV P B Ψ [] [] v a')
     (hle : Ty.Le a' a) (hk : ContTy P B Ψ R ε k a b Eb none) (hvc : Val.VarsIn 0 (fun _ => True) v)
     (hkc : Cont.Closed k) (hσc : Store.Closed σ) : StateTyE P B Eb (.run (.ret v) k σ) :=
-  ⟨Ψ, R, a, b, ε, Eff.empty, hσ, .C_Sub (.C_Return hv) hle (Eff.Sub.refl _), Eff.empty_sub _, hk, hvc,
+  ⟨Ψ, R, a, b, ε, Eff.empty, hσ, .C_Sub (.C_Return hv) hle (Eff.Sub.refl _) ha, Eff.empty_sub _, hk, hvc,
     hkc, hσc⟩
 
 /-- `drop κ` の枠で、κ の継続の解放の枠を実行する（E-DropRel など）。 -/
@@ -173,7 +179,15 @@ theorem store_prim_inv (hb : B.Assumptions P) {Ψ R b ts es ws a ε1 s} (hsig : 
   obtain ⟨t, rfl⟩ := single_of_length (htl.trans h1.1)
   have : es = [] := List.eq_nil_of_length_eq_zero (hel.trans h1.2)
   subst this
-  rw [Eff.substRho_nil] at hsub
+  have hid : Eff.substAt 0 [t] [] s.eff = s.eff := by
+    unfold PrimSig.StoreShape at hsh
+    cases hk : s.kind <;> rw [hk] at hsh hkd
+    all_goals first
+      | exact absurd rfl hkd.1
+      | exact absurd rfl hkd.2.1
+      | exact absurd rfl hkd.2.2
+      | (rw [hsh.2.2.2.2.2]; first | exact Eff.substAt_single _ _ _ _ | exact Eff.substAt_empty _ _ _)
+  rw [hid] at hsub
   exact ⟨t, rfl, rfl, hargs, hle, hsub⟩
 
 theorem ClosedArgs.single {t : Ty} {es : List Eff} (h : Val.VarsIn 0 (fun _ => True) (.prim b [t] es)) :
@@ -196,23 +210,23 @@ theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
   obtain ⟨hsn, hs1, hs2, hs3, hs4, hs5⟩ := hshs
   have htn : ∀ b' t' ε', t ≠ .cont b' t' ε' := (ht t (by simp)).2
   refine .C_Let (a := t) ?_ (.C_Let (a := t) ?_ ?_)
-  · have hv := HasTypeV.V_Prim (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
-      (by simp [hg1]) (by simp [hg2])
+  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
+      (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hsg) hg2 (by simp [hg1])
       (hb.store_admits _ _ [] [t] hsg (by rw [hkg]; decide) (by rw [hkg]; decide) (by rw [hkg]; decide)
-        (by simp [hg1]))
+        (by simp [hg1])) ht)
     rw [fnTy_eq, hg3, hg4, hg5] at hv
-    simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt, Eff.substRho_nil] at hv
-    simp [Ty.shift_zero] at hv
+    simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt] at hv
+    simp [Ty.shift_of_wf (c := 0) 0 t (ht t (by simp)).1, Eff.substAt_single] at hv
     exact .C_App hv (.cons (.V_LocRef hl) .nil)
   · have hf' := hf.rename (RenOk.shift [some t] [])
-    exact .C_Sub (.C_App hf' (.cons (.V_Var (by simp) htn) .nil)) (Ty.Le.refl _) (Eff.empty_sub _)
-  · have hv := HasTypeV.V_Prim (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
-      (by simp [hs1]) (by simp [hs2])
+    exact .C_Eff (.C_App hf' (.cons (.V_Var (i := 0) (by simp) htn) .nil)) (Eff.empty_sub _)
+  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
+      (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hss) hs2 (by simp [hs1])
       (hb.store_admits _ _ [] [t] hss (by rw [hks]; decide) (by rw [hks]; decide) (by rw [hks]; decide)
-        (by simp [hs1]))
+        (by simp [hs1])) ht)
     rw [fnTy_eq, hs3, hs4, hs5] at hv
-    simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt, Eff.substRho_nil] at hv
-    simp [Ty.shift_zero] at hv
+    simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt] at hv
+    simp [Ty.shift_of_wf (c := 0) 0 t (ht t (by simp)).1, Eff.substAt_single] at hv
     exact .C_App hv (.cons (.V_LocRef hl) (.cons (.V_Var (by simp) htn) .nil))
 
 end Benitoite.Release

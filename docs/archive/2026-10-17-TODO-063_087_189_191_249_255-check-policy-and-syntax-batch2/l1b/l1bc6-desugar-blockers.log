@@ -1,0 +1,118 @@
+✔ [60/76] Built Benitoite.Surface.Lemmas.DictSupport (341ms)
+✖ [61/76] Building Benitoite.Surface.Lemmas.Invariants (3.0s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/Lemmas/Invariants.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Invariants.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Invariants.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Lemmas/Invariants.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Lemmas/Invariants.setup.json --json
+error: Benitoite/Surface/Lemmas/Invariants.lean:30:35: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.104) (x : ?m.106 x), True
+but is expected to have type
+  Eff.VarsIn n (fun x => True) ε' ∧ Eff.Canonical ε'
+in the application
+  ⟨ha.right.right.left, fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:42:130: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.223) (x : ?m.225 x), True
+but is expected to have type
+  Eff.VarsIn n (fun x => True) (Eff.rawSubstAt 0 ts es eff✝).norm ∧ (Eff.rawSubstAt 0 ts es eff✝).norm.Canonical
+in the application
+  ⟨subst_clean es hts r h.right.right.left, fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:47:33: Application type mismatch: The argument
+  List.getElem_mem h
+has type
+  ts[i] ∈ ts
+but is expected to have type
+  Ty.shift 0 0 ts[i] ∈ ts
+in the application
+  varsInList_mem hts (List.getElem_mem h)
+error: Benitoite/Surface/Lemmas/Invariants.lean:61:52: Application type mismatch: The argument
+  List.getElem_mem h.left
+has type
+  ts[i] ∈ ts
+but is expected to have type
+  Ty.shift 0 0 ts[i] ∈ ts
+in the application
+  varsInList_mem hts (List.getElem_mem h.left)
+warning: Benitoite/Surface/Lemmas/Invariants.lean:46:56: This simp argument is unused:
+  Ty.shift_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.subst, Ty.substAt, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, h, List.getElem?_eq_getElem h,
+    Option.getD_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Surface/Lemmas/Invariants.lean:60:58: This simp argument is unused:
+  Ty.shift_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.subst, Ty.substAt, Ty.substTysAt_eq_map, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, h.1,
+    List.getElem?_eq_getElem h.1, Option.getD_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Surface/Lemmas/Invariants.lean:75:116: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.31) (x : ?m.33 x), True
+but is expected to have type
+  Eff.VarsIn n (fun x => True) (Eff.substAt 0 ts es ε) ∧ (Eff.substAt 0 ts es ε).Canonical
+in the application
+  ⟨subst_clean es hts r hr, fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:132:57: unsolved goals
+n : Nat
+Γ : List (Option Ty)
+ntys : Nat
+h : EnvClean n Γ
+i : Nat
+b t : Ty
+ε : EffR
+ho : Γ[i]? = some (some (b.cont t ε))
+hb : TyOK n b
+ht : TyOK n t
+⊢ (Ty.shift ntys 0 b).cont (Ty.shift ntys 0 t) (Eff.shift ntys 0 ε) = (Ty.shift ntys 0 b).cont (Ty.shift ntys 0 t) ε
+error: Benitoite/Surface/Lemmas/Invariants.lean:309:84: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.6578) (x : ?m.6580 x), True
+but is expected to have type
+  Eff.VarsIn C.length (fun x => True) (Eff.substAt 0 (ss ++ [τ]) es✝ ms.eff) ∧
+    (Eff.substAt 0 (ss ++ [τ]) es✝ ms.eff).Canonical
+in the application
+  ⟨subst_clean es✝ hts ms.ret hr, fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:321:96: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.6688) (x : ?m.6690 x), True
+but is expected to have type
+  Eff.VarsIn C.length (fun x => True) Eff.empty ∧ Eff.empty.Canonical
+in the application
+  ⟨scopedList_clean sc.left, fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:327:91: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.6765) (x : ?m.6767 x), True
+but is expected to have type
+  Eff.VarsIn C.length (fun x => True) ε✝ ∧ ε✝.Canonical
+in the application
+  ⟨scoped_clean sc.right.right.left, fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:330:10: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.6791) (x : ?m.6793 x), True
+but is expected to have type
+  Eff.VarsIn C.length (fun x => True) εargs✝ ∧ εargs✝.Canonical
+in the application
+  ⟨clean_le hl (scopedList_clean sc.left), fun x x_1 => trivial⟩
+error: Benitoite/Surface/Lemmas/Invariants.lean:360:82: Application type mismatch: The argument
+  fun x x_1 => trivial
+has type
+  ∀ (x : ?m.7282) (x : ?m.7284 x), True
+but is expected to have type
+  Eff.VarsIn C.length (fun x => True) ε✝ ∧ ε✝.Canonical
+in the application
+  ⟨scoped_clean sc.right.right.left, fun x x_1 => trivial⟩
+error: build failed
+Some required targets logged failures:
+- Benitoite.Surface.Lemmas.Invariants
+real 4.11
+user 4.68
+sys 0.42

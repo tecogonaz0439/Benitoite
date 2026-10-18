@@ -1,0 +1,6 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad() -> Unit uses Failure.Fail
+end function
+function main() -> Unit
+end function

@@ -199,9 +199,10 @@ fn expand<'a>(node: Node<'a>, work: &mut Vec<Work<'a>>) {
             LCompKind::Handle(h) => {
                 for cl in h.clauses.iter().rev() {
                     let keys = cl
-                        .params
+                        .dict_params
                         .iter()
-                        .map(|p| Key::Var(p.id))
+                        .map(|p| Key::Var(p.var))
+                        .chain(cl.params.iter().map(|p| Key::Var(p.id)))
                         .chain(std::iter::once(Key::Var(cl.cont.id)))
                         .collect();
                     scoped(work, &cl.body, keys);
@@ -250,9 +251,10 @@ pub(super) fn captured(root: Node<'_>) -> HashSet<Key> {
                     for cl in &h.clauses {
                         result.extend(free_keys(
                             Node::Comp(&cl.body),
-                            cl.params
+                            cl.dict_params
                                 .iter()
-                                .map(|p| Key::Var(p.id))
+                                .map(|p| Key::Var(p.var))
+                                .chain(cl.params.iter().map(|p| Key::Var(p.id)))
                                 .chain(std::iter::once(Key::Var(cl.cont.id)))
                                 .collect(),
                         ));

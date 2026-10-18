@@ -13,6 +13,10 @@ use crate::syntax::ast::Module;
 use crate::syntax::token::Comment;
 use crate::typeck::TypeckOutput;
 
+/// 本体を検査せず、生成道具へ宣言を渡す入口。
+#[path = "pipeline/declarations.rs"]
+pub mod declarations;
+
 /// 検査・脱糖・コンパイルの段を動かすスレッドのスタックの大きさ（64 MiB。02-01「関数の呼び出しと処理系のスタック」）。
 pub const STAGE_STACK_BYTES: usize = 64 * 1024 * 1024;
 

@@ -12,13 +12,14 @@ namespace Benitoite.Release
 
 variable {P : Program} {B : Builtins}
 
-theorem builtinOnly_empty : BuiltinOnly P B Eff.empty := fun a h => by simp [Eff.empty] at h
+theorem builtinOnly_empty : BuiltinOnly P B Eff.empty :=
+  ⟨rfl, fun a h => by simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at h⟩
 
 /-- 組み込みのエフェクト L の操作 op を処理する `handle` の枠が継続にないとき、ε が L を含めば、継続の末尾も
 L を許す。 -/
 theorem ContTy.end_of_noHandler (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb Re l bs b0}
     (hk : ContTy P B Ψ R ε k a b Eb Re) (hbs : B.effects l = some bs) (hb0 : b0 ∈ bs)
-    (hε : ε (.name l) = true) (hno : NoHandler k (.prim b0)) : Eb (.name l) = true := by
+    (hε : Eff.mem ε (.name l)) (hno : NoHandler k (.prim b0)) : Eff.mem Eb (.name l) := by
   have hPl : P.effects l = none := by
     cases e : P.effects l with
     | none => rfl
@@ -30,7 +31,7 @@ theorem ContTy.end_of_noHandler (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb Re l b
     rw [List.all_eq_true] at h
     have := h (.prim b0) (List.mem_map.mpr ⟨b0, hb0, rfl⟩)
     rw [hh] at this; cases this
-  simp only [handled, effOps, hPl, hbs, Option.map_some]
+  simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hPl, hbs, Option.map_some]
   revert hall
   cases bs.map OpRef.prim <;> simp
 
@@ -43,7 +44,7 @@ theorem no_event (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {s : State}
     intro Ψ R ε v k a b hk
     obtain ⟨_, _, _, hst, _⟩ := hk.inv_release
     have := hk.state_end hdecl hb hst
-    simp [Eff.empty] at this
+    simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at this
   -- IO：`handle` の枠がなければ、継続の末尾が組み込みのエフェクトを許す。
   have hio : ∀ {Ψ R a ε1 ε b' b0 ts es ws k s0}, HasTypeC P B Ψ [] [] R (.app (.prim b0 ts es) ws) a ε1 →
       Eff.Sub ε1 ε → ContTy P B Ψ R ε k a b' Eff.empty none → B.sig b0 = some s0 →
@@ -52,10 +53,12 @@ theorem no_event (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {s : State}
     obtain ⟨s', hs', _, _, _, _, _, hsub⟩ := inv_prim_app hm
     rw [hsig] at hs'; cases hs'
     obtain ⟨l, bs, _, heff, _, hbs, hb0⟩ := hb.io_op b0 _ hsig hkd
-    have hl : ε (.name l) = true := by
-      apply hε; apply hsub; rw [heff]; apply Eff.substRho_name; simp [Eff.single]
+    have hl : Eff.mem ε (.name l) := by
+      apply hε.1; apply hsub.1
+      rw [heff, Eff.substAt_single]
+      exact (Eff.mem_single _ _).mpr rfl
     have := hk.end_of_noHandler hdecl hbs hb0 hl hno
-    simp [Eff.empty] at this
+    simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at this
   cases hst with
   | E_IO hsig hkd hno _ =>
       obtain ⟨_, _, _, _, _, _, _, hm, hε, hk, _⟩ := hs
@@ -88,9 +91,21 @@ theorem no_unhandledOp (hdecl : P.EffectsOk B) {Eb : Eff} {s : State} (hs : Stat
               obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, _⟩ := hs
               obtain ⟨od, hod, _, _, _, hsub⟩ := inv_op_app hm
               refine no_unhandled_user hdecl hk hEb hod ?_ hu
-              apply hε; apply hsub
-              rw [Eff.substRho_nil]
-              simp [Eff.single]
+              apply hε.1; apply hsub.1
+              rw [Eff.substAt_single]
+              exact (Eff.mem_single _ _).mpr rfl
+          | raise T E =>
+              obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, _⟩ := hs
+              obtain ⟨names, as, r, e, hf, ha, _, _⟩ := hm.inv_app rfl
+              obtain ⟨_, _, hl⟩ := hf.inv_raise rfl
+              obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl
+              rw [← hps] at ha
+              cases ha with
+              | cons hv tail =>
+                  cases tail
+                  have hend := hk.fail_end hu ((hm.inv_raise_app.2.2.2.1.trans hε).2 _
+                    ((Eff.memFail_singleFail _ _).mpr rfl))
+                  exact ((Eff.fails_eq_nil_iff Eb).mp hEb.1 E hend).elim
           | _ => exact (show False from hu)
       | _ => exact (show False from hu)
   | _ => exact (show False from hu)
@@ -103,7 +118,7 @@ theorem stateTyE_init_noLamNames (hwf : P.WellFormed) (hb : B.Assumptions P) {m 
   have hc := (hm.varsIn_iff_noLamNames 0 (fun _ => False)).mpr hc
   have hmc : Comp.VarsIn 0 (fun _ => True) m := Comp.VarsIn.toTrue m hc
   have hΨ : StoreTy.WF StoreTy.empty := fun l x h => by simp [StoreTy.empty] at h
-  have hw : Ty.WF 0 a := HasTypeC.wf hwf hb hm (envWF_nil 0) hΨ hmc
+  have hw : Ty.WF 0 a := HasTypeCQ.wf hwf hb hm (envWF_nil 0) hΨ hmc
   refine ⟨StoreTy.empty, none, a, a, Eff.empty, Eff.empty, ?_, hm, Eff.Sub.refl _,
     .K_Empty (Eff.Sub.refl _) hw, hmc, fun f hf => by simp at hf, fun l c h => by simp [Store.empty] at h⟩
   refine ⟨⟨0, fun l _ => rfl⟩, fun l x h => ?_, fun l x h => ?_, fun l c h => ?_⟩ <;>

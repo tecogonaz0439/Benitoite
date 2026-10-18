@@ -1,0 +1,9 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad() -> Integer
+ return handle 1 with
+ case Failure.raise(error) -> 2
+ end handle
+end function
+function main() -> Unit
+end function

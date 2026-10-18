@@ -1,4 +1,5 @@
 import Benitoite.Release.Lemmas.TySubstMain
+import Benitoite.Release.Lemmas.FailureCont
 
 /-!
 # 閉じた値の形と、パターンの照合（契約名を持つコア）
@@ -9,21 +10,25 @@ import Benitoite.Release.Lemmas.TySubstMain
 
 namespace Benitoite.Release
 
+variable {Q : NoFailCtx}
+
+
 variable {P : Program} {B : Builtins}
 
 /-! ## 型の付いた閉じた値は、網羅性の意味での値の形をしている -/
 
 mutual
-  theorem HasTypeV.inhabits' {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) (hΓ : Γ = []) : Inhabits P a v := by
+  theorem HasTypeVQ.inhabits' {Ψ C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΓ : Γ = []) : Inhabits P a v := by
     match h with
     | .V_Var hi _ => subst hΓ; simp at hi
     | .V_Const => exact .const
-    | .V_Fun _ hnames _ _ => rw [fnTy_eq]; exact .fn
-    | .V_Prim _ hnames _ _ _ => rw [fnTy_eq]; exact .fn
+    | .V_Fun _ hnames _ => rw [fnTy_eq]; exact .fn
+    | .V_Prim _ hnames _ => rw [fnTy_eq]; exact .fn
     | .V_Op _ hnames _ => rw [fnTy_eq]; exact .fn
-    | .V_Lam hnames _ => exact .fn
-    | .V_Con hc hts hargs => exact .con hc hts.symm (HasTypeVs.inhabits' hargs hΓ)
-    | .V_List he _ => exact .list (HasTypeEach.inhabits' he hΓ)
+    | .V_Raise _ _ => exact .fn
+    | .V_Lam hnames hw _ => exact .fn
+    | .V_Con hc hts hargs => exact .con hc hts.symm (HasTypeVsQ.inhabits' hargs hΓ)
+    | .V_List he _ => exact .list (HasTypeEachQ.inhabits' he hΓ)
     | .V_LocRef _ => exact .reference
     | .V_LocLazy _ => exact .lazy
     | .V_Map _ _ _ _ _ _ => exact .map
@@ -31,29 +36,29 @@ mutual
     | .V_Bytes => exact .bytes
     | .V_Dict _ _ _ => exact .dict
     | .V_Super _ _ _ => exact .dict
-    | .V_Sub h hle =>
+    | .V_Sub h hle hw =>
         rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
-        · exact HasTypeV.inhabits' h hΓ
+        · exact HasTypeVQ.inhabits' h hΓ
         · exact .fn
 
-  theorem HasTypeVs.inhabits' {Ψ C Γ vs as} (h : HasTypeVs P B Ψ C Γ vs as) (hΓ : Γ = []) :
+  theorem HasTypeVsQ.inhabits' {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΓ : Γ = []) :
       InhabitsAll P as vs := by
     match h with
     | .nil => exact .nil
-    | .cons hv hvs => exact .cons (HasTypeV.inhabits' hv hΓ) (HasTypeVs.inhabits' hvs hΓ)
+    | .cons hv hvs => exact .cons (HasTypeVQ.inhabits' hv hΓ) (HasTypeVsQ.inhabits' hvs hΓ)
 
-  theorem HasTypeEach.inhabits' {Ψ C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a) (hΓ : Γ = []) :
+  theorem HasTypeEachQ.inhabits' {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) (hΓ : Γ = []) :
       InhabitsEach P a vs := by
     match h with
     | .nil => exact .nil
-    | .cons hv hvs => exact .cons (HasTypeV.inhabits' hv hΓ) (HasTypeEach.inhabits' hvs hΓ)
+    | .cons hv hvs => exact .cons (HasTypeVQ.inhabits' hv hΓ) (HasTypeEachQ.inhabits' hvs hΓ)
 end
 
-theorem HasTypeV.inhabits {Ψ C v a} (h : HasTypeV P B Ψ C [] v a) : Inhabits P a v := h.inhabits' rfl
+theorem HasTypeVQ.inhabits {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v a) : Inhabits P a v := h.inhabits' rfl
 
 /-! ## 閉じた値の形 -/
 
-theorem HasTypeV.canonical_boolean {Ψ C v} (h : HasTypeV P B Ψ C [] v (.base .boolean)) :
+theorem HasTypeVQ.canonical_boolean {Ψ C v} (h : HasTypeVQ P B Ψ Q C [] v (.base .boolean)) :
     ∃ b, v = .const (.boolean b) := by
   have hnf : ∀ names ps r ε, (Ty.base .boolean) ≠ .fn names ps r ε := by intros; simp
   cases v with
@@ -71,6 +76,9 @@ theorem HasTypeV.canonical_boolean {Ψ C v} (h : HasTypeV P B Ψ C [] v (.base .
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+  | raise T E =>
+      obtain ⟨_, _, hl⟩ := h.inv_raise rfl
+      have := hl.eq_of_not_fn hnf; simp at this
   | lam names ps body =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn hnf; simp at this
@@ -84,7 +92,7 @@ theorem HasTypeV.canonical_boolean {Ψ C v} (h : HasTypeV P B Ψ C [] v (.base .
   | loc l => rcases h.inv_loc rfl with ⟨_, _, h'⟩ | ⟨_, _, h'⟩ <;> simp at h'
 
 /-- `Reference[A]` の型の閉じた値は、可変のセルの場所である。 -/
-theorem HasTypeV.canonical_ref {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.reference a)) :
+theorem HasTypeVQ.canonical_ref {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.reference a)) :
     ∃ l, v = .loc l ∧ Ψ l = some (.ref a) := by
   have hnf : ∀ names ps r ε, (Ty.reference a) ≠ .fn names ps r ε := by intros; simp
   cases v with
@@ -99,6 +107,9 @@ theorem HasTypeV.canonical_ref {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.referenc
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+  | raise T E =>
+      obtain ⟨_, _, hl⟩ := h.inv_raise rfl
+      have := hl.eq_of_not_fn hnf; simp at this
   | lam names ps body =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn hnf; simp at this
@@ -115,7 +126,7 @@ theorem HasTypeV.canonical_ref {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.referenc
       · simp at h'
 
 /-- `Lazy[A]` の型の閉じた値は、明示遅延の場所である。 -/
-theorem HasTypeV.canonical_lazy {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.lazy a)) :
+theorem HasTypeVQ.canonical_lazy {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.lazy a)) :
     ∃ l, v = .loc l ∧ Ψ l = some (.lazy a) := by
   have hnf : ∀ names ps r ε, (Ty.lazy a) ≠ .fn names ps r ε := by intros; simp
   cases v with
@@ -130,6 +141,9 @@ theorem HasTypeV.canonical_lazy {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.lazy a)
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+  | raise T E =>
+      obtain ⟨_, _, hl⟩ := h.inv_raise rfl
+      have := hl.eq_of_not_fn hnf; simp at this
   | lam names ps body =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn hnf; simp at this
@@ -147,25 +161,25 @@ theorem HasTypeV.canonical_lazy {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.lazy a)
 
 /-! ## パターンの照合が束縛する値の型 -/
 
-theorem HasTypeVs.append {Ψ C Γ vs ws as bs} (h₁ : HasTypeVs P B Ψ C Γ vs as)
-    (h₂ : HasTypeVs P B Ψ C Γ ws bs) : HasTypeVs P B Ψ C Γ (vs ++ ws) (as ++ bs) := by
+theorem HasTypeVsQ.append {Ψ C Γ vs ws as bs} (h₁ : HasTypeVsQ P B Ψ Q C Γ vs as)
+    (h₂ : HasTypeVsQ P B Ψ Q C Γ ws bs) : HasTypeVsQ P B Ψ Q C Γ (vs ++ ws) (as ++ bs) := by
   match h₁ with
   | .nil => exact h₂
-  | .cons hv hrest => exact .cons hv (HasTypeVs.append hrest h₂)
+  | .cons hv hrest => exact .cons hv (HasTypeVsQ.append hrest h₂)
 
 /-- 型の並びの位置を指定すると、同じ位置の値の型が得られる。 -/
-theorem HasTypeVs.lookup {Ψ C Γ vs as} (h : HasTypeVs P B Ψ C Γ vs as)
+theorem HasTypeVsQ.lookup {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
     (i : Nat) {a} (hi : as[i]? = some a) :
-    ∃ v, vs[i]? = some v ∧ HasTypeV P B Ψ C Γ v a := by
+    ∃ v, vs[i]? = some v ∧ HasTypeVQ P B Ψ Q C Γ v a := by
   match h, i with
   | .nil, _ => simp at hi
   | .cons hv _, 0 => simp at hi; subst a; exact ⟨_, rfl, hv⟩
   | .cons _ ht, i + 1 => exact ht.lookup i (by simpa using hi)
 
 /-- 同じ位置で型が付く値と型の並びを、同じ番号で選ぶ。 -/
-theorem HasTypeVs.selectSlots_typed {Ψ C Γ vs as} (h : HasTypeVs P B Ψ C Γ vs as)
+theorem HasTypeVsQ.selectSlots_typed {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
     {slots δ} (hs : selectSlots as slots = some δ) :
-    ∃ ws, selectSlots vs slots = some ws ∧ HasTypeVs P B Ψ C Γ ws δ := by
+    ∃ ws, selectSlots vs slots = some ws ∧ HasTypeVsQ P B Ψ Q C Γ ws δ := by
   induction slots generalizing δ with
   | nil => simp [selectSlots] at hs; subst δ; exact ⟨[], rfl, .nil⟩
   | cons i slots ih =>
@@ -181,47 +195,48 @@ theorem HasTypeVs.selectSlots_typed {Ψ C Γ vs as} (h : HasTypeVs P B Ψ C Γ v
               exact ⟨v :: ws, by simp [selectSlots, hv, hw], .cons hty htys⟩
 
 /-- リストの任意の切り出しで、各要素の型は変わらない。 -/
-theorem HasTypeEach.take {Ψ C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a) (n : Nat) :
-    HasTypeEach P B Ψ C Γ (vs.take n) a := by
+theorem HasTypeEachQ.take {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) (n : Nat) :
+    HasTypeEachQ P B Ψ Q C Γ (vs.take n) a := by
   match h, n with
   | .nil, _ => simp; exact .nil
   | .cons _ _, 0 => exact .nil
   | .cons hv ht, n + 1 => exact .cons hv (ht.take n)
 
-theorem HasTypeEach.drop {Ψ C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a) (n : Nat) :
-    HasTypeEach P B Ψ C Γ (vs.drop n) a := by
+theorem HasTypeEachQ.drop {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) (n : Nat) :
+    HasTypeEachQ P B Ψ Q C Γ (vs.drop n) a := by
   match h, n with
   | .nil, _ => simp; exact .nil
   | .cons hv ht, 0 => exact .cons hv ht
   | .cons _ ht, n + 1 => exact ht.drop n
 
-theorem HasTypeEach.toVs {Ψ C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a) :
-    HasTypeVs P B Ψ C Γ vs (List.replicate vs.length a) := by
+theorem HasTypeEachQ.toVs {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) :
+    HasTypeVsQ P B Ψ Q C Γ vs (List.replicate vs.length a) := by
   match h with
   | .nil => exact .nil
   | .cons hv ht => exact .cons hv ht.toVs
 
 /-- 空のリストでも、要素の型の正しさは V-List から得られる。 -/
-theorem HasTypeV.inv_list_wf {C Γ v T elems} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .list elems) :
-    ∃ a, HasTypeEach P B Ψ C Γ elems a ∧ Ty.WF C.length a ∧ T = .list a := by
+theorem HasTypeVQ.inv_list_wf {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .list elems) :
+    ∃ a, HasTypeEachQ P B Ψ Q C Γ elems a ∧ Ty.WF C.length a ∧ T = .list a := by
   match h with
   | .V_List h hw => cases hv; exact ⟨_, h, hw, rfl⟩
-  | .V_Sub h hle =>
+  | .V_Sub h hle hw =>
       obtain ⟨a, he, hw, rfl⟩ := inv_list_wf h hv
       exact ⟨a, he, hw, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ _ => cases hv
-  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Fun .. => cases hv
+  | .V_Prim .. => cases hv
   | .V_Op _ _ _ => cases hv
-  | .V_Lam _ _ => cases hv
+  | .V_Raise _ _ => cases hv
+  | .V_Lam _ hw _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
 
 mutual
   theorem PatTy.match_typed {Ψ C p a δ} (hp : PatTy P p a δ) {v ws}
-      (hv : HasTypeV P B Ψ C [] v a) (hm : Pat.matchVal p v = some ws) : HasTypeVs P B Ψ C [] ws δ := by
+      (hv : HasTypeVQ P B Ψ Q C [] v a) (hm : Pat.matchVal p v = some ws) : HasTypeVsQ P B Ψ Q C [] ws δ := by
     match hp with
     | .P_Wild => simp [Pat.matchVal] at hm; subst hm; exact .nil
     | .P_Var => simp [Pat.matchVal] at hm; subst hm; exact .cons hv .nil
@@ -262,7 +277,7 @@ mutual
                       have hav := (he.drop (elems.length - after.length)).toVs
                       rw [List.length_take, Nat.min_eq_left (by omega)] at hbv
                       rw [List.length_drop, show elems.length - (elems.length - after.length) = after.length by omega] at hav
-                      have hmids : HasTypeVs P B Ψ C []
+                      have hmids : HasTypeVsQ P B Ψ Q C []
                           (match rest with | some .bind => [Val.list ((elems.drop before.length).take
                             (elems.length - (before.length + after.length)))] | _ => []) (restTys rest t) := by
                         cases rest with
@@ -293,8 +308,8 @@ mutual
         | _ => simp [Pat.matchVal] at hm
 
   theorem PatTys.match_typed {Ψ C ps as δ} (hps : PatTys P ps as δ) {vs ws}
-      (hvs : HasTypeVs P B Ψ C [] vs as) (hm : Pat.matchList ps vs = some ws) :
-      HasTypeVs P B Ψ C [] ws δ := by
+      (hvs : HasTypeVsQ P B Ψ Q C [] vs as) (hm : Pat.matchList ps vs = some ws) :
+      HasTypeVsQ P B Ψ Q C [] ws δ := by
     match hps, hvs with
     | .nil, .nil => simp [Pat.matchList] at hm; subst hm; exact .nil
     | .cons (p := p) (ps := qs) hp hps', .cons (v := v) (vs := us) hv hvs' =>
@@ -394,10 +409,10 @@ mutual
             · rw [ite_eq_right hlen] at hm; cases hm
         | _ => simp [Pat.matchVal] at hm
     | .const _, .var _ | .const _, .fnRef _ _ _ | .const _, .prim _ _ _ | .const _, .lam _ _ _
-    | .const _, .con _ _ _ | .const _, .list _ | .const _, .op _ _ | .const _, .loc _ =>
+    | .const _, .con _ _ _ | .const _, .list _ | .const _, .op _ _ | .const _, .raise _ _ | .const _, .loc _ =>
         simp [Pat.matchVal] at hm
     | .con _ _, .var _ | .con _ _, .const _ | .con _ _, .fnRef _ _ _ | .con _ _, .prim _ _ _
-    | .con _ _, .lam _ _ _ | .con _ _, .list _ | .con _ _, .op _ _ | .con _ _, .loc _ =>
+    | .con _ _, .lam _ _ _ | .con _ _, .list _ | .con _ _, .op _ _ | .con _ _, .raise _ _ | .con _ _, .loc _ =>
         simp [Pat.matchVal] at hm
 
   theorem Pat.matchList_closed {ps vs ws} (hv : Val.VarsInList 0 (fun _ => True) vs)
@@ -423,17 +438,17 @@ end
 
 /-- 照合する型付きの選択肢では、対応で並べ替えた束縛も分岐の型の並びを持つ。 -/
 theorem AltsTy.select_match {Ψ C alts a δ alt v ws} (h : AltsTy P alts a δ)
-    (halt : alt ∈ alts) (hv : HasTypeV P B Ψ C [] v a)
+    (halt : alt ∈ alts) (hv : HasTypeVQ P B Ψ Q C [] v a)
     (hm : Pat.matchVal alt.pat v = some ws) :
-    ∃ zs, selectSlots ws alt.slots = some zs ∧ HasTypeVs P B Ψ C [] zs δ := by
+    ∃ zs, selectSlots ws alt.slots = some zs ∧ HasTypeVsQ P B Ψ Q C [] zs δ := by
   obtain ⟨γ, hp, _, hs⟩ := h.2.2.2 alt halt
   exact (hp.match_typed hv hm).selectSlots_typed hs
 
 /-- 選択肢の先頭が恒等である条件は、尾の走査には要らない。 -/
 theorem firstAlt_typed {Ψ C alts a δ v ws}
     (h : ∀ alt ∈ alts, ∃ γ, PatTy P alt.pat a γ ∧ selectSlots γ alt.slots = some δ)
-    (hv : HasTypeV P B Ψ C [] v a) (hm : firstAlt v alts = some ws) :
-    HasTypeVs P B Ψ C [] ws δ := by
+    (hv : HasTypeVQ P B Ψ Q C [] v a) (hm : firstAlt v alts = some ws) :
+    HasTypeVsQ P B Ψ Q C [] ws δ := by
   induction alts with
   | nil => simp [firstAlt] at hm
   | cons alt alts ih =>
@@ -446,15 +461,15 @@ theorem firstAlt_typed {Ψ C alts a δ v ws}
           subst ws; exact hut
 
 theorem AltsTy.firstAlt_typed {Ψ C alts a δ v ws} (h : AltsTy P alts a δ)
-    (hv : HasTypeV P B Ψ C [] v a) (hm : firstAlt v alts = some ws) :
-    HasTypeVs P B Ψ C [] ws δ :=
+    (hv : HasTypeVQ P B Ψ Q C [] v a) (hm : firstAlt v alts = some ws) :
+    HasTypeVsQ P B Ψ Q C [] ws δ :=
   Benitoite.Release.firstAlt_typed (fun alt halt => by
     obtain ⟨γ, hp, _, hs⟩ := h.2.2.2 alt halt
     exact ⟨γ, hp, hs⟩) hv hm
 
 theorem firstAlt_exists {Ψ C alts a δ v}
     (h : ∀ alt ∈ alts, ∃ γ, PatTy P alt.pat a γ ∧ selectSlots γ alt.slots = some δ)
-    (hv : HasTypeV P B Ψ C [] v a)
+    (hv : HasTypeVQ P B Ψ Q C [] v a)
     (hm : ∃ alt ∈ alts, (Pat.matchVal alt.pat v).isSome) :
     ∃ ws, firstAlt v alts = some ws := by
   induction alts with
@@ -473,7 +488,7 @@ theorem firstAlt_exists {Ψ C alts a δ v}
           exact ⟨ws, by simp [firstAlt, hp, hw]⟩
 
 theorem AltsTy.firstAlt_exists {Ψ C alts a δ v} (h : AltsTy P alts a δ)
-    (hv : HasTypeV P B Ψ C [] v a)
+    (hv : HasTypeVQ P B Ψ Q C [] v a)
     (hm : ∃ alt ∈ alts, (Pat.matchVal alt.pat v).isSome) :
     ∃ ws, firstAlt v alts = some ws :=
   Benitoite.Release.firstAlt_exists (fun alt halt => by
@@ -492,11 +507,11 @@ theorem firstAlt_closed {alts v ws} (hv : Val.VarsIn 0 (fun _ => True) v)
           exact .of_mem (fun x hx => (Pat.matchVal_closed hv hp).mem (selectSlots_mem hs x hx))
 
 /-- 分岐全体の型付けから、選択された分岐の本体とガードを取り出す。 -/
-theorem HasTypeArms.mem {Ψ C Γ R arms a b ε arm}
-    (h : HasTypeArms P B Ψ C Γ R arms a b ε) (hm : arm ∈ arms) :
-    ∃ δ, AltsTy P arm.alts a δ ∧ HasTypeC P B Ψ C (binds δ ++ Γ) R arm.body b ε ∧
+theorem HasTypeArmsQ.mem {Ψ C Γ R arms a b ε arm}
+    (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε) (hm : arm ∈ arms) :
+    ∃ δ, AltsTy P arm.alts a δ ∧ HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R arm.body b ε ∧
       ∀ g, arm.guard = some g →
-        HasTypeC P B Ψ C (hideConts (binds δ ++ Γ)) none g (.base .boolean) Eff.empty := by
+        HasTypeCQ P B Ψ Q C (hideConts (binds δ ++ Γ)) none g (.base .boolean) Eff.empty := by
   match h with
   | .nil _ => simp at hm
   | .plain ha hb ht =>

@@ -6,6 +6,8 @@ import Benitoite.Release.Lemmas.Dict
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {Q : NoFailCtx}
+
 theorem desugarExprs_length (op : OpPrim) : (es : Exprs) →
     (desugarExprs op es).length = es.length
   | .nil => rfl
@@ -25,7 +27,7 @@ theorem accessorDef_scoped {c cd k} (sc : cd.Scoped) (hk : k < cd.args.length) :
       exact List.mem_range.mp hi)
   · exact Ty.VarsIn.mono (Nat.le_refl _) (by intro i hi; exact False.elim hi) _
       (varsInList_mem sc (List.getElem_mem hk))
-  · intro i hi; simp [Eff.empty] at hi
+  · exact ⟨fun _ h => Bool.noConfusion h, trivial⟩
 
 theorem InhabitsAll.length {P as vs} (h : InhabitsAll P as vs) : as.length = vs.length := by
   match h with
@@ -90,53 +92,27 @@ theorem accessorPattern_exhaustive {P : Release.Program} {c cd ts k}
   split <;> simp
 
 
-mutual
-  /-- 宣言自身の型変数で具体化すると、レコードのフィールド型は変わらない。 -/
-  theorem record_subst_identity (n : Nat) : (t : Ty) → Ty.VarsIn n (fun _ => False) t →
-      t.subst ((List.range n).map Ty.tvar) [] = t
-    | .base _, _ => by simp only [Ty.subst, Ty.substAt]
-    | .opaque _, _ => by simp only [Ty.subst, Ty.substAt]
-    | .data d as, h => by
-        simpa only [Ty.subst, Ty.substAt] using congrArg (Ty.data d) (record_substList_identity n as h)
-    | .list a, h => by
-        simpa only [Ty.subst, Ty.substAt] using congrArg Ty.list (record_subst_identity n a h)
-    | .fn names ps r e, h => by
-        simp only [Ty.subst, Ty.substAt, Eff.substRho_nil]
-        congr 1
-        · simpa only [Ty.subst] using record_substList_identity n ps h.2.1
-        · simpa only [Ty.subst] using record_subst_identity n r h.2.2.1
-    | .tvar i, h => by
-        change i < n at h
-        simp [Ty.subst, Ty.substAt, h, Ty.shift]
-    | .reference a, h => by
-        simpa only [Ty.subst, Ty.substAt] using congrArg Ty.reference (record_subst_identity n a h)
-    | .lazy a, h => by
-        simpa only [Ty.subst, Ty.substAt] using congrArg Ty.lazy (record_subst_identity n a h)
-    | .cont _ _ _, h => False.elim h
-    | .map a b, h => by
-        simp only [Ty.subst, Ty.substAt]
-        congr 1
-        · simpa only [Ty.subst] using record_subst_identity n a h.1
-        · simpa only [Ty.subst] using record_subst_identity n b h.2
-    | .set a, h => by
-        simpa only [Ty.subst, Ty.substAt] using congrArg Ty.set (record_subst_identity n a h)
-    | .bytes, _ => by simp only [Ty.subst, Ty.substAt]
-    | .dict cl a, h => by
-        simpa only [Ty.subst, Ty.substAt] using congrArg (Ty.dict cl) (record_subst_identity n a h)
-    | .tapp i as, h => by
-        have hi := h.1
-        simp only [Ty.subst, Ty.substAt, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero,
-          List.length_map, List.length_range, List.getElem?_map, List.getElem?_range, hi,
-          ↓reduceIte, Option.map_some, Option.getD_some, Ty.shift_zero, Ty.applyTo]
-        exact congrArg (Ty.tapp i) (record_substList_identity n as h.2)
-    | .ctor _, _ => by simp only [Ty.subst, Ty.substAt]
+/-- 宣言自身の型変数で具体化すると、レコードのフィールド型は変わらない。 -/
+theorem record_subst_identity (n : Nat) (t : Ty) (h : Ty.VarsIn n (fun _ => False) t) :
+    t.subst ((List.range n).map Ty.tvar) [] = t := by
+  rw [Ty.subst, Ty.substAt_eq_bind]
+  have he : Ty.bind (SubstEnv.at 0 ((List.range n).map Ty.tvar) []) t =
+      Ty.bind SubstEnv.identity t := by
+    apply Ty.bind_congr_scoped (n := n)
+    · intro i hi
+      simp [SubstEnv.at, SubstEnv.identity, hi, Ty.rawShift, Ty.norm]
+    · exact (Ty.VarsIn.wf t h).raw t
+    · exact Ty.RowsIn.mono (fun _ _ => rfl) t (Ty.VarsIn.rows t h)
+  rw [he, Ty.bind_identity, (Ty.VarsIn.wf t h).canonical t]
 
-  theorem record_substList_identity (n : Nat) : (ts : List Ty) → Ty.VarsInList n (fun _ => False) ts →
-      ts.map (Ty.subst ((List.range n).map Ty.tvar) []) = ts
-    | [], _ => rfl
-    | t :: ts, h => by
-        simp only [List.map_cons, record_subst_identity n t h.1, record_substList_identity n ts h.2]
-end
+theorem record_substList_identity (n : Nat) (ts : List Ty)
+    (h : Ty.VarsInList n (fun _ => False) ts) :
+    ts.map (Ty.subst ((List.range n).map Ty.tvar) []) = ts := by
+  calc
+    _ = ts.map id := List.map_congr_left (fun t ht =>
+      record_subst_identity n t (Ty.VarsInList.iff.mp h t ht))
+    _ = _ := List.map_id ts
+
 
 theorem wilds_typed (P : Release.Program) (as : List Ty) :
     PatTys P (as.map fun _ => .wild) as [] := by
@@ -179,8 +155,8 @@ theorem accessorDef_typed {P : Release.Program} {B : Builtins} {c cd k}
     rw [record_substList_identity cd.ntys cd.args sc]
     exact accessorArgs_typed P cd.args k hk
   refine ⟨by simp [accessorDef, accessorDecl, NamesWF], ?_⟩
-  apply HasTypeC.C_Match (.V_Var rfl (by intro _ _ _ he; cases he))
-  · exact HasTypeArms.mkArm_cons hp (.C_Return (.V_Var rfl (clean_notCont ha)))
+  apply HasTypeCQ.C_Match (.V_Var rfl (by intro _ _ _ he; cases he))
+  · exact HasTypeArmsQ.mkArm_cons hp (.C_Return (.V_Var rfl (clean_notCont ha)))
       (.nil (by simpa [accessorDef, accessorDecl, List.length_replicate] using Ty.VarsIn.wf _ ha))
   · simpa only [unguardedPats_mkArm_cons, unguardedPats] using accessorPattern_exhaustive hc unique
 
@@ -241,12 +217,12 @@ theorem fieldAt_mem {α : Type} {i positions vs} {v : α}
 /-- 書いた値は束縛の下へずらし、残す値はパターンの環境から取り出す。 -/
 theorem recordUpdateValues_typed {P : Release.Program} {B : Builtins} {C Γ c n positions vs tys}
     (hn : n = tys.length)
-    (h : HasTypeVs P B StoreTy.empty C Γ vs
+    (h : HasTypeVsQ P B StoreTy.empty Q C Γ vs
       (positions.map fun i => (tys[i]?).getD (.base .unit)))
     (hclean : Ty.VarsInList C.length (fun _ => True) tys)
     (hp : PatTy P (recordUpdatePattern c n positions) (.data d ts)
       (retainedTypes (List.range n) positions (fun i => (tys[i]?).getD (.base .unit)))) :
-    HasTypeVs P B StoreTy.empty C
+    HasTypeVsQ P B StoreTy.empty Q C
       (binds (retainedTypes (List.range n) positions (fun i => (tys[i]?).getD (.base .unit))) ++ Γ)
       (recordUpdateValues c n positions vs) tys := by
   let t : Nat → Ty := fun i => (tys[i]?).getD (.base .unit)
@@ -271,7 +247,7 @@ theorem recordUpdateValues_typed {P : Release.Program} {B : Builtins} {C Γ c n 
               intro him
               obtain ⟨v, hv, _⟩ := fieldAt_typed h him
               rw [he] at hv; cases hv
-            apply HasTypeV.V_Var (retained_get_range t hil him Γ)
+            apply HasTypeVQ.V_Var (retained_get_range t hil him Γ)
             have hi' : i < tys.length := by omega
             apply clean_notCont
             simp only [t, List.getElem?_eq_getElem hi', Option.getD_some]

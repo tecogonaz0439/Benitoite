@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.83s
+     Running tests/l21_json.rs (target/debug/deps/l21_json-4e115d9a9038a048)
+
+running 1 test
+test codec_extra_key_path_escapes_untrusted_key ... FAILED
+
+failures:
+
+---- codec_extra_key_path_escapes_untrusted_key stdout ----
+
+thread 'codec_extra_key_path_escapes_untrusted_key' (6526606) panicked at crates/benitoite/tests/l21_json.rs:52:9:
+assertion `left == right` failed: Direct: RunEnd { exit_code: 1, end: MainError, main_error: Some("extra key must be an escaped Key path"), die_failure: None, reports: [], heap: HeapStats { allocations: 31, allocated_bytes: 2432, live_bytes: 608, peak_heap_bytes: 1728, collections: 12, pause_total_nanos: 54710, pause_max_nanos: 7500, pause_nanos: [], roots_traced: 409, frees: 20 } }
+  left: MainError
+ right: Returned
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    codec_extra_key_path_escapes_untrusted_key
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.30s
+
+error: test failed, to rerun pass `-p benitoite --test l21_json`

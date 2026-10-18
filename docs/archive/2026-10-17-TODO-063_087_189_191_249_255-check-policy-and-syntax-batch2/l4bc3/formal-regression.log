@@ -1,0 +1,418 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+== formal: lake build
+ℹ [226/250] Replayed desugarDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [230/250] Replayed builtinCheck:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [234/250] Replayed coverageDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [237/250] Replayed coverageProgramDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+Build completed successfully (250 jobs).
+lake build: 0s
+== formal: lake build desugarDiff
+ℹ [128/128] Replayed desugarDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+Build completed successfully (128 jobs).
+lake build desugarDiff: 1s
+== formal: lake build builtinCheck
+ℹ [130/130] Replayed builtinCheck:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+Build completed successfully (130 jobs).
+lake build builtinCheck: 0s
+== formal: lake build coverageDiff
+ℹ [130/130] Replayed coverageDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+Build completed successfully (130 jobs).
+lake build coverageDiff: 0s
+== formal: Rust coverage export
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-fc0fc83daaeb8942)
+
+running 2 tests
+test export_named_coverage ... ok
+coverage export: 10020 cases (20 boundary, 10000 random), 11.473s, budget stopped: 0, max work per check: 2714
+test export_coverage ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.31s
+
+Rust coverage export (including cargo): 14s
+== formal: coverageDiff
+coverageDiff: cases=10020 matched=9133 mismatched=887 fuelExhausted=0
+coverageDiff: 2s; report: /Users/tecogonaz/src/Benitoite/target/coverage-diff/run-l4bc3-20261018/report.json
+== formal: coverageDiff with views
+coverageDiff: cases=10028 matched=9142 mismatched=886 fuelExhausted=0
+coverage stages: 19s
+== formal: lake build coverageProgramDiff
+ℹ [132/132] Replayed coverageProgramDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+Build completed successfully (132 jobs).
+lake build coverageProgramDiff: 0s
+== formal: lake build surfaceCheck
+Build completed successfully (132 jobs).
+== formal: lake build surfaceCheckAll
+Build completed successfully (138 jobs).
+lake build surfaceCheckAll: 0s
+== formal: width exchange
+....
+----------------------------------------------------------------------
+Ran 4 tests in 1.075s
+
+OK
+width exchange: 2s; reports: target/p3a-gate/width-exchange/
+== formal: named exchange
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 2.184s
+
+OK
+named exchange: 2s
+== formal: extensible exchange
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.885s
+
+OK
+extensible exchange: 6s
+== formal: try exchange
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.363s
+
+OK
+try exchange: 3s
+== formal: Rust export
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.72s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-e8b1a9ac7234b11e)
+
+running 17 tests
+test export_rejects_constref_in_value_position ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_independent_program_exchange ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test named::export_extensible_package ... ok
+width export: 3 inputs; 0.813s; /Users/tecogonaz/src/Benitoite/target/desugar-diff/run-l4bc3-20261018/width-smoke
+test export_width_smoke ... ok
+test export_named_types_smoke ... ok
+test export_named_declarations_smoke ... ok
+test named::export_extensible_source ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_named_calls_smoke ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_named_static_calls_smoke ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test named::export_general_named_programs ... ok
+test export_desugar_corpus has been running for over 60 seconds
+desugar annotations [positions, different from R]: {"resultMatch": [487, 487], "resultReturn": [2025, 2025], "tailMatch": [7119, 1]}
+desugar export: 1352 exported, 0 out of scope, 389 excluded (check error); 1741 inputs; 568.507s; /Users/tecogonaz/src/Benitoite/target/desugar-diff/run-l4bc3-20261018
+test export_desugar_corpus ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 568.51s
+
+Rust export (including cargo): 570s
+== formal: desugarDiff
+golden programs: matched=352 mismatched=0 outOfScope=0 excluded(check error)=389
+golden functions: matched=975 mismatched=0 outOfScope=0 excluded(check error)=0
+golden compared construction: guard: positions=7, units=7
+golden compared construction: alternatives: positions=5, units=5
+golden compared construction: alternative: positions=11, units=5
+golden compared construction: alternative: reordered binders: positions=0, units=0
+golden compared construction: guarded alternatives: positions=2, units=2
+golden compared construction: range pattern: positions=5, units=4
+golden compared construction: range pattern: negative Integer: positions=0, units=0
+golden compared construction: range pattern: Character: positions=1, units=1
+golden compared construction: list pattern: no rest: positions=19, units=9
+golden compared construction: list pattern: skip: positions=5, units=3
+golden compared construction: list pattern: bind: positions=9, units=8
+golden compared construction: list pattern: suffix: positions=2, units=2
+golden compared construction: list pattern binding: positions=2, units=2
+golden compared construction: constant reference: positions=219, units=52
+golden compared construction: constant: basic: positions=205, units=50
+golden compared construction: constant: list: positions=10, units=3
+golden compared construction: constant: record: positions=0, units=0
+golden compared construction: constant: data: positions=0, units=0
+golden compared construction: constant: nested: positions=10, units=5
+golden compared construction: constant: call argument: positions=190, units=47
+golden compared construction: constant: constructor field: positions=113, units=41
+golden compared construction: constant: list element: positions=17, units=2
+golden compared construction: constant: lambda: positions=0, units=0
+golden compared construction: constant: record update base: positions=0, units=0
+golden compared construction: constant: under local binding: positions=95, units=31
+golden compared construction: Decimal literal: positions=22, units=4
+golden compared construction: Decimal direct negation: positions=3, units=2
+golden compared construction: Decimal direct negative zero: positions=1, units=1
+golden compared construction: spread: first: positions=9, units=6
+golden compared construction: spread: middle: positions=1, units=1
+golden compared construction: spread: last: positions=9, units=2
+golden compared construction: spread: before empty: positions=9, units=6
+golden compared construction: spread: after empty: positions=9, units=2
+golden compared construction: spread: both empty: positions=0, units=0
+golden compared construction: interpolation: positions=91, units=51
+golden compared construction: interpolation: text: positions=207, units=45
+golden compared construction: interpolation: empty text: positions=142, units=43
+golden compared construction: interpolation: String: positions=21, units=18
+golden compared construction: interpolation: Integer: positions=40, units=23
+golden compared construction: interpolation: Float: positions=2, units=1
+golden compared construction: interpolation: Character: positions=0, units=0
+golden compared construction: interpolation: Boolean: positions=93, units=21
+golden compared construction: interpolation: Byte: positions=2, units=2
+golden compared construction: interpolation: Decimal: positions=10, units=3
+golden compared construction: interpolation: consecutive expressions: positions=0, units=0
+golden compared construction: interpolation: parts 0: positions=0, units=0
+golden compared construction: interpolation: parts 1: positions=29, units=9
+golden compared construction: interpolation: parts 2+: positions=62, units=45
+golden compared construction: record construction: positions=46, units=36
+golden compared construction: record construction: reordered: positions=1, units=1
+golden compared construction: record update: partial: positions=9, units=9
+golden compared construction: record update: all: positions=2, units=2
+golden compared construction: record update: reordered: positions=0, units=0
+golden compared construction: record pattern: positions=26, units=8
+golden compared construction: record pattern: partial: positions=18, units=5
+golden compared construction: record pattern: nested: positions=0, units=0
+golden compared construction: record pattern: reordered: positions=0, units=0
+golden compared construction: accessor definition: positions=69, units=69
+golden compared construction: accessor definition: polymorphic: positions=1, units=1
+golden compared construction: accessor direct: call: positions=59, units=39
+golden compared construction: accessor parenthesized: call: positions=0, units=0
+golden compared construction: accessor direct: pipe rule 1: positions=0, units=0
+golden compared construction: accessor parenthesized: pipe rule 1: positions=0, units=0
+golden compared construction: accessor direct: pipe rule 2: positions=0, units=0
+golden compared construction: accessor parenthesized: pipe rule 2: positions=0, units=0
+golden compared construction: accessor direct: placeholder: positions=0, units=0
+golden compared construction: accessor parenthesized: placeholder: positions=0, units=0
+golden compared construction: accessor direct: placeholder pipe rule 2: positions=0, units=0
+golden compared construction: accessor parenthesized: placeholder pipe rule 2: positions=0, units=0
+golden compared construction: accessor parenthesized value: positions=0, units=0
+golden compared construction: interpolation: parts 5: positions=11, units=8
+golden compared construction: interpolation: parts 4: positions=6, units=6
+golden compared construction: interpolation: parts 2: positions=18, units=13
+golden compared construction: methName: nonempty U: positions=4, units=2
+golden compared construction: DictEv.local: positions=13, units=9
+golden compared construction: methName: nonempty U direct: call: positions=2, units=2
+golden compared construction: DictEv.impl: positions=287, units=35
+golden compared construction: funDicts: positions=9, units=6
+golden compared construction: methName: nonempty U direct: placeholder: positions=1, units=1
+golden compared construction: funDicts direct: pipe rule 1: positions=1, units=1
+golden compared construction: implementation method: positions=12, units=12
+golden compared construction: implementation supers unit: positions=12, units=12
+golden compared construction: methName: empty U: positions=192, units=39
+golden compared construction: methName: empty U direct: call: positions=192, units=39
+golden compared construction: interpolation: Integer8: positions=15, units=2
+golden compared construction: interpolation: parts 17: positions=7, units=7
+golden compared construction: interpolation: Integer16: positions=15, units=2
+golden compared construction: interpolation: Integer32: positions=15, units=2
+golden compared construction: interpolation: UnsignedInteger16: positions=12, units=2
+golden compared construction: interpolation: UnsignedInteger32: positions=12, units=2
+golden compared construction: interpolation: UnsignedInteger64: positions=12, units=2
+golden compared construction: interpolation: Float32: positions=9, units=3
+golden compared construction: interpolation: parts 9: positions=2, units=1
+golden compared construction: interpolation: parts 3: positions=8, units=8
+golden compared construction: interpolation: parts 7: positions=4, units=4
+golden compared construction: interpolation: parts 25: positions=3, units=1
+golden compared construction: interpolation: parts 19: positions=3, units=1
+golden compared construction: constant: other type: positions=4, units=2
+golden compared construction: funDicts direct: call: positions=8, units=5
+golden compared construction: DictEv.super: positions=4, units=3
+golden compared construction: implementation superclass dictionary: positions=1, units=1
+random programs: matched=1000 mismatched=0 outOfScope=0 excluded(check error)=0
+random functions: matched=72778 mismatched=0 outOfScope=0 excluded(check error)=0
+random compared construction: guard: positions=7000, units=5000
+random compared construction: alternatives: positions=5000, units=4000
+random compared construction: alternative: positions=10000, units=4000
+random compared construction: alternative: reordered binders: positions=5000, units=4000
+random compared construction: guarded alternatives: positions=4000, units=4000
+random compared construction: range pattern: positions=3000, units=1000
+random compared construction: range pattern: negative Integer: positions=1000, units=1000
+random compared construction: range pattern: Character: positions=1000, units=1000
+random compared construction: list pattern: no rest: positions=3000, units=1000
+random compared construction: list pattern: skip: positions=3000, units=1000
+random compared construction: list pattern: bind: positions=7000, units=2000
+random compared construction: list pattern: suffix: positions=6000, units=2000
+random compared construction: list pattern binding: positions=2000, units=1000
+random compared construction: constant reference: positions=61000, units=2000
+random compared construction: constant: basic: positions=54000, units=2000
+random compared construction: constant: list: positions=3000, units=2000
+random compared construction: constant: record: positions=4000, units=2000
+random compared construction: constant: data: positions=0, units=0
+random compared construction: constant: nested: positions=43000, units=2000
+random compared construction: constant: call argument: positions=2000, units=1000
+random compared construction: constant: constructor field: positions=14000, units=2000
+random compared construction: constant: list element: positions=10000, units=2000
+random compared construction: constant: lambda: positions=2000, units=1000
+random compared construction: constant: record update base: positions=1000, units=1000
+random compared construction: constant: under local binding: positions=16000, units=1000
+random compared construction: Decimal literal: positions=3000, units=1000
+random compared construction: Decimal direct negation: positions=3000, units=1000
+random compared construction: Decimal direct negative zero: positions=1000, units=1000
+random compared construction: spread: first: positions=1346, units=1000
+random compared construction: spread: middle: positions=1000, units=1000
+random compared construction: spread: last: positions=1367, units=1000
+random compared construction: spread: before empty: positions=1346, units=1000
+random compared construction: spread: after empty: positions=1367, units=1000
+random compared construction: spread: both empty: positions=1287, units=1000
+random compared construction: interpolation: positions=8000, units=1000
+random compared construction: interpolation: text: positions=3000, units=1000
+random compared construction: interpolation: empty text: positions=23000, units=1000
+random compared construction: interpolation: String: positions=5000, units=1000
+random compared construction: interpolation: Integer: positions=6000, units=1000
+random compared construction: interpolation: Float: positions=1000, units=1000
+random compared construction: interpolation: Character: positions=1000, units=1000
+random compared construction: interpolation: Boolean: positions=1000, units=1000
+random compared construction: interpolation: Byte: positions=1000, units=1000
+random compared construction: interpolation: Decimal: positions=3000, units=1000
+random compared construction: interpolation: consecutive expressions: positions=9000, units=1000
+random compared construction: interpolation: parts 0: positions=0, units=0
+random compared construction: interpolation: parts 1: positions=4000, units=1000
+random compared construction: interpolation: parts 2+: positions=4000, units=1000
+random compared construction: record construction: positions=6000, units=3000
+random compared construction: record construction: reordered: positions=5509, units=3000
+random compared construction: record update: partial: positions=3000, units=3000
+random compared construction: record update: all: positions=3000, units=2000
+random compared construction: record update: reordered: positions=3667, units=3000
+random compared construction: record pattern: positions=14000, units=4000
+random compared construction: record pattern: partial: positions=5000, units=3000
+random compared construction: record pattern: nested: positions=2000, units=1000
+random compared construction: record pattern: reordered: positions=6986, units=4000
+random compared construction: accessor definition: positions=12000, units=12000
+random compared construction: accessor definition: polymorphic: positions=5000, units=5000
+random compared construction: accessor direct: call: positions=3000, units=3000
+random compared construction: accessor parenthesized: call: positions=1000, units=1000
+random compared construction: accessor direct: pipe rule 1: positions=1000, units=1000
+random compared construction: accessor parenthesized: pipe rule 1: positions=1000, units=1000
+random compared construction: accessor direct: pipe rule 2: positions=1000, units=1000
+random compared construction: accessor parenthesized: pipe rule 2: positions=1000, units=1000
+random compared construction: accessor direct: placeholder: positions=2000, units=1000
+random compared construction: accessor parenthesized: placeholder: positions=2000, units=1000
+random compared construction: accessor direct: placeholder pipe rule 2: positions=1000, units=1000
+random compared construction: accessor parenthesized: placeholder pipe rule 2: positions=1000, units=1000
+random compared construction: accessor parenthesized value: positions=6000, units=1000
+random compared construction: methName: empty U: positions=30000, units=12000
+random compared construction: DictEv.local: positions=116000, units=15000
+random compared construction: funDicts: positions=27000, units=6000
+random compared construction: DictEv.super: positions=4000, units=1000
+random compared construction: DictEv.impl: positions=79000, units=9000
+random compared construction: methName: nonempty U: positions=21000, units=2000
+random compared construction: methName: nonempty U parenthesized: placeholder: positions=5000, units=2000
+random compared construction: funDicts parenthesized: call: positions=3000, units=2000
+random compared construction: methName: empty U parenthesized: pipe rule 2: positions=2000, units=2000
+random compared construction: methName: empty U direct: call: positions=4000, units=3000
+random compared construction: funDicts direct: call: positions=3000, units=2000
+random compared construction: funDicts direct: pipe rule 1: positions=2000, units=1000
+random compared construction: funDicts parenthesized: pipe rule 1: positions=2000, units=1000
+random compared construction: funDicts direct: placeholder: positions=4000, units=1000
+random compared construction: funDicts direct: placeholder pipe rule 2: positions=2000, units=1000
+random compared construction: funDicts parenthesized: placeholder: positions=4000, units=1000
+random compared construction: funDicts parenthesized: placeholder pipe rule 2: positions=2000, units=1000
+random compared construction: methName: nonempty U direct: call: positions=2000, units=1000
+random compared construction: methName: nonempty U direct: pipe rule 1: positions=2000, units=1000
+random compared construction: methName: nonempty U parenthesized: call: positions=2000, units=1000
+random compared construction: methName: nonempty U parenthesized: pipe rule 1: positions=2000, units=1000
+random compared construction: methName: nonempty U direct: placeholder: positions=4000, units=1000
+random compared construction: methName: nonempty U direct: placeholder pipe rule 2: positions=2000, units=1000
+random compared construction: methName: nonempty U parenthesized: placeholder pipe rule 2: positions=2000, units=1000
+random compared construction: methName: empty U direct: pipe rule 1: positions=1000, units=1000
+random compared construction: methName: empty U parenthesized: call: positions=1000, units=1000
+random compared construction: methName: empty U parenthesized: pipe rule 1: positions=1000, units=1000
+random compared construction: methName: empty U direct: placeholder: positions=2000, units=1000
+random compared construction: methName: empty U direct: placeholder pipe rule 2: positions=1000, units=1000
+random compared construction: methName: empty U parenthesized: placeholder: positions=2000, units=1000
+random compared construction: methName: empty U parenthesized: placeholder pipe rule 2: positions=1000, units=1000
+random compared construction: methName: empty U direct: pipe rule 2: positions=1000, units=1000
+random compared construction: funDicts direct: pipe rule 2: positions=1000, units=1000
+random compared construction: funDicts parenthesized: pipe rule 2: positions=1000, units=1000
+random compared construction: methName: nonempty U direct: pipe rule 2: positions=1000, units=1000
+random compared construction: methName: nonempty U parenthesized: pipe rule 2: positions=1000, units=1000
+random compared construction: interpolation: parts 3: positions=1000, units=1000
+random compared construction: interpolation: parts 5: positions=1000, units=1000
+random compared construction: interpolation: parts 2: positions=1000, units=1000
+random compared construction: interpolation: parts 7: positions=1000, units=1000
+random compared construction: implementation method: positions=10000, units=10000
+random compared construction: implementation supers unit: positions=10000, units=10000
+random compared construction: implementation superclass dictionary: positions=2000, units=2000
+desugarDiff: 38s; report: /Users/tecogonaz/src/Benitoite/target/desugar-diff/run-l4bc3-20261018/report.json
+== formal: builtinCheck
+builtinCheck: inputs=1352, prim entries=98624, converted=98595
+missing prims: []; missing constructors: []
+unconvertible opaque arguments: ["Task.await", "TaskGroup.spawn"]
+typeclass constraints (excluded): []
+State functions represented as pure: ["Task.all",
+ "Task.allOk",
+ "Task.await",
+ "TaskGroup.open",
+ "TaskGroup.spawn",
+ "Task.race",
+ "Task.withTimeout",
+ "IO.File.closeReader",
+ "IO.File.closeWriter",
+ "Network.Http.closeListener",
+ "Network.Http.requestOf"]
+summary comparisons: 72600; mismatches: 0; nonconverged inputs: 0
+builtinCheck: 28s; report: /Users/tecogonaz/src/Benitoite/target/desugar-diff/run-l4bc3-20261018/builtin-report.json
+== formal: coverageProgramDiff
+coverageProgramDiff: inputs=1352 matches=16417 bindings=6036 matched=22453 mismatched=0 outOfScope=0 fuelExhausted=0
+coverageProgramDiff: 2s; report: /Users/tecogonaz/src/Benitoite/target/desugar-diff/run-l4bc3-20261018/coverage/report.json
+== formal: surfaceCheckAll
+surfaceCheckAll: inputs=100 mismatches=0
+surfaceCheckAll: inputs=200 mismatches=0
+surfaceCheckAll: inputs=300 mismatches=0
+surfaceCheckAll: inputs=400 mismatches=0
+surfaceCheckAll: inputs=500 mismatches=0
+surfaceCheckAll: inputs=600 mismatches=0
+surfaceCheckAll: inputs=700 mismatches=0
+surfaceCheckAll: inputs=800 mismatches=0
+surfaceCheckAll: inputs=900 mismatches=0
+surfaceCheckAll: inputs=1000 mismatches=0
+surfaceCheckAll: inputs=1100 mismatches=0
+surfaceCheckAll: inputs=1200 mismatches=0
+surfaceCheckAll: inputs=1300 mismatches=0
+{"lazyRestriction":0,"matched":51652,"mismatched":0,"outOfScope":19,"preparationFailure":0,"q11":1}
+surfaceCheckAll: 46s; report: /Users/tecogonaz/src/Benitoite/target/desugar-diff/run-l4bc3-20261018/surface-check/report.json
+== formal: per-program final Rust exports
+final input routing: 1741 inputs, identifiers, exclusions, scopes and coverage agree
+width export: three inputs and all 30 definitions agree
+single surface checks: 0/1741 inputs
+single surface checks: 100/1741 inputs
+single surface checks: 200/1741 inputs
+single surface checks: 300/1741 inputs
+single surface checks: 400/1741 inputs
+single surface checks: 500/1741 inputs
+single surface checks: 600/1741 inputs
+single surface checks: 700/1741 inputs
+single surface checks: 800/1741 inputs
+single surface checks: 900/1741 inputs
+single surface checks: 1000/1741 inputs
+single surface checks: 1100/1741 inputs
+single surface checks: 1200/1741 inputs
+single surface checks: 1300/1741 inputs
+single surface checks: 1400/1741 inputs
+single surface checks: 1500/1741 inputs
+single surface checks: 1600/1741 inputs
+single surface checks: 1700/1741 inputs
+named programs: 1741 inputs, 73753 definitions, 22453 coverage entries agree
+named special export: three contract mutations rejected for the intended reason
+named checked programs: six hole/pipe mutations rejected for the intended reason
+external package export: IOErrorKind view and constant declaration package agree
+named export: six mutations rejected for the intended reason
+final routing, per-program exports and rejection checks passed; checking all independent coverage
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/crates/benitoite/tests/desugar_export/check_named.py", line 499, in <module>
+    main()
+  File "/Users/tecogonaz/src/Benitoite/crates/benitoite/tests/desugar_export/check_named.py", line 493, in main
+    report = run("coverageDiff", [coverage_dir / "named-all-corpus.json"], coverage_dir / "named-all-report.json")
+  File "/Users/tecogonaz/src/Benitoite/crates/benitoite/tests/desugar_export/check_named.py", line 30, in run
+    require(process.returncode == status,
+  File "/Users/tecogonaz/src/Benitoite/crates/benitoite/tests/desugar_export/check_named.py", line 22, in require
+    raise AssertionError(message)
+AssertionError: coverageDiff: expected 0, got 1: coverageDiff: cases=10020 matched=9133 mismatched=887 fuelExhausted=0
+

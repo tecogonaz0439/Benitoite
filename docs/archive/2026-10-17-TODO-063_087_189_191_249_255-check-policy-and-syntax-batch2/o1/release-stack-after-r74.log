@@ -1,0 +1,20 @@
++ cargo test --release -p benitoite --lib -- pipeline::tests::stages_fit_the_measured_stack_ --include-ignored
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `release` profile [optimized] target(s) in 50.75s
+     Running unittests src/lib.rs (target/release/deps/benitoite-f4ad65d7b65bd5f6)
+
+running 10 tests
+test pipeline::tests::stages_fit_the_measured_stack_for_statement_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_guard_fallbacks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_recursive_types ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_operators ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_branches ... ok
+test pipeline::tests::stages_fit_the_measured_stack_for_flat_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_records ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_blocks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_lists ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_patterns ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1212 filtered out; finished in 26.92s
+
+completed 10 release-stack tests

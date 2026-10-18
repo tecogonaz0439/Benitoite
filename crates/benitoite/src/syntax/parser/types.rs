@@ -251,12 +251,34 @@ pub(super) fn parse_uses(
         p.enter(child(depth))?;
         let from = p.pos;
         let path = p.qual_name(true)?;
+        let ambiguous = !effects.is_empty() && path.len() == 1;
+        let args = if !ambiguous && p.eat(TokenKind::LBracket) {
+            Some(comma_list(
+                p,
+                depth,
+                CommaList {
+                    close: TokenKind::RBracket,
+                    element: text::TYPE,
+                    separator: text::COMMA_OR_RBRACKET,
+                    allow_empty: true,
+                    indexed: false,
+                },
+                push_type,
+                |out, error| out.push(TypeExpr::Error(error)),
+            )?)
+        } else {
+            None
+        };
         effects.push(EffectRef {
             id: p.node_id(),
             span: p.span_from(from),
             path,
+            args,
         });
-        if effects.len() > 1 && p.at(TokenKind::LBracket) {
+        if effects.len() > 1
+            && effects.last().is_some_and(|e| e.path.len() == 1)
+            && p.at(TokenKind::LBracket)
+        {
             let end = matching_bracket(p);
             let span = end
                 .and_then(|end| effects.last().map(|e| e.span.to(end)))

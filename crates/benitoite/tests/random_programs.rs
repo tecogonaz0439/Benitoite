@@ -23,6 +23,9 @@ pub mod generator;
 #[path = "random_programs/shrink.rs"]
 mod shrink;
 
+#[path = "operation_dictionaries/mod.rs"]
+mod operation_dictionaries;
+
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -302,5 +305,19 @@ fn injected_difference(source: &str) -> Result<(), Failure> {
     ) {
         Comparison::Failed(detail) => Err(Failure::new("injected stdout", detail)),
         Comparison::Matched | Comparison::Excluded(_) => Ok(()),
+    }
+}
+
+// 関門: 辞書の束縛・捕捉と公開引数の順序を両実行器で独立に確かめる。
+// 入力はVMの表と共有し、実行時の引数の渡し方に固有の差を捕まえる。
+#[test]
+fn constrained_operation_call_forms_differential() {
+    for (index, &(name, declarations, expression, expected)) in
+        operation_dictionaries::CASES.iter().enumerate()
+    {
+        let source = operation_dictionaries::source(declarations, expression, expected);
+        if let Err(failure) = evaluate(u64::try_from(index).unwrap(), &source) {
+            panic!("{name}: {}\n{source}", failure.detail);
+        }
     }
 }

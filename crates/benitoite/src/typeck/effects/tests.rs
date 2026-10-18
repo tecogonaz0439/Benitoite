@@ -1264,3 +1264,82 @@ fn die_production_loading_keeps_imports_and_effect_help_explicit() {
         }
     }
 }
+
+// 関門: 公開の型検査がモジュールを越える契約を守ることを確かめる。
+// Scheme の行条件を呼び出し側で落とす退行は単一ファイルの golden では届かない。
+// 既存の check_files を使い、本番の差し込み口を足さない。
+#[test]
+fn failure_row_contract_survives_modules_and_higher_order_values() {
+    let library = r#"
+import Benitoite.Unofficial.Failure
+public function catchString[effect Rest](body: function() -> Integer uses Failure.Fail[String], Rest) -> Integer uses Rest
+ return handle body() with
+ case Failure.raise(error) -> String.characterCount(error)
+ end handle
+end function
+"#;
+    for (declaration, body, expected) in [
+        (
+            "",
+            "return Catch.catchString(lambda() return Failure.raise(error: \"abc\") end lambda)",
+            None,
+        ),
+        (
+            "[effect E](body: function() -> Integer uses Failure.Fail[String], E) -> Integer uses E",
+            "bind f <- Catch.catchString\n return f(body)",
+            None,
+        ),
+        (
+            "[effect E](body: function() -> Integer uses E) -> Integer uses E",
+            "bind f <- Catch.catchString\n return f(body)",
+            Some(C::E0515),
+        ),
+    ] {
+        let signature = if declaration.is_empty() {
+            "() -> Integer"
+        } else {
+            declaration
+        };
+        let main = format!(
+            "import Catch\nimport Benitoite.Unofficial.Failure\nfunction use{signature}\n{body}\nend function\n"
+        );
+        let (_, _, _, diagnostics) =
+            check_files(&[("main.bnt", &main), ("Catch.bnt", library)], false);
+        let codes = diagnostics
+            .iter()
+            .filter(|d| d.is_error())
+            .map(|d| d.code.unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            codes,
+            expected.into_iter().collect::<Vec<_>>(),
+            "{main}\n{diagnostics:#?}"
+        );
+    }
+}
+
+// 同じ綴りの利用者の操作を標準の非再開操作と誤認しない。
+#[test]
+fn user_failure_spelling_keeps_ordinary_operation_semantics() {
+    let (_, _, _, diagnostics) = check_files(
+        &[
+            (
+                "main.bnt",
+                r#"
+import LocalFailure as Failure
+function recovered() -> Integer
+ return handle Failure.raise(error: "abc") with
+ case Failure.raise(error) -> resume(String.characterCount(error))
+ end handle
+end function
+"#,
+            ),
+            (
+                "LocalFailure.bnt",
+                "public effect Fail\n function raise(error: String) -> Integer\nend effect\n",
+            ),
+        ],
+        false,
+    );
+    assert!(diagnostics.is_empty(), "{diagnostics:#?}");
+}

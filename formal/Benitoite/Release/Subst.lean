@@ -10,6 +10,8 @@ import Benitoite.Release.Syntax
 置き換えた型を Ā に適用する（`Ty.applyTo`）。
 -/
 
+noncomputable section
+
 namespace Benitoite.Release
 
 /-- 型を変換しても引数の個数と契約名の一意性は変わらない。 -/
@@ -42,67 +44,6 @@ def Arm.binders (arm : Arm) : Nat := Arm.bindersOf arm.alts
 
 /-! ## 型とエフェクトの置き換え -/
 
-/-- 型構成子 φ を型引数 Ā に適用した型。型引数の個数が φ と合わないときの値は使わない（どれも置き換えと
-可換になるように、足りない型引数を `Unit` で補う）。 -/
-def TyCon.apply : TyCon → List Ty → Ty
-  | .data d, as => .data d as
-  | .list, as => .list (as.headD (.base .unit))
-  | .set, as => .set (as.headD (.base .unit))
-  | .map, as => .map (as.headD (.base .unit)) (as.tail.headD (.base .unit))
-  | .reference, as => .reference (as.headD (.base .unit))
-  | .lazy, as => .lazy (as.headD (.base .unit))
-
-/-- `α[Ā]` の α を t に置き換えた型。t が型構成子なら Ā に適用し、型構成子を表す型パラメータなら、その適用に
-する。t がそれ以外の型のとき（型の種類が合わないとき）は t のままにする。 -/
-def Ty.applyTo (t : Ty) (as : List Ty) : Ty :=
-  match t with
-  | .ctor φ => φ.apply as
-  | .tvar j => .tapp j as
-  | t => t
-
-/-- 型の変数の番号を、`c` 以上のものだけ `k` ずらす。 -/
-def Ty.shift (k c : Nat) : Ty → Ty
-  | .base ι => .base ι
-  | .opaque o => .opaque o
-  | .data d args => .data d (args.map (Ty.shift k c))
-  | .list a => .list (Ty.shift k c a)
-  | .fn names params ret eff => .fn names (params.map (Ty.shift k c)) (Ty.shift k c ret) eff
-  | .tvar i => if i < c then .tvar i else .tvar (i + k)
-  | .reference a => .reference (Ty.shift k c a)
-  | .lazy a => .lazy (Ty.shift k c a)
-  | .cont b t eff => .cont (Ty.shift k c b) (Ty.shift k c t) eff
-  | .map a b => .map (Ty.shift k c a) (Ty.shift k c b)
-  | .set a => .set (Ty.shift k c a)
-  | .bytes => .bytes
-  | .dict cl τ => .dict cl (Ty.shift k c τ)
-  | .tapp i args => .tapp (if i < c then i else i + k) (args.map (Ty.shift k c))
-  | .ctor φ => .ctor φ
-
-def Ty.substAt (c : Nat) (ts : List Ty) (es : List Eff) : Ty → Ty
-  | .base ι => .base ι
-  | .opaque o => .opaque o
-  | .data d args => .data d (args.map (Ty.substAt c ts es))
-  | .list a => .list (Ty.substAt c ts es a)
-  | .fn names params ret eff =>
-      .fn names (params.map (Ty.substAt c ts es)) (Ty.substAt c ts es ret) (Eff.substRho es eff)
-  | .tvar i =>
-      if i < c then .tvar i
-      else if i - c < ts.length then ((ts[i - c]?).getD (.tvar i)).shift c 0
-      else .tvar (i - ts.length)
-  | .reference a => .reference (Ty.substAt c ts es a)
-  | .lazy a => .lazy (Ty.substAt c ts es a)
-  | .cont b t eff => .cont (Ty.substAt c ts es b) (Ty.substAt c ts es t) (Eff.substRho es eff)
-  | .map a b => .map (Ty.substAt c ts es a) (Ty.substAt c ts es b)
-  | .set a => .set (Ty.substAt c ts es a)
-  | .bytes => .bytes
-  | .dict cl τ => .dict cl (Ty.substAt c ts es τ)
-  | .tapp i args =>
-      if i < c then .tapp i (args.map (Ty.substAt c ts es))
-      else if i - c < ts.length then
-        Ty.applyTo (((ts[i - c]?).getD (.tvar i)).shift c 0) (args.map (Ty.substAt c ts es))
-      else .tapp (i - ts.length) (args.map (Ty.substAt c ts es))
-  | .ctor φ => .ctor φ
-
 /-- 型の置き換え θ = [T̄/ᾱ, Ē/ρ̄]（束縛の外側での置き換え）。 -/
 def Ty.subst (ts : List Ty) (es : List Eff) : Ty → Ty := Ty.substAt 0 ts es
 
@@ -110,12 +51,13 @@ mutual
   def Val.substTyAt (c : Nat) (ts : List Ty) (es : List Eff) : Val → Val
     | .var i => .var i
     | .const k => .const k
-    | .fnRef f tys effs => .fnRef f (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substRho es))
-    | .prim b tys effs => .prim b (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substRho es))
+    | .fnRef f tys effs => .fnRef f (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
+    | .prim b tys effs => .prim b (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
     | .lam names params body => .lam names (params.map (Ty.substAt c ts es)) (Comp.substTyAt c ts es body)
     | .con k tys args => .con k (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
     | .list elems => .list (Val.substTyAtList c ts es elems)
     | .op o tys => .op o (tys.map (Ty.substAt c ts es))
+    | .raise t e => .raise (t.substAt c ts es) (e.substAt c ts es)
     | .loc l => .loc l
     | .mapV ks vs => .mapV (Val.substTyAtList c ts es ks) (Val.substTyAtList c ts es vs)
     | .setV elems => .setV (Val.substTyAtList c ts es elems)
@@ -139,7 +81,7 @@ mutual
     | .handle m h => .handle (Comp.substTyAt c ts es m) (Clause.substTyAtList c ts es h)
     | .resume k v => .resume (Val.substTyAt c ts es k) (Val.substTyAt c ts es v)
     | .meth d m tys effs args =>
-        .meth (Val.substTyAt c ts es d) m (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substRho es))
+        .meth (Val.substTyAt c ts es d) m (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
           (Val.substTyAtList c ts es args)
 
   def Arm.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Arm → List Arm
@@ -153,6 +95,7 @@ mutual
   def Clause.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Clause → List Clause
     | [] => []
     | .mk o n k m :: cs => .mk o n k (Comp.substTyAt (c + k) ts es m) :: Clause.substTyAtList c ts es cs
+    | .fail e m :: cs => .fail (e.substAt c ts es) (Comp.substTyAt (c + 1) ts es m) :: Clause.substTyAtList c ts es cs
 end
 
 /-- 01-12 の `Mθ`。 -/
@@ -175,6 +118,7 @@ mutual
     | .con c tys args => .con c tys (Val.renameList ξ args)
     | .list elems => .list (Val.renameList ξ elems)
     | .op o tys => .op o tys
+    | .raise t e => .raise t e
     | .loc l => .loc l
     | .mapV ks vs => .mapV (Val.renameList ξ ks) (Val.renameList ξ vs)
     | .setV elems => .setV (Val.renameList ξ elems)
@@ -210,6 +154,7 @@ mutual
   def Clause.renameList (ξ : Nat → Nat) : List Clause → List Clause
     | [] => []
     | .mk o n k m :: cs => .mk o n k (Comp.rename (upRen (n + 1) ξ) m) :: Clause.renameList ξ cs
+    | .fail e m :: cs => .fail e (Comp.rename (upRen 2 ξ) m) :: Clause.renameList ξ cs
 end
 
 def upSubst (k : Nat) (σ : Nat → Val) (i : Nat) : Val :=
@@ -225,6 +170,7 @@ mutual
     | .con c tys args => .con c tys (Val.substList σ args)
     | .list elems => .list (Val.substList σ elems)
     | .op o tys => .op o tys
+    | .raise t e => .raise t e
     | .loc l => .loc l
     | .mapV ks vs => .mapV (Val.substList σ ks) (Val.substList σ vs)
     | .setV elems => .setV (Val.substList σ elems)
@@ -260,6 +206,7 @@ mutual
   def Clause.substList (σ : Nat → Val) : List Clause → List Clause
     | [] => []
     | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m) :: Clause.substList σ cs
+    | .fail e m :: cs => .fail e (Comp.subst (upSubst 2 σ) m) :: Clause.substList σ cs
 end
 
 /-- 01-12 の `M[W̄/x̄]`。束縛した順の最後の値が番号 0 に当たる。 -/

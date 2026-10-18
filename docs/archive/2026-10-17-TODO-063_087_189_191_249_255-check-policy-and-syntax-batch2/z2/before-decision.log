@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.90s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-56ccf1742902add3)
+
+running 1 test
+test ir::decision::tests::exhaustive_character_columns_preserve_correlated_rows ... FAILED
+
+failures:
+
+---- ir::decision::tests::exhaustive_character_columns_preserve_correlated_rows stdout ----
+
+thread 'ir::decision::tests::exhaustive_character_columns_preserve_correlated_rows' (6526083) panicked at crates/benitoite/src/ir/decision.rs:1909:39:
+called `Result::unwrap()` on an `Err` value: Internal(InternalError { stage: "decision", message: "empty pattern matrix" })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    ir::decision::tests::exhaustive_character_columns_preserve_correlated_rows
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1229 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p benitoite --lib`

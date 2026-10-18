@@ -1,0 +1,16 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "443e1faff532a66352986150d3f36e8e72be3319",
+    "--only",
+    "fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,spec_examples,reference_examples,skill_docs",
+    "--test",
+    "*",
+    "--dry-run"
+  ],
+  "exit": 0,
+  "seconds": 0.012
+}

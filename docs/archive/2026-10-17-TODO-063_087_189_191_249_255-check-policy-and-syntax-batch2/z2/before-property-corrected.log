@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.53s
+     Running tests/property_library.rs (target/debug/deps/property_library-fbb68f20985e72e8)
+
+running 1 test
+test exhausted_candidates_at_exact_budget_do_not_report_limit ... FAILED
+
+failures:
+
+---- exhausted_candidates_at_exact_budget_do_not_report_limit stdout ----
+
+thread 'exhausted_candidates_at_exact_budget_do_not_report_limit' (6528180) panicked at crates/benitoite/tests/property_library.rs:95:5:
+assertion `left == right` failed: RunEnd { exit_code: 1, end: MainError, main_error: Some("limit only when candidates remain untried"), die_failure: None, reports: [], heap: HeapStats { allocations: 72, allocated_bytes: 5440, live_bytes: 0, peak_heap_bytes: 5440, collections: 0, pause_total_nanos: 0, pause_max_nanos: 0, pause_nanos: [], roots_traced: 0, frees: 0 } }
+  left: MainError
+ right: Returned
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    exhausted_candidates_at_exact_budget_do_not_report_limit
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.20s
+
+error: test failed, to rerun pass `-p benitoite --test property_library`

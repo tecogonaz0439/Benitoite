@@ -1,6 +1,7 @@
 import Benitoite.Surface.Lemmas.Typing
 import Benitoite.Surface.Lemmas.Scoped
 import Benitoite.Surface.Lemmas.SubstClean
+import Benitoite.Surface.Lemmas.NoFailSignature
 
 /-! 定義の導出から、脱糖したプログラムと入口の型付けを得る（設計書 01-12「トップレベルの関数」「型クラス」）。 -/
 namespace Benitoite.Surface
@@ -10,7 +11,7 @@ variable {p : Program} {B : Builtins} {op : OpPrim}
 
 theorem desugar_wellFormed (hwf : p.WellFormed) (hwt : p.WellTyped B op) :
     (desugarProgram op p).WellFormed := by
-  refine ⟨?_, hwf.2.2.1, hwf.2.2.2.1, ?_, ?_⟩
+  refine ⟨?_, hwf.2.2.1, (fun o od h => (hwf.2.2.2.1 o od h).1), ?_, ?_⟩
   · intro f dd hd
     cases hs : p.defs f with
     | none =>
@@ -34,7 +35,7 @@ theorem desugar_wellFormed (hwf : p.WellFormed) (hwt : p.WellTyped B op) :
           rcases List.mem_append.mp ht with ht | ht
           · exact varsInList_mem (d.toFunDecl.dictTys_scoped sc.2.2.2.1) ht
           · exact varsInList_mem sc.1 ht),
-        sc.2.1, sc.2.2.1, HasBlock.desugar_scoped (hwt.1 f d hds).2.2 sc.2.2.2.2⟩
+        sc.2.1, sc.2.2.1, HasBlockQ.desugar_scoped (hwt.1 f d hds).2.2 sc.2.2.2.2⟩
   · exact hwf.2.2.2.2.2.2.1
   · intro i dd hd
     obtain ⟨id, hs, heq⟩ := Option.map_eq_some_iff.mp hd
@@ -54,7 +55,7 @@ theorem desugar_wellFormed (hwf : p.WellFormed) (hwt : p.WellTyped B op) :
       obtain ⟨b', hb', _, htyped⟩ := hmethods m ms hm
       have he : b' = b := Option.some.inj (hb'.symm.trans hbody)
       subst b'
-      exact HasBlock.desugar_scoped htyped (sc.2.2.2 cd m ms b hc hm hbody)
+      exact HasBlockQ.desugar_scoped htyped (sc.2.2.2 cd m ms b hc hm hbody)
 
 /-- 本体の指定で受理したソース照合から、指定を消した同じコアの型付けを導く。 -/
 theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
@@ -79,7 +80,9 @@ theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
       have names := (hwf.2.1 f d hds).2.1
       have sc := (hwf.2.1 f d hds).2.2
       refine ⟨names, ?_⟩
-      apply HasBlock.desugar (view := p.functionViews f) hwf hsig (hwt.1 f d hds).2.2
+      change HasTypeCQ _ _ _ (Qsig (d.dictTys ++ d.params) d.ret d.eff) _ _ _ _ _ _
+      rw [FunDecl.Qsig_core]
+      apply HasBlockQ.desugar (view := p.functionViews f) hwf hsig (hwt.1 f d hds).2.2
       · simpa [binds_length, FunDecl.dictTys_length] using sc.2.2.2.2
       · have hh := EnvClean.binds (Γ := []) (cleanList_append
           (d.toFunDecl.dictTys_scoped (pe := fun _ => True) sc.2.2.2.1) (scopedList_clean sc.1))
@@ -101,10 +104,10 @@ theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
         ⟨scoped_clean sc.2.1, trivial⟩
       have hret : TyOK (ms.tparams ++ id.tparams).length (id.methTy ms ms.ret) := by
         simpa only [Surface.ImplDecl.methTy, List.length_append, List.length_singleton] using
-          substAt_clean ms.tparams.length [] htarget ms.ret (scoped_clean hsc.2.2.1)
+          substAt_clean ms.tparams.length [] htarget (by simp) ms.ret (scoped_clean hsc.2.2.1)
       have hparams : Ty.VarsInList (ms.tparams.length + id.tparams.length) (fun _ => True)
           (ms.params.map (id.methTy ms)) :=
-        substAtList_clean ms.tparams.length [] htarget ms.params (scopedList_clean hsc.2.1)
+        substAtList_clean ms.tparams.length [] htarget (by simp) ms.params (scopedList_clean hsc.2.1)
       have hdicts : Ty.VarsInList id.tparams.length (fun _ => True) id.dictTys := by
         unfold ImplSig.dictTys
         exact Ty.varsInList_of_forall (by
@@ -120,7 +123,7 @@ theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
           EnvClean.binds (Γ := []) hclean (by intro j t hj; simp at hj)
       refine ⟨desugarBlock op .tail body, by simp only [desugarImpl, hb, Option.map_some], ?_⟩
       refine ⟨hsc.1, ?_⟩
-      apply HasBlock.desugar (view := p.methodViews i m) (pe := (· < ms.neffs)) hwf hsig hbody
+      apply HasBlockQ.desugar (view := p.methodViews i m) (pe := (· < ms.neffs)) hwf hsig hbody
       · simpa only [List.length_append, binds_length, ImplSig.dictTys, List.length_map] using
           sc.2.2.2 cd m ms body hc hms hb
       · exact hΓ
@@ -143,12 +146,24 @@ theorem main_typed (hwf : p.WellFormed) (hmain : p.HasMain Eff.empty) :
     simp [desugarProgram, Program.lookupFun, hd]
   have hsat : SatAll B [] [] d.tparams := by
     rw [ht]; exact ⟨rfl, by intro i τ c hi; cases hi⟩
-  have hf := HasTypeV.V_Fun (ts := []) (es := []) (Ψ := StoreTy.empty) (Γ := [])
-    hd' (hwf.2.1 _ _ hd).2.1 hsat (by simpa [desugarDef] using he.symm)
+  have hf := HasTypeVQ.V_Fun (Q := Qempty) (ts := []) (es := []) (Ψ := StoreTy.empty) (Γ := [])
+    hd' (hwf.2.1 _ _ hd).2.1 (by
+      have hsc := (hwf.2.1 _ _ hd).2.2
+      refine ⟨hsat, by simp, by simpa [desugarDef] using he.symm, by simp, ?_, ?_, ?_⟩
+      · simpa only [desugarDef, he, List.length_nil] using Eff.VarsIn.rows d.eff hsc.2.2.1
+      · have hq := Qsig.varsIn_scoped hsc.1 hsc.2.1 hsc.2.2.1
+        simpa only [desugarDef, FunDecl.dictTys, hdict, List.map_nil, List.nil_append, he, List.length_nil] using hq
+      · intro i hi
+        have hq := Qsig.varsIn_scoped hsc.1 hsc.2.1 hsc.2.2.1
+        have hi' : Qsig d.params d.ret d.eff i := by
+          simpa only [desugarDef, FunDecl.dictTys, hdict, List.map_nil, List.nil_append] using hi
+        have hn := hq i hi'
+        rw [he] at hn
+        exact (Nat.not_lt_zero i hn).elim)
   have hε' := Eff.sub_empty hε
   simp only [desugarDef, fnTy_eq, FunDecl.coreNames, internalNames, hn, List.length_nil,
     List.range_zero, FunDecl.dictTys, hdict, hp, List.nil_append,
-    hε', List.map_nil, Eff.substRho_empty] at hf
+    hε', List.map_nil, Eff.substAt_empty] at hf
   exact ⟨_, .C_App hf .nil⟩
 
 end Benitoite.Surface

@@ -161,32 +161,6 @@ fn unsupported_target(target: &TypeArg) -> Option<&'static str> {
 fn unsupported(name: &str) -> Value {
     tagged("unsupported", json!({"name":name}))
 }
-fn eff(e: &EffectSet) -> Value {
-    let mut atoms: Vec<Value> = e
-        .names
-        .iter()
-        .map(|n| {
-            let name = match n {
-                EffectName::User(id) => format!("effect:{}", id.0),
-                EffectName::Builtin(id) => {
-                    let d = id.def().unwrap();
-                    // die の型規則が指定する標準の原子名へ揃える。型・効果・
-                    // 組み込みの表を同じ名前で交換する（07-04「01-12 との対応」）。
-                    if d.module == ["IO", "Process"] && d.name == "Exit" {
-                        "Process.Exit".to_owned()
-                    } else if d.module.is_empty() {
-                        d.name.to_owned()
-                    } else {
-                        format!("{}.{}", d.module.join("."), d.name)
-                    }
-                }
-            };
-            tagged("name", json!({"value":name}))
-        })
-        .collect();
-    atoms.extend(e.vars.iter().map(|i| tagged("rho", json!({"index":i.0}))));
-    json!(atoms)
-}
 
 fn constant(v: &ConstValue) -> Value {
     match v {
@@ -245,6 +219,13 @@ enum SurfaceSlot {
     Continuation,
     Ignored,
     Dictionary(usize),
+    ClauseDictionary {
+        clause: NodeId,
+        constraint: usize,
+        outer: usize,
+        arity: usize,
+        dict_count: usize,
+    },
 }
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum CoreSlot {
@@ -388,6 +369,37 @@ impl Surface<'_> {
             annotations: BTreeMap::new(),
         }
     }
+    fn eff(&mut self, e: &EffectSet) -> Value {
+        let mut atoms: Vec<Value> = e
+            .names
+            .iter()
+            .map(|n| {
+                let name = match n {
+                    EffectName::User(id) => format!("effect:{}", id.0),
+                    EffectName::Builtin(id) => {
+                        let d = id.def().unwrap();
+                        // die の型規則が指定する標準の原子名へ揃える。型・効果・
+                        // 組み込みの表を同じ名前で交換する（07-04「01-12 との対応」）。
+                        if d.module == ["IO", "Process"] && d.name == "Exit" {
+                            "Process.Exit".to_owned()
+                        } else if d.module.is_empty() {
+                            d.name.to_owned()
+                        } else {
+                            format!("{}.{}", d.module.join("."), d.name)
+                        }
+                    }
+                };
+                tagged("name", json!({"value":name}))
+            })
+            .collect();
+        atoms.extend(e.vars.iter().map(|i| tagged("rho", json!({"index":i.0}))));
+        atoms.extend(
+            e.failures
+                .iter()
+                .map(|t| json!({"kind":"fail","error":self.ty(t)})),
+        );
+        json!(atoms)
+    }
     fn type_index(&self, i: u32) -> usize {
         assert!(!self.closed_constant, "type parameter in constant body");
         let i = usize::try_from(i).unwrap();
@@ -449,6 +461,40 @@ impl Surface<'_> {
                     json!({"name":impl_name(*impl_decl),"tys":tys,"args":args}),
                 )
             }
+            DictExpr::Clause {
+                clause,
+                constraint,
+                supers,
+            } => {
+                let constraint = usize::try_from(*constraint).unwrap();
+                let slot = env
+                    .iter()
+                    .find(|s| {
+                        matches!(s,
+                            SurfaceSlot::ClauseDictionary { clause: owner, constraint: i, .. }
+                                if owner == clause && *i == constraint
+                        )
+                    })
+                    .expect("clause dictionary not in environment");
+                let SurfaceSlot::ClauseDictionary {
+                    outer,
+                    arity,
+                    dict_count,
+                    ..
+                } = slot
+                else {
+                    unreachable!()
+                };
+                let mut value = tagged(
+                    "clause",
+                    json!({"outer":outer,"arity":arity,"dictCount":dict_count,
+                    "constraint":constraint,"depth":env.len() - outer - arity - dict_count - 1}),
+                );
+                for cl in supers {
+                    value = tagged("super", json!({"dict":value,"cls":class_name(*cl)}));
+                }
+                value
+            }
             DictExpr::Param { constraint, supers } => {
                 let index = env
                     .iter()
@@ -497,7 +543,7 @@ impl Surface<'_> {
             Ty::Fn(f) => {
                 let params: Vec<_> = f.params.iter().map(|p| self.ty(p)).collect();
                 let ret = self.ty(&f.ret);
-                let mut fields = json!({"params":params,"ret":ret,"eff":eff(&f.effects)});
+                let mut fields = json!({"params":params,"ret":ret,"eff":self.eff(&f.effects)});
                 assert_eq!(
                     f.param_names.iter().collect::<BTreeSet<_>>().len(),
                     f.params.len()
@@ -577,6 +623,9 @@ impl Surface<'_> {
         })
     }
     fn op_ref(&self, id: BindingId) -> Value {
+        if Some(id) == self.p.resolved.stdlib("Benitoite.Failure.raise") {
+            return json!("fail");
+        }
         match self.p.resolved.builtin_ops.get(id) {
             Some(b) => tagged(
                 "prim",
@@ -606,7 +655,7 @@ impl Surface<'_> {
     }
     fn args(&mut self, args: &TypeArgs) -> (Vec<Value>, Vec<Value>) {
         let tys = args.tys.iter().map(|t| self.type_arg(t)).collect();
-        (tys, args.effects.iter().map(eff).collect())
+        (tys, args.effects.iter().map(|e| self.eff(e)).collect())
     }
     fn header(&mut self, s: &Scheme) -> Value {
         let mut ordered: Vec<_> = s.type_params.iter().enumerate().collect();
@@ -624,8 +673,14 @@ impl Surface<'_> {
             })
             .collect();
         let params: Vec<_> = s.params.iter().map(|p| self.ty(p)).collect();
-        let mut header = json!({"tparams":tparams,"neffs":s.effect_params.len(),"params":params,
-            "ret":self.ty(&s.ret),"eff":eff(&s.effects)});
+        let eff_params: Vec<_> = s
+            .effect_params
+            .iter()
+            .enumerate()
+            .map(|(i, _)| json!({"noFail":s.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))}))
+            .collect();
+        let mut header = json!({"tparams":tparams,"neffs":s.effect_params.len(),"effParams":eff_params,"params":params,
+            "ret":self.ty(&s.ret),"eff":self.eff(&s.effects)});
         assert_eq!(
             s.param_names
                 .iter()
@@ -821,14 +876,15 @@ impl Surface<'_> {
                     if matches!(binding.kind, BindingKind::BuiltinFn(_)) {
                         return self.outside("constrained head: builtin");
                     }
-                    if matches!(binding.kind, BindingKind::Op { .. }) {
-                        return self.outside("constrained head: operation");
-                    }
                     return self.dictionary_name(n, id, env);
                 }
                 let (tys, effs) = self.targs(n.id, id);
                 if matches!(binding.kind, BindingKind::Op { .. }) {
                     assert!(effs.is_empty(), "operation has effect arguments: {id:?}");
+                }
+                if Some(id) == self.p.resolved.stdlib("Benitoite.Failure.raise") {
+                    assert_eq!(tys.len(), 2);
+                    return tagged("raise", json!({"result":tys[0],"error":tys[1]}));
                 }
                 let (tag, name) = match binding.kind {
                     BindingKind::Fn => ("funName", fun_name(id)),
@@ -907,12 +963,21 @@ impl Surface<'_> {
             tys.remove(0);
             (
                 "methName",
-                json!({"dict":dicts[0],"name":method_name(id),"tys":tys,"effs":effs,"dicts":dicts[1..],"params":params,"eff":eff(&f.effects)}),
+                json!({"dict":dicts[0],"name":method_name(id),"tys":tys,"effs":effs,"dicts":dicts[1..],"params":params,"eff":self.eff(&f.effects)}),
+            )
+        } else if matches!(
+            self.p.resolved.bindings.get(id).unwrap().kind,
+            BindingKind::Op { .. }
+        ) {
+            assert!(effs.is_empty(), "operation has effect arguments");
+            (
+                "opDicts",
+                json!({"name":format!("op:{}",id.0),"tys":tys,"dicts":dicts,"params":params,"eff":self.eff(&f.effects)}),
             )
         } else {
             (
                 "funDicts",
-                json!({"name":fun_name(id),"tys":tys,"effs":effs,"dicts":dicts,"params":params,"eff":eff(&f.effects)}),
+                json!({"name":fun_name(id),"tys":tys,"effs":effs,"dicts":dicts,"params":params,"eff":self.eff(&f.effects)}),
             )
         };
         assert_eq!(f.param_names.len(), f.params.len());
@@ -1128,7 +1193,8 @@ impl Surface<'_> {
                 }
                 let body = self.block(&v.body, &local, Position::Tail);
                 self.return_ty = saved_ret;
-                let mut fields = json!({"params":params,"ret":ret,"eff":eff(effects),"body":body});
+                let mut fields =
+                    json!({"params":params,"ret":ret,"eff":self.eff(effects),"body":body});
                 assert_eq!(f.param_names.len(), f.params.len());
                 fields["names"] = json!(f.param_names);
                 tagged("lam", fields)
@@ -1379,19 +1445,69 @@ impl Surface<'_> {
                 let body = self.block(&v.body, env, Position::Other);
                 let info = self.p.types.handlers.get(v.id).unwrap();
                 assert_eq!(v.clauses.len(), info.clauses.len());
-                let clauses: Vec<_> = v.clauses.iter().zip(&info.clauses).map(|(clause, info)| {
+                if let [clause] = v.clauses.as_slice()
+                    && let Some(error) = &info.clauses[0].failure_type
+                {
+                    let error = self.ty(error);
+                    let result = self.node_ty(v.id);
                     let mut local = env.to_vec();
                     local.extend(clause.params.iter().map(|p| match p.name {
                         Some(_) => SurfaceSlot::Local(self.declaration(p.id)),
                         None => SurfaceSlot::Ignored,
                     }));
-                    local.push(SurfaceSlot::Continuation);
-                    let ntys = self.p.types.decl_types.get(info.op).unwrap().type_params.len();
-                    self.clause_types.push((clause.id, ntys));
-                    let body = self.block(&clause.body, &local, Position::Other);
+                    local.push(SurfaceSlot::Ignored);
+                    self.clause_types.push((clause.id, 1));
+                    let clause = self.block(&clause.body, &local, Position::Other);
                     self.clause_types.pop();
-                    json!({"op":self.op_ref(info.op),"arity":clause.params.len(),"ntys":ntys,"body":body})
-                }).collect();
+                    return tagged(
+                        "handleFail",
+                        json!({"error":error,"result":result,"body":body,"clause":clause}),
+                    );
+                }
+                let clauses: Vec<_> = v
+                    .clauses
+                    .iter()
+                    .zip(&info.clauses)
+                    .map(|(clause, info)| {
+                        let mut local = env.to_vec();
+                        let dict_count = self
+                            .p
+                            .types
+                            .decl_types
+                            .get(info.op)
+                            .unwrap()
+                            .class_constraints
+                            .len();
+                        local.extend((0..dict_count).map(|constraint| {
+                            SurfaceSlot::ClauseDictionary {
+                                clause: clause.id,
+                                constraint,
+                                outer: env.len(),
+                                arity: clause.params.len(),
+                                dict_count,
+                            }
+                        }));
+                        local.extend(clause.params.iter().map(|p| match p.name {
+                            Some(_) => SurfaceSlot::Local(self.declaration(p.id)),
+                            None => SurfaceSlot::Ignored,
+                        }));
+                        local.push(SurfaceSlot::Continuation);
+                        let ntys = self
+                            .p
+                            .types
+                            .decl_types
+                            .get(info.op)
+                            .unwrap()
+                            .type_params
+                            .len();
+                        assert!(info.failure_type.is_none(), "mixed failure clause");
+                        self.clause_types.push((clause.id, ntys));
+                        let body = self.block(&clause.body, &local, Position::Other);
+                        self.clause_types.pop();
+                        json!({"op":self.op_ref(info.op),"arity":clause.params.len(),"ntys":ntys,
+                        "dictCount":dict_count,"failureType":null,"body":body})
+                    })
+                    .collect();
                 tagged("handleE", json!({"body":body,"clauses":clauses}))
             }
             a::Expr::Error(_) => panic!("checked error expression"),
@@ -1694,7 +1810,7 @@ impl Core<'_> {
                 };
                 // 実際のラムダだけを数える。裸の直接の頭にはラムダがなく、
                 // 括弧で包んだ辞書付きの名前は値化したラムダとしてここを通る。
-                self.lambda_effects.push(eff(&f.effects));
+                self.lambda_effects.push(self.surface.eff(&f.effects));
                 let params: Vec<_> = l.params.iter().map(|p| self.surface.ty(&p.ty)).collect();
                 let mut local = env.to_vec();
                 local.extend(l.params.iter().map(|p| CoreSlot::Local(p.id)));
@@ -1732,7 +1848,12 @@ impl Core<'_> {
                     "core operation has effect arguments: {op:?}"
                 );
                 let (tys, _) = self.surface.args(targs);
-                tagged("op", json!({"name":format!("op:{}",op.0),"tys":tys}))
+                if Some(*op) == self.surface.p.resolved.stdlib("Benitoite.Failure.raise") {
+                    assert_eq!(tys.len(), 2);
+                    tagged("raise", json!({"result":tys[0],"error":tys[1]}))
+                } else {
+                    tagged("op", json!({"name":format!("op:{}",op.0),"tys":tys}))
+                }
             }
         }
     }
@@ -1815,14 +1936,13 @@ impl Core<'_> {
                 // そのまま写し、公開の引数（終了状態一つ）だけを App に保持する。
                 // 付加情報の型・参照は Rust の IR check が検査する（07-04）。
                 // 表層の範囲判定の漏れは unsupported の不一致として残す。
-                // funDicts は Fn の頭だけを表し、prim・op・field の辞書は表さない。
+                // prim・field の辞書は対象外。opDicts は通常の操作引数へ辞書を前置する。
                 if !dicts.is_empty() {
                     match &func.kind {
                         c::ValKind::External { .. } => return unsupported("external function"),
                         c::ValKind::Builtin { .. } => {
                             return unsupported("constrained head: builtin");
                         }
-                        c::ValKind::Op { .. } => return unsupported("constrained head: operation"),
                         c::ValKind::TopFn { def, .. }
                             if matches!(
                                 self.surface.p.resolved.bindings.get(*def).unwrap().kind,
@@ -1832,6 +1952,7 @@ impl Core<'_> {
                             return unsupported("constrained head: field");
                         }
                         c::ValKind::Var(_)
+                        | c::ValKind::Op { .. }
                         | c::ValKind::Const(_)
                         | c::ValKind::TopFn { .. }
                         | c::ValKind::Lambda(_)
@@ -1936,13 +2057,16 @@ impl Core<'_> {
                 let body = self.comp(&h.body, env);
                 let clauses: Vec<_> = h.clauses.iter().map(|clause| {
                     let mut local = env.to_vec();
+                    local.extend(clause.dict_params.iter().map(|p| CoreSlot::Local(p.var)));
                     local.extend(clause.params.iter().map(|p| CoreSlot::Local(p.id)));
                     local.push(CoreSlot::Continuation(clause.cont.id));
-                    let ntys = self.program.schemes.get(clause.op).unwrap().type_params.len();
+                    let ntys = if clause.failure_type.is_some() { 1 } else { self.program.schemes.get(clause.op).unwrap().type_params.len() };
+                    let failure_type = clause.failure_type.as_ref().map(|t| self.surface.ty(t));
                     self.surface.clause_types.push((clause.node, ntys));
                     let body = self.comp(&clause.body, &local);
                     self.surface.clause_types.pop();
-                    json!({"op":self.surface.op_ref(clause.op),"arity":clause.params.len(),"ntys":ntys,"body":body})
+                    json!({"op":self.surface.op_ref(clause.op),"arity":clause.dict_params.len() + clause.params.len(),
+                        "ntys":ntys,"dictCount":clause.dict_params.len(),"failureType":failure_type,"body":body})
                 }).collect();
                 tagged("handle", json!({"body":body,"clauses":clauses}))
             }
@@ -2275,6 +2399,7 @@ pub fn definitions(
             s.outside(reason);
         }
         let scheme = Scheme {
+            no_fail: vec![],
             param_names: Vec::new(),
             type_params: info.type_params.clone(),
             effect_params: Vec::new(),
@@ -2350,15 +2475,25 @@ pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Valu
         assert_eq!(op.builtin.as_ref(), p.resolved.builtin_ops.get(op.binding));
         let scheme = p.types.decl_types.get(op.binding).unwrap();
         assert_eq!(core.schemes.get(op.binding).unwrap(), scheme);
-        assert_eq!(usize::try_from(op.arity).unwrap(), scheme.params.len());
+        assert_eq!(
+            usize::try_from(op.arity).unwrap(),
+            scheme.class_constraints.len() + scheme.params.len()
+        );
         assert!(
             scheme.effect_params.is_empty(),
             "operation declares effect parameters"
         );
+        if op.failure {
+            assert_eq!(
+                Some(op.binding),
+                p.resolved.stdlib("Benitoite.Failure.raise")
+            );
+            assert!(scheme.class_constraints.is_empty());
+            continue;
+        }
         if let Some(b) = op.builtin {
             let name = builtins::builtin_decl(b).unwrap().name;
-            let mut entry =
-                json!({"name":name,"arity":scheme.params.len(),"ntys":scheme.type_params.len()});
+            let mut entry = json!({"name":name,"arity":scheme.params.len(),"ntys":scheme.type_params.len(),"effectKind":"ordinary"});
             assert_eq!(op.param_names, scheme.param_names);
             entry["names"] = json!(op.param_names);
             prim_ops.insert(name.to_owned(), entry);
@@ -2367,11 +2502,25 @@ pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Valu
             let EffectName::User(effect) = op.effect else {
                 panic!("non-builtin operation in builtin effect");
             };
-            ops.push(json!({"name":format!("op:{}",op.binding.0),"eff":format!("effect:{}",effect.0),"header":surface.header(scheme)}));
+            let mut header = surface.header(scheme);
+            let mut params: Vec<_> = scheme
+                .class_constraints
+                .iter()
+                .map(|c| surface.dict_ty(c))
+                .collect();
+            params.extend(header["params"].as_array().unwrap().clone());
+            header["params"] = json!(params);
+            header["names"] = json!(internal_names(
+                scheme.class_constraints.len(),
+                &scheme.param_names
+            ));
+            ops.push(json!({"name":format!("op:{}",op.binding.0),"eff":format!("effect:{}",effect.0),
+                "header":header,"dictParams":surface.dict_params(&scheme.class_constraints),"effectKind":"ordinary"}));
         }
     }
     let effects: Vec<_> = p.types.effects.iter().filter_map(|(_, e)| {
         for op in &e.ops { assert!(seen.contains(op), "missing core operation"); }
+        if Some(e.binding) == p.resolved.stdlib("Benitoite.Failure.Fail") { return None; }
         let EffectName::User(id) = e.name else { return None; };
         Some(json!({"name":format!("effect:{}",id.0),"ops":e.ops.iter().map(|id| format!("op:{}",id.0)).collect::<Vec<_>>()}))
     }).collect();
@@ -2461,6 +2610,7 @@ pub fn named_class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
             continue;
         }
         let scheme = Scheme {
+            no_fail: vec![],
             param_names: Vec::new(),
             type_params: info.type_params.clone(),
             effect_params: Vec::new(),
@@ -2530,6 +2680,7 @@ pub fn named_stdlib_declarations(
                 .expect("missing stdlib implementation");
             let cl = p.types.traits.get(i.class).expect("missing stdlib class");
             let scheme = Scheme {
+                no_fail: vec![],
                 param_names: Vec::new(),
                 type_params: info.type_params.clone(),
                 effect_params: Vec::new(),

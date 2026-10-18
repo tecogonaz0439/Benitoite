@@ -13,10 +13,10 @@ variable {P : Program} {B : Builtins}
 
 /-! ## 閉じた値の形 -/
 
-/-- 関数の型の閉じた値は、`λ`、関数の名前、組み込みの関数、操作のいずれかである。 -/
-theorem HasTypeV.canonical_fn {Ψ C v names ps r ε} (h : HasTypeV P B Ψ C [] v (.fn names ps r ε)) :
+/-- 関数の型の閉じた値は、`λ`、関数の名前、組み込みの関数、通常の操作、raise のいずれかである。 -/
+theorem HasTypeVQ.canonical_fn_or_raise {Ψ C v names ps r ε} (h : HasTypeV P B Ψ C [] v (.fn names ps r ε)) :
     (∃ ns qs body, v = .lam ns qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨ (∃ b ts es, v = .prim b ts es) ∨
-      (∃ o ts, v = .op o ts) := by
+      (∃ o ts, v = .op o ts) ∨ (∃ T E, v = .raise T E) := by
   cases v with
   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
   | const c =>
@@ -24,7 +24,8 @@ theorem HasTypeV.canonical_fn {Ψ C v names ps r ε} (h : HasTypeV P B Ψ C [] v
       cases c <;> simp [Const.type] at e
   | fnRef f ts es => exact Or.inr (Or.inl ⟨_, _, _, rfl⟩)
   | prim b ts es => exact Or.inr (Or.inr (Or.inl ⟨_, _, _, rfl⟩))
-  | op o ts => exact Or.inr (Or.inr (Or.inr ⟨_, _, rfl⟩))
+  | op o ts => exact Or.inr (Or.inr (Or.inr (Or.inl ⟨_, _, rfl⟩)))
+  | raise T E => exact Or.inr (Or.inr (Or.inr (Or.inr ⟨_, _, rfl⟩)))
   | lam ns qs body => exact Or.inl ⟨_, _, _, rfl⟩
   | con c ts args => obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
   | list elems => obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
@@ -35,15 +36,28 @@ theorem HasTypeV.canonical_fn {Ψ C v names ps r ε} (h : HasTypeV P B Ψ C [] v
   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
 
+/-- 従来の関数値の分類。追加した raise を除く値について、元の結論を保つ。 -/
+theorem HasTypeVQ.canonical_fn {Ψ C v names ps r ε}
+    (h : HasTypeV P B Ψ C [] v (.fn names ps r ε))
+    (hn : ∀ T E, v ≠ .raise T E) :
+    (∃ ns qs body, v = .lam ns qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨
+      (∃ b ts es, v = .prim b ts es) ∨ (∃ o ts, v = .op o ts) := by
+  rcases h.canonical_fn_or_raise with h | h | h | h | ⟨T, E, he⟩
+  · exact Or.inl h
+  · exact Or.inr (Or.inl h)
+  · exact Or.inr (Or.inr (Or.inl h))
+  · exact Or.inr (Or.inr (Or.inr h))
+  · exact (hn T E he).elim
+
 /-- 辞書の型の閉じた値は、実装の辞書であるか、E-Super で `↑` を一段取り出せる。 -/
-theorem HasTypeV.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
+theorem HasTypeVQ.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
     (v : Val) → ∀ {cl τ}, HasTypeV P B Ψ C [] v (.dict cl τ) →
       (∃ i ts vs, v = .dict i ts vs) ∨ (∃ v', v.superStep P = some v')
   | .dict i ts vs, _, _, _ => Or.inl ⟨i, ts, vs, rfl⟩
   | .super w s, cl, τ, h => by
       obtain ⟨cl0, τ0, cd0, hw, hcl0, hs, _⟩ := h.inv_super rfl
       right
-      rcases HasTypeV.canonical_dict hwt w hw with ⟨i, ts, vs, rfl⟩ | ⟨w', hw'⟩
+      rcases HasTypeVQ.canonical_dict hwt w hw with ⟨i, ts, vs, rfl⟩ | ⟨w', hw'⟩
       · obtain ⟨id, hi, _, _, he⟩ := hw.inv_dict rfl
         simp only [Ty.dict.injEq] at he
         obtain ⟨rfl, rfl⟩ := he
@@ -67,6 +81,9 @@ theorem HasTypeV.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
   | .op _ _, _, _, h => by
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+  | .raise _ _, _, _, h => by
+      obtain ⟨_, _, hl⟩ := h.inv_raise rfl
+      have := hl.eq_of_not_fn (by intros; simp); simp at this
   | .lam _ _ _, _, _, h => by
       obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn (by intros; simp); simp at this
@@ -82,7 +99,7 @@ theorem progress_meth (hwt : P.WellTyped B) {Ψ σ R a ε v m ss es ws k}
     (hm : HasTypeC P B Ψ [] [] R (.meth v m ss es ws) a ε) :
     ∃ l s', Step P B (.run (.meth v m ss es ws) k σ) l s' := by
   obtain ⟨cl, τ, cd, ms, hv, hcl, hms, hsat, hesl, _, hws, _, _⟩ := hm.inv_meth rfl
-  rcases HasTypeV.canonical_dict hwt v hv with ⟨i, ts, vs, rfl⟩ | ⟨v', hv'⟩
+  rcases HasTypeVQ.canonical_dict hwt v hv with ⟨i, ts, vs, rfl⟩ | ⟨v', hv'⟩
   · obtain ⟨id, hi, hsatI, hvs, he⟩ := hv.inv_dict rfl
     simp only [Ty.dict.injEq] at he
     obtain ⟨rfl, rfl⟩ := he
@@ -94,12 +111,13 @@ theorem progress_meth (hwt : P.WellTyped B) {Ψ σ R a ε v m ss es ws k}
   · exact ⟨_, _, .E_Super hv'⟩
 
 /-- `resume` の第一引数は、変数か場所である。 -/
-theorem HasTypeC.resume_form {Ψ C Γ R m T ε w v} (h : HasTypeC P B Ψ C Γ R m T ε)
+theorem HasTypeCQ.resume_form {Ψ C Γ R m T ε w v} (h : HasTypeC P B Ψ C Γ R m T ε)
     (hm : m = .resume w v) : (∃ i, w = .var i) ∨ (∃ l, w = .loc l) := by
   match h with
   | .C_Resume _ _ => cases hm; exact Or.inl ⟨_, rfl⟩
   | .C_ResumeL _ _ => cases hm; exact Or.inr ⟨_, rfl⟩
-  | .C_Sub h _ _ => exact resume_form h hm
+  | .C_Sub h _ _ hw => exact resume_form h hm
+  | .C_Eff h _ => exact resume_form h hm
   | .C_Return _ => cases hm
   | .C_Let _ _ => cases hm
   | .C_App _ _ => cases hm
@@ -177,7 +195,7 @@ theorem findClause_of_handles {h : List Clause} {o : OpRef} (hh : handles h o = 
 /-- 継続のどの `handle` の枠も処理しない利用者の操作は、型の付いた状態では呼ばれない。 -/
 theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) (hod : P.ops o = some od)
-    (hε : ε (.name od.eff) = true) (hno : NoHandler k (.user o)) : False := by
+    (hε : Eff.mem ε (.name od.eff)) (hno : NoHandler k (.user o)) : False := by
   obtain ⟨os, hos, hmem⟩ := hdecl.2.1 o od hod
   have hend := hk.name_end hε (fun hs hin => by
     have hh := hno hs hin
@@ -186,10 +204,10 @@ theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
       rw [List.all_eq_true] at h
       have := h (.user o) (List.mem_map.mpr ⟨o, hmem, rfl⟩)
       rw [hh] at this; cases this
-    simp only [handled, effOps, hos]
+    simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hos]
     revert hall
     cases os.map OpRef.user <;> simp)
-  obtain ⟨l, hl, hnone, _⟩ := hEb _ hend
+  obtain ⟨l, hl, hnone, _⟩ := hEb.2 _ hend
   cases hl
   rw [hos] at hnone; cases hnone
 
@@ -205,7 +223,7 @@ theorem progress_ret (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k} (hσ : Store
       cases f with
       | guardF w arms next body =>
           obtain ⟨_, _, _, _, _, _, hle, _⟩ := hk.inv_guard
-          obtain ⟨flag, rfl⟩ := (HasTypeV.V_Sub hv hle).canonical_boolean
+          obtain ⟨flag, rfl⟩ := (HasTypeVQ.V_Sub hv hle (by simp [Ty.WF])).canonical_boolean
           cases flag
           · exact ⟨_, _, .E_GuardF⟩
           · exact ⟨_, _, .E_GuardT⟩
@@ -353,7 +371,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
       obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
-      simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
+      simp [Ty.subst, Ty.substAt] at hargs'
       rcases hargs' with _ | ⟨hw, _ | _⟩
       obtain ⟨l, rfl, hΨl⟩ := hw.canonical_ref
       obtain ⟨v, hv⟩ := hσ.ref_cell hΨl
@@ -364,7 +382,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
       obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
-      simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
+      simp [Ty.subst, Ty.substAt] at hargs'
       rcases hargs' with _ | ⟨hw, _ | ⟨_, _ | _⟩⟩
       obtain ⟨l, rfl, _⟩ := hw.canonical_ref
       exact ⟨_, _, .E_RefSet hsig hkd⟩
@@ -374,7 +392,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
       obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
-      simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
+      simp [Ty.subst, Ty.substAt] at hargs'
       rcases hargs' with _ | ⟨hw, _ | ⟨_, _ | _⟩⟩
       obtain ⟨l, rfl, _⟩ := hw.canonical_ref
       exact ⟨_, _, .E_RefUpdate hsig hkd⟩
@@ -384,7 +402,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
       obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
-      simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
+      simp [Ty.subst, Ty.substAt] at hargs'
       rcases hargs' with _ | ⟨hw, _ | _⟩
       obtain ⟨l, rfl, hΨl⟩ := hw.canonical_lazy
       rcases hσ.lazy_cell hΨl with ⟨m, hm'⟩ | ⟨v, hv⟩
@@ -397,7 +415,7 @@ theorem progress_app (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
     ∃ l s', Step P B (.run (.app f ws) k σ) l s' := by
   obtain ⟨names, as, b', ε', hf, hargs, _, _⟩ := hm.inv_app rfl
-  rcases hf.canonical_fn with ⟨ns, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩
+  rcases hf.canonical_fn_or_raise with ⟨ns, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩ | ⟨T, E, rfl⟩
   · obtain ⟨r, ε'', _, _, hle⟩ := hf.inv_lam rfl
     obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
     exact ⟨_, _, .E_Lam (by rw [hargs.length_eq, hps])⟩
@@ -410,13 +428,29 @@ theorem progress_app (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b
   · by_cases hno : NoHandler k (.user o)
     · obtain ⟨od, hod, _, _, _, hsub⟩ := inv_op_app hm
       refine (no_unhandled_user hdecl hk hEb hod ?_ hno).elim
-      apply hε; apply hsub
-      rw [Eff.substRho_nil]
-      simp [Eff.single]
+      apply hε.1; apply hsub.1
+      rw [Eff.substAt_single]
+      exact (Eff.mem_single _ _).mpr rfl
     · obtain ⟨k1, h, k2, hsplit⟩ := split_of_not_noHandler hno
       obtain ⟨c, hc⟩ := findClause_of_handles hsplit.2.1
       obtain ⟨κ, hκ, _⟩ := hσ.fresh
       exact ⟨_, _, .E_Op hsplit hc hκ⟩
+  · obtain ⟨ht, he, hfn⟩ := hf.inv_raise rfl
+    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hfn
+    rw [← hps] at hargs
+    cases hargs with
+    | cons hv tail =>
+        cases tail
+        by_cases hno : NoHandler k .fail
+        · have hend := hk.fail_end hno (((hm.inv_raise_app.2.2.2.1).trans hε).2 _
+            ((Eff.memFail_singleFail _ _).mpr rfl))
+          exact ((Eff.fails_eq_nil_iff Eb).mp hEb.1 E hend).elim
+        · obtain ⟨k1, h, k2, hs⟩ := split_of_not_noHandler hno
+          rcases hk.handler_kind (hs := h) (by rw [hs.1]; simp) with ho | ⟨E', body, hh⟩
+          · have hh := hs.2.1; rw [ho] at hh; cases hh
+          · subst h
+            obtain ⟨κ, hκ, _⟩ := hσ.fresh
+            exact ⟨_, _, .E_OpFail hs hκ⟩
 
 theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b ε ε1 Eb m k}
     (hσ : StoreOk P B Ψ σ) (hm : HasTypeC P B Ψ [] [] R m a ε1) (hε : Eff.Sub ε1 ε)
@@ -425,7 +459,7 @@ theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assum
   cases m with
   | ret v =>
       obtain ⟨a', hv, hle⟩ := hm.inv_ret rfl
-      exact progress_ret hb hσ hk (.V_Sub hv hle)
+      exact progress_ret hb hσ hk (hm.ret_value rfl)
   | letIn m n => exact Or.inr ⟨_, _, .E_Let⟩
   | app f ws => exact Or.inr (progress_app hdecl hb hσ hm hε hk hEb)
   | ite v m n =>

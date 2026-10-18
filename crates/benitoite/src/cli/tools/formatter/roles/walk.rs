@@ -483,9 +483,26 @@ impl<'a> Walker<'a> {
         }
     }
 
+    fn uses(&mut self, uses: Option<&crate::syntax::ast::UsesList>) {
+        for effect in uses.into_iter().flat_map(|u| &u.effects) {
+            let Some(args) = &effect.args else {
+                continue;
+            };
+            if let Some(name) = self.path_end(&effect.path)
+                && let Some(open) = self.next_is(name, TokenKind::LBracket)
+                && self.open_bracket(open, true).is_some()
+            {
+                for arg in args {
+                    self.element(arg.span(), Place::Deeper(open));
+                    self.ty(arg);
+                }
+            }
+        }
+    }
     fn fn_decl(&mut self, decl: &FnDecl) {
         self.signature(&decl.name, &decl.type_params, &decl.params);
         self.ty(&decl.ret);
+        self.uses(decl.uses.as_ref());
         if let Some(body) = &decl.body
             && let Some(open) = self.keyword(decl.span)
         {
@@ -553,6 +570,7 @@ impl<'a> Walker<'a> {
     fn method(&mut self, method: &MethodSig) {
         self.signature(&method.name, &method.type_params, &method.params);
         self.ty(&method.ret);
+        self.uses(method.uses.as_ref());
     }
 
     fn effect(&mut self, decl: &EffectDecl) {
@@ -639,6 +657,7 @@ impl<'a> Walker<'a> {
             }
         }
         self.ty(&t.ret);
+        self.uses(t.uses.as_ref());
     }
 
     // ---------------- 文と式 ----------------
@@ -911,6 +930,7 @@ impl<'a> Walker<'a> {
         if let Some(ret) = &e.ret {
             self.ty(ret);
         }
+        self.uses(e.uses.as_ref());
         match e.ending {
             LambdaEnding::Explicit { .. } => self.block(&e.body, open),
             LambdaEnding::Omitted { .. } => {

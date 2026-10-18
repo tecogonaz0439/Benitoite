@@ -1,0 +1,56 @@
+[
+  {
+    "name": "after-decision",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--lib",
+      "exhaustive_character_columns_preserve_correlated_rows"
+    ],
+    "exit": 0,
+    "seconds": 6.011
+  },
+  {
+    "name": "after-json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "l21_json",
+      "codec_extra_key_path_escapes_untrusted_key"
+    ],
+    "exit": 0,
+    "seconds": 5.26
+  },
+  {
+    "name": "after-property",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "property_library",
+      "exhausted_candidates_at_exact_budget_do_not_report_limit"
+    ],
+    "exit": 0,
+    "seconds": 1.964
+  },
+  {
+    "name": "after-golden",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "golden"
+    ],
+    "exit": 0,
+    "seconds": 2.408
+  }
+]

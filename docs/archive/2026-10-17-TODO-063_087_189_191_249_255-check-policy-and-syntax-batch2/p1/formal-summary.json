@@ -1,0 +1,82 @@
+{
+  "coverage": {
+    "matched": 10020,
+    "mismatched": 0,
+    "fuelExhausted": 0
+  },
+  "coverageWithView": {
+    "matched": 10028,
+    "mismatched": 0,
+    "fuelExhausted": 0
+  },
+  "allCoverageFinal": {
+    "matched": 10020,
+    "mismatched": 0,
+    "fuelExhausted": 0
+  },
+  "desugar": {
+    "golden": {
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 983,
+        "excluded": 0
+      },
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 355,
+        "excluded": 415
+      }
+    },
+    "random": {
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 72778,
+        "excluded": 0
+      },
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1000,
+        "excluded": 0
+      }
+    },
+    "mismatches": 0
+  },
+  "builtins": {
+    "checkedInputs": 1355,
+    "summaryComparisons": 72736,
+    "summaryMismatchCount": 0,
+    "nonconvergedCount": 0,
+    "errors": 0
+  },
+  "programCoverage": {
+    "inputs": 1355,
+    "cases": 22456,
+    "matched": 22456,
+    "mismatched": 0,
+    "outOfScope": 0,
+    "fuelExhausted": 0
+  },
+  "surface": {
+    "q11": 1,
+    "preparationFailure": 0,
+    "outOfScope": 19,
+    "mismatched": 0,
+    "matched": 51658,
+    "lazyRestriction": 0
+  },
+  "routingInputs": 1770,
+  "singleSurfaceExpectationsPreserved": 17,
+  "batch2": {
+    "independentTests": 7,
+    "rustFeatures": [
+      "op",
+      "failure",
+      "character"
+    ],
+    "characterDefinitions": 2
+  }
+}

@@ -1,0 +1,9 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+effect Other
+ function op() -> Unit
+end effect
+function bad() -> Unit uses Other[Integer]
+end function
+function main() -> Unit
+end function

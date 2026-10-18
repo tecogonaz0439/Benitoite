@@ -43,6 +43,7 @@ def tag : Benitoite.Surface.Expr → String
   | .lam _ _ _ _ _ => "lam"
   | .methName _ _ _ _ _ _ _ => "methName"
   | .funDicts _ _ _ _ _ _ => "funDicts"
+  | .opDicts _ _ _ _ _ => "opDicts"
   | .partialCall _ _ _ _ _ => "partialCall"
   | .matchE _ _ _ => "matchE"
   | .call _ _ _ _ => "call"
@@ -99,7 +100,7 @@ def normalize (p : Prepared) : Materials × List (String × WalkState) := Id.run
   let impls := p.materials.impls.map fun (n,i) => Id.run do
     let (methods,w) := (i.methods.mapM fun (method,(mi : Check.MethodInput)) => do
       let ms : Option MethSig := (p.input.D.classes i.signature.cls).bind (fun c => c.methods method)
-      let result := ms.map fun (m : MethSig) => substTyAt m.tparams.length [i.signature.target] [] m.ret
+      let result := ms.map fun (m : MethSig) => substTyAt p.input.atoms m.tparams.length [i.signature.target] [] m.ret
       let index := p.materials.names.methods.idxOf method
       let body' ← walkBlock p.input result .tail [0,index] result mi.body
       pure (method,{ mi with body := body' })).run {}
@@ -154,7 +155,7 @@ def run (args : List String) : IO UInt32 := do
   let b ← IO.ofExcept (readBuiltins rawB)
   let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
   let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
-  let expected := if c.version >= 9 then 3 else 2
+  let expected := Benitoite.Exchange.sidecarVersion c.version
   if b.version != expected || (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
     throw (IO.userError "exchange version pair mismatch")
   if c.version >= 9 then

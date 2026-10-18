@@ -95,7 +95,7 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 - Parenthesize the inner lambda in a directly nested pair if either omits its terminator: `lambda(x) return (lambda(y) return x + y)`. Call arguments and binding statements provide independent boundaries. A pipe in `lambda(x) return x + 1 |> increment` belongs to the body; `(lambda(x) return x + 1)(3)` calls the lambda itself.
 - Match patterns with `match value with`, then one `case pattern -> body` per line, then `end match`. A handler is `handle body with` / `case Module.operation(arguments) -> clause` / `end handle`.
 - Declare data types with `data Name` ... `end data` and records with `record Name` ... `end record`.
-- `@extensible` marks `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError`; it is also available on user data and records. Outside their defining package, cover future shapes with an unguarded variable or `_`, even after every known constructor (including `Other`). A record pattern's `..` only omits current fields: use getters or a `match` with a branch for future shapes instead of a destructuring `bind`. Construction, updates, and getters keep their contracts; record field additions have no compatibility guarantee. `Result` and `Option` remain closed. See [Records and data types](references/idioms.md#records-and-data-types).
+- `@extensible` marks `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, `Json.Codec.ConversionError`, and `Csv.ParseError`; it is also available on user data and records. Outside their defining package, cover future shapes with an unguarded variable or `_`, even after every known constructor (including `Other`). A record pattern's `..` only omits current fields: use getters or a `match` with a branch for future shapes instead of a destructuring `bind`. Construction, updates, and getters keep their contracts; record field additions have no compatibility guarantee. `Result` and `Option` remain closed. See [Records and data types](references/idioms.md#records-and-data-types).
 - Constructors are written with their type name, in expressions and in patterns: `Option.Some(x)`, `Option.None`, `Result.Ok(x)`, `Result.Error(e)`, `Shape.Circle(r)`.
 - Operators: `=` and `<>` compare; `and`, `or`, `not` are logical; `div` and `mod` divide integers; `+` also joins strings. `==`, `!=`, `&&`, `||`, `!` do not exist.
 - Use `try e or return` in reusable functions, libraries, and callbacks. It returns the failure from the innermost function or lambda, whose return type must be a matching Result or Option. Convert different error types with `Result.mapError` first. Bare `try e` is permanently fixed to the same returning meaning and adds no Show requirement. The input includes pipes up to the action: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return`.
@@ -110,6 +110,7 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 - Calls take no type arguments: write `Map.empty()`, not `Map.empty[String, Integer]()`. Add an entry to a map with `Map.set(m: m, k: key, value: value)`; there is no `Map.insert`. Parsing functions such as `Integer.parse` return `Option`.
 - Type arguments use brackets: `List[Integer]`, `Map[String, Integer]`, `Result[Unit, String]`. `List<Integer>` is not valid.
 - `with r = acquire() do ... end with` releases its resources in reverse order when the block ends. `TaskGroup.spawn(group: group, action: lambda() ... end lambda)` starts a task in a group opened with `TaskGroup.open()`, and `Task.await(task)` waits for its result; releasing the group waits for all its tasks.
+- User-defined operations can constrain value type parameters, for example `function render[T: Trait.Show](value: T) -> String`. The caller selects the implementation, and the clause can use those methods for any caller type. Constraints add no public arguments. Function values, `_` holes, and `|>` use the same public parameter names and evaluation order as direct calls. Clause lambdas can capture the constraints; nested clauses keep their own constraints. Operations cannot declare type constructor parameters, effect variables, or their own `uses`.
 - A handler that handles only some operations of an effect does not remove the effect from the type. Functions whose type has `State` (`Reference`, `TaskGroup`, `Task.await`, `close...`) cannot be handled.
 - Maps and sets are ordered by key, not by insertion.
 - Numeric widths are distinct types with no implicit conversion. Unsuffixed `1` is always `Integer`; use `1s32` for `Integer32` and `1.0f32` for `Float32`. Suffixes (`s8`–`s64`, `u8`–`u64`, `f32`/`f64`) are provisional and may change as the syntax is revised. `Integer64` = `Integer`, `Float64` = `Float`, `UnsignedInteger8` = `Byte`, and `UnsignedInteger` = `UnsignedInteger64`. Keep `Integer`, `Float`, and `Byte` as the usual names. `Byte` has no arithmetic, and unsigned types have no unary minus.
@@ -117,7 +118,7 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 - Experimental `@external("wasm", "path.wasm", "export")` functions use a binary import-free Component Model component and have no body or `end function`. Concrete records/data, flags as `Set` of argument-free constructors, and `Map` with WIT-compatible keys can cross the boundary. External resource types require `uses State`; other external calls are pure. The generated adapter counts packed bytes and separately limits logical value construction with the same `--wasm-transfer` value. See the WIT examples and limits in `references/idioms.md`.
 - Strings interpolate with `"${expression}"`. Comments start with `//`.
 - There is no `null`, no exception, and no loop statement. Use `Option`, `Result` with `try`, and `List.map`, `List.fold`, `List.forEach`, or recursion.
-- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Csv`, `Regex`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
+- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Json.Codec`, `Failure`, `Test.Property`, `Csv`, `Regex`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
 - Every function that performs an effect, directly or through a call, lists it after `uses`. Network effects (`Http.Connect`, `Http.Listen`) are not part of `IO.All`.
 - A statement whose value is not `Unit` is an error: handle each `Result` with `try`, `match`, or `bind _ <-`.
 - `Process.shell` runs its string with `/bin/sh -c`. Write only POSIX sh: no bash arrays, no `[[ ]]`, no `{a,b}` expansion, no `$'...'`. Prefer `Process.run` with an argument list when no shell feature is needed.
@@ -190,3 +191,28 @@ Read these when you need them:
 | `references/stdlib/index.md` | You need a standard library module: it lists every module with its import name. |
 
 Each module has its own file named `references/stdlib/<Module>.md`, such as `references/stdlib/List.md` or `references/stdlib/IO.Console.md`; follow the links from `references/stdlib/index.md`.
+
+For pure JSON conversions, import `Benitoite.Unofficial.Json.Codec`. Its basic and
+container functions return `Result[..., Codec.ConversionError]`; Integer/Float
+kinds are strict and non-finite Float is rejected. List/Map stop at the first
+index/key failure. ConversionError has an outer-to-inner Field/Index/Key path;
+its Show reports the path and kinds without automatically printing input values.
+The codec requires no Fail; choose `Failure.fromResult` explicitly at an application boundary.
+
+For pure property trials, import `Benitoite.Unofficial.Test.Property` and call
+`Property.check(config: ..., gen: ..., shrinker: ..., property: ...)` from one
+ordinary `@test`. The property returns `Result[Unit, String]` and all
+callbacks are pure; runtime stops and interruptions propagate normally. Match
+an Error and return `Property.formatFailure(failure: ..., show: ...)` as the
+test's String error; show has type `function(value: T) -> String`. `test --check` executes no
+callbacks. Config uses an explicit seed and inclusive budgets: trials 1..10000,
+size 0..10000, maxShrinks 0..100000; invalid settings call no callbacks.
+Integer generators include both endpoints, Float generators are finite, and
+nested container sizes are not total resource bounds. Shrinking counts all
+candidate trials, even cycles; the reduced input is not promised minimal.
+Keep the config, rule version, original/reduced input and messages for replay.
+See `references/stdlib/Test.Property.md` for Gen/Shrinker fields and each API.
+The source repository includes a development derive tool for record codecs and
+Gen/Shrinker functions (see `tools/derive/README.md`). In an environment with
+only the distributed executable and Skill, write these functions directly using
+Codec and Property APIs.

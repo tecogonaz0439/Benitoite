@@ -154,7 +154,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                         let r = reason(source.span, ReasonKind::ImplSuper { class: sup });
                         let scope = d.scopes.get(&source.id).cloned().unwrap_or_default();
                         let dict = resolution.ok().and_then(|resolution| {
-                            solve::check_bounds(d, i.module, &scope, &s, &resolution, &r)
+                            solve::check_bounds(d, i.module, &scope, &s, &resolution, &r, None)
                                 .is_empty()
                                 .then_some(resolution.dict)
                         });
@@ -275,7 +275,10 @@ fn check_methods(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
             && params.len() == found.params.len()
             && params.iter().zip(&found.params).all(|(a, b)| a == b)
             && ret == found.ret
-            && found.effects.is_subset(&expected.effects);
+            && found.no_fail == expected.no_fail
+            && found
+                .effects
+                .is_subset(&expected.effects.subst_types(&args, &[]));
         let same_names = found.param_names == expected.param_names;
         if !valid || !same_names {
             let span = source

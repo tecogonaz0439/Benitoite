@@ -37,3 +37,6 @@ pub(super) const IO_REASONS: &[(std::io::ErrorKind, &str)] = &[
     (std::io::ErrorKind::InvalidData, IO_INVALID_DATA),
     (std::io::ErrorKind::Interrupted, IO_INTERRUPTED),
 ];
+
+pub(super) const CHARACTER_COVERAGE_CHANGE: &str = "Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable";
+pub(super) const CHARACTER_COVERAGE_MIGRATION: &str = "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md";

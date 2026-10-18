@@ -41,7 +41,7 @@
 【方針】本章のモジュールに共通する規則は次のとおりである。
 
 - 本章の型は、モジュールの名前で修飾して書く（`Json.Value`、`Regex.Pattern`）。構成子は型の名前でも修飾して書く（`Json.Value.Null`）。レコードのフィールドは、型のモジュールの関数で取り出す（`Json.ParseError.line(e)`）。
-- 入力の形が正しくないことによる失敗は `Result.Error` で返す。失敗の値の型は、モジュールごとの `ParseError` のレコードか、人間が読める理由の `String` である。理由の文面は処理系の版によって変わりうる。
+- 入力の形が正しくないことによる失敗は `Result.Error` で返す。失敗の値の型は、モジュールごとの `ParseError`・`ConversionError` のレコードか、人間が読める理由の `String` である。理由の文面は処理系の版によって変わりうる。
 - 文字列の位置は、名前に単位を含める（[基本型の意味論](../01-spec/01-04-types-basic.md)の「String」）。本章でバイト位置を返すものは、名前に `byte` を含める。
 - 本章の関数は、どれも純粋であり、エフェクトを持たない。関数を引数にとる関数だけが、受け取った関数のエフェクト変数を持つ。
 
@@ -175,6 +175,33 @@ function extractDates(text: String) -> Result[List[String], String]
   return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value)))
 end function
 ```
+
+### Json.Codec
+
+【決定】`Benitoite.Unofficial.Json.Codec` は、通常の `Result` を返す純粋な変換を提供する。`PathPart` は `Field(String)`・`Index(Integer)`・`Key(String)`、`ConversionError` は `path: List[PathPart]`・`expected: String`・`found: String`・`reason: String` の公開レコードとする。`ConversionError` には `@extensible` を付ける。`Trait.Show` は外側からの経路と expected・found を表示し、reason と入力の値全体は自動で表示しない。理由: 変換に失敗した位置と種類を、入力の内容を複製せずに確認できるようにするためである。
+
+基本型の `encodeString/decodeString`・`encodeBoolean/decodeBoolean`・`encodeInteger/decodeInteger`・`encodeFloat/decodeFloat` は、対応する `Json.Value` の構成子だけを変換する。Integer と Float の暗黙の相互変換は行わず、Float の符号化・復号の両方で NaN と無限大を拒否する。
+
+| 関数 | 引数と変換 |
+|---|---|
+| `encodeList[T]` / `decodeList[T]` | `value` と純粋な `encode` / `decode` を取り、添字順で処理する。最初の失敗へ `Index` を前置する |
+| `encodeMap[T]` / `decodeMap[T]` | String 鍵の Map を鍵順で処理し、最初の失敗へ `Key` を前置する |
+| `encodeOption[T]` / `decodeOption[T]` | None は Null、Some は要素の変換とする。復号では Null を None とする |
+| `decodeObject` | Object を取り出す。種類の不一致は空の経路の Error とする |
+| `decodeField[T]` | `members`・`key`・`decode`・ゼロ引数の `decodeMissing` を取り、存在の有無で一方だけを呼ぶ。失敗へ JSON キーの `Field` を前置する |
+| `missing[T]` | 必須欄の欠落を Error とする。欄の経路は呼び出し側が付ける |
+| `rejectExtra` | 全欄の変換後に呼び、`keys` にない最初の鍵を鍵順で拒否する。経路には `Key` を使い、入力の鍵を引用・エスケープして表示する |
+| `kind`・`error`・`prepend` | 入力内容を含めない種類名、相対経路のエラーの構築、外側の経路の追加を行う |
+
+コンテナへ渡す関数の契約名は `value`、戻り値は `Result[..., ConversionError]` とする。各コンテナの変換も Result を返し、最初の失敗の後に残りの要素を変換しない。欄の欠落と Null の扱いは別に指定する。自動生成した Option 欄では、両方を None とする。
+
+【決定】外部の [生成道具](../../../tools/derive/README.md) は、型パラメータのない非循環レコードから `encodePerson(value: Person) -> Result[Json.Value, Codec.ConversionError]`・`decodePerson(value: Json.Value) -> Result[Person, Codec.ConversionError]` の形の通常の関数を生成する。型と同じモジュールへ置き、公開かどうかも型に合わせる。別モジュールのレコードには公開の生成関数を持つ target を指定する。
+
+対応する欄は基本四型、レコード、List、String 鍵の Map、区別を失わない Option の組み合わせである。入れ子 Option と、Null を成功として受け入れる要素を持つ Option の自動変換を拒否する。未対応型は欄全体のカスタム変換を要求する。`json.keys` は JSON キーを改名し、同じキーへの重複を拒否する。
+
+レコードの欄は宣言順に変換し、失敗には JSON キーの Field を前置する。必須欄の欠落・Null・種類の不一致を拒否し、暗黙の既定値を入れない。全欄が成功した後に余分なキーを鍵順で拒否する。カスタムの encode/decode は純粋・単相な一引数の関数を対で指定し、必要ならゼロ引数の decodeMissing で欠落の扱いを置き換える。通常の型検査も生成後に行う。カスタムの戻す失敗は相対経路とし、呼び出し側が Field を前置する。
+
+【決定】対応型の値に対し、カスタム変換も往復の条件を満たす場合に `decode(encode(x)) = Ok(x)` を受け入れ条件とする。任意の JSON の字面の保存、重複キーの検出、parse/stringify を挟んだ数の表現の保存は保証しない。ParseError と ConversionError は区別し、文字列の parse と値の decode は利用者が明示して組み合わせる。Codec は Fail を要求せず、型付き失敗を選ぶ場合は利用箇所で `Failure.fromResult` を呼ぶ。
 
 ### Csv
 

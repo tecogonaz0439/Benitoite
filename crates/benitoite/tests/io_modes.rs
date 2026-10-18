@@ -516,3 +516,30 @@ end function
         );
     }
 }
+
+// 関門: 子の内側で変換しても、実物の IO の完了順と結果の順序を混同しない。
+#[test]
+fn typed_failure_converted_in_children_keeps_io_and_action_order() {
+    compare(
+        r#"
+import Benitoite.Unofficial.Failure
+function read(fail: Boolean) -> Result[String, String] uses File.Read
+ return Failure.toResult(body: lambda()
+  bind text <- Failure.fromResult(File.readText("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda))
+  return if fail then Failure.raise(error: text) else text end if
+ end lambda)
+end function
+function main() -> Result[Unit, String] uses File.Read, Console.Write
+ bind values <- Task.all([lambda() return read(true) end lambda, lambda() return read(false) end lambda])
+ if values <> [Result.Error("first\nsecond\n"), Result.Ok("first\nsecond\n")] then return Result.Error("values") end if
+ Console.writeLine("converted children")
+ return Result.Ok(())
+end function
+"#,
+        b"",
+        false,
+        b"converted children\n",
+        b"",
+        false,
+    );
+}

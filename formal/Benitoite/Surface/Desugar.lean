@@ -53,6 +53,7 @@ def directCallee : Expr → Option CallHead
   | .primName b ts es => some (.app (.prim b ts es) [])
   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
   | .opName o ts => some (.app (.op o ts) [])
+  | .opDicts o ts ds _ _ => some (.app (.op o ts) (DictEv.toValList ds))
   | _ => none
 
 /-- 変換関数はすべて直接の頭。型付けが none の場合を排除する。 -/
@@ -167,6 +168,14 @@ mutual
     | .primName b ts es => .ret (.prim b ts es)
     -- 01-12「ハンドラ」: 利用者の操作の名前 op を、呼ばずに値として使う | return op[T̄]
     | .opName o ts => .ret (.op o ts)
+    -- 01-12「形式化した操作の制約と節の辞書」: 辞書を値の作成時に捕え、
+    -- 公開の引数だけをラムダで受ける。操作の呼び出しは本体に残す。
+    | .opDicts o ts ds names ps => .ret (.lam names ps
+        (.app (.op o ts)
+          (Val.renameList (· + ps.length) (DictEv.toValList ds) ++ boundVars ps.length)))
+    | .raise t e => .ret (.raise t e)
+    | .handleFail e _ body clause =>
+        .handle (desugarBlock opPrim .other body) [.fail e (desugarBlock opPrim .other clause)]
     -- 同節: 引数のない構成子 T.C、Option.None | return C[T̄]()
     | .nullCon c ts => .ret (.con c ts [])
     -- 同節: 引数を持つ構成子 T.C を値として使う
@@ -381,8 +390,8 @@ mutual
   /-- 01-12「ハンドラ」の opi'(x̄i) ki ⇒ ⟦Ni⟧。型注釈と変数番号は入力で確定済み。 -/
   def desugarClauses (opPrim : OpPrim) : Clauses → List Release.Clause
     | .nil => []
-    | .cons o n ntys body rest =>
-        .mk o n ntys (desugarBlock opPrim .other body) :: desugarClauses opPrim rest
+    | .cons o n ntys body rest ndicts =>
+        .mk o (ndicts + n) ntys (desugarBlock opPrim .other body) :: desugarClauses opPrim rest
 
   def desugarBlock (opPrim : OpPrim) (p : Position) : Block → Comp
     -- 01-12「ブロック」: { } | return ()

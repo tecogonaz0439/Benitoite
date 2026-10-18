@@ -1,0 +1,23 @@
+'Benitoite.Release.Ty.norm_idem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Eff.norm_memFail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.rawShift_compare' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Eff.norm_rawShift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.norm_substAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Eff.norm_substAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Eff.bind_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.substAt_eq_raw_of_legacy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.WF.canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.bind_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.substAt_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.Le.wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+def Benitoite.Release.Ty.norm : Ty → Ty :=
+fun x => x.brecOn Ty.norm._f Eff.norm._f Ty.normTys._f
+def Benitoite.Release.Eff.norm : Eff → Eff :=
+fun x => EffR.brecOn x Ty.norm._f Eff.norm._f Ty.normTys._f
+def Benitoite.Release.Ty.rawBind : SubstEnv → Ty → Ty :=
+fun θ x => x.brecOn (Ty.rawBind._f θ) (Eff.rawBind._f θ) (Ty.rawBindTys._f θ)
+def Benitoite.Release.Ty.substAt : Nat → List Ty → List Eff → Ty → Ty :=
+fun c ts es x => x.brecOn (Ty.substAt._f c ts es) (fun t f => PUnit.unit) (Ty.substTysAt._f c ts es)
+real 0.36
+user 0.17
+sys 0.18

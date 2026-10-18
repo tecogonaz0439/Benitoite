@@ -1,0 +1,9 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad[effect Rest](body: function() -> Integer uses Rest) -> Integer uses Rest
+ return handle body() with
+ case Failure.raise(error) -> String.characterCount(error)
+ end handle
+end function
+function main() -> Unit
+end function

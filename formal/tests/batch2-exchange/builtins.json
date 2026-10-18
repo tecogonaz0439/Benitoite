@@ -1,0 +1,235 @@
+{
+  "version": 4,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-batch2",
+      "prims": [
+        {
+          "name": "List.map",
+          "tparams": [],
+          "neffs": 0,
+          "names": [
+            "xs",
+            "f"
+          ],
+          "params": [
+            {
+              "list": {
+                "elem": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              }
+            },
+            {
+              "fn": {
+                "names": [
+                  "value"
+                ],
+                "params": [
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "eff": []
+              }
+            }
+          ],
+          "ret": {
+            "list": {
+              "elem": {
+                "base": {
+                  "name": "Integer"
+                }
+              }
+            }
+          },
+          "eff": [],
+          "kind": "pure",
+          "opEff": null,
+          "classConstraints": [],
+          "unconvertibleTypes": [],
+          "effParams": []
+        },
+        {
+          "name": "%eq",
+          "tparams": [
+            {
+              "equality": true,
+              "key": false,
+              "ordered": false
+            }
+          ],
+          "neffs": 0,
+          "names": [
+            "left",
+            "right"
+          ],
+          "params": [
+            {
+              "tvar": {
+                "index": 0
+              }
+            },
+            {
+              "tvar": {
+                "index": 0
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Boolean"
+            }
+          },
+          "eff": [],
+          "kind": "pure",
+          "opEff": null,
+          "classConstraints": [],
+          "unconvertibleTypes": [],
+          "effParams": []
+        },
+        {
+          "name": "Console.writeLine",
+          "tparams": [],
+          "neffs": 0,
+          "names": [
+            "text"
+          ],
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Unit"
+            }
+          },
+          "eff": [
+            {
+              "name": {
+                "value": "Console"
+              }
+            }
+          ],
+          "kind": "io",
+          "opEff": "Console",
+          "classConstraints": [],
+          "unconvertibleTypes": [],
+          "effParams": []
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "Console",
+          "ops": [
+            "Console.writeLine"
+          ]
+        }
+      ],
+      "resources": [],
+      "dataDecls": [
+        {
+          "name": "PosPair",
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "PosPair",
+              "fields": null,
+              "args": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ]
+            }
+          ],
+          "typeName": "PosPair",
+          "isRecord": false,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Pair",
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Pair",
+              "fields": [
+                "left",
+                "right"
+              ],
+              "args": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ]
+            }
+          ],
+          "typeName": "Pair",
+          "isRecord": true,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ],
+      "summaries": [
+        {
+          "name": "PosPair",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        },
+        {
+          "name": "Pair",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        }
+      ],
+      "statePure": [],
+      "supplementalData": [],
+      "supplementalPrims": []
+    }
+  ]
+}

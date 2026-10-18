@@ -1,0 +1,16 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function catchString[effect Rest](body: function() -> Integer uses Failure.Fail[String], Rest) -> Integer uses Rest
+ return handle body() with
+ case Failure.raise(error) -> String.characterCount(error)
+ end handle
+end function
+function both[effect Rest](body: function() -> Integer uses Failure.Fail[String], Rest, other: function() -> Integer uses Rest) -> Integer uses Rest
+ bind _ <- other()
+ return catchString(body)
+end function
+function bad() -> Integer uses Failure.Fail[Integer]
+ return both(body: lambda() return 1 end lambda, other: lambda() return Failure.raise(error: 3) end lambda)
+end function
+function main() -> Unit
+end function

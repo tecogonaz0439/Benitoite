@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cargo",
+    "tree",
+    "--manifest-path",
+    "fuzz/Cargo.toml",
+    "--offline",
+    "--locked",
+    "-p",
+    "benitoite",
+    "--depth",
+    "0"
+  ],
+  "exit": 0,
+  "seconds": 0.158
+}

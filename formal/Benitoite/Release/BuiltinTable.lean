@@ -125,6 +125,9 @@ def satB (S : SummaryTable) (C : List TParam) (t : Ty) (p : TParam) : Bool :=
   if p.key then satisfiesB S C true t
   else if p.equality then satisfiesB S C false t else true
 
+/-- 実際の組み込みの表でも、空制約は任意の型で成立する。 -/
+theorem satB_unconstrained (S : SummaryTable) (t : Ty) : satB S [] t {} = true := rfl
+
 /-- ordered は Release.TParam に含まれず、prim の admits だけで検査する。 -/
 structure BuiltinConstraint where
   equality : Bool := false

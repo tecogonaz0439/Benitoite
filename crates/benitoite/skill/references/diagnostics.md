@@ -1687,7 +1687,6 @@ Each operation has at most one clause in a `handle`.
 - `uses`: an operation declaration cannot have `uses`; the handler decides the effects
 - `effect_var`: an operation cannot have effect variables
 - `type_ctor`: an operation cannot have type constructor parameters such as `F[_]`
-- `trait_constraint`: a type parameter of an operation can have only `equality` or `key`, not a trait
 
 Operations of an effect are declared with a name, parameters, and a result type.
 
@@ -1711,6 +1710,53 @@ The optional message of `or die` must be a pure String expression.
 
 The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.
 
+## E0513
+
+- Kind: check (error)
+- Message: invalid type arguments for effect `{name}` (expected {count})
+
+Only the standard Failure.Fail takes exactly one value type argument.
+
+## E0514
+
+- Kind: check (error)
+- Message: incompatible failure types `{expected}` and `{found}` in one effect set
+- `convert`: convert errors explicitly in a failure clause before joining effects
+
+A source computation can have at most one invariant failure type.
+
+## E0515
+
+- Kind: check (error)
+- Message: cannot establish that the remaining effects exclude Failure.Fail
+- `signature`: declare Failure.Fail in the callback signature, handle failures inside the callback, or move the handle boundary
+
+NoFail conditions come only from declared signatures. A row next to an explicit Failure.Fail excludes failures.
+
+## E0516
+
+- Kind: check (error)
+- Message: `resume` is not allowed in a failure clause
+- `result`: return the result of the whole handle instead
+
+Failure.raise aborts the captured continuation.
+
+## E0517
+
+- Kind: check (error)
+- Message: cannot determine the error type caught by this handle
+- `annotation`: annotate the callback or result type to fix the failure type
+
+The failure type must be fixed before its handler is erased.
+
+## E0518
+
+- Kind: check (error)
+- Message: cannot mix failure and ordinary operation clauses in one handle
+- `nest`: nest two handles instead
+
+A failure handle contains exactly one Failure.raise clause.
+
 ## E0601
 
 - Kind: check (error)
@@ -1720,7 +1766,7 @@ The declared atomic effects of the checked function (main or a test) exceed the 
 - `future`: add an unguarded variable or `_` pattern to cover future values of `{future_ty}`
 - `extensible_decl`: this type permits future shapes outside its package
 
-Every possible value must be matched by some branch.
+Every possible value must be matched by some branch. Character ranges can cover all Unicode scalars without a catch-all. For a match containing only 'a', the missing-character witness is '\u{0}'. Integer ranges still need a catch-all.
 
 ## E0602
 

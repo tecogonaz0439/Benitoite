@@ -4,49 +4,37 @@ import Benitoite.Surface.Lemmas.Invariants
 namespace Benitoite.Surface
 open Benitoite.Release
 
-mutual
-  theorem substAt_clean {n ts} (c : Nat) (es : List Eff) (hts : Ty.VarsInList n (fun _ => True) ts) :
-      (a : Ty) → TyOK (c + ts.length) a → TyOK (c + n) (a.substAt c ts es)
-    | .base _, _ => by simp [TyOK, Ty.substAt, Ty.VarsIn]
-    | .opaque _, _ => by simp [TyOK, Ty.substAt, Ty.VarsIn]
-    | .data _ as, h => by
-        simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAtList_clean c es hts as h
-    | .list a, h => by simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAt_clean c es hts a h
-    | .fn names ps r _, h => by
-        simp only [TyOK, Ty.substAt, Ty.VarsIn] at h ⊢
-        exact ⟨by simpa only [NamesWF, List.length_map] using h.1, substAtList_clean c es hts ps h.2.1, substAt_clean c es hts r h.2.2.1, fun _ _ => trivial⟩
-    | .tvar i, h => by
-        simp only [TyOK, Ty.VarsIn] at h
-        by_cases hi : i < c
-        · simp only [Ty.substAt, hi, ↓reduceIte, TyOK, Ty.VarsIn]; omega
-        · have hit : i - c < ts.length := by omega
-          simp only [Ty.substAt, hi, hit, ↓reduceIte, List.getElem?_eq_getElem hit, Option.getD_some]
-          simpa only [Nat.add_comm] using shift_clean c _ (varsInList_mem hts (List.getElem_mem hit))
-    | .reference a, h => by simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAt_clean c es hts a h
-    | .lazy a, h => by simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAt_clean c es hts a h
-    | .cont _ _ _, h => by exact False.elim h
-    | .map a b, h => by
-        simp only [TyOK, Ty.substAt, Ty.VarsIn] at h ⊢
-        exact ⟨substAt_clean c es hts a h.1, substAt_clean c es hts b h.2⟩
-    | .set a, h => by simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAt_clean c es hts a h
-    | .bytes, _ => by simp [TyOK, Ty.substAt, Ty.VarsIn]
-    | .dict _ a, h => by simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAt_clean c es hts a h
-    | .tapp i as, h => by
-        have hh := substAtList_clean c es hts as h.2
-        by_cases hi : i < c
-        · simp only [Ty.substAt, hi, ↓reduceIte, TyOK, Ty.VarsIn]
-          exact ⟨by omega, hh⟩
-        · have hit : i - c < ts.length := by have := h.1; omega
-          simp only [Ty.substAt, hi, hit, ↓reduceIte, List.getElem?_eq_getElem hit, Option.getD_some]
-          apply Ty.applyTo_varsIn _ hh
-          simpa only [Nat.add_comm] using shift_clean c _ (varsInList_mem hts (List.getElem_mem hit))
-    | .ctor _, _ => by simp [TyOK, Ty.substAt, Ty.VarsIn]
 
-  theorem substAtList_clean {n ts} (c : Nat) (es : List Eff) (hts : Ty.VarsInList n (fun _ => True) ts) :
-      (as : List Ty) → Ty.VarsInList (c + ts.length) (fun _ => True) as →
-        Ty.VarsInList (c + n) (fun _ => True) (as.map (Ty.substAt c ts es))
-    | [], _ => trivial
-    | a :: as, h => by exact ⟨substAt_clean c es hts a h.1, substAtList_clean c es hts as h.2⟩
-end
+theorem substAt_clean {n ts} (c : Nat) (es : List Eff)
+    (hts : Ty.VarsInList n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e)
+    (a : Ty) (ha : TyOK (c + ts.length) a) : TyOK (c + n) (a.substAt c ts es) := by
+  rw [Ty.substAt_eq_bind]
+  apply Ty.bind_clean (m := c + ts.length) _ _ _ a ha
+  · intro i hi
+    by_cases hic : i < c
+    · simp only [SubstEnv.at, hic, ↓reduceIte, TyOK, Ty.VarsIn]
+      omega
+    · have hit : i - c < ts.length := by omega
+      simp only [SubstEnv.at, hic, hit, ↓reduceIte, List.getElem?_eq_getElem hit, Option.getD_some]
+      have hx := Ty.VarsInList.iff.mp hts _ (List.getElem_mem hit)
+      have he : (ts[i-c]).shift c 0 = (ts[i-c]).rawShift c 0 := by
+        rw [Ty.shift_eq_norm_rawShift]
+        exact Ty.rawShift_canonical c 0 ((Ty.VarsIn.wf _ hx).canonical _)
+      rw [← he]
+      simpa only [Nat.add_comm] using shift_clean c _ hx
+  · intro e hm
+    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp hm
+    simpa only [Nat.add_comm] using rawShiftEff_clean c f (hes f hf)
+
+theorem substAtList_clean {n ts} (c : Nat) (es : List Eff)
+    (hts : Ty.VarsInList n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e)
+    (as : List Ty) (h : Ty.VarsInList (c + ts.length) (fun _ => True) as) :
+    Ty.VarsInList (c + n) (fun _ => True) (as.map (Ty.substAt c ts es)) := by
+  apply Ty.VarsInList.iff.mpr
+  intro t ht
+  obtain ⟨a, ha, rfl⟩ := List.mem_map.mp ht
+  exact substAt_clean c es hts hes a (Ty.VarsInList.iff.mp h a ha)
 
 end Benitoite.Surface

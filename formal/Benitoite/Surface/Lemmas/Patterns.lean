@@ -4,12 +4,14 @@ import Benitoite.Surface.Lemmas.PatternSupport
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {Q : NoFailCtx}
+
 /-- 既存の単一パターンの分岐は、恒等対応の選択肢として型が付く。 -/
-theorem HasArms.single {D B op C Γ R pos pat body rest a b ε εs δ}
+theorem HasArmsQ.single {D B op C Γ R pos pat body rest a b ε εs δ}
     (hv : pat.Valid) (hp : PatTy D.patternProgram pat.toCore a δ)
-    (hb : HasBlock D B op C (binds δ ++ Γ) R pos body b ε)
-    (hs : HasArms D B op C Γ R pos rest a b εs) :
-    HasArms D B op C Γ R pos (Arms.single pat body rest) a b (Eff.union ε εs) := by
+    (hb : HasBlockQ D B op Q C (binds δ ++ Γ) R pos body b ε)
+    (hs : HasArmsQ D B op Q C Γ R pos rest a b εs) :
+    HasArmsQ D B op Q C Γ R pos (Arms.single pat body rest) a b (Eff.union ε εs) := by
   exact .plain (by intro alt hm; simp only [List.mem_singleton] at hm; subst alt; exact hv)
     (PatTy.singleAlt hp) hb hs
 
@@ -31,20 +33,20 @@ theorem AltsTy.clean {P : Release.Program}
   exact Ty.varsInList_of_forall (fun t ht => varsInList_mem hc (selectSlots_mem hs t ht))
 
 /-- 照合対象の let を、最初の選択肢の束縛の外側に挿入する。 -/
-theorem HasTypeC.shiftAlts {P B C Γ R m a ε alts t δ}
+theorem HasTypeCQ.shiftAlts {P B C Γ R m a ε alts t δ}
     (hp : AltsTy P alts t δ)
-    (h : HasTypeC P B StoreTy.empty C (binds δ ++ Γ) R m a ε) :
-    HasTypeC P B StoreTy.empty C (binds δ ++ some t :: Γ) R
+    (h : HasTypeCQ P B StoreTy.empty Q C (binds δ ++ Γ) R m a ε) :
+    HasTypeCQ P B StoreTy.empty Q C (binds δ ++ some t :: Γ) R
       (m.rename (upRen (Arm.bindersOf alts) (· + 1))) a ε := by
   have hr := (RenOk.shift [some t] Γ).up (binds δ)
   rw [binds_length, hp.2.1] at hr
   exact h.rename hr
 
 /-- ガードでは同じ付け替えを、継続を隠した二つの環境の間で行う。 -/
-theorem HasTypeC.shiftGuard {P B C Γ m alts t δ}
+theorem HasTypeCQ.shiftGuard {P B C Γ m alts t δ}
     (hp : AltsTy P alts t δ)
-    (h : HasTypeC P B StoreTy.empty C (hideConts (binds δ ++ Γ)) none m (.base .boolean) Eff.empty) :
-    HasTypeC P B StoreTy.empty C (hideConts (binds δ ++ some t :: Γ)) none
+    (h : HasTypeCQ P B StoreTy.empty Q C (hideConts (binds δ ++ Γ)) none m (.base .boolean) Eff.empty) :
+    HasTypeCQ P B StoreTy.empty Q C (hideConts (binds δ ++ some t :: Γ)) none
       (m.rename (upRen (Arm.bindersOf alts) (· + 1))) (.base .boolean) Eff.empty := by
   have hr := (RenOk.shift [some t] Γ).up (binds δ)
   rw [binds_length, hp.2.1] at hr

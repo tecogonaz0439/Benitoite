@@ -179,6 +179,14 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
         }
         Expr::Error(_) => ITy::Error,
     };
+    if ctx
+        .decls
+        .resolved
+        .stdlib("Benitoite.Failure.raise")
+        .is_some()
+    {
+        ctx.source_effects.insert(e.id(), ctx.effect.clone());
+    }
     ctx.record_type(e.id(), ty.clone());
     ty
 }

@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.7`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.8`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.7`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.8`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
@@ -155,7 +155,7 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "unicodeVersion": "17.0.0",
   "build": {
     "commit": null,
@@ -229,6 +229,8 @@ Every target has `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`
 A successful `main` is `{symbol: "main", location, effects, processShellReference, shellReferenceScope}`. Each item in `tests` is `{function, description, location, effects}` in declaration order. An omitted test description is `null`; an explicitly empty description is `""`. `location` identifies the function name, using `{file, start, end, label: ""}`; start and end contain one-based `line` and `column` and a zero-based byte `offset` in the original source.
 
 An Effects object is `{basis: "declaredUpperBound", expanded: [...]}`. Its array contains unique atomic built-in names in lexical order. It reports the declared upper bound, including effects that the body does not use. `IO.All` expands to `Clock.Time`, `Console.Read`, `Console.Write`, `File.Read`, `File.Write`, `Process.Environment`, `Process.Exit`, `Process.Run`, `Random.Generate`, and `State`; it includes neither HTTP effect nor `Assert.Check`. Tests retain `Assert.Check` in each contract, the aggregate, and later effect-limit comparisons. Declaring `Assert.Check` on `main` is a check error (`E0415`). An unhandled `or die` needs `Process.Exit`; fully handling it and removing it from the declared bound removes it from the report. A bare `try` or `or return` adds no exit effect.
+
+An unhandled `Failure.Fail[E]` on `main` or a test is a check error (`E0506`), including during `test --check`. Handle it inside the entry, or convert it with `Failure.toResult`. Fail is excluded from `IO.All`, `expanded`, and the names accepted by `--allow-effects`; the report and effect-limit schema versions stay unchanged.
 
 Pure success has `expanded: []`. Unknown effects are represented by a `null` Effects value, never an empty array. If a target's check fails, its `main` or `tests` is `null`. A checked file with no tests has `tests: []`. An empty directory is a complete success with `targets: []` and an empty aggregate effect set. A failure in one file leaves successful targets' contracts available, but makes the overall `complete` false and `aggregateEffects` null. Discovery failure stops before checking any entries; previously discovered targets remain incomplete reference information with `status: "checkError"` and `tests: null`. Internal errors and observed interruptions can leave later entries uninspected.
 
@@ -537,6 +539,97 @@ Without direct holes, a call on the right of a pipe receives the left value as i
 
 With direct holes, as in `xs |> List.map(xs: _, f: action)`, the pipe instead calls the generated function with one argument. A parenthesized right side also receives a single argument as a function value. Two holes require two arguments; a pipe does not automatically partially apply that function again.
 
+### Typed failures
+
+Import `Benitoite.Unofficial.Failure` explicitly. `Failure.raise(error)` has type
+`function(error: E) -> T uses Failure.Fail[E]`. The error can be any value type and
+requires neither Show nor equality. Only the standard Fail takes a type argument;
+other effects do not. Write qualified type-argument effects, such as `Failure.Fail[String]`,
+after a comma in a uses list.
+
+```benitoite
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+function recovered() -> Integer
+  return handle Failure.raise(error: "bad") with
+    case Failure.raise(error) -> String.characterCount(error)
+  end handle
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(recovered()))
+end function
+```
+
+```output
+3
+```
+
+A failure clause returns the result of the whole handle. It cannot use `resume`,
+and one handle cannot mix failure and ordinary operation clauses. Nest two handles
+when both are needed. The nearest failure clause catches the failure; runtime code
+does not select handlers by the error's type. A clause may explicitly raise a new
+failure with a different error type, which an outer handle can catch.
+
+One source effect set has at most one invariant failure type. Incompatible joins
+report E0514. In a declared signature, an effect row beside an explicit Fail excludes
+failures, including inside callback and result function types. This internal condition
+is described as `Rest excludes Failure.Fail`; it survives function values, higher-order
+calls, and module boundaries. It is computed from the signature, never from the body.
+A handle whose remaining row lacks that condition reports E0515. A plain effect row,
+such as the row in List.map, can propagate failures. Capturing a failure does not
+remove latent effects from a returned function. Handle failures before main or a test
+returns.
+
+`Failure.fromResult(result)` returns the value in Ok or raises the original E in
+Error. `Failure.toResult(body)` calls body once inside a failure handler, wraps its
+normal return value in Ok, and returns Error for a raised failure. Its callback has
+type `function() -> T uses Failure.Fail[E], Rest`; its result is `Result[T, E]`
+and its remaining effects are Rest, which excludes Fail. Neither conversion
+requires Show or equality. Use a binding or callback type annotation when E cannot
+be inferred; calls do not accept explicit type arguments.
+
+```benitoite
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+record Invalid
+  value: Integer
+end record
+
+function convert(value: Integer) -> Integer uses Failure.Fail[Invalid]
+  return Failure.fromResult(if value = 2 then Result.Error(Invalid(value: value)) else Result.Ok(value) end if)
+end function
+
+function main() -> Unit uses Console.Write
+  bind result: Result[List[Integer], Invalid] <- Failure.toResult(body: lambda()
+    return List.map(xs: [1, 2, 3], f: convert)
+  end lambda)
+  match result with
+    case Result.Ok(_) -> Console.writeLine("all succeeded")
+    case Result.Error(error) -> Console.writeLine("failed at " + Integer.toString(Invalid.value(error)))
+  end match
+end function
+```
+
+```output
+failed at 2
+```
+
+The first failure stops the map, including later elements. Other effects and
+completed external work remain. Nested with scopes release resources once, from
+inner to outer, before toResult returns. A release failure stops execution as a
+runtime error; it is not converted to Error. A normal return from body is always
+wrapped in Ok, even when body returns a Result using return or try.
+
+Convert failures inside each child task and return its Result through the existing
+Task APIs. A child that uses its parent's non-resumable failure handler still stops
+with R0502. A lazy body must remain pure: handle its failure inside the body with
+toResult to cache a Result, or use a lambda to defer an effectful computation.
+The conversions do not catch die, Process.Exit, runtime errors, resource limits,
+interruption, cancellation, or external traps.
+
 ### Type and effect parameters
 
 Type parameters are written in brackets after the name: `function first[T](xs: List[T]) -> Option[T]`. Type arguments also use brackets: `List[Integer]`, `Map[String, Integer]`. An *effect variable* is a type parameter that stands for a set of effects; it lets a function take a function argument with any effects and pass them on.
@@ -605,6 +698,22 @@ Patterns can be:
 - lists, `[]`, `[x]`, `[first, ..rest]`, `[.., last]`;
 - several alternatives separated by commas, `case 1, 2 ->`;
 - followed by a guard, `case n if n > 0 ->`.
+
+Character ranges can cover the entire Unicode scalar domain. A single `case '\u{0}'..'\u{10ffff}' ->` or the two ranges `'\u{0}'..'\u{d7ff}'` and `'\u{e000}'..'\u{10ffff}'` are exhaustive without a catch-all. The same rule applies inside records, constructors and lists, and a full range can be used in a `bind` pattern. A later catch-all is rejected with `E0602`; a redundant comma alternative uses `E0608`. Guarded branches do not establish exhaustiveness. Integer ranges still require a catch-all even when they cover the entire `Integer` implementation range. For a missing character, `E0601` shows a concrete uncovered scalar, such as `'\u{0}'` for a match containing only `'a'`.
+
+```benitoite check
+function scalarHalf(c: Character) -> Integer
+  bind '\u{0}'..'\u{10ffff}' <- c
+  return match c with
+    case '\u{0}'..'\u{d7ff}' -> 0
+    case '\u{e000}'..'\u{10ffff}' -> 1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- scalarHalf('\u{e000}')
+end function
+```
 
 A list literal can contain one spread, `[first, ..rest]`, which inserts the elements of another list. `bind` and `shadow` accept a pattern that always matches, such as `bind Pair(a, b) <- pair`.
 
@@ -682,7 +791,7 @@ Inside the defining package, patterns covering every declared constructor can be
 
 The package boundary is the same as for `public(package)`: the starting script and its root modules form one package, the standard library and prelude form another, and each dependency's internal modules belong to that dependency. Importing a type into another module of the same package does not make the use external.
 
-The standard library marks four failure types as extensible: `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError`. `Result` and `Option` themselves remain closed: `Result.Ok(value)` and `Result.Error(error)` cover both cases when their contents are bound as variables. `String` error values keep the ordinary string-pattern rules; the opaque `IOError` and `NetworkError` have no constructors to match.
+The standard library marks `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, `Json.Codec.ConversionError`, and `Csv.ParseError` as extensible. `Result` and `Option` themselves remain closed: `Result.Ok(value)` and `Result.Error(error)` cover both cases when their contents are bound as variables. `String` error values keep the ordinary string-pattern rules; the opaque `IOError` and `NetworkError` have no constructors to match.
 
 For an extensible record, `ParseError(message: text, ..)` covers only the known record shape; `..` omits current fields. Outside its package, add a variable or `_` branch to `match`. A destructuring `bind` or `shadow` must always match, so using just that record pattern reports `E0607`; use a getter or a `match` with a branch for future shapes. Construction, updates, and getters keep their declared field contracts. The attribute does not guarantee compatibility when record fields are added or changed.
 
@@ -876,6 +985,10 @@ Adding `uses Console.Write` to `greet` fixes the error.
 An effect is part of the type of a function value: `function(text: String) -> Unit uses Console.Write`.
 
 ## 11. Effect handlers
+
+An operation can constrain its value type parameters with traits and built-in constraints, for example `function render[T: Trait.Show](value: T) -> String`. Callers select the implementation; a handler clause can use the declared methods for any caller type. Several constraints use `&`, including supertraits. The constraints add no public arguments. Operations cannot declare type constructor parameters, effect variables, or their own `uses`.
+
+A constrained operation can also be stored as a function value, partially applied with `_`, or used on the right of `|>`. Its function type keeps only the declared public parameters and the operation effect. A lambda inside a clause can capture the declared constraints, including supertraits; nested clauses keep their own constraints. Named arguments are evaluated once in source order before they are placed in declaration order.
 
 You can declare your own effects. An `effect` declaration lists its operations, which are called like functions. `handle body with case operation(arguments) -> clause end handle` runs `body` and, whenever the body calls one of the listed operations, runs the clause instead. In the clause, `resume(value)` continues the body, with `value` as the result of the operation. A clause that does not call `resume` ends the `handle` with its own value. `resume` is written directly in the clause; it cannot appear in a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders (a `handle` written there can resume its own clauses).
 
@@ -1143,6 +1256,89 @@ Here two entries were selected and neither started. `filesNotRun` counts all ent
 
 The exit status of executing `test` is 0 when all tests pass, 1 when a test fails, 2 for check errors, effect-limit rejection, compilation limits, unreadable files, and usage errors, 3 for an internal error, and 130 when interrupted. When several apply, the first in the order 130, 3, 2, 1 is used. Output failures exit with 1. Non-executing `test --check` uses the [inspection statuses](#inspection-reports), with or without a JSON report.
 
+### Pure property trials
+
+Import `Benitoite.Unofficial.Test.Property` for pure generators, shrinkers, and
+bounded property trials. These are ordinary library functions: one `@test`
+calls `Property.check`, matches its result, and returns a formatted String error.
+`test --check` only inspects types and effects; it runs no generators or properties.
+
+```benitoite test
+import Benitoite.Unofficial.Test.Property
+
+@test("integer addition agrees with multiplication")
+function addition() -> Result[Unit, String]
+  bind gen <- try Property.integer(low: -100, high: 100)
+  bind config <- Property.Config(seed: 17, trials: 100, size: 8, maxShrinks: 100)
+  bind result <- Property.check(config: config, gen: gen, shrinker: Property.shrinkInteger(), property: lambda(value)
+    return if value + value = value * 2 then Result.Ok(()) else Result.Error("addition disagrees") end if
+  end lambda)
+  return match result with
+    case Result.Ok(_) -> Result.Ok(())
+    case Result.Error(failure) -> Result.Error(Property.formatFailure(failure: failure, show: lambda(value) return Integer.toString(value) end lambda))
+  end match
+end function
+```
+
+`Gen[T]` is a public record with
+`run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]`;
+`Shrinker[T]` has `candidates: function(value: T) -> List[T]`. Import
+`Benitoite.Unofficial.IO.Random` when writing a generator by hand. Pass each returned
+random state to the next draw. Both callbacks and the property must be pure;
+Assert, IO, typed Fail, and exit cannot run inside them. Runtime errors and
+interruptions propagate normally, without becoming counterexamples.
+
+`Config` allows any Integer seed, trials from 1 to 10000, size from 0 to 10000,
+and maxShrinks from 0 to 100000, all inclusive. Invalid settings return
+`CheckFailure.InvalidConfig(String)` before calling any callback. Each trial
+gets the same size. A direct `Gen.run` call uses its stored function's size
+contract; built-in string/list/map generators require size in 0..10000.
+
+Generators include `constant(value)`, `map(gen, f)`, `both(left, right)`,
+`integer(low, high)`, `boolean()`, `float()`, `string()`, `list(element)`,
+`option(element)`, and `stringMap(value)`. Only integer returns a Result:
+reversed bounds are an error, equal bounds do not advance random state, and
+both endpoints are included even across the entire Integer range. Integer draws
+are deliberately biased toward zero and endpoints, without a uniformity promise.
+Float draws are finite, in [-1, 1], with explicit zero and ±1 branches.
+Strings use valid Unicode scalars. Strings and lists have length 0..size;
+stringMap makes 0..size key/value attempts and keeps the first value for a duplicate
+key without retrying. Nested generators receive the same size, so this is not an
+absolute total allocation bound. Option chooses None with probability 1/4.
+
+`shrinkInteger`, `shrinkFloat`, `shrinkBoolean`, and `shrinkString` take no arguments.
+`shrinkList(element)`, `shrinkOption(element)`, and `shrinkStringMap(value)` take an
+element shrinker and require equality on the element type to remove unchanged
+and duplicate candidates. Integer candidates start with zero and successive
+halves toward zero, without overflowing on the minimum Integer. Float candidates
+are zero and a finite half. Strings/lists try empty, contiguous deletions with
+halving widths, then one element at a time. Maps delete keys in key order before
+shrinking values in key order. Option tries None before shrinking its content.
+A mapped Gen needs a separately supplied Shrinker; no inverse is inferred.
+Handwritten Gen, Shrinker, and check need no equality constraint and may handle
+function values.
+
+The first property `Result.Error` starts shrinking. Passing candidates are skipped;
+a failing candidate becomes the current input and restarts the candidate sequence.
+Every candidate trial counts toward maxShrinks, including repeats and cycles.
+Zero skips the shrinker entirely and records the limit as reached. The budget
+bounds callback invocations, not a callback's own execution time or memory use.
+Keep size small for built-in List, String, and Map shrinking: generating and
+deduplicating candidates can cost more than quadratic time in the input length,
+and maxShrinks does not bound that work.
+
+`CheckFailure.Falsified(Counterexample[T])` carries `config`, the first failing
+1-based `trial`, `original`, `reduced`, `originalMessage`, `message`, `shrinks`,
+`limitReached`, and `libraryVersion` (currently `1.0.0`). The reduced input still
+fails with its recorded message; it need not be the smallest counterexample.
+`formatFailure(failure, show)` includes these budgets and replay data, plus concrete
+original/reduced inputs using `show: function(value: T) -> String`.
+Use the same seed, config, library rules, property, and handwritten callbacks to
+replay. This does not extend Random.fromSeed's cross-version contract to changed
+Property rules. A lossy show function cannot guarantee full reconstruction;
+keep important concrete failures as fixed examples. For record generator/shrinker
+code generation, see [Record generators and shrinkers](#record-generators-and-shrinkers).
+
 ## 17. Formatting
 
 `benitoite fmt` rewrites files in the standard layout. It changes only whitespace: spaces within lines, indentation, blank lines, and trailing spaces. It keeps your line breaks and comments, does not add or remove tokens, and has no settings. `fmt` checks only the syntax, so a file with type errors can be formatted. A file with lexical or syntax errors (codes `E01nn` and `E02nn`) is left unchanged and its diagnostics are reported; the other files are still formatted. Other errors found while reading the file, such as a wrong attribute, do not stop formatting.
@@ -1219,6 +1415,9 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Time` | `import Benitoite.Unofficial.Time` | Points in time and calendar dates |
 | `Path` | `import Benitoite.Unofficial.Path` | Joining and splitting paths |
 | `Json` | `import Benitoite.Unofficial.Json` | JSON |
+| `Failure` | `import Benitoite.Unofficial.Failure` | Typed failures and Result conversions |
+| `Test.Property` | `import Benitoite.Unofficial.Test.Property` | Pure generators, shrinkers, and property trials |
+| `Json.Codec` | `import Benitoite.Unofficial.Json.Codec` | Pure Result-based JSON conversion |
 | `Csv` | `import Benitoite.Unofficial.Csv` | CSV (RFC 4180) |
 | `Regex` | `import Benitoite.Unofficial.Regex` | Regular expressions; finding one match takes time proportional to the input length times the pattern size, and finding all matches can take time proportional to the square of the input length |
 | `Encoding` | `import Benitoite.Unofficial.Encoding` | Base64 |
@@ -1316,7 +1515,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.7` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.8` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1328,7 +1527,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.7"
+language "0.0.8"
 
 package Textkit
   license "MIT"
@@ -1346,7 +1545,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.7"
+language "0.0.8"
 
 dependency Textkit
   path "packages/textkit"
@@ -1378,7 +1577,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.7"
+language "0.0.8"
 ```
 
 ```benitoite check
@@ -1389,7 +1588,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.7`, a declaration of `0.0.7` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.8`, a declaration of `0.0.8` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -1584,3 +1783,72 @@ Traps, ABI violations, and instantiation failures other than resource-limit fail
 Arguments and results can coexist in host memory. Dynamic WIT representations, typed arrays, packed adapter buffers, guest and adapter linear memory, and Benitoite values all consume memory. The configured transfer and memory budgets constrain different parts of this consumption; they do not bound total process memory.
 
 These checks do not guarantee a component's result is correct or that it returns normally. Component compilation happens during checking as well as execution. Input components are limited to 256 MiB, but checking has no time or host-memory limit. Isolation of the interpreter, including checking untrusted components, remains the responsibility of the harness or OS; scripts have no runtime permission control.
+
+### JSON record conversion
+
+`Benitoite.Unofficial.Json.Codec` provides pure `Result` conversions for String,
+Boolean, Integer, finite Float, List, String-keyed Map, and Option. Numbers must
+have the exact JSON constructor; Integer is not implicitly converted to Float.
+NaN and infinities fail in both directions. ConversionError is an extensible
+record with `path`, `expected`, `found`, and `reason`. Paths contain Field, Index,
+and Key steps, from the outermost container to the first failure. Show displays
+the path and kinds without automatically printing the input payload.
+
+```benitoite
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+
+function main() -> Result[Unit, String]
+  bind encoded <- try Codec.encodeList(value: [1, 2, 3], encode: Codec.encodeInteger)
+    |> Result.mapError(r: _, f: lambda(error) return Codec.ConversionError.reason(error) end lambda)
+  bind decoded <- try Codec.decodeList(value: encoded, decode: Codec.decodeInteger)
+    |> Result.mapError(r: _, f: lambda(error) return Codec.ConversionError.reason(error) end lambda)
+  if decoded <> [1, 2, 3] then
+    return Result.Error("JSON conversion roundtrip failed")
+  end if
+  return Result.Ok(())
+end function
+```
+
+```output
+```
+
+The development [derive tool](../../tools/derive/README.md) generates ordinary
+encode/decode functions for noncyclic records without type parameters. It checks
+fields in declaration order and then rejects the first extra key in key order.
+Missing and null automatic Option fields decode to None; required fields have no
+implicit defaults. `json.keys` renames keys. Nested Option and unsupported types
+need whole-field custom encode/decode; optional decodeMissing handles absence.
+Custom conversions must be pure and satisfy the intended roundtrip law.
+
+Use preview, review its diff/manifest, apply with the reviewed manifest hash,
+then run ordinary check/test and **derive check**. Normal check does not read the
+generation record and cannot detect all stale encoders after fields are added.
+The [two-level record example](../../tools/derive/examples/People.bnt) includes
+an ordinary `@test`, generated Gen/Shrinker functions, a property that tries JSON
+roundtrips, and an explicit `Failure.fromResult` application boundary;
+the codec itself requires no Fail effect. JSON text parsing remains a separate
+Result with ParseError. Arbitrary JSON spelling and representation across
+parse/stringify are outside the conversion roundtrip guarantee.
+
+### Record generators and shrinkers
+
+The same derive configuration can request `property.generator` and
+`property.shrinker`, together or separately from JSON. They generate pure,
+zero-argument functions returning Gen and Shrinker for the record. Fields use
+successive random states and the same size in declaration order; shrinking
+changes one field at a time in that order. Supported types are String, Boolean,
+Integer across its full range, finite Float, noncyclic records, List,
+String-keyed Map, and Option. Property-only nested Option is supported.
+A dependent record needs its own Property target and public functions across
+modules. Generic and recursive records are not generated.
+
+Custom `fields.gen` and `fields.shrink` must be paired, fully qualified pure
+monomorphic zero-argument functions returning Gen/Shrinker of the field type.
+They replace the entire field; their bodies and distribution remain the user's
+responsibility. Relationships between fields require a handwritten generator
+and shrinker for the entire record. For a saved failure report, attach the
+`.generated.json` record containing generatorVersion and configSha256, alongside
+the Property failure's seed/config, library version, and concrete inputs. Replay
+also depends on unchanged type structures, generation settings, custom
+functions, and the property. No generator-identification function is emitted.

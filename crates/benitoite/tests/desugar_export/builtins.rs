@@ -41,6 +41,10 @@ fn opaque_arguments(ty: &Ty, names: &mut BTreeSet<String>) {
         Ty::Fn(f) => {
             f.params.iter().for_each(|t| opaque_arguments(t, names));
             opaque_arguments(&f.ret, names);
+            f.effects
+                .failures
+                .iter()
+                .for_each(|t| opaque_arguments(t, names));
         }
         Ty::App(_, args) => args.iter().for_each(|t| opaque_arguments(t, names)),
         Ty::Param(_) | Ty::Rigid { .. } => {}
@@ -93,7 +97,16 @@ fn remap_ty(ty: &Ty, names: &BTreeMap<BindingId, BindingId>) -> Ty {
             param_names: f.param_names.clone(),
             params: f.params.iter().map(|t| remap_ty(t, names)).collect(),
             ret: remap_ty(&f.ret, names),
-            effects: f.effects.clone(),
+            effects: EffectSet {
+                names: f.effects.names.clone(),
+                vars: f.effects.vars.clone(),
+                failures: f
+                    .effects
+                    .failures
+                    .iter()
+                    .map(|t| remap_ty(t, names))
+                    .collect(),
+            },
         })),
         Ty::App(i, args) => Ty::App(*i, args.iter().map(|t| remap_ty(t, names)).collect()),
         Ty::Param(_) | Ty::Rigid { .. } => ty.clone(),
@@ -235,7 +248,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             assert_eq!(decl.capability, Capability::Io);
             assert!(scheme.effect_params.is_empty());
             assert!(scheme.effects.vars.is_empty());
-            let effect = eff(&scheme.effects);
+            let effect = surface.eff(&scheme.effects);
             assert_eq!(effect.as_array().unwrap().len(), 1);
             Some(effect[0]["name"]["value"].as_str().unwrap().to_owned())
         } else {
@@ -245,8 +258,14 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             state_pure.push(decl.name);
         }
         let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
-        let mut prim = json!({"name":decl.name,"tparams":tparams,"neffs":scheme.effect_params.len(),
-            "params":params,"ret":surface.ty(&scheme.ret),"eff":eff(&scheme.effects),
+        let eff_params: Vec<_> = scheme
+            .effect_params
+            .iter()
+            .enumerate()
+            .map(|(i, _)| json!({"noFail":scheme.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))}))
+            .collect();
+        let mut prim = json!({"name":decl.name,"tparams":tparams,"neffs":scheme.effect_params.len(),"effParams":eff_params,
+            "params":params,"ret":surface.ty(&scheme.ret),"eff":surface.eff(&scheme.effects),
             "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
             "unconvertibleTypes":unconvertible});
         assert_eq!(
@@ -270,7 +289,8 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             if id == BuiltinEffectId::IO_ALL {
                 return None;
             }
-            let effect = eff(&EffectSet {
+            let effect = surface.eff(&EffectSet {
+                failures: vec![],
                 names: vec![EffectName::Builtin(id)],
                 vars: vec![],
             });

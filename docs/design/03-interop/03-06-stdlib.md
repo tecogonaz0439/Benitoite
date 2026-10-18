@@ -42,9 +42,11 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 |---|---|---|
 | prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`、各幅の数とその別名）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
 | 標準の型クラス | `Benitoite.Trait`（後述の「標準の型クラス（初回リリース版）」） | `import Benitoite.Trait` で取り込み、`Trait.Monad.flatMap` と書く |
+| 型付きの失敗 | `Benitoite.Failure`（[エラー処理](../01-spec/01-09-errors.md#型付きの失敗と-result-の変換)） | `import Benitoite.Unofficial.Failure` で取り込み、raise/fromResult/toResult を使う |
+| 性質の試行 | `Benitoite.Test.Property`（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)） | `import Benitoite.Unofficial.Test.Property` で取り込み、`Property.check` と書く |
 | IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.Unofficial.IO.Console` で取り込み、`Console.writeLine` と書く |
 | ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)） | `import Benitoite.Unofficial.Network.Http` で取り込み、`Http.get` と書く |
-| テキストとデータを扱うモジュール | `Benitoite.Path`・`Benitoite.Json`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash`（[テキストとデータの処理](03-08-text-and-data.md)） | `import Benitoite.Unofficial.Json` で取り込み、`Json.parse` と書く |
+| テキストとデータを扱うモジュール | `Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash`（[テキストとデータの処理](03-08-text-and-data.md)） | `import Benitoite.Unofficial.Json` で取り込み、`Json.parse` と書く |
 
 - prelude のモジュール `IO`（`Benitoite.IO`）は、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト `IO.All` だけを持つ。ネットワークのエフェクトは `IO.All` に含まれない（[エフェクト](../01-spec/01-07-effects.md)）。理由: ネットワークの操作は、スクリプトを動かす機械の外の資源に触れ、機械の中の操作（コンソール、ファイル、プロセス、環境変数、時計、乱数）とは影響の及ぶ範囲が異なる。`uses IO.All` は import なしに書ける。`Benitoite.IO` の下のモジュールの関数を呼ぶには import が要る。
 - import なしに完全な名前で書けるのは prelude だけである。`Benitoite.IO.Console.writeLine` を import なしに書くことはできない。
@@ -70,7 +72,7 @@ end function
 | 状態 | モジュール | 取り込み方 |
 |---|---|---|
 | 標準 | prelude のすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait` | prelude は import なしで使う。`Benitoite.Trait` は `import Benitoite.Trait` で取り込む |
-| 非公式 | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
+| 非公式 | `Benitoite.Test.Property`、`Benitoite.Failure`、`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
 
 - 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは prelude に入らない。
 - 非公式のモジュールを `import Benitoite.IO.Console` と書くこと、標準のモジュールを `import Benitoite.Unofficial.Trait` と書くことは、どちらも標準ライブラリにないモジュールの取り込みの誤りである。診断は、その版で正しい取り込みの名前を修正案として示す（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
@@ -458,7 +460,7 @@ end function
 | 型クラス | 実装する型 |
 |---|---|
 | `Show`・`Order` | 基本型（各幅の数、`Decimal`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
-| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError` |
+| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
 | `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
 | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
 
@@ -536,6 +538,8 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 
 ### 標準ライブラリのソースの書き方
 
+【決定】Failure.fromResult は通常の match、Failure.toResult は通常の handle として Failure.bnt に定義する。標準専用の表から得るのは Fail と raise の宣言であり、fromResult/toResult の型と NoFail の条件は通常の標準ソースのシグネチャから得る。
+
 【決定】標準ライブラリのソースは、利用者のモジュールと同じ構文のモジュールとして書く。モジュール `Benitoite.X.Y` のソースは、処理系に同梱する標準ライブラリの根の下の `X/Y.bnt` に置く。読み込みと名前解決は[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
 
 - 利用者から見える関数・型・型クラス・エフェクトには `public` を付ける。補助の関数は `public` を付けずに書き、そのモジュールの中からだけ使う。
@@ -572,3 +576,23 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 
 この例は書き方を示すものであり、`List.get` の代わりに、標準ライブラリのソースの中だけで使える組み込みの関数（`Option` を作らずに要素を順に取り出すもの）を使ってよい。この例は O(n log n) であり、要素を順に取り出す組み込みの関数を使えば O(n) にできる。標準ライブラリのソースの関数の定義そのものは、処理系に同梱するソースが与える。
 
+
+### 外部生成の宣言情報
+
+【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 1 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は builtin・record・list・map・option・unsupported に分け、未対応型には解決した型の表示と元の注釈・位置を残す。型の別名は通常の型検査の処理で展開し、標準の Option は綴りでなく解決した同一性で区別する。
+
+JSON 変換を要求する target では Json.Codec、Property を要求する target では Test.Property を仮想の入口に加え、依存先も含めて生成後に必要となる標準ソースを全入力へ含める。JSON にはモジュールの説明と先頭の宣言の終了バイト位置、既存の import の別名と解決先、生成名の衝突を調べるための宣言一覧も含める。詳しい欄と設定は [example の契約](../../../crates/benitoite/examples/derive_inventory/README.md)で定める。正常時は終了0、宣言・入力・対象の誤りは1、引数と設定の書式の誤りは2とし、失敗時には JSON を出さず標準エラー出力に説明を書く。この入口は宣言の情報を読むものであり、ソースの生成・編集は行わない。
+
+### 外部生成の管理と照合
+
+【決定】開発用の `tools/derive/derive.py` は、宣言情報を使う生成関数から本文を受け取り、`preview`・確認済み manifest の `apply`・再生成の `check` で管理する。CLI の引数・設定・記録の書式は [道具の契約](../../../tools/derive/README.md)で定める。JSON 変換の生成を提供する（[Json.Codec](03-08-text-and-data.md#jsoncodec)）。レコードの生成器・縮小器も提供する（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)）。JSON と Property は単独でも、同じ領域へ合わせても生成できる。
+
+【決定】型を宣言した `.bnt` の管理領域は、完全な行の `// benitoite-derive:begin <region>` と `// benitoite-derive:end <region>` で囲む。印のない初回は原則として末尾への追加を提案し、既存領域は印の内側だけを編集する。重複・入れ子・片方だけの印、記録のない既存領域、記録の出力ハッシュと異なる本文は拒否する。領域外のバイト列を保ち、必要な import も領域内に置く。既存の import は解決済みのモジュールの同一性で再利用し、関数名と別名の衝突は書き込み前に報告する。
+
+【決定】新たな import が必要な初回の領域は、モジュールの説明と先頭の宣言・既存の import の後、最初の通常の宣言の前へ置く。同じソースの新たな import は、この領域へ集める。既存領域がすべて宣言の後にあり、新規領域もない場合は import の追加を拒否し、利用者が宣言の前へ import を書いて再度 preview する。理由: 本番の parser は宣言の後の import を拒否するため、末尾への生成だけでは通常の検査を通らないからである。
+
+【決定】設定と同じディレクトリの `<設定のstem>.generated.json` に、版、道具の版、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。位置・元の型の表記・コメント・空白は構造ハッシュに含めない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
+
+【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用と receipt の保存後に生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
+
+管理の解除は本文を残し、印・設定の当該 target・記録の当該 target を手で除く。残る target の生成の `check` と通常の `check`・`test` を行う。上書きを強制する入口と専用の管理解除コマンドは設けない。

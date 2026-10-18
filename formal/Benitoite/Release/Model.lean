@@ -55,21 +55,21 @@ theorem sig_cases {b s} (h : builtins.sig b = some s) : s = refGetSig ∨ s = re
     · cases h; exact Or.inr rfl
     · cases h
 
-theorem single_no_rho (i : Nat) : Eff.single stateEff (.rho i) = false := by
-  simp [Eff.single]
+theorem single_no_rho (i : Nat) : Eff.test (Eff.single stateEff) (.rho i) = false := by
+  simp [Eff.test, Eff.single, Eff.ofAtoms, Eff.atoms]
 
 theorem assumptions (P : Program) : builtins.Assumptions P where
   sig_scoped := by
     intro b s h
     rcases sig_cases h with rfl | rfl <;>
-      exact ⟨by simp [NamesWF, refGetSig, refSetSig],
-        by simp [Ty.VarsInList, Ty.VarsIn, PrimSig.ntys, refGetSig, refSetSig],
-        by simp [Ty.VarsIn, PrimSig.ntys, refGetSig, refSetSig],
-        fun i hi => by simp [refGetSig, refSetSig, single_no_rho] at hi⟩
+      simp [PrimSig.Scoped, refGetSig, refSetSig, PrimSig.ntys, NamesWF, Ty.VarsInList,
+        Ty.VarsIn, Eff.VarsIn, Eff.single, Eff.ofAtoms]
+
   admits_subst := by
     intro b s C0 C1 ts ts' es' h ha _ _
     rcases sig_cases h with rfl | rfl <;> simpa [refGetSig, refSetSig] using ha
   sat_subst := fun _ _ _ _ _ _ _ _ _ => trivial
+  sat_unconstrained := fun _ _ => trivial
   admits_sat := by
     intro b s C ts h ha
     rcases sig_cases h with rfl | rfl <;>
@@ -184,9 +184,8 @@ theorem classProgram_impls {i id} (h : classProgram.impls i = some id) :
     · cases h; exact Or.inr ⟨by assumption, rfl⟩
     · cases h
 
-theorem constSig_scoped : constSig.Scoped :=
-  ⟨by simp [NamesWF, constSig], trivial, by simp [constSig, Ty.VarsIn],
-    fun i hi => by simp [constSig, Eff.empty] at hi⟩
+theorem constSig_scoped : constSig.Scoped := by
+  simp [MethSig.Scoped, constSig, NamesWF, Ty.VarsInList, Ty.VarsIn, Eff.VarsIn, Eff.empty]
 
 theorem classProgram_wellFormed : classProgram.WellFormed := by
   refine ⟨fun _ _ h => (by cases h), fun _ _ h => (by cases h), fun _ _ h => (by cases h), ?_, ?_⟩
@@ -217,8 +216,8 @@ theorem classProgram_wellFormed : classProgram.WellFormed := by
         · cases hb
 
 /-- メソッドの本体 `return k` に、D-Impl が求める型 `Integer` が付く。 -/
-theorem const_body_typed (k : Int) {id : ImplDecl} (ht : id.target = .base .integer) :
-    HasTypeC classProgram builtins StoreTy.empty ([] ++ id.tparams)
+theorem const_body_typed {Q : NoFailCtx} (k : Int) {id : ImplDecl} (ht : id.target = .base .integer) :
+    HasTypeCQ classProgram builtins StoreTy.empty Q ([] ++ id.tparams)
       (binds (id.dictTys.map (Ty.shift 0 0) ++ constSig.params.map (id.methTy constSig)))
       (some (id.methTy constSig constSig.ret)) (.ret (.const (.integer k)))
       (id.methTy constSig constSig.ret) constSig.eff := by
@@ -238,7 +237,8 @@ theorem classProgram_wellTyped : classProgram.WellTyped builtins := by
       simp only [classC] at hm
       split at hm
       · cases hm
-        exact ⟨_, by simp [implC, *], by simp [NamesWF, constSig], const_body_typed 0 rfl⟩
+        exact ⟨.ret (.const (.integer 0)), by simp [implC, *], by simp [NamesWF, constSig],
+          (by simpa [constSig, implC, ImplDecl.methTy, Eff.substAt_empty] using const_body_typed (id := implC) 0 rfl)⟩
       · cases hm
     · intro s hs; simp [classC] at hs
   · refine ⟨classD, by simp [classProgram, implD], ?_, ?_, ?_, ?_⟩
@@ -248,16 +248,17 @@ theorem classProgram_wellTyped : classProgram.WellTyped builtins := by
       simp only [classD] at hm
       split at hm
       · cases hm
-        exact ⟨_, by simp [implD, *], by simp [NamesWF, constSig], const_body_typed 1 rfl⟩
+        exact ⟨.ret (.const (.integer 1)), by simp [implD, *], by simp [NamesWF, constSig],
+          (by simpa [constSig, implD, ImplDecl.methTy, Eff.substAt_empty] using const_body_typed (id := implD) 1 rfl)⟩
       · cases hm
     · intro s hs
       simp [classD] at hs
       subst hs
       refine ⟨.dict "CInt" [] [], by simp [implD], ?_⟩
-      have := HasTypeV.V_Dict (P := classProgram) (B := builtins) (Ψ := StoreTy.empty) (C := [])
+      have := HasTypeVQ.V_Dict (Q := Qempty) (P := classProgram) (B := builtins) (Ψ := StoreTy.empty) (C := [])
         (Γ := binds implD.dictTys) (i := "CInt") (ts := []) (vs := []) (id := implC)
         (by simp [classProgram]) ⟨rfl, fun _ _ _ h _ => by simp at h⟩ .nil
-      simpa [implC, implD, Ty.subst, Ty.substAt] using this
+      simpa [implC, implD, Ty.subst, Ty.substAt, Eff.substAt] using this
 
 theorem classProgram_effectsOk : classProgram.EffectsOk builtins :=
   ⟨fun _ _ _ h => (by cases h), fun _ _ h => (by cases h), fun _ _ h => (by cases h)⟩
@@ -267,19 +268,20 @@ theorem super_call_typed :
     HasTypeC classProgram builtins StoreTy.empty [] [] none
       (.meth (.super (.dict "DInt" [] []) "C") "m" [] [] []) (.base .integer) Eff.empty := by
   have hd : HasTypeV classProgram builtins StoreTy.empty [] [] (.dict "DInt" [] []) (.dict "D" (.base .integer)) := by
-    have := HasTypeV.V_Dict (P := classProgram) (B := builtins) (Ψ := StoreTy.empty) (C := []) (Γ := [])
+    have := HasTypeVQ.V_Dict (Q := Qempty) (P := classProgram) (B := builtins) (Ψ := StoreTy.empty) (C := []) (Γ := [])
       (i := "DInt") (ts := []) (vs := []) (id := implD)
       (by simp [classProgram]) ⟨rfl, fun _ _ _ h _ => by simp at h⟩ .nil
-    simpa [implD, Ty.subst, Ty.substAt] using this
-  have hs := HasTypeV.V_Super (s := "C") (cd := classD) hd (by simp [classProgram]) (by simp [classD])
-  have hm := HasTypeC.C_Meth (R := none) (m := "m") (ss := []) (es := []) (ws := []) (cd := classC)
+    simpa [implD, Ty.subst, Ty.substAt, Eff.substAt] using this
+  have hs := HasTypeVQ.V_Super (s := "C") (cd := classD) hd (by simp [classProgram]) (by simp [classD])
+  have hm := HasTypeCQ.C_Meth (R := none) (m := "m") (ss := []) (es := []) (ws := []) (cd := classC)
     (ms := constSig) hs
-    (by simp [classProgram]) (by simp [classC]) (by simp [NamesWF, constSig]) ⟨rfl, fun _ _ _ h _ => by simp at h⟩ rfl .nil
-  refine .C_Sub hm ?_ ?_
-  · simp [constSig, Ty.subst, Ty.substAt, Ty.shift]; exact Or.inl rfl
-  · intro a h
-    simp [constSig, Eff.substRho, Eff.empty] at h
-    cases a <;> cases h
+    (by simp [classProgram]) (by simp [classC]) (by simp [NamesWF, constSig]) ⟨rfl, fun _ _ _ h _ => by simp at h⟩
+    (by intro t ht; simp only [List.nil_append, List.mem_singleton] at ht; subst t
+        exact ⟨trivial, by intros; simp⟩)
+    (MethodRowsAdmissible.of_noRows
+      (by simp [MethSig.Scoped, constSig, NamesWF, Ty.VarsIn, Ty.VarsInList,
+        Eff.VarsIn, Eff.empty]) rfl) .nil
+  simpa [constSig, Ty.subst, Ty.substAt, Eff.substAt_empty, Ty.shift] using hm
 
 /-- 型クラスのメソッドの呼び出しからの実行は、事象を伴う遷移をしない。 -/
 example : ∀ s, Steps classProgram builtins
@@ -288,7 +290,7 @@ example : ∀ s, Steps classProgram builtins
   effect_soundness classProgram_wellFormed classProgram_wellTyped classProgram_effectsOk
     (assumptions classProgram) super_call_typed
     (by simp [Comp.ClosedNoEffVars, Comp.VarsIn, Val.VarsIn, Ty.VarsInList, Val.VarsInList,
-      Eff.RhosInList])
+      Eff.VarsInList])
 
 /-! ## 契約名の整形式・適合・位置による実行 -/
 
@@ -325,32 +327,52 @@ example : ¬ Ty.Le (.fn ["value"] [.base .integer] (.base .integer) Eff.empty)
 example : HasTypeV emptyProgram builtins StoreTy.empty [] []
     (.prim "Reference.get" [.base .integer] [])
     (.fn ["reference"] [.reference (.base .integer)] (.base .integer) (Eff.single stateEff)) := by
-  have h := HasTypeV.V_Prim (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
+  have h := HasTypeVQ.V_Prim (Q := Qempty) (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
     (C := []) (Γ := []) (b := "Reference.get") (s := refGetSig) (ts := [.base .integer])
-    (es := []) (by simp [builtins]) (by simp [NamesWF, refGetSig]) rfl rfl rfl
-  have he : Eff.substRho [] (Eff.single stateEff) = Eff.single stateEff := by
-    funext a
-    cases a <;> simp [Eff.substRho]
-  simpa [fnTy, refGetSig, Ty.subst, Ty.substAt, Ty.shift, he] using h
+    (es := []) (by simp [builtins]) (by simp [NamesWF, refGetSig])
+    (PrimitiveAdmissible.of_noRows
+      (by simp [PrimSig.Scoped, refGetSig, PrimSig.ntys, NamesWF, Ty.VarsIn, Ty.VarsInList,
+        Eff.VarsIn, Eff.single, Eff.ofAtoms]) rfl rfl rfl
+      (by intro t ht; simp only [List.mem_singleton] at ht; subst t
+          exact ⟨trivial, by intros; simp⟩))
+  have he : Eff.substAt 0 [.base .integer] [] (Eff.single stateEff) = Eff.single stateEff :=
+    Eff.substAt_ofAtoms 0 _ _
+  simpa [fnTy_eq, refGetSig, Ty.subst, Ty.substAt, he, Ty.shift] using h
 
 /-- 最初の引数は番号 1、最後の引数は番号 0 に束縛する。契約名はこの位置を変えない。 -/
 def firstLambda : Val := .lam ["left", "right"] [.base .integer, .base .string] (.ret (.var 1))
 
 example : HasTypeV emptyProgram builtins StoreTy.empty [] [] firstLambda
     (.fn ["left", "right"] [.base .integer, .base .string] (.base .integer) Eff.empty) := by
-  exact .V_Lam (by simp [NamesWF]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))
+  exact .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))
+
+/-- 束縛されていない型変数を引数に持つラムダは、本体がその引数を返すだけでも拒む。 -/
+example : ∀ a, ¬ HasTypeV emptyProgram builtins StoreTy.empty [] []
+    (.lam ["value"] [.tvar 0] (.ret (.var 0))) a := by
+  intro a h
+  obtain ⟨r, ε, hw, _, _, _⟩ := h.inv_lam_wf rfl
+  have : 0 < 0 := hw.2.1.1
+  omega
+
+/-- 同じラムダは、その型変数が束縛された位置なら型が付く。 -/
+example : HasTypeV emptyProgram builtins StoreTy.empty [({} : TParam)] []
+    (.lam ["value"] [.tvar 0] (.ret (.var 0)))
+    (.fn ["value"] [.tvar 0] (.tvar 0) Eff.empty) := by
+  exact .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys])
+    (.C_Return (.V_Var rfl (by intros; intro h; cases h)))
 
 /-- 型の包含を何度通しても、ラムダ自身の契約名の整形式は必要である。 -/
 theorem lambda_names_wellFormed {P B Ψ C Γ v a names ps body}
     (h : HasTypeV P B Ψ C Γ v a) (hv : v = .lam names ps body) : NamesWF names ps := by
   match h with
-  | .V_Lam hn _ => cases hv; exact hn
-  | .V_Sub h _ => exact lambda_names_wellFormed h hv
+  | .V_Lam hn hw _ => cases hv; exact hn
+  | .V_Sub h _ hw => exact lambda_names_wellFormed h hv
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ _ => cases hv
-  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Fun .. => cases hv
+  | .V_Prim .. => cases hv
   | .V_Op _ _ _ => cases hv
+  | .V_Raise _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
@@ -383,8 +405,8 @@ def higherOrderCallee : Val :=
 example : HasTypeC emptyProgram builtins StoreTy.empty [] [] none
     (.app higherOrderCallee [.lam ["value"] [.base .integer] (.ret (.var 0))])
     (.base .unit) Eff.empty := by
-  exact .C_App (.V_Lam (by simp [NamesWF]) (.C_Return .V_Const))
-    (.cons (.V_Lam (by simp [NamesWF]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))) .nil)
+  exact .C_App (.V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return .V_Const))
+    (.cons (.V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))) .nil)
 
 /-- C-App と C-Sub を経ても、異なる契約名の関数値を渡す呼び出しは型付けできない。 -/
 example : ∀ a ε, ¬ HasTypeC emptyProgram builtins StoreTy.empty [] [] none

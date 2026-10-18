@@ -1,4 +1,5 @@
 import Benitoite.Surface.CheckTools
+import Benitoite.Surface.FinitePredicates
 
 /-! 表層の規則の、型付けの判断以外の前提の判定。
 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
@@ -36,41 +37,36 @@ theorem constructorHolesOk_spec (args : HoleArgs) (n : Nat) :
     constructorHolesOk args n = true ↔ args.ConstructorOk n := by
   simp [constructorHolesOk, HoleArgs.ConstructorOk]
 
-mutual
-  def wfTy (n : Nat) : Ty → Bool
-    | .data _ ts => wfTys n ts
-    | .list t | .reference t | .lazy t | .set t | .dict _ t => wfTy n t
-    | .fn names ps r _ => namesWF names ps && wfTys n ps && wfTy n r
-    | .tvar i => decide (i < n)
-    | .cont b t _ | .map b t => wfTy n b && wfTy n t
-    | .tapp i ts => decide (i < n) && wfTys n ts
-    | _ => true
-  def wfTys (n : Nat) : List Ty → Bool
-    | [] => true
-    | t :: ts => wfTy n t && wfTys n ts
-end
+/-- 入力の正規化を行わず、有限支持上の判定へ接続する。 -/
+def canonicalEff := Finite.canonicalEff
+def wfTy := Finite.wfTy
+def wfTys := Finite.wfTys
+def wfEff := Finite.wfEff
+def cleanTy := Finite.cleanTy
+def cleanTys := Finite.cleanTys
+def cleanEff := Finite.cleanEff
 
-mutual
-  theorem wfTy_spec (n : Nat) : (t : Ty) → (wfTy n t = true ↔ Ty.WF n t)
-    | .base b => by simp [wfTy, Ty.WF]
-    | .opaque o => by simp [wfTy, Ty.WF]
-    | .data d ts => by simp [wfTy, Ty.WF, wfTys_spec n ts]
-    | .list t => by simp [wfTy, Ty.WF, wfTy_spec n t]
-    | .fn names ps r e => by simp [wfTy, Ty.WF, namesWF_spec, wfTys_spec n ps, wfTy_spec n r, and_assoc]
-    | .tvar i => by simp [wfTy, Ty.WF]
-    | .reference t => by simp [wfTy, Ty.WF, wfTy_spec n t]
-    | .lazy t => by simp [wfTy, Ty.WF, wfTy_spec n t]
-    | .cont b t e => by simp [wfTy, Ty.WF, wfTy_spec n b, wfTy_spec n t]
-    | .map b t => by simp [wfTy, Ty.WF, wfTy_spec n b, wfTy_spec n t]
-    | .set t => by simp [wfTy, Ty.WF, wfTy_spec n t]
-    | .bytes => by simp [wfTy, Ty.WF]
-    | .dict cl t => by simp [wfTy, Ty.WF, wfTy_spec n t]
-    | .tapp i ts => by simp [wfTy, Ty.WF, wfTys_spec n ts]
-    | .ctor c => by simp [wfTy, Ty.WF]
-  theorem wfTys_spec (n : Nat) : (ts : List Ty) → (wfTys n ts = true ↔ Ty.WFList n ts)
-    | [] => by simp [wfTys, Ty.WFList]
-    | t :: ts => by simp [wfTys, Ty.WFList, wfTy_spec n t, wfTys_spec n ts]
-end
+theorem canonicalEff_spec {atoms e} (he : Eff.AtomsIn atoms e) :
+    canonicalEff atoms e = true ↔ Eff.Canonical e := Finite.canonicalEff_spec he
+
+theorem wfTy_spec {atoms} (n : Nat) (t : Ty) (ha : t.AtomsIn atoms) :
+    wfTy atoms n t = true ↔ Ty.WF n t := Finite.wfTy_spec n t ha
+
+theorem wfTys_spec {atoms} (n : Nat) (ts : List Ty) (ha : Tys.AtomsIn atoms ts) :
+    wfTys atoms n ts = true ↔ Ty.WFList n ts := Finite.wfTys_spec n ts ha
+
+theorem wfEff_spec {atoms} (n : Nat) (e : Eff) (ha : e.AtomsIn atoms) :
+    wfEff atoms n e = true ↔ Eff.WF n e ∧ Eff.Canonical e := Finite.wfEff_spec n e ha
+
+theorem cleanTy_spec {atoms} (n : Nat) (t : Ty) (ha : t.AtomsIn atoms) :
+    cleanTy atoms n t = true ↔ Ty.VarsIn n (fun _ => True) t := Finite.cleanTy_spec n t ha
+
+theorem cleanTys_spec {atoms} (n : Nat) (ts : List Ty) (ha : Tys.AtomsIn atoms ts) :
+    cleanTys atoms n ts = true ↔ Ty.VarsInList n (fun _ => True) ts := Finite.cleanTys_spec n ts ha
+
+theorem cleanEff_spec {atoms} (n : Nat) (e : Eff) (ha : e.AtomsIn atoms) :
+    cleanEff atoms n e = true ↔ Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e :=
+  Finite.cleanEff_spec n e ha
 
 mutual
   def exprExits : Expr → Bool
@@ -103,9 +99,12 @@ mutual
     | .constE _ _ => by simp [exprExits, Expr.Exits]
     | .funName _ _ _ => by simp [exprExits, Expr.Exits]
     | .funDicts _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .opDicts _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .methName _ _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .primName _ _ _ => by simp [exprExits, Expr.Exits]
     | .opName _ _ => by simp [exprExits, Expr.Exits]
+    | .raise _ _ => by simp [exprExits, Expr.Exits]
+    | .handleFail _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .nullCon _ _ => by simp [exprExits, Expr.Exits]
     | .conValue _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .literal _ => by simp [exprExits, Expr.Exits]
@@ -208,10 +207,13 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
       · intro h; exact .elseIf ((isIf_spec n).mp h)
       · intro h; cases h with
         | elseIf hn => exact (isIf_spec n).mpr hn
+  | .raise _ _ => by constructor <;> intro h <;> cases h
+  | .handleFail _ _ _ _ => by constructor <;> intro h <;> cases h
   | .local _ => by constructor <;> intro h <;> cases h
   | .constE _ _ => by constructor <;> intro h <;> cases h
   | .funName _ _ _ => by constructor <;> intro h <;> cases h
   | .funDicts _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .opDicts _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .methName _ _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .primName _ _ _ => by constructor <;> intro h <;> cases h
   | .opName _ _ => by constructor <;> intro h <;> cases h
@@ -369,7 +371,7 @@ def stringAddOk (atoms : List Atom) (B : Builtins) (op : OpPrim)
   | some (b, ts) => match B.sig b with
       | none => false
       | some s => ts.isEmpty && decide (ts.length = s.ntys) && decide (s.neffs = 0) &&
-          admitsDec b C ts && tyEq atoms (fnTyCheck s.names s.params s.ret s.eff ts [])
+          admitsDec b C ts && tyEq atoms (fnTyCheck atoms s.names s.params s.ret s.eff ts [])
             (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty)
 
 theorem stringAddOk_sound {atoms B op admitsDec C}
@@ -387,14 +389,16 @@ theorem stringAddOk_sound {atoms B op admitsDec C}
           rcases h with ⟨⟨⟨⟨hts, hlen⟩, heffs⟩, hadmits⟩, heq⟩
           have hnil : ts = [] := by simpa using hts
           subst ts
-          have hat : Ty.AtomsIn atoms (fnTyCheck s.names s.params s.ret s.eff [] []) :=
+          have hat : Ty.AtomsIn atoms (fnTyCheck atoms s.names s.params s.ret s.eff [] []) :=
             substTy_atoms (ha b s hs) (by trivial) (by simp)
           have htarget : Ty.AtomsIn atoms
               (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty) := by
-            simp [Ty.AtomsIn, Tys.AtomsIn, Eff.AtomsIn, Eff.empty]
+            simp [Ty.Support, Ty.SupportList, Eff.Support, Eff.empty]
           have ht := tyEq_sound hat htarget heq
           refine ⟨b, [], s, ho, rfl, hs, of_decide_eq_true hlen,
             of_decide_eq_true heffs, had b C [] s hs hadmits, ?_⟩
-          simpa only [fnTyCheck_eq] using ht
+          rw [fnTyCheck_eq _ _ _ _ _ _ (by simp) (by simp)
+            (ha b s hs).1 (ha b s hs).2.1 (ha b s hs).2.2] at ht
+          exact ht
 
 end Benitoite.Surface.CheckTools

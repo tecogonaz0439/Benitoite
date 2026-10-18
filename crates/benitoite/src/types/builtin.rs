@@ -512,3 +512,45 @@ pub fn find_builtin_effect(module: &[&str], name: &str) -> Option<BuiltinEffectI
         .position(|d| d.module == module && d.name == name)?;
     u16::try_from(index).ok().map(BuiltinEffectId)
 }
+
+/// ソースに一般のパラメータ付き effect 宣言を追加せずに提供する標準の失敗宣言。
+/// 名前解決・型検査・Skill の生成が同じ表を読む。
+#[derive(Clone, Copy)]
+pub struct FailureDeclaration {
+    pub module: &'static str,
+    pub effect: &'static str,
+    pub operation: &'static str,
+}
+
+/// 型付きの非再開の失敗。prelude へは公開しない。
+pub const FAILURE: FailureDeclaration = FailureDeclaration {
+    module: "Failure",
+    effect: "Fail",
+    operation: "raise",
+};
+
+impl FailureDeclaration {
+    /// 型引数は戻り値 T、固定するエラー型 E の順である。
+    pub fn scheme(self) -> super::Scheme {
+        let mut effects = super::EffectSet::empty();
+        effects.insert_failure(super::Ty::Param(1));
+        super::Scheme {
+            param_names: vec!["error".into()],
+            type_params: ["T", "E"]
+                .into_iter()
+                .map(|name| super::TypeParamInfo {
+                    name: name.into(),
+                    kind: super::ParamKind::Value,
+                    builtin: None,
+                })
+                .collect(),
+            effect_params: vec![],
+            no_fail: vec![],
+            class_constraints: vec![],
+            params: vec![super::Ty::Param(1)],
+            ret: super::Ty::Param(0),
+            effects,
+            wrote_io_all: false,
+        }
+    }
+}

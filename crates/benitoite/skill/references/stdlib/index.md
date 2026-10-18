@@ -2,7 +2,7 @@
 
 The modules of the standard library. Each module has its own file in this directory. Unofficial modules may change; their import name changes when they become standard.
 
-IOError, NetworkError, Json.ParseError, and Csv.ParseError implement Trait.Show by returning their message string unchanged, without added quotes or locations. The first two implementations live in Trait; the ParseError implementations live in Json and Csv. A Result error used with `or die` requires Show; `or return` and bare try do not. Option's die cause is fixed and needs no Show. Explicit Trait.Show.show calls require `import Benitoite.Trait`; die connects its standard references internally without adding names to the user's scope.
+IOError, NetworkError, Json.ParseError, and Csv.ParseError implement Trait.Show by returning their message string unchanged, without added quotes or locations. The first two implementations live in Trait; the ParseError implementations live in Json and Csv. Json.Codec.ConversionError is an extensible conversion failure; its Show displays the relative path and expected/found kinds, without automatically including the input payload or reason. Codec conversions are pure Results. A Result error used with `or die` requires Show; `or return` and bare try do not. Option's die cause is fixed and needs no Show. Explicit Trait.Show.show calls require `import Benitoite.Trait`; die connects its standard references internally without adding names to the user's scope.
 
 Parameter names in these declarations are part of the function contract. Label every argument of an ordinary call with two or more parameters, including calls through function values. Callback names and their order must match the nested function type, even for one parameter. For example, List.map expects `value`, List.fold expects `acc, value`, and Result.mapError expects `error`. An existing function with different names needs an explicit lambda wrapper. See [Idioms](../idioms.md#calls-callback-contracts-holes-and-pipes) for examples.
 
@@ -60,3 +60,6 @@ Parameter names in these declarations are part of the function contract. Label e
 | [UnsignedInteger](UnsignedInteger.md) | standard (prelude) | not needed | Functions on `UnsignedInteger`, an alias of `UnsignedInteger64`. |
 | [Float32](Float32.md) | standard (prelude) | not needed | Conversions and functions on `Float32`, the IEEE 754 single-precision type. |
 | [Float64](Float64.md) | standard (prelude) | not needed | Functions on `Float64`, the same type as `Float`, exposed under the canonical module name. |
+| [Failure](Failure.md) | unofficial | `import Benitoite.Unofficial.Failure` | Typed, non-resumable failures. |
+| [Json.Codec](Json.Codec.md) | unofficial | `import Benitoite.Unofficial.Json.Codec` | Pure, explicit JSON conversions. |
+| [Test.Property](Test.Property.md) | unofficial | `import Benitoite.Unofficial.Test.Property` | Pure property trials with explicit random state and bounded shrinking. |

@@ -1,0 +1,233 @@
+//! Pure, explicit JSON conversions. Failures contain relative paths, never input payloads.
+
+import Benitoite.Unofficial.Json
+import Benitoite.Trait
+
+/// One step from the root of a converted value.
+public data PathPart
+  Field(String)
+  Index(Integer)
+  Key(String)
+end data
+
+/// A conversion failure. `path` runs from the outermost container to the failure.
+@extensible
+public record ConversionError
+  path: List[PathPart]
+  expected: String
+  found: String
+  reason: String
+end record
+
+/// Returns the JSON kind without including any input content.
+public function kind(value: Json.Value) -> String
+  return match value with
+    case Json.Value.Null -> "null"
+    case Json.Value.Boolean(_) -> "boolean"
+    case Json.Value.Integer(_) -> "integer"
+    case Json.Value.Float(_) -> "float"
+    case Json.Value.String(_) -> "string"
+    case Json.Value.Array(_) -> "array"
+    case Json.Value.Object(_) -> "object"
+  end match
+end function
+
+/// Builds a relative conversion failure without copying input payloads.
+public function error(expected: String, found: String, reason: String) -> ConversionError
+  return ConversionError(path: [], expected: expected, found: found, reason: reason)
+end function
+
+/// Adds an outer path component to a relative failure.
+public function prepend(part: PathPart, error: ConversionError) -> ConversionError
+  return ConversionError(..error, path: List.prepend(xs: ConversionError.path(error), x: part))
+end function
+
+/// Requires an object before decoding any record fields.
+public function decodeObject(value: Json.Value) -> Result[Map[String, Json.Value], ConversionError]
+  return match value with
+    case Json.Value.Object(members) -> Result.Ok(members)
+    case _ -> Result.Error(error(expected: "object", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+/// Decodes a present field or uses an explicit missing-field conversion, adding its field path.
+public function decodeField[T](members: Map[String, Json.Value], key: String, decode: function(value: Json.Value) -> Result[T, ConversionError], decodeMissing: function() -> Result[T, ConversionError]) -> Result[T, ConversionError]
+  bind result <- match Map.get(m: members, k: key) with
+    case Option.Some(value) -> decode(value)
+    case Option.None -> decodeMissing()
+  end match
+  return Result.mapError(r: result, f: lambda(error) return prepend(part: PathPart.Field(key), error: error) end lambda)
+end function
+
+/// Fails for a required missing field; the caller adds its field path.
+public function missing[T]() -> Result[T, ConversionError]
+  return Result.Error(error(expected: "present field", found: "missing", reason: "required field is missing"))
+end function
+
+/// Rejects the first unexpected object key in key order, after all fields succeeded.
+/// Uses a Key path so Show quotes and escapes the input key.
+public function rejectExtra(members: Map[String, Json.Value], keys: List[String]) -> Result[Unit, ConversionError]
+  return rejectExtraFrom(remaining: Map.keys(members), keys: keys, i: 0)
+end function
+
+function rejectExtraFrom(remaining: List[String], keys: List[String], i: Integer) -> Result[Unit, ConversionError]
+  return match List.get(xs: remaining, i: i) with
+    case Option.None -> Result.Ok(())
+    case Option.Some(key) ->
+      if List.contains(xs: keys, x: key) then
+        rejectExtraFrom(remaining: remaining, keys: keys, i: i + 1)
+      else
+        Result.Error(prepend(part: PathPart.Key(key), error: error(expected: "known field", found: "extra key", reason: "unexpected object key")))
+      end if
+  end match
+end function
+
+/// Encodes a String without implicit numeric conversion.
+public function encodeString(value: String) -> Result[Json.Value, ConversionError]
+  return Result.Ok(Json.Value.String(value))
+end function
+
+/// Decodes only the JSON string kind.
+public function decodeString(value: Json.Value) -> Result[String, ConversionError]
+  return match value with
+    case Json.Value.String(x) -> Result.Ok(x)
+    case _ -> Result.Error(error(expected: "string", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+/// Encodes a Boolean without implicit numeric conversion.
+public function encodeBoolean(value: Boolean) -> Result[Json.Value, ConversionError]
+  return Result.Ok(Json.Value.Boolean(value))
+end function
+
+/// Decodes only the JSON boolean kind.
+public function decodeBoolean(value: Json.Value) -> Result[Boolean, ConversionError]
+  return match value with
+    case Json.Value.Boolean(x) -> Result.Ok(x)
+    case _ -> Result.Error(error(expected: "boolean", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+/// Encodes a Integer without implicit numeric conversion.
+public function encodeInteger(value: Integer) -> Result[Json.Value, ConversionError]
+  return Result.Ok(Json.Value.Integer(value))
+end function
+
+/// Decodes only the JSON integer kind.
+public function decodeInteger(value: Json.Value) -> Result[Integer, ConversionError]
+  return match value with
+    case Json.Value.Integer(x) -> Result.Ok(x)
+    case _ -> Result.Error(error(expected: "integer", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+/// Encodes a finite Float without implicit numeric conversion.
+public function encodeFloat(value: Float) -> Result[Json.Value, ConversionError]
+  if not finite(value) then
+    return Result.Error(error(expected: "finite float", found: "non-finite float", reason: "JSON cannot represent NaN or infinity"))
+  end if
+  return Result.Ok(Json.Value.Float(value))
+end function
+
+/// Decodes only the JSON float kind; rejects NaN and infinity.
+public function decodeFloat(value: Json.Value) -> Result[Float, ConversionError]
+  return match value with
+    case Json.Value.Float(x) ->
+      if finite(x) then
+        Result.Ok(x)
+      else
+        Result.Error(error(expected: "finite float", found: "non-finite float", reason: "JSON cannot represent NaN or infinity"))
+      end if
+    case _ -> Result.Error(error(expected: "float", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+function finite(value: Float) -> Boolean
+  return not Float.isNaN(value) and not Float.isNaN(value - value)
+end function
+
+/// Encodes None as null, or Some using the supplied conversion.
+public function encodeOption[T](value: Option[T], encode: function(value: T) -> Result[Json.Value, ConversionError]) -> Result[Json.Value, ConversionError]
+  return match value with
+    case Option.None -> Result.Ok(Json.Value.Null)
+    case Option.Some(x) -> encode(x)
+  end match
+end function
+
+/// Decodes null as None, or a non-null value using the supplied conversion.
+public function decodeOption[T](value: Json.Value, decode: function(value: Json.Value) -> Result[T, ConversionError]) -> Result[Option[T], ConversionError]
+  return match value with
+    case Json.Value.Null -> Result.Ok(Option.None)
+    case _ -> Result.map(r: decode(value), f: some)
+  end match
+end function
+
+/// Encodes in index order and adds the first failing index to the path.
+public function encodeList[T](value: List[T], encode: function(value: T) -> Result[Json.Value, ConversionError]) -> Result[Json.Value, ConversionError]
+  return Result.map(r: convertList(value: value, convert: encode, i: 0, acc: []), f: array)
+end function
+
+/// Decodes in index order and adds the first failing index to the path.
+public function decodeList[T](value: Json.Value, decode: function(value: Json.Value) -> Result[T, ConversionError]) -> Result[List[T], ConversionError]
+  return match value with
+    case Json.Value.Array(items) -> convertList(value: items, convert: decode, i: 0, acc: [])
+    case _ -> Result.Error(error(expected: "array", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+function convertList[A, B](value: List[A], convert: function(value: A) -> Result[B, ConversionError], i: Integer, acc: List[B]) -> Result[List[B], ConversionError]
+  return match List.get(xs: value, i: i) with
+    case Option.None -> Result.Ok(acc)
+    case Option.Some(x) ->
+      bind converted <- try Result.mapError(r: convert(x), f: lambda(error) return prepend(part: PathPart.Index(i), error: error) end lambda)
+      convertList(value: value, convert: convert, i: i + 1, acc: List.append(xs: acc, x: converted))
+  end match
+end function
+
+/// Encodes a String-keyed map in key order, adding the first failing key to the path.
+public function encodeMap[T](value: Map[String, T], encode: function(value: T) -> Result[Json.Value, ConversionError]) -> Result[Json.Value, ConversionError]
+  return Result.map(r: convertMap(pairs: Map.toList(value), convert: encode, i: 0, acc: Map.empty()), f: object)
+end function
+
+/// Decodes a String-keyed map in key order, adding the first failing key to the path.
+public function decodeMap[T](value: Json.Value, decode: function(value: Json.Value) -> Result[T, ConversionError]) -> Result[Map[String, T], ConversionError]
+  return match value with
+    case Json.Value.Object(members) -> convertMap(pairs: Map.toList(members), convert: decode, i: 0, acc: Map.empty())
+    case _ -> Result.Error(error(expected: "object", found: kind(value), reason: "wrong JSON kind"))
+  end match
+end function
+
+function convertMap[A, B](pairs: List[Pair[String, A]], convert: function(value: A) -> Result[B, ConversionError], i: Integer, acc: Map[String, B]) -> Result[Map[String, B], ConversionError]
+  return match List.get(xs: pairs, i: i) with
+    case Option.None -> Result.Ok(acc)
+    case Option.Some(pair) ->
+      bind key <- Pair.first(pair)
+      bind converted <- try Result.mapError(r: convert(Pair.second(pair)), f: lambda(error) return prepend(part: PathPart.Key(key), error: error) end lambda)
+      convertMap(pairs: pairs, convert: convert, i: i + 1, acc: Map.set(m: acc, k: key, value: converted))
+  end match
+end function
+
+implement Trait.Show[ConversionError]
+  function show(x: ConversionError) -> String
+    bind path <- List.fold(xs: ConversionError.path(x), initial: "$", f: lambda(acc, value)
+      return acc + match value with
+        case PathPart.Field(name) -> "." + name
+        case PathPart.Index(index) -> "[" + Integer.toString(index) + "]"
+        case PathPart.Key(key) -> "[" + Trait.Show.show(key) + "]"
+      end match
+    end lambda)
+    return path + ": expected " + ConversionError.expected(x) + ", found " + ConversionError.found(x)
+  end function
+end implement
+
+function some[T](value: T) -> Option[T]
+  return Option.Some(value)
+end function
+
+function array(value: List[Json.Value]) -> Json.Value
+  return Json.Value.Array(value)
+end function
+
+function object(value: Map[String, Json.Value]) -> Json.Value
+  return Json.Value.Object(value)
+end function

@@ -53,6 +53,7 @@ pub(super) fn basic(id: B) -> Ty {
 }
 pub(super) fn scheme(params: Vec<Ty>, ret: Ty) -> Scheme {
     Scheme {
+        no_fail: vec![],
         param_names: crate::base::parameter_names::positional_names(params.len()),
         type_params: vec![],
         effect_params: vec![],
@@ -251,6 +252,7 @@ impl Decls<'_> {
         match ty {
             Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args.iter().rev()),
             Ty::Fn(f) => {
+                pending.extend(&f.effects.failures);
                 pending.push(&f.ret);
                 pending.extend(f.params.iter().rev());
             }
@@ -263,11 +265,38 @@ impl Decls<'_> {
         let mut variables = 0_u32;
         if let Some(uses) = uses {
             super::effects::check_uses(self, uses, scope);
-            for e in &uses.effects {
+            for (i, e) in uses.effects.iter().enumerate() {
                 let Some(id) = self.reference(e.id) else {
                     continue;
                 };
-                if let Some(index) = scope.effects.get(id) {
+                let failure = Some(id) == self.resolved.stdlib("Benitoite.Failure.Fail");
+                let count = e.args.as_ref().map_or(0, Vec::len);
+                if (failure && count != 1) || (!failure && e.args.is_some()) {
+                    self.diagnostics.push(
+                        DiagBuilder::new(DiagCode::E0513)
+                            .primary(e.span)
+                            .arg(
+                                "name",
+                                e.path
+                                    .iter()
+                                    .map(|n| n.text.as_str())
+                                    .collect::<Vec<_>>()
+                                    .join("."),
+                            )
+                            .arg("count", if failure { "1" } else { "0" })
+                            .build(),
+                    );
+                    continue;
+                }
+                if failure {
+                    if let Some(ty) = e.args.as_ref().and_then(|a| a.first()) {
+                        let ty = self.ty(ty, scope);
+                        if result.failures.contains(&ty) {
+                            super::effects::duplicate_use(self, uses, i);
+                        }
+                        result.insert_failure(ty);
+                    }
+                } else if let Some(index) = scope.effects.get(id) {
                     variables = variables.saturating_add(1);
                     result.insert_var(EffVar(*index));
                 } else if let Some(name) = self.effect_name(id) {
@@ -288,6 +317,45 @@ impl Decls<'_> {
             if variables > 1 {
                 self.diagnostic(DiagCode::E0417, uses.span);
             }
+        }
+        if result.failures.len() > 1
+            && let Some(uses) = uses
+        {
+            let mut type_names = vec![String::new(); scope.params.iter().count()];
+            for (id, (index, _)) in scope.params.iter() {
+                if let Some(name) = self.resolved.bindings.get(id)
+                    && let Some(slot) = usize::try_from(*index)
+                        .ok()
+                        .and_then(|i| type_names.get_mut(i))
+                {
+                    *slot = name.name.clone();
+                }
+            }
+            let names = TyNames {
+                bindings: &self.resolved.bindings,
+                adts: &self.out.adts,
+                effects: &self.out.effects,
+                type_params: &type_names,
+                effect_params: &[],
+            };
+            let expected = result
+                .failures
+                .first()
+                .map(|t| t.show(&names))
+                .unwrap_or_default();
+            let found = result
+                .failures
+                .get(1)
+                .map(|t| t.show(&names))
+                .unwrap_or_default();
+            self.diagnostics.push(
+                DiagBuilder::new(DiagCode::E0514)
+                    .primary(uses.span)
+                    .arg("expected", expected)
+                    .arg("found", found)
+                    .help("convert")
+                    .build(),
+            );
         }
         (result, all)
     }
@@ -312,46 +380,57 @@ impl Decls<'_> {
             self.type_limit = true;
         }
     }
+    #[inline(never)]
     fn ty_inner(&mut self, expr: &TypeExpr, scope: &Scope) -> Ty {
         match expr {
             TypeExpr::Paren(t) => self.ty(&t.inner, scope),
             TypeExpr::Error(_) => unit(),
-            TypeExpr::Fn(f) => {
-                let mut budget = TypeBudget::default();
-                if let Err(limit) = budget.enter(1) {
-                    self.type_limit(limit, f.span);
-                    return unit();
-                }
-                let mut params = Vec::new();
-                for t in &f.params {
-                    let ty = self.ty(t, scope);
-                    if self.type_limit {
-                        return unit();
-                    }
-                    if let Err(limit) = budget.substituted(&ty, &[], 2) {
-                        self.type_limit(limit, t.span());
-                        return unit();
-                    }
-                    params.push(ty);
-                }
-                let ret = self.ty(&f.ret, scope);
-                if self.type_limit {
-                    return unit();
-                }
-                if let Err(limit) = budget.substituted(&ret, &[], 2) {
-                    self.type_limit(limit, f.ret.span());
-                    return unit();
-                }
-                let (effects, _) = self.uses(f.uses.as_ref(), scope);
-                Ty::Fn(Box::new(FnTy {
-                    param_names: f.param_names.iter().map(|n| n.text.clone()).collect(),
-                    params,
-                    ret,
-                    effects,
-                }))
-            }
+            TypeExpr::Fn(f) => self.function_type(f, scope),
             TypeExpr::Named(t) => self.named(t, scope),
         }
+    }
+    // 関数型だけに要る効果と予算の枠を、名前付きの型の各再帰段に積まない
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn function_type(&mut self, f: &FnType, scope: &Scope) -> Ty {
+        let mut budget = TypeBudget::default();
+        if let Err(limit) = budget.enter(1) {
+            self.type_limit(limit, f.span);
+            return unit();
+        }
+        let mut params = Vec::new();
+        for t in &f.params {
+            let ty = self.ty(t, scope);
+            if self.type_limit {
+                return unit();
+            }
+            if let Err(limit) = budget.substituted(&ty, &[], 2) {
+                self.type_limit(limit, t.span());
+                return unit();
+            }
+            params.push(ty);
+        }
+        let ret = self.ty(&f.ret, scope);
+        if self.type_limit {
+            return unit();
+        }
+        if let Err(limit) = budget.substituted(&ret, &[], 2) {
+            self.type_limit(limit, f.ret.span());
+            return unit();
+        }
+        let (effects, _) = self.uses(f.uses.as_ref(), scope);
+        for error in &effects.failures {
+            if let Err(limit) = budget.substituted(error, &[], 2) {
+                self.type_limit(limit, f.span);
+                return unit();
+            }
+        }
+        Ty::Fn(Box::new(FnTy {
+            param_names: f.param_names.iter().map(|n| n.text.clone()).collect(),
+            params,
+            ret,
+            effects,
+        }))
     }
     fn named(&mut self, t: &NamedType, scope: &Scope) -> Ty {
         let Some(id) = self.reference(t.id) else {
@@ -526,8 +605,14 @@ impl Decls<'_> {
             return s;
         }
         let (effects, all) = self.uses(f.uses.as_ref(), &scope);
+        for error in &effects.failures {
+            if !self.type_child(&mut budget, error, f.name.span) {
+                return s;
+            }
+        }
         s.effects = effects;
         s.wrote_io_all = all;
+        s.no_fail = s.signature_no_fail();
         for (i, name) in s.effect_params.iter().enumerate() {
             if !s
                 .params
@@ -621,6 +706,11 @@ impl Decls<'_> {
                         TypeExpr::Fn(f) => {
                             types.extend(&f.params);
                             types.push(&f.ret);
+                            if let Some(uses) = &f.uses {
+                                types.extend(
+                                    uses.effects.iter().flat_map(|e| e.args.iter().flatten()),
+                                );
+                            }
                         }
                         TypeExpr::Paren(t) => types.push(&t.inner),
                         TypeExpr::Error(_) => {}
@@ -635,7 +725,8 @@ impl Decls<'_> {
 fn has_effect(ty: &Ty, index: u32) -> bool {
     match ty {
         Ty::Fn(f) => {
-            f.effects.vars.contains(&EffVar(index))
+            f.effects.failures.iter().any(|t| has_effect(t, index))
+                || f.effects.vars.contains(&EffVar(index))
                 || f.params.iter().any(|t| has_effect(t, index))
                 || has_effect(&f.ret, index)
         }
@@ -648,7 +739,11 @@ fn has_param(ty: &Ty, index: u32) -> bool {
         Ty::Param(i) => *i == index,
         Ty::App(i, a) => *i == index || a.iter().any(|t| has_param(t, index)),
         Ty::Con(_, a) => a.iter().any(|t| has_param(t, index)),
-        Ty::Fn(f) => f.params.iter().any(|t| has_param(t, index)) || has_param(&f.ret, index),
+        Ty::Fn(f) => {
+            f.effects.failures.iter().any(|t| has_param(t, index))
+                || f.params.iter().any(|t| has_param(t, index))
+                || has_param(&f.ret, index)
+        }
         _ => false,
     }
 }
@@ -660,8 +755,7 @@ pub(super) fn check(
     resolved: &ResolveOutput,
     require_main: bool,
 ) -> (TypeckOutput, Vec<Diagnostic>) {
-    let mut d = Decls::new(modules, asts, sources, resolved);
-    check_declarations(&mut d, require_main);
+    let mut d = declaration_context(modules, asts, sources, resolved, require_main);
     if d.type_limit
         || d.diagnostics
             .iter()
@@ -693,6 +787,31 @@ pub(super) fn check(
     if d.diagnostics.iter().any(Diagnostic::is_error) {
         d.out.main = None;
     }
+    (d.out, d.diagnostics)
+}
+
+fn declaration_context<'a>(
+    modules: &'a ModuleTable,
+    asts: &'a [Module],
+    sources: &'a SourceTable,
+    resolved: &'a ResolveOutput,
+    require_main: bool,
+) -> Decls<'a> {
+    let mut d = Decls::new(modules, asts, sources, resolved);
+    failure_declarations(&mut d);
+    check_declarations(&mut d, require_main);
+    d
+}
+
+// 型の構造と制約の検査を共用し、定数・関数本体の検査には入らない
+// （設計書 02-01「宣言だけの収集」）。
+pub(crate) fn declarations(
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    resolved: &ResolveOutput,
+) -> (TypeckOutput, Vec<Diagnostic>) {
+    let d = declaration_context(modules, asts, sources, resolved, false);
     (d.out, d.diagnostics)
 }
 
@@ -1152,4 +1271,26 @@ fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
         }
     }
     out
+}
+
+// 標準の同一性を名前解決の表から得る。利用者が同じ綴りを宣言しても一致しない
+// （設計書 02-05「型とエフェクトの表現」）。
+fn failure_declarations(d: &mut Decls<'_>) {
+    let (Some(effect), Some(op)) = (
+        d.resolved.stdlib("Benitoite.Failure.Fail"),
+        d.resolved.stdlib("Benitoite.Failure.raise"),
+    ) else {
+        return;
+    };
+    let s = crate::types::builtin::FAILURE.scheme();
+    d.out.decl_types.insert(op, s);
+    d.out.effects.insert(
+        effect,
+        EffectDef {
+            binding: effect,
+            name: EffectName::User(effect),
+            display_name: "Failure.Fail".into(),
+            ops: vec![op],
+        },
+    );
 }

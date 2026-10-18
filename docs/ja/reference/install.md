@@ -1,8 +1,8 @@
 # Benitoite のインストール
 
-> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
-この文書では、`benitoite` `0.0.7` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
+この文書では、`benitoite` `0.0.8` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
 
 ## 対応するシステム
 
@@ -30,20 +30,20 @@ Benitoite のリポジトリの GitHub Releases のページにある各リリ�
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.7-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.0.8-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 ハッシュを確かめる。macOS では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.7-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 Linux では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.7-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 ハッシュが一致すると、コマンドはファイル名の後に `OK` を表示する。一致しないときは、アーカイブをダウンロードし直し、そのアーカイブは使わない。
@@ -55,16 +55,16 @@ grep "benitoite-0.0.7-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 アーカイブを新しいディレクトリに展開し、展開した `benitoite` を、`~/.local/bin` など `PATH` にあるディレクトリへ移す。
 
 ```sh
-mkdir benitoite-0.0.7
-tar -xzf "benitoite-0.0.7-$TARGET.tar.gz" -C benitoite-0.0.7
+mkdir benitoite-0.0.8
+tar -xzf "benitoite-0.0.8-$TARGET.tar.gz" -C benitoite-0.0.8
 mkdir -p ~/.local/bin
-find benitoite-0.0.7 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.0.8 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 `benitoite` を再配布するときは、アーカイブの `LICENSE-MIT`、`LICENSE-APACHE`、`THIRD_PARTY_LICENSES` を残しておく。`benitoite --licenses` は、同じ `THIRD_PARTY_LICENSES` を表示する。
 
-`benitoite --version` は、最初の行に `benitoite 0.0.7` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
+`benitoite --version` は、最初の行に `benitoite 0.0.8` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
 
 エージェントやハーネスでは、`benitoite --version=json` で版・ビルド・対応する形式の情報を問い合わせる。このオプションは最初かつ唯一の引数として指定する。リリースの版から機能を推測せず、必要な `formats` のキーと解釈できる整数の版を確かめる。出力は UTF-8 の単一 JSON オブジェクトと末尾の LF である。成功は終了状態 0、使い方の誤りは 2、処理系の不具合は 3、出力の失敗は 1 になる。欄は[版と対応する形式](benitoite.md#版と対応する形式)、不明な値の意味は[ビルド情報](#ビルド情報)を参照する。
 
@@ -198,4 +198,4 @@ rm ~/.local/bin/benitoite
 
 インストールのときに `--project` や `--agent` を使ったときは、`uninstall` にも同じオプションを渡す。
 
-> 注記: `0.0.1` から `0.0.7` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。
+> 注記: `0.0.1` から `0.0.8` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。

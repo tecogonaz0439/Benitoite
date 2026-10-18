@@ -206,6 +206,7 @@ fn die_failure_core_has_one_message_then_one_cause_and_canonical_exit() {
                 }
             };
             let effects = EffectSet {
+                failures: vec![],
                 names: vec![EffectName::Builtin(
                     crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap(),
                 )],

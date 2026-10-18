@@ -111,6 +111,10 @@ impl<'p> Index<'p> {
                     self.add(h.id, &h.body, &[], None, var_count);
                     for c in &h.clauses {
                         self.add(c.id, &c.body, &c.params, Some(c.cont.id), var_count);
+                        if let Some(info) = self.bodies.get_mut(&c.id) {
+                            info.free
+                                .retain(|v| !c.dict_params.iter().any(|d| d.var == *v));
+                        }
                     }
                 }
                 CompKind::Return(_)
@@ -177,6 +181,7 @@ impl<'p> Index<'p> {
                 }
                 CompKind::Handle(h) => {
                     for clause in &h.clauses {
+                        bound.extend(clause.dict_params.iter().map(|p| p.var));
                         bound.extend(clause.params.iter().map(|p| p.id));
                         bound.insert(clause.cont.id);
                     }

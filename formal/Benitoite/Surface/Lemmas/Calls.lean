@@ -4,56 +4,63 @@ import Benitoite.Surface.Lemmas.ScopedSupport
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {Q : NoFailCtx}
+
+
 /-- 頭の型付けは、辞書を除いた値引数と呼び出しの結果を表す。
 `meth` の引数の型の等式は、`Ty.Le` が最も外側の関数型のエフェクトだけを広げることに依る。
 `Ty.Le` を深い部分型に広げるときは、C-Meth の型を `Ty.Le` で広げた形に直す。 -/
-inductive CallHead.HasType (P : Release.Program) (B : Builtins) (C : List TParam)
+inductive CallHead.HasTypeQ (P : Release.Program) (B : Builtins) (Q : NoFailCtx) (C : List TParam)
     (Γ : List (Option Ty)) : CallHead → List String → List Ty → Ty → Eff → Prop
-  | app {v ds dnames names dtys as a ε} :
-      HasTypeV P B StoreTy.empty C Γ v (.fn (dnames ++ names) (dtys ++ as) a ε) →
-      HasTypeVs P B StoreTy.empty C Γ ds dtys →
-      CallHead.HasType P B C Γ (.app v ds) names as a ε
+  | app {v ds dnames names dtys as a εcall ε} :
+      HasTypeVQ P B StoreTy.empty Q C Γ v (.fn (dnames ++ names) (dtys ++ as) a εcall) →
+      HasTypeVsQ P B StoreTy.empty Q C Γ ds dtys → Eff.Sub εcall ε →
+      CallHead.HasTypeQ P B Q C Γ (.app v ds) names as a ε
   | meth {d cl τ cd m ms ss es us utys as ε} :
-      HasTypeV P B StoreTy.empty C Γ d (.dict cl τ) →
+      HasTypeVQ P B StoreTy.empty Q C Γ d (.dict cl τ) →
       P.classes cl = some cd → cd.methods m = some ms → NamesWF ms.names ms.params →
-      SatAll B C ss ms.tparams → es.length = ms.neffs →
-      HasTypeVs P B StoreTy.empty C Γ us utys →
+      SatAll B C ss ms.tparams →
+      (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
+      MethodRowsAdmissible C Q ms es →
+      HasTypeVsQ P B StoreTy.empty Q C Γ us utys →
       ms.params.map (Ty.subst (ss ++ [τ]) es) = utys ++ as →
-      Eff.Sub (Eff.substRho es ms.eff) ε →
-      CallHead.HasType P B C Γ (.meth d m ss es us) (ms.names.drop us.length) as
+      Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε →
+      CallHead.HasTypeQ P B Q C Γ (.meth d m ss es us) (ms.names.drop us.length) as
         (ms.ret.subst (ss ++ [τ]) es) ε
 
-theorem CallHead.HasType.apply {P B C Γ h names as a ε R ws}
-    (hh : CallHead.HasType P B C Γ h names as a ε)
-    (hw : HasTypeVs P B StoreTy.empty C Γ ws as) :
-    HasTypeC P B StoreTy.empty C Γ R (h.apply ws) a ε := by
+abbrev CallHead.HasType (P : Release.Program) (B : Builtins) := CallHead.HasTypeQ P B Qempty
+
+theorem CallHead.HasTypeQ.apply {P B C Γ h names as a ε R ws}
+    (hh : CallHead.HasTypeQ P B Q C Γ h names as a ε)
+    (hw : HasTypeVsQ P B StoreTy.empty Q C Γ ws as) :
+    HasTypeCQ P B StoreTy.empty Q C Γ R (h.apply ws) a ε := by
   cases hh with
-  | app hv hd => exact .C_App hv (hd.append hw)
-  | meth hd hc hm hn ht he hu hp hs =>
-      apply HasTypeC.weakenEff (HasTypeC.C_Meth hd hc hm hn ht he ?_) hs
+  | app hv hd hs => exact .C_Eff (.C_App hv (hd.append hw)) hs
+  | meth hd hc hm hn ht hscope he hu hp hs =>
+      apply HasTypeCQ.weakenEff (HasTypeCQ.C_Meth hd hc hm hn ht hscope he ?_) hs
       rw [hp]; exact hu.append hw
 
-theorem CallHead.HasType.rename {P B C Γ Δ h names as a ε ξ}
-    (hh : CallHead.HasType P B C Γ h names as a ε) (hr : RenOk Γ Δ ξ) :
-    CallHead.HasType P B C Δ (h.rename ξ) names as a ε := by
+theorem CallHead.HasTypeQ.rename {P B C Γ Δ h names as a ε ξ}
+    (hh : CallHead.HasTypeQ P B Q C Γ h names as a ε) (hr : RenOk Γ Δ ξ) :
+    CallHead.HasTypeQ P B Q C Δ (h.rename ξ) names as a ε := by
   cases hh with
-  | app hv hd => exact .app (hv.rename hr) (hd.rename hr)
-  | meth hd hc hm hn ht he hu hp hs => simpa only [CallHead.rename, Val.renameList_length] using
-      (CallHead.HasType.meth (hd.rename hr) hc hm hn ht he (hu.rename hr) hp hs)
+  | app hv hd hs => exact .app (hv.rename hr) (hd.rename hr) hs
+  | meth hd hc hm hn ht hscope he hu hp hs => simpa only [CallHead.rename, Val.renameList_length] using
+      (CallHead.HasTypeQ.meth (hd.rename hr) hc hm hn ht hscope he (hu.rename hr) hp hs)
 
-theorem CallHead.HasType.weakenEff {P B C Γ h names as a ε δ}
-    (hh : CallHead.HasType P B C Γ h names as a ε) (hs : Eff.Sub ε δ) :
-    CallHead.HasType P B C Γ h names as a δ := by
+theorem CallHead.HasTypeQ.weakenEff {P B C Γ h names as a ε δ}
+    (hh : CallHead.HasTypeQ P B Q C Γ h names as a ε) (hs : Eff.Sub ε δ) :
+    CallHead.HasTypeQ P B Q C Γ h names as a δ := by
   cases hh with
-  | app hv hd => exact .app (.V_Sub hv (Or.inr ⟨_, _, _, _, _, rfl, rfl, hs⟩)) hd
-  | meth hd hc hm hn ht he hu hp heff => exact .meth hd hc hm hn ht he hu hp (heff.trans hs)
+  | app hv hd he => exact .app hv hd (he.trans hs)
+  | meth hd hc hm hn ht hscope he hu hp heff => exact .meth hd hc hm hn ht hscope he hu hp (heff.trans hs)
 
 /-- handled は節の本体を読まないので、脱糖前の操作の並びで計算できる。 -/
 theorem desugarClauses_handles (op : OpPrim) (cs : Clauses) (o : OpRef) :
     handles (desugarClauses op cs) o = handles cs.skeleton o := by
   match cs with
   | .nil => rfl
-  | .cons _ _ _ _ rest =>
+  | .cons _ _ _ _ rest _ =>
       simpa only [desugarClauses, Clauses.skeleton, handles, List.any_cons, Clause.op] using
         congrArg (fun b => _ || b) (desugarClauses_handles op rest o)
 
@@ -62,12 +69,14 @@ theorem desugarClauses_handled (op : OpPrim) (p : Program) (B : Builtins) (cs : 
       handled p.declarations.patternProgram B cs.skeleton := by
   have hh : handles (desugarClauses op cs) = handles cs.skeleton :=
     funext (desugarClauses_handles op cs)
-  funext a
-  cases a with
-  | rho _ => rfl
-  | name l =>
-      simp only [handled, hh]
-      rfl
+  apply Eff.ext_test
+  · intro a
+    cases a with
+    | rho _ => rfl
+    | name l =>
+        simp only [Eff.test, Eff.ofAtoms, handled, hh]
+        rfl
+  · rfl
 
 variable {P : Release.Program} {B : Builtins} {C : List TParam} {Γ : List (Option Ty)}
 
@@ -109,10 +118,10 @@ theorem boundVars_getElem {n k : Nat} (hk : k < n) :
 
 /-- 書いた位置に対応する値が、その位置の宣言型を持つ。 -/
 theorem fieldAt_typed {positions : List Nat} {vs : List Val} {tys : List Ty} {i : Nat}
-    (h : HasTypeVs P B StoreTy.empty C Γ vs
+    (h : HasTypeVsQ P B StoreTy.empty Q C Γ vs
       (positions.map fun j => (tys[j]?).getD (.base .unit))) (hi : i ∈ positions) :
     ∃ v, fieldAt i positions vs = some v ∧
-      HasTypeV P B StoreTy.empty C Γ v ((tys[i]?).getD (.base .unit)) := by
+      HasTypeVQ P B StoreTy.empty Q C Γ v ((tys[i]?).getD (.base .unit)) := by
   induction positions generalizing vs with
   | nil => cases hi
   | cons j js ih =>
@@ -125,8 +134,8 @@ theorem fieldAt_typed {positions : List Nat} {vs : List Val} {tys : List Ty} {i 
 
 /-- 同じ位置列で作った値の列と型の列の点ごとの対応。 -/
 theorem valueMaps_typed (indices : List Nat) (v : Nat → Val) (t : Nat → Ty)
-    (h : ∀ i ∈ indices, HasTypeV P B StoreTy.empty C Γ (v i) (t i)) :
-    HasTypeVs P B StoreTy.empty C Γ (indices.map v) (indices.map t) := by
+    (h : ∀ i ∈ indices, HasTypeVQ P B StoreTy.empty Q C Γ (v i) (t i)) :
+    HasTypeVsQ P B StoreTy.empty Q C Γ (indices.map v) (indices.map t) := by
   induction indices with
   | nil => exact .nil
   | cons i is ih => exact .cons (h i (by simp)) (ih (fun j hj => h j (by simp [hj])))
@@ -140,9 +149,9 @@ theorem map_range_getD {α : Type} (xs : List α) (fallback : α) :
 
 theorem recordFields_typed {positions vs tys}
     (hp : positions.Perm (List.range tys.length))
-    (h : HasTypeVs P B StoreTy.empty C Γ vs
+    (h : HasTypeVsQ P B StoreTy.empty Q C Γ vs
       (positions.map fun j => (tys[j]?).getD (.base .unit))) :
-    HasTypeVs P B StoreTy.empty C Γ
+    HasTypeVsQ P B StoreTy.empty Q C Γ
       (recordFields positions.length positions vs (.const .unit)) tys := by
   have hl := hp.length_eq
   rw [List.length_range] at hl
@@ -207,19 +216,19 @@ theorem CallOk.recordFields_source {names ps inserted labels positions}
 theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εcall}
     (xs : List (Option Ty)) (hlen : xs.length = inserted.length)
     (hp : (List.range inserted.length ++ positions).Perm (List.range ps.length))
-    (hf : HasTypeC P B StoreTy.empty C (xs ++ Γ) R (callee.rename (· + shift))
+    (hf : HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (callee.rename (· + shift))
       (.fn names ps a εcall) ε)
     (hd : ∀ h, directCallee f = some h → ∀ ys : List (Option Ty),
-      CallHead.HasType P B C (ys ++ xs ++ Γ)
+      CallHead.HasTypeQ P B Q C (ys ++ xs ++ Γ)
         (h.rename (· + (shift + ys.length))) names ps a εcall)
-    (hi : HasTypeVs P B StoreTy.empty C (xs ++ Γ) inserted
+    (hi : HasTypeVsQ P B StoreTy.empty Q C (xs ++ Γ) inserted
       (sourceTypes ps (List.range inserted.length)))
-    (hms : CompTypes P B C Γ R ε ms (sourceTypes ps positions))
+    (hms : CompTypesQ P B Q C Γ R ε ms (sourceTypes ps positions))
     (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps positions))
     (he : Eff.Sub εcall ε) :
-    HasTypeC P B StoreTy.empty C (xs ++ Γ) R (callComp shift inserted f callee positions ms) a ε := by
+    HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (callComp shift inserted f callee positions ms) a ε := by
   have hm : ms.length = positions.length := by simpa only [sourceTypes_length] using hms.length
-  have ordered := fun {Δ : List (Option Ty)} {vs} (hv : HasTypeVs P B StoreTy.empty C Δ vs
+  have ordered := fun {Δ : List (Option Ty)} {vs} (hv : HasTypeVsQ P B StoreTy.empty Q C Δ vs
       (sourceTypes ps (List.range inserted.length ++ positions))) =>
     recordFields_typed hp hv
   unfold callComp
@@ -228,8 +237,8 @@ theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εc
     rw [← hlen]
     apply letChain_typed hms xs
     rw [hms.length]
-    apply HasTypeC.weakenEff (δ := ε)
-    · apply CallHead.HasType.apply
+    apply HasTypeCQ.weakenEff (δ := ε)
+    · apply CallHead.HasTypeQ.apply
       · simpa only [binds_length] using hd h hh (binds (sourceTypes ps positions))
       · have hv := (hi.rename (RenOk.shift (binds (sourceTypes ps positions)) (xs ++ Γ))).append
           (boundVars_typed (Γ := xs ++ Γ) hc)
@@ -237,13 +246,13 @@ theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εc
         simpa only [List.length_append, List.length_range, sourceTypes_length, hm, ← hlen,
           binds_length, List.append_assoc] using ho
     · exact he
-  · apply HasTypeC.C_Let hf
+  · apply HasTypeCQ.C_Let hf
     rw [← hlen]
     apply letChain_typed hms (some (.fn names ps a εcall) :: xs)
     rw [hms.length]
-    apply HasTypeC.weakenEff (δ := ε)
-    · apply HasTypeC.C_App (names := names) (as := ps) (ε := εcall)
-      · apply HasTypeV.V_Var
+    apply HasTypeCQ.weakenEff (δ := ε)
+    · apply HasTypeCQ.C_App (names := names) (as := ps) (ε := εcall)
+      · apply HasTypeVQ.V_Var
         · rw [List.append_assoc, List.getElem?_append_right (by simp [binds_length])]
           simp [binds_length]
         · intro _ _ _ h; cases h

@@ -35,10 +35,15 @@ fn scripts_execute_nested_captured_and_repeated_lazy_bodies() {
             "bind _ <- lazy 1 div 0 end lazy\nreturn 42",
             42,
         ),
+        (
+            "failure converted inside lazy and forced twice",
+            "bind text <- String.repeat(s: \"error\", n: 30)\nbind x: Lazy[Result[Integer, String]] <- lazy\n Failure.toResult(body: lambda() return Failure.raise(error: text) end lambda)\nend lazy\nbind first <- Lazy.force(x)\nbind pad <- String.repeat(s: \"allocation\", n: 100)\nbind second <- Lazy.force(x)\nreturn if first = Result.Error(text) and second = first then 42 else String.characterCount(pad) end if",
+            42,
+        ),
     ];
     for (name, expression, expected) in cases {
         let source = format!(
-            "function value() -> Integer\n {expression}\nend function\nfunction main() -> Result[Unit, String]\n bind answer <- value()\n return if answer = {expected} then Result.Ok(()) else Result.Error(\"wrong value\") end if\nend function\n"
+            "import Benitoite.Unofficial.Failure\nfunction value() -> Integer\n {expression}\nend function\nfunction main() -> Result[Unit, String]\n bind answer <- value()\n return if answer = {expected} then Result.Ok(()) else Result.Error(\"wrong value\") end if\nend function\n"
         );
         let checked = pipeline::check_text(
             "lazy.bnt",

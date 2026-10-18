@@ -25,6 +25,7 @@ pub struct GeneratedFile {
 
 /// 生成物の見出しと固定の文（06-06 により生成物の本文は英語）。
 mod text {
+    pub const FAILURE_CONTRACT: &str = "The standard effect `Failure.Fail[E]` takes one error type. `Failure.raise` aborts to the nearest failure clause; `resume` is forbidden in that clause. A handle may contain either one failure clause or ordinary operation clauses. Catching removes only the body failure; a clause may raise a different error type. A row beside an explicit Failure.Fail in any part of a declared signature excludes failures (for example `Rest excludes Failure.Fail`). This condition is retained through higher-order values and modules, and is never inferred from a function body. Other effects take no type arguments. Handle every failure before main or a test returns. The error type requires neither Show nor equality.";
     pub const GRAMMAR_HEADING: &str = "初回リリース版の文法の全体";
     pub const GRAMMAR_TITLE: &str = "# Benitoite grammar";
     pub const GRAMMAR_INTRO: &str = "The base grammar of Benitoite in EBNF. \
@@ -127,7 +128,10 @@ and [Idioms](idioms.md#calls-callback-contracts-holes-and-pipes) for examples.";
 in this directory. Unofficial modules may change; their import name changes when they become standard.\n\n\
 IOError, NetworkError, Json.ParseError, and Csv.ParseError implement Trait.Show by returning their \
 message string unchanged, without added quotes or locations. The first two implementations live \
-in Trait; the ParseError implementations live in Json and Csv. A Result error used with `or die` \
+in Trait; the ParseError implementations live in Json and Csv. Json.Codec.ConversionError is an \
+extensible conversion failure; its Show displays the relative path and expected/found kinds, \
+without automatically including the input payload or reason. Codec conversions are pure Results. \
+A Result error used with `or die` \
 requires Show; `or return` and bare try do not. Option's die cause is fixed and needs no Show. \
 Explicit Trait.Show.show calls require `import Benitoite.Trait`; die connects its standard \
 references internally without adding names to the user's scope.\n\n\
@@ -417,6 +421,29 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
             ));
         }
         out.push_str(&format!("\n{}\n", text::LINE_TYPE_DISTINCT));
+    }
+    if module.path == [crate::types::builtin::FAILURE.module] {
+        let decl = crate::types::builtin::FAILURE;
+        let s = decl.scheme();
+        let type_params = s
+            .type_params
+            .iter()
+            .map(|p| p.name.clone())
+            .collect::<Vec<_>>();
+        let shown = s.fn_ty().show(&crate::types::TyNames {
+            bindings: &crate::base::BindingMap::default(),
+            adts: &crate::types::AdtTable::default(),
+            effects: &crate::base::BindingMap::default(),
+            type_params: &type_params,
+            effect_params: &[],
+        });
+        out.push_str(&format!(
+            "\n```text\n{}.{}[T, E]: {}\n```\n\n{}\n",
+            decl.module,
+            decl.operation,
+            shown,
+            text::FAILURE_CONTRACT
+        ));
     }
     for decl in &parsed.module.decls {
         if decl.package.is_some() {

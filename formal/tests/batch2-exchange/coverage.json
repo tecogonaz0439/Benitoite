@@ -1,0 +1,125 @@
+{
+  "version": 4,
+  "seedXor": 0,
+  "randomCases": 0,
+  "boundaryCases": 3,
+  "kinds": {},
+  "cases": [
+    {
+      "name": "function-contract",
+      "decls": [],
+      "ty": {
+        "kind": "function",
+        "names": [
+          "value"
+        ],
+        "params": [
+          {
+            "kind": "integer",
+            "args": []
+          }
+        ],
+        "ret": {
+          "kind": "integer",
+          "args": []
+        },
+        "eff": [
+          {
+            "kind": "fail",
+            "error": {
+              "base": {
+                "name": "String"
+              }
+            }
+          }
+        ]
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [],
+      "package": "author"
+    },
+    {
+      "name": "integer",
+      "decls": [],
+      "ty": {
+        "kind": "integer",
+        "args": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [],
+      "package": "author"
+    },
+    {
+      "name": "character-full",
+      "decls": [],
+      "ty": {
+        "kind": "character",
+        "args": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "characterRange",
+              "lo": 0,
+              "hi": 1114111
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "characterRange",
+        "lo": 0,
+        "hi": 1114111
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [],
+      "package": "author"
+    }
+  ]
+}

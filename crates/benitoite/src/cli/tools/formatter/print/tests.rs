@@ -420,6 +420,12 @@ end function
 
 const CASES: &[(&str, &str, &str)] = &[
     ("spaces", SPACES_INPUT, SPACES_EXPECTED),
+    // 型付きエフェクトの角括弧は、ラムダでも引数の並びとして整形する。
+    (
+        "failure type arguments in lambda",
+        "function main() -> Unit\nbind f <- lambda() -> Integer uses Failure.Fail[\nList[\nString\n]\n]\nreturn Failure.raise([])\nend lambda\nend function\n",
+        "function main() -> Unit\n  bind f <- lambda() -> Integer uses Failure.Fail[\n    List[\n      String\n    ]\n  ]\n    return Failure.raise([])\n  end lambda\nend function\n",
+    ),
     (
         "external package type",
         "@external( \"wasm\" , \"x.wasm\" , \"api#cell\" )\npublic ( package ) type Cell\n",

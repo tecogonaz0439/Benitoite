@@ -1,0 +1,8 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function bad() -> Integer uses Failure.Fail[String]
+ bind _ <- Failure.raise(error: "bad")
+ return Failure.raise(error: 42)
+end function
+function main() -> Unit
+end function

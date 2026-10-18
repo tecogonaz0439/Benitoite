@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # nightly が要る Miri と、到達可能性の比較の長い実行をここに置く。
-# stable の共通の検査と回収の強制は check.sh で行う。check.sh の選んだ検査は、runtime::heap を
-# 変えたときにこのスクリプトも走らせる
+# stable の検査は check.sh の水準ごとに割り当てる。ヒープの不変条件を変える作業は、
+# 局所の heap-verify・gc-stress と必要な本スクリプトを、次の作業の前提にする前に通す。
+# work/change は heap/ の変更で heap_checks を選ぶ。コメントだけなら計画で理由と名指しを残す。
+# 最後の関係状態への成功は引用し、同じ実行を改造末で重ねない
 # （設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 # runtime::heap:: の下の Miri で動かせない・遅すぎるテストには
 # #[cfg_attr(miri, ignore)] を理由のコメントとともに付け、Miri で動かせない VM のテストは
@@ -16,7 +18,8 @@
 # Miri の絞り込みはモジュールの名前の頭で行う。VM のテストは、Miri のために選んだ
 # vm::miri_tests だけを走らせ、vm:: のほかのテストは check.sh でだけ走らせる。
 # スクリプトの全体は 10 分以内に収める（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
-# ヒープ検証器・回収の強制・compile_fail/no_run の通常の検査は check.sh に置く。
+# ヒープ検証器・回収の強制・compile_fail/no_run は、局所検査と change の所定構成へ割り当てる。
+# このファイル自体の変更は自動分類できない。説明だけでも計画の --only 等で検査を名指しする。
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "$BASH_SOURCE")/.." && pwd)"

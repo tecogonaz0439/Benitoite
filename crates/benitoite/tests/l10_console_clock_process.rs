@@ -144,3 +144,101 @@ end function
         assert_eq!(output.stdout, expected.as_bytes(), "TZ={tz}");
     }
 }
+
+// 関門: 通常ソースの toResult が捨てる継続と、OS の解放失敗をつなぐ。
+// 制限は子プロセスだけに設定し、標準のソースや VM にテスト用の口を増やさない。
+#[cfg(unix)]
+#[test]
+fn result_conversion_does_not_hide_release_failure_or_die() {
+    let directory = ScriptDirectory::new();
+    let path = directory.0.join("failure-cleanup.bnt");
+    for (action, expected) in [
+        ("return Failure.raise(error: \"original\")", "R0401"),
+        ("return 7", "R0401"),
+        (
+            "bind missing: Option[Integer] <- Option.None\n return try missing or die(\"die inside conversion\")",
+            "die",
+        ),
+    ] {
+        let source = format!(
+            r#"import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses File.Write, State, Process.Exit, Console.Write
+ bind result: Result[Integer, String] <- Failure.toResult(body: lambda()
+  with outer = try File.openWriter(path: "outer", mode: File.WriteMode.Replace) or die,
+       inner = try File.openWriter(path: "inner", mode: File.WriteMode.Replace) or die do
+   bind _ <- try File.write(writer: outer, text: "outer buffered") or die
+   bind _ <- try File.write(writer: inner, text: "inner buffered") or die
+   {action}
+  end with
+ end lambda)
+ Console.writeLine("unexpected normal result")
+end function
+"#
+        );
+        std::fs::write(&path, source).unwrap();
+        for mode in ["direct", "request"] {
+            let output = std::process::Command::new("/bin/sh")
+                .args([
+                    "-c",
+                    "ulimit -f 0 || exit 125; trap '' XFSZ; exec \"$@\"",
+                    "f2",
+                ])
+                .arg(env!("CARGO_BIN_EXE_benitoite"))
+                .args(["run", "--diagnostics=json"])
+                .arg(&path)
+                .current_dir(&directory.0)
+                .env("BENITOITE_DEV_IO_MODE", mode)
+                .env_remove("BENITOITE_DEV_PANIC")
+                .output()
+                .unwrap();
+            assert_eq!(output.status.code(), Some(1), "{action}/{mode}: {output:?}");
+            assert!(output.stdout.is_empty(), "{output:?}");
+            let reports: Vec<serde_json::Value> = String::from_utf8(output.stderr)
+                .unwrap()
+                .lines()
+                .map(|line| serde_json::from_str(line).unwrap())
+                .collect();
+            if expected == "die" {
+                assert_eq!(reports.len(), 3, "{reports:?}");
+                assert_eq!(reports.first().unwrap()["kind"], "die");
+                assert_eq!(
+                    reports.first().unwrap()["notes"],
+                    serde_json::json!([
+                        "message: die inside conversion",
+                        "cause: expected a value, got Option.None"
+                    ])
+                );
+            } else {
+                assert_eq!(reports.len(), 1, "{reports:?}");
+                assert_eq!(reports.first().unwrap()["code"], expected);
+                let failures: Vec<_> = reports.first().unwrap()["notes"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter_map(|note| note.as_str())
+                    .filter(|note| note.contains("failed to release"))
+                    .collect();
+                assert_eq!(failures.len(), 2, "{failures:?}");
+                for (failure, opened_line) in failures.iter().zip([8, 7]) {
+                    assert!(failure.contains(&format!(":{opened_line}:")), "{failure}");
+                }
+            }
+            for (report, opened_line) in reports.iter().skip(1).rev().zip([7, 8]) {
+                assert_eq!(report["code"], "R0401", "{report}");
+                assert!(
+                    report["message"]
+                        .as_str()
+                        .unwrap()
+                        .contains(&format!(":{opened_line}:")),
+                    "{report}"
+                );
+            }
+            for file in ["outer", "inner"] {
+                assert_eq!(std::fs::read(directory.0.join(file)).unwrap(), b"");
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 # Installing Benitoite
 
-This page explains how to install `benitoite` `0.0.7`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+This page explains how to install `benitoite` `0.0.8`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
 
 ## Supported systems
 
@@ -28,20 +28,20 @@ Download the archive for your system and `SHA256SUMS` with `curl`. In the comman
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.7-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.0.8-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 Check the hash. On macOS:
 
 ```sh
-grep "benitoite-0.0.7-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 On Linux:
 
 ```sh
-grep "benitoite-0.0.7-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 The command prints `OK` after the file name when the hash matches. If it does not, download the archive again and do not use it.
@@ -53,16 +53,16 @@ The command prints `OK` after the file name when the hash matches. If it does no
 Extract the archive into a new directory, and move the extracted `benitoite` to a directory on your `PATH`, such as `~/.local/bin`:
 
 ```sh
-mkdir benitoite-0.0.7
-tar -xzf "benitoite-0.0.7-$TARGET.tar.gz" -C benitoite-0.0.7
+mkdir benitoite-0.0.8
+tar -xzf "benitoite-0.0.8-$TARGET.tar.gz" -C benitoite-0.0.8
 mkdir -p ~/.local/bin
-find benitoite-0.0.7 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.0.8 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 Keep `LICENSE-MIT`, `LICENSE-APACHE`, and `THIRD_PARTY_LICENSES` from the archive if you redistribute `benitoite`. `benitoite --licenses` prints the same `THIRD_PARTY_LICENSES`.
 
-`benitoite --version` prints `benitoite 0.0.7` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
+`benitoite --version` prints `benitoite 0.0.8` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
 
 For an agent or harness, use `benitoite --version=json` as the first and only argument to query version, build, and supported-format information. Verify the required `formats` keys and understood integer versions instead of inferring capabilities from the release number. The output is one UTF-8 JSON object followed by LF. Success exits with 0, usage errors with 2, internal errors with 3, and output failures with 1. See [Version and supported formats](benitoite.md#version-and-supported-formats) for the fields and [Build information](#build-information) for the meaning of unknown values.
 
@@ -196,4 +196,4 @@ rm ~/.local/bin/benitoite
 
 If you used `--project` or `--agent` when installing, pass the same options to `uninstall`.
 
-> Note: Releases `0.0.1` through `0.0.7` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`.
+> Note: Releases `0.0.1` through `0.0.8` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`.

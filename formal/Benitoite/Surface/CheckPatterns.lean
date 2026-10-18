@@ -15,8 +15,11 @@ def constPatBase : Release.Const → Option BaseTy
   | .unit => some .unit
   | _ => none
 
+def ConAtomsIn (atoms : List Atom) (P : Release.Program) : Prop :=
+  ∀ c cd, P.cons c = some cd → Tys.AtomsIn atoms cd.args
+
 mutual
-  def patTy (P : Release.Program) : Release.Pat → Ty → Option (List Ty)
+  def patTy (atoms : List Atom) (P : Release.Program) : Release.Pat → Ty → Option (List Ty)
     | .wild, _ => some []
     | .var, a => some [a]
     | .const c, .base b =>
@@ -27,54 +30,55 @@ mutual
     | .range (.character _) (.character _), .base .character => some []
     | .list before rest after, .list a => do
         if rest.isSome || after.isEmpty then
-          let δb ← patTys P before (List.replicate before.length a)
-          let δa ← patTys P after (List.replicate after.length a)
+          let δb ← patTys atoms P before (List.replicate before.length a)
+          let δa ← patTys atoms P after (List.replicate after.length a)
           pure (δb ++ restTys rest a ++ δa)
         else none
     | .con c ps, .data d ts => do
         let cd ← P.cons c
         if cd.data == d && decide (ts.length = cd.ntys) then
-          patTys P ps (substTysAt 0 ts [] cd.args)
+          patTys atoms P ps (substTysAt atoms 0 ts [] cd.args)
         else none
     | _, _ => none
-  def patTys (P : Release.Program) : List Release.Pat → List Ty → Option (List Ty)
+  def patTys (atoms : List Atom) (P : Release.Program) : List Release.Pat → List Ty → Option (List Ty)
     | [], [] => some []
     | p :: ps, a :: as => do
-        let δ ← patTy P p a
-        let δs ← patTys P ps as
+        let δ ← patTy atoms P p a
+        let δs ← patTys atoms P ps as
         pure (δ ++ δs)
     | _, _ => none
 end
 
-private theorem pat_sound (P : Release.Program) :
-    (∀ p a δ, patTy P p a = some δ → PatTy P p a δ) ∧
-    (∀ ps as δ, patTys P ps as = some δ → PatTys P ps as δ) := by
-  apply patTy.mutual_induct
-    (motive_1 := fun p a => ∀ δ, patTy P p a = some δ → PatTy P p a δ)
-    (motive_2 := fun ps as => ∀ δ, patTys P ps as = some δ → PatTys P ps as δ)
-  · intro a δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Wild
-  · intro a δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Var
-  · intro c b b' hc hb δ h
+private theorem pat_sound (atoms : List Atom) (P : Release.Program) (hp : ConAtomsIn atoms P) :
+    (∀ p a δ, a.AtomsIn atoms → patTy atoms P p a = some δ → PatTy P p a δ) ∧
+    (∀ ps as δ, Tys.AtomsIn atoms as → patTys atoms P ps as = some δ → PatTys P ps as δ) := by
+  apply patTy.mutual_induct atoms
+    (motive_1 := fun p a => ∀ δ, a.AtomsIn atoms → patTy atoms P p a = some δ → PatTy P p a δ)
+    (motive_2 := fun ps as => ∀ δ, Tys.AtomsIn atoms as → patTys atoms P ps as = some δ → PatTys P ps as δ)
+  · intro a δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Wild
+  · intro a δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_Var
+  · intro c b b' hc hb δ hat h
     have eb := eq_of_beq hb
     subst b'
     cases c <;> simp_all [constPatBase, patTy]
       <;> obtain ⟨rfl, rfl⟩ := h
       <;> exact .P_Const rfl
-  · intro c b b' hc hb δ h; simp [patTy, hc, hb] at h
-  · intro c b hc δ h; simp [patTy, hc] at h
-  · intro lo hi δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeInt
-  · intro lo hi δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeChar
-  · intro before rest after a hr ihb iha δ h
+  · intro c b b' hc hb δ hat h; simp [patTy, hc, hb] at h
+  · intro c b hc δ hat h; simp [patTy, hc] at h
+  · intro lo hi δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeInt
+  · intro lo hi δ hat h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeChar
+  · intro before rest after a hr ihb iha δ hat h
     simp only [patTy, hr, ↓reduceIte] at h
     obtain ⟨δb, hb, h⟩ := Option.bind_eq_some_iff.mp h
     obtain ⟨δa, ha, h⟩ := Option.bind_eq_some_iff.mp h
     simp only [pure, Option.some.injEq] at h
     subst δ
-    apply PatTy.P_List (ihb _ hb) (iha _ ha)
+    have hat : a.AtomsIn atoms := hat
+    apply PatTy.P_List (ihb _ (tysAtoms_replicate hat _) hb) (iha _ (tysAtoms_replicate hat _) ha)
     intro hn
     simpa [hn] using hr
-  · intro before rest after a hr δ h; simp [patTy, hr] at h
-  · intro c ps d ts ih δ h
+  · intro before rest after a hr δ hat h; simp [patTy, hr] at h
+  · intro c ps d ts ih δ hat h
     simp only [patTy] at h
     obtain ⟨cd, hc, h⟩ := Option.bind_eq_some_iff.mp h
     split at h
@@ -84,39 +88,39 @@ private theorem pat_sound (P : Release.Program) :
       subst d
       apply PatTy.P_Con hc (of_decide_eq_true hn)
       change PatTys P ps (cd.args.map (Ty.substAt 0 ts [])) δ
-      rw [← substTysAt_eq]
-      apply ih cd δ; assumption
+      rw [← substTysAt_eq 0 ts [] cd.args
+        (tysAtoms_iff.mp hat) (by simp) (tysAtoms_iff.mp (hp _ _ hc))]
+      apply ih cd δ (substTysAt_atoms (hp _ _ hc) hat (by simp) 0)
+      assumption
     · contradiction
-  · intro p a hw hv hc hi hh hl hk δ h
+  · intro p a hw hv hc hi hh hl hk δ hat h
     simp only [patTy] at h
     contradiction
-  · intro δ h; simp only [patTys, Option.some.injEq] at h; subst δ; exact .nil
-  · intro p ps a as ihp ihs δ h
+  · intro δ hat h; simp only [patTys, Option.some.injEq] at h; subst δ; exact .nil
+  · intro p ps a as ihp ihs δ hat h
     simp only [patTys] at h
     obtain ⟨δp, hp, h⟩ := Option.bind_eq_some_iff.mp h
     obtain ⟨δs, hs, h⟩ := Option.bind_eq_some_iff.mp h
     simp only [pure, Option.some.injEq] at h
     subst δ
-    exact .cons (ihp _ hp) (ihs _ hs)
-  · intro ps as hn hc δ h
+    exact .cons (ihp _ hat.1 hp) (ihs _ hat.2 hs)
+  · intro ps as hn hc δ hat h
     simp only [patTys] at h
     contradiction
 
-theorem patTy_sound {P p a δ} (h : patTy P p a = some δ) : PatTy P p a δ :=
-  (pat_sound P).1 p a δ h
+theorem patTy_sound {atoms P p a δ} (hp : ConAtomsIn atoms P) (ha : a.AtomsIn atoms)
+    (h : patTy atoms P p a = some δ) : PatTy P p a δ := (pat_sound atoms P hp).1 p a δ ha h
 
-theorem patTys_sound {P ps as δ} (h : patTys P ps as = some δ) : PatTys P ps as δ :=
-  (pat_sound P).2 ps as δ h
+theorem patTys_sound {atoms P ps as δ} (hp : ConAtomsIn atoms P) (ha : Tys.AtomsIn atoms as)
+    (h : patTys atoms P ps as = some δ) : PatTys P ps as δ := (pat_sound atoms P hp).2 ps as δ ha h
 
-/-- レコードは toCore によって宣言順に並べ、省略したフィールドを wild にする。 -/
-def surfacePatTy (D : Declarations) (p : Pattern) (a : Ty) : Option (List Ty) :=
-  patTy D.patternProgram p.toCore a
+def surfacePatTy (atoms : List Atom) (D : Declarations) (p : Pattern) (a : Ty) : Option (List Ty) :=
+  patTy atoms D.patternProgram p.toCore a
 
-theorem surfacePatTy_sound {D p a δ} (h : surfacePatTy D p a = some δ) :
-    PatTy D.patternProgram p.toCore a δ := patTy_sound h
+theorem surfacePatTy_sound {atoms D p a δ} (hp : ConAtomsIn atoms D.patternProgram)
+    (ha : a.AtomsIn atoms) (h : surfacePatTy atoms D p a = some δ) :
+    PatTy D.patternProgram p.toCore a δ := patTy_sound hp ha h
 
-def ConAtomsIn (atoms : List Atom) (P : Release.Program) : Prop :=
-  ∀ c cd, P.cons c = some cd → Tys.AtomsIn atoms cd.args
 
 mutual
   theorem patTyped_atoms {atoms P p a δ} (hp : ConAtomsIn atoms P)
@@ -134,7 +138,7 @@ mutual
           (patTypedList_atoms hp ha (tysAtoms_replicate ht _))
         cases rest with
         | none => trivial
-        | some r => cases r <;> simp [restTys, Tys.AtomsIn, Ty.AtomsIn, ht]
+        | some r => cases r <;> simp [restTys, Ty.SupportList, Ty.Support, ht]
     | P_Con hc hn hs =>
         exact patTypedList_atoms hp hs
           (tysAtoms_map (hp _ _ hc) (fun _ h => subst_atoms h ht (by simp)))
@@ -146,11 +150,11 @@ mutual
 end
 
 theorem patTy_atoms {atoms P p a δ} (hp : ConAtomsIn atoms P) (ha : Ty.AtomsIn atoms a)
-    (h : patTy P p a = some δ) : Tys.AtomsIn atoms δ :=
-  patTyped_atoms hp (patTy_sound h) ha
+    (h : patTy atoms P p a = some δ) : Tys.AtomsIn atoms δ :=
+  patTyped_atoms hp (patTy_sound hp ha h) ha
 
 def checkAlt (atoms : List Atom) (P : Release.Program) (a : Ty) (δ : List Ty) (alt : Release.Alt) : Bool :=
-  match patTy P alt.pat a with
+  match patTy atoms P alt.pat a with
   | none => false
   | some γ => natPerm alt.slots (List.range γ.length) &&
       match selectSlots γ alt.slots with
@@ -182,7 +186,7 @@ theorem checkAlts_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)
       · intro alt hm
         have hc := List.all_eq_true.mp hall alt hm
         unfold checkAlt at hc
-        cases hg : patTy P alt.pat a with
+        cases hg : patTy atoms P alt.pat a with
         | none => simp [hg] at hc
         | some γ =>
             simp only [hg] at hc
@@ -193,13 +197,13 @@ theorem checkAlts_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)
                 have hds := tysAtoms_selectSlots (patTy_atoms hp ha hg) he
                 have eqδ := tysEq_sound hds hd (by simpa [he] using ht)
                 subst ds
-                exact ⟨γ, patTy_sound hg, (natPerm_spec _ _).mp hs, he⟩
+                exact ⟨γ, patTy_sound hp ha hg, (natPerm_spec _ _).mp hs, he⟩
 
 /-- 最初の選択肢の束縛型を求めてから、恒等対応と残りの並べ替えを検査する。 -/
 def altsTy (atoms : List Atom) (P : Release.Program) (alts : List Release.Alt) (a : Ty) :
     Option (List Ty) := do
   let first ← alts.head?
-  let δ ← patTy P first.pat a
+  let δ ← patTy atoms P first.pat a
   if checkAlts atoms P alts a δ then some δ else none
 
 theorem altsTy_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)

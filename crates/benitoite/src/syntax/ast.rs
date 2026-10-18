@@ -373,7 +373,7 @@ pub struct ParenType {
     pub inner: Box<TypeExpr>,
 }
 
-/// `uses` の並び。span は `uses` から最後の名前まで。
+/// `uses` の並び。span は `uses` から最後の参照の型引数の終わりまで。
 #[derive(Clone, PartialEq, Debug)]
 pub struct UsesList {
     pub span: Span,
@@ -383,6 +383,8 @@ pub struct UsesList {
 /// `uses` の並びの中のエフェクトの名前（修飾した名前）。名前を使う箇所のノード。
 #[derive(Clone, PartialEq, Debug)]
 pub struct EffectRef {
+    /// エフェクトの型引数。省略と空の角括弧を区別する。
+    pub args: Option<Vec<TypeExpr>>,
     pub id: NodeId,
     pub span: Span,
     pub path: Vec<Name>,

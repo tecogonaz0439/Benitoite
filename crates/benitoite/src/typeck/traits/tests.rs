@@ -872,3 +872,74 @@ fn interpolation_suggestion_stops_at_the_dictionary_budget() {
         }
     }
 }
+
+#[test]
+fn operation_constraints_keep_public_contracts_and_rigid_clause_bounds() {
+    for (source, expected) in [
+        (
+            "effect Render\n function render[T: Trait.Show](value: T) -> String\nend effect\nfunction bad() -> String uses Render\n return render(lambda() () end lambda)\nend function\n",
+            C::E0705,
+        ),
+        (
+            "effect Render\n function render[T](value: T) -> String\nend effect\nfunction bad() -> String\n return handle render(42) with case render(value) -> resume(Trait.Show.show(value)) end handle\nend function\n",
+            C::E0705,
+        ),
+        (
+            "effect Render\n function render[T: Trait.Show](value: T) -> String\nend effect\nfunction bad() -> String uses Render\n return render(wrong: 42)\nend function\n",
+            C::E0451,
+        ),
+        (
+            "effect Render\n function render[T: Trait.Show](value: T) -> String\nend effect\nfunction bad() -> String uses Render\n return render(value: 42, extra: 7)\nend function\n",
+            C::E0451,
+        ),
+    ] {
+        let source = format!("import Benitoite.Trait\n{source}");
+        let (_, _, _, diagnostics) = check(&source);
+        assert!(
+            diagnostics.iter().any(|d| d.code == Some(expected)),
+            "{source}: {diagnostics:?}"
+        );
+    }
+}
+
+#[test]
+fn operation_clause_bounds_are_kept_when_constructing_implementation_dictionaries() {
+    for (bound, expected) in [(": equality", None), ("", Some(C::E0424))] {
+        let source = format!(
+            r#"
+trait Describe[T]
+ function describe(value: T) -> String
+end trait
+implement[T: equality] Describe[List[T]]
+ function describe(value: List[T]) -> String
+  return if value = value then "same" else "different" end if
+ end function
+end implement
+effect Inspect
+ function inspect[T{bound}](value: T) -> String
+end effect
+function test() -> String
+ return handle inspect(42) with
+ case inspect(value) -> resume(Describe.describe([value]))
+ end handle
+end function
+"#
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        if let Some(expected) = expected {
+            assert!(
+                diagnostics.iter().any(|d| d.code == Some(expected)),
+                "{diagnostics:?}"
+            );
+            assert!(
+                diagnostics
+                    .iter()
+                    .flat_map(|d| &d.helps)
+                    .any(|h| h.message.contains("inspect")),
+                "{diagnostics:?}"
+            );
+        } else {
+            assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        }
+    }
+}

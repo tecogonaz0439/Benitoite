@@ -12,133 +12,169 @@ import Benitoite.Release.Lemmas.Regularity
 
 namespace Benitoite.Release
 
+variable {Q : NoFailCtx}
+
+
 variable {P : Program} {B : Builtins}
 
 theorem SatAll.local (hb : B.Assumptions P) {C1 C0 : List TParam} {ts tps}
     (hts : ∀ t ∈ ts, Ty.WF C1.length t) (h : SatAll B C1 ts tps) : SatAll B (C1 ++ C0) ts tps :=
   ⟨h.1, fun i t p hi hp => hb.sat_local _ _ _ _ (hts _ (List.mem_of_getElem? hi)) (h.2 i t p hi hp)⟩
 
+
+theorem Admissible.outer (hb : B.Assumptions P) {C1 C0 tps ne Qs Qt ts es e}
+    (h : Admissible B C1 tps ne Qs Qt ts es e) :
+    Admissible B (C1 ++ C0) tps ne Qs Qt ts es e :=
+  { h with
+    types := h.types.local hb (fun t ht => (h.typeScope t ht).1)
+    typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
+    rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
+
+theorem PrimitiveAdmissible.outer (hb : B.Assumptions P) {C1 C0 b s Q ts es}
+    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 s Q ts es) :
+    PrimitiveAdmissible (C1 ++ C0) s Q ts es :=
+  { h with
+    admits := hb.admits_local _ _ _ _ _ hs (fun t ht => (h.typeScope t ht).1) h.admits
+    typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
+    rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
+
+theorem MethodRowsAdmissible.outer {C1 C0 Q ms es}
+    (h : MethodRowsAdmissible C1 Q ms es) : MethodRowsAdmissible (C1 ++ C0) Q ms es :=
+  ⟨h.1, fun f hf => Eff.WF.mono (by simp) f (h.2.1 f hf), h.2.2⟩
+
 mutual
-  theorem HasTypeV.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ v a} (h : HasTypeV P B Ψ C1 Γ v a)
-      (hv : Val.VarsIn C1.length (fun _ => True) v) : HasTypeV P B Ψ (C1 ++ C0) Γ v a := by
+  theorem HasTypeVQ.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ v a} (h : HasTypeVQ P B Ψ Q C1 Γ v a)
+      (hv : Val.VarsIn C1.length (fun _ => True) v) : HasTypeVQ P B Ψ Q (C1 ++ C0) Γ v a := by
     match h with
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
-    | .V_Fun hd hnames hts hes =>
-        simp only [Val.VarsIn] at hv
-        exact .V_Fun hd hnames (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))) hes
-    | .V_Prim hs hnames hts hes had =>
-        simp only [Val.VarsIn] at hv
-        exact .V_Prim hs hnames hts hes
-          (hb.admits_local _ _ _ _ _ hs (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)) had)
+    | .V_Fun hd hnames had => exact .V_Fun hd hnames (had.outer hb)
+    | .V_Prim hs hnames had => exact .V_Prim hs hnames (had.outer hb hs)
     | .V_Op hod hnames hts =>
         simp only [Val.VarsIn] at hv
         exact .V_Op hod hnames (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)))
-    | .V_Lam hnames hbody =>
+    | .V_Raise ht he => exact .V_Raise (Ty.WF.mono (by simp) _ ht) (Ty.WF.mono (by simp) _ he)
+    | .V_Lam hnames hw hbody =>
         simp only [Val.VarsIn] at hv
-        exact .V_Lam hnames (HasTypeC.outer hb hbody hv.2.2)
+        exact .V_Lam hnames (Ty.WF.mono (by simp) _ hw) (HasTypeCQ.outer hb hbody hv.2.2)
     | .V_Con hc hts hargs =>
         simp only [Val.VarsIn] at hv
-        exact .V_Con hc hts (HasTypeVs.outer hb hargs hv.2)
+        exact .V_Con hc hts (HasTypeVsQ.outer hb hargs hv.2)
     | .V_List he hw =>
         simp only [Val.VarsIn] at hv
-        exact .V_List (HasTypeEach.outer hb he hv) (Ty.WF.mono (by simp) _ hw)
+        exact .V_List (HasTypeEachQ.outer hb he hv) (Ty.WF.mono (by simp) _ hw)
     | .V_LocRef hl => exact .V_LocRef hl
     | .V_LocLazy hl => exact .V_LocLazy hl
     | .V_Map hk hvs hl hkey hwa hwb =>
         simp only [Val.VarsIn] at hv
-        exact .V_Map (HasTypeEach.outer hb hk hv.1) (HasTypeEach.outer hb hvs hv.2) hl
+        exact .V_Map (HasTypeEachQ.outer hb hk hv.1) (HasTypeEachQ.outer hb hvs hv.2) hl
           (hb.sat_local _ _ _ _ hwa hkey) (Ty.WF.mono (by simp) _ hwa) (Ty.WF.mono (by simp) _ hwb)
     | .V_Set he hkey hw =>
         simp only [Val.VarsIn] at hv
-        exact .V_Set (HasTypeEach.outer hb he hv) (hb.sat_local _ _ _ _ hw hkey) (Ty.WF.mono (by simp) _ hw)
+        exact .V_Set (HasTypeEachQ.outer hb he hv) (hb.sat_local _ _ _ _ hw hkey) (Ty.WF.mono (by simp) _ hw)
     | .V_Bytes => exact .V_Bytes
     | .V_Dict hi hts hvs =>
         simp only [Val.VarsIn] at hv
-        exact .V_Dict hi (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))) (HasTypeVs.outer hb hvs hv.2)
+        exact .V_Dict hi (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))) (HasTypeVsQ.outer hb hvs hv.2)
     | .V_Super hv' hc hs =>
         simp only [Val.VarsIn] at hv
-        exact .V_Super (HasTypeV.outer hb hv' hv) hc hs
-    | .V_Sub h hle => exact .V_Sub (HasTypeV.outer hb h hv) hle
+        exact .V_Super (HasTypeVQ.outer hb hv' hv) hc hs
+    | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.outer hb h hv) hle (Ty.WF.mono (by simp) _ hw)
 
-  theorem HasTypeVs.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ vs as} (h : HasTypeVs P B Ψ C1 Γ vs as)
-      (hv : Val.VarsInList C1.length (fun _ => True) vs) : HasTypeVs P B Ψ (C1 ++ C0) Γ vs as := by
+  theorem HasTypeVsQ.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ vs as} (h : HasTypeVsQ P B Ψ Q C1 Γ vs as)
+      (hv : Val.VarsInList C1.length (fun _ => True) vs) : HasTypeVsQ P B Ψ Q (C1 ++ C0) Γ vs as := by
     match h with
     | .nil => exact .nil
     | .cons hx hxs =>
         simp only [Val.VarsInList] at hv
-        exact .cons (HasTypeV.outer hb hx hv.1) (HasTypeVs.outer hb hxs hv.2)
+        exact .cons (HasTypeVQ.outer hb hx hv.1) (HasTypeVsQ.outer hb hxs hv.2)
 
-  theorem HasTypeEach.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ vs a} (h : HasTypeEach P B Ψ C1 Γ vs a)
-      (hv : Val.VarsInList C1.length (fun _ => True) vs) : HasTypeEach P B Ψ (C1 ++ C0) Γ vs a := by
+  theorem HasTypeEachQ.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ vs a} (h : HasTypeEachQ P B Ψ Q C1 Γ vs a)
+      (hv : Val.VarsInList C1.length (fun _ => True) vs) : HasTypeEachQ P B Ψ Q (C1 ++ C0) Γ vs a := by
     match h with
     | .nil => exact .nil
     | .cons hx hxs =>
         simp only [Val.VarsInList] at hv
-        exact .cons (HasTypeV.outer hb hx hv.1) (HasTypeEach.outer hb hxs hv.2)
+        exact .cons (HasTypeVQ.outer hb hx hv.1) (HasTypeEachQ.outer hb hxs hv.2)
 
-  theorem HasTypeC.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R m a ε} (h : HasTypeC P B Ψ C1 Γ R m a ε)
-      (hm : Comp.VarsIn C1.length (fun _ => True) m) : HasTypeC P B Ψ (C1 ++ C0) Γ R m a ε := by
+  theorem HasTypeCQ.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R m a ε} (h : HasTypeCQ P B Ψ Q C1 Γ R m a ε)
+      (hm : Comp.VarsIn C1.length (fun _ => True) m) : HasTypeCQ P B Ψ Q (C1 ++ C0) Γ R m a ε := by
     match h with
-    | .C_Return hv => simp only [Comp.VarsIn] at hm; exact .C_Return (HasTypeV.outer hb hv hm)
-    | .C_Sub h hle hs => exact .C_Sub (HasTypeC.outer hb h hm) hle hs
+    | .C_Return hv => simp only [Comp.VarsIn] at hm; exact .C_Return (HasTypeVQ.outer hb hv hm)
+    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.outer hb h hm) hle hs (Ty.WF.mono (by simp) _ hw)
+    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.outer hb h hm) hs
     | .C_Let hm' hn =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Let (HasTypeC.outer hb hm' hm.1) (HasTypeC.outer hb hn hm.2)
+        exact .C_Let (HasTypeCQ.outer hb hm' hm.1) (HasTypeCQ.outer hb hn hm.2)
     | .C_App hf hargs =>
         simp only [Comp.VarsIn] at hm
-        exact .C_App (HasTypeV.outer hb hf hm.1) (HasTypeVs.outer hb hargs hm.2)
+        exact .C_App (HasTypeVQ.outer hb hf hm.1) (HasTypeVsQ.outer hb hargs hm.2)
     | .C_If hv h1 h2 =>
         simp only [Comp.VarsIn] at hm
-        exact .C_If (HasTypeV.outer hb hv hm.1) (HasTypeC.outer hb h1 hm.2.1) (HasTypeC.outer hb h2 hm.2.2)
+        exact .C_If (HasTypeVQ.outer hb hv hm.1) (HasTypeCQ.outer hb h1 hm.2.1) (HasTypeCQ.outer hb h2 hm.2.2)
     | .C_Match hv harms hex =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Match (HasTypeV.outer hb hv hm.1) (HasTypeArms.outer hb harms hm.2) hex
-    | .C_Lazy hm' => simp only [Comp.VarsIn] at hm; exact .C_Lazy (HasTypeC.outer hb hm' hm)
+        exact .C_Match (HasTypeVQ.outer hb hv hm.1) (HasTypeArmsQ.outer hb harms hm.2) hex
+    | .C_Lazy hm' => simp only [Comp.VarsIn] at hm; exact .C_Lazy (HasTypeCQ.outer hb hm' hm)
     | .C_Escape hv hw =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Escape (HasTypeV.outer hb hv hm) (Ty.WF.mono (by simp) _ hw)
+        exact .C_Escape (HasTypeVQ.outer hb hv hm) (Ty.WF.mono (by simp) _ hw)
     | .C_Use hv hr hm' hs =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Use (HasTypeV.outer hb hv hm.1) hr (HasTypeC.outer hb hm' hm.2) hs
+        exact .C_Use (HasTypeVQ.outer hb hv hm.1) hr (HasTypeCQ.outer hb hm' hm.2) hs
     | .C_Handle hm' hs hc =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Handle (HasTypeC.outer hb hm' hm.1) hs (HasTypeClauses.outer hb hc hm.2)
+        exact .C_Handle (HasTypeCQ.outer hb hm' hm.1) hs (HasTypeClausesQ.outer hb hc hm.2)
+    | .C_Handle_Fail hm' hs hn hc =>
+        exact .C_Handle_Fail (HasTypeCQ.outer hb hm' hm.1) hs hn (HasFailureClause.outer hb hc hm.2)
     | .C_Resume hi hv =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Resume hi (HasTypeV.outer hb hv hm.2)
+        exact .C_Resume hi (HasTypeVQ.outer hb hv hm.2)
     | .C_ResumeL hl hv =>
         simp only [Comp.VarsIn] at hm
-        exact .C_ResumeL hl (HasTypeV.outer hb hv hm.2)
-    | .C_Meth hv hc hmeth hnames hts hes hws =>
+        exact .C_ResumeL hl (HasTypeVQ.outer hb hv hm.2)
+    | .C_Meth hv hc hmeth hnames hts hscope hes hws =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Meth (HasTypeV.outer hb hv hm.1) hc hmeth hnames
-          (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hm.2.1))) hes (HasTypeVs.outer hb hws hm.2.2.2)
+        exact .C_Meth (HasTypeVQ.outer hb hv hm.1) hc hmeth hnames
+          (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hm.2.1)))
+          (fun t ht => ⟨Ty.WF.mono (by simp) t (hscope t ht).1, (hscope t ht).2⟩) hes.outer (HasTypeVsQ.outer hb hws hm.2.2.2)
 
-  theorem HasTypeArms.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R arms a b ε}
-      (h : HasTypeArms P B Ψ C1 Γ R arms a b ε) (hm : Arm.VarsInList C1.length (fun _ => True) arms) :
-      HasTypeArms P B Ψ (C1 ++ C0) Γ R arms a b ε := by
+  theorem HasTypeArmsQ.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R arms a b ε}
+      (h : HasTypeArmsQ P B Ψ Q C1 Γ R arms a b ε) (hm : Arm.VarsInList C1.length (fun _ => True) arms) :
+      HasTypeArmsQ P B Ψ Q (C1 ++ C0) Γ R arms a b ε := by
     match h with
     | .nil hw => exact .nil (Ty.WF.mono (by simp) _ hw)
     | .plain hp hbody hrest =>
         simp only [Arm.VarsInList] at hm
-        exact .plain hp (HasTypeC.outer hb hbody hm.1) (HasTypeArms.outer hb hrest hm.2)
+        exact .plain hp (HasTypeCQ.outer hb hbody hm.1) (HasTypeArmsQ.outer hb hrest hm.2)
     | .guarded hp hg hbody hrest =>
         simp only [Arm.VarsInList] at hm
-        exact .guarded hp (HasTypeC.outer hb hg hm.1) (HasTypeC.outer hb hbody hm.2.1)
-          (HasTypeArms.outer hb hrest hm.2.2)
+        exact .guarded hp (HasTypeCQ.outer hb hg hm.1) (HasTypeCQ.outer hb hbody hm.2.1)
+          (HasTypeArmsQ.outer hb hrest hm.2.2)
 
-  theorem HasTypeClauses.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R h t ε}
-      (hc : HasTypeClauses P B Ψ C1 Γ R h t ε) (hm : Clause.VarsInList C1.length (fun _ => True) h) :
-      HasTypeClauses P B Ψ (C1 ++ C0) Γ R h t ε := by
+  theorem HasTypeClausesQ.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R h t ε}
+      (hc : HasTypeClausesQ P B Ψ Q C1 Γ R h t ε) (hm : Clause.VarsInList C1.length (fun _ => True) h) :
+      HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ R h t ε := by
     match hc with
-    | .cons (sg := sg) hsg hnames hn hk hbody hrest =>
+    | .cons (sg := sg) hsg hnames hn hk hew hbody hrest =>
         simp only [Clause.VarsInList] at hm
-        refine .cons hsg hnames hn hk ?_ (HasTypeClauses.outer hb hrest hm.2)
-        have := HasTypeC.outer (C0 := C0) hb hbody (by
+        refine .cons hsg hnames hn hk (Eff.WF.mono (by simp) _ hew) ?_ (HasTypeClausesQ.outer hb hrest hm.2)
+        have := HasTypeCQ.outer (C0 := C0) hb hbody (by
           simp only [List.length_append]; rw [hk] at hm; simpa [Nat.add_comm] using hm.1)
         simpa [List.append_assoc] using this
     | .nil => exact .nil
+  theorem HasFailureClause.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C1 Γ E R h t ε)
+      (hm : Clause.VarsInList C1.length (fun _ => True) h) :
+      HasFailureClause P B Ψ Q (C1 ++ C0) Γ E R h t ε := by
+    match hc with
+    | .one he ht hew hbody =>
+        refine .one (Ty.WF.mono (by simp) _ he) (Ty.WF.mono (by simp) _ ht)
+          (Eff.WF.mono (by simp) _ hew) ?_
+        have hv := HasTypeCQ.outer (C0 := C0) hb hbody (by
+          simpa only [List.length_cons, Nat.add_comm] using hm.2.1)
+        exact hv
+
 end
 
 end Benitoite.Release

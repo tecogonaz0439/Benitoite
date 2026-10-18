@@ -1,0 +1,82 @@
+✔ [36/56] Built Benitoite.Release.BuiltinTable (588ms)
+✖ [37/56] Building Benitoite.Release.Coverage (3.6s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Coverage.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Coverage.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Coverage.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Coverage.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Coverage.setup.json --json
+error: Benitoite/Release/Coverage.lean:59:6: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Ty.applyTo', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:89:26: unsolved goals
+ts : List Ty
+names : List String
+ps : List Ty
+r : Ty
+e : EffR
+⊢ e = (Eff.rawSubstAt 0 ts [] e).norm
+error: Benitoite/Release/Coverage.lean:91:17: unsolved goals
+ts : List Ty
+i : Nat
+⊢ (if i < ts.length then ts[i]?.getD (Ty.tvar i) else Ty.tvar (i - ts.length)) =
+    if i < ts.length then Ty.shift 0 0 (ts[i]?.getD (Ty.tvar i)) else Ty.tvar (i - ts.length)
+error: Benitoite/Release/Coverage.lean:94:21: unsolved goals
+ts : List Ty
+b t : Ty
+e : EffR
+⊢ e = (Eff.rawSubstAt 0 ts [] e).norm
+error: Benitoite/Release/Coverage.lean:100:20: unsolved goals
+ts : List Ty
+i : Nat
+as : List Ty
+⊢ (if i < ts.length then (ts[i]?.getD (Ty.tvar i)).applyTo (List.map (Ty.substAt 0 ts []) as)
+    else Ty.tapp (i - ts.length) (List.map (Ty.substAt 0 ts []) as)) =
+    if i < ts.length then (Ty.shift 0 0 (ts[i]?.getD (Ty.tvar i))).applyTo (List.map (Ty.substAt 0 ts []) as)
+    else Ty.tapp (i - ts.length) (List.map (Ty.substAt 0 ts []) as)
+warning: Benitoite/Release/Coverage.lean:90:88: This simp argument is unused:
+  Eff.substRho_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [substTy, Ty.subst, Ty.substAt, Eff.substAt, substTys_eq, substTy_eq ts r]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Coverage.lean:91:57: This simp argument is unused:
+  Ty.shift_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [substTy, Ty.subst, Ty.substAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Coverage.lean:95:92: This simp argument is unused:
+  Eff.substRho_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [substTy, Ty.subst, Ty.substAt, Eff.substAt, substTy_eq ts b, substTy_eq ts t]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Coverage.lean:100:73: This simp argument is unused:
+  Ty.shift_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [substTy, Ty.subst, Ty.substAt, substTys_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Release/Coverage.lean:109:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'substTys', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:118:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'conFields', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:203:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'conFields', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:232:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'shapes', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:339:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'compatible', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:375:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'usefulFuelWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:416:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'shapesWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:429:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'overlapsFuelWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1366:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Coverage.usefulFuelWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1371:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'usefulReportWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1376:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'usefulReportWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1381:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'usefulWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1398:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Coverage.overlapsFuelWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1403:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'overlapsWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1408:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'overlapsWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1425:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'coveringAlternativesWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1440:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'usefulReportWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1455:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'checkMatchWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1460:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'usefulWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1465:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'irrefutableWithView', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1781:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'checkMatch', which is 'noncomputable'
+error: Benitoite/Release/Coverage.lean:1789:4: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'checkMatchWithView', which is 'noncomputable'
+error: build failed
+Some required targets logged failures:
+- Benitoite.Release.Coverage

@@ -1,0 +1,308 @@
+{
+  "base": "04e82f6f8d7510b0aca968c4573fee0e249cd62e",
+  "head": "04e82f6f8d7510b0aca968c4573fee0e249cd62e",
+  "judge": "Codex",
+  "date": "2026-10-18",
+  "configuration": {
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "leanToolchain": "leanprover/lean4:v4.34.1",
+    "features": "default (gc-mark-sweep)",
+    "exchangeVersions": {
+      "corpus": 11,
+      "tables": 4,
+      "coverage": 4
+    }
+  },
+  "trackedChanges": [
+    "CHANGELOG.md",
+    "crates/benitoite/skill/references/diagnostics.md",
+    "crates/benitoite/skill/references/idioms.md",
+    "crates/benitoite/src/diag/codes.rs",
+    "crates/benitoite/src/ir/check.rs",
+    "crates/benitoite/src/ir/decision.rs",
+    "crates/benitoite/src/typeck/decls.rs",
+    "crates/benitoite/src/typeck/effects/declarations.rs",
+    "crates/benitoite/src/typeck/effects/mod.rs",
+    "crates/benitoite/src/typeck/pattern_ext.rs",
+    "crates/benitoite/src/typeck/patterns.rs",
+    "crates/benitoite/testdata/patterns/nonexhaustive_literals.diag.json",
+    "crates/benitoite/tests/desugar_export.rs",
+    "crates/benitoite/tests/desugar_export/check_named.py",
+    "crates/benitoite/tests/desugar_export/exchange-manifest.json",
+    "crates/benitoite/tests/desugar_export/routing-manifest.json",
+    "crates/benitoite/tests/vm_handlers.rs",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/decisions.md",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/plan.md",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/results.md",
+    "docs/design/01-spec/01-02-syntax.md",
+    "docs/design/01-spec/01-05-data-types.md",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/02-impl/02-05-typechecker.md",
+    "docs/design/02-impl/02-06-ir-and-lowering.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "docs/reference/benitoite.md",
+    "scripts/check-formal.sh"
+  ],
+  "untrackedFilesAtSnapshot": [
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.bnt",
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.diag.json",
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.exit",
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.mode",
+    "crates/benitoite/testdata/patterns/p1-character-domain.bnt",
+    "crates/benitoite/testdata/patterns/p1-character-domain.exit",
+    "crates/benitoite/testdata/patterns/p1-character-domain.mode",
+    "crates/benitoite/testdata/patterns/p1-character-domain.stdout",
+    "crates/benitoite/testdata/patterns/p1-character-missing.bnt",
+    "crates/benitoite/testdata/patterns/p1-character-missing.diag.json",
+    "crates/benitoite/testdata/patterns/p1-character-missing.exit",
+    "crates/benitoite/testdata/patterns/p1-character-missing.mode",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/change-counts.json",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/check-times.json",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/formal-summary.json",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/formal.log",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/manifest-delta.json",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/migration.md",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/results.md",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/typeck-baseline.csv",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/typeck-current.csv",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/typeck-performance.md",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/typeck_probe.rs",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/work-command.txt",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/work-resume-command.txt",
+    "docs/2026-10-17-TODO-063_087_189_191_249_255-check-policy-and-syntax-batch2/p1/work-summary.log"
+  ],
+  "relevantInputs": {
+    "crates/benitoite/skill/references/diagnostics.md": {
+      "sha256": "39279ad93ea7a50b1959deca63c35da7316e23c019995b2935102b6dc0183398",
+      "untracked": false
+    },
+    "crates/benitoite/skill/references/idioms.md": {
+      "sha256": "1d69e7f7d6552c528d49b125e226d377874baae87b5da23a5fdfe12a15f3ec5e",
+      "untracked": false
+    },
+    "crates/benitoite/src/diag/codes.rs": {
+      "sha256": "12d0ced5611a02918cbdae88365c10937d550d92b87c1e5e84a3aaa3adfef70b",
+      "untracked": false
+    },
+    "crates/benitoite/src/ir/check.rs": {
+      "sha256": "06aecac37ce4b4f612418690db2952fd887c491891fb02b3f5cd9862240f8f3e",
+      "untracked": false
+    },
+    "crates/benitoite/src/ir/decision.rs": {
+      "sha256": "9e654d4c9389c9f448feaf44cd1f156d20a373e9b98b2dd963546a0c3c4e6917",
+      "untracked": false
+    },
+    "crates/benitoite/src/typeck/decls.rs": {
+      "sha256": "c64e09e3dbb56c4993b8ae584d40276dc830bbc2eb5e4a4c97e9add96d2c3dd2",
+      "untracked": false
+    },
+    "crates/benitoite/src/typeck/effects/declarations.rs": {
+      "sha256": "851d44a80261bc347348cc703f365dbbba3724bcd2f90f47aae7d679ff8140d2",
+      "untracked": false
+    },
+    "crates/benitoite/src/typeck/effects/mod.rs": {
+      "sha256": "32f77d199c70219cfefc097386f870720fa32ae793a68def4599d6661bd1cf19",
+      "untracked": false
+    },
+    "crates/benitoite/src/typeck/pattern_ext.rs": {
+      "sha256": "34ef125fd5aa32589b76c328f134fcc46c9efabae7d81e00b38e5a44d341ec16",
+      "untracked": false
+    },
+    "crates/benitoite/src/typeck/patterns.rs": {
+      "sha256": "6e31ccd4d321dd7f83aa080f47de8f6880bf62df7604181a1a9586e020ea89ee",
+      "untracked": false
+    },
+    "crates/benitoite/testdata/patterns/nonexhaustive_literals.diag.json": {
+      "sha256": "599ed5dd449ea61a68984c2b0e43824244b80a71dbed988e7b8cd80e9ecdd9af",
+      "untracked": false
+    },
+    "crates/benitoite/tests/desugar_export.rs": {
+      "sha256": "e900e17244927efa0e60efd1feb06e651dc0b056512c52952d6dd737296abbf8",
+      "untracked": false
+    },
+    "crates/benitoite/tests/desugar_export/check_named.py": {
+      "sha256": "a78979675e884086ce510e11f07a5df71252a7afb45f4695fd2220fe6aac1b22",
+      "untracked": false
+    },
+    "crates/benitoite/tests/desugar_export/exchange-manifest.json": {
+      "sha256": "b0ef3880b3fd35a90e957834374b43017a7c2330240a29bcf36c810884f1b6e4",
+      "untracked": false
+    },
+    "crates/benitoite/tests/desugar_export/routing-manifest.json": {
+      "sha256": "d612a80284bc3118b19b1d7a9fdc9a6bf753fc9d4967af78fe66b9f32dc822c1",
+      "untracked": false
+    },
+    "crates/benitoite/tests/vm_handlers.rs": {
+      "sha256": "a5fd7568dc4ec59203b27b61f742b79cbfeea730537cb1392791e86d17a05c83",
+      "untracked": false
+    },
+    "docs/design/01-spec/01-02-syntax.md": {
+      "sha256": "beada7948148ddf29c1c7fdafc91c6765ef604ff6537aba7b7166512f8626efb",
+      "untracked": false
+    },
+    "docs/design/01-spec/01-05-data-types.md": {
+      "sha256": "010b49b60d3b13bdf56e7a9b79647b0c01f60d0d611a839e35667553dc4d1764",
+      "untracked": false
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "sha256": "59a394492a2d0b14ffb383b9f33de3217a345cf30f2b6ba7d71d4a7201a9c107",
+      "untracked": false
+    },
+    "docs/design/02-impl/02-05-typechecker.md": {
+      "sha256": "ca31fcd3308e0282f1e0397fbb6e2ac39a158d97634a97aa6b7eb7b6a17e5a17",
+      "untracked": false
+    },
+    "docs/design/02-impl/02-06-ir-and-lowering.md": {
+      "sha256": "0f275a4302c4fc9a72f39578d6c4f62b5d032b4cfc8fe13b98aad05a31cc3df5",
+      "untracked": false
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "sha256": "1dc58e7bafac3190ad4a93bc28819301606dfe648dd7ca745c6c1e0e7ed2e724",
+      "untracked": false
+    },
+    "docs/reference/benitoite.md": {
+      "sha256": "3394fdfa4b5ee7023ae50a43e6ab8e6bff5fdf683c3882cf2286f09414f4a229",
+      "untracked": false
+    },
+    "scripts/check-formal.sh": {
+      "sha256": "68e5c0f89bbd2a3dd4ff60eaa7dc38e5552f5848437ad02cfafe65d173d313fb",
+      "untracked": false
+    },
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.bnt": {
+      "sha256": "c5876b6ed24aa6eaffdd8f6d8f29c3e66bf9a4ec972bc7fc7066facb5ff1ef7b",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.diag.json": {
+      "sha256": "548ceec6590740821864626cd6b3592a4df244f4c1b5568599d6740218aaefc0",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.exit": {
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/effects/p1-duplicate-failure.mode": {
+      "sha256": "b78232388282c6420137ababfeb08b77a605007fe7650cfce4e36bb6afa013fb",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-domain.bnt": {
+      "sha256": "09fed2285a0190f0a2b4a15bfc0b6bd67415a0044aedc862323d9859996b1a74",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-domain.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-domain.mode": {
+      "sha256": "b5004f26a852b0d60ec1237432c1a33c2307ff2458c374d9d99749d045c7feb9",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-domain.stdout": {
+      "sha256": "9269fe5c54e0e827d8d11077d222df4c46eb4eceee47834e18efd2b4d9e0c4f9",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-missing.bnt": {
+      "sha256": "a8d22096a69e352b7e4bd1d87d153cf702db67049ee8e315fad5951a5ca45d4d",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-missing.diag.json": {
+      "sha256": "fb00f4f4ea2e59eee0ff14be4d73b6b45b4e2977578d8a32be227526d890816c",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-missing.exit": {
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "untracked": true
+    },
+    "crates/benitoite/testdata/patterns/p1-character-missing.mode": {
+      "sha256": "b78232388282c6420137ababfeb08b77a605007fe7650cfce4e36bb6afa013fb",
+      "untracked": true
+    }
+  },
+  "exchangedInputs": {
+    "formal/tests/batch2-exchange/builtins.json": "dbcbf000b062216bebe0f8a66090e79acf17c477099710d504a5c62969717325",
+    "formal/tests/batch2-exchange/corpus.json": "92eecd922fa84538f5e130c13e4ec608272fcdf452682408f38fc21b8ffc1116",
+    "formal/tests/batch2-exchange/coverage-program.json": "2dd5905194219b4d7964f63f114d06d314e62684b197bf28dad94d40336d2bb3",
+    "formal/tests/batch2-exchange/coverage.json": "12c330696a6bbd34e1503c6be3cf000f80603d3a9dc5ec8774469aa2d6a574b6",
+    "formal/tests/batch2-exchange/stdlib.json": "27f30a9b3fec4c733432a3e89ea791115d904c56647e54bf72c9712ab29afe9d",
+    "target/formal-batch2-character/builtins.json": "fca3f5f8d74f04b83d2c57bb816aa917da3c23fdc80ad41564bf00dc31f933db",
+    "target/formal-batch2-character/corpus.json": "5fef296fcc734b068066f541eb1e1a9caad9eab592dde5c8c604577383eeb877",
+    "target/formal-batch2-character/coverage-program.json": "f9e63ccdf538088422060ed434eb58406bad2ecf6cf9adbfa2822395541d7c03",
+    "target/formal-batch2-character/coverage.json": "b07bde279331e859cca906352e5b14705e66ef81b46c64c351a6d180f3227823",
+    "target/formal-batch2-character/stdlib.json": "afafae24ab478b086cf4bc870c3d44730e31f3c283605aeeb93769a192f62e31",
+    "target/formal-batch2-failure/builtins.json": "5bb89728f68ef94a42088cdf98adebe91369af6044a4f51977b116f2167fdc8f",
+    "target/formal-batch2-failure/corpus.json": "919ac11dedc700a6c67808f236b79d850320c245c996cf4a013919467b963305",
+    "target/formal-batch2-failure/coverage-program.json": "8ff130ffc227a44994dbf5ac4dd19e9077341b87b684dad4dfcd755609142c8a",
+    "target/formal-batch2-failure/coverage.json": "b7e666f07c2a9d597681986e2a2e674f90bfac23508b7b0e99177b5a6db3592d",
+    "target/formal-batch2-failure/stdlib.json": "efbda5e9a8b9838291cc4ed69294c1352ed54533dce010d91b134160357c1550",
+    "target/formal-batch2-op/builtins.json": "ac12a2afaf46056d556a524f136c2600cf592a131e87f0c7894d637995716464",
+    "target/formal-batch2-op/corpus.json": "c0428e17037aca2f8792373f7f9144615c3b6ba245f4602da8f336b4a9559297",
+    "target/formal-batch2-op/coverage-program.json": "251d3cb045f3a3f68ad5ff4a5942d4abab4548d2d34541a715f70305413fab6f",
+    "target/formal-batch2-op/coverage.json": "b6776e2022dbe7a907acb87258b676c75bd80fe829e2c8b79759275402c0ae46",
+    "target/formal-batch2-op/local-desugar-report.json": "86186c3b3315d1d1493d624da13c14d942ca05b43e611cbd492df0fa56a60b49",
+    "target/formal-batch2-op/local-surface-report.json": "485bbe96317d43d0736b4ee6a9169c4df3dbbbede3d0843a4fcfce656548b0e9",
+    "target/formal-batch2-op/stdlib.json": "26b0051bbb919ccc48cbc042eda26ff954e635f996e6aae3103a423e0cd4ab01",
+    "target/p1-formal-coverage/future-corpus.json": "a2495567fd9ed5fc57b911418d869f2bedbbb2b14d995aa5abcb2987d46f2f46",
+    "target/p1-formal-coverage/named-all-corpus.json": "f53c373b688906444f6cdc0b45468a7cb03b892dfe06f1743e12a8697e2be232",
+    "target/p1-formal-coverage/named-corpus.json": "35d5ecd7ab1acd08b5dd3f9aae6a78fe20b60f35861a7d024aef0bf1197def2b",
+    "target/p1-formal-desugar/extensible-package-builtins.json": "0a2b09a1c4d58668e04523a61a643fc1606cf7c693a6a03535d0a0a30bc8a125",
+    "target/p1-formal-desugar/extensible-package-corpus.json": "f782696499032c5c91a1304f61b8fca387ad1689a8958037eab072b01a714662",
+    "target/p1-formal-desugar/extensible-package-coverage.json": "c0df4cf553a7cc9c26854f2a5f8d81dbb8fd8c4f74d4903680774748cc5257fe",
+    "target/p1-formal-desugar/extensible-package-stdlib.json": "b16cc4258eed73fd1349211cbdc371bea44a18af48dbad44e6dc4c8f3ac8aa96",
+    "target/p1-formal-desugar/independent-program-builtins.json": "69923f11a3b81027708d2dbc01ce6c87e1e0f0ac43be9aa73292ff782824472f",
+    "target/p1-formal-desugar/independent-program-corpus.json": "8b89533aaa13e83ab243e428ed490b8f91ab2576772d55093c1ea917878b0f70",
+    "target/p1-formal-desugar/independent-program-coverage.json": "5c66475c9d4d3396b90d6a9dfcd72c8f53cd813f4e041b6ed6660b7c92ab85f1",
+    "target/p1-formal-desugar/independent-program-stdlib.json": "83967b18d24f95e32203df23c0a73f948ea58b8bd0fb709206314ecf318dddc9",
+    "target/p1-formal-desugar/named-annotation-only-builtins.json": "66f037cf55fdb685e164d3969c617bff6b85e523bd2e58e9ddec045f9928dd1d",
+    "target/p1-formal-desugar/named-annotation-only-corpus.json": "b9992ce7c0ce507d380365dff2da197c17303e68dd5a0e1e9da27333a1c1b1ad",
+    "target/p1-formal-desugar/named-annotation-only-coverage.json": "bbeec348565fe0f962104b74cea843c9f5f8428def48632975b358c94f756495",
+    "target/p1-formal-desugar/named-annotation-only-stdlib.json": "4643c6583398b2aab6e8597e78f9f2682e415946a6ce2b3bde3ead36523c1366",
+    "target/p1-formal-desugar/named-calls-builtins.json": "ea938cd7c059799f7121c8ef924b28b817f64a6e11846ce1b3c23af8dd824475",
+    "target/p1-formal-desugar/named-calls-corpus.json": "53f4f202c0e0126ab4bdad6130a769ef8adda1ee22492765bebc37bd88710c86",
+    "target/p1-formal-desugar/named-calls-coverage.json": "df57634757b1d60e3e7ffa373950f1f00f752bccc9ee98e53a5cf03c16b49709",
+    "target/p1-formal-desugar/named-calls-stdlib.json": "3e76fc2d19b273c840ed6b5b741f92b2068e4b2a0fdd2c239fe5e03f7d06aa48",
+    "target/p1-formal-desugar/named-declarations-builtins.json": "4820ac6432a507116c6396d5fd9e85ee07578ad77e9c02a3919e6cdd9711eefa",
+    "target/p1-formal-desugar/named-declarations-corpus.json": "17326df53b1d01ccbc7e65c7cbd89866a665277a576d264e637e4c693cdcb1da",
+    "target/p1-formal-desugar/named-declarations-stdlib.json": "8afb23e5190445251a77a090e7cf830f5d2e577488eec72077790e64c1392c98",
+    "target/p1-formal-desugar/named-positional-holes-builtins.json": "2aba3d71b51b334bbf81ebb05e4240188ad7a123e7ed7e0080117d043c53cc65",
+    "target/p1-formal-desugar/named-positional-holes-corpus.json": "0c8612241faff1097751d88dfb74b102ef09cb28a3ecf4ea9db4ff1769a452db",
+    "target/p1-formal-desugar/named-positional-holes-coverage.json": "ff0c7d43eb7d8df26aba97dce53ab69a914823a06e87d0a6515140286f70cc0f",
+    "target/p1-formal-desugar/named-positional-holes-stdlib.json": "3c1f5007c9f36c89e8c266b12627818db562907085f65078c5b1b40bb92466d9",
+    "target/p1-formal-desugar/named-programs-builtins.json": "d9b19e462520ae7a4d99cd59e735447425a43752d443be6f97ec2a13b5227fd2",
+    "target/p1-formal-desugar/named-programs-corpus.json": "c01123ce94cd706c1f20bfd90ec2212be0983276b8599c0e8cf8ad3d347cecb3",
+    "target/p1-formal-desugar/named-programs-coverage.json": "349f59d95a4dd33db1e1a9ec325d885a53f286e26d6dddcbb28ae3898cd03137",
+    "target/p1-formal-desugar/named-programs-stdlib.json": "13ef81c0da1fd5f806907d9673315ce44c595e2fdf7636cb0c8a4858c2fca3e8",
+    "target/p1-formal-desugar/named-static-calls-builtins.json": "490d0aa8fc4e48b81b5e6516f1a182e6c465da74e6faec81c718b533d0a9e709",
+    "target/p1-formal-desugar/named-static-calls-corpus.json": "0404d6f36da96bbdc4e151a00c5637df7850e71b59283c0d33d57e61f0c58b8e",
+    "target/p1-formal-desugar/named-static-calls-coverage.json": "c1fb726509626290324204f0351c245897abedbd12732e6ecce8d98ae08b02fb",
+    "target/p1-formal-desugar/named-static-calls-stdlib.json": "3cb53701db4a6e0d3e4204ea3c22428734f4e4abbd081c82875c98027809a753",
+    "target/p1-formal-desugar/named-types-builtins.json": "d143fe7d8a6936e7a48c0863879466cbce9a35dd69d06a38a03bffbf172733dc",
+    "target/p1-formal-desugar/named-types-corpus.json": "9c325a29dd4d69903072d48d78db91542302e2485059618f6084eba7285b3c96",
+    "target/p1-formal-desugar/named-types-stdlib.json": "c8f6d9ec982d2b6f6d7bc926a7c36221df8d338769330ca79c1d944750c3e9fb"
+  },
+  "reports": {
+    "target/p1-formal-desugar/report.json": "e28c4e1aebe09c7c44b4d459faa58c3a5fff3854835d49480c5c1f8c8c899bcf",
+    "target/p1-formal-desugar/builtin-report.json": "d360a9b3b935109d45102b3c292e670123af5bc7522ea3a586d3f5a6900ce5b8",
+    "target/p1-formal-desugar/coverage/report.json": "5ca62ab5c151abf0d9a2f418f550b3a22aed6d3ccf23d31df795681a55ed678e",
+    "target/p1-formal-desugar/surface-check/report.json": "4e834730d55331039e13aed9b43ad1388024a564794d81e72aab604fa50fdbce",
+    "target/p1-formal-desugar/named-program-mutations-report.json": "556d9b17618383882bba9e8e44770c35bdb669f82a0809a9ab51299886bc6278",
+    "target/p1-formal-coverage/report.json": "156eb2c651d4614b02514dcf8d87c6301596b3173f73c1693f082eda2871a15f",
+    "target/p1-formal-coverage/future-report.json": "0a57fc36235f44636926bd444594b94a2bc50a36a1103e7a6006763423ad7b7a",
+    "target/p1-formal-coverage/named-all-report.json": "156eb2c651d4614b02514dcf8d87c6301596b3173f73c1693f082eda2871a15f"
+  },
+  "executables": {
+    "desugarDiff": "b30af12a8a21804044a1ae7e10010d6872ccc9d47475d85661be42b94269830e",
+    "builtinCheck": "d5fd6d69ee7f338c19ae53905a1cf5bdd5499dcfb3a145508428feca20eeaba3",
+    "coverageDiff": "2f3b90f16de313dbbaba04c37cff6f96aec550a448dc90ca139afe3dd57ab822",
+    "coverageProgramDiff": "9a71388c4bdcd2cfdc91f3c17b0f551c10d7a50ed2170a129a05e95f186bfcb9",
+    "surfaceCheck": "c198110bf7e0bd78bcf0de6de5790184ad2f8936fb1456ffb1f055e59a3e7f15",
+    "surfaceCheckAll": "dd897806ab37f9adc94671d32f6d4755e844f27adb3a6abaa3e5c393ee1c05f6"
+  },
+  "relation": "同じ作業ツリーの関係状態で全比較を実行した。比較の後に変更したのは結果と集約の記録だけであり、Rust・標準ソース・Lean・交換の生成元・入力・比較器は一致する。G2以降とV1の変更後へは無条件に引用しない。結果記録自身は実行入力ではないためSHAの対象から除く。",
+  "recordFiles": [
+    "p1/results.md",
+    "p1/formal-summary.json",
+    "p1/formal.log",
+    "p1/work-summary.log",
+    "p1/check-times.json",
+    "p1/manifest-delta.json"
+  ]
+}

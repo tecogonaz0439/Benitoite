@@ -1,0 +1,12 @@
+// spec: 01-07 型付きの失敗
+import Benitoite.Unofficial.Failure
+function choose[T, effect Rest](body: function() -> T uses Failure.Fail[String], Rest, other: function() -> T uses Rest) -> (function() -> T uses Failure.Fail[String], Rest)
+ return body
+end function
+function bad() -> Unit
+ bind body <- lambda() return Failure.raise(error: "bad") end lambda
+ bind other <- lambda() return Failure.raise(error: 42) end lambda
+ bind f <- choose(body: body, other: other)
+end function
+function main() -> Unit
+end function

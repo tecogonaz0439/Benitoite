@@ -1,6 +1,6 @@
 # 実行前の検査
 
-> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 修正中は通常の `benitoite check main.bnt` または非実行の `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に JSON 報告を一度取得する。その報告を確認し、Skill の確認の規則に従って宣言したエフェクトを利用者に説明してから、了承済みの集合を実行へ渡す。
 

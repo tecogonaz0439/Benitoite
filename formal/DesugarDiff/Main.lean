@@ -26,6 +26,7 @@ def increment (entries : List (String × Nat)) (name : String) : List (String ×
 /-- 辞書の local を普通の式の local と分けて数える。 -/
 partial def dictionaryFeatures (j : Json) : List String :=
   match (fromJson? j : Except String DictEv) with
+  | .ok (.clause _ _ _ _ _) => ["DictEv.clause"]
   | .ok (.local _) => ["DictEv.local"]
   | .ok (.super d _) => "DictEv.super" :: dictionaryFeatures (toJson d)
   | .ok (.impl _ _ ds) => "DictEv.impl" :: ds.flatMap (fun d => dictionaryFeatures (toJson d))
@@ -378,8 +379,8 @@ def compareInput (atoms : Eff) (operators : List OperatorEntry) (input : Input)
           s := { s with constructions := increment s.constructions f }
         for f in features.eraseDups do
           s := { s with constructionUnits := increment s.constructionUnits f }
-        let expectedJson := canonicalJson atoms (toJson expected)
-        let actualJson := canonicalJson atoms (toJson core)
+        let expectedJson := canonicalJson (toJson expected)
+        let actualJson := canonicalJson (toJson core)
         if let some (path, e, a) := difference "definition" expectedJson actualJson then
           failures := failures ++ [{
             group := input.group

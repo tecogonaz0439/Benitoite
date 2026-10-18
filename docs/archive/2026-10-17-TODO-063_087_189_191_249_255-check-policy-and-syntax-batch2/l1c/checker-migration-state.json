@@ -1,0 +1,65 @@
+{
+  "status": "integrated; original six-file checkpoint is retained as a historical snapshot; do not reapply",
+  "base": "35a77b5367c15465ce6e0e39c2c97992250e1494",
+  "patch": "checker-migration.patch",
+  "patch_sha256": "462a7d157e5cef9253a7993a0995af3ae8e29ad93b924fa564c88da5ecace5aa",
+  "changes": [
+    {
+      "path": "formal/Benitoite/Surface/Check.lean",
+      "base_sha256": "39a7c625000486e2de21ebdb55c86a780a48cc7014e4e2703c51873a6a178a75",
+      "patched_sha256": "8c6cd500717cd3d94a00bf55b4cd0def02fb23b26375b5105a46e78278b22df6"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPatterns.lean",
+      "base_sha256": "e00ee3cf784754521ef43ea363d38209f9dc2afb3f9cb486ceb34d625fba8413",
+      "patched_sha256": "53eb52ccbfd3986cd2cbe3b51b9669b5665eae5e6cd33f5b121b0eab9e011223"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "base_sha256": "5f6ffa0304fc3c3549a5655c0645f4ac811be1c1b3589b878925ce821d402ecb",
+      "patched_sha256": "45c0f980a1088b062f0b623759df60b9a796ffc5b177bccbcaeefc3cc2722abb"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSupport.lean",
+      "base_sha256": "5a3ef38a77662955b181705791deebbccaf520af8d5d34ad7e71dc271e307ed2",
+      "patched_sha256": "eb51b2a8abad1b84917d3fe3a205bfa6cee9ce4a741b7057b6575b4a8c484b24"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTables.lean",
+      "base_sha256": "6f6482d7d42e508ad772f6646a2536eade38ff1461ab73c11ecec46b3e76efaa",
+      "patched_sha256": "4107691c9169218ee33793edf7c36406a87d012da605343f7fc4b1e6ec7d9fa7"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTools.lean",
+      "base_sha256": "ffeff799a035af81083778f833935ce186471f16864f07ededab28e453614507",
+      "patched_sha256": "d61c0fe6681569374e6c63f50da37c2beeff277e8f379d83749fb6d188dc1449"
+    }
+  ],
+  "required_files": [
+    {
+      "path": "formal/Benitoite/Release/Order/FiniteAtoms.lean",
+      "sha256": "6a57378eb743fd672df5010d34996be6d5468c82f9222f274e308211be13855b"
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "sha256": "82f362948750a6fe625f1cc98df4687be6f09f7d7133f5d16403f4ec983301db"
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "sha256": "3955de7bcca6e0f2e18e17c55e1f8b1a9e5b34609d5e32b6a1b7e2c2621d31a1"
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "sha256": "904b2f7d7afc0c76a139d30fc87fc174a06d53171e510b32042776f20871bf31"
+    },
+    {
+      "path": "formal/Benitoite/Surface/FinitePredicates.lean",
+      "sha256": "2d572d183dfba436cb2fe6394da27d3b6f1a7ba09d6d7b02a7bf456d7e22b9a2"
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteExamples.lean",
+      "sha256": "f0f6057c7ed70059b1dfdd3631bdceb801126d75cfc91d48c9bd346e25f428bd"
+    }
+  ],
+  "continued_at": "l1c/results.md, L1cc2"
+}

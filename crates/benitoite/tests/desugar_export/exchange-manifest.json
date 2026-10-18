@@ -1,5 +1,14 @@
 {
   "version": 1,
+  "batch2Failure": {
+    "definitions": {
+      "failure-polymorphic": 4,
+      "failure-handlers": 4,
+      "failure-values": 5,
+      "failure-nofail": 1
+    },
+    "restViolation": "function instantiation violates scope or NoFail"
+  },
   "named": [
     {
       "stem": "named-types",
@@ -66,12 +75,25 @@
         "matches": 1,
         "bindings": 0
       }
+    },
+    {
+      "stem": "generated-record-property",
+      "definitions": 27,
+      "origin": "generated-code-and-ordinary-tests",
+      "scopes": {
+        "inScope": 20,
+        "accessor": 7
+      },
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      }
     }
   ],
   "namedVersions": {
-    "corpus": 10,
-    "table": 3,
-    "coverage": 3
+    "corpus": 11,
+    "table": 4,
+    "coverage": 4
   },
   "namedCoverageCases": 10,
   "namedExcluded": [],
@@ -954,6 +976,7 @@
       "group": "golden",
       "name": "testdata/fmt/header.bnt",
       "excluded": [
+        "Some(E0908)",
         "Some(E0910)"
       ],
       "definitions": 0,
@@ -25134,12 +25157,375 @@
       "coverage": null,
       "implementations": 0,
       "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/effects/f2-lazy-failure.bnt",
+      "excluded": [
+        "Some(E0503)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/effects/f2-unconstrained-rest.bnt",
+      "excluded": [
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/effects/p1-duplicate-failure.bnt",
+      "excluded": [
+        "Some(E0419)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-ambiguous.bnt",
+      "excluded": [
+        "Some(E0517)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-arguments-extra.bnt",
+      "excluded": [
+        "Some(E0513)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-arguments-missing.bnt",
+      "excluded": [
+        "Some(E0513)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-arguments-ordinary.bnt",
+      "excluded": [
+        "Some(E0513)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-annotation.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-effects.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-else-if.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-expected-type.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-function-value.bnt",
+      "excluded": [
+        "Some(E0514)",
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-if.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-partial.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-pipe.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-join-result-type.bnt",
+      "excluded": [
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-mixed.bnt",
+      "excluded": [
+        "Some(E0518)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-builtin-value.bnt",
+      "excluded": [
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-call.bnt",
+      "excluded": [
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-dictionary-value.bnt",
+      "excluded": [
+        "Some(E0515)",
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-expected-accept.bnt",
+      "excluded": [
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-instantiation.bnt",
+      "excluded": [
+        "Some(E0514)",
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-method-value.bnt",
+      "excluded": [
+        "Some(E0515)",
+        "Some(E0514)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-nofail-signature.bnt",
+      "excluded": [
+        "Some(E0515)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-resume.bnt",
+      "excluded": [
+        "Some(E0516)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f1-typed-failure.bnt",
+      "excluded": [],
+      "definitions": 4,
+      "scopes": {
+        "inScope": 3,
+        "accessor": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "group": "golden",
+      "name": "testdata/handlers/f2-result-conversion.bnt",
+      "excluded": [],
+      "definitions": 2,
+      "scopes": {
+        "accessor": 1,
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "group": "golden",
+      "name": "testdata/patterns/p1-character-domain.bnt",
+      "excluded": [],
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 1
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "group": "golden",
+      "name": "testdata/patterns/p1-character-missing.bnt",
+      "excluded": [
+        "Some(E0601)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
     }
   ],
   "routingManifest": "routing-manifest.json",
   "coverageExports": {
     "named-": {
-      "version": 3,
+      "version": 4,
       "boundaryCases": 10,
       "randomCases": 0,
       "seedXor": 0,
@@ -25157,7 +25543,7 @@
       ]
     },
     "named-all-": {
-      "version": 3,
+      "version": 4,
       "boundaryCases": 20,
       "randomCases": 10000,
       "seedXor": 57793,
@@ -25189,7 +25575,7 @@
     "desugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
-      "matched": 975,
+      "matched": 985,
       "excluded": 0
     },
     "surfaceCounts": {
@@ -25197,7 +25583,7 @@
       "preparationFailure": 0,
       "outOfScope": 19,
       "mismatched": 0,
-      "matched": 51652,
+      "matched": 51660,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
@@ -26450,14 +26836,14 @@
       }
     ],
     "coverage": {
-      "matched": 22453,
+      "matched": 22458,
       "mismatched": 0,
       "outOfScope": 0,
       "fuelExhausted": 0
     },
-    "definitions": 73753,
-    "surfaceChecks": 51672,
-    "coverageEntries": 22453,
+    "definitions": 73763,
+    "surfaceChecks": 51680,
+    "coverageEntries": 22458,
     "randomDesugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
@@ -26466,8 +26852,8 @@
     },
     "desugarPrograms": {
       "golden": {
-        "matched": 352,
-        "excluded": 389,
+        "matched": 355,
+        "excluded": 415,
         "outside": 0,
         "mismatched": 0
       },
@@ -26512,6 +26898,11 @@
       "q11": 0,
       "lazyRestriction": 0,
       "preparationFailure": 0
+    }
+  },
+  "batch2Character": {
+    "definitions": {
+      "character-domain": 4
     }
   }
 }

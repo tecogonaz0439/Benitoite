@@ -1,6 +1,12 @@
 #!/bin/bash
 # Lean の証明、脱糖・宣言表・網羅性の差分検査と型検査済みの全定義の検査。
 # 出力は target/desugar-diff/ と target/coverage-diff/ に保持する。macOS /bin/bash 3.2 で動く。
+# 形式化の内側では、処理系より先に定義・証明・01-12 の写しをそろえ、sorry のない既定の
+# lake build と定義・言明・仮定のレビューを完了する。本スクリプトの全比較は、Rust と Lean の
+# 接続を閉じる区切りと最終の関係状態に割り当て、同じ状態への成功は引用できる。
+# check.sh の formal_build は既定のビルドだけで、全比較の代わりにはならない。
+# 検査時期と引用は設計書 07-03「実装の規約と静的な検査」、先行条件は 07-04 に従う。
+# このファイルの変更は formal に分類する。説明だけなら計画で --only 等を名指しする。
 set -euo pipefail
 repo_root="$(cd -- "$(dirname -- "$BASH_SOURCE")/.." && pwd)"
 cd "$repo_root"
@@ -113,6 +119,11 @@ try_exchange_start=$SECONDS
 printf '%s\n' '== formal: try exchange'
 python3 -I formal/tests/test_try_exchange.py
 printf 'try exchange: %ss\n' "$((SECONDS - try_exchange_start))"
+
+batch2_start=$SECONDS
+printf '%s\n' '== formal: batch2 independent exchange'
+python3 -B formal/tests/test_batch2_exchange.py
+printf 'batch2 exchange: %ss\n' "$((SECONDS - batch2_start))"
 
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'

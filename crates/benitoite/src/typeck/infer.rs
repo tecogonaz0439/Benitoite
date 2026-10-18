@@ -49,9 +49,10 @@ pub struct IFnTy {
     pub effect: IEffect,
 }
 
-/// 確定した要素と、高々一つのまだ決まっていない変数の組。
+/// 名前と宣言した行の集合、推論中の失敗型、高々一つの未確定の行の組。
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct IEffect {
+    pub failures: Vec<ITy>,
     pub fixed: EffectSet,
     pub var: Option<EffInfer>,
 }
@@ -173,6 +174,8 @@ pub enum ReasonKind {
     Resume,
     /// 定数式と宣言の型
     ConstValue,
+    /// Fail のエラー型の不変な一致。
+    FailureType,
 }
 
 /// 解く順序の区分（02-05「制約の解決」の手順 1 と 2）。

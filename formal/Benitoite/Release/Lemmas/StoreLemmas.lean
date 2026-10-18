@@ -85,14 +85,15 @@ theorem StoreOk.cell {Ψ σ l x} (h : StoreOk P B Ψ σ) (hl : Ψ l = some x) :
 
 /-! ## 値の型は継続の型にならない -/
 
-theorem HasTypeV.notCont {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) : a.NotCont := by
+theorem HasTypeVQ.notCont {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) : a.NotCont := by
   match h with
   | .V_Var _ hc => exact hc
   | .V_Const (c := c) => intro b t ε e; cases c <;> simp [Const.type] at e
-  | .V_Fun _ _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
-  | .V_Prim _ _ _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
+  | .V_Fun .. => intro b t ε e; rw [fnTy_eq] at e; cases e
+  | .V_Prim .. => intro b t ε e; rw [fnTy_eq] at e; cases e
   | .V_Op _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
-  | .V_Lam _ _ => intro b t ε e; cases e
+  | .V_Raise _ _ => intro b t ε e; cases e
+  | .V_Lam _ hw _ => intro b t ε e; cases e
   | .V_Con _ _ _ => intro b t ε e; cases e
   | .V_List _ _ => intro b t ε e; cases e
   | .V_LocRef _ => intro b t ε e; cases e
@@ -102,9 +103,9 @@ theorem HasTypeV.notCont {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) : a.NotCon
   | .V_Bytes => intro b t ε e; cases e
   | .V_Dict _ _ _ => intro b t ε e; cases e
   | .V_Super _ _ _ => intro b t ε e; cases e
-  | .V_Sub h hle =>
+  | .V_Sub h hle hw =>
       rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
-      · exact HasTypeV.notCont h
+      · exact HasTypeVQ.notCont h
       · intro b t ε e; cases e
 
 end Benitoite.Release

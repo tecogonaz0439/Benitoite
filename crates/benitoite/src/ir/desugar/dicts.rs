@@ -38,6 +38,50 @@ impl State<'_> {
                     origin: span,
                 })
             }
+            DictExpr::Clause {
+                clause,
+                constraint,
+                supers,
+            } => {
+                let index = usize::try_from(*constraint)
+                    .map_err(|_| error("clause constraint overflow"))?;
+                let param = self
+                    .clause_dicts
+                    .get(clause)
+                    .and_then(|ps| ps.get(index))
+                    .ok_or_else(|| error("clause dictionary outside its scope"))?;
+                let mut out = DictVal {
+                    kind: DictKind::Param(param.var),
+                    class: param.constraint.class,
+                    arg: TypeArg::Ty(Ty::Rigid {
+                        clause: *clause,
+                        index: param.constraint.param,
+                    }),
+                    origin: span,
+                };
+                for class in supers {
+                    let previous = self
+                        .types
+                        .traits
+                        .get(out.class)
+                        .ok_or_else(|| error("missing clause supertrait source"))?;
+                    let index = previous
+                        .supers
+                        .iter()
+                        .position(|s| s == class)
+                        .ok_or_else(|| error("clause supertrait not declared"))?;
+                    out = DictVal {
+                        class: *class,
+                        arg: out.arg.clone(),
+                        origin: span,
+                        kind: DictKind::Super {
+                            of: Box::new(out),
+                            index: number(index)?,
+                        },
+                    };
+                }
+                Ok(out)
+            }
             DictExpr::Param { constraint, supers } => {
                 let index =
                     usize::try_from(*constraint).map_err(|_| error("constraint index overflow"))?;

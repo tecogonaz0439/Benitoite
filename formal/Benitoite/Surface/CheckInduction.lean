@@ -1,4 +1,5 @@
-import Benitoite.Surface.CheckLemmas
+import Benitoite.Surface.CheckComputeSound
+import Benitoite.Surface.Lemmas.NoFailSignature
 
 /-! 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
 場合別の証明が仮定する、構文の各部分に対する検査の契約。
@@ -11,45 +12,46 @@ open Benitoite.Release Benitoite.Surface.CheckTools
 def ExprSound (q : Input) (e : Expr) : Prop :=
   ∀ C Γ R p path s s' a ε, q.Sound → e.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → checkExprR q .strict C Γ R p path e s = .ok ((a, ε), s') →
-    HasType q.D q.B q.opPrim C Γ R p e a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms
+    HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms
 
 def BlockSound (q : Input) (body : Block) : Prop :=
   ∀ C Γ R p path s s' a ε, q.Sound → body.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → checkBlockR q .strict C Γ R p path body s = .ok ((a, ε), s') →
-    HasBlock q.D q.B q.opPrim C Γ R p body a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms
+    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms
 
 def TypesSound (q : Input) (es : Exprs) : Prop :=
   ∀ C Γ R path index ts s s' ε, q.Sound → es.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → Tys.AtomsIn q.atoms ts →
     checkTypesR q .strict C Γ R path index es ts s = .ok (ε, s') →
-    HasTypes q.D q.B q.opPrim C Γ R es ts ε ∧ ε.AtomsIn q.atoms
+    HasTypesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R es ts ε ∧ ε.AtomsIn q.atoms
 
 def EachSound (q : Input) (es : Exprs) : Prop :=
   ∀ C Γ R path index a s s' ε, q.Sound → es.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → a.AtomsIn q.atoms →
     checkEachR q .strict C Γ R path index es a s = .ok (ε, s') →
-    HasEach q.D q.B q.opPrim C Γ R es a ε ∧ ε.AtomsIn q.atoms
+    HasEachQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R es a ε ∧ ε.AtomsIn q.atoms
 
 def HoleArgsSound (q : Input) (args : HoleArgs) : Prop :=
   ∀ C Γ R path index ts s s' ε, q.Sound → args.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → Tys.AtomsIn q.atoms ts →
     checkHoleArgsR q .strict C Γ R path index args ts s = .ok (ε, s') →
-    HasHoleArgs q.D q.B q.opPrim C Γ R args ts ε ∧ ε.AtomsIn q.atoms
+    HasHoleArgsQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R args ts ε ∧ ε.AtomsIn q.atoms
 
 def ArmsSound (q : Input) (arms : Arms) : Prop :=
   ∀ C Γ R p path a b s s' ε, q.Sound → arms.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → a.AtomsIn q.atoms → b.AtomsIn q.atoms →
     checkArmsR q .strict C Γ R p path arms a b s = .ok (ε, s') →
-    HasArms q.D q.B q.opPrim C Γ R p arms a b ε ∧ ε.AtomsIn q.atoms
+    HasArmsQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p arms a b ε ∧ ε.AtomsIn q.atoms
 
 def ClausesSound (q : Input) (cs : Clauses) : Prop :=
   ∀ C Γ R path t ε s s' actual, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
     checkClausesR q .strict C Γ R path cs t ε s = .ok (actual, s') →
-    HasClauses q.D q.B q.opPrim C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms
+    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms
 
 def ClauseTypesAtoms (q : Input) (cs : Clauses) : Prop :=
-  ∀ C Γ R path t ε s s' out, t.AtomsIn q.atoms →
+  ∀ C Γ R path t ε s s' out, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → t.AtomsIn q.atoms → ε.AtomsIn q.atoms → s.AtomsIn q.atoms →
     inferClauseTypesR q C Γ R path cs t ε s = .ok (out, s') → out.AtomsIn q.atoms
 
 /-- Exprs の帰納法の仮定は二つの検査の契約、Clauses は厳密な契約と探索の保存。
@@ -134,8 +136,8 @@ theorem handle_case_ih {q body cs}
   · apply ih (.clauses cs)
     simp only [CheckNode.size, Expr.handleE.sizeOf_spec]; omega
 
-theorem clauses_case_ih {q o n ntys body rest}
-    (ih : CaseHypotheses q (.clauses (.cons o n ntys body rest))) :
+theorem clauses_case_ih {q o n ntys body rest ndicts}
+    (ih : CaseHypotheses q (.clauses (.cons o n ntys body rest ndicts))) :
     BlockSound q body ∧ ClauseChecksSound q rest := by
   constructor
   · apply ih (.block body)
@@ -179,7 +181,8 @@ theorem pipe_conCall_case_ih {q lhs c ts args}
 
 /-- ClauseTypesAtoms の場合は探索の保存補題から直接埋められる。 -/
 theorem clauseTypesAtoms (q : Input) (cs : Clauses) : ClauseTypesAtoms q cs :=
-  fun _ _ _ _ _ _ _ _ _ ht h => inferClauseTypesR_atoms ht h
+  fun C Γ R path t ε s s' out hq hc hΓ hR ht hε hs h =>
+    ((inferClauseTypesR_computes q cs C Γ R path t ε hq hc hΓ hR ht hε) s s' out hs h).1
 
 def DictSound (q : Input) (d : DictEv) : Prop :=
   ∀ C Γ path a, q.Sound → d.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
@@ -202,57 +205,57 @@ structure CheckerSoundness (q : Input) : Prop where
 theorem checkExpr_of_mutual {q C Γ R p path e a ε} (hs : MutualSoundness q)
     (hq : q.Sound) (he : e.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R)
-    (h : checkExpr q .strict C Γ R p path e = .ok (a, ε)) :
-    HasType q.D q.B q.opPrim C Γ R p e a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms := by
+    (h : checkExprQ q .strict C Γ R p path e = .ok (a, ε)) :
+    HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms := by
   obtain ⟨s', hh⟩ := run'_ok h
   exact hs.expr e C Γ R p path {} s' a ε hq he hΓ hR hh
 
 theorem checkBlock_of_mutual {q C Γ R p path body a ε} (hs : MutualSoundness q)
     (hq : q.Sound) (hb : body.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R)
-    (h : checkBlock q .strict C Γ R p path body = .ok (a, ε)) :
-    HasBlock q.D q.B q.opPrim C Γ R p body a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms := by
+    (h : checkBlockQ q .strict C Γ R p path body = .ok (a, ε)) :
+    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms := by
   obtain ⟨s', hh⟩ := run'_ok h
   exact hs.block body C Γ R p path {} s' a ε hq hb hΓ hR hh
 
 theorem checkArms_of_mutual {q C Γ R p path arms a b ε} (hs : MutualSoundness q)
     (hq : q.Sound) (ha : arms.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (hin : a.AtomsIn q.atoms) (hout : b.AtomsIn q.atoms)
-    (h : checkArms q .strict C Γ R p path arms a b = .ok ε) :
-    HasArms q.D q.B q.opPrim C Γ R p arms a b ε ∧ ε.AtomsIn q.atoms := by
-  obtain ⟨s', hh⟩ := run'_ok h
+    (h : checkArmsQ q .strict C Γ R p path arms a b = .ok ε) :
+    HasArmsQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p arms a b ε ∧ ε.AtomsIn q.atoms := by
+  obtain ⟨s', hh⟩ := run'_ok (guardResult_ok h)
   exact hs.arms arms C Γ R p path a b {} s' ε hq ha hΓ hR hin hout hh
 
 theorem checkClauses_of_mutual {q C Γ R path cs t ε actual} (hs : MutualSoundness q)
     (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (ht : t.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms)
-    (h : checkClauses q .strict C Γ R path cs t ε = .ok actual) :
-    HasClauses q.D q.B q.opPrim C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
-  obtain ⟨s', hh⟩ := run'_ok h
+    (h : checkClausesQ q .strict C Γ R path cs t ε = .ok actual) :
+    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
+  obtain ⟨s', hh⟩ := run'_ok (guardResult_ok h)
   exact (hs.clauses cs).1 C Γ R path t ε {} s' actual hq hc hΓ hR ht hε hh
 
 theorem checkTypes_of_mutual {q C Γ R path es ts ε} (hs : MutualSoundness q)
     (hq : q.Sound) (he : es.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (ht : Tys.AtomsIn q.atoms ts)
-    (h : checkTypes q .strict C Γ R path es ts = .ok ε) :
-    HasTypes q.D q.B q.opPrim C Γ R es ts ε ∧ ε.AtomsIn q.atoms := by
-  obtain ⟨s', hh⟩ := run'_ok h
+    (h : checkTypesQ q .strict C Γ R path es ts = .ok ε) :
+    HasTypesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R es ts ε ∧ ε.AtomsIn q.atoms := by
+  obtain ⟨s', hh⟩ := run'_ok (guardResult_ok h)
   exact (hs.exprs es).1 C Γ R path 0 ts {} s' ε hq he hΓ hR ht hh
 
 theorem checkEach_of_mutual {q C Γ R path es a ε} (hs : MutualSoundness q)
     (hq : q.Sound) (he : es.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (ha : a.AtomsIn q.atoms)
-    (h : checkEach q .strict C Γ R path es a = .ok ε) :
-    HasEach q.D q.B q.opPrim C Γ R es a ε ∧ ε.AtomsIn q.atoms := by
-  obtain ⟨s', hh⟩ := run'_ok h
+    (h : checkEachQ q .strict C Γ R path es a = .ok ε) :
+    HasEachQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R es a ε ∧ ε.AtomsIn q.atoms := by
+  obtain ⟨s', hh⟩ := run'_ok (guardResult_ok h)
   exact (hs.exprs es).2 C Γ R path 0 a {} s' ε hq he hΓ hR ha hh
 
 theorem checkHoleArgs_of_mutual {q C Γ R path args ts ε} (hs : MutualSoundness q)
     (hq : q.Sound) (ha : args.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (ht : Tys.AtomsIn q.atoms ts)
-    (h : checkHoleArgs q .strict C Γ R path args ts = .ok ε) :
-    HasHoleArgs q.D q.B q.opPrim C Γ R args ts ε ∧ ε.AtomsIn q.atoms := by
-  obtain ⟨s', hh⟩ := run'_ok h
+    (h : checkHoleArgsQ q .strict C Γ R path args ts = .ok ε) :
+    HasHoleArgsQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R args ts ε ∧ ε.AtomsIn q.atoms := by
+  obtain ⟨s', hh⟩ := run'_ok (guardResult_ok h)
   exact hs.holes args C Γ R path 0 ts {} s' ε hq ha hΓ hR ht hh
 
 theorem checkDict_of_dictionary {q C Γ path d a} (hs : DictionarySoundness q)
@@ -263,18 +266,32 @@ theorem checkDict_of_dictionary {q C Γ path d a} (hs : DictionarySoundness q)
 theorem checkDicts_of_dictionary {q C Γ path ds ts} (hs : DictionarySoundness q)
     (hq : q.Sound) (hd : DictEvs.AtomsIn q.atoms ds) (hΓ : Env.AtomsIn q.atoms Γ)
     (ht : Tys.AtomsIn q.atoms ts) (h : checkDicts q C Γ path ds ts = .ok ()) :
-    DictEv.HasTypes q.D q.B C Γ ds ts := hs.dicts ds C Γ path 0 ts hq hd hΓ ht h
+    DictEv.HasTypes q.D q.B C Γ ds ts := hs.dicts ds C Γ path 0 ts hq hd hΓ ht (guardResult_ok h)
 
-theorem checkDef_of_mutual {q path d} (hs : MutualSoundness q)
+theorem checkDef_of_mutual {q path d}
+    (hs : ∀ rows, MutualSoundness ({ q with noFailRows := rows } : Input))
     (hq : q.Sound) (hd : d.AtomsIn q.atoms) (h : checkDef q path d = .ok ()) :
     Def.WellTyped q.D q.B q.opPrim d := by
+  obtain ⟨uScope, hScope, h⟩ := bind_ok h
+  have hc := (require_ok hScope).1
+  simp only [Bool.and_eq_true] at hc
+  have hp : Tys.AtomsIn q.atoms d.params := by
+    exact tysAtoms_iff.mpr (fun t ht => tysAtoms_iff.mp hd.1.1 t (List.mem_append_right _ ht))
+  have hqs : NoFailCtxOf (signatureQ d.neffs d.params d.ret d.eff) = Qsig d.params d.ret d.eff := by
+    funext i
+    exact propext (signatureQ_scoped
+      ((rowsTysCheck_spec d.neffs d.params hp).mp hc.1.1)
+      ((rowsTyCheck_spec d.neffs d.ret hd.1.2.1).mp hc.1.2)
+      ((rowsEffCheck_spec d.neffs d.eff hd.1.2.2).mp hc.2) i)
   obtain ⟨uNames, hNames, h⟩ := bind_ok h
   obtain ⟨u, hu, h⟩ := bind_ok h
   obtain ⟨v, hv, h⟩ := bind_ok h
   obtain ⟨ε, hacc, heff⟩ := bind_ok h
-  have hb := checkBlock_of_mutual hs hq hd.2 (Env.atoms_binds hd.1.1)
+  have hb := checkBlock_of_mutual (hs (signatureQ d.neffs d.params d.ret d.eff))
+    (hq.withNoFailRows (signatureQ d.neffs d.params d.ret d.eff)) hd.2 (Env.atoms_binds hd.1.1)
     (fun t ht => by cases ht; exact hd.1.2.1) hv
   refine ⟨(namesWF_spec _ _).mp (require_ok hNames).1, (lamBodyOk_spec _ _).mp (require_ok hu).1, ?_⟩
-  exact accept_block_eff hb.1 hb.2.1 hd.1.2.1 hb.2.2 hacc heff
+  have hb' := accept_block_eff hb.1 hb.2.1 hd.1.2.1 hb.2.2 hd.1.2.2 hacc heff
+  simpa only [hqs] using hb'
 
 end Benitoite.Surface.Check

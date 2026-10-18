@@ -10,6 +10,9 @@ import Benitoite.Release.WellFormed
 
 namespace Benitoite.Release
 
+variable {Q : NoFailCtx}
+
+
 mutual
   def Val.LambdaNamesWF : Val → Prop
     | .var _ => True
@@ -20,6 +23,7 @@ mutual
     | .con _ _ args => Val.LambdaNamesWFList args
     | .list elems => Val.LambdaNamesWFList elems
     | .op _ _ => True
+    | .raise _ _ => True
     | .loc _ => True
     | .mapV ks vs => Val.LambdaNamesWFList ks ∧ Val.LambdaNamesWFList vs
     | .setV elems => Val.LambdaNamesWFList elems
@@ -55,6 +59,7 @@ mutual
   def Clause.LambdaNamesWFList : List Clause → Prop
     | [] => True
     | .mk _ _ _ m :: cs => Comp.LambdaNamesWF m ∧ Clause.LambdaNamesWFList cs
+    | .fail _ m :: cs => Comp.LambdaNamesWF m ∧ Clause.LambdaNamesWFList cs
 end
 
 
@@ -63,12 +68,13 @@ mutual
   def Val.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) : Val → Prop
     | .var _ => True
     | .const _ => True
-    | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs
-    | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs
+    | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
+    | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
     | .lam _ params body => Ty.VarsInList n pe params ∧ Comp.VarsInNoLamNames n pe body
     | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args
     | .list elems => Val.VarsInNoLamNamesList n pe elems
     | .op _ tys => Ty.VarsInList n pe tys
+    | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
     | .loc _ => True
     | .mapV ks vs => Val.VarsInNoLamNamesList n pe ks ∧ Val.VarsInNoLamNamesList n pe vs
     | .setV elems => Val.VarsInNoLamNamesList n pe elems
@@ -92,7 +98,7 @@ mutual
     | .handle m h => Comp.VarsInNoLamNames n pe m ∧ Clause.VarsInNoLamNamesList n pe h
     | .resume k v => Val.VarsInNoLamNames n pe k ∧ Val.VarsInNoLamNames n pe v
     | .meth d _ tys effs args =>
-        Val.VarsInNoLamNames n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs ∧ Val.VarsInNoLamNamesList n pe args
+        Val.VarsInNoLamNames n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInNoLamNamesList n pe args
 
   def Arm.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
     | [] => True
@@ -104,6 +110,7 @@ mutual
   def Clause.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Clause → Prop
     | [] => True
     | .mk _ _ k m :: cs => Comp.VarsInNoLamNames (n + k) pe m ∧ Clause.VarsInNoLamNamesList n pe cs
+    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m ∧ Clause.VarsInNoLamNamesList n pe cs
 end
 
 
@@ -111,69 +118,77 @@ variable {P : Program} {B : Builtins}
 
 mutual
   /-- 型付けは、入れ子を含む全ラムダの名前の整形式を保証する。 -/
-  theorem HasTypeV.lambdaNamesWF {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) :
+  theorem HasTypeVQ.lambdaNamesWF {Ψ C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) :
       v.LambdaNamesWF := by
     match h with
     | .V_Var _ _ => trivial
     | .V_Const => trivial
-    | .V_Fun _ _ _ _ => trivial
-    | .V_Prim _ _ _ _ _ => trivial
+    | .V_Fun .. => trivial
+    | .V_Prim .. => trivial
     | .V_Op _ _ _ => trivial
-    | .V_Lam hn hb => exact ⟨hn, HasTypeC.lambdaNamesWF hb⟩
-    | .V_Con _ _ hs => exact HasTypeVs.lambdaNamesWF hs
-    | .V_List hs _ => exact HasTypeEach.lambdaNamesWF hs
+    | .V_Raise _ _ => trivial
+    | .V_Lam hn hw hb => exact ⟨hn, HasTypeCQ.lambdaNamesWF hb⟩
+    | .V_Con _ _ hs => exact HasTypeVsQ.lambdaNamesWF hs
+    | .V_List hs _ => exact HasTypeEachQ.lambdaNamesWF hs
     | .V_LocRef _ => trivial
     | .V_LocLazy _ => trivial
-    | .V_Map hk hv _ _ _ _ => exact ⟨HasTypeEach.lambdaNamesWF hk, HasTypeEach.lambdaNamesWF hv⟩
-    | .V_Set hs _ _ => exact HasTypeEach.lambdaNamesWF hs
+    | .V_Map hk hv _ _ _ _ => exact ⟨HasTypeEachQ.lambdaNamesWF hk, HasTypeEachQ.lambdaNamesWF hv⟩
+    | .V_Set hs _ _ => exact HasTypeEachQ.lambdaNamesWF hs
     | .V_Bytes => trivial
-    | .V_Dict _ _ hs => exact HasTypeVs.lambdaNamesWF hs
+    | .V_Dict _ _ hs => exact HasTypeVsQ.lambdaNamesWF hs
     | .V_Super hv _ _ =>
-        simp only [Val.LambdaNamesWF]; exact HasTypeV.lambdaNamesWF hv
-    | .V_Sub hv _ => exact HasTypeV.lambdaNamesWF hv
+        simp only [Val.LambdaNamesWF]; exact HasTypeVQ.lambdaNamesWF hv
+    | .V_Sub hv _ hw => exact HasTypeVQ.lambdaNamesWF hv
 
-  theorem HasTypeVs.lambdaNamesWF {Ψ C Γ vs as} (h : HasTypeVs P B Ψ C Γ vs as) :
+  theorem HasTypeVsQ.lambdaNamesWF {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
       Val.LambdaNamesWFList vs := by
     match h with
     | .nil => trivial
-    | .cons hv hs => exact ⟨HasTypeV.lambdaNamesWF hv, HasTypeVs.lambdaNamesWF hs⟩
+    | .cons hv hs => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeVsQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeEach.lambdaNamesWF {Ψ C Γ vs a} (h : HasTypeEach P B Ψ C Γ vs a) :
+  theorem HasTypeEachQ.lambdaNamesWF {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) :
       Val.LambdaNamesWFList vs := by
     match h with
     | .nil => trivial
-    | .cons hv hs => exact ⟨HasTypeV.lambdaNamesWF hv, HasTypeEach.lambdaNamesWF hs⟩
+    | .cons hv hs => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeEachQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeC.lambdaNamesWF {Ψ C Γ R m a ε} (h : HasTypeC P B Ψ C Γ R m a ε) :
+  theorem HasTypeCQ.lambdaNamesWF {Ψ C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε) :
       m.LambdaNamesWF := by
     match h with
-    | .C_Return hv => exact HasTypeV.lambdaNamesWF hv
-    | .C_Sub hm _ _ => exact HasTypeC.lambdaNamesWF hm
-    | .C_Let hm hn => exact ⟨HasTypeC.lambdaNamesWF hm, HasTypeC.lambdaNamesWF hn⟩
-    | .C_App hf hs => exact ⟨HasTypeV.lambdaNamesWF hf, HasTypeVs.lambdaNamesWF hs⟩
-    | .C_If hv hm hn => exact ⟨HasTypeV.lambdaNamesWF hv, HasTypeC.lambdaNamesWF hm, HasTypeC.lambdaNamesWF hn⟩
-    | .C_Match hv hs _ => exact ⟨HasTypeV.lambdaNamesWF hv, HasTypeArms.lambdaNamesWF hs⟩
+    | .C_Return hv => exact HasTypeVQ.lambdaNamesWF hv
+    | .C_Sub hm _ _ hw => exact HasTypeCQ.lambdaNamesWF hm
+    | .C_Eff hm _ => exact HasTypeCQ.lambdaNamesWF hm
+    | .C_Let hm hn => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeCQ.lambdaNamesWF hn⟩
+    | .C_App hf hs => exact ⟨HasTypeVQ.lambdaNamesWF hf, HasTypeVsQ.lambdaNamesWF hs⟩
+    | .C_If hv hm hn => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeCQ.lambdaNamesWF hm, HasTypeCQ.lambdaNamesWF hn⟩
+    | .C_Match hv hs _ => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeArmsQ.lambdaNamesWF hs⟩
     | .C_Lazy hm =>
-        simp only [Comp.LambdaNamesWF]; exact HasTypeC.lambdaNamesWF hm
-    | .C_Escape hv _ => exact HasTypeV.lambdaNamesWF hv
-    | .C_Use hv _ hm _ => exact ⟨HasTypeV.lambdaNamesWF hv, HasTypeC.lambdaNamesWF hm⟩
-    | .C_Handle hm _ hs => exact ⟨HasTypeC.lambdaNamesWF hm, HasTypeClauses.lambdaNamesWF hs⟩
-    | .C_Resume _ hv => exact ⟨trivial, HasTypeV.lambdaNamesWF hv⟩
-    | .C_ResumeL _ hv => exact ⟨trivial, HasTypeV.lambdaNamesWF hv⟩
-    | .C_Meth hv _ _ _ _ _ hs => exact ⟨HasTypeV.lambdaNamesWF hv, HasTypeVs.lambdaNamesWF hs⟩
+        simp only [Comp.LambdaNamesWF]; exact HasTypeCQ.lambdaNamesWF hm
+    | .C_Escape hv _ => exact HasTypeVQ.lambdaNamesWF hv
+    | .C_Use hv _ hm _ => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeCQ.lambdaNamesWF hm⟩
+    | .C_Handle hm _ hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeClausesQ.lambdaNamesWF hs⟩
+    | .C_Handle_Fail hm _ _ hc => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasFailureClause.lambdaNamesWF hc⟩
+    | .C_Resume _ hv => exact ⟨trivial, HasTypeVQ.lambdaNamesWF hv⟩
+    | .C_ResumeL _ hv => exact ⟨trivial, HasTypeVQ.lambdaNamesWF hv⟩
+    | .C_Meth hv _ _ _ _ _ _ hs => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeVsQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeArms.lambdaNamesWF {Ψ C Γ R arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε) :
+  theorem HasTypeArmsQ.lambdaNamesWF {Ψ C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε) :
       Arm.LambdaNamesWFList arms := by
     match h with
     | .nil _ => trivial
-    | .plain _ hm hs => exact ⟨HasTypeC.lambdaNamesWF hm, HasTypeArms.lambdaNamesWF hs⟩
-    | .guarded _ hg hm hs => exact ⟨HasTypeC.lambdaNamesWF hg, HasTypeC.lambdaNamesWF hm, HasTypeArms.lambdaNamesWF hs⟩
+    | .plain _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
+    | .guarded _ hg hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hg, HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeClauses.lambdaNamesWF {Ψ C Γ R cs t ε} (h : HasTypeClauses P B Ψ C Γ R cs t ε) :
+  theorem HasTypeClausesQ.lambdaNamesWF {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε) :
       Clause.LambdaNamesWFList cs := by
     match h with
     | .nil => trivial
-    | .cons _ _ _ _ hm hs => exact ⟨HasTypeC.lambdaNamesWF hm, HasTypeClauses.lambdaNamesWF hs⟩
+    | .cons _ _ _ _ _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeClausesQ.lambdaNamesWF hs⟩
+  theorem HasFailureClause.lambdaNamesWF {Ψ C Γ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) : Clause.LambdaNamesWFList h := by
+    match hc with
+    | .one _ _ _ hb => exact ⟨HasTypeCQ.lambdaNamesWF hb, trivial⟩
+
 end
 
 mutual
@@ -203,6 +218,7 @@ mutual
     | .op _ tys => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
           grind only
+    | .raise _ _ => by simp [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF]
     | .loc _ => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
           grind only
@@ -297,15 +313,20 @@ mutual
         simp only [Clause.VarsInList, Clause.VarsInNoLamNamesList, Clause.LambdaNamesWFList,
           Comp.varsIn_iff_noLamNames (n + k) pe m, Clause.varsInList_iff_noLamNames n pe cs] <;>
           grind only
+    | .fail e m :: cs => by
+        simp only [Clause.VarsInList, Clause.VarsInNoLamNamesList, Clause.LambdaNamesWFList,
+          Comp.varsIn_iff_noLamNames (n + 1) pe m, Clause.varsInList_iff_noLamNames n pe cs]
+        grind only
+
 end
 
 /-- 型付きの値では、変数の範囲にあるラムダ名の条件を別途仮定する必要がない。 -/
-theorem HasTypeV.varsIn_iff_noLamNames {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) (n : Nat) (pe : Nat → Prop) :
+theorem HasTypeVQ.varsIn_iff_noLamNames {Ψ C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (n : Nat) (pe : Nat → Prop) :
     Val.VarsIn n pe v ↔ Val.VarsInNoLamNames n pe v := by
   rw [Val.varsIn_iff_noLamNames, and_iff_left h.lambdaNamesWF]
 
 /-- 初期の計算も、型付けから全ラムダの名前の条件を導ける。 -/
-theorem HasTypeC.varsIn_iff_noLamNames {Ψ C Γ R m a ε} (h : HasTypeC P B Ψ C Γ R m a ε) (n : Nat) (pe : Nat → Prop) :
+theorem HasTypeCQ.varsIn_iff_noLamNames {Ψ C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε) (n : Nat) (pe : Nat → Prop) :
     Comp.VarsIn n pe m ↔ Comp.VarsInNoLamNames n pe m := by
   rw [Comp.varsIn_iff_noLamNames, and_iff_left h.lambdaNamesWF]
 

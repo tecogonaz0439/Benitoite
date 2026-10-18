@@ -1,0 +1,71 @@
+// spec: 01-05 網羅性の検査
+import Benitoite.Unofficial.IO.Console
+function classify(c: Character) -> Integer
+  bind '\u{0}'..'\u{10ffff}' <- c
+  return match c with
+  case '\u{0}'..'\u{d7ff}' -> 1
+  case '\u{e000}'..'\u{10ffff}' -> 2
+  end match
+end function
+function correlatedBoolean(c: Character, d: Boolean) -> Integer
+  return match Pair(c, d) with
+  case Pair('\u{0}'..'m', _) -> 1
+  case Pair(_, true) -> 2
+  case Pair('n'..'\u{10ffff}', false) -> 3
+  end match
+end function
+function correlatedCharacter(c: Character, d: Character) -> Integer
+  return match Pair(c, d) with
+  case Pair('\u{0}'..'m', _) -> 1
+  case Pair(_, '\u{0}'..'\u{d7ff}') -> 2
+  case Pair('n'..'\u{10ffff}', '\u{e000}'..'\u{10ffff}') -> 3
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(classify('\u{0}')))
+  Console.writeLine(Integer.toString(classify('\u{d7ff}')))
+  Console.writeLine(Integer.toString(classify('\u{e000}')))
+  Console.writeLine(Integer.toString(classify('\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{0}', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{0}', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{0}', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{0}', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{0}', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{0}', d: '\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: 'm', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: 'm', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'm', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'm', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'm', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'm', d: '\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: 'n', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: 'n', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'n', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'n', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'n', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'n', d: '\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: 'z', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: 'z', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'z', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'z', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'z', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: 'z', d: '\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{d7ff}', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{d7ff}', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{d7ff}', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{d7ff}', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{d7ff}', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{d7ff}', d: '\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{e000}', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{e000}', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{e000}', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{e000}', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{e000}', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{e000}', d: '\u{10ffff}')))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{10ffff}', d: true)))
+  Console.writeLine(Integer.toString(correlatedBoolean(c: '\u{10ffff}', d: false)))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{10ffff}', d: '\u{0}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{10ffff}', d: '\u{d7ff}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{10ffff}', d: '\u{e000}')))
+  Console.writeLine(Integer.toString(correlatedCharacter(c: '\u{10ffff}', d: '\u{10ffff}')))
+end function

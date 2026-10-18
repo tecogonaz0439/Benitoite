@@ -46,6 +46,8 @@ structure Builtins.Assumptions (P : Program) (B : Builtins) : Prop where
     s.admits C1 (ts.map (Ty.substAt C1.length ts' es'))
   sat_subst : ∀ C0 C1 t p ts' es', B.sat (C1 ++ C0) t p →
     ClosedSat B C0 C1 ts' → ts'.length = C0.length → B.sat C1 (t.substAt C1.length ts' es') p
+  /-- 閉じた整形式の型は、制約を付けない型パラメータを具体化できる。 -/
+  sat_unconstrained : ∀ t, Ty.WF 0 t → B.sat [] t ({} : TParam)
   /-- 組み込みの関数の制約を満たす型引数は、その型パラメータの組み込みの制約も満たす。 -/
   admits_sat : ∀ b s C ts, B.sig b = some s → s.admits C ts → SatAll B C ts s.tparams
   /-- 制約の並び `C1` の型パラメータだけを使う型が制約を満たすかは、`C1` の外側の並びによらない。 -/

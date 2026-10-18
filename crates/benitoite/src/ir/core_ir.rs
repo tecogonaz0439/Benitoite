@@ -236,12 +236,16 @@ pub struct ContVar {
 /// `handle` の節 `op(x̄) k ⇒ N`。
 #[derive(Clone, PartialEq, Debug)]
 pub struct Clause<C> {
+    /// Fail の非再開節で固定したエラー型。通常節は None。
+    pub failure_type: Option<Ty>,
     pub id: BodyId,
     /// 節の AST のノード番号。節の中の型に現れる `Ty::Rigid { clause, index }` の `clause` と同じ番号であり、
     /// 検査器はこの番号で、`Ty::Rigid` がこの節の操作の型パラメータかを判定する（設計書 02-05「型とエフェクトの表現」）
     pub node: NodeId,
     /// 節の操作の束縛の番号（利用者の操作と組み込みのエフェクトの操作のどちらも `Op` の束縛）
     pub op: BindingId,
+    /// 宣言順の辞書。値引数と継続を公開の契約から分けて保つ。
+    pub dict_params: Vec<DictParam>,
     pub params: Vec<Var>,
     pub cont: ContVar,
     /// 末尾で再開する節か（型検査の「ハンドラの節」の表から写す。設計書 02-05「書く位置の検査」）
@@ -469,6 +473,8 @@ pub struct ConstDef<C> {
 /// エフェクトの操作の表の項目（設計書 02-07「コンパイル済みプログラム」の操作の表の元）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct OpDef {
+    /// 標準 Failure.raise。型引数の E を失敗の原子へ写す。
+    pub failure: bool,
     /// 利用者のパラメータの契約名。局所名と辞書の引数は含めない。
     pub param_names: Vec<String>,
     pub binding: BindingId,

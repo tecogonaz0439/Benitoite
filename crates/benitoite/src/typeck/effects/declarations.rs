@@ -17,6 +17,9 @@ pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
         let Some(id) = d.reference(e.id) else {
             continue;
         };
+        if Some(id) == d.resolved.stdlib("Benitoite.Failure.Fail") {
+            continue;
+        }
         let repeated = if let Some(v) = scope.effects.get(id) {
             !vars.insert(*v)
         } else if let Some(name) = d.effect_name(id) {
@@ -25,21 +28,27 @@ pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
             false
         };
         if repeated {
-            d.diagnostics.push(
-                DiagBuilder::new(DiagCode::E0419)
-                    .primary(e.span)
-                    .arg("name", path(e))
-                    .help_edits(
-                        "remove",
-                        vec![Edit {
-                            span: removal(uses, i),
-                            replacement: String::new(),
-                        }],
-                    )
-                    .build(),
-            );
+            duplicate_use(d, uses, i);
         }
     }
+}
+pub(in crate::typeck) fn duplicate_use(d: &mut Decls<'_>, uses: &UsesList, i: usize) {
+    let Some(e) = uses.effects.get(i) else {
+        return;
+    };
+    d.diagnostics.push(
+        DiagBuilder::new(DiagCode::E0419)
+            .primary(e.span)
+            .arg("name", path(e))
+            .help_edits(
+                "remove",
+                vec![Edit {
+                    span: removal(uses, i),
+                    replacement: String::new(),
+                }],
+            )
+            .build(),
+    );
 }
 fn removal(uses: &UsesList, i: usize) -> Span {
     let Some(e) = uses.effects.get(i) else {

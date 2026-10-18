@@ -434,9 +434,11 @@ impl<'a> Lowerer<'a> {
             let mut clauses = Vec::new();
             for cl in &h.clauses {
                 clauses.push(Clause {
+                    failure_type: cl.failure_type.clone(),
                     id: self.body_id(cl.id, renew)?,
                     node: cl.node,
                     op: cl.op,
+                    dict_params: cl.dict_params.clone(),
                     params: cl.params.clone(),
                     cont: cl.cont.clone(),
                     tail_resumptive: cl.tail_resumptive,
@@ -1160,6 +1162,13 @@ impl Lowerer<'_> {
                 parts.push(Interval { lo, hi, rows });
             }
         }
+        let exhaustive_character = domain.character
+            && parts.first().is_some_and(|p| p.lo == 0)
+            && parts.last().is_some_and(|p| p.hi == domain.max())
+            && parts.windows(2).all(|pair| match pair {
+                [a, b] => domain.next(a.hi) == Some(b.lo),
+                _ => false,
+            });
         let mut arms = Vec::new();
         for part in parts {
             let next = m.specialize(c, &[], |p, _| {
@@ -1178,7 +1187,13 @@ impl Lowerer<'_> {
             // 手順 8: 重なった行を並べ替えずに手順 1 に戻る。
             arms.push((test, self.tree(next, match_arms)?));
         }
-        let default = Some(Box::new(self.tree(m.default(c)?, match_arms)?));
+        // 全域なら既定分岐には届かない。既定の行だけでは残りの列を網羅しない場合もある
+        // （設計書 02-06「判定の木への変換」）。
+        let default = if exhaustive_character {
+            None
+        } else {
+            Some(Box::new(self.tree(m.default(c)?, match_arms)?))
+        };
         Ok(Tree::Constant {
             column: col.clone(),
             arms,
@@ -1685,6 +1700,7 @@ mod tests {
     const THREE: BindingId = BindingId(20);
     const RECORD: BindingId = BindingId(30);
     const OBS: BindingId = BindingId(40);
+    const PAIR: BindingId = BindingId(50);
 
     fn span() -> Span {
         Span {
@@ -1812,6 +1828,12 @@ mod tests {
                 None,
             ),
             (THREE, vec![], vec![vec![], vec![], vec![]], None),
+            (
+                PAIR,
+                vec!["A".into(), "B".into()],
+                vec![vec![Ty::Param(0), Ty::Param(1)]],
+                None,
+            ),
             (
                 RECORD,
                 vec![],
@@ -2460,6 +2482,115 @@ mod tests {
         tests
     }
 
+    // 網羅した文字には既定分岐が不要であり、未被覆のコア入力は拒否する。
+    #[test]
+    fn exhaustive_character_ranges_lower_without_a_default() {
+        let ty = builtin_ty(BuiltinTypeId::CHARACTER);
+        for rows in [
+            vec![(
+                CorePat::Range {
+                    lo: Const::Char('\0'),
+                    hi: Const::Char('\u{10ffff}'),
+                },
+                0,
+            )],
+            vec![
+                (
+                    CorePat::Range {
+                        lo: Const::Char('\0'),
+                        hi: Const::Char('\u{d7ff}'),
+                    },
+                    0,
+                ),
+                (
+                    CorePat::Range {
+                        lo: Const::Char('\u{e000}'),
+                        hi: Const::Char('\u{10ffff}'),
+                    },
+                    1,
+                ),
+            ],
+        ] {
+            let arms = (0..rows.len())
+                .map(|i| arm(u32::try_from(i).unwrap(), vec![], None))
+                .collect();
+            let body = matching(vval(&var(0, ty.clone())), rows, arms);
+            let low = lower(body.clone());
+            let LCompKind::CaseConst { default, .. } = &low.kind else {
+                panic!("expected constant cases")
+            };
+            assert!(default.is_none());
+            compare(
+                &body,
+                ['\0', 'a', '\u{d7ff}', '\u{e000}', '\u{10ffff}']
+                    .map(|c| Value::Const(Const::Char(c))),
+                &[],
+            );
+        }
+        let body = matching(
+            vval(&var(0, ty)),
+            vec![(
+                CorePat::Range {
+                    lo: Const::Char('a'),
+                    hi: Const::Char('z'),
+                },
+                0,
+            )],
+            vec![arm(0, vec![], None)],
+        );
+        assert!(matches!(
+            lower_program(&program(body)),
+            Err(LowerError::Internal(_))
+        ));
+    }
+
+    // 全域の列に残るワイルドカード行だけでは、もう一方の列を網羅しない場合を守る。
+    #[test]
+    fn exhaustive_character_columns_preserve_correlated_rows() {
+        let character = builtin_ty(BuiltinTypeId::CHARACTER);
+        let char_range = |lo, hi| CorePat::Range {
+            lo: Const::Char(lo),
+            hi: Const::Char(hi),
+        };
+        for (second_ty, middle, last, seconds) in [
+            (
+                bool_ty(),
+                pat_bool(true),
+                pat_bool(false),
+                vec![bvalue(false), bvalue(true)],
+            ),
+            (
+                character.clone(),
+                char_range('\0', '\u{d7ff}'),
+                char_range('\u{e000}', '\u{10ffff}'),
+                ['\0', '\u{d7ff}', '\u{e000}', '\u{10ffff}']
+                    .map(|c| Value::Const(Const::Char(c)))
+                    .to_vec(),
+            ),
+        ] {
+            let body = matching(
+                vval(&var(0, adt_ty(PAIR, vec![character.clone(), second_ty]))),
+                vec![
+                    (ctor(PAIR, 0, vec![char_range('\0', 'm'), CorePat::Wild]), 0),
+                    (ctor(PAIR, 0, vec![CorePat::Wild, middle]), 1),
+                    (ctor(PAIR, 0, vec![char_range('n', '\u{10ffff}'), last]), 2),
+                ],
+                (0..3).map(|i| arm(i, vec![], None)).collect(),
+            );
+            compare(
+                &body,
+                ['\0', 'm', 'n', 'z', '\u{d7ff}', '\u{e000}', '\u{10ffff}']
+                    .into_iter()
+                    .flat_map(|c| {
+                        seconds.iter().cloned().map(move |second| {
+                            Value::Ctor(PAIR, 0, vec![Value::Const(Const::Char(c)), second])
+                        })
+                    }),
+                &[],
+            );
+        }
+    }
+
     #[test]
     fn interval_splitting_preserves_overlapping_rows_guards_and_extreme_endpoints() {
         let guard_var = var(9, bool_ty());
@@ -2891,9 +3022,11 @@ mod tests {
                 id: BodyId(2),
                 body,
                 clauses: vec![Clause {
+                    failure_type: None,
                     id: BodyId(3),
                     node: NodeId(7),
                     op: BindingId(60),
+                    dict_params: vec![],
                     params: vec![],
                     cont: ContVar {
                         id: VarId(6),
@@ -2904,6 +3037,7 @@ mod tests {
                     span: other_span(),
                 }],
                 handled: EffectSet {
+                    failures: vec![],
                     names: vec![EffectName::User(BindingId(61))],
                     vars: vec![],
                 },
@@ -3136,6 +3270,7 @@ mod tests {
     #[test]
     fn generated_nodes_have_minimal_effects_types_and_match_origins() {
         let io = EffectSet {
+            failures: vec![],
             names: vec![EffectName::Builtin(BuiltinEffectId(2))],
             vars: vec![EffVar(0)],
         };
@@ -3284,6 +3419,7 @@ mod tests {
             var_count: 0,
         });
         p.ops.push(OpDef {
+            failure: false,
             param_names: Vec::new(),
             binding: BindingId(60),
             effect: EffectName::User(BindingId(61)),

@@ -56,23 +56,96 @@ def closedDefaults (kind : String) (j : Json) : Json :=
       mapField (mapField i "matches" (mapArray legacyBody)) "bindings" (mapArray legacyBody))
   else j
 
-/-- 8/2/2 と 9/3/3 は、それぞれ後の版の情報がない場合だけ互換入力として読める。 -/
+/-- 新しい欄の補完は旧版だけに行い、既存の辞書欄とは区別する。 -/
+partial def batch2Defaults : Json → Json
+  | .arr xs => .arr (xs.map batch2Defaults)
+  | .obj xs => Id.run do
+      let mut j := Json.mkObj (xs.toArray.toList.map fun (k,v) => (k,batch2Defaults v))
+      if let .ok ne := j.getObjValAs? Nat "neffs" then
+        j := addFields j [("effParams", toJson (List.replicate ne (EffParam.mk false)))]
+      if (j.getObjVal? "op").isOk && (j.getObjVal? "arity").isOk then
+        j := addFields j [("dictCount", toJson (0 : Nat)), ("failureType", Json.null)]
+      j := mapField j "ops" (mapArray fun o =>
+        if (o.getObjVal? "header").isOk then
+          addFields o [("dictParams", toJson ([] : List (String × Nat))), ("effectKind", toJson "ordinary")]
+        else o)
+      j := mapField j "primOps" (mapArray fun o => addFields o [("effectKind", toJson "ordinary")])
+      return j
+  | j => j
+
+/-- 旧版の操作宣言に辞書を混ぜても、既存の関数の辞書欄とは混同しない。 -/
+partial def rejectBatch2 : Json → Except String Unit
+  | .arr xs => xs.toList.forM rejectBatch2
+  | j@(.obj xs) => do
+      if (j.getObjVal? "kind").toOption == some (toJson "fail") ||
+          (j.getObjVal? "op").toOption == some (toJson "fail") then
+        throw "Fail requires new exchange version"
+      if let .ok os := (j.getObjVal? "ops").bind Json.getArr? then
+        for o in os do
+          if (o.getObjVal? "header").isOk && (o.getObjVal? "dictParams").isOk then
+            throw "operation dictionaries require new exchange version"
+      xs.toArray.toList.forM (fun (_,v) => rejectBatch2 v)
+  | _ => pure ()
+
+/-- 行の一覧は宣言した個数と完全に対応し、真偽値以外を参照として解釈しない。 -/
+partial def validateBatch2 : Json → Except String Unit
+  | .arr xs => xs.toList.forM validateBatch2
+  | j@(.obj xs) => do
+      if let .ok ne := j.getObjValAs? Nat "neffs" then
+        let rows ← (j.getObjValAs? (List EffParam) "effParams").mapError (fun e => s!"effParams/noFail: {e}")
+        if rows.length != ne then throw "NoFail row count mismatch"
+      if (j.getObjVal? "op").isOk && (j.getObjVal? "arity").isOk then
+        let count ← (j.getObjValAs? Nat "dictCount").mapError (fun e => s!"dictCount: {e}")
+        if !(← j.getObj?).contains "failureType" then throw "missing failureType"
+        let failure ← (j.getObjVal? "failureType").mapError (fun e => s!"failureType: {e}")
+        if failure == Json.null then
+          if (← j.getObjVal? "op") == toJson "fail" then throw "Fail clause requires failureType"
+        else
+          let _ ← decodeTy failure
+          if (← j.getObjVal? "op") != toJson "fail" || count != 0 ||
+              (← j.getObjValAs? Nat "arity") != 1 || (← j.getObjValAs? Nat "ntys") != 1 then
+            throw "invalid Fail clause signature"
+      if (j.getObjVal? "kind").toOption == some (toJson "fail") then
+        let _ ← decodeAtom j
+      if let .ok os := (j.getObjVal? "ops").bind Json.getArr? then
+        for o in os do
+          if (o.getObjVal? "header").isOk then
+            let _ ← o.getObjValAs? (List (String × Nat)) "dictParams"
+            if (← o.getObjValAs? String "effectKind") != "ordinary" then
+              throw "user operation must be ordinary"
+      if let .ok os := (j.getObjVal? "primOps").bind Json.getArr? then
+        for o in os do
+          if (← o.getObjValAs? String "effectKind") != "ordinary" then
+            throw "primitive operation must be ordinary"
+      xs.toArray.toList.forM (fun (_,v) => validateBatch2 v)
+  | _ => pure ()
+
+/-- corpus 8/9/10 と他形式 2/3 を保ち、11/4 の情報は旧版で捨てない。 -/
 def exchangeJson (kind : String) (j : Json) : Except String Json := do
   let version ← j.getObjValAs? Nat "version"
   let old := if kind == "corpus" then 8 else 2
-  let current := if kind == "corpus" then 10 else 3
+  let current := if kind == "corpus" then 11 else 4
   if kind == "corpus" && version < 10 then
     rejectFields ["tryResultReturn", "tryOptionReturn", "tryResultDie", "tryOptionDie"] j
-  -- 契約名の導入前の版に新版の欄を混ぜた誤りを、単なる版の拒否と区別する。
   if version == (if kind == "corpus" then 7 else 1) then
     rejectFields ["names", "labels", "positions", "fields"] j
+  if version < current then
+    rejectFields ["effParams", "noFail", "dictCount", "failureType", "effectKind", "opDicts", "raise", "handleFail", "clause"] j
+    rejectBatch2 j
   if version == old then
     rejectFields (["builtin", "package", "coverageView", "extensible", "isRecord", "dataTypes"] ++
       if kind == "coverage" then [] else ["typeName", "constructorName"]) j
-    return closedDefaults kind j
-  if version != current && !(kind == "corpus" && version == 9) then
+    return batch2Defaults (closedDefaults kind j)
+  if version != current && version != (current - 1) && !(kind == "corpus" && version == 9) then
     throw s!"unsupported {kind} exchange version: {version}"
-  return j
+  if version == current then
+    validateBatch2 j
+    return j
+  return batch2Defaults j
+
+/-- 同じ世代の sidecar のみを組み合わせる。 -/
+def sidecarVersion (corpusVersion : Nat) : Nat :=
+  if corpusVersion == 11 then 4 else if corpusVersion >= 9 then 3 else 2
 
 def validateDataTypes (ds : List DataTypeInfo) : Except String Unit := do
   if (ds.map (·.name)).eraseDups.length != ds.length then throw "duplicate data type metadata"

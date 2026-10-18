@@ -52,9 +52,11 @@ theorem checkDieExit_sound {q C path exit t u} (hq : q.Sound) (ht : t.AtomsIn q.
   have sa := hq.builtins exit sg (lookup_ok hs)
   have eq := tyEq_sound (fnTyCheck_atoms (ts := [t]) (es := []) sa.1 sa.2.1 sa.2.2 ⟨ht, trivial⟩ (by simp))
     (show Ty.AtomsIn q.atoms (.fn ["code"] [.base .integer] t
-      (singleEff q.atoms (.name "Process.Exit"))) from ⟨⟨trivial, trivial⟩, ht, singleEff_atoms _ _⟩)
+      (singleEff q.atoms (.name "Process.Exit"))) from ⟨⟨trivial, trivial⟩, ht, singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok he).1)⟩)
     (require_ok h).1
-  rw [fnTyCheck_eq, singleEff_eq_contains (require_ok he).1] at eq
+  rw [fnTyCheck_eq sg.names sg.params sg.ret sg.eff [t] []
+    (by intro u hu; simp only [List.mem_singleton] at hu; subst u; exact ht) (by simp)
+    sa.1 sa.2.1 sa.2.2, singleEff_eq_contains (require_ok he).1] at eq
   exact ⟨⟨sg, lookup_ok hs, hk, hop, hn, hne, (namesWF_spec _ _).mp hnames,
     hq.admits exit C [t] sg (lookup_ok hs) (require_ok ha).1, eq⟩, (require_ok he).1⟩
 
@@ -63,14 +65,14 @@ theorem checkDieMessageR_sound {q C Γ path message s s' u}
     (hm : ∀ m, message = some m → m.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (h : checkDieMessageR q .strict C Γ path message s = .ok (u, s')) :
     ∀ m, message = some m →
-      HasType q.D q.B q.opPrim C (hideConts Γ) none .other m (.base .string) Eff.empty := by
+      HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C (hideConts Γ) none .other m (.base .string) Eff.empty := by
   intro m he
   subst message
-  obtain ⟨ε, mid, ht, ha, h⟩ := checking_accept_expr_ok
+  obtain ⟨ε, mid, ht, ha, h, haClean⟩ := checking_accept_expr_ok
     (fun _ _ _ _ h => ih m rfl _ _ _ _ _ _ _ _ _ hq (hm m rfl)
       (Env.atoms_hideConts hΓ) (by intro t ht; cases ht) h) (by trivial) h
   have hacc := (checking_lift_ok h).1
-  exact .E_Sub ht (Or.inl rfl) (acceptEff_sound ha hacc)
+  exact .E_Sub ht (Or.inl rfl) (acceptEff_sound ha (emptyEff_atoms _) hacc) haClean
 
 theorem tryResultDie_case {q t ok err dict method exit e message} :
     CaseSound q (.expr (.tryResultDie t ok err dict method exit e message)) := by
@@ -81,6 +83,7 @@ theorem tryResultDie_case {q t ok err dict method exit e message} :
     subst message
     exact ih (.expr m) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   rw [result_atoms] at he
   obtain ⟨cdo, ho, h⟩ := checking_lift_bind_ok h
   obtain ⟨cde, hec, h⟩ := checking_lift_bind_ok h
@@ -119,8 +122,8 @@ theorem tryResultDie_case {q t ok err dict method exit e message} :
           have ds := checkDieShow_sound hq he.2.1 hΓ es.2.1.2.1 hshow
           have ms := checkDieMessageR_sound ihm hq
             (by intro m hm; cases hm; exact he.2.2.2) hΓ hm
-          refine ⟨?_, he.1, union_atoms _ _ _⟩
-          rw [union_eq es.2.2 (singleEff_atoms _ _), singleEff_eq_contains dx.2]
+          refine ⟨?_, he.1, union_atoms es.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true dx.2))⟩
+          rw [union_eq es.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true dx.2)), singleEff_eq_contains dx.2]
           exact .E_TryResultDie (lookup_ok ho) (lookup_ok hec) hno hne hoArgs heArgs hd
             (by simpa only [matched.1, teq] using es.1)
             (by rw [← matched.1]; exact tryResultExhaustive_sound hq.constructors (require_ok hex).1)
@@ -135,6 +138,7 @@ theorem tryOptionDie_case {q t someCon noneCon exit e message} :
     subst message
     exact ih (.expr m) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
+  have h := guardInferred_ok h
   rw [option_atoms] at he
   obtain ⟨cds, hs, h⟩ := checking_lift_bind_ok h
   obtain ⟨cdn, hn, h⟩ := checking_lift_bind_ok h
@@ -167,8 +171,8 @@ theorem tryOptionDie_case {q t someCon noneCon exit e message} :
         have dx := checkDieExit_sound hq he.1 hexit
         have ms := checkDieMessageR_sound ihm hq
           (by intro m hm; cases hm; exact he.2.2) hΓ hm
-        refine ⟨?_, he.1, union_atoms _ _ _⟩
-        rw [union_eq es.2.2 (singleEff_atoms _ _), singleEff_eq_contains dx.2]
+        refine ⟨?_, he.1, union_atoms es.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true dx.2))⟩
+        rw [union_eq es.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true dx.2)), singleEff_eq_contains dx.2]
         exact .E_TryOptionDie (lookup_ok hs) (lookup_ok hn) hns hnn hsArgs hnArgs hd
           (by simpa only [matched.1, teq] using es.1)
           (by rw [← matched.1]; exact tryOptionExhaustive_sound hq.constructors (require_ok hex).1)

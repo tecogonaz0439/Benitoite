@@ -60,7 +60,7 @@ def run (args : List String) : IO UInt32 := do
   let _ ← IO.ofExcept (readBuiltins rawB)
   let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
   let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
-  let expected := if version >= 9 then 3 else 2
+  let expected := sidecarVersion version
   if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != expected ||
       (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
     throw (IO.userError "exchange version pair mismatch")

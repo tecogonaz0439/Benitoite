@@ -1,0 +1,39 @@
+   Compiling benitoite v0.0.7 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.90s
+     Running tests/golden.rs (target/debug/deps/golden-957bf4f7d90a5e33)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... FAILED
+
+failures:
+
+---- golden_suite stdout ----
+BENITOITE_GOLDEN_FILTER="p1-character-domain"
+golden: 1 cases; differential (golden run and bench): 0 matched
+check mode core IR: 0 matched
+gc-stress excluded: 0
+formatter properties: 1 checked, 0 excluded
+testdata/patterns/p1-character-domain.bnt (Direct) .exit: expected 0, actual 3
+testdata/patterns/p1-character-domain.bnt (Direct) .stdout: first differing byte 0
+- expected: "1\n1\n2\n2\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n"
++ actual: ""
+testdata/patterns/p1-character-domain.bnt (Direct) .diag.json:
+- expected: 
++ actual: {"kind":"internal","severity":"error","code":null,"message":"internal compiler error","primary":null,"secondary":[],"notes":["benitoite 0.0.7","the error occurred in the decision stage","empty pattern matrix","this is a bug in the implementation; please report it with the script that caused it, after removing any secrets"],"helps":[]}
+testdata/patterns/p1-character-domain.bnt (Request) .exit: expected 0, actual 3
+testdata/patterns/p1-character-domain.bnt (Request) .stdout: first differing byte 0
+- expected: "1\n1\n2\n2\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n2\n3\n2\n2\n3\n3\n"
++ actual: ""
+testdata/patterns/p1-character-domain.bnt (Request) .diag.json:
+- expected: 
++ actual: {"kind":"internal","severity":"error","code":null,"message":"internal compiler error","primary":null,"secondary":[],"notes":["benitoite 0.0.7","the error occurred in the decision stage","empty pattern matrix","this is a bug in the implementation; please report it with the script that caused it, after removing any secrets"],"helps":[]}
+testdata/patterns/p1-character-domain.bnt: compilation failed: InternalError { stage: "decision", message: "empty pattern matrix" }
+
+
+failures:
+    golden_suite
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+error: test failed, to rerun pass `-p benitoite --test golden`

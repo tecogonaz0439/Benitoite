@@ -1,0 +1,182 @@
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=8, order=[{'rho': {'index': 0}}, {'rho': {'index': 1}}, {'name': {'value': 'Ask'}}, {'name': {'value': 'Console'}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'name': {'value': 'Ask'}}, {'name': {'valu[57 chars] 1}}] != [{'rho': {'index': 0}}, {'rho': {'index': 1}[57 chars]e'}}]
+
+First differing element 0:
+{'name': {'value': 'Ask'}}
+{'rho': {'index': 0}}
+
++ [{'rho': {'index': 0}},
++  {'rho': {'index': 1}},
+- [{'name': {'value': 'Ask'}},
+? ^
+
++  {'name': {'value': 'Ask'}},
+? ^
+
+-  {'name': {'value': 'Console'}},
+?                                ^
+
++  {'name': {'value': 'Console'}}]
+?                                ^
+
+-  {'rho': {'index': 0}},
+-  {'rho': {'index': 1}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=8, order=[{'name': {'value': 'Console'}}, {'name': {'value': 'Ask'}}, {'rho': {'index': 1}}, {'rho': {'index': 0}}, {'rho': {'index': 0}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'name': {'value': 'Ask'}}, {'name': {'valu[57 chars] 1}}] != [{'rho': {'index': 0}}, {'rho': {'index': 1}[57 chars]e'}}]
+
+First differing element 0:
+{'name': {'value': 'Ask'}}
+{'rho': {'index': 0}}
+
++ [{'rho': {'index': 0}},
++  {'rho': {'index': 1}},
+- [{'name': {'value': 'Ask'}},
+? ^
+
++  {'name': {'value': 'Ask'}},
+? ^
+
+-  {'name': {'value': 'Console'}},
+?                                ^
+
++  {'name': {'value': 'Console'}}]
+?                                ^
+
+-  {'rho': {'index': 0}},
+-  {'rho': {'index': 1}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=9, order=[{'rho': {'index': 0}}, {'rho': {'index': 1}}, {'name': {'value': 'Ask'}}, {'name': {'value': 'Console'}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'name': {'value': 'Ask'}}, {'name': {'valu[57 chars] 1}}] != [{'rho': {'index': 0}}, {'rho': {'index': 1}[57 chars]e'}}]
+
+First differing element 0:
+{'name': {'value': 'Ask'}}
+{'rho': {'index': 0}}
+
++ [{'rho': {'index': 0}},
++  {'rho': {'index': 1}},
+- [{'name': {'value': 'Ask'}},
+? ^
+
++  {'name': {'value': 'Ask'}},
+? ^
+
+-  {'name': {'value': 'Console'}},
+?                                ^
+
++  {'name': {'value': 'Console'}}]
+?                                ^
+
+-  {'rho': {'index': 0}},
+-  {'rho': {'index': 1}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=9, order=[{'name': {'value': 'Console'}}, {'name': {'value': 'Ask'}}, {'rho': {'index': 1}}, {'rho': {'index': 0}}, {'rho': {'index': 0}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'name': {'value': 'Ask'}}, {'name': {'valu[57 chars] 1}}] != [{'rho': {'index': 0}}, {'rho': {'index': 1}[57 chars]e'}}]
+
+First differing element 0:
+{'name': {'value': 'Ask'}}
+{'rho': {'index': 0}}
+
++ [{'rho': {'index': 0}},
++  {'rho': {'index': 1}},
+- [{'name': {'value': 'Ask'}},
+? ^
+
++  {'name': {'value': 'Ask'}},
+? ^
+
+-  {'name': {'value': 'Console'}},
+?                                ^
+
++  {'name': {'value': 'Console'}}]
+?                                ^
+
+-  {'rho': {'index': 0}},
+-  {'rho': {'index': 1}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=10, order=[{'rho': {'index': 0}}, {'rho': {'index': 1}}, {'name': {'value': 'Ask'}}, {'name': {'value': 'Console'}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'name': {'value': 'Ask'}}, {'name': {'valu[57 chars] 1}}] != [{'rho': {'index': 0}}, {'rho': {'index': 1}[57 chars]e'}}]
+
+First differing element 0:
+{'name': {'value': 'Ask'}}
+{'rho': {'index': 0}}
+
++ [{'rho': {'index': 0}},
++  {'rho': {'index': 1}},
+- [{'name': {'value': 'Ask'}},
+? ^
+
++  {'name': {'value': 'Ask'}},
+? ^
+
+-  {'name': {'value': 'Console'}},
+?                                ^
+
++  {'name': {'value': 'Console'}}]
+?                                ^
+
+-  {'rho': {'index': 0}},
+-  {'rho': {'index': 1}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=10, order=[{'name': {'value': 'Console'}}, {'name': {'value': 'Ask'}}, {'rho': {'index': 1}}, {'rho': {'index': 0}}, {'rho': {'index': 0}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'name': {'value': 'Ask'}}, {'name': {'valu[57 chars] 1}}] != [{'rho': {'index': 0}}, {'rho': {'index': 1}[57 chars]e'}}]
+
+First differing element 0:
+{'name': {'value': 'Ask'}}
+{'rho': {'index': 0}}
+
++ [{'rho': {'index': 0}},
++  {'rho': {'index': 1}},
+- [{'name': {'value': 'Ask'}},
+? ^
+
++  {'name': {'value': 'Ask'}},
+? ^
+
+-  {'name': {'value': 'Console'}},
+?                                ^
+
++  {'name': {'value': 'Console'}}]
+?                                ^
+
+-  {'rho': {'index': 0}},
+-  {'rho': {'index': 1}}]
+
+----------------------------------------------------------------------
+Ran 1 test in 5.889s
+
+FAILED (failures=6)
+real 5.94
+user 0.82
+sys 0.40

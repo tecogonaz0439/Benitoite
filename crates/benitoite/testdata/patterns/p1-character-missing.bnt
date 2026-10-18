@@ -1,0 +1,9 @@
+// spec: 01-05 網羅性の検査
+function incomplete(c: Character) -> Unit
+  match c with
+  case 'a' -> ()
+  end match
+end function
+function main() -> Unit
+  ()
+end function

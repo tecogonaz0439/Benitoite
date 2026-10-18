@@ -27,10 +27,10 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":3,"inputs":[table]})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":[table]})).unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":3,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    let stdlib = json!({"version":4,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
         exchange::to_vec(&stdlib).unwrap(),
@@ -55,13 +55,13 @@ fn write_named(
     }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":10,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(&json!({"version":11,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":3,"inputs":tables})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":tables})).unwrap(),
     )
     .unwrap();
     let stdlib = inputs
@@ -70,12 +70,12 @@ fn write_named(
         .collect::<Vec<_>>();
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&json!({"version":3,"inputs":stdlib})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":stdlib})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-coverage.json")),
-        exchange::to_vec(&json!({"version":3,"inputs":coverage})).unwrap(),
+        exchange::to_vec(&json!({"version":4,"inputs":coverage})).unwrap(),
     )
     .unwrap();
 }
@@ -210,7 +210,7 @@ fn export_named_static_calls_smoke() {
         &names,
         Some((integer.clone(), json!([]))),
     );
-    let header = json!({"tparams":[],"neffs":0,"names":["callback"],"params":[callback],"ret":{"fn":{"names":["b","a"],"params":[integer,integer],"ret":integer,"eff":[]}},"eff":[]});
+    let header = json!({"tparams":[],"neffs":0,"effParams":[],"names":["callback"],"params":[callback],"ret":{"fn":{"names":["b","a"],"params":[integer,integer],"ret":integer,"eff":[]}},"eff":[]});
     let body = let_in(
         ret(var(2)),
         let_in(
@@ -242,7 +242,7 @@ fn export_named_static_calls_smoke() {
         &names,
         None,
     );
-    let header = json!({"tparams":[],"neffs":0,"names":["callback"],"params":[callback],"ret":integer,"eff":[]});
+    let header = json!({"tparams":[],"neffs":0,"effParams":[],"names":["callback"],"params":[callback],"ret":integer,"eff":[]});
     let body = let_in(
         ret(json!({"const":{"value":{"integer":{"value":17}}}})),
         let_in(
@@ -277,7 +277,7 @@ fn export_named_static_calls_smoke() {
         &names,
         Some((integer.clone(), json!([]))),
     );
-    let header = json!({"tparams":[],"neffs":0,"names":["callback"],"params":[callback],"ret":{"fn":{"names":["b"],"params":[integer],"ret":integer,"eff":[]}},"eff":[]});
+    let header = json!({"tparams":[],"neffs":0,"effParams":[],"names":["callback"],"params":[callback],"ret":{"fn":{"names":["b"],"params":[integer],"ret":integer,"eff":[]}},"eff":[]});
     let body = let_in(
         ret(var(1)),
         let_in(
@@ -425,13 +425,70 @@ impl Export {
         write_named(output, stem, self.inputs, self.tables, self.coverage);
         fs::write(
             output.join(format!("{stem}-stdlib.json")),
-            exchange::to_vec(&json!({"version":3,"inputs":self.declarations})).unwrap(),
+            exchange::to_vec(&json!({"version":4,"inputs":self.declarations})).unwrap(),
         )
         .unwrap();
     }
 }
 
 // 全件の振り分けと同じ補助を使い、追加した実行入力を短い検査でも新形式へ出す。
+// 生成した関数が参照する通常の標準宣言も、独立した検査の入力に含める。
+// 実行の自己検査では交換時の宣言・名前・型の欠落を検出できない
+// （設計書 07-04「証明する性質」）。
+#[test]
+fn export_generated_record_property() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap();
+    let checked = pipeline::check_path(
+        &root.join("tools/derive/examples/People.bnt"),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    )
+    .unwrap();
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let program = checked.program.as_ref().unwrap();
+    assert!(contracts_well_formed(program));
+    let mut export = Export::new();
+    export.push(
+        "golden",
+        "generated-record-property",
+        program,
+        &exchange::complete_stdlib(),
+    );
+    let declarations = export.declarations[0]["functions"].as_array().unwrap();
+    for (name, names) in [
+        (
+            "Benitoite.Test.Property.check",
+            vec!["config", "gen", "shrinker", "property"],
+        ),
+        (
+            "Benitoite.Test.Property.formatFailure",
+            vec!["failure", "show"],
+        ),
+        ("Benitoite.Test.Property.integer", vec!["low", "high"]),
+        (
+            "Benitoite.Json.Codec.decodeField",
+            vec!["members", "key", "decode", "decodeMissing"],
+        ),
+    ] {
+        let id = program.resolved.stdlib(name).unwrap();
+        let function = declarations
+            .iter()
+            .find(|f| f["name"] == format!("fn:{}", id.0))
+            .unwrap();
+        assert_eq!(function["header"]["names"], json!(names), "{name}");
+    }
+    export.write_to(
+        &export_directory("generated-record-property"),
+        "generated-record-property",
+    );
+}
+
 #[test]
 fn export_general_named_programs() {
     let output = export_directory("named-programs");
@@ -586,12 +643,12 @@ fn export_extensible_package() {
     fs::create_dir_all(root.join("dep")).unwrap();
     fs::write(
         root.join("package.bnt"),
-        "language \"0.0.7\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+        "language \"0.0.8\"\ndependency Dep\n path \"dep\"\nend dependency\n",
     )
     .unwrap();
     fs::write(
         root.join("dep/package.bnt"),
-        "language \"0.0.7\"\npackage Dep\nend package\n",
+        "language \"0.0.8\"\npackage Dep\nend package\n",
     )
     .unwrap();
     fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();
@@ -635,7 +692,7 @@ fn export_extensible_package() {
         .iter()
         .filter(|d| d["package"] == "stdlib" && d["extensible"] == true)
         .collect();
-    assert_eq!(standard.len(), 4);
+    assert_eq!(standard.len(), 5);
     assert_eq!(
         standard
             .iter()
@@ -648,7 +705,8 @@ fn export_extensible_package() {
             ("IOErrorKind", false),
             ("NetworkErrorKind", false),
             ("ParseError", true),
-            ("ParseError", true)
+            ("ParseError", true),
+            ("ConversionError", true)
         ]
     );
     for d in &standard {
@@ -699,13 +757,14 @@ fn export_extensible_source() {
     let input = &export.inputs[0];
     let decls = input["dataTypes"].as_array().unwrap();
     let open: Vec<_> = decls.iter().filter(|d| d["extensible"] == true).collect();
-    assert_eq!(open.len(), 7);
+    assert_eq!(open.len(), 8);
     for name in [
         "Kind",
         "Detail",
         "Unused",
         "IOErrorKind",
         "NetworkErrorKind",
+        "ConversionError",
     ] {
         assert!(open.iter().any(|d| d["typeName"] == name));
     }
@@ -727,7 +786,7 @@ fn export_extensible_source() {
         .find(|d| d["name"].as_str().unwrap().contains("inspect ("))
         .unwrap();
     let standard: Vec<_> = open.iter().filter(|d| d["package"] == "stdlib").collect();
-    assert_eq!(standard.len(), 4);
+    assert_eq!(standard.len(), 5);
     assert_eq!(
         author["scope"]["inScope"]["surface"]["coverageView"],
         json!(standard.iter().map(|d| &d["name"]).collect::<Vec<_>>())

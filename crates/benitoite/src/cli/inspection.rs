@@ -57,7 +57,10 @@ pub(super) fn function_contract(
         .decl_types
         .get(binding)
         .ok_or_else(|| internal("function scheme missing from checked program"))?;
-    if !scheme.effects.vars.is_empty() {
+    if !scheme.effects.failures.is_empty() {
+        return Err(internal("unhandled failure in checked entry contract"));
+    }
+    if !scheme.no_fail.is_empty() || !scheme.effects.vars.is_empty() {
         return Err(internal("effect variables in checked entry contract"));
     }
     let mut effects = scheme

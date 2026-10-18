@@ -43,6 +43,7 @@ pub(super) enum IArg {
 }
 /// 囲むハンドラの節の情報。
 pub(super) struct ClauseContext {
+    pub failure: bool,
     pub op_ret: ITy,
     pub handle_ty: ITy,
 }
@@ -58,6 +59,7 @@ pub(super) struct Body<'a, 'd> {
     pub constraints: Vec<Constraint>,
     pub locals: BindingMap<ITy>,
     pub expr_types: NodeMap<ITy>,
+    pub source_effects: NodeMap<IEffect>,
     pub expr_spans: HashMap<NodeId, Span>,
     pub call_plans: NodeMap<super::CallPlan>,
     pub named_calls: Vec<super::calls::PendingCall>,
@@ -71,6 +73,7 @@ pub(super) struct Body<'a, 'd> {
     pub die_shows: NodeMap<DictExpr>,
     pub die_message_boundary: bool,
     pub handlers: NodeMap<HandleInfo>,
+    pub failure_handles: Vec<(NodeId, ITy, Span)>,
     pub clauses: Vec<ClauseContext>,
     /// プレースホルダの展開が継続を隠している間の E0509 の補助。
     pub placeholder_boundary: bool,
@@ -115,6 +118,7 @@ impl<'a, 'd> Body<'a, 'd> {
             constraints: vec![],
             locals: BindingMap::default(),
             expr_types: NodeMap::default(),
+            source_effects: NodeMap::default(),
             expr_spans: HashMap::new(),
             call_plans: NodeMap::default(),
             named_calls: vec![],
@@ -127,6 +131,7 @@ impl<'a, 'd> Body<'a, 'd> {
             die_shows: NodeMap::default(),
             die_message_boundary: false,
             handlers: NodeMap::default(),
+            failure_handles: vec![],
             clauses: vec![],
             placeholder_boundary: false,
             return_owner: ReturnOwner::Function,
@@ -244,6 +249,9 @@ impl<'a, 'd> Body<'a, 'd> {
                     self.name_rigid_types(t, names, indices);
                 }
                 self.name_rigid_types(&mut f.ret, names, indices);
+                for t in &mut f.effects.failures {
+                    self.name_rigid_types(t, names, indices);
+                }
             }
             Ty::Param(_) => {}
         }
@@ -309,6 +317,17 @@ impl<'a, 'd> Body<'a, 'd> {
         let before = self.decls.diagnostics.len();
         let before_aliases = self.decls.invalid_alias_uses;
         let ty = self.decls.ty(t, &self.scope);
+        // 値が純粋でも、受け入れる注釈の潜在効果には署名由来の条件が要る
+        // （設計書 01-12「型付きの失敗の表層検査」）。
+        if !ty.failure_rows_valid(&self.scheme.no_fail) {
+            self.diagnostic(
+                crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0515)
+                    .primary(t.span())
+                    .help("signature")
+                    .build(),
+            );
+            return ITy::Error;
+        }
         if before != self.decls.diagnostics.len() || before_aliases != self.decls.invalid_alias_uses
         {
             ITy::Error
@@ -321,8 +340,68 @@ impl<'a, 'd> Body<'a, 'd> {
         let constraints = std::mem::take(&mut self.constraints);
         solver.solve(self, constraints);
         self.solver = solver;
+        self.check_single_failures();
         super::pattern_ext::check_body(self);
         super::effects::check_body(self);
+    }
+    fn check_single_failures(&mut self) {
+        if self
+            .decls
+            .resolved
+            .stdlib("Benitoite.Failure.raise")
+            .is_none()
+        {
+            return;
+        }
+        if self.diagnostics.iter().any(|d| {
+            matches!(
+                d.code,
+                Some(crate::diag::DiagCode::E0514 | crate::diag::DiagCode::E0515)
+            )
+        }) {
+            return;
+        }
+        for (node, t) in self.expr_types.iter() {
+            let Some(span) = self.expr_spans.get(&node).copied() else {
+                continue;
+            };
+            let ty = self.solver.finalize(t, self.decls.resolved);
+            if !ty.failure_rows_valid(&self.scheme.no_fail) {
+                self.diagnostics.push(
+                    crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0515)
+                        .primary(span)
+                        .help("signature")
+                        .build(),
+                );
+                return;
+            }
+            if !ty.single_failure() {
+                self.diagnostics.push(
+                    crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0514)
+                        .primary(span)
+                        .arg("expected", self.show_type(t))
+                        .arg("found", self.show_type(t))
+                        .help("convert")
+                        .build(),
+                );
+                return;
+            }
+        }
+        for (node, e) in self.source_effects.iter() {
+            let Some(span) = self.expr_spans.get(&node).copied() else {
+                continue;
+            };
+            let e = self.solver.finalize_effect(e);
+            if !e.failures.is_empty() && e.vars.iter().any(|v| !self.scheme.no_fail.contains(v)) {
+                self.diagnostics.push(
+                    crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0515)
+                        .primary(span)
+                        .help("signature")
+                        .build(),
+                );
+                return;
+            }
+        }
     }
     pub fn actual_effects(&self) -> EffectSet {
         self.solver.finalize_effect(&self.body_effect)
@@ -439,6 +518,22 @@ impl<'a, 'd> Body<'a, 'd> {
                 },
             );
         }
+        for (node, error_ty, span) in &self.failure_handles {
+            if self.solver.unresolved_type(error_ty) {
+                self.diagnostics.push(
+                    crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0517)
+                        .primary(*span)
+                        .help("annotation")
+                        .build(),
+                );
+            }
+            if let Some(mut h) = self.handlers.get(*node).cloned() {
+                for clause in &mut h.clauses {
+                    clause.failure_type = Some(self.solver.finalize(error_ty, self.decls.resolved));
+                }
+                self.handlers.insert(*node, h);
+            }
+        }
         for (node, h) in self.handlers.iter() {
             self.decls.out.handlers.insert(node, h.clone());
         }
@@ -469,6 +564,11 @@ impl<'a, 'd> Body<'a, 'd> {
             .iter()
             .map(|_| self.fresh_effect())
             .collect();
+        for row in &s.no_fail {
+            if let Some(eff) = usize::try_from(row.0).ok().and_then(|i| effs.get(i)) {
+                self.solver.require_no_fail(eff.clone(), span);
+            }
+        }
         self.type_args.insert(node, (args.clone(), effs.clone()));
         for (p, a) in s.type_params.iter().zip(&args) {
             if let (Some(bound), IArg::Ty(t)) = (p.builtin, a) {
@@ -521,7 +621,7 @@ impl<'a, 'd> Body<'a, 'd> {
             .map(|t| substitute(t, &args, &effs))
             .collect::<Vec<_>>();
         let ret = substitute(&s.ret, &args, &effs);
-        let effect = substitute_effect(&s.effects, &effs);
+        let effect = substitute_effect(&s.effects, &args, &effs);
         (
             ITy::Fn(Box::new(IFnTy {
                 contract: IContract::Known(s.param_names.clone()),
@@ -544,7 +644,11 @@ pub(super) fn reason(span: Span, kind: ReasonKind) -> Reason {
     }
 }
 pub(super) fn fixed(effects: EffectSet) -> IEffect {
+    let failures = effects.failures.iter().map(lift).collect();
+    let mut effects = effects;
+    effects.failures.clear();
     IEffect {
+        failures,
         fixed: effects,
         var: None,
     }
@@ -571,7 +675,7 @@ pub(super) fn substitute(t: &Ty, args: &[IArg], effs: &[IEffect]) -> ITy {
             contract: IContract::Known(f.param_names.clone()),
             params: f.params.iter().map(|t| substitute(t, args, effs)).collect(),
             ret: substitute(&f.ret, args, effs),
-            effect: substitute_effect(&f.effects, effs),
+            effect: substitute_effect(&f.effects, args, effs),
         })),
         Ty::Rigid { clause, index } => ITy::Rigid {
             clause: *clause,
@@ -579,9 +683,15 @@ pub(super) fn substitute(t: &Ty, args: &[IArg], effs: &[IEffect]) -> ITy {
         },
     }
 }
-fn substitute_effect(e: &EffectSet, effs: &[IEffect]) -> IEffect {
+fn substitute_effect(e: &EffectSet, args: &[IArg], effs: &[IEffect]) -> IEffect {
     let mut out = IEffect {
+        failures: e
+            .failures
+            .iter()
+            .map(|t| substitute(t, args, effs))
+            .collect(),
         fixed: EffectSet {
+            failures: vec![],
             names: e.names.clone(),
             vars: vec![],
         },
@@ -590,6 +700,7 @@ fn substitute_effect(e: &EffectSet, effs: &[IEffect]) -> IEffect {
     for v in &e.vars {
         if let Some(e) = usize::try_from(v.0).ok().and_then(|i| effs.get(i)) {
             out.fixed = out.fixed.union(&e.fixed);
+            out.failures.extend(e.failures.clone());
             out.var = e.var;
         } else {
             out.fixed.insert_var(*v);

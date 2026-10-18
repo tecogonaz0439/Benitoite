@@ -188,13 +188,32 @@ pub fn resolve(
     ids: &mut IdGen,
 ) -> ResolveOutput {
     let mut resolver = collect::Resolver::new(modules, asts, sources, ids);
-    resolver.collect();
-    resolver.imports();
-    resolver.signatures();
-    resolver.check_declarations();
+    resolver.declarations();
     resolver.bodies();
     resolver.check_constants();
     resolver.out
+}
+
+// 宣言を読む道具も通常の名前解決と同じ import・可視性・循環の検査を使う
+// （設計書 02-01「宣言だけの収集」）。本体の参照と定数の依存は辿らない。
+pub(crate) fn resolve_declarations(
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    ids: &mut IdGen,
+) -> ResolveOutput {
+    let mut resolver = collect::Resolver::new(modules, asts, sources, ids);
+    resolver.declarations();
+    resolver.out
+}
+
+impl collect::Resolver<'_> {
+    fn declarations(&mut self) {
+        self.collect();
+        self.imports();
+        self.signatures();
+        self.check_declarations();
+    }
 }
 
 impl ResolveOutput {

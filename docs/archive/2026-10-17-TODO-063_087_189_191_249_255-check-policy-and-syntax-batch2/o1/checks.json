@@ -1,0 +1,53 @@
+[
+  {
+    "name": "clippy",
+    "command": [
+      "cargo",
+      "clippy",
+      "--all-targets"
+    ],
+    "exit": 0,
+    "seconds": 7.702
+  },
+  {
+    "name": "work",
+    "command": [
+      "bash",
+      "/private/tmp/benitoite-o1-work.sh"
+    ],
+    "exit": 0,
+    "seconds": 479.752
+  },
+  {
+    "name": "heap-local",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify",
+      "--test",
+      "vm_handlers"
+    ],
+    "exit": 0,
+    "seconds": 105.308
+  },
+  {
+    "name": "stress-local",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify,gc-stress",
+      "--test",
+      "vm_handlers"
+    ],
+    "exit": 0,
+    "seconds": 107.539
+  }
+]

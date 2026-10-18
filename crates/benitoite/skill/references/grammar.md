@@ -54,7 +54,8 @@ FnTypeParam = "effect" UpperIdent
 Constraint  = QualUpper | LowerIdent .
 TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 Param       = LowerIdent ":" Type .
-Uses        = "uses" QualUpper { "," QualUpper } .
+Uses        = "uses" EffectRef { "," EffectRef } .
+EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
 
 ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
 

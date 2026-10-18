@@ -76,6 +76,7 @@ impl TypeBudget {
                     pending.extend(ts.iter().map(|t| (t, next, substitute)));
                 }
                 Ty::Fn(f) => {
+                    pending.extend(f.effects.failures.iter().map(|t| (t, next, substitute)));
                     pending.push((&f.ret, next, substitute));
                     pending.extend(f.params.iter().map(|t| (t, next, substitute)));
                 }

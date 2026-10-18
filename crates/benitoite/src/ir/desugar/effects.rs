@@ -336,12 +336,17 @@ impl State<'_> {
                     self.var(None, self.ty(p.id)?)?
                 });
             }
-            let scheme = self.declared(info.op)?;
+            let scheme = self.declared(info.op)?.clone();
             let rigid = scheme
                 .type_params
                 .iter()
                 .enumerate()
                 .map(|(i, _)| {
+                    if i == 1
+                        && let Some(t) = &info.failure_type
+                    {
+                        return Ok(TypeArg::Ty(t.clone()));
+                    }
                     Ok(TypeArg::Ty(Ty::Rigid {
                         clause: clause.id,
                         index: number(i)?,
@@ -353,13 +358,27 @@ impl State<'_> {
                 id: VarId(fresh(&mut self.vars)?),
                 arg,
             };
+            let dict_params = scheme
+                .class_constraints
+                .iter()
+                .map(|constraint| {
+                    Ok(DictParam {
+                        var: VarId(fresh(&mut self.vars)?),
+                        constraint: *constraint,
+                    })
+                })
+                .collect::<Result<Vec<_>, InternalError>>()?;
+            self.clause_dicts.insert(clause.id, dict_params.clone());
             self.conts.push((cont.clone(), self.ty(e.id)?));
             let body = self.block(&clause.body, Position::Other)?;
             self.conts.pop();
+            self.clause_dicts.remove(&clause.id);
             clauses.push(Clause {
+                failure_type: info.failure_type.clone(),
                 id,
                 node: clause.id,
                 op: info.op,
+                dict_params,
                 params,
                 cont,
                 tail_resumptive: info.tail_resumptive,
@@ -415,6 +434,12 @@ fn state_effect(eff: &EffectSet) -> EffectSet {
 }
 fn without(eff: &EffectSet, removed: &EffectSet) -> EffectSet {
     EffectSet {
+        failures: eff
+            .failures
+            .iter()
+            .filter(|t| !removed.failures.contains(t))
+            .cloned()
+            .collect(),
         names: eff
             .names
             .iter()
@@ -433,7 +458,13 @@ fn without(eff: &EffectSet, removed: &EffectSet) -> EffectSet {
 /// 節自身の再開のエフェクトを除いて ε を求める。入れ子のハンドラも同じ規則で求める
 /// （設計書 02-06「コア IR」の表の後の段落）。
 fn handle_effect(h: &Handle<Comp>, skipped: &[VarId]) -> EffectSet {
-    let mut eff = without(&effect_without(&h.body, skipped), &h.handled);
+    let mut removed = h.handled.clone();
+    for clause in &h.clauses {
+        if let Some(t) = &clause.failure_type {
+            removed.insert_failure(t.clone());
+        }
+    }
+    let mut eff = without(&effect_without(&h.body, skipped), &removed);
     let mut inner = skipped.to_vec();
     inner.extend(h.clauses.iter().map(|c| c.cont.id));
     for clause in &h.clauses {
