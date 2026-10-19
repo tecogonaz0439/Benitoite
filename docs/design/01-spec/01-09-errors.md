@@ -132,13 +132,13 @@ function readOrEmpty(path: String) -> String uses File.Read, Console.Write
 end function
 ```
 
-`IOError` 自体は中身を見せない型であり、等値の型ではない。
+`IOError` 自体は不透明型であり、等値の型ではない。
 
 【決定】どの構成子にも当たらない失敗は `IOErrorKind.Other` で表し、分類していない失敗を入れる構成子を別に設けない。`IOErrorKind` には `@extensible` を付ける。標準ライブラリの外からの照合には、将来の形を覆うガードのない変数または `_` のパターンを必要とする。`Other` は既知の構成子であり、将来の形を覆わない（[代数的データ型とパターンマッチ](01-05-data-types.md)の「拡張可能な型」）。理由: 失敗の種類を追加するときに、利用者のコードが既知の種類だけを前提にしないよう、型の使用条件として検査するためである。
 
 ### ネットワークの失敗の種類（初回リリース版）
 
-【決定】ネットワークの操作（[ネットワークのモジュール](../03-interop/03-09-network.md)）の失敗は、`IOError` ではなく、prelude の型 `NetworkError` で表す。失敗しうるネットワークの関数は `Result[T, NetworkError]` を返す。`NetworkError` は、`IOError` と同じく中身を見せない型であり、等値の型ではない。
+【決定】ネットワークの操作（[ネットワークのモジュール](../03-interop/03-09-network.md)）の失敗は、`IOError` ではなく、prelude の型 `NetworkError` で表す。失敗しうるネットワークの関数は `Result[T, NetworkError]` を返す。`NetworkError` は、`IOError` と同じく不透明型であり、等値の型ではない。
 
 | 関数 | 型 | 値 |
 |---|---|---|

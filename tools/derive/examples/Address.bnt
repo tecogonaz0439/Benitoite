@@ -1,9 +1,27 @@
 //! A second, noncyclic record used by the JSON and Property generation example.
+import Benitoite.Trait
 // benitoite-derive:begin address
 import Benitoite.Unofficial.Json.Codec as Codec
 import Benitoite.Unofficial.Json as Json
 import Benitoite.Unofficial.Test.Property as Property
 import Benitoite.Unofficial.IO.Random
+
+implement Trait.Show[Address]
+  function show(x: Address) -> String
+    return "Address(" + "city: " + Trait.Show.show(Address.city(x)) + ")"
+  end function
+end implement
+
+implement Trait.Order[Address]
+  function compare(x: Address, y: Address) -> Trait.Ordering
+    bind deriveOrder0 <- Trait.Order.compare(x: Address.city(x), y: Address.city(y))
+    match deriveOrder0 with
+      case Trait.Ordering.Equal -> ()
+      case other -> return other
+    end match
+    return Trait.Ordering.Equal
+  end function
+end implement
 
 /// Encodes Address in declaration order, returning the first relative conversion failure.
 public function encodeAddress(value: Address) -> Result[Json.Value, Codec.ConversionError]
@@ -23,6 +41,13 @@ function derive_shrinkAddress_0(original: Address, value: String) -> Address
   return Address(..original, city: value)
 end function
 
+function derive_shrinkAddress_steps_0(value: Address) -> Property.ShrinkStep[Address]
+  return Property.ShrinkStep.Skip(lambda()
+    bind candidates <- Property.Shrinker.candidates(Property.shrinkString())
+    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Address.city(value)), f: derive_shrinkAddress_0(original: value, value: _)), right: lambda() return Property.ShrinkStep.Done end lambda)
+  end lambda)
+end function
+
 /// Generates Address in field order with the same size and successive random states.
 public function genAddress() -> Property.Gen[Address]
   bind deriveRun0 <- Property.Gen.run(Property.string())
@@ -34,10 +59,8 @@ end function
 
 /// Shrinks one field at a time in declaration order; cross-field conditions require a custom shrinker.
 public function shrinkAddress() -> Property.Shrinker[Address]
-  bind deriveShrink0 <- Property.Shrinker.candidates(Property.shrinkString())
   return Property.Shrinker(candidates: lambda(value: Address)
-    bind deriveCandidates0 <- List.concatenate(xs: [], ys: List.map(xs: deriveShrink0(Address.city(value)), f: derive_shrinkAddress_0(original: value, value: _)))
-    return deriveCandidates0
+    return derive_shrinkAddress_steps_0(value)
   end lambda)
 end function
 // benitoite-derive:end address

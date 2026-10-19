@@ -1,0 +1,9 @@
+== plan: level work against 8f4bfce16dbfa08f8f3a61e1b0c504e94857d0d3 (changed files not classified) (partial selection: --only formal_build,spec_examples,spec_tally)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate

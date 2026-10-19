@@ -843,7 +843,7 @@ mod tests {
         let lengths = [
             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
             16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
-            11, 39,
+            11, 39, 3,
         ];
         assert_eq!(
             super::super::funcs::PARTS
@@ -920,9 +920,9 @@ mod tests {
                 !decl.name.starts_with('%') && !decl.name.starts_with("Benitoite.")
             );
         }
-        assert_eq!(lengths.len(), 54);
-        assert_eq!(names.len(), 483);
-        assert_eq!(capabilities, [410, 16, 57]);
+        assert_eq!(lengths.len(), 55);
+        assert_eq!(names.len(), 486);
+        assert_eq!(capabilities, [413, 16, 57]);
         assert!(lookup_builtin("missing.name").is_none());
         let invalid = BuiltinId(u16::MAX);
         assert!(builtin_decl(invalid).is_none());

@@ -127,7 +127,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         let path = directory.join("corpus.json");
         stream.finish(
             &path,
-            json!({"version":11,"operators":exchange::operators()}),
+            json!({"version":12,"operators":exchange::operators()}),
         );
         let written: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         std::fs::remove_file(path).unwrap();

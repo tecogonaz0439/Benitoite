@@ -44,6 +44,9 @@ pub fn unknown_key(k: &str) -> String {
 pub fn expected_string(k: &str) -> String {
     format!("expected nonempty string: {k}")
 }
+pub fn expected_boolean(k: &str) -> String {
+    format!("expected boolean: {k}")
+}
 pub fn required_pair(a: &str, b: &str) -> String {
     format!("{a} and {b} must be specified together")
 }
@@ -62,3 +65,7 @@ pub fn declaration_failure(d: &[benitoite::diag::Diagnostic]) -> String {
 
 pub const MISSING_ENTRY_MODULE: &str = "missing inventory entry module";
 pub const MISSING_IMPORTED_MODULE: &str = "missing imported module";
+
+pub const INVALID_SCHEMA: &str = "invalid declaration inventory type, kind, or signature";
+pub const OPAQUE_TARGET: &str =
+    "derive.opaque_target: opaque type requires handwritten checked construction";

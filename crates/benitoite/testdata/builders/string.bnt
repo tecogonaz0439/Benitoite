@@ -1,0 +1,13 @@
+// spec: 01-06 関数内の構築器
+import Benitoite.StringBuilder
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses State, Console.Write
+  bind b: StringBuilder <- StringBuilder.new()
+  StringBuilder.append(builder: b, text: "a")
+  bind before <- StringBuilder.copy(b)
+  StringBuilder.appendAll(texts: ["b", "c"], builder: b)
+  Console.writeLine(before)
+  Console.writeLine(StringBuilder.copy(b))
+  Console.writeLine(Integer.toString(StringBuilder.byteLength(b)))
+end function

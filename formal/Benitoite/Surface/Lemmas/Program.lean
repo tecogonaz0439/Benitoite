@@ -82,7 +82,7 @@ theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
       refine ⟨names, ?_⟩
       change HasTypeCQ _ _ _ (Qsig (d.dictTys ++ d.params) d.ret d.eff) _ _ _ _ _ _
       rw [FunDecl.Qsig_core]
-      apply HasBlockQ.desugar (view := p.functionViews f) hwf hsig (hwt.1 f d hds).2.2
+      apply HasBlock.desugar (view := p.functionViews f) hwf hsig (hwt.1 f d hds).2.2
       · simpa [binds_length, FunDecl.dictTys_length] using sc.2.2.2.2
       · have hh := EnvClean.binds (Γ := []) (cleanList_append
           (d.toFunDecl.dictTys_scoped (pe := fun _ => True) sc.2.2.2.1) (scopedList_clean sc.1))
@@ -123,7 +123,7 @@ theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
           EnvClean.binds (Γ := []) hclean (by intro j t hj; simp at hj)
       refine ⟨desugarBlock op .tail body, by simp only [desugarImpl, hb, Option.map_some], ?_⟩
       refine ⟨hsc.1, ?_⟩
-      apply HasBlockQ.desugar (view := p.methodViews i m) (pe := (· < ms.neffs)) hwf hsig hbody
+      apply HasBlock.desugar (view := p.methodViews i m) (pe := (· < ms.neffs)) hwf hsig hbody
       · simpa only [List.length_append, binds_length, ImplSig.dictTys, List.length_map] using
           sc.2.2.2 cd m ms body hc hms hb
       · exact hΓ

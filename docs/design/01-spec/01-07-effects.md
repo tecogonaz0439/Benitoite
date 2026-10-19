@@ -39,7 +39,7 @@
 | `Benitoite.IO.Random` | `Random.Generate` | 乱数の生成 |
 | `Benitoite.Network.Http` | `Http.Listen` | HTTP の接続の待ち受け、要求の受け付けと応答 |
 | 〃 | `Http.Connect` | HTTP のサーバへの接続と、要求の送信 |
-| `Benitoite`（prelude） | `State` | 可変のセル（後述の「可変のセル（初回リリース版）」）とタスクの集まりの操作、タスクの結果を待つこと（`Task.await`。[並行処理](01-11-concurrency.md)） |
+| `Benitoite`（prelude） | `State` | 関数内の構築器と可変のセル（後述の「可変のセル（初回リリース版）」）とタスクの集まりの操作、タスクの結果を待つこと（`Task.await`。[並行処理](01-11-concurrency.md)） |
 
 表のエフェクトの名前は、各モジュールを取り込んだときの書き方である（`import Benitoite.Unofficial.IO.Console` の後の `uses Console.Write`）。取り込みは、そのモジュールのエフェクトを `uses` に書くためにも要る。
 
@@ -85,7 +85,7 @@
 
 【決定】外部の状態によって失敗しうる IO の関数は、`Result[T, IOError]` を返す。ネットワークの関数は、`IOError` ではなく `NetworkError` を返す（[エラー処理](01-09-errors.md)の「ネットワークの失敗の種類（初回リリース版）」）。`IOError` は、構成子を公開しない prelude の型である。`IOError` の値はパターンで分解できない。
 
-【決定】`IOError` は中身を見せない prelude の型であり、基本型にも代数的データ型にも含めない。`IOError` とそれを含む型（`Result[String, IOError]` など）は等値の型ではなく、`=` と `<>` で比べられない（[型システム](01-06-type-system.md)の「等値の型」）。理由: `IOError` の値が等しいとはどういうことかが定まらない。失敗の種類を調べるには、`IOError.kind` で種類を取り出すか、`IOError.message` で文字列にするか、`match` で `Result.Ok` と `Result.Error` を分ける。
+【決定】`IOError` は組み込みの不透明型であり、基本型にも代数的データ型にも含めない。`IOError` とそれを含む型（`Result[String, IOError]` など）は等値の型ではなく、`=` と `<>` で比べられない（[型システム](01-06-type-system.md)の「等値の型」）。理由: `IOError` の値が等しいとはどういうことかが定まらない。失敗の種類を調べるには、`IOError.kind` で種類を取り出すか、`IOError.message` で文字列にするか、`match` で `Result.Ok` と `Result.Error` を分ける。
 
 【方針】`IOError` に対して、次の関数を定める。
 
@@ -210,6 +210,8 @@ function countNonEmpty(lines: List[String]) -> Integer uses State
   return Reference.get(n)
 end function
 ```
+
+【決定】StringBuilder・ListBuilder・BytesBuilderの専用局所宣言と全操作もStateを持つ。copyと長さの操作も現在の可変状態を読むためStateを要する。局所性を理由にStateを消去せず、ハンドラで処理する操作にも変えない（[型システム](01-06-type-system.md#関数内の構築器)）。
 
 ### 影響の大きい操作（初回リリース版）
 

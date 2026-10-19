@@ -20,7 +20,7 @@ use builtin::{BuiltinEffectId, BuiltinTypeId};
 /// 型構成子。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum TyCon {
-    /// 組み込みの型（基本型、`List`・`Map`・`Set`・`Bytes`、中身を見せない型、リソースの型）
+    /// 組み込みの型（基本型、`List`・`Map`・`Set`・`Bytes`、不透明型、リソースの型）
     Builtin(BuiltinTypeId),
     /// ソースで宣言した代数的データ型とレコード。宣言の束縛の番号で指す
     Adt(BindingId),
@@ -255,7 +255,7 @@ impl Scheme {
     }
 }
 
-/// 型が関数の型または中身を見せない型（鍵の要約では `Float`・`Float32`）を含むかの要約（01-06「等値の型」）。
+/// 型が関数の型または等値を持たない組み込みの不透明型（鍵の要約では `Float`・`Float32`）を含むかの要約（01-06「等値の型」）。
 #[derive(Clone, PartialEq, Eq, Debug, Default)]
 pub struct TypeSummary {
     /// 型引数によらず含む

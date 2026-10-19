@@ -1,0 +1,27 @@
+import Benitoite
+#print axioms Benitoite.Surface.Check.BuilderInvariant.empty
+#print axioms Benitoite.Surface.Check.BuilderInvariant.value
+#print axioms Benitoite.Surface.Check.BuilderInvariant.values
+#print axioms Benitoite.Surface.Check.BuilderInvariant.hide
+#print axioms Benitoite.Surface.Check.nodeComputes
+#print axioms Benitoite.Surface.Check.checkExprR_computes
+#print axioms Benitoite.Surface.Check.checkBlockR_computes
+#print axioms Benitoite.Surface.Check.checkClausesR_computes
+#print axioms Benitoite.Surface.Check.inferClauseTypesR_computes
+#print axioms Benitoite.Surface.Check.handlerStep_atoms
+#print axioms Benitoite.Surface.Check.MutualSoundness.of_cases
+#print axioms Benitoite.Surface.Check.clauseTypesAtoms
+#print axioms Benitoite.Surface.Check.checkExpr_of_mutual
+#print axioms Benitoite.Surface.Check.checkBlock_of_mutual
+#print axioms Benitoite.Surface.Check.checkArms_of_mutual
+#print axioms Benitoite.Surface.Check.checkClauses_of_mutual
+#print axioms Benitoite.Surface.Check.checkTypes_of_mutual
+#print axioms Benitoite.Surface.Check.checkEach_of_mutual
+#print axioms Benitoite.Surface.Check.checkHoleArgs_of_mutual
+#print axioms Benitoite.Surface.Check.checkExpr_single_of_mutual
+#print axioms Benitoite.Surface.Check.checkBlock_single_of_mutual
+#print axioms Benitoite.Surface.Check.checkCasesSound
+#print axioms Benitoite.Surface.Check.mutualSoundness
+#print axioms Benitoite.Surface.Check.checkerSoundness
+#print axioms Benitoite.Surface.Check.checkExpr_single
+#print axioms Benitoite.Surface.Check.checkBlock_single

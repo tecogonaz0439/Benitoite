@@ -1,0 +1,92 @@
+// spec: 01-06 高カインド型（初回リリース版）
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+data UserResult[A, X]
+  Ok(A)
+  Error(X)
+end data
+
+implement Trait.Functor2[UserResult]
+  function map[A, B, X, effect E](x: UserResult[A, X], f: function(value: A) -> B uses E) -> UserResult[B, X] uses E
+    return match x with
+      case UserResult.Ok(value) -> UserResult.Ok(f(value))
+      case UserResult.Error(error) -> UserResult.Error(error)
+    end match
+  end function
+end implement
+
+implement Trait.Applicative2[UserResult]
+  function pure[A, X](x: A) -> UserResult[A, X]
+    return UserResult.Ok(x)
+  end function
+
+  function apply[A, B, X, effect E](fs: UserResult[(function(value: A) -> B uses E), X], x: UserResult[A, X]) -> UserResult[B, X] uses E
+    return match fs with
+      case UserResult.Error(error) -> UserResult.Error(error)
+      case UserResult.Ok(f) -> Trait.Functor2.map(x: x, f: f)
+    end match
+  end function
+end implement
+
+implement Trait.Monad2[UserResult]
+  function flatMap[A, B, X, effect E](x: UserResult[A, X], f: function(value: A) -> UserResult[B, X] uses E) -> UserResult[B, X] uses E
+    return match x with
+      case UserResult.Ok(value) -> f(value)
+      case UserResult.Error(error) -> UserResult.Error(error)
+    end match
+  end function
+end implement
+
+function generic[F[_, _]: Trait.Monad2, X, effect E](x: F[Integer, X], f: function(value: Integer) -> Integer uses E) -> F[Integer, X] uses E
+  bind map <- Trait.Functor2.map
+  return map(f: f, x: x)
+end function
+
+function chained[F[_, _]: Trait.Monad2, X](x: F[Integer, X], f: function(value: Integer) -> F[Integer, X]) -> F[Integer, X]
+  bind flatMap <- Trait.Monad2.flatMap
+  return flatMap(f: f, x: x)
+end function
+
+function keep(value: Integer) -> UserResult[Integer, String]
+  return UserResult.Ok(value)
+end function
+
+function reject(value: Integer) -> UserResult[Integer, String]
+  return UserResult.Error("callback")
+end function
+
+function six(value: Integer) -> Integer
+  return value * 6
+end function
+
+function display(x: UserResult[Integer, String]) -> Unit uses Console.Write
+  Console.writeLine(match x with
+    case UserResult.Ok(value) -> "Ok:${value}"
+    case UserResult.Error(error) -> "Error:" + error
+  end match)
+end function
+
+function main() -> Unit uses Console.Write
+  display(generic(x: UserResult.Ok(7), f: six))
+  display(generic(x: UserResult.Error("input"), f: six))
+  display(chained(x: UserResult.Ok(7), f: keep))
+  display(chained(x: UserResult.Ok(7), f: reject))
+  display(chained(x: UserResult.Error("input"), f: keep))
+  bind pure: UserResult[Integer, String] <- Trait.Applicative2.pure(7)
+  display(pure)
+  bind fs: UserResult[(function(value: Integer) -> Integer), String] <- UserResult.Ok(six)
+  bind error: UserResult[(function(value: Integer) -> Integer), String] <- UserResult.Error("function")
+  display(Trait.Applicative2.apply(fs: fs, x: UserResult.Ok(7)))
+  display(Trait.Applicative2.apply(fs: fs, x: UserResult.Error("input")))
+  display(Trait.Applicative2.apply(fs: error, x: UserResult.Ok(7)))
+  display(Trait.Applicative2.apply(fs: error, x: UserResult.Error("input")))
+  display(generic(x: UserResult.Ok(7), f: lambda(value)
+    Console.writeLine("callback")
+    return value * 6
+  end lambda))
+  display(generic(x: UserResult.Error("input"), f: lambda(value)
+    Console.writeLine("unexpected callback")
+    return value * 6
+  end lambda))
+end function

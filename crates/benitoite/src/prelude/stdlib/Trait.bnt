@@ -51,6 +51,26 @@ public trait Monad[F[_]: Applicative]
   function flatMap[A, B, effect E](x: F[A], f: function(value: A) -> F[B] uses E) -> F[B] uses E
 end trait
 
+/// Two-parameter containers whose first value can be transformed while keeping the second type.
+public trait Functor2[F[_, _]]
+  /// Applies `f` to the successful value inside `x`, keeping its second type.
+  function map[A, B, X, effect E](x: F[A, X], f: function(value: A) -> B uses E) -> F[B, X] uses E
+end trait
+
+/// Two-parameter functors that can wrap a value and apply a wrapped function.
+public trait Applicative2[F[_, _]: Functor2]
+  /// Wraps `x`. Annotate the result when its second type cannot be inferred.
+  function pure[A, X](x: A) -> F[A, X]
+  /// Applies the wrapped function to `x`; the Result implementation prefers an error in `fs`.
+  function apply[A, B, X, effect E](fs: F[(function(value: A) -> B uses E), X], x: F[A, X]) -> F[B, X] uses E
+end trait
+
+/// Two-parameter applicatives whose computations can depend on earlier values.
+public trait Monad2[F[_, _]: Applicative2]
+  /// Applies `f` to the successful value inside `x`, keeping its second type.
+  function flatMap[A, B, X, effect E](x: F[A, X], f: function(value: A) -> F[B, X] uses E) -> F[B, X] uses E
+end trait
+
 /// Containers whose values can be combined in order.
 public trait Foldable[F[_]]
   /// Combines the values from the first with `f`, starting from `initial`.
@@ -492,6 +512,33 @@ function traverseFrom[G[_]: Applicative, A, B, effect E](xs: List[A], f: functio
       traverseFrom(xs: xs, f: f, i: i + 1, acc: Applicative.apply(fs: appendTo, x: f(v)))
   end match
 end function
+
+// Functor2, Applicative2, and Monad2 for Result
+
+implement Functor2[Result]
+  function map[A, B, X, effect E](x: Result[A, X], f: function(value: A) -> B uses E) -> Result[B, X] uses E
+    return Result.map(r: x, f: f)
+  end function
+end implement
+
+implement Applicative2[Result]
+  function pure[A, X](x: A) -> Result[A, X]
+    return Result.Ok(x)
+  end function
+
+  function apply[A, B, X, effect E](fs: Result[(function(value: A) -> B uses E), X], x: Result[A, X]) -> Result[B, X] uses E
+    return match fs with
+      case Result.Error(error) -> Result.Error(error)
+      case Result.Ok(f) -> Result.map(r: x, f: f)
+    end match
+  end function
+end implement
+
+implement Monad2[Result]
+  function flatMap[A, B, X, effect E](x: Result[A, X], f: function(value: A) -> Result[B, X] uses E) -> Result[B, X] uses E
+    return Result.andThen(r: x, f: f)
+  end function
+end implement
 
 // Show, Semigroup, and Monoid for Map and Set
 

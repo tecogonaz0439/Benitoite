@@ -202,3 +202,114 @@ fn golden_programs_and_seeded_single_site_mutations() {
         "verify corpus: programs={programs}, mutations={mutations}, rejected={rejected}, accepted={accepted}"
     );
 }
+
+// 関門: 上限検査を持つ純粋な合成が失敗した場合に set へ進まない、コアの
+// 評価順とデータ依存を確かめる。巨大な値や本番に不要な上限の差し替え口は作らない。
+#[test]
+fn builder_sets_depend_on_successful_size_checked_combination() {
+    use benitoite::ir::core_ir::{CompKind, ValKind};
+    for (class, annotation, parameter, operation, combine) in [
+        (
+            "ListBuilder",
+            "ListBuilder[Integer]",
+            "Integer",
+            "append(builder: b, value: value)",
+            "List.append",
+        ),
+        (
+            "ListBuilder",
+            "ListBuilder[Integer]",
+            "List[Integer]",
+            "appendAll(builder: b, values: value)",
+            "List.concatenate",
+        ),
+        (
+            "BytesBuilder",
+            "BytesBuilder",
+            "Byte",
+            "append(builder: b, value: value)",
+            "Bytes.concatenate",
+        ),
+        (
+            "BytesBuilder",
+            "BytesBuilder",
+            "Bytes",
+            "appendAll(builder: b, bytes: value)",
+            "Bytes.concatenate",
+        ),
+    ] {
+        let source = format!(
+            "import Benitoite.{class}\nfunction append(value: {parameter}) -> Unit uses State\n bind b: {annotation} <- {class}.new()\n {class}.{operation}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            "builder-order.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        let core = pipeline::desugar_checked(&checked.program.unwrap()).unwrap();
+        assert!(benitoite::ir::check::check_program(&core).is_empty());
+        let def = core.defs.iter().find(|d| d.name == "append").unwrap();
+        let mut calls = Vec::new();
+        let mut pending = vec![(&def.body, None)];
+        while let Some((comp, result)) = pending.pop() {
+            match &comp.kind {
+                CompKind::Let { var, bound, body } => {
+                    pending.push((body, result));
+                    pending.push((bound, Some(var.id)));
+                }
+                CompKind::App { func, args, .. } => {
+                    if let ValKind::Builtin { id, .. } = &func.kind {
+                        calls.push((
+                            benitoite::builtins::table::builtin_decl(*id).unwrap().name,
+                            result,
+                            args,
+                        ));
+                    }
+                }
+                CompKind::Return(_) | CompKind::Escape(_) => {}
+                other @ (CompKind::Method(_)
+                | CompKind::If { .. }
+                | CompKind::Match { .. }
+                | CompKind::Use { .. }
+                | CompKind::Lazy { .. }
+                | CompKind::Handle(_)
+                | CompKind::Resume { .. }) => panic!("unexpected control flow: {other:?}"),
+            }
+        }
+        let get = calls
+            .iter()
+            .position(|(name, _, _)| *name == "Reference.get")
+            .unwrap();
+        let combine = calls
+            .iter()
+            .position(|(name, _, _)| *name == combine)
+            .unwrap();
+        let set = calls
+            .iter()
+            .position(|(name, _, _)| *name == "Reference.set")
+            .unwrap();
+        assert!(
+            get < combine && combine < set,
+            "{class}/{operation}: {calls:?}"
+        );
+        let next = calls[combine].1.unwrap();
+        assert!(
+            matches!(calls[set].2[1].kind, ValKind::Var(id) if id == next),
+            "{class}/{operation}: {calls:?}"
+        );
+        if class == "BytesBuilder" && parameter == "Byte" {
+            let fragment = calls
+                .iter()
+                .position(|(name, _, _)| *name == "Bytes.fromList")
+                .unwrap();
+            assert!(get < fragment && fragment < combine);
+            assert!(matches!(&calls[fragment].2[0].kind, ValKind::List(xs) if xs.len() == 1));
+        }
+        let compiled = pipeline::compile(&core, checked.sources).unwrap();
+        assert!(verify(&compiled).is_ok());
+    }
+}

@@ -50,6 +50,8 @@ Exit codes of `run`: 0 when `main` finishes, 1 when `main` returns `Result.Error
 3. Immediately before confirmation, run `benitoite test --check --report=json file.bnt` once. Apply the same report acceptance rules as for scripts, with `kind: "testCheckReport"`. If it fails, return to ordinary `test --check` while fixing the files, then obtain a fresh report before confirmation. Do the confirmation in [Before running](#before-running), using the union of the test functions' declared effects in `aggregateEffects.expanded`. Keep `Assert.Check` in the accepted set; it is part of the test contract.
 4. Run `benitoite test --allow-effects=<accepted names> file.bnt`. With this option, every entry must pass preparation and effect comparison before any test starts; a failure rejects the whole run. Fix it, inspect again, and show any added effects to the user before changing the allowed set. Without the option, a file with check errors is skipped while other files can run.
 
+To include documentation examples, keep `--doc` on both the inspection and execution commands. Require version 2 of `testCheckReport` and `testResults`; review the aggregate of ordinary tests and executable doc examples. Check/error examples add no execution permissions. See [Inspecting before execution](references/inspection.md) for the four modes, public imports, partial results, and summary counts.
+
 `test --check` rejects `--allow-effects`, `--max-call-stack`, and every `--wasm-*` option. `test --report=json` without `--check` is a usage error. An inspection writes no `test` or `testSummary` lines. When handling partial results, exit statuses, or executing-test summaries, read [Inspecting before execution](references/inspection.md).
 
 ## Before running
@@ -118,7 +120,7 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 - Experimental `@external("wasm", "path.wasm", "export")` functions use a binary import-free Component Model component and have no body or `end function`. Concrete records/data, flags as `Set` of argument-free constructors, and `Map` with WIT-compatible keys can cross the boundary. External resource types require `uses State`; other external calls are pure. The generated adapter counts packed bytes and separately limits logical value construction with the same `--wasm-transfer` value. See the WIT examples and limits in `references/idioms.md`.
 - Strings interpolate with `"${expression}"`. Comments start with `//`.
 - There is no `null`, no exception, and no loop statement. Use `Option`, `Result` with `try`, and `List.map`, `List.fold`, `List.forEach`, or recursion.
-- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Json.Codec`, `Failure`, `Test.Property`, `Csv`, `Regex`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
+- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Json.Codec`, `Failure`, `Test.Property`, `Csv`, `Regex`, `Scope`, `Range`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
 - Every function that performs an effect, directly or through a call, lists it after `uses`. Network effects (`Http.Connect`, `Http.Listen`) are not part of `IO.All`.
 - A statement whose value is not `Unit` is an error: handle each `Result` with `try`, `match`, or `bind _ <-`.
 - `Process.shell` runs its string with `/bin/sh -c`. Write only POSIX sh: no bash arrays, no `[[ ]]`, no `{a,b}` expansion, no `$'...'`. Prefer `Process.run` with an argument list when no shell feature is needed.
@@ -152,6 +154,18 @@ end function
 5 three
 first: one
 ```
+
+## Checked values and local builders
+
+Use public construction and inspection functions for opaque types; constructors, updates, patterns and automatic accessors are private to the owner module (E0340). Direct Regex/Scope calls reject known invalid inputs even in tests; pass invalid inputs through an ordinary function parameter to test runtime Error. Range retains runtime Result.Error for constants too. Scope proves spelling membership, not permission, DNS/filesystem identity or IO success. See `references/common-mistakes.md` and `references/stdlib/Scope.md` / `references/stdlib/Range.md`.
+
+Import `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. All operations, including copy/length, require State. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies preserve immutable structure, though referenced element cells are shared. There is no State elimination, clear/reserve/finish, or native-buffer speed guarantee. See the corresponding generated builder module reference for signatures.
+
+## Choosing collection and sequencing functions
+
+When the container is known, use `List.map/fold`, `Option.map/andThen`, or `Result.map/andThen/mapError`. Use the smallest class constraint needed only when one function must work with several containers: `Trait.Functor`, `Trait.Applicative`, or `Trait.Monad` for one type parameter; `Trait.Functor2`, `Trait.Applicative2`, or `Trait.Monad2` for two. Import `Benitoite.Trait` explicitly. The two-parameter classes transform `F[A, X]` while keeping `X`; their standard implementation is `Result`. They do not make `Result` usable with the one-parameter `Monad` or `Traversable`.
+
+Use `andThen/flatMap` to continue with a successful value, keeping the same error type (use `Result.mapError` to align different error types). Use `try … or return` to return a failure to the caller, `or die` to report it and end the run, and `Failure.toResult` to turn a typed `Failure.Fail[E]` into a `Result` and remove the handled Fail from the enclosing effect bound. These serve different purposes. For E0506 on the standard Fail, import `Benitoite.Unofficial.Failure`, call `Failure.toResult` inside `main` or the `@test` function, and remove the handled Fail from that entry's `uses` while keeping other effects. A user-defined effect named Fail or Log still needs its own handler. For display, comparison, and combination, choose concrete functions or `Show`/`Order`/other classes by their meaning: do not mechanically replace numeric `toString` with `Show`, or built-in Float comparisons with `Order[Float]`. See [Concrete and generic containers](references/idioms.md#concrete-and-generic-containers) for checked examples.
 
 ## Tests
 
@@ -206,13 +220,34 @@ callbacks are pure; runtime stops and interruptions propagate normally. Match
 an Error and return `Property.formatFailure(failure: ..., show: ...)` as the
 test's String error; show has type `function(value: T) -> String`. `test --check` executes no
 callbacks. Config uses an explicit seed and inclusive budgets: trials 1..10000,
-size 0..10000, maxShrinks 0..100000; invalid settings call no callbacks.
+size 0..10000, maxShrinks 0..100000, maxShrinkWork 0..1000000. Supply
+all five Config fields; start with maxShrinkWork: 10000 for small examples
+(the recommendation remains subject to performance measurement). Invalid settings
+call no callbacks. Shrinker.candidates returns ShrinkStep (Done/Yield/Skip),
+not List; write deferred continuations rather than collecting a whole list.
+The initial candidates call and each continuation cost one work unit; each
+candidate property call costs one work unit and one shrink. Either zero budget
+skips the shrinker, and both counters accumulate after failing candidates restart.
+An exhausted budget never calls a continuation just to discover Done. These
+budgets do not bound time or allocation within a callback.
 Integer generators include both endpoints, Float generators are finite, and
 nested container sizes are not total resource bounds. Shrinking counts all
 candidate trials, even cycles; the reduced input is not promised minimal.
-Keep the config, rule version, original/reduced input and messages for replay.
+Keep the config, libraryVersion (2.0.0), GENERATOR_VERSION for generated code,
+handwritten sources, original/reduced input and messages for replay. The same
+seed alone does not reproduce counterexamples across library versions.
 See `references/stdlib/Test.Property.md` for Gen/Shrinker fields and each API.
-The source repository includes a development derive tool for record codecs and
-Gen/Shrinker functions (see `tools/derive/README.md`). In an environment with
+The source repository includes a development derive tool for record codecs,
+Gen/Shrinker functions, and explicitly requested Show/Order implementations
+(see `tools/derive/README.md`). Show/Order target flags are independent booleans;
+targets are noncyclic records without type parameters, and every field needs
+the corresponding dictionary. Show uses field order and each field's quoting;
+Order stops at the first non-Equal field. Neither supplies builtin equality,
+key constraints, or a serialization format. Existing handwritten implementations
+are protected. An opaque record may explicitly request Show/Order in its owner
+module; review the proposed opaque display before applying it. Its declaration inventory
+and generation records use version 2; settings remain version 1. Review a fresh
+preview to migrate old records, and use handwritten checked construction for
+opaque types (including custom codecs/generators for opaque fields). In an environment with
 only the distributed executable and Skill, write these functions directly using
 Codec and Property APIs.

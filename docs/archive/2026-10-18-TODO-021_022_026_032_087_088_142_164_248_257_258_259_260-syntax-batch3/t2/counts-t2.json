@@ -1,0 +1,114 @@
+{
+  "base": "f0e6c71d29cbc8704093dcf5c355469ad50c4381",
+  "state": "t2",
+  "solver_sha256": "f01b117ec652aad72c2ef0254158dc07bd518cb5c9ff0172ea284b8a27a3db0d",
+  "probe_sha256": "822d878db28e09df3f5b71f2341062a734c0c47abc4143ce2866f7abaab571dd",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "--manifest-path",
+    "/Users/tecogonaz/src/Benitoite/target/t2/count/t2/Cargo.toml",
+    "--target-dir",
+    "/Users/tecogonaz/src/Benitoite/target/t2/count/build-t2",
+    "t2_count_probe::counts",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 81.129665958,
+  "cases": {
+    "chain-8": {
+      "zonks": 1,
+      "zonk_nodes": 9,
+      "finalized_nodes": 9,
+      "result": "EffectSet { failures: [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])], names: [], vars: [] }"
+    },
+    "function-8": {
+      "zonks": 4,
+      "zonk_nodes": 41,
+      "finalized_nodes": 31,
+      "result": "EffectSet { failures: [Fn(FnTy { param_names: [\"value\"], params: [Con(Builtin(BuiltinTypeId(8)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])], ret: Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])]), effects: EffectSet { failures: [Con(Builtin(BuiltinTypeId(2)), []), Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])]), Param(4)], names: [], vars: [EffVar(3)] } })], names: [], vars: [] }"
+    },
+    "chain-16": {
+      "zonks": 1,
+      "zonk_nodes": 17,
+      "finalized_nodes": 17,
+      "result": "EffectSet { failures: [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])], names: [], vars: [] }"
+    },
+    "function-16": {
+      "zonks": 4,
+      "zonk_nodes": 73,
+      "finalized_nodes": 55,
+      "result": "EffectSet { failures: [Fn(FnTy { param_names: [\"value\"], params: [Con(Builtin(BuiltinTypeId(8)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])], ret: Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])]), effects: EffectSet { failures: [Con(Builtin(BuiltinTypeId(2)), []), Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])]), Param(4)], names: [], vars: [EffVar(3)] } })], names: [], vars: [] }"
+    },
+    "chain-32": {
+      "zonks": 1,
+      "zonk_nodes": 33,
+      "finalized_nodes": 33,
+      "result": "EffectSet { failures: [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])], names: [], vars: [] }"
+    },
+    "function-32": {
+      "zonks": 4,
+      "zonk_nodes": 137,
+      "finalized_nodes": 103,
+      "result": "EffectSet { failures: [Fn(FnTy { param_names: [\"value\"], params: [Con(Builtin(BuiltinTypeId(8)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])], ret: Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])]), effects: EffectSet { failures: [Con(Builtin(BuiltinTypeId(2)), []), Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])]), Param(4)], names: [], vars: [EffVar(3)] } })], names: [], vars: [] }"
+    },
+    "chain-64": {
+      "zonks": 1,
+      "zonk_nodes": 65,
+      "finalized_nodes": 65,
+      "result": "EffectSet { failures: [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])], names: [], vars: [] }"
+    },
+    "function-64": {
+      "zonks": 4,
+      "zonk_nodes": 265,
+      "finalized_nodes": 199,
+      "result": "EffectSet { failures: [Fn(FnTy { param_names: [\"value\"], params: [Con(Builtin(BuiltinTypeId(8)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])], ret: Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])]), effects: EffectSet { failures: [Con(Builtin(BuiltinTypeId(2)), []), Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Adt(BindingId(123)), [Con(Builtin(BuiltinTypeId(2)), [])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])])]), Param(4)], names: [], vars: [EffVar(3)] } })], names: [], vars: [] }"
+    },
+    "unknown": {
+      "zonks": 1,
+      "zonk_nodes": 1,
+      "finalized_nodes": 1,
+      "result": "EffectSet { failures: [Con(Builtin(BuiltinTypeId(5)), [])], names: [], vars: [] }"
+    },
+    "error": {
+      "zonks": 1,
+      "zonk_nodes": 1,
+      "finalized_nodes": 1,
+      "result": "EffectSet { failures: [Con(Builtin(BuiltinTypeId(5)), [])], names: [], vars: [] }"
+    },
+    "parameter": {
+      "zonks": 1,
+      "zonk_nodes": 1,
+      "finalized_nodes": 1,
+      "result": "EffectSet { failures: [Param(2)], names: [], vars: [] }"
+    },
+    "rigid": {
+      "zonks": 1,
+      "zonk_nodes": 1,
+      "finalized_nodes": 1,
+      "result": "EffectSet { failures: [Rigid { clause: NodeId(17), index: 2 }], names: [], vars: [] }"
+    },
+    "unknown-head": {
+      "zonks": 1,
+      "zonk_nodes": 2,
+      "finalized_nodes": 2,
+      "result": "EffectSet { failures: [Con(Builtin(BuiltinTypeId(5)), [])], names: [], vars: [] }"
+    },
+    "parameter-head": {
+      "zonks": 1,
+      "zonk_nodes": 2,
+      "finalized_nodes": 2,
+      "result": "EffectSet { failures: [App(2, [Con(Builtin(BuiltinTypeId(2)), [])])], names: [], vars: [] }"
+    },
+    "unknown-contract": {
+      "zonks": 1,
+      "zonk_nodes": 2,
+      "finalized_nodes": 2,
+      "result": "EffectSet { failures: [Fn(FnTy { param_names: [], params: [], ret: Con(Builtin(BuiltinTypeId(5)), []), effects: EffectSet { failures: [], names: [], vars: [] } })], names: [], vars: [] }"
+    }
+  }
+}

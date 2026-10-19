@@ -90,6 +90,173 @@ end function
 fn scripts_update_values_return_unit_and_release_frames_and_cycles() {
     let cases = [
         (
+            "string builder snapshots and evaluation order",
+            r#"import Benitoite.StringBuilder
+function piece(count: Reference[Integer]) -> String uses State
+ Reference.set(reference: count, value: Reference.get(count) + 1)
+ return "é"
+end function
+"#,
+            r#"bind count <- Reference.new(0)
+ bind b: StringBuilder <- StringBuilder.new()
+ StringBuilder.append(text: piece(count), builder: b)
+ bind before <- StringBuilder.copy(b)
+ StringBuilder.appendAll(texts: [piece(count), "!"], builder: b)
+ bind after <- StringBuilder.copy(b)
+ StringBuilder.append(builder: b, text: if true then
+  StringBuilder.append(builder: b, text: "x")
+  StringBuilder.copy(b)
+ else "unreachable" end if)
+ bind action <- lambda() return before end lambda
+ return if before = "é" and after = "éé!" and action() = "é"
+  and StringBuilder.copy(b) = "éé!xéé!x"
+  and StringBuilder.byteLength(b) = 12 and Reference.get(count) = 2
+ then Result.Ok(()) else Result.Error("builder evaluation") end if"#,
+        ),
+        (
+            "list builder snapshots shared references and nested argument evaluation",
+            r#"import Benitoite.ListBuilder
+function collect[T](value: T) -> List[T] uses State
+ bind b: ListBuilder[T] <- ListBuilder.new()
+ ListBuilder.append(builder: b, value: value)
+ return ListBuilder.copy(b)
+end function
+"#,
+            r#"bind r <- Reference.new(1)
+ bind b: ListBuilder[Reference[Integer]] <- ListBuilder.new()
+ ListBuilder.append(value: r, builder: b)
+ bind before <- ListBuilder.copy(b)
+ ListBuilder.appendAll(values: collect(r), builder: b)
+ bind after <- ListBuilder.copy(b)
+ ListBuilder.appendAll(builder: b, values: if true then
+  ListBuilder.append(builder: b, value: r)
+  ListBuilder.copy(b)
+ else [] end if)
+ Reference.set(reference: r, value: 42)
+ bind f <- lambda() return List.length(before) end lambda
+ bind observed <- match before with
+ case [cell] -> Reference.get(cell)
+ case _ -> 0
+ end match
+ return if f() = 1 and List.length(after) = 2 and ListBuilder.length(b) = 6
+  and observed = 42 and List.length(collect("generic")) = 1
+ then Result.Ok(()) else Result.Error("list builder snapshots") end if"#,
+        ),
+        (
+            "bytes builder fragments and argument effects",
+            r#"import Benitoite.BytesBuilder
+function piece(count: Reference[Integer]) -> Byte uses State
+ Reference.set(reference: count, value: Reference.get(count) + 1)
+ return 0xafu8
+end function
+"#,
+            r#"bind count <- Reference.new(0)
+ bind b: BytesBuilder <- BytesBuilder.new()
+ BytesBuilder.append(value: piece(count), builder: b)
+ bind before <- BytesBuilder.copy(b)
+ BytesBuilder.appendAll(bytes: Bytes.fromList([piece(count), 0x00u8]), builder: b)
+ bind after <- BytesBuilder.copy(b)
+ BytesBuilder.appendAll(builder: b, bytes: if true then
+  BytesBuilder.append(builder: b, value: 0xffu8)
+  BytesBuilder.copy(b)
+ else Bytes.empty() end if)
+ bind f <- lambda() return before end lambda
+ bind cached <- lazy Bytes.toHex(before) end lazy
+ return if Lazy.force(cached) = "af" and Bytes.toHex(f()) = "af" and Bytes.toHex(after) = "afaf00"
+  and Bytes.toHex(BytesBuilder.copy(b)) = "afaf00ffafaf00ff"
+  and BytesBuilder.length(b) = 8 and Reference.get(count) = 2
+ then Result.Ok(()) else Result.Error("bytes builder evaluation") end if"#,
+        ),
+        (
+            "builder continuation resume and drop with multiple cells",
+            r#"import Benitoite.ListBuilder
+import Benitoite.BytesBuilder
+effect Ask
+ function ask() -> Integer
+end effect
+"#,
+            r#"bind xs: ListBuilder[Integer] <- ListBuilder.new()
+ bind bs: BytesBuilder <- BytesBuilder.new()
+ ListBuilder.append(builder: xs, value: 1)
+ bind n <- handle
+  ListBuilder.append(builder: xs, value: ask())
+  BytesBuilder.append(builder: bs, value: 0x02u8)
+  ListBuilder.length(xs)
+ with
+ case ask() ->
+  bind local: BytesBuilder <- BytesBuilder.new()
+  BytesBuilder.append(builder: local, value: 0x03u8)
+  bind snapshot <- BytesBuilder.copy(local)
+  bind result <- resume(2)
+  result + BytesBuilder.length(local) + Bytes.length(snapshot)
+ end handle
+ bind dropped <- handle
+  ListBuilder.appendAll(builder: xs, values: [ask(), 99])
+  BytesBuilder.append(builder: bs, value: 0xffu8)
+  1000
+ with
+ case ask() ->
+  bind local: ListBuilder[Integer] <- ListBuilder.new()
+  ListBuilder.append(builder: local, value: 7)
+  ListBuilder.length(local)
+ end handle
+ return if n = 4 and dropped = 1 and ListBuilder.copy(xs) = [1, 2]
+  and Bytes.toHex(BytesBuilder.copy(bs)) = "02"
+ then Result.Ok(()) else Result.Error("builder continuation") end if"#,
+        ),
+        (
+            "builders survive return fail and task cancellation",
+            r#"import Benitoite.ListBuilder
+import Benitoite.BytesBuilder
+import Benitoite.Unofficial.Failure
+effect Abort
+ function abort() -> Unit
+end effect
+function early() -> List[Integer] uses State
+ bind b: ListBuilder[Integer] <- ListBuilder.new()
+ ListBuilder.append(builder: b, value: 5)
+ return ListBuilder.copy(b)
+end function
+function fail(saved: Reference[Bytes]) -> Unit uses State, Failure.Fail[String]
+ bind b: BytesBuilder <- BytesBuilder.new()
+ BytesBuilder.append(builder: b, value: 0x06u8)
+ Reference.set(reference: saved, value: BytesBuilder.copy(b))
+ Failure.raise("expected")
+end function
+function wait(ready: Reference[Boolean]) -> Unit uses State
+ if Reference.get(ready) then return () end if
+ return wait(ready)
+end function
+function spin() -> Unit
+ return spin()
+end function
+"#,
+            r#"bind saved <- Reference.new(Bytes.empty())
+ bind result <- Failure.toResult(body: lambda() return fail(saved) end lambda)
+ bind ready <- Reference.new(false)
+ bind _ <- handle
+  with group = TaskGroup.open() do
+   bind _ <- TaskGroup.spawn(group: group, action: lambda()
+    bind b: ListBuilder[Integer] <- ListBuilder.new()
+    ListBuilder.appendAll(builder: b, values: [7, 8])
+    Reference.set(reference: ready, value: ListBuilder.length(b) = 2)
+    spin()
+    return ListBuilder.copy(b)
+   end lambda)
+   wait(ready)
+   abort()
+  end with
+ with
+ case abort() -> ()
+ end handle
+ bind after: BytesBuilder <- BytesBuilder.new()
+ BytesBuilder.append(builder: after, value: 0x09u8)
+ return if early() = [5] and result = Result.Error("expected")
+  and Bytes.toHex(Reference.get(saved)) = "06" and Reference.get(ready)
+  and Bytes.toHex(BytesBuilder.copy(after)) = "09"
+ then Result.Ok(()) else Result.Error("builder control cleanup") end if"#,
+        ),
+        (
             "update result",
             "",
             "bind r <- Reference.new(3)\n bind u <- Reference.update(reference: r, f: lambda(value: Integer) -> Integer return value + 7 end lambda)\n Reference.set(reference: r, value: Reference.get(r) * 2)\n return if u = () and Reference.get(r) = 20 then Result.Ok(()) else Result.Error(\"update\") end if",

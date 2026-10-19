@@ -18,6 +18,7 @@ pub(super) struct Ctx {
     pub(super) scopes: Vec<BTreeMap<String, BindingId>>,
     pub(super) used: Vec<(BindingId, Span)>,
     pub(super) record_values: bool,
+    pub(super) builder_boundary: Option<(NodeId, &'static str, Span)>,
 }
 
 impl Ctx {
@@ -29,6 +30,7 @@ impl Ctx {
             scopes: Vec::new(),
             used: Vec::new(),
             record_values: true,
+            builder_boundary: None,
         }
     }
     pub(super) fn local(&self, name: &str) -> Option<BindingId> {
@@ -291,6 +293,9 @@ impl Resolver<'_> {
         path: &[Name],
         position: Position,
     ) -> Option<BindingId> {
+        if self.builder_name(ctx, node, path) {
+            return None;
+        }
         let id = self.raw_name(ctx, node, path, position)?;
         self.checked_name(ctx, node, path, position, id)
     }
@@ -303,6 +308,9 @@ impl Resolver<'_> {
         position: Position,
         id: BindingId,
     ) -> Option<BindingId> {
+        if self.reject_opaque(ctx, path, position, id) {
+            return None;
+        }
         let binding = self.out.bindings.get(id)?;
         if !position.accepts(binding.kind)
             && !(ctx.record_values
@@ -342,6 +350,69 @@ impl Resolver<'_> {
         Some(id)
     }
 
+    // 型名の公開と内部表現の利用を分ける。メンバーの印を複製せず親型の所有元で判定する。
+    fn reject_opaque(
+        &mut self,
+        ctx: &Ctx,
+        path: &[Name],
+        position: Position,
+        id: BindingId,
+    ) -> bool {
+        if !matches!(
+            position,
+            Position::Value | Position::Ctor | Position::Record
+        ) {
+            return false;
+        }
+        let Some(binding) = self.out.bindings.get(id) else {
+            return false;
+        };
+        let parent = match binding.kind {
+            BindingKind::Ctor { data, .. } => data,
+            BindingKind::Field { record, .. } => record,
+            BindingKind::Record => id,
+            BindingKind::Fn
+            | BindingKind::BuiltinFn(_)
+            | BindingKind::ImplFn { .. }
+            | BindingKind::Const
+            | BindingKind::Data
+            | BindingKind::BuiltinType(_)
+            | BindingKind::Alias
+            | BindingKind::ExternalType
+            | BindingKind::Trait
+            | BindingKind::Method { .. }
+            | BindingKind::Effect
+            | BindingKind::BuiltinEffect(_)
+            | BindingKind::Op { .. }
+            | BindingKind::Module(_)
+            | BindingKind::NamespaceRoot
+            | BindingKind::TypeParam { .. }
+            | BindingKind::EffectVar { .. }
+            | BindingKind::Local(_) => return false,
+        };
+        let Some(owner) = self.out.bindings.get(parent) else {
+            return false;
+        };
+        if !owner.opaque || owner.module == ctx.module {
+            return false;
+        }
+        let (Some(first), Some(last), Some(module)) =
+            (path.first(), path.last(), self.modules.get(owner.module))
+        else {
+            return false;
+        };
+        let mut diagnostic = DiagBuilder::new(DiagCode::E0340)
+            .arg("type", &owner.name)
+            .arg("module", module.name.dotted())
+            .primary(first.span.to(last.span))
+            .help("public_api");
+        if let Some(span) = owner.span {
+            diagnostic = diagnostic.secondary(span, "declared");
+        }
+        self.out.diagnostics.push(diagnostic.build());
+        true
+    }
+
     /// レコードと直接のデータ構成子は束縛の種類で区別する（設計書 02-04「名前の引き方」）。
     pub(super) fn record_call_name(
         &mut self,
@@ -352,6 +423,9 @@ impl Resolver<'_> {
     ) -> Option<BindingId> {
         let raw = self.raw_name(ctx, node, path, Position::Record)?;
         let id = self.final_name(raw, Position::Ctor);
+        if self.reject_opaque(ctx, path, Position::Value, id) {
+            return None;
+        }
         if self
             .out
             .bindings

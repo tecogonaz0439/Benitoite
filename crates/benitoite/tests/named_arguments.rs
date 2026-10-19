@@ -4,6 +4,148 @@
 use benitoite::diag::DiagCode as C;
 use benitoite::pipeline::{self, CheckOptions};
 
+// 関門: 読み込み済みの標準モジュールも、使用元のimportなしには参照できない。
+// 構築器の既存例は全てimport済みであり、他モジュールからの漏れを捕まえない。
+// 公開checkを通し、専用の本番APIやファイルシステムの差し替えを追加しない。
+#[test]
+fn builders_require_import_in_the_using_module() {
+    for (module, annotation, create) in [
+        ("StringBuilder", "StringBuilder", "new()"),
+        ("ListBuilder", "ListBuilder[Integer]", "new()"),
+        ("BytesBuilder", "BytesBuilder", "new()"),
+        (
+            "Unofficial.Regex",
+            "Unofficial.Regex.Pattern",
+            "compile(\"x\")",
+        ),
+    ] {
+        for imported_elsewhere in [false, true] {
+            let dependency = if imported_elsewhere {
+                "import Other\n"
+            } else {
+                ""
+            };
+            let (annotation, expression) = if module == "Unofficial.Regex" {
+                (
+                    format!("Result[Benitoite.{annotation}, String]"),
+                    format!("Benitoite.{module}.{create}"),
+                )
+            } else {
+                (
+                    format!("Benitoite.{annotation}"),
+                    format!("Benitoite.{module}.{create}"),
+                )
+            };
+            let source = format!(
+                "{dependency}function example() -> Unit uses State\n bind b: {annotation} <- {expression}\nend function\n"
+            );
+            let other = format!("import Benitoite.{module}\n");
+            let result = pipeline::check_files(
+                &[
+                    ("main.bnt", source.as_bytes()),
+                    ("Other.bnt", other.as_bytes()),
+                ],
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+            );
+            let codes: Vec<_> = result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect();
+            assert_eq!(
+                codes,
+                [C::E0303, C::E0303],
+                "{module}, imported elsewhere={imported_elsewhere}: {:?}",
+                result.diagnostics
+            );
+            assert!(result.program.is_none());
+        }
+    }
+}
+
+// 関門: 二引数クラスが第二の型とラベルを保ち、種類・実装一意性の既存診断へ到達する。
+// 実行順と値はgolden、辞書の型と番号はdesugar_exportが担う。
+#[test]
+fn binary_traits_preserve_error_types_kinds_and_callback_names() {
+    for (name, source, expected) in [
+        (
+            "error-type",
+            "function wrong(x: Result[Integer, String]) -> Result[Integer, String]\n return Trait.Monad2.flatMap(x: x, f: lambda(value)\n bind other: Result[Integer, Integer] <- Result.Error(value)\n return other\n end lambda)\nend function",
+            vec![C::E0401],
+        ),
+        (
+            "unary-kind",
+            "function unary[F[_]: Trait.Monad, A](x: F[A]) -> F[A]\n return x\nend function\nfunction wrong(x: Result[Integer, String]) -> Result[Integer, String]\n return unary(x)\nend function",
+            vec![C::E0407, C::E0401],
+        ),
+        (
+            "unary-constraint",
+            "function wrong[F[_, _]: Trait.Monad, A, X](x: F[A, X]) -> F[A, X]\n return x\nend function",
+            vec![C::E0427],
+        ),
+        (
+            "binary-kind",
+            "implement Trait.Monad2[Option]\n function flatMap[A, B, X, effect E](x: Option[A], f: function(value: A) -> Option[B] uses E) -> Option[B] uses E\n return Option.andThen(o: x, f: f)\n end function\nend implement",
+            vec![C::E0427],
+        ),
+        (
+            "standard-orphan",
+            "implement Trait.Monad2[Result]\n function flatMap[A, B, X, effect E](x: Result[A, X], f: function(value: A) -> Result[B, X] uses E) -> Result[B, X] uses E\n return Result.andThen(r: x, f: f)\n end function\nend implement",
+            vec![C::E0701],
+        ),
+        (
+            "duplicate",
+            "trait Binary[F[_, _]]\n function pure[A, X](x: A) -> F[A, X]\nend trait\nimplement Binary[Result]\n function pure[A, X](x: A) -> Result[A, X]\n return Result.Ok(x)\n end function\nend implement\nimplement Binary[Result]\n function pure[A, X](x: A) -> Result[A, X]\n return Result.Ok(x)\n end function\nend implement",
+            vec![C::E0702],
+        ),
+        (
+            "callback-name",
+            "function wrong(x: Result[Integer, String]) -> Result[Integer, String]\n return Trait.Functor2.map(x: x, f: lambda(other) return other end lambda)\nend function",
+            vec![C::E0454],
+        ),
+        (
+            "transparent-applied",
+            "type Alias[A, X] = Result[A, X]\nfunction mapped(x: Alias[Integer, String]) -> Alias[Integer, String]\n return Trait.Functor2.map(f: lambda(value) return value * 2 end lambda, x: x)\nend function",
+            vec![],
+        ),
+        (
+            "alias-constructor",
+            "type Alias[A, X] = Result[A, X]\ntrait Binary[F[_, _]]\n function pure[A, X](x: A) -> F[A, X]\nend trait\nimplement Binary[Alias]\n function pure[A, X](x: A) -> Result[A, X]\n return Result.Ok(x)\n end function\nend implement",
+            vec![C::E0410, C::E0712],
+        ),
+    ] {
+        let source = format!("import Benitoite.Trait\n{source}\n");
+        let result = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{name}: {:?}",
+            result.diagnostics
+        );
+        assert_eq!(result.program.is_some(), expected.is_empty(), "{name}");
+        if let Some(program) = result.program {
+            let core = pipeline::desugar_checked(&program).unwrap();
+            assert!(benitoite::ir::check::check_program(&core).is_empty());
+        }
+    }
+}
+
 // 関門: ラベルを局所参照にせず、一般 parser から対応の診断へ到達することを守る。
 // 準備した AST の型検査では parser・名前解決の接続漏れを捕まえられない。
 // 公開のパイプラインを使い、本番の差し込み口を増やさない。
@@ -1027,6 +1169,544 @@ fn final_higher_order_contracts_preserve_parameter_order() {
             assert_eq!(end.end, EndKind::Returned, "{end:?}");
             assert_eq!(end.exit_code, 0, "{end:?}");
             assert!(end.reports.is_empty(), "{end:?}");
+        }
+    }
+}
+
+// 関門: 専用名が通常値へ混入せず、捕捉境界で拒否されることと既存の引数診断を
+// 公開パイプラインで確かめる。実行・安全点は vm_reference_cells の担当とする。
+#[test]
+fn string_builders_keep_second_class_values_and_capture_boundaries() {
+    let helpers = r#"
+function g(text: String, unit: Unit) -> Unit
+ return ()
+end function
+function f(size: Integer, unit: Unit) -> Unit
+ return ()
+end function
+function choose(text: String) -> function(unit: Unit) -> Unit
+ return lambda(unit) return () end lambda
+end function
+function start(action: function(unit: Unit) -> Unit uses State) -> Unit uses State
+ action(())
+end function
+effect Ask
+ function ask() -> Unit
+end effect
+"#;
+    for (name, body, expected) in [
+        ("return", "return b", vec![C::E0464]),
+        ("ordinary-alias", "bind alias <- b", vec![C::E0464]),
+        ("list-storage", "bind xs <- [b]", vec![C::E0464]),
+        (
+            "reference-storage",
+            "bind r <- Reference.new(b)",
+            vec![C::E0464],
+        ),
+        (
+            "inferred-argument",
+            "bind r <- Option.Some(b)",
+            vec![C::E0464],
+        ),
+        (
+            "comparison",
+            "bind equal <- b = b",
+            vec![C::E0464, C::E0464],
+        ),
+        ("interpolation", "bind s <- \"${b}\"", vec![C::E0464]),
+        (
+            "lambda",
+            "bind action <- lambda() return StringBuilder.copy(b) end lambda",
+            vec![C::E0465],
+        ),
+        (
+            "lazy",
+            "bind value <- lazy\n StringBuilder.copy(b)\nend lazy",
+            vec![C::E0465],
+        ),
+        (
+            "partial-argument",
+            "bind action <- g(text: StringBuilder.copy(b), unit: _)",
+            vec![C::E0465],
+        ),
+        (
+            "partial-callee",
+            "bind action <- (choose(StringBuilder.copy(b)))(_)",
+            vec![C::E0465],
+        ),
+        (
+            "partial-constructor",
+            "bind action <- Pair.Pair(StringBuilder.copy(b), _)",
+            vec![C::E0465],
+        ),
+        (
+            "task-callback",
+            "start(f(size: StringBuilder.byteLength(b), unit: _))",
+            vec![C::E0465],
+        ),
+        (
+            "failure-clause",
+            "handle\n Failure.raise(\"error\")\nwith\ncase Failure.raise(error) ->\n bind snapshot <- StringBuilder.copy(b)\n ()\nend handle",
+            vec![C::E0465],
+        ),
+        (
+            "handler-clause",
+            "handle\n ask()\nwith\ncase ask() ->\n bind snapshot <- StringBuilder.copy(b)\n resume(())\nend handle",
+            vec![C::E0465],
+        ),
+        (
+            "operation-value",
+            "bind action <- StringBuilder.append",
+            vec![C::E0466],
+        ),
+        (
+            "new-hole",
+            "bind action <- StringBuilder.new(_)",
+            vec![C::E0466],
+        ),
+        (
+            "new-value",
+            "bind action <- StringBuilder.new",
+            vec![C::E0466],
+        ),
+        (
+            "operation-hole",
+            "bind action <- StringBuilder.append(builder: b, text: _)",
+            vec![C::E0466],
+        ),
+        (
+            "operation-pipe",
+            "bind value <- b |> StringBuilder.copy",
+            vec![C::E0466],
+        ),
+        (
+            "ordinary-target",
+            "bind value <- StringBuilder.copy(\"ordinary\")",
+            vec![C::E0464],
+        ),
+        (
+            "missing-target",
+            "StringBuilder.append(text: \"x\")",
+            vec![C::E0453],
+        ),
+        (
+            "unknown-label",
+            "StringBuilder.append(builder: b, wrong: \"x\")",
+            vec![C::E0451],
+        ),
+        (
+            "duplicate-label",
+            "StringBuilder.append(builder: b, text: \"x\", text: \"y\")",
+            vec![C::E0452],
+        ),
+        (
+            "positional",
+            "StringBuilder.append(b, \"x\")",
+            vec![C::E0449],
+        ),
+        (
+            "mixed",
+            "StringBuilder.append(b, text: \"x\")",
+            vec![C::E0450],
+        ),
+        (
+            "wrong-type",
+            "StringBuilder.append(builder: b, text: 1)",
+            vec![C::E0401],
+        ),
+        (
+            "wrong-list-type",
+            "StringBuilder.appendAll(builder: b, texts: [1])",
+            vec![C::E0401],
+        ),
+        (
+            "ordinary-annotation",
+            "bind s: StringBuilder <- \"x\"",
+            vec![C::E0463],
+        ),
+        (
+            "new-without-annotation",
+            "bind other <- StringBuilder.new()",
+            vec![C::E0463],
+        ),
+        (
+            "new-unknown-label",
+            "bind other: StringBuilder <- StringBuilder.new(value: 1)",
+            vec![C::E0451],
+        ),
+        (
+            "new-with-argument",
+            "bind other: StringBuilder <- StringBuilder.new(1)",
+            vec![C::E0402],
+        ),
+        ("shadow-alias", "shadow b <- b", vec![C::E0464]),
+        (
+            "copy-before-partials",
+            "bind snapshot <- StringBuilder.copy(b)\n bind size <- StringBuilder.byteLength(b)\n bind a <- g(text: snapshot, unit: _)\n bind c <- (choose(snapshot))(_)\n bind d <- Pair.Pair(snapshot, _)\n start(f(size: size, unit: _))",
+            vec![],
+        ),
+        (
+            "inner-local",
+            "bind action <- lambda()\n bind inner: StringBuilder <- StringBuilder.new()\n StringBuilder.append(builder: inner, text: \"x\")\n return StringBuilder.copy(inner)\nend lambda",
+            vec![],
+        ),
+        (
+            "if-match-body",
+            "if true then\n StringBuilder.append(builder: b, text: \"a\")\nend if\nmatch true with\ncase true -> StringBuilder.append(builder: b, text: \"b\")\ncase false -> ()\nend match",
+            vec![],
+        ),
+        (
+            "last-bind",
+            "bind last: StringBuilder <- StringBuilder.new()",
+            vec![],
+        ),
+    ] {
+        let source = format!(
+            "import Benitoite.StringBuilder\nimport Benitoite.Pair\nimport Benitoite.Unofficial.Failure\n{helpers}\nfunction example() -> Unit uses State\n bind b: StringBuilder <- StringBuilder.new()\n {body}\nend function\n"
+        );
+        let result = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{name}: {:?}",
+            result.diagnostics
+        );
+        assert_eq!(result.program.is_some(), expected.is_empty(), "{name}");
+        if expected == [C::E0465] {
+            let d = result
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(C::E0465))
+                .unwrap();
+            assert_eq!(d.secondary.len(), 2, "{name}: {d:?}");
+            assert_eq!(
+                d.secondary[0].span.start.0 as usize,
+                source.find("b: StringBuilder").unwrap(),
+                "{name}"
+            );
+            let primary = &d.primary.as_ref().unwrap().span;
+            assert_eq!(
+                &source[primary.start.0 as usize..primary.end.0 as usize],
+                "b",
+                "{name}"
+            );
+        }
+        if let Some(program) = result.program {
+            let core = pipeline::desugar_checked(&program).unwrap();
+            assert!(
+                benitoite::ir::check::check_program(&core).is_empty(),
+                "{name}"
+            );
+        }
+    }
+    for (name, source, expected) in [
+        (
+            "state",
+            "function example() -> Unit\n bind b: StringBuilder <- StringBuilder.new()\nend function",
+            vec![C::E0501],
+        ),
+        (
+            "type-position",
+            "function example(b: StringBuilder) -> Unit\n return ()\nend function",
+            vec![C::E0464],
+        ),
+        (
+            "type-argument",
+            "function example(xs: List[StringBuilder]) -> Unit\n return ()\nend function",
+            vec![C::E0464],
+        ),
+        ("alias", "type BuilderAlias = StringBuilder", vec![C::E0464]),
+        (
+            "import-alias",
+            "function example() -> Unit uses State\n bind b: SB <- SB.new()\n SB.append(builder: b, text: \"x\")\nend function",
+            vec![],
+        ),
+    ] {
+        let import = if name == "import-alias" {
+            "import Benitoite.StringBuilder as SB"
+        } else {
+            "import Benitoite.StringBuilder"
+        };
+        let source = format!("{import}\n{source}\n");
+        let result = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{name}: {:?}",
+            result.diagnostics
+        );
+    }
+}
+
+// 関門: List の要素型と三種類の同一性は String の既存表では検査できない。
+// 公開の検査・独立 IR 検査・命令検証まで通し、実行は vm_reference_cells が担う。
+#[test]
+fn list_and_bytes_builders_keep_types_and_boundaries() {
+    for (class, annotation, item, all_label, all, ordinary) in [
+        (
+            "ListBuilder",
+            "ListBuilder[Integer]",
+            "1",
+            "values",
+            "[2, 3]",
+            "List[Integer]",
+        ),
+        (
+            "BytesBuilder",
+            "BytesBuilder",
+            "0x01u8",
+            "bytes",
+            "Bytes.fromList([0x02u8])",
+            "Bytes",
+        ),
+    ] {
+        for (name, body, expected) in [
+            (
+                "append",
+                format!(
+                    "{class}.append(value: {item}, builder: b)\n {class}.appendAll({all_label}: {all}, builder: b)\n bind snapshot <- {class}.copy(b)\n bind size <- {class}.length(b)"
+                ),
+                vec![],
+            ),
+            (
+                "ordinary-target",
+                format!("bind snapshot <- {class}.copy(\"ordinary\")"),
+                vec![C::E0464],
+            ),
+            (
+                "ordinary-append-target",
+                format!("{class}.append(builder: \"ordinary\", value: {item})"),
+                vec![C::E0464],
+            ),
+            ("return", "return b".into(), vec![C::E0464]),
+            ("storage", "bind xs <- [b]".into(), vec![C::E0464]),
+            (
+                "lambda",
+                format!("bind f <- lambda() return {class}.copy(b) end lambda"),
+                vec![C::E0465],
+            ),
+            (
+                "lazy",
+                format!("bind v <- lazy {class}.copy(b) end lazy"),
+                vec![C::E0465],
+            ),
+            (
+                "partial",
+                format!("bind f <- keep(value: {class}.copy(b), unit: _)"),
+                vec![C::E0465],
+            ),
+            (
+                "partial-callee",
+                format!("bind f <- (choose({class}.copy(b)))(_ )"),
+                vec![C::E0465],
+            ),
+            (
+                "partial-constructor",
+                format!("bind f <- Pair.Pair({class}.copy(b), _)"),
+                vec![C::E0465],
+            ),
+            (
+                "handler-capture",
+                format!(
+                    "handle\n ask()\nwith\ncase ask() ->\n bind snapshot <- {class}.copy(b)\n resume(())\nend handle"
+                ),
+                vec![C::E0465],
+            ),
+            (
+                "operation-hole",
+                format!("bind f <- {class}.append(builder: b, value: _)"),
+                vec![C::E0466],
+            ),
+            (
+                "operation-value",
+                format!("bind f <- {class}.copy"),
+                vec![C::E0466],
+            ),
+            (
+                "pipe",
+                format!("bind v <- b |> {class}.copy"),
+                vec![C::E0466],
+            ),
+            (
+                "wrong-element",
+                format!("{class}.append(builder: b, value: \"wrong\")"),
+                vec![C::E0401],
+            ),
+            (
+                "wrong-label",
+                format!("{class}.append(builder: b, text: {item})"),
+                vec![C::E0451],
+            ),
+            (
+                "kind",
+                "bind s: StringBuilder <- StringBuilder.new()\n bind v <- StringBuilder.copy(b)"
+                    .into(),
+                vec![C::E0464],
+            ),
+            (
+                "inner-new",
+                format!(
+                    "bind f <- lambda()\n bind inner: {annotation} <- {class}.new()\n {class}.append(builder: inner, value: {item})\n return {class}.copy(inner)\nend lambda"
+                ),
+                vec![],
+            ),
+            (
+                "prior-copy",
+                format!(
+                    "bind snapshot <- {class}.copy(b)\n bind f <- keep(value: snapshot, unit: _)"
+                ),
+                vec![],
+            ),
+            (
+                "branches",
+                format!(
+                    "if true then\n {class}.append(builder: b, value: {item})\nend if\nmatch true with\ncase true -> {class}.appendAll(builder: b, {all_label}: {all})\ncase false -> ()\nend match"
+                ),
+                vec![],
+            ),
+            (
+                "last-bind",
+                format!("bind last: {annotation} <- {class}.new()"),
+                vec![],
+            ),
+        ] {
+            let source = format!(
+                "import Benitoite.{class}\nimport Benitoite.StringBuilder\nimport Benitoite.Bytes\nimport Benitoite.Pair\neffect Ask\n function ask() -> Unit\nend effect\nfunction keep(value: {ordinary}, unit: Unit) -> Unit\n return ()\nend function\nfunction choose(value: {ordinary}) -> function(unit: Unit) -> Unit\n return lambda(unit) return () end lambda\nend function\nfunction example() -> Unit uses State\n bind b: {annotation} <- {class}.new()\n {body}\nend function\n"
+            );
+            let checked = pipeline::check_text(
+                name,
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+            );
+            assert_eq!(
+                checked
+                    .diagnostics
+                    .iter()
+                    .filter(|d| d.is_error())
+                    .filter_map(|d| d.code)
+                    .collect::<Vec<_>>(),
+                expected,
+                "{class}/{name}: {:?}",
+                checked.diagnostics
+            );
+            assert_eq!(
+                checked.program.is_some(),
+                expected.is_empty(),
+                "{class}/{name}"
+            );
+            if expected == [C::E0465] {
+                let d = checked
+                    .diagnostics
+                    .iter()
+                    .find(|d| d.code == Some(C::E0465))
+                    .unwrap();
+                assert_eq!(d.secondary.len(), 2, "{class}/{name}: {d:?}");
+            }
+            if let Some(program) = checked.program {
+                let core = pipeline::desugar_checked(&program).unwrap();
+                assert!(
+                    benitoite::ir::check::check_program(&core).is_empty(),
+                    "{class}/{name}"
+                );
+                let bytecode = pipeline::compile(&core, checked.sources).unwrap();
+                assert!(
+                    benitoite::bytecode::verify::verify(&bytecode).is_ok(),
+                    "{class}/{name}"
+                );
+            }
+        }
+    }
+    for (name, source, expected) in [
+        (
+            "missing-element",
+            "function f() -> Unit uses State\n bind b: ListBuilder <- ListBuilder.new()\nend function",
+            vec![C::E0463],
+        ),
+        (
+            "builder-element",
+            "function f() -> Unit uses State\n bind b: ListBuilder[BytesBuilder] <- ListBuilder.new()\nend function",
+            vec![C::E0464],
+        ),
+        (
+            "wrong-new",
+            "function f() -> Unit uses State\n bind b: ListBuilder[Integer] <- BytesBuilder.new()\nend function",
+            vec![C::E0463],
+        ),
+        (
+            "state",
+            "function f() -> Unit\n bind b: BytesBuilder <- BytesBuilder.new()\nend function",
+            vec![C::E0501],
+        ),
+        ("alias", "type B = ListBuilder[Integer]", vec![C::E0464]),
+        (
+            "import-alias",
+            "function f() -> Unit uses State\n bind b: LB[Integer] <- LB.new()\n LB.append(builder: b, value: 1)\n bind c: BB <- BB.new()\n BB.append(builder: c, value: 0x01u8)\nend function",
+            vec![],
+        ),
+        (
+            "generic",
+            "function f[T](value: T) -> List[T] uses State\n bind b: ListBuilder[T] <- ListBuilder.new()\n ListBuilder.append(builder: b, value: value)\n return ListBuilder.copy(b)\nend function",
+            vec![],
+        ),
+    ] {
+        let imports = if name == "import-alias" {
+            "import Benitoite.ListBuilder as LB\nimport Benitoite.BytesBuilder as BB"
+        } else {
+            "import Benitoite.ListBuilder\nimport Benitoite.BytesBuilder"
+        };
+        let source = format!("{imports}\n{source}\n");
+        let checked = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{name}: {:?}",
+            checked.diagnostics
+        );
+        if let Some(program) = checked.program {
+            let core = pipeline::desugar_checked(&program).unwrap();
+            assert!(
+                benitoite::ir::check::check_program(&core).is_empty(),
+                "{name}"
+            );
         }
     }
 }

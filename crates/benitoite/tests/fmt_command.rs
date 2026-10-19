@@ -165,6 +165,29 @@ fn check_reports_without_rewriting() {
     assert_eq!(dir.read("a.bnt"), UNFORMATTED);
 }
 
+// 関門: 型引数内のusesの行と次の型引数を区切り、整形後も同じ契約を検査できる。
+#[test]
+fn fmt_keeps_parenthesized_effectful_function_type_arguments() {
+    let dir = TestDirectory::new("binary-function-type");
+    let source = "import Benitoite.Trait\nfunction apply[A,B,X,effect E](fs:Result[(function(value:A)->B uses E),X],x:Result[A,X])->Result[B,X] uses E\nreturn Trait.Applicative2.apply(fs:fs,x:x)\nend function\nfunction main()->Unit\n()\nend function\n";
+    dir.write("apply.bnt", source);
+    let output = fmt(&dir, &["apply.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert!(output.stdout.is_empty());
+    assert!(output.stderr.is_empty());
+    let formatted = dir.read("apply.bnt");
+    assert!(formatted.contains("Result[(function(value: A) -> B uses E), X]"));
+    let output = Command::new(env!("CARGO_BIN_EXE_benitoite"))
+        .current_dir(&dir.path)
+        .args(["check", "apply.bnt"])
+        .output()
+        .unwrap();
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    let output = fmt(&dir, &["--check", "apply.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(dir.read("apply.bnt"), formatted);
+}
+
 #[test]
 fn directory_expands_to_sorted_bnt_files_only() {
     let dir = TestDirectory::new("directory_expands_to_sorted_bnt_files_only");
@@ -486,4 +509,44 @@ fn directory_walk_formats_package_settings() {
     );
     let output = fmt(&dir, &["--check", "."]);
     assert_eq!(code(&output), 0, "{}", stderr(&output));
+}
+
+// 属性・doc・公開修飾の順序を、保存したソースと再整形の結果で守る。
+// opaqueを落とす整形は通常の構文整形テストでは検出できない。CLI以外の差し込み口は不要。
+#[test]
+fn opaque_attribute_survives_formatting_with_docs_and_visibility() {
+    let dir = TestDirectory::new("opaque");
+    let expected =
+        "/// Checked value.\n@opaque()\npublic(package) record Box[T]\n  raw: T\nend record\n";
+    dir.write(
+        "model.bnt",
+        "/// Checked value.\n@opaque()\npublic(package) record Box[T]\n raw:T\nend record\n",
+    );
+    let output = fmt(&dir, &["model.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(dir.read("model.bnt"), expected);
+    let output = fmt(&dir, &["--check", "model.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(dir.read("model.bnt"), expected);
+}
+
+// 関門: 専用分類の注釈を通常の型へ変えず、整形後も直接 new/op の形を保つ。
+#[test]
+fn builder_annotations_and_direct_operations_survive_formatting() {
+    let dir = TestDirectory::new("builders");
+    dir.write("builder.bnt", "import Benitoite.StringBuilder as SB\nfunction main()->Unit uses State\nbind b:SB<-SB.new()\nSB.append(text:\"a\",builder:b)\nbind before<-SB.copy(b)\nSB.appendAll(builder:b,texts:[before,\"b\"])\nend function\n");
+    let output = fmt(&dir, &["builder.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    let formatted = dir.read("builder.bnt");
+    assert!(formatted.contains("bind b: SB <- SB.new()"));
+    assert!(formatted.contains("SB.append(text: \"a\", builder: b)"));
+    let output = Command::new(env!("CARGO_BIN_EXE_benitoite"))
+        .current_dir(&dir.path)
+        .args(["check", "builder.bnt"])
+        .output()
+        .unwrap();
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    let output = fmt(&dir, &["--check", "builder.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(dir.read("builder.bnt"), formatted);
 }

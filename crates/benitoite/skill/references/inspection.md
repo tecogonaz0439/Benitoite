@@ -12,7 +12,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 
 The allowed sets above are examples; use the set reviewed for the actual program. For pure execution, write `benitoite run --allow-effects= pure.bnt`. An omitted option imposes no effect limit. `run` options go before the script path; following arguments belong to the script. `test` options can also follow paths.
 
-The version query accepts no following arguments and returns one JSON object with `schemaVersion: 1`, `kind: "version"`, `name`, `version`, `unicodeVersion`, `build`, `formats`, and `loaderEnvironment`. Require the needed format keys and integer versions that you understand, rather than inferring capabilities from the release number. Current format keys are `version`, `diagnostics`, `testResults`, `checkReport`, `testCheckReport`, `effectLimit`, `loaderEnvironment`, `skillList`, and `skillDocument`, each with `[1]`. The existing diagnostic and test-result JSON Lines have no added schema field or initial version line; their format includes die diagnostics and test `failure.die`. `effectLimit` versions an option and its diagnostic contract, not a new output object. Unknown formats, statuses, or effects are unsupported, not success or an empty set.
+The version query accepts no following arguments and returns one JSON object with `schemaVersion: 1`, `kind: "version"`, `name`, `version`, `unicodeVersion`, `build`, `formats`, and `loaderEnvironment`. Require the needed format keys and integer versions that you understand, rather than inferring capabilities from the release number. Current format keys are `version`, `diagnostics`, `testResults`, `checkReport`, `testCheckReport`, `effectLimit`, `loaderEnvironment`, `skillList`, and `skillDocument`, with `[1,2]` for `testCheckReport` and `testResults` and `[1]` for the other keys. The existing diagnostic and test-result JSON Lines have no added schema field or initial version line; their format includes die diagnostics and test `failure.die`. `effectLimit` versions an option and its diagnostic contract, not a new output object. Unknown formats, statuses, or effects are unsupported, not success or an empty set.
 
 Build fields are `commit`, `dirty`, `target`, and `provenance: {commit, dirty}`. A missing commit is `null`; dirty is a boolean or `null`, where `null` means unknown. Dirty state is not collected automatically: an omitted build input has provenance `notCollected`. Explicit build-time `BENITOITE_BUILD_COMMIT` (a full 40- or 64-digit hexadecimal ID or `unknown`) and `BENITOITE_BUILD_DIRTY` (`true`, `false`, or `unknown`) take precedence independently and have provenance `environment`. Otherwise commit lookup uses Git when available, with provenance `git` or `unknown`; the target comes from Cargo. Runtime environment changes do not change embedded information.
 
@@ -26,7 +26,7 @@ Before using an inspection as a confirmed set, require a complete single JSON ob
 
 | Field | Meaning |
 |---|---|
-| `kind` | `checkReport` for main, `testCheckReport` for tests; both use `schemaVersion: 1`. |
+| `kind` | `checkReport` for main, `testCheckReport` for tests; use `schemaVersion: 1` by default; `test --doc` uses version 2. |
 | `producer` | `{name, version, build}`, matching the version query. |
 | `executed` | Always `false`; no user function ran. |
 | `targetsComplete` | Entry selection or discovery finished; this alone does not mean checks succeeded. |
@@ -63,3 +63,25 @@ benitoite skill show --format=json references/stdlib/IO.Process.md
 
 Text is the default format: `list` prints one name per line and `show` only the document, without adding a newline. JSON queries write one object followed by LF. `--format=text|json` requires `=`, may occur once, and may precede or follow the show name. `list` takes no name; `show` requires one. These queries reject installation options, and install/uninstall reject `--format`. Success exits with 0; invalid syntax or an unknown document exits with 2, empty standard output, and a standard-error explanation even for JSON queries. Internal errors exit with 3 and output failures with 1; do not interpret missing output as an empty document. Every name returned by list or show satisfies these same rules; invalid or duplicate embedded names cause an internal error instead of a partial list.
 
+
+For documentation examples, use `--doc` consistently on both inspection and execution:
+`benitoite test --doc --check --report=json tests/`, then
+`benitoite test --doc --allow-effects=<accepted-set> tests/`. Require version 2 of
+testCheckReport and testResults in the version query. Omitting --doc keeps version 1;
+do not ignore unknown JSON Lines kinds as though they were version 1 successes.
+
+Version 2 keeps Target.tests and adds docExamples and ignoredDocBlocks. Examples
+declare their own imports and uses, check public API boundaries, and have modes
+test/check/error/run. The aggregate includes only ordinary tests and executable
+test/run examples; check/error examples add no execution permissions. Expected
+static rejection is a successful error example with observedDiagnostics, not a
+top-level diagnostic failure. Unknown effects/tests are null, successful empty
+ones are empty arrays. An unexpected rejection or diagnostic mismatch makes the
+inspection incomplete. --check never executes a main or verifies output.
+
+All executable examples are prepared and checked against the allowed set before
+any execution. Execution emits docExample lines, a docSummary with discovered
+mode counts and ignoredBlocks, and the final testSummary. The final summary counts
+ordinary test functions and completed doc examples, one per example even when it
+contains multiple @test functions. No imported or standard-library docs are
+recursively collected. Each example runs with independent state and empty stdin.

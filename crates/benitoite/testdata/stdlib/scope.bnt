@@ -1,0 +1,20 @@
+// 設計書 03-06「Scope」。
+// 関門: CLIの実行・表示・フォーマットと参照実行器の接続。保存欄の全組合せはruntime_builtinsで守る。
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+
+function dynamicHost(pattern: String, host: String) -> Result[Scope.CheckedHost, Scope.ScopeError]
+  return Scope.checkHost(pattern: pattern, host: host)
+end function
+
+function main() -> Result[Unit, String] uses Console.Write
+  bind checked <- try Scope.checkHost(pattern: "*.EXAMPLE.COM", host: "API.EXAMPLE.COM") |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error) end lambda)
+  Console.writeLine(Scope.host(checked))
+  Console.writeLine(Scope.hostPattern(checked))
+  match dynamicHost(pattern: "*.example.com", host: "a.b.example.com") with
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+    case Result.Error(error) -> Console.writeLine(Trait.Show.show(error))
+  end match
+  return Result.Ok(())
+end function

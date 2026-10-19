@@ -388,6 +388,171 @@ class Management(Project, unittest.TestCase):
                 self.assertEqual(result.stdout, b'')
                 self.assertEqual(self.files(), before)
 
+    # 四問: 実際の出力を使い、外部JSONの契約と意味ハッシュの境界を確かめる。
+    # 未知のタグや番号を通す退行、表示を意味として読む退行で失敗する。
+    # VMの既存例はJSONの読者を検査しない。テスト専用の本番APIは加えない。
+    def test_v2_reader_and_semantic_hash_contract(self):
+        inv = derive.collect(self.root, self.config)
+        original = derive.structure(inv['targets'][0], inv)
+        changed = copy.deepcopy(inv)
+        field = changed['targets'][0]['fields'][0]
+        field['span']['start'] += 10
+        field['typeSpan']['start'] += 10
+        field['metadata'] = {'resolved': 'unrelated display', 'original': 'Text', 'span': {}}
+        changed['targets'][0]['package'] = False
+        derive.validate_inventory(changed)
+        self.assertEqual(derive.structure(changed['targets'][0], changed), original)
+        changed['targets'][0]['fields'][0]['type']['head']['name'] = 'Benitoite.Boolean.Boolean'
+        derive.validate_inventory(changed)
+        self.assertNotEqual(derive.structure(changed['targets'][0], changed)['declarationSha256'], original['declarationSha256'])
+        changed = copy.deepcopy(inv)
+        changed['functions']['Unrelated.unchecked'] = copy.deepcopy(next(iter(inv['functions'].values())))
+        self.assertEqual(derive.structure(changed['targets'][0], changed), original)
+        ty = inv['targets'][0]['fields'][0]['type']
+        cases = [
+            {'tag': 'unsupported', 'resolved': 'Fn(..)'},
+            {**ty, 'unknown': True},
+            {**ty, 'head': {'tag': 'named', 'name': 'Absent.Type'}},
+            {**ty, 'arguments': [copy.deepcopy(ty)]},
+            {'tag': 'parameter', 'index': 0},
+            {**ty, 'head': {'tag': 'unknown', 'name': 'Benitoite.String.String'}},
+            {'tag': 'function', 'params': [{'name': 'x', 'type': ty}, {'name': 'x', 'type': ty}],
+             'returnType': ty, 'effects': {'names': [], 'vars': [], 'failures': []}},
+            {'tag': 'function', 'params': [], 'returnType': ty,
+             'effects': {'names': [], 'vars': [0], 'failures': []}},
+        ]
+        for bad in cases:
+            with self.subTest(bad=bad):
+                changed = copy.deepcopy(inv)
+                changed['targets'][0]['fields'][0]['type'] = bad
+                with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
+                    derive.validate_inventory(changed)
+        for bad in ('Ctor { arity: 2 }', {'tag': 'constructor', 'arity': 0}, {'tag': 'mystery'}):
+            with self.subTest(kind=bad):
+                changed = copy.deepcopy(inv)
+                c = next(iter(changed['classes'].values()))
+                c['paramKind'] = bad
+                with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
+                    derive.validate_inventory(changed)
+        changed = copy.deepcopy(inv)
+        changed['targets'][0]['visibility'] = 'private'
+        with self.assertRaisesRegex(ValueError, 'inconsistent inventory visibility'):
+            derive.validate_inventory(changed)
+
+    def test_opaque_record_and_data_generation_refused_in_owner_module(self):
+        for declaration in ('record Person\n  name: String\nend record\n',
+                            'data Person\n  Person(String)\nend data\n'):
+            for feature in ('json', 'property'):
+                with self.subTest(declaration=declaration, feature=feature):
+                    self.source.write_text('@opaque\npublic ' + declaration)
+                    target = self.config_value['targets'][0]
+                    target.pop('json', None)
+                    target.pop('property', None)
+                    target[feature] = ({'encode': 'encodePerson', 'decode': 'decodePerson'} if feature == 'json'
+                                       else {'generator': 'genPerson', 'shrinker': 'shrinkPerson'})
+                    self.save_config()
+                    before = self.files()
+                    result = subprocess.run([sys.executable, '-B', Path(derive.__file__), 'preview',
+                                             '--root', self.root, '--config', self.config,
+                                             '--out', self.root / 'opaque-preview'], capture_output=True)
+                    self.assertEqual(result.returncode, 1, result.stderr.decode())
+                    self.assertIn(b'derive.opaque_target', result.stderr)
+                    self.assertEqual(result.stdout, b'')
+                    self.assertEqual(self.files(), before)
+        # 不透明型の欄も、検査付きの作成経路を迂回させない。
+        self.source.write_text('@opaque\npublic record Checked\n  value: Integer\nend record\n'
+                               'public record Person\n  checked: Checked\nend record\n')
+        for feature in ('json', 'property'):
+            target.pop('json', None)
+            target.pop('property', None)
+            target[feature] = ({'encode': 'enc', 'decode': 'dec'} if feature == 'json'
+                               else {'generator': 'gen', 'shrinker': 'shrink'})
+            self.save_config()
+            self.manager = derive.Manager(self.root, self.config)
+            with self.assertRaisesRegex(ValueError, 'unsupported .* field type'):
+                self.preview('opaque-field')
+            self.assertFalse((self.root / 'opaque-field').exists())
+
+    def test_opaque_fields_use_explicit_checked_custom_functions(self):
+        self.source.write_text('''import Benitoite.Unofficial.Json as Json
+import Benitoite.Unofficial.Json.Codec as Codec
+import Benitoite.Unofficial.Test.Property
+@opaque
+public record Checked
+  value: Integer
+end record
+public record Person
+  checked: Checked
+end record
+public function encodeChecked(value: Checked) -> Result[Json.Value, Codec.ConversionError]
+  return Codec.encodeInteger(Checked.value(value))
+end function
+public function decodeChecked(value: Json.Value) -> Result[Checked, Codec.ConversionError]
+  bind raw <- try Codec.decodeInteger(value)
+  return Result.Ok(Checked(value: if raw < 0 then 0 else raw end if))
+end function
+public function genChecked() -> Property.Gen[Checked]
+  return Property.constant(Checked(value: 0))
+end function
+public function shrinkChecked() -> Property.Shrinker[Checked]
+  return Property.Shrinker(candidates: lambda(value) return Property.ShrinkStep.Done end lambda)
+end function
+function main() -> Unit
+  ()
+end function
+@test
+function checkedRoundtrip() -> Unit uses Assert.Check
+  bind original <- Person(checked: Checked(value: 0))
+  Assert.equal(actual: Result.andThen(r: encodePerson(original), f: decodePerson), expected: Result.Ok(original))
+end function
+''')
+        self.config_value['targets'][0].update(
+            json={'encode': 'encodePerson', 'decode': 'decodePerson'},
+            property={'generator': 'genPerson', 'shrinker': 'shrinkPerson'},
+            fields={'checked': {'encode': 'People.encodeChecked', 'decode': 'People.decodeChecked',
+                                'gen': 'People.genChecked', 'shrink': 'People.shrinkChecked'}})
+        self.save_config()
+        self.manager = derive.Manager(self.root, self.config)
+        self.install()
+        self.manager.check()
+        for command in ('check', 'test'):
+            result = subprocess.run([derive.BENITOITE, command, self.source], capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr.decode() + result.stdout.decode())
+
+    def test_v1_migration_review_and_modified_region_protection(self):
+        self.install()
+        old = json.loads(self.manager.record.read_bytes())
+        old.update(version=1, generatorVersion='1.2.0-property')
+        old.pop('inventoryVersion')
+        old.pop('hashVersion')
+        self.manager.record.write_text(json.dumps(old))
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'derive.migration_required'):
+            self.manager.check()
+        self.assertEqual(self.files(), before)
+        path, checksum = self.preview('migration')
+        plan = json.loads(path.read_bytes())
+        self.assertEqual(plan['version'], 2)
+        self.assertEqual(plan['recordAfter']['inventoryVersion'], 2)
+        self.assertEqual(plan['recordAfter']['hashVersion'], 2)
+        self.assertEqual(plan['migration']['previousRecord'], old)
+        self.assertFalse(plan['migration']['semanticHashesComparable'])
+        self.assertEqual((path.parent / 'changes.diff').read_bytes(), b'')
+        self.assertEqual(self.manager.apply(path, checksum), 0)
+        self.manager.check()
+        self.assertIsNone(self.manager.apply(path, checksum))
+        plan['version'] = 1
+        path = self.root / 'old-manifest.json'
+        path.write_text(json.dumps(plan))
+        self.reject_apply_unchanged(path, hashlib.sha256(path.read_bytes()).hexdigest(), 'derive.incompatible_manifest')
+        # 新版が本文を置換する場合にも、旧記録と元のbytesを先に照合する。
+        self.manager.record.write_text(json.dumps(old))
+        self.source.write_bytes(self.source.read_bytes().replace(b'return 1', b'return 2'))
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'derive.modified_region'):
+            self.preview('modified-migration')
+        self.assertEqual(self.files(), before)
+
     def test_public_cli_empty_workflow_and_argument_errors(self):
         self.config_value['targets'] = []
         self.save_config()
@@ -677,10 +842,17 @@ public function sizes() -> P.Gen[Integer]
   return P.Gen(run: lambda(generator, size) return Pair(size, generator) end lambda)
 end function
 public function halves() -> P.Shrinker[Integer]
-  return P.Shrinker(candidates: lambda(value) return if value = 0 then [] else [0, value div 2] end if end lambda)
+  return P.Shrinker(candidates: lambda(value) return if value = 0 then P.ShrinkStep.Done else P.ShrinkStep.Yield(0, lambda() return P.ShrinkStep.Yield(value div 2, lambda() return P.ShrinkStep.Done end lambda) end lambda) end if end lambda)
 end function
 function main() -> Unit
   ()
+end function
+function collect[T](steps: P.ShrinkStep[T], acc: List[T]) -> List[T]
+  return match steps with
+    case P.ShrinkStep.Done -> acc
+    case P.ShrinkStep.Skip(next) -> collect(steps: next(), acc: acc)
+    case P.ShrinkStep.Yield(value, next) -> collect(steps: next(), acc: List.append(xs: acc, x: value))
+  end match
 end function
 @test
 function generatedContracts() -> Unit uses Assert.Check
@@ -694,10 +866,10 @@ function generatedContracts() -> Unit uses Assert.Check
   Assert.equal(actual: Pair.first(Random.nextInteger(generator: Pair.second(actual), low: 0, high: 1000000)), expected: Pair.first(next))
   Assert.equal(actual: Pair.first(run(generator: Random.fromSeed(17), size: 7)), expected: Pair.first(actual))
   Assert.equal(actual: Person.sizeSeen(Pair.first(run(generator: initial, size: 0))), expected: 0)
-  bind shrink <- P.Shrinker.candidates(shrinkPerson())
+  bind shrink <- lambda(value) return collect(steps: P.Shrinker.candidates(shrinkPerson())(value), acc: []) end lambda
   Assert.equal(actual: shrink(Person(first: 8, second: 4, sizeSeen: 6)), expected: [Person(first: 0, second: 4, sizeSeen: 6), Person(first: 4, second: 4, sizeSeen: 6), Person(first: 8, second: 0, sizeSeen: 6), Person(first: 8, second: 2, sizeSeen: 6), Person(first: 8, second: 4, sizeSeen: 0), Person(first: 8, second: 4, sizeSeen: 3)])
   Assert.equal(actual: shrink(Person(first: 0, second: 0, sizeSeen: 0)), expected: [])
-  bind config <- P.Config(seed: 17, trials: 3, size: 7, maxShrinks: 3)
+  bind config <- P.Config(seed: 17, trials: 3, size: 7, maxShrinks: 3, maxShrinkWork: 10000)
   bind failure <- P.check(config: config, gen: genPerson(), shrinker: shrinkPerson(), property: lambda(value) return Result.Error("fails") end lambda)
   Assert.equal(actual: failure, expected: P.check(config: config, gen: genPerson(), shrinker: shrinkPerson(), property: lambda(value) return Result.Error("fails") end lambda))
   match failure with
@@ -751,10 +923,54 @@ function generatedBasics() -> Unit uses Assert.Check
 end function
 ''')
         self.manager.check()
+        preview, _ = self.preview('bundled')
+        self.assertEqual((preview.parent / 'changes.diff').read_bytes(), b'')
         self.normal('check')
         self.normal()
         path, _ = self.preview()
+        plan = json.loads(path.read_bytes())
+        self.assertEqual(plan['recordAfter']['version'], 2)
         self.assertEqual((path.parent / 'changes.diff').read_bytes(), b'')
+        self.assertEqual(json.loads(self.manager.record.read_bytes())['version'], 2)
+
+    def test_generated_shrinker_defers_later_factories_and_continuations(self):
+        self.source.write_text('''import Benitoite.Unofficial.Test.Property
+public record Person
+  first: Integer
+  later: Character
+end record
+public function charGen() -> Property.Gen[Character]
+  return Property.constant('x')
+end function
+public function charShrink() -> Property.Shrinker[Character]
+  bind never <- 1 div 0
+  return Property.Shrinker(candidates: lambda(value) return Property.ShrinkStep.Done end lambda)
+end function
+function main() -> Unit
+  ()
+end function
+@test
+function deferredFactories() -> Unit uses Assert.Check
+  bind shrinker <- shrinkPerson()
+  bind config <- Property.Config(seed: 1, trials: 1, size: 0, maxShrinks: 1, maxShrinkWork: 2)
+  bind initial <- Person(first: 8, later: 'x')
+  bind result <- Property.check(config: config, gen: Property.constant(initial), shrinker: shrinker, property: lambda(value) return Result.Error("original") end lambda)
+  match result with
+    case Result.Error(Property.CheckFailure.Falsified(example)) ->
+      Assert.equal(actual: Property.Counterexample.shrinkWork(example), expected: 2)
+      Assert.equal(actual: Property.Counterexample.shrinks(example), expected: 0)
+      Assert.equal(actual: Property.Counterexample.reduced(example), expected: initial)
+      Assert.equal(actual: Property.Counterexample.limitReached(example), expected: true)
+    case _ -> Assert.fail("expected an untried generated candidate")
+  end match
+end function
+''')
+        self.config_value['targets'][0]['fields'] = {'later': {'gen': 'People.charGen', 'shrink': 'People.charShrink'}}
+        self.save_config()
+        self.install()
+        self.normal('check')
+        self.normal()
+        self.manager.check()
 
     def test_property_only_nested_option_private_record_and_custom_unsupported_field(self):
         self.source.write_text('''import Benitoite.Unofficial.Test.Property
@@ -766,16 +982,23 @@ public function charGen() -> Property.Gen[Character]
   return Property.constant('x')
 end function
 public function charShrink() -> Property.Shrinker[Character]
-  return Property.Shrinker(candidates: lambda(value) return [] end lambda)
+  return Property.Shrinker(candidates: lambda(value) return Property.ShrinkStep.Done end lambda)
 end function
 function main() -> Unit
   ()
+end function
+function collect[T](steps: Property.ShrinkStep[T], acc: List[T]) -> List[T]
+  return match steps with
+    case Property.ShrinkStep.Done -> acc
+    case Property.ShrinkStep.Skip(next) -> collect(steps: next(), acc: acc)
+    case Property.ShrinkStep.Yield(value, next) -> collect(steps: next(), acc: List.append(xs: acc, x: value))
+  end match
 end function
 @test
 function propertyOnly() -> Unit uses Assert.Check
   bind run <- Property.Gen.run(genPerson())
   Assert.equal(actual: Person.custom(Pair.first(run(generator: Random.fromSeed(1), size: 0))), expected: 'x')
-  bind shrink <- Property.Shrinker.candidates(shrinkPerson())
+  bind shrink <- lambda(value) return collect(steps: Property.Shrinker.candidates(shrinkPerson())(value), acc: []) end lambda
   Assert.equal(actual: shrink(Person(nested: Option.Some(Option.Some(true)), custom: 'x')), expected: [Person(nested: Option.None, custom: 'x'), Person(nested: Option.Some(Option.None), custom: 'x'), Person(nested: Option.Some(Option.Some(false)), custom: 'x')])
 end function
 ''')
@@ -826,6 +1049,202 @@ end function
                 with self.assertRaisesRegex(ValueError, 'custom .*must be pure and monomorphic'):
                     self.preview('custom')
                 self.assertEqual(self.files(), before)
+
+
+class TraitGeneration(Project, unittest.TestCase):
+    # 四問: preview/applyから実VMまで、表示・比較順・明示要求・手書き保護を守る。
+    # 欄の逆順、暗黙の依存追加、既存implementの上書きで失敗する。
+    # JSON/Propertyの既存テストはクラス辞書を生成しない。本番の差し込み口は不要である。
+    normal = JsonGeneration.normal
+
+    def setUp(self):
+        super().setUp()
+        self.config_value['targets'][0] = {
+            'source': 'People.bnt', 'type': 'People.Person', 'region': 'person',
+            'show': True, 'order': True}
+        self.save_config()
+        self.manager = derive.Manager(self.root, self.config)
+
+    def test_review_apply_runtime_field_order_dependencies_opaque_and_replay(self):
+        self.source.write_text('''import Address as Place
+import Benitoite.Trait as T
+import Benitoite.Assert
+public record Person
+  name: String
+  age: Integer
+  addresses: List[Place.Address]
+end record
+@opaque
+public(package) record Secret
+  value: Integer
+end record
+@test
+function derived() -> Unit uses Assert.Check
+  bind ada <- Person(name: "Ada", age: 7, addresses: [Place.Address(zip: 9)])
+  Assert.equal(actual: T.Show.show(ada), expected: "Person(name: \\"Ada\\", age: 7, addresses: [Address(zip: 9)])")
+  Assert.equal(actual: T.Order.compare(x: ada, y: Person(name: "Ada", age: 8, addresses: [])), expected: T.Ordering.Less)
+  Assert.equal(actual: T.Order.compare(x: ada, y: Person(name: "Bob", age: 0, addresses: [])), expected: T.Ordering.Less)
+  Assert.equal(actual: T.Order.compare(x: ada, y: Person(name: "Ada", age: 7, addresses: [Place.Address(zip: 8)])), expected: T.Ordering.Greater)
+  Assert.equal(actual: T.Order.compare(x: ada, y: ada), expected: T.Ordering.Equal)
+  Assert.equal(actual: T.Show.show(Secret(value: 42)), expected: "Secret(value: 42)")
+  Assert.equal(actual: T.Order.compare(x: Secret(value: 42), y: Secret(value: 41)), expected: T.Ordering.Greater)
+end function
+function main() -> Unit
+  ()
+end function
+''')
+        address = self.root / 'Address.bnt'
+        address.write_text('public record Address\n  zip: Integer\nend record\n')
+        self.config_value['targets'] += [
+            {'source': 'Address.bnt', 'type': 'Address.Address', 'region': 'address', 'show': True, 'order': True},
+            {'source': 'People.bnt', 'type': 'People.Secret', 'region': 'secret', 'show': True, 'order': True}]
+        self.save_config()
+        before = self.source.read_bytes()
+        manifest, checksum = self.preview()
+        plan = derive.read_json(manifest.read_bytes())
+        rows = plan['recordAfter']['targets']
+        self.assertEqual(rows[0]['templates'], {'show': '1', 'order': '1'})
+        self.assertTrue(rows[2]['traitTarget']['opaque'])
+        self.assertTrue(any(d.get('template') == 'show' and d['target']['head']['name'] == 'Address.Address'
+                            for d in rows[0]['implementationDependencies']))
+        self.assertTrue(any(d.get('module') == 'Benitoite.Trait' and d['typeParams']
+                            for d in rows[0]['implementationDependencies'] if 'typeParams' in d))
+        self.assertEqual(self.source.read_bytes(), before)
+        self.assertEqual(self.manager.apply(manifest, checksum), 2)
+        self.normal('check')
+        self.normal()
+        self.manager.check()
+        self.assertIsNone(self.manager.apply(manifest, checksum))
+        again, _ = self.preview('again')
+        self.assertEqual((again.parent / 'changes.diff').read_bytes(), b'')
+        self.assertEqual(derive.read_json(again.read_bytes())['recordAfter'], plan['recordAfter'])
+        self.assertIn(before, self.source.read_bytes())
+
+    def test_independent_selections_and_combined_json_property(self):
+        for show, order in ((True, False), (False, True), (True, True)):
+            with self.subTest(show=show, order=order):
+                self.source.write_text('public record Person\n  name: String\nend record\nfunction main() -> Unit\n ()\nend function\n')
+                self.manager.record.unlink(missing_ok=True)
+                target = self.config_value['targets'][0]
+                target.update(show=show, order=order)
+                target['json'] = {'encode': 'encodePerson', 'decode': 'decodePerson'}
+                target['property'] = {'generator': 'genPerson', 'shrinker': 'shrinkPerson'}
+                self.save_config()
+                manifest, checksum = self.preview(f'selection-{show}-{order}')
+                self.manager.apply(manifest, checksum)
+                self.normal('check')
+                self.normal()
+                self.manager.check()
+                record = derive.read_json(self.manager.record.read_bytes())['targets'][0]
+                self.assertEqual(set(record['templates']), {'json', 'property'} | ({'show'} if show else set()) | ({'order'} if order else set()))
+
+    def test_handwritten_dictionary_for_data_and_generic_record_is_used(self):
+        self.source.write_text('''import Benitoite.Trait
+import Benitoite.Assert
+data Token
+  Token
+end data
+implement Trait.Show[Token]
+  function show(x: Token) -> String
+    return "token"
+  end function
+end implement
+implement Trait.Order[Token]
+  function compare(x: Token, y: Token) -> Trait.Ordering
+    return if 1 div 0 = 0 then Trait.Ordering.Less else Trait.Ordering.Greater end if
+  end function
+end implement
+record Box[T]
+  value: T
+end record
+implement[T: Trait.Show] Trait.Show[Box[T]]
+  function show(x: Box[T]) -> String
+    return "box:" + Trait.Show.show(Box.value(x))
+  end function
+end implement
+implement[T: Trait.Order] Trait.Order[Box[T]]
+  function compare(x: Box[T], y: Box[T]) -> Trait.Ordering
+    return Trait.Order.compare(x: Box.value(x), y: Box.value(y))
+  end function
+end implement
+record Person
+  rank: Integer
+  box: Box[Token]
+end record
+@test
+function derived() -> Unit uses Assert.Check
+  bind box <- Box(value: Token.Token)
+  Assert.equal(actual: Trait.Show.show(Person(rank: 1, box: box)), expected: "Person(rank: 1, box: box:token)")
+  Assert.equal(actual: Trait.Order.compare(x: Person(rank: 1, box: box), y: Person(rank: 2, box: box)), expected: Trait.Ordering.Less)
+end function
+function main() -> Unit
+  ()
+end function
+''')
+        self.save_config()
+        self.install()
+        self.normal('check')
+        self.normal()
+        self.manager.check()
+
+    def test_refusals_preserve_source_and_report_specific_contract(self):
+        for declaration, settings, explanation in (
+            ('record Person\n  callback: function(value: Integer) -> Integer\nend record\n', {}, 'derive.missing_implementation'),
+            ('record Person\n  next: Option[Person]\nend record\n', {}, 'derive.cyclic_dependency'),
+            ('record Person[T]\n  value: T\nend record\n', {}, 'type parameters'),
+            ('@opaque\npublic record Person\n  name: String\nend record\n', {'json': {'encode': 'enc', 'decode': 'dec'}}, 'derive.opaque_target'),
+            ('@opaque\npublic record Person\n  name: String\nend record\n', {'property': {'generator': 'gen', 'shrinker': 'shrink'}}, 'derive.opaque_target'),
+            ('record Child\n  value: Integer\nend record\nrecord Person\n  child: Child\nend record\n', {}, 'derive.missing_implementation'),
+            ('import Benitoite.Trait\nrecord Person\n  name: String\nend record\n'
+             'implement Trait.Show[Person]\n  function show(x: Person) -> String\n    return "handwritten"\n  end function\nend implement\n', {}, 'derive.overlapping_implementation'),
+        ):
+            with self.subTest(explanation=explanation):
+                self.source.write_text(declaration)
+                self.config_value['targets'][0] = {
+                    'source': 'People.bnt', 'type': 'People.Person', 'region': 'person',
+                    'show': True, 'order': True, **settings}
+                self.save_config()
+                before = self.files()
+                with self.assertRaisesRegex(ValueError, explanation):
+                    self.preview('refused')
+                self.assertEqual(self.files(), before)
+
+    def test_flags_are_strict_and_unselected_trait_is_not_loaded(self):
+        target = self.config_value['targets'][0]
+        for key, value in (('show', 1), ('show', 'true'), ('order', None), ('order', {})):
+            with self.subTest(key=key, value=value):
+                target.update(show=False, order=False)
+                target[key] = value
+                self.save_config()
+                result = subprocess.run([derive.INVENTORY, '--root', self.root, '--config', self.config], capture_output=True)
+                self.assertEqual(result.returncode, 2, result.stderr.decode())
+                self.assertIn(b'expected boolean', result.stderr)
+                self.assertEqual(result.stdout, b'')
+        target.update(show=False, order=False)
+        self.save_config()
+        inv = derive.collect(self.root, self.config)
+        self.assertNotIn('Benitoite.Trait.Show', inv['classes'])
+        del target['show']
+        del target['order']
+        self.assertEqual(derive.normalized_config(inv['targets'][0]['config']), derive.normalized_config(target))
+
+    def test_another_authenticated_region_cannot_authorize_replacing_an_implementation(self):
+        body = ('implement Trait.Show[Person]\n  function show(x: Person) -> String\n'
+                '    return "owned by another region"\n  end function\nend implement\n')
+        self.source.write_text('import Benitoite.Trait\nrecord Person\n  value: Integer\nend record\n'
+                               'record Other\n  value: Integer\nend record\n'
+                               '// benitoite-derive:begin other\n' + body + '// benitoite-derive:end other\n')
+        self.config_value['targets'].append({
+            'source': 'People.bnt', 'type': 'People.Other', 'region': 'other', 'show': True})
+        self.save_config()
+        self.manager.record.write_text(json.dumps({
+            'version': 2, 'generatorVersion': derive.GENERATOR_VERSION, 'targets': [{
+                'source': 'People.bnt', 'type': 'People.Other', 'region': 'other',
+                'templates': {'show': '1'}, 'outputSha256': hashlib.sha256(body.encode()).hexdigest()}]}))
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'derive.overlapping_implementation.*People.bnt'):
+            self.preview('other-region')
+        self.assertEqual(self.files(), before)
 
 
 if __name__ == '__main__':

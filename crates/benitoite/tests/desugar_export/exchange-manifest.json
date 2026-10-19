@@ -78,20 +78,21 @@
     },
     {
       "stem": "generated-record-property",
-      "definitions": 27,
+      "definitions": 40,
       "origin": "generated-code-and-ordinary-tests",
       "scopes": {
-        "inScope": 20,
+        "inScope": 33,
         "accessor": 7
       },
       "coverage": {
-        "matches": 4,
+        "matches": 5,
         "bindings": 0
-      }
+      },
+      "surfaceChecks": 30
     }
   ],
   "namedVersions": {
-    "corpus": 11,
+    "corpus": 12,
     "table": 4,
     "coverage": 4
   },
@@ -5245,6 +5246,34 @@
       "surfaceChecks": 6
     },
     {
+      "group": "golden",
+      "name": "testdata/builders/list-bytes.bnt",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "group": "golden",
+      "name": "testdata/builders/string.bnt",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
       "name": "testdata/concurrency/c12-all-results.bnt",
       "group": "golden",
       "definitions": 1,
@@ -8903,16 +8932,16 @@
     {
       "name": "testdata/stdlib/l40-regex.bnt",
       "group": "golden",
-      "definitions": 2,
+      "definitions": 3,
       "scopes": {
-        "inScope": 2
+        "inScope": 3
       },
       "coverage": {
         "matches": 0,
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 3
     },
     {
       "group": "golden",
@@ -25196,6 +25225,21 @@
     },
     {
       "group": "golden",
+      "name": "testdata/eval/k1-opaque",
+      "definitions": 11,
+      "scopes": {
+        "inScope": 9,
+        "accessor": 2
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 1
+      },
+      "implementations": 1,
+      "surfaceChecks": 8
+    },
+    {
+      "group": "golden",
       "name": "testdata/handlers/f1-ambiguous.bnt",
       "excluded": [
         "Some(E0517)"
@@ -25496,6 +25540,18 @@
     },
     {
       "group": "golden",
+      "name": "testdata/names/k1-opaque",
+      "excluded": [
+        "Some(E0340)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
       "name": "testdata/patterns/p1-character-domain.bnt",
       "excluded": [],
       "definitions": 4,
@@ -25514,6 +25570,89 @@
       "name": "testdata/patterns/p1-character-missing.bnt",
       "excluded": [
         "Some(E0601)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/stdlib/range.bnt",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "group": "golden",
+      "name": "testdata/stdlib/scope.bnt",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "group": "golden",
+      "name": "testdata/traits/monad2-minimal.bnt",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 1,
+      "surfaceChecks": 3
+    },
+    {
+      "group": "golden",
+      "name": "testdata/traits/monad2-result.bnt",
+      "definitions": 13,
+      "scopes": {
+        "inScope": 13
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 13
+    },
+    {
+      "group": "golden",
+      "name": "testdata/traits/monad2-user.bnt",
+      "definitions": 14,
+      "scopes": {
+        "inScope": 14
+      },
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      },
+      "implementations": 3,
+      "surfaceChecks": 10
+    },
+    {
+      "group": "golden",
+      "name": "testdata/types/k2-constant-regex.bnt",
+      "excluded": [
+        "Some(E0457)",
+        "Some(E0458)"
       ],
       "definitions": 0,
       "scopes": {},
@@ -25575,7 +25714,7 @@
     "desugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
-      "matched": 985,
+      "matched": 1034,
       "excluded": 0
     },
     "surfaceCounts": {
@@ -25583,7 +25722,7 @@
       "preparationFailure": 0,
       "outOfScope": 19,
       "mismatched": 0,
-      "matched": 51660,
+      "matched": 51701,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
@@ -26836,14 +26975,14 @@
       }
     ],
     "coverage": {
-      "matched": 22458,
+      "matched": 22472,
       "mismatched": 0,
       "outOfScope": 0,
       "fuelExhausted": 0
     },
-    "definitions": 73763,
-    "surfaceChecks": 51680,
-    "coverageEntries": 22458,
+    "definitions": 73812,
+    "surfaceChecks": 51721,
+    "coverageEntries": 22472,
     "randomDesugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
@@ -26852,8 +26991,8 @@
     },
     "desugarPrograms": {
       "golden": {
-        "matched": 355,
-        "excluded": 415,
+        "matched": 363,
+        "excluded": 417,
         "outside": 0,
         "mismatched": 0
       },

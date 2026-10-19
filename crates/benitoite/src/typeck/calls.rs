@@ -4,7 +4,7 @@ use super::context::{Body, reason};
 use super::generate::{declaration_params, integer_literal};
 use super::infer::*;
 use super::solve::Solver;
-use crate::base::{NodeId, Span};
+use crate::base::{BindingId, NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::resolve::BindingKind;
 use crate::syntax::ast::{CallExpr, Expr};
@@ -28,6 +28,7 @@ pub(super) struct PendingCall {
     args: Vec<CallArgument>,
     parameter_spans: Vec<Option<Span>>,
     direct_ctor: bool,
+    direct_callee: Option<BindingId>,
     inserted: Option<CallArgument>,
     partial_signature: Option<IFnTy>,
     positional_params: Option<Vec<ITy>>,
@@ -255,6 +256,21 @@ pub(super) fn generate(
         effect,
         args,
         direct_ctor,
+        direct_callee: if let Expr::Name(n) = e.callee.as_ref()
+            && inserted.is_none()
+            && !partial
+        {
+            ctx.decls.reference(n.id).filter(|id| {
+                ctx.decls.resolved.bindings.get(*id).is_some_and(|b| {
+                    matches!(
+                        b.kind,
+                        BindingKind::Fn | BindingKind::BuiltinFn(_) | BindingKind::ImplFn { .. }
+                    )
+                })
+            })
+        } else {
+            None
+        },
         inserted,
         partial_signature,
         positional_params,
@@ -499,6 +515,7 @@ fn resolve_arguments(
     ctx.call_plans.insert(
         call.node,
         CallPlan {
+            direct_callee: call.direct_callee,
             arity,
             source_to_param: positions.clone(),
             inserted_first: call.inserted.is_some(),
@@ -551,4 +568,117 @@ fn resolve_arguments(
         });
     }
     constraints
+}
+
+// 専用操作の対象は普通の式として検査しない。Unit の内部スロットはラベル・個数を
+// 既存の検査へ渡す印であり、対象の式や局所束縛の型の表には書かない
+// （設計書 02-05「出力」「制約の生成」）。
+pub(super) fn builder(
+    ctx: &mut Body<'_, '_>,
+    e: &CallExpr,
+    class: crate::resolve::builders::BuilderClass,
+    kind: Option<&super::BuilderKind>,
+    op: Option<crate::resolve::builders::BuilderOp>,
+    ret: ITy,
+) {
+    use crate::resolve::builders::{BuilderClass, BuilderOp};
+    use crate::syntax::ast::Arg;
+    use crate::types::{TyCon, builtin::BuiltinTypeId as B};
+    let names = class
+        .operations()
+        .iter()
+        .find(|contract| contract.op == op)
+        .map(|contract| {
+            contract
+                .labels
+                .iter()
+                .map(|n| (*n).to_owned())
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let unit = super::generate::basic(B::UNIT);
+    let mut params = if op.is_some() {
+        vec![unit.clone()]
+    } else {
+        vec![]
+    };
+    let element = match kind {
+        Some(super::BuilderKind::List(t)) => super::context::lift(t),
+        None if class == BuilderClass::List => ctx.fresh_ty(),
+        Some(super::BuilderKind::String | super::BuilderKind::Bytes) | None => unit.clone(),
+    };
+    match op {
+        Some(BuilderOp::Append) => params.push(match class {
+            BuilderClass::String => super::generate::basic(B::STRING),
+            BuilderClass::List => element,
+            BuilderClass::Bytes => super::generate::basic(B::BYTE),
+        }),
+        Some(BuilderOp::AppendAll) => params.push(match class {
+            BuilderClass::String => ITy::Con(
+                TyCon::Builtin(B::LIST),
+                vec![super::generate::basic(B::STRING)],
+            ),
+            BuilderClass::List => ITy::Con(TyCon::Builtin(B::LIST), vec![element]),
+            BuilderClass::Bytes => super::generate::basic(B::BYTES),
+        }),
+        None | Some(BuilderOp::Copy | BuilderOp::Length) => {}
+    }
+    let mut args = Vec::new();
+    for (index, arg) in e.args.iter().enumerate() {
+        let Some(value) = arg.expr() else { continue };
+        let target = op.is_some()
+            && match arg {
+                Arg::Named(a) => a.name.text == "builder",
+                Arg::Expr(_) => index == 0,
+                Arg::Placeholder(_) => false,
+            };
+        let ty = if target {
+            unit.clone()
+        } else {
+            ctx.expr(value)
+        };
+        args.push(CallArgument {
+            ty,
+            name: match arg {
+                Arg::Named(a) => Some((a.name.text.clone(), a.name.span)),
+                Arg::Expr(_) | Arg::Placeholder(_) => None,
+            },
+            reason: reason(value.span(), ReasonKind::CallArg { index: 0 }),
+            hole: false,
+        });
+    }
+    let effect = super::builders::state();
+    let callee = ITy::Fn(Box::new(IFnTy {
+        contract: IContract::Known(names),
+        params,
+        ret: ret.clone(),
+        effect: effect.clone(),
+    }));
+    let pending = PendingCall {
+        node: e.id,
+        span: e.span,
+        callee_span: e.callee.span(),
+        declaration_span: None,
+        callee,
+        ret,
+        effect: effect.clone(),
+        args,
+        parameter_spans: vec![],
+        direct_ctor: false,
+        direct_callee: None,
+        inserted: None,
+        partial_signature: None,
+        positional_params: None,
+    };
+    let mut solver = std::mem::take(&mut ctx.solver);
+    let constraints = resolve(ctx, &mut solver, pending);
+    ctx.solver = solver;
+    for constraint in constraints {
+        ctx.add(constraint);
+    }
+    ctx.add(Constraint::EffSub {
+        sub: effect,
+        sup: ctx.effect.clone(),
+        reason: reason(e.span, ReasonKind::CallEffect),
+    });
 }

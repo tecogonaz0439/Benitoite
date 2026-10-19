@@ -18,7 +18,7 @@ def MethodChecked (q : Input) (id : ImplInput) (ms : MethSig) (method : MethodIn
   (rowsTysCheck q.atoms ms.neffs ms.params && rowsTyCheck q.atoms ms.neffs ms.ret && rowsEffCheck q.atoms ms.neffs ms.eff) = true ∧
   ∃ path a ε out,
     lamBodyOk method.body (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret) = true ∧
-    checkBlockQ { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } .strict (ms.tparams ++ id.tparams)
+    checkBlockQ { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } .strict [] (ms.tparams ++ id.tparams)
       (binds (id.dictTys.map (shiftTy q.atoms ms.tparams.length 0) ++
         ms.params.map (substTyAt q.atoms ms.tparams.length [id.target] [])))
       (some (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret)) .tail path method.body = .ok (a, ε) ∧
@@ -163,6 +163,7 @@ theorem checkImpl_of_checker {q methods supers path id views}
     have dictAtoms := tysAtoms_map hi.2.1
       (fun _ h => shiftTy_atoms h ms.tparams.length 0)
     have hb' := checkBlock_of_mutual (hs (views m) (signatureQ ms.neffs ms.params ms.ret ms.eff)).surface
+      (BuilderInvariant.empty _ _ _)
       ((hq.withView (views m)).withNoFailRows (signatureQ ms.neffs ms.params ms.ret ms.eff))
       (hi.2.2.2 m method.body hb)
       (Env.atoms_binds (tysAtoms_append dictAtoms paramsAtoms))

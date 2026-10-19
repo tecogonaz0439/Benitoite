@@ -54,6 +54,10 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/Bytes.md"),
     },
     SkillFile {
+        path: "references/stdlib/BytesBuilder.md",
+        text: include_str!("../../../../skill/references/stdlib/BytesBuilder.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Character.md",
         text: include_str!("../../../../skill/references/stdlib/Character.md"),
     },
@@ -158,6 +162,10 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/List.md"),
     },
     SkillFile {
+        path: "references/stdlib/ListBuilder.md",
+        text: include_str!("../../../../skill/references/stdlib/ListBuilder.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Map.md",
         text: include_str!("../../../../skill/references/stdlib/Map.md"),
     },
@@ -186,6 +194,10 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/Path.md"),
     },
     SkillFile {
+        path: "references/stdlib/Range.md",
+        text: include_str!("../../../../skill/references/stdlib/Range.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Reference.md",
         text: include_str!("../../../../skill/references/stdlib/Reference.md"),
     },
@@ -202,12 +214,20 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/RoundingMode.md"),
     },
     SkillFile {
+        path: "references/stdlib/Scope.md",
+        text: include_str!("../../../../skill/references/stdlib/Scope.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Set.md",
         text: include_str!("../../../../skill/references/stdlib/Set.md"),
     },
     SkillFile {
         path: "references/stdlib/String.md",
         text: include_str!("../../../../skill/references/stdlib/String.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/StringBuilder.md",
+        text: include_str!("../../../../skill/references/stdlib/StringBuilder.md"),
     },
     SkillFile {
         path: "references/stdlib/Task.md",

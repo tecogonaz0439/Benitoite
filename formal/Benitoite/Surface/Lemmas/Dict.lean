@@ -22,28 +22,30 @@ theorem op_dicts_typed {p : Program} {B op Q C Γ R o od ts ds ws}
   exact .C_App hv ((DictEv.HasTypes.toVal op hds).append hws)
 
 /-- 操作の値化は辞書を捕える。作成は純粋で、操作の効果はラムダの呼び出しに残る。 -/
-theorem op_value_typed {p : Program} {B op Q view C Γ o od ts ds ps}
+theorem op_value_typed {p : Program} {B op Q view C Γ Γc o od ts ds ps}
     (hd : (p.declarationsFor view).ops o = some od)
     (hcore : NamesWF od.names od.params) (hn : NamesWF od.valueNames ps)
     (ht : SatAll B C ts od.tparams) (hpref : od.params = od.dictTys ++ od.valueParams)
     (hnames : od.names = internalNames ds.length ++ od.valueNames)
     (hp : ps = od.valueParams.map (Ty.subst ts []))
     (hds : DictEv.HasTypes (p.declarationsFor view) B C Γ ds (od.dictTys.map (Ty.subst ts [])))
+    (hΓc : RenOk Γ Γc id)
     (hc : Ty.VarsInList C.length (fun _ => True) ps)
     (hw : Ty.WF C.length (.fn od.valueNames ps (od.ret.subst ts []) (Eff.single od.eff))) :
-    HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C Γ
+    HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C Γc
       (.lam od.valueNames ps (.app (.op o ts)
         (Val.renameList (· + ps.length) (DictEv.toValList ds) ++ boundVars ps.length)))
       (.fn od.valueNames ps (od.ret.subst ts []) (Eff.single od.eff)) := by
-  have hv := DictEv.HasTypes.toVal (Q := Q) op (DictEv.HasTypes.hide hds)
-  have hs := hv.rename (RenOk.shift (binds ps) (hideConts Γ))
+  have hv := (DictEv.HasTypes.toVal (Q := Q) op (DictEv.HasTypes.hide hds)).rename hΓc.hide
+  simp only [Val.renameList_id] at hv
+  have hs := hv.rename (RenOk.shift (binds ps) (hideConts Γc))
   have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
     Eff.substAt_ofAtoms 0 [] _
   apply HasTypeVQ.V_Lam hn hw
   apply HasTypeCQ.C_App
   · simpa only [fnTy_eq, hpref, hnames, List.map_append, hp, he] using
       (HasTypeVQ.V_Op (P := desugarProgram op p) (B := B)
-        (Ψ := StoreTy.empty) (Q := Q) (Γ := binds ps ++ hideConts Γ) hd hcore ht)
+        (Ψ := StoreTy.empty) (Q := Q) (Γ := binds ps ++ hideConts Γc) hd hcore ht)
   · simpa only [binds_length, hp] using hs.append (boundVars_typed hc)
 
 /-- 宣言順の辞書は、継続・値引数の後の逆順の束縛へ写る。 -/

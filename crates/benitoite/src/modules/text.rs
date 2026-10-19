@@ -40,3 +40,6 @@ pub(super) const IO_REASONS: &[(std::io::ErrorKind, &str)] = &[
 
 pub(super) const CHARACTER_COVERAGE_CHANGE: &str = "Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable";
 pub(super) const CHARACTER_COVERAGE_MIGRATION: &str = "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md";
+
+pub(super) const CONSTANT_REGEX_CHANGE: &str = "direct Regex.compile calls reject invalid constant sources with E0457 or E0458; direct Scope checks reject invalid known arguments with E0459 through E0462";
+pub(super) const CONSTANT_REGEX_MIGRATION: &str = "to test Result.Error, pass the pattern to a normal function whose parameters are used by Regex.compile or Scope checks; review constant patterns, language declarations and dependency hashes; see the 0.0.9 section of CHANGELOG.md";

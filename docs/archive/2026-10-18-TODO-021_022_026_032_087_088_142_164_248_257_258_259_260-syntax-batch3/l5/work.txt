@@ -1,0 +1,165 @@
+== plan: level work against 234006521fef80e881e9cba982e9e128c6a8ff40 (changed files not classified) (partial selection: --only formal_build,spec_examples,spec_tally)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-06 名前を持つ関数型の適合と推論
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 文字列補間
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+== spec_examples
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.27s
+
+== formal_build
+✔ [172/269] Built Benitoite.Surface.BuilderSyntax:c.o (171ms)
+✔ [173/269] Built Benitoite.Surface.BuilderLower:c.o (114ms)
+✔ [177/269] Built Benitoite.Surface.Lemmas.DictSupport (617ms)
+✔ [180/269] Built Benitoite.Surface.NoFailCheckExamples (537ms)
+✔ [181/269] Built Benitoite.Surface.FiniteExamples (761ms)
+✔ [182/269] Built Benitoite.Surface.Syntax:c.o (785ms)
+✔ [201/269] Built Benitoite.Surface.Desugar:c.o (816ms)
+✔ [202/269] Built Benitoite.Surface.BuilderCheck:c.o (305ms)
+✔ [203/269] Built Benitoite.Surface.CheckPredicates:c.o (1.1s)
+✔ [204/269] Built Benitoite.Surface.CheckTables (627ms)
+✔ [206/269] Built Benitoite.Surface.CheckCounterexamples (665ms)
+✔ [207/269] Built Benitoite.Surface.CheckTablesSound (563ms)
+✔ [208/269] Built Benitoite.Surface.CheckProgramSound (599ms)
+✔ [209/269] Built Benitoite.Exchange.Convert (2.3s)
+✔ [210/269] Built Benitoite.Surface.CheckToolsExamples (2.8s)
+✔ [211/269] Built Benitoite.Surface.CheckSupport:c.o (5.6s)
+✔ [212/269] Built DesugarDiff.Main (2.1s)
+✔ [214/269] Built CoverageDiff.Main (2.2s)
+✔ [216/269] Built Benitoite.Exchange.Builtins (1.8s)
+✔ [218/269] Built Benitoite.Surface.BuilderFree:c.o (6.5s)
+✔ [219/269] Built Benitoite.Surface.Typing:c.o (6.8s)
+✔ [220/269] Built BuiltinCheck.Main (1.4s)
+✔ [222/269] Built Benitoite.Exchange.CheckInput (1.4s)
+✔ [223/269] Built CoverageProgramDiff.Main (1.5s)
+✔ [226/269] Built Benitoite.Exchange.Convert:c.o (3.0s)
+✔ [227/269] Built SurfaceCheck.Main (951ms)
+✔ [229/269] Built SurfaceCheck.Walk (1.1s)
+✔ [230/269] Built SurfaceCheck.Walk:c.o (479ms)
+✔ [231/269] Built SurfaceCheck.Batch (1.1s)
+✔ [232/269] Built Benitoite.Surface.Lemmas.Invariants (10s)
+✔ [233/269] Built SurfaceCheck.Batch:c.o (762ms)
+✔ [234/269] Built SurfaceCheck.Validation (883ms)
+✔ [235/269] Built SurfaceCheck.Validation:c.o (115ms)
+✔ [236/269] Built Benitoite.Surface.Lemmas.SubstClean (431ms)
+✔ [237/269] Built Benitoite.Surface.CheckExamples (8.3s)
+✔ [238/269] Built Benitoite.Surface.Lemmas.Sequence (568ms)
+✔ [239/269] Built SurfaceCheck.All (705ms)
+✔ [241/269] Built Benitoite.Surface.Lemmas.ScopedSupport (428ms)
+✔ [242/269] Built Benitoite.Surface.Lemmas.PatternSupport (466ms)
+✔ [243/269] Built Benitoite.Surface.Check:c.o (10s)
+ℹ [244/269] Built coverageDiff:exe (880ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [245/269] Built surfaceCheck:exe (884ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [246/269] Built Benitoite.Surface.Lemmas.ExtensionsScoped (1.0s)
+✔ [247/269] Built Benitoite.Surface.Lemmas.Calls (1.1s)
+ℹ [248/269] Built coverageProgramDiff:exe (974ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [249/269] Built surfaceCheckAll:exe (977ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [250/269] Built Benitoite.Surface.Lemmas.Patterns (1.2s)
+ℹ [251/269] Built desugarDiff:exe (1.1s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [252/269] Built builtinCheck:exe (1.1s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [253/269] Built Benitoite.Surface.Lemmas.CallHead (647ms)
+✔ [254/269] Built Benitoite.Surface.Lemmas.Records (483ms)
+✔ [255/269] Built Benitoite.Surface.Lemmas.Builders (484ms)
+✔ [256/269] Built Benitoite.Surface.Lemmas.Dict (520ms)
+✔ [257/269] Built Benitoite.Surface.Lemmas.Extensions (662ms)
+✔ [258/269] Built Benitoite.Surface.Lemmas.BuilderLower (510ms)
+✔ [259/269] Built Benitoite.Surface.Lemmas.ReturnTry (1.1s)
+✔ [260/269] Built Benitoite.Surface.Lemmas.BlockSequence (723ms)
+✔ [261/269] Built Benitoite.Surface.Lemmas.Scoped (7.3s)
+✔ [262/269] Built Benitoite.Surface.Lemmas.Typing (7.1s)
+✔ [263/269] Built Benitoite.Surface.Lemmas.Program (357ms)
+✔ [264/269] Built Benitoite.Surface.Theorems (276ms)
+✔ [265/269] Built Benitoite.Surface.FailureExamples (1.4s)
+✔ [266/269] Built Benitoite.Surface.Monad2Examples (2.6s)
+✖ [267/269] Building Benitoite.Surface.Examples (5.7s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/Examples.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Examples.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Examples.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Examples.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Examples.setup.json --json
+error: Benitoite/Surface/Examples.lean:519:2: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: Benitoite/Surface/Examples.lean:586:2: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Some required targets logged failures:
+- Benitoite.Surface.Examples
+error: build failed
+FAILED: formal_build

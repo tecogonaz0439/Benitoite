@@ -258,6 +258,29 @@ partial def DictEv.toSurface : DictEv → Except String Benitoite.Surface.DictEv
   | .clause outer arity count i depth => return .clause ⟨outer, arity, count⟩ i depth
   | .super d cl => return .super (← d.toSurface) cl
 
+def BuilderKind.toSurface : BuilderKind → Except String Benitoite.Surface.BuilderKind
+  | .string => return .string
+  | .list t => return .list (← t.toRelease)
+  | .bytes => return .bytes
+
+def BuilderPrimRef.toSurface (r : BuilderPrimRef) : Except String Benitoite.Surface.BuilderPrimRef := do
+  return ⟨r.name, ← r.types.mapM Ty.toRelease⟩
+
+def BuilderPureRef.toSurface : BuilderPureRef → Except String Benitoite.Surface.BuilderPureRef
+  | .prim r => return .prim (← r.toSurface)
+  | .funRef n ts => return .funRef n (← ts.mapM Ty.toRelease)
+
+def BuilderCellRefs.toSurface (r : BuilderCellRefs) : Except String Benitoite.Surface.BuilderCellRefs := do
+  return ⟨← r.newRef.toSurface, ← r.getRef.toSurface, ← r.setRef.toSurface⟩
+
+def BuilderRefs.toSurface : BuilderRefs → Except String Benitoite.Surface.BuilderRefs
+  | .string c a j l => return .string (← c.toSurface) (← a.toSurface) (← j.toSurface) (← l.toSurface)
+  | .list t c a j l => return .list (← t.toRelease) (← c.toSurface) (← a.toSurface) (← j.toSurface) (← l.toSurface)
+  | .bytes c e f j l => return .bytes (← c.toSurface) (← e.toSurface) (← f.toSurface) (← j.toSurface) (← l.toSurface)
+
+def BuilderOp.toSurface : BuilderOp → Benitoite.Surface.BuilderOp
+  | .append => .append | .appendAll => .appendAll | .copy => .copy | .length => .length
+
 def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.InterpPart
   | .text s => return .text s
   | .stringExpr => return .stringExpr
@@ -274,6 +297,7 @@ mutual
         let some e := (constants.find? (fun p => p.1 == name)).map Prod.snd
           | throw s!"missing expanded constant: {name}"
         return e
+    | .builderOp op i args refs => return .builderOp op.toSurface i (← toExprs constants args) (← refs.toSurface)
     | .local i => return .local i
     | .funDicts n ts es ds names ps _ => return .funDicts n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
     | .methName d n ts es ds names ps _ => return .methName (← d.toSurface) n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
@@ -393,6 +417,7 @@ mutual
         if alts.any (fun a => a.slots.length != first.slots.length) then throw "alternative binder counts differ"
         return .cons alts (← g.mapM (Expr.toSurface constants)) (← b.toSurface constants) (← toArms constants as)
   partial def Block.toSurface (constants : List (String × Benitoite.Surface.Expr) := []) : Block → Except String Benitoite.Surface.Block
+    | .builderBind k r b => return .builderBind (← k.toSurface) (← r.toSurface) (← b.toSurface constants)
     | .empty => return .empty
     | .last e => return .last (← e.toSurface constants)
     | .lastBind k t e => return .lastBind (if k then .shadow else .bind) (← t.toRelease) (← e.toSurface constants)
@@ -485,7 +510,7 @@ mutual
     | .partialCall f _ es _ e => e :: (f.headLambdaEffects constants ++ holesEffects constants es)
     | .partialCon _ _ es => [] :: holesEffects constants es
     | .call f _ _ es => f.headLambdaEffects constants ++ es.flatMap (Expr.lambdaEffects constants)
-    | .conCall _ _ es | .list _ es | .record _ _ _ es => es.flatMap (Expr.lambdaEffects constants)
+    | .builderOp _ _ es _ | .conCall _ _ es | .list _ es | .record _ _ _ es => es.flatMap (Expr.lambdaEffects constants)
     | .recordUpdate _ _ _ _ base es => base.lambdaEffects constants ++ es.flatMap (Expr.lambdaEffects constants)
     | .listSpread _ f before e after => before.flatMap (Expr.lambdaEffects constants) ++
         e.lambdaEffects constants ++ after.flatMap (Expr.lambdaEffects constants) ++ f.headLambdaEffects constants
@@ -520,6 +545,7 @@ mutual
   partial def holesEffects (constants : List ConstantEntry := []) (es : List HoleArg) : List Eff := es.flatMap fun
     | .expr _ _ e => e.lambdaEffects constants | .hole _ _ _ => []
   partial def Block.lambdaEffects (constants : List ConstantEntry := []) : Block → List Eff
+    | .builderBind _ _ b => b.lambdaEffects constants
     | .empty => []
     | .last e | .lastBind _ _ e | .lastDiscard e | .lastPat _ _ _ e => e.lambdaEffects constants
     | .bind _ _ e b | .discard e b | .seq e b | .bindPat _ _ _ e b => e.lambdaEffects constants ++ b.lambdaEffects constants

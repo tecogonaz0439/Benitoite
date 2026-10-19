@@ -1,0 +1,546 @@
+[
+  {
+    "kind": "host",
+    "pattern": "EXAMPLE.COM",
+    "target": "Example.Com",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "example.com",
+    "expectedTarget": "example.com"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "LOCALHOST",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "localhost",
+    "expectedTarget": "localhost"
+  },
+  {
+    "kind": "host",
+    "pattern": "*.example.com",
+    "target": "API.EXAMPLE.COM",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "*.example.com",
+    "expectedTarget": "api.example.com"
+  },
+  {
+    "kind": "host",
+    "pattern": "*.example.com",
+    "target": "a.b.example.com",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "*.example.com",
+    "target": "example.com",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "**.example.com",
+    "target": "api.example.com",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "**.example.com",
+    "expectedTarget": "api.example.com"
+  },
+  {
+    "kind": "host",
+    "pattern": "**.example.com",
+    "target": "a.b.example.com",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "**.example.com",
+    "expectedTarget": "a.b.example.com"
+  },
+  {
+    "kind": "host",
+    "pattern": "**.example.com",
+    "target": "example.com",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "example.com",
+    "target": "badexample.com",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "*.example.com",
+    "target": "api.example.com.evil",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "*",
+    "target": "x",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "api.*.com",
+    "target": "api.example.com",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "*.",
+    "target": "x",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "1.2.3.999",
+    "target": "host",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "**.1.2.3.4",
+    "target": "x",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "1.2.3.4",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "999.000.1.999",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "[::1]",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "https://example.com",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "host:443",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "例.example",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "api..example",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "example.com.",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "-api",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "api-",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "localhost",
+    "target": "x\u0000y",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "*",
+    "target": "bad.",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "1.2.3",
+    "target": "1.2.3",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "1.2.3",
+    "expectedTarget": "1.2.3"
+  },
+  {
+    "kind": "host",
+    "pattern": "host-name",
+    "target": "HOST-NAME",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "host-name",
+    "expectedTarget": "host-name"
+  },
+  {
+    "kind": "path",
+    "pattern": "/",
+    "target": "/",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/",
+    "expectedTarget": "/"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/**",
+    "expectedTarget": "/"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/資料/*.txt",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/**",
+    "expectedTarget": "/資料/*.txt"
+  },
+  {
+    "kind": "path",
+    "pattern": "/data/reports/**",
+    "target": "/data/reports",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/data/reports/**",
+    "expectedTarget": "/data/reports"
+  },
+  {
+    "kind": "path",
+    "pattern": "/data/reports/**",
+    "target": "/data/reports/a/b",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/data/reports/**",
+    "expectedTarget": "/data/reports/a/b"
+  },
+  {
+    "kind": "path",
+    "pattern": "/data/reports/**",
+    "target": "/data/reports-old",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "path",
+    "pattern": "/資料/**",
+    "target": "/資料/報告",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/資料/**",
+    "expectedTarget": "/資料/報告"
+  },
+  {
+    "kind": "path",
+    "pattern": "/a",
+    "target": "/a/b",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "path",
+    "pattern": "/A",
+    "target": "/a",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "path",
+    "pattern": "/a/*",
+    "target": "/a/b",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "path",
+    "pattern": "/a/**/b",
+    "target": "/a/b",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "path",
+    "pattern": "relative",
+    "target": "/a",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "path",
+    "pattern": "//**",
+    "target": "/a",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "path",
+    "pattern": "/a/",
+    "target": "/a",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "path",
+    "pattern": "/a/../b",
+    "target": "/a",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "relative",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/a/",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "//a",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/a/./b",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/a/../b",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/a\\b",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/**",
+    "target": "/a\u0000b",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "path",
+    "pattern": "/a/**",
+    "target": "/a/*",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/a/**",
+    "expectedTarget": "/a/*"
+  },
+  {
+    "kind": "path",
+    "pattern": "/A/**",
+    "target": "/A/é",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "/A/**",
+    "expectedTarget": "/A/é"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.EXAMPLE.COM",
+    "target": "A.B.Example.Com",
+    "result": "ok",
+    "code": null,
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 0,
+    "expectedPattern": "**.example.com",
+    "expectedTarget": "a.b.example.com"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "a.b.example.com",
+    "result": "ok",
+    "code": null,
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 65535,
+    "expectedPattern": "**.example.com",
+    "expectedTarget": "a.b.example.com"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "*.example.com",
+    "target": "api.example.com",
+    "result": "ok",
+    "code": null,
+    "minimum": 443,
+    "maximum": 443,
+    "port": 443,
+    "expectedPattern": "*.example.com",
+    "expectedTarget": "api.example.com"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "a.b.example.com",
+    "result": "InvalidPortRange",
+    "code": "E0461",
+    "minimum": -1,
+    "maximum": 65535,
+    "port": 0
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "a.b.example.com",
+    "result": "InvalidPortRange",
+    "code": "E0461",
+    "minimum": 0,
+    "maximum": 65536,
+    "port": 0
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "a.b.example.com",
+    "result": "InvalidPortRange",
+    "code": "E0461",
+    "minimum": 443,
+    "maximum": 0,
+    "port": 70000
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "elsewhere",
+    "result": "InvalidPort",
+    "code": "E0461",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": -1
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "elsewhere",
+    "result": "InvalidPort",
+    "code": "E0461",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 70000
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "elsewhere",
+    "result": "OutsideScope",
+    "code": "E0462",
+    "minimum": 443,
+    "maximum": 443,
+    "port": 444
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "a.b.example.com",
+    "result": "PortOutsideScope",
+    "code": "E0462",
+    "minimum": 443,
+    "maximum": 443,
+    "port": 444
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "*",
+    "target": "",
+    "result": "InvalidPattern",
+    "code": "E0459",
+    "minimum": 443,
+    "maximum": 0,
+    "port": -1
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "**.example.com",
+    "target": "",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 443,
+    "maximum": 0,
+    "port": -1
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "localhost",
+    "target": "localhost",
+    "result": "InvalidPortRange",
+    "code": "E0461",
+    "minimum": -9223372036854775808,
+    "maximum": 9223372036854775807,
+    "port": 0
+  }
+]

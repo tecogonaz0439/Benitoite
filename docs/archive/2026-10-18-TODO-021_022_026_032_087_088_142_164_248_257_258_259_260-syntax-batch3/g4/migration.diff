@@ -1,0 +1,156 @@
+--- a/Address.bnt
++++ b/Address.bnt
+@@ -5,6 +5,23 @@
+ import Benitoite.Unofficial.Json as Json
+ import Benitoite.Unofficial.Test.Property as Property
+ import Benitoite.Unofficial.IO.Random
++
++implement Trait.Show[Address]
++  function show(x: Address) -> String
++    return "Address(" + "city: " + Trait.Show.show(Address.city(x)) + ")"
++  end function
++end implement
++
++implement Trait.Order[Address]
++  function compare(x: Address, y: Address) -> Trait.Ordering
++    bind deriveOrder0 <- Trait.Order.compare(x: Address.city(x), y: Address.city(y))
++    match deriveOrder0 with
++      case Trait.Ordering.Equal -> ()
++      case other -> return other
++    end match
++    return Trait.Ordering.Equal
++  end function
++end implement
+ 
+ /// Encodes Address in declaration order, returning the first relative conversion failure.
+ public function encodeAddress(value: Address) -> Result[Json.Value, Codec.ConversionError]
+@@ -24,6 +41,13 @@
+   return Address(..original, city: value)
+ end function
+ 
++function derive_shrinkAddress_steps_0(value: Address) -> Property.ShrinkStep[Address]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Property.shrinkString())
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Address.city(value)), f: derive_shrinkAddress_0(original: value, value: _)), right: lambda() return Property.ShrinkStep.Done end lambda)
++  end lambda)
++end function
++
+ /// Generates Address in field order with the same size and successive random states.
+ public function genAddress() -> Property.Gen[Address]
+   bind deriveRun0 <- Property.Gen.run(Property.string())
+@@ -35,10 +59,8 @@
+ 
+ /// Shrinks one field at a time in declaration order; cross-field conditions require a custom shrinker.
+ public function shrinkAddress() -> Property.Shrinker[Address]
+-  bind deriveShrink0 <- Property.Shrinker.candidates(Property.shrinkString())
+   return Property.Shrinker(candidates: lambda(value: Address)
+-    bind deriveCandidates0 <- List.concatenate(xs: [], ys: List.map(xs: deriveShrink0(Address.city(value)), f: derive_shrinkAddress_0(original: value, value: _)))
+-    return deriveCandidates0
++    return derive_shrinkAddress_steps_0(value)
+   end lambda)
+ end function
+ // benitoite-derive:end address
+--- a/People.bnt
++++ b/People.bnt
+@@ -63,6 +63,12 @@
+   return Failure.fromResult(decodePerson(value))
+ end function
+ // benitoite-derive:begin person
++implement Trait.Show[Person]
++  function show(x: Person) -> String
++    return "Person(" + "displayName: " + Trait.Show.show(Person.displayName(x)) + ", address: " + Trait.Show.show(Person.address(x)) + ", nickname: " + Trait.Show.show(Person.nickname(x)) + ", scores: " + Trait.Show.show(Person.scores(x)) + ", active: " + Trait.Show.show(Person.active(x)) + ", count: " + Trait.Show.show(Person.count(x)) + ")"
++  end function
++end implement
++
+ /// Encodes Person in declaration order, returning the first relative conversion failure.
+ public function encodePerson(value: Person) -> Result[Json.Value, Codec.ConversionError]
+   bind deriveField0 <- try Result.mapError(r: (Codec.encodeString)(Person.displayName(value)), f: lambda(error) return Codec.prepend(part: Codec.PathPart.Field("display_name"), error: error) end lambda)
+@@ -91,24 +97,66 @@
+   return Person(..original, displayName: value)
+ end function
+ 
++function derive_shrinkPerson_steps_0(value: Person) -> Property.ShrinkStep[Person]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Property.shrinkString())
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Person.displayName(value)), f: derive_shrinkPerson_0(original: value, value: _)), right: lambda() return derive_shrinkPerson_steps_1(value) end lambda)
++  end lambda)
++end function
++
+ function derive_shrinkPerson_1(original: Person, value: Address.Address) -> Person
+   return Person(..original, address: value)
++end function
++
++function derive_shrinkPerson_steps_1(value: Person) -> Property.ShrinkStep[Person]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Address.shrinkAddress())
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Person.address(value)), f: derive_shrinkPerson_1(original: value, value: _)), right: lambda() return derive_shrinkPerson_steps_2(value) end lambda)
++  end lambda)
+ end function
+ 
+ function derive_shrinkPerson_2(original: Person, value: Option[String]) -> Person
+   return Person(..original, nickname: value)
+ end function
+ 
++function derive_shrinkPerson_steps_2(value: Person) -> Property.ShrinkStep[Person]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Property.shrinkOption(element: Property.shrinkString()))
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Person.nickname(value)), f: derive_shrinkPerson_2(original: value, value: _)), right: lambda() return derive_shrinkPerson_steps_3(value) end lambda)
++  end lambda)
++end function
++
+ function derive_shrinkPerson_3(original: Person, value: List[Map[String, Float]]) -> Person
+   return Person(..original, scores: value)
++end function
++
++function derive_shrinkPerson_steps_3(value: Person) -> Property.ShrinkStep[Person]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Property.shrinkList(element: Property.shrinkStringMap(value: Property.shrinkFloat())))
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Person.scores(value)), f: derive_shrinkPerson_3(original: value, value: _)), right: lambda() return derive_shrinkPerson_steps_4(value) end lambda)
++  end lambda)
+ end function
+ 
+ function derive_shrinkPerson_4(original: Person, value: Boolean) -> Person
+   return Person(..original, active: value)
+ end function
+ 
++function derive_shrinkPerson_steps_4(value: Person) -> Property.ShrinkStep[Person]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Property.shrinkBoolean())
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Person.active(value)), f: derive_shrinkPerson_4(original: value, value: _)), right: lambda() return derive_shrinkPerson_steps_5(value) end lambda)
++  end lambda)
++end function
++
+ function derive_shrinkPerson_5(original: Person, value: Integer) -> Person
+   return Person(..original, count: value)
++end function
++
++function derive_shrinkPerson_steps_5(value: Person) -> Property.ShrinkStep[Person]
++  return Property.ShrinkStep.Skip(lambda()
++    bind candidates <- Property.Shrinker.candidates(Property.shrinkInteger())
++    return Property.appendSteps(left: Property.mapSteps(steps: candidates(Person.count(value)), f: derive_shrinkPerson_5(original: value, value: _)), right: lambda() return Property.ShrinkStep.Done end lambda)
++  end lambda)
+ end function
+ 
+ /// Generates Person in field order with the same size and successive random states.
+@@ -132,20 +180,8 @@
+ 
+ /// Shrinks one field at a time in declaration order; cross-field conditions require a custom shrinker.
+ public function shrinkPerson() -> Property.Shrinker[Person]
+-  bind deriveShrink0 <- Property.Shrinker.candidates(Property.shrinkString())
+-  bind deriveShrink1 <- Property.Shrinker.candidates(Address.shrinkAddress())
+-  bind deriveShrink2 <- Property.Shrinker.candidates(Property.shrinkOption(element: Property.shrinkString()))
+-  bind deriveShrink3 <- Property.Shrinker.candidates(Property.shrinkList(element: Property.shrinkStringMap(value: Property.shrinkFloat())))
+-  bind deriveShrink4 <- Property.Shrinker.candidates(Property.shrinkBoolean())
+-  bind deriveShrink5 <- Property.Shrinker.candidates(Property.shrinkInteger())
+   return Property.Shrinker(candidates: lambda(value: Person)
+-    bind deriveCandidates0 <- List.concatenate(xs: [], ys: List.map(xs: deriveShrink0(Person.displayName(value)), f: derive_shrinkPerson_0(original: value, value: _)))
+-    bind deriveCandidates1 <- List.concatenate(xs: deriveCandidates0, ys: List.map(xs: deriveShrink1(Person.address(value)), f: derive_shrinkPerson_1(original: value, value: _)))
+-    bind deriveCandidates2 <- List.concatenate(xs: deriveCandidates1, ys: List.map(xs: deriveShrink2(Person.nickname(value)), f: derive_shrinkPerson_2(original: value, value: _)))
+-    bind deriveCandidates3 <- List.concatenate(xs: deriveCandidates2, ys: List.map(xs: deriveShrink3(Person.scores(value)), f: derive_shrinkPerson_3(original: value, value: _)))
+-    bind deriveCandidates4 <- List.concatenate(xs: deriveCandidates3, ys: List.map(xs: deriveShrink4(Person.active(value)), f: derive_shrinkPerson_4(original: value, value: _)))
+-    bind deriveCandidates5 <- List.concatenate(xs: deriveCandidates4, ys: List.map(xs: deriveShrink5(Person.count(value)), f: derive_shrinkPerson_5(original: value, value: _)))
+-    return deriveCandidates5
++    return derive_shrinkPerson_steps_0(value)
+   end lambda)
+ end function
+ // benitoite-derive:end person

@@ -1,4 +1,12 @@
 //! Optional values.
+//!
+//! ```benitoite test
+//! @test
+//! function optionExample() -> Unit uses Assert.Check
+//!   Assert.equal(actual: Option.map(o: Option.Some(3), f: lambda(value) return value + 1), expected: Option.Some(4))
+//!   Assert.equal(actual: Option.unwrapOr(o: Option.None, fallback: 9), expected: 9)
+//! end function
+//! ```
 
 /// A value that may be absent: `Option.Some(x)` holds `x`, and `Option.None` holds nothing.
 public data Option[T]

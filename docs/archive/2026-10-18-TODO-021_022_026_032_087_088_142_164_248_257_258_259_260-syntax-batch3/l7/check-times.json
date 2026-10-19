@@ -1,0 +1,135 @@
+[
+  {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "963040ed61b1af211cfb22e082060b6ca8c419a5",
+      "--only",
+      "formal_build,spec_examples,spec_tally",
+      "--dry-run"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 0.01,
+    "log": "work-dry-run.txt"
+  },
+  {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "963040ed61b1af211cfb22e082060b6ca8c419a5",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 12.064,
+    "log": "work.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_batch3_exchange.py"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 7.101,
+    "log": "batch3-exchange.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_named_exchange.py"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 2.428,
+    "log": "named-exchange.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_try_exchange.py"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 3.75,
+    "log": "try-exchange.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_extensible_exchange.py"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 6.623,
+    "log": "extensible-exchange.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_batch2_exchange.py"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 1.477,
+    "log": "batch2-exchange.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_width_exchange.py"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 1.23,
+    "log": "width-exchange.txt"
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-c",
+      "import ast,pathlib; p=pathlib.Path(\"formal/tests/test_batch3_exchange.py\"); ast.parse(p.read_text(), filename=str(p))"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 0.028,
+    "log": "python-syntax.txt"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l7/axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "seconds": 0.718,
+    "log": "axioms.txt"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l7/additional-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "seconds": 0.684,
+    "log": "additional-axioms.txt"
+  }
+]

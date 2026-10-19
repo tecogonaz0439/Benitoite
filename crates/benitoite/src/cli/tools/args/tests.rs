@@ -73,6 +73,7 @@ fn path_arguments_accept_check_and_reject_usage_errors() {
                 max_call_stack: None,
                 deny_warnings: false,
                 check: true,
+                doc: false,
                 paths: vec![PathBuf::from("a.bnt")],
             }),
         ),

@@ -507,6 +507,7 @@ mod command {
             max_call_stack: None,
             deny_warnings: false,
             check,
+            doc: false,
             paths: paths.iter().map(PathBuf::from).collect(),
         }
     }

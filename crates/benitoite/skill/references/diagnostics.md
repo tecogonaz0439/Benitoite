@@ -741,6 +741,14 @@ Write `or return` without a value to return the failure, or `or die` with an opt
 
 Enclose an explicit `try` expression in parentheses before continuing it.
 
+## E0260
+
+- Kind: check (error)
+- Message: invalid documentation example: {reason}
+- `syntax`: use `benitoite test`, `benitoite check`, `benitoite error` followed by `diagnostic`, or `benitoite` followed by `output`
+
+Documentation examples use fenced blocks. Error examples require a real E-code on its own diagnostic line; run examples require output. Files and nonzero exit expectations are not supported in comments.
+
 ## E0301
 
 - Kind: check (error)
@@ -1097,6 +1105,16 @@ Lambda parameters, pattern variables of branches, handler clause parameters, and
 
 Modules that declare built-in effects cannot be renamed, so that `uses` always shows the original effect names, such as `Console.Write` and `File.Write`.
 
+## E0340
+
+- Kind: check (error)
+- Message: the representation of opaque type `{type}` is private to `{module}`
+- Label: representation is private
+- `declared`: opaque type declared here
+- `public_api`: use the module's public construction and inspection functions
+
+Outside the declaring module, an opaque type can be passed as an ordinary value, but its constructors, fields, record updates, and representation patterns cannot be used.
+
 ## E0401
 
 - Kind: check (error)
@@ -1177,11 +1195,11 @@ Arithmetic and ordering operators work only on the listed basic types.
 
 - Kind: check (error)
 - Message: values of type `{ty}` cannot be compared with `{op}`
-- `why`: types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`
+- `why`: types that contain functions or built-in opaque types without equality such as `IOError` cannot be compared with `=` or `<>`
 - `constraint`: add the constraint `equality` to the type parameter, such as `[{param}: equality]`
 - `operation`: add the constraint `{constraint}` to the type parameter `{declared}` in the declaration of the operation `{operation}`
 
-Equality is defined only for types without functions and opaque standard library types, and external types.
+Equality types contain no function types, no built-in opaque types without equality such as `IOError`, and no external types. An `@opaque` data type or record follows the equality rules for its contents.
 
 ## E0407
 
@@ -1570,6 +1588,102 @@ Supply each parameter of the function contract.
 
 Direct data construction uses positional fields; constructor function values have parameter contracts.
 
+## E0457
+
+- Kind: check (error)
+- Message: invalid constant regular expression: {reason}
+- Label: invalid pattern
+- `constant`: constant declared here
+- `origins_omitted`: {omitted} other constant declarations omitted
+
+A direct Regex.compile call checks a known constant source. Pass dynamic input to observe Result.Error at runtime.
+
+## E0458
+
+- Kind: check (error)
+- Message: constant regular expression exceeds the compilation limit: {reason}
+- Label: compilation limit
+- `constant`: constant declared here
+- `origins_omitted`: {omitted} other constant declarations omitted
+
+The runtime RegexBuilder also rejects this source. The constant evaluation budget is a separate limit.
+
+## E0459
+
+- Kind: check (error)
+- Message: invalid constant scope pattern: {reason}
+- Label: invalid pattern
+- `constant`: constant declared here
+- `origins_omitted`: {omitted} other constant declarations omitted
+
+Use an exact host/path pattern, *.host, **.host, or an absolute path ending in /**.
+
+## E0460
+
+- Kind: check (error)
+- Message: invalid constant scope target: {reason}
+- Label: invalid target
+- `constant`: constant declared here
+- `origins_omitted`: {omitted} other constant declarations omitted
+
+Supply a host or absolute path with the spelling required by Scope.
+
+## E0461
+
+- Kind: check (error)
+- Message: invalid constant scope port bounds or port
+- Label: invalid port
+- `constant`: constant declared here
+- `origins_omitted`: {omitted} other constant declarations omitted
+- `condition`: lower bound supplied here
+
+Ports must be between 0 and 65535, and minimumPort must not exceed maximumPort.
+
+## E0463
+
+- Kind: check (error)
+- Message: a builder requires an annotated local bind and a direct new call
+- `bind`: use `bind b: StringBuilder <- StringBuilder.new()`
+
+Builder declarations require a dedicated annotation and matching direct new call.
+
+## E0464
+
+- Kind: check (error)
+- Message: a local builder cannot be used as an ordinary type or value
+- `copy`: use copy to obtain an ordinary immutable value
+
+Builder classifications are allowed only in annotated local binds; builder names are allowed only as direct operation targets.
+
+## E0465
+
+- Kind: check (error)
+- Message: a local builder cannot be captured across {boundary}
+- `declared`: builder declared here
+- `boundary`: capture boundary starts here
+- `copy`: bind a copy or length before the boundary and capture that ordinary value
+
+A lambda, lazy expression, partial application, or handler clause starts a fresh builder context.
+
+## E0466
+
+- Kind: check (error)
+- Message: builder operations require a direct call
+- `direct`: write a direct call without holes or a pipe
+
+Builder operations cannot be used as function values, partially applied, or piped.
+
+## E0462
+
+- Kind: check (error)
+- Message: constant target is outside the supplied scope
+- Label: outside scope
+- `constant`: constant declared here
+- `origins_omitted`: {omitted} other constant declarations omitted
+- `condition`: scope condition supplied here
+
+The known target does not satisfy the supplied host/path pattern or inclusive port range.
+
 ## E0454
 
 - Kind: check (error)
@@ -1649,8 +1763,9 @@ A task group must be released when its block ends, so it is opened only by `with
 - Message: `{function}` does not handle the effect `{effect}`
 - Label: `{effect}` is not handled
 - `handle`: handle `{effect}` with `handle ... with` inside `{function}`
+- `to_result`: or convert the failure with Failure.toResult inside `{function}`
 
-Effects declared by the program must be handled inside `main` and inside test functions.
+Effects declared by the program must be handled inside `main` and inside test functions. For the standard Failure.Fail, import Benitoite.Unofficial.Failure, catch it with Failure.toResult, and remove the handled Fail from the entry function's uses. Result.andThen/flatMap chains Result values; it does not handle Fail.
 
 ## E0507
 
@@ -1975,7 +2090,7 @@ Nesting implementations that require two or more traits of the same type paramet
 
 - Kind: check (error)
 - Message: unknown attribute `@{name}`
-- `allowed`: the attributes are `@test`, `@test("...")`, `@deprecated("...")`, `@extensible`, and `@external("wasm", "...", "...")`
+- `allowed`: the attributes are `@test`, `@test("...")`, `@deprecated("...")`, `@extensible`, `@opaque`, and `@external("wasm", "...", "...")`
 
 Only the listed attributes can be written.
 
@@ -1984,7 +2099,7 @@ Only the listed attributes can be written.
 - Kind: check (error)
 - Message: `@{name}` cannot be written on {what}
 
-`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects. `@extensible` is written on `data` types and records.
+`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects. `@extensible` is written on `data` types and records. `@opaque` is written on public or package-public `data` types and records.
 
 ## E0803
 
@@ -2116,6 +2231,29 @@ Functions that pass external types use component state.
 - `remove`: remove the arguments from `@extensible`
 
 `@extensible` is written without arguments on a `data` type or record.
+
+## E0818
+
+- Kind: check (error)
+- Message: `@opaque` takes no arguments
+- `remove`: remove the arguments from `@opaque`
+
+Write `@opaque` without arguments on a public or package-public data type or record.
+
+## E0819
+
+- Kind: check (error)
+- Message: `@opaque` cannot be combined with `@{other}`
+- Label: incompatible attributes
+
+`@opaque` cannot be combined with `@extensible` or `@external`; an external type is already opaque.
+
+## E0820
+
+- Kind: check (error)
+- Message: `@opaque` requires a public or package-public data or record declaration
+
+The opaque attribute separates visibility of a type from access to its representation.
 
 ## E0901
 

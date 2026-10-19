@@ -7,11 +7,11 @@ open Benitoite.Release
 variable {Q : NoFailCtx}
 
 /-- 既存の単一パターンの分岐は、恒等対応の選択肢として型が付く。 -/
-theorem HasArmsQ.single {D B op C Γ R pos pat body rest a b ε εs δ}
+theorem HasArmsQ.single {Δb : BuilderCtx} {D B op C Γ R pos pat body rest a b ε εs δ}
     (hv : pat.Valid) (hp : PatTy D.patternProgram pat.toCore a δ)
-    (hb : HasBlockQ D B op Q C (binds δ ++ Γ) R pos body b ε)
-    (hs : HasArmsQ D B op Q C Γ R pos rest a b εs) :
-    HasArmsQ D B op Q C Γ R pos (Arms.single pat body rest) a b (Eff.union ε εs) := by
+    (hb : HasBlockQ D B op Q (List.replicate δ.length none ++ Δb) C (binds δ ++ Γ) R pos body b ε)
+    (hs : HasArmsQ D B op Q Δb C Γ R pos rest a b εs) :
+    HasArmsQ D B op Q Δb C Γ R pos (Arms.single pat body rest) a b (Eff.union ε εs) := by
   exact .plain (by intro alt hm; simp only [List.mem_singleton] at hm; subst alt; exact hv)
     (PatTy.singleAlt hp) hb hs
 

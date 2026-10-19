@@ -1,6 +1,6 @@
 # 実行前の検査
 
-> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 修正中は通常の `benitoite check main.bnt` または非実行の `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に JSON 報告を一度取得する。その報告を確認し、Skill の確認の規則に従って宣言したエフェクトを利用者に説明してから、了承済みの集合を実行へ渡す。
 
@@ -14,7 +14,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 
 上の許す集合は例であり、実際のプログラムを見直した集合を使う。純粋な実行には `benitoite run --allow-effects= pure.bnt` と書く。オプションを省略するとエフェクト上限を掛けない。`run` のオプションはスクリプトのパスより前に置き、後続の引数はスクリプトに渡す。`test` のオプションはパスの後にも置ける。
 
-版の問い合わせは後続の引数を受けず、`schemaVersion: 1`、`kind: "version"`、`name`、`version`、`unicodeVersion`、`build`、`formats`、`loaderEnvironment` を持つ一つの JSON オブジェクトを返す。リリース番号から対応機能を推測せず、必要な形式のキーと理解できる整数の版を要求する。現在の形式のキーは `version`、`diagnostics`、`testResults`、`checkReport`、`testCheckReport`、`effectLimit`、`loaderEnvironment`、`skillList`、`skillDocument` で、いずれも `[1]` を持つ。既存の診断とテスト結果の JSON Lines には、スキーマの欄や先頭の版の行を加えない。その形式には die の診断とテストの `failure.die` を含む。`effectLimit` はオプションとその診断の契約の版を表し、新しい出力オブジェクトではない。未知の形式・状態・エフェクトは未対応であり、成功や空集合として扱わない。
+版の問い合わせは後続の引数を受けず、`schemaVersion: 1`、`kind: "version"`、`name`、`version`、`unicodeVersion`、`build`、`formats`、`loaderEnvironment` を持つ一つの JSON オブジェクトを返す。リリース番号から対応機能を推測せず、必要な形式のキーと理解できる整数の版を要求する。現在の形式のキーは `version`、`diagnostics`、`testResults`、`checkReport`、`testCheckReport`、`effectLimit`、`loaderEnvironment`、`skillList`、`skillDocument` で、testCheckReport と testResults は `[1,2]`、ほかは `[1]` を持つ。既存の診断とテスト結果の JSON Lines には、スキーマの欄や先頭の版の行を加えない。その形式には die の診断とテストの `failure.die` を含む。`effectLimit` はオプションとその診断の契約の版を表し、新しい出力オブジェクトではない。未知の形式・状態・エフェクトは未対応であり、成功や空集合として扱わない。
 
 ビルドの欄は `commit`、`dirty`、`target`、`provenance: {commit, dirty}` である。コミットが不明なら `null`、dirty は真偽値または `null` であり、`null` は不明を表す。dirty は自動採取せず、ビルドの入力を省略した場合の由来は `notCollected` となる。ビルド時に明示した `BENITOITE_BUILD_COMMIT`（40 桁または 64 桁の完全な十六進 ID か `unknown`）と `BENITOITE_BUILD_DIRTY`（`true`、`false`、`unknown`）はそれぞれ独立に優先し、由来は `environment` となる。それ以外では、利用できる場合に Git でコミットを調べ、由来は `git` または `unknown` となる。target は Cargo から得る。実行時の環境変数の変更は、埋め込んだ情報を変えない。
 
@@ -28,7 +28,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 
 | 欄 | 意味 |
 |---|---|
-| `kind` | main では `checkReport`、テストでは `testCheckReport`。どちらも `schemaVersion: 1` を使う。 |
+| `kind` | main では `checkReport`、テストでは `testCheckReport`。既定は `schemaVersion: 1`、test --doc は版 2 を使う。 |
 | `producer` | `{name, version, build}`。版の問い合わせと同じ値。 |
 | `executed` | 常に `false`。利用者の関数を実行していない。 |
 | `targetsComplete` | 入口の選択または探索が完了した。これだけでは検査の成功を意味しない。 |
@@ -64,3 +64,10 @@ benitoite skill show --format=json references/stdlib/IO.Process.md
 `list` は、`schemaVersion: 1`、`kind: "skillList"`、`producer`、および `{name, byteLength, contentHash}` を辞書順に並べた `documents` 配列を返す。`show` は、`schemaVersion: 1`、`kind: "skillDocument"`、`producer`、`name`、`byteLength`、`contentHash`、`text` を返す。長さは `SKILL.md` の版の置換後の UTF-8 バイト数を数え、SHA-256 のハッシュも同じバイト列を対象とする。`install` も同一の本文を書く。これらの問い合わせは埋め込みの文書を読み、`HOME`、作業ディレクトリ、インストール済みの写しを調べない。ライセンスを含め、名前は一覧と完全に一致し、`/` で区切った各成分は大文字小文字を区別する。空の名前、先頭の `/`、空成分、`.`、`..`、バックスラッシュ、コロンは不正であり、名前を OS のパスとして開くことはない。
 
 既定の形式は text であり、`list` は一行に一つの名前、`show` は改行を追加せず文書だけを出す。JSON の問い合わせは一つのオブジェクトと末尾の LF を書く。`--format=text|json` は `=` を必須とし、一回だけ指定でき、show の名前の前後どちらにも置ける。`list` は名前を取らず、`show` は一つ要求する。これらの問い合わせはインストール用のオプションを拒否し、install/uninstall は `--format` を拒否する。成功は 0、不正な構文や未知の文書は 2 で終わる。これらの誤りでは JSON の問い合わせでも標準出力を空とし、標準エラー出力に説明を書く。処理系の不具合は 3、出力の失敗は 1 で終わる。出力がないことを空の文書と解釈しない。list と show が返す名前はすべて同じ規則を満たし、埋め込みの名前が不正または重複していれば、部分的な一覧ではなく処理系の不具合とする。
+
+
+文書の例には、検査と実行の両方に --doc を付ける。`benitoite test --doc --check --report=json tests/` を使い、その後 `benitoite test --doc --allow-effects=<了承した集合> tests/` を実行する。版の問い合わせで testCheckReport と testResults の版 2 を要求する。--doc を省略すると版 1 になる。未知の JSON Lines の種類を、版 1 の成功として無視しない。
+
+版 2 は Target.tests を保ち、docExamples と ignoredDocBlocks を加える。例には自分自身の import と uses を書き、公開 API の境界を検査する。モードは test/check/error/run である。集計するエフェクトは通常のテストと実行する test/run の例だけで、check/error は実行の許可を加えない。期待した静的拒否は observedDiagnostics を持つ成功した error 例であり、最上位の診断の失敗ではない。不明なエフェクトとテストは null、成功した空の値は空配列とする。想定外の拒否や診断の不一致は検査を不完全にする。--check は main を実行せず、出力を検証しない。
+
+実行前に、実行する全例の準備と許す集合の照合を終える。実行は docExample 行、発見したモード別の数と ignoredBlocks を持つ docSummary、最終の testSummary を出力する。最終集計は通常のテスト関数と完了した例を数え、複数の @test を含む例も一件と数える。取り込んだ文書や標準文書は再帰的に集めない。各例は独立した状態と空の標準入力で実行する。

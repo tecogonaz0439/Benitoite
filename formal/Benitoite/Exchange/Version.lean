@@ -120,32 +120,35 @@ partial def validateBatch2 : Json → Except String Unit
       xs.toArray.toList.forM (fun (_,v) => validateBatch2 v)
   | _ => pure ()
 
-/-- corpus 8/9/10 と他形式 2/3 を保ち、11/4 の情報は旧版で捨てない。 -/
+/-- corpus と sidecar の世代を独立に判定し、旧版の深い位置でも新情報を捨てない。 -/
 def exchangeJson (kind : String) (j : Json) : Except String Json := do
   let version ← j.getObjValAs? Nat "version"
-  let old := if kind == "corpus" then 8 else 2
-  let current := if kind == "corpus" then 11 else 4
-  if kind == "corpus" && version < 10 then
+  let corpus := kind == "corpus"
+  if !(if corpus then [8, 9, 10, 11, 12] else [2, 3, 4]).contains version then
+    -- 契約名導入前の入力にも、既存の具体的な拒否理由を保つ。
+    if version == (if corpus then 7 else 1) then
+      rejectFields ["names", "labels", "positions", "fields"] j
+    throw s!"unsupported {kind} exchange version: {version}"
+  if !corpus || version < 12 then
+    rejectFields ["builderBind", "builderOp", "refs", "newRef", "getRef", "setRef"] j
+  if corpus && version < 10 then
     rejectFields ["tryResultReturn", "tryOptionReturn", "tryResultDie", "tryOptionDie"] j
-  if version == (if kind == "corpus" then 7 else 1) then
-    rejectFields ["names", "labels", "positions", "fields"] j
-  if version < current then
+  let batch2 := version >= (if corpus then 11 else 4)
+  if !batch2 then
     rejectFields ["effParams", "noFail", "dictCount", "failureType", "effectKind", "opDicts", "raise", "handleFail", "clause"] j
     rejectBatch2 j
-  if version == old then
+  if version == (if corpus then 8 else 2) then
     rejectFields (["builtin", "package", "coverageView", "extensible", "isRecord", "dataTypes"] ++
       if kind == "coverage" then [] else ["typeName", "constructorName"]) j
     return batch2Defaults (closedDefaults kind j)
-  if version != current && version != (current - 1) && !(kind == "corpus" && version == 9) then
-    throw s!"unsupported {kind} exchange version: {version}"
-  if version == current then
+  if batch2 then
     validateBatch2 j
     return j
   return batch2Defaults j
 
-/-- 同じ世代の sidecar のみを組み合わせる。 -/
+/-- corpus 11 と 12 は同じ sidecar 4 を使う。 -/
 def sidecarVersion (corpusVersion : Nat) : Nat :=
-  if corpusVersion == 11 then 4 else if corpusVersion >= 9 then 3 else 2
+  if corpusVersion >= 11 then 4 else if corpusVersion >= 9 then 3 else 2
 
 def validateDataTypes (ds : List DataTypeInfo) : Except String Unit := do
   if (ds.map (·.name)).eraseDups.length != ds.length then throw "duplicate data type metadata"
@@ -174,7 +177,7 @@ def validateBuiltinShape (builtin : BuiltinData) (ntys : Nat) (record : Bool)
 partial def validateConstantBody : Json → Except String Unit
   | .arr xs => xs.toList.forM validateConstantBody
   | .obj xs => xs.toArray.toList.forM fun (k,v) => do
-      if ["matchE", "bind", "lastBind", "bindPat", "lastPat"].contains k then
+      if ["matchE", "bind", "lastBind", "bindPat", "lastPat", "builderBind", "builderOp"].contains k then
         throw "source match/binding in constant"
       validateConstantBody v
   | _ => pure ()

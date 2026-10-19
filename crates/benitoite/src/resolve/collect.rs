@@ -126,6 +126,7 @@ impl<'a> Resolver<'a> {
             span: Some(name.span),
             public: visibility == Level::Public,
             package: visibility == Level::Package,
+            opaque: false,
             deprecated,
         })
     }
@@ -139,6 +140,7 @@ impl<'a> Resolver<'a> {
             span: None,
             public: true,
             package: false,
+            opaque: false,
             deprecated: None,
         })
     }
@@ -392,6 +394,13 @@ impl<'a> Resolver<'a> {
         };
         let owner = top.item.id();
         let id = self.node_binding(module, owner, name, kind, visibility, deprecated.clone());
+        if matches!(kind, BindingKind::Data | BindingKind::Record)
+            && top.attrs.iter().any(|attr| attr.name.text == "opaque")
+            && let Some(mut binding) = self.out.bindings.get(id).cloned()
+        {
+            binding.opaque = true;
+            self.out.bindings.insert(id, binding);
+        }
         if matches!(top.item, Item::Fn(_) | Item::ExternalType(_))
             && let Some(attr) = top.attrs.iter().find(|attr| attr.name.text == "external")
         {

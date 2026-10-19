@@ -104,7 +104,7 @@ Wasmtime 49.0.2 は、機能 `runtime`・`component-model`・`std`・`cranelift`
 【方針】処理系は、標準ライブラリの一部の型・関数・エフェクトを、言語の規則の中で特別に扱う。
 
 - 構文や型の規則が参照する型: `List`（リストのリテラル）、`Option`・`Result`（`try`。[エラー処理](../01-spec/01-09-errors.md)。`Result` は `main` の戻り値の型 `Result[Unit, String]` の判定にも使う）、`Pair`・`Triple`、`Map`・`Set`（定数式。[構文](../01-spec/01-02-syntax.md)）。
-- ソースに宣言を置かず、処理系の表で与えるもの: 中身を見せない組み込みの型（基本型、`List`・`Map`・`Set`・`Bytes`・`Reference`・`Lazy`・`Task`・`TaskGroup`・`IOError`・`NetworkError`、リソースの型、`Regex.Pattern`・`Regex.Match`・`Random.Generator`）、操作を持たないエフェクト `State`、まとめたエフェクト `IO.All`。
+- ソースに宣言を置かず、処理系の表で与えるもの: 組み込みの型（基本型、`List`・`Map`・`Set`・`Bytes`・`Reference`・`Lazy`・`Task`・`TaskGroup`・`IOError`・`NetworkError`、リソースの型、`Regex.Pattern`・`Regex.Match`・`Random.Generator`）、操作を持たないエフェクト `State`、まとめたエフェクト `IO.All`。
 - 組み込みのエフェクト（[エフェクト](../01-spec/01-07-effects.md)）と、テストの実行器がハンドラとして処理する `Assert.Check`（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)）。
 - 書ける位置が限られる関数: `TaskGroup.open`（`with` の束縛の式としてだけ書ける）。
 - 定数式に書ける関数: `Map.fromList`・`Set.fromList`・`Map.empty`・`Set.empty`（[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」）。
@@ -120,7 +120,7 @@ Wasmtime 49.0.2 は、機能 `runtime`・`component-model`・`std`・`cranelift`
 |---|---|
 | `Unit` | 同じ名前のモジュールを持たないので、`State` と同じく名前空間の根 `Benitoite` の直下の prelude の名前とする（`Benitoite.Unit`） |
 | そのほかの基本型、`List`・`Map`・`Set`・`Bytes`・`Reference`・`Lazy`・`Task`・`TaskGroup`・`IOError`・`NetworkError` | 同じ名前の prelude のモジュール（`Benitoite.Integer` の型 `Integer`、`Benitoite.IOError` の型 `IOError` など）。名前 `X` は、型を書く位置では型を、修飾の段ではモジュールを指す |
-| リソースの型と、IO・ネットワーク・テキストとデータのモジュールの中身を見せない型 | その型を定める章のモジュール（`Benitoite.IO.File` の `Reader`・`Writer`、`Benitoite.IO.Random` の `Generator`、`Benitoite.Regex` の `Pattern`・`Match`、`Benitoite.Network.Http` の `Listener`・`Exchange` など。[IO のモジュール](03-07-io-modules.md)、[テキストとデータの処理](03-08-text-and-data.md)、[ネットワークのモジュール](03-09-network.md)） |
+| リソースの型と、IO・ネットワーク・テキストとデータのモジュールの不透明型 | その型を定める章のモジュール（`Benitoite.IO.File` の `Reader`・`Writer`、`Benitoite.IO.Random` の `Generator`、`Benitoite.Regex` の `Pattern`・`Match`、`Benitoite.Network.Http` の `Listener`・`Exchange` など。[IO のモジュール](03-07-io-modules.md)、[テキストとデータの処理](03-08-text-and-data.md)、[ネットワークのモジュール](03-09-network.md)） |
 
 数の正の名前・別名・表示名は、型の定義と別の内部の表で対応付ける（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)の「標準ライブラリのソースの持ち方」）。新しい七種は同名のモジュールに属し、既存の `Integer`・`Float`・`Byte` の定義の所属は保つ。幅付きの名前と別名の各モジュールでも、同名の型の束縛と標準ライブラリの索引が同じ型の番号を指す。例えば `Integer64` モジュール内の型 `Integer64` は、`Integer` モジュール内の型 `Integer` と同一である。`Show`・`Order` の実装は各型に一つずつ置き、別名のモジュールには追加しない。
 

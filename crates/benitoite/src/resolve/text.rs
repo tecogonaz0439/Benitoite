@@ -35,3 +35,9 @@ pub(super) const CONSTRUCTOR_NAME: &str = "constructor";
 pub(super) const TYPE_PARAMETER_NAME: &str = "type parameter";
 pub(super) const EFFECT_VARIABLE_NAME: &str = "effect variable";
 pub(super) const VALUE_NAME: &str = "value";
+
+// 構築器の捕捉境界（設計書 02-10「文言の言語」）。
+pub(super) const BUILDER_LAMBDA: &str = "lambda";
+pub(super) const BUILDER_LAZY: &str = "lazy";
+pub(super) const BUILDER_PARTIAL: &str = "partial application";
+pub(super) const BUILDER_CLAUSE: &str = "handler clause";

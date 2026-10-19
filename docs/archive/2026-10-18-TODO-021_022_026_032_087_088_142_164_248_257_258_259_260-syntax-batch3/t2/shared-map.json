@@ -1,0 +1,203 @@
+{
+  "functions-32": {
+    "source": "target/t2/shared/corpus/functions-32.bnt",
+    "source_sha256": "300a445593da35f4fedaf4ee2dee0430cbdedb340e463a5e327d179b9f746089",
+    "status": "nodes=4089 bindings=1346 errors=0 codes=[] typecheck_ns=17081417",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "f1c3dc567945d957002c3e9a2848b1f7599cb603dfc53d2666a1666d18a8983a",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "a1df715bb77a044c625cfe66949aec921369ba7cd5677130ba6a0b0437f5bf43"
+    }
+  },
+  "functions-128": {
+    "source": "target/t2/shared/corpus/functions-128.bnt",
+    "source_sha256": "bce25965715243d937b32c5084ea57f1b125840c383b6077f849933343b99ef4",
+    "status": "nodes=5241 bindings=1634 errors=0 codes=[] typecheck_ns=21917625",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "88495cd26e63c2146314f4b398e620182b6c49187a17c2b2c2a61725e86ab65d",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "48b5014acd247d2be9ef08932cea1ba3be270108c9b90babbf44b20804ebe793"
+    }
+  },
+  "one-body-128": {
+    "source": "target/t2/shared/corpus/one-body-128.bnt",
+    "source_sha256": "ef7102511635c44ec99f19f2cb6193a5cfdc4159f5c53e490d8f511fa65a72d1",
+    "status": "nodes=4350 bindings=1380 errors=0 codes=[] typecheck_ns=28079917",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "af0538a5b46894172930eb6a912199dc42316f4ec9d059cbf87094614fdbb6ff",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "160c7e316f18e9b86e259030706343937c5fe7e15c79827e800ab379a80b34cb"
+    }
+  },
+  "one-body-512": {
+    "source": "target/t2/shared/corpus/one-body-512.bnt",
+    "source_sha256": "2a8eb3047bb714c582047cf66d90218d5541f1286432ba98b700f30225475734",
+    "status": "nodes=6270 bindings=1764 errors=0 codes=[] typecheck_ns=43278250",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "41bf3d29c49d5c53ccfe511eea46bd6193ea711a40a2b9b916bd8eaafbde08c5",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "279821b6d82683e4b6006b883920aa8148398474dbdecb98efa683a23fc402c0"
+    }
+  },
+  "wrong-returns": {
+    "source": "target/t2/shared/corpus/wrong-returns.bnt",
+    "source_sha256": "206dfbe6d5a99dcd3eb5d7ade47d8578f95d678dddcc1afe4d0f6b7ba36e173d",
+    "status": "nodes=3734 bindings=1256 errors=2 codes=[\"Some(E0401)\", \"Some(E0401)\"] typecheck_ns=30203625",
+    "files": {
+      "cli.jsonl": "405e0001bc80a557f90a5e07161a856cda032d2b4e28a6a16fe470607182f02c",
+      "diagnostics.txt": "eff5dddffe7ceb8a7d407ea65c1f75b288af584ccf2a95283774695953f6d634",
+      "types.txt": "c25c2c75b8b0cf2eb439a0bb4b47acc02b3ea96b6d0efe10ecc688a46582535c"
+    }
+  },
+  "handlers-f04_log": {
+    "source": "crates/benitoite/testdata/handlers/f04_log.bnt",
+    "source_sha256": "d2fc3076d9422616af18e774446a38f1d9efb2c5282228f23d9ed030955c60d4",
+    "status": "nodes=3801 bindings=1275 errors=0 codes=[] typecheck_ns=16732125",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "7064b944069df7eacf58d3ddfc10471886171dc452bfacacf2cdd4d4ace2b383",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "2fee8942bf63bd2f580fa58b1b7e76a7c026f57eaad96dd0c7ca6a28d0f4f01f"
+    }
+  },
+  "handlers-secf1-clause-local": {
+    "source": "crates/benitoite/testdata/handlers/secf1-clause-local.bnt",
+    "source_sha256": "fec0b0ba32220dfbfd64e28593a5aba984a076f5943e416675acc0aa25c0c773",
+    "status": "nodes=3885 bindings=1286 errors=0 codes=[] typecheck_ns=25448500",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "8ea5f2e8e1f3b867683bfa57e272ec611ec9f465c2408806deb4c98ed288998c",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "97f4d86c1fc214fc4df83007a0bd9741f75b70493878e18f9cf156680850fa69"
+    }
+  },
+  "handlers-f1-nofail-expected-accept": {
+    "source": "crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+    "source_sha256": "60f332b8c3205346133340edea6a7b82e591da21a8624eda50d14bc5df54aca0",
+    "status": "nodes=3776 bindings=1269 errors=1 codes=[\"Some(E0515)\"] typecheck_ns=24625792",
+    "files": {
+      "cli.jsonl": "b48030ff93770b1bd2c4c528b68c48346ea61a7919b1e35fa820c8249bf909d1",
+      "diagnostics.txt": "9117a1012d0c502ce80efe48adea7d93bf86f4c5d9a73cfef31563aa8f384254",
+      "types.txt": "71a8f6066d2bd8bec3ee14ec70418e4a9fbcfa7a64254fe21cd49f1603f89f9d"
+    }
+  },
+  "handlers-f1-nofail-method-value": {
+    "source": "crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+    "source_sha256": "04e93190eba0ae416ae47b40366e4b1a1c1801c9d9cdea3a6f27057759d276e8",
+    "status": "nodes=3821 bindings=1279 errors=2 codes=[\"Some(E0514)\", \"Some(E0515)\"] typecheck_ns=20390000",
+    "files": {
+      "cli.jsonl": "0bc13c06a45454b743bf76ff3b507b11bfe9d34e5ac5c7bbe9d8d7d135d53f98",
+      "diagnostics.txt": "7a19db34fa9c44851ca94b92f6691ca1147149bd4252e68b1dd9881aea8a0982",
+      "types.txt": "5a9cbbb40b13157469b8e14d716bbbd3c2af231ac5eb2829face7c25a07b4b54"
+    }
+  },
+  "handlers-f1-nofail-dictionary-value": {
+    "source": "crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+    "source_sha256": "687302dddf42469f08f5f028159e614aac1705fc14b671609eb56b879326b380",
+    "status": "nodes=5735 bindings=1631 errors=2 codes=[\"Some(E0514)\", \"Some(E0515)\"] typecheck_ns=112075417",
+    "files": {
+      "cli.jsonl": "307d9f29d310062b03dd4b881e172bdf221ff5d4f979ef6a761c9496591f9244",
+      "diagnostics.txt": "1e94ea8e620fe78fed13df8edc51403b706a0c9d2659645e6dbf5f34ad3295b8",
+      "types.txt": "3c6be2421e4d671fd771dae296d4c8809ce7fef0c5afcc5e4636219196bf9ee0"
+    }
+  },
+  "handlers-f1-nofail-call": {
+    "source": "crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+    "source_sha256": "4093fa0953ca1c7f624704adfc7c501014885a9745a3a60a6813de20383ce0f8",
+    "status": "nodes=3793 bindings=1272 errors=1 codes=[\"Some(E0515)\"] typecheck_ns=21907750",
+    "files": {
+      "cli.jsonl": "a952a909421e80df0c7d5a25b035fab2fb7d2bc0924b015a8e474ba1e188a248",
+      "diagnostics.txt": "d493a435e83ea4b8fb368c58107c0b78e39bedc4157c40e68706d426bf77df62",
+      "types.txt": "1ee5095ecd689b9534d1121a1812f7dee6d64a08abf5e23df1157b5b4cb98f9f"
+    }
+  },
+  "handlers-f1-nofail-signature": {
+    "source": "crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+    "source_sha256": "bd6c98743d3727c98fd00cb3f19e5e8f29a5de99a1b126c989bf604a7a704240",
+    "status": "nodes=3778 bindings=1269 errors=1 codes=[\"Some(E0515)\"] typecheck_ns=19474166",
+    "files": {
+      "cli.jsonl": "f0d32738c5ed37120021c87943f01d588887769b9779db8e7113913cdb356a9e",
+      "diagnostics.txt": "583dfa587a804fbd37bbd512371ee59a14532e7f46d67d95125f913a22211d15",
+      "types.txt": "0f075b45301fc6be4cf0e4978586501c723abe0bec1fd29feeedb5841a263449"
+    }
+  },
+  "handlers-secf1-nested-escape": {
+    "source": "crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+    "source_sha256": "b7f24e4f5a85d3dd7d00d069a9a168b024ef7eaf835b9c9c042acc8f8aef85aa",
+    "status": "nodes=3744 bindings=1257 errors=1 codes=[\"Some(E0401)\"] typecheck_ns=19444291",
+    "files": {
+      "cli.jsonl": "110474c6dfa191db4088a76f398d5f4c8b65f86f1db04fe97e467df0c0988dba",
+      "diagnostics.txt": "4e9907bc76dbdff26d625f835ebeb8e3213746e1029875ba072047837e997fe4",
+      "types.txt": "6a13b6538b88ac5bee0041576073541199681a05316c359a553133d86c6f9b19"
+    }
+  },
+  "handlers-c12-resume-twice": {
+    "source": "crates/benitoite/testdata/handlers/c12-resume-twice.bnt",
+    "source_sha256": "9e4c05e7b3d8705e879dfa2425adceb9d2a86dc0550235c673598b3181ee1d78",
+    "status": "nodes=3769 bindings=1269 errors=0 codes=[] typecheck_ns=15844917",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "b66d4d7be2e74ef5abad6a21862900be4b0a9f7a92969b811d4279772431c9c8",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "e8e5f610cd8b7c37efee67b1de8b9ab6562ae05eb36aefbbfdec65e3554544b7"
+    }
+  },
+  "traits-f04_supertraits": {
+    "source": "crates/benitoite/testdata/traits/f04_supertraits.bnt",
+    "source_sha256": "dbd8dba13ad884614ccfac59460b58ebe9796633680bb7d2991b23b7eff4bde5",
+    "status": "nodes=3762 bindings=1265 errors=0 codes=[] typecheck_ns=16223458",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "59f5a9340be2eb3627fe7a38c7ca715a6fb6d97b6f0cc3de3ffb8594941bdbf6",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "b0a61d2357657628dc66ebc92f48f6ee877253d62f854e610becc24b254f0d28"
+    }
+  },
+  "traits-c11-dictionary-run": {
+    "source": "crates/benitoite/testdata/traits/c11-dictionary-run.bnt",
+    "source_sha256": "b1a55b0ea50b1d60e3117ebb8615365742c56b2d9f44e449aad3a4e16b26d4ab",
+    "status": "nodes=3802 bindings=1278 errors=0 codes=[] typecheck_ns=16304459",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "be39ebf2b61cda5e4ca5fdd79d6bf79a2feb0861aba0af20c2b258f29bdaf14a",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "dfe265eb8b337d61e5ebb1d8e56c71e5b951d2e23d967a3006f8fb9a649ebb0f"
+    }
+  },
+  "traits-c11-constraint-missing": {
+    "source": "crates/benitoite/testdata/traits/c11-constraint-missing.bnt",
+    "source_sha256": "c23df59700f6c16a45e026ed58bf2759f688302c944632eea65ae326339b5fdb",
+    "status": "nodes=3717 bindings=1257 errors=1 codes=[\"Some(E0706)\"] typecheck_ns=15614000",
+    "files": {
+      "cli.jsonl": "bc4e6442ca172eca9b50ab94dda23893e584b20a620f5fb6a194a04bd11a9f75",
+      "diagnostics.txt": "ad1c6a148fcf450a7fd67529cf41833e1c1310acb1cb85f2994b06d753d507ea",
+      "types.txt": "4204ddd2f1dd53fba23e2f06c059643fc0f5b1ad6844ce98728e13efdc1312da"
+    }
+  },
+  "modules-f18_directory-main": {
+    "source": "crates/benitoite/testdata/modules/f18_directory/main.bnt",
+    "source_sha256": "49bf1ab784f06d7e9c61c195be7ddbb5660140f740a05f51f4c4bdd9ac8ffbc8",
+    "status": "nodes=3750 bindings=1267 errors=0 codes=[] typecheck_ns=15845125",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "8ebf260656f9131e821dc01ac795be40fb623ed03dba09d8b4178966bc555699",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "b66e975428de96169ec8911ead5e31cebeb0e998073994fc3226b84bdd7c5421"
+    }
+  },
+  "modules-f05_imports-main": {
+    "source": "crates/benitoite/testdata/modules/f05_imports/main.bnt",
+    "source_sha256": "51bac2d73ccef8392e5e50b8b27a1f39806a77db8466f300a7a88e314c9f5ec6",
+    "status": "nodes=3777 bindings=1271 errors=0 codes=[] typecheck_ns=19000958",
+    "files": {
+      "cli.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "core.txt": "7e151532581c6d836ef116faa6cc6dc0992789a39ffdc6a0ed54d09de49874f7",
+      "diagnostics.txt": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "types.txt": "f203f6dc16e7405182ac191ea1c6e1b16eb045685a5e0a88d0ae054f94e38cf0"
+    }
+  }
+}

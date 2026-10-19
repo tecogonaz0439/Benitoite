@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
@@ -56,6 +56,8 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 2. `benitoite test --check file.bnt`（またはディレクトリ）を実行する。診断を直し、検査が終了状態 0 で成功するまで繰り返す。警告も直す。実行時と同じ選択済みテストを実行せずに検査し、`main` は要求しない。診断は標準エラー出力へ書き、標準出力には何も書かない。
 3. 確認の直前に、`benitoite test --check --report=json file.bnt` を一度実行する。`kind: "testCheckReport"` とし、スクリプトと同じ報告の受理条件を適用する。失敗した場合は通常の `test --check` に戻ってファイルを直し、確認の前に新しい報告を得る。`aggregateEffects.expanded` にあるテストの関数の宣言したエフェクトの和を使い、[実行の前に](#実行の前に)の確認を行う。`Assert.Check` はテストの契約の一部なので、許す集合に残す。
 4. `benitoite test --allow-effects=<accepted names> file.bnt` を実行する。このオプションを指定すると、すべての入口が準備とエフェクトの比較を通るまで、どのテストも開始しない。失敗すれば実行全体を拒否する。修正してもう一度検査し、許す集合を変える前に、追加されたエフェクトを利用者に示す。このオプションがなければ、検査の誤りがあるファイルを飛ばしてほかのファイルを実行できる。
+
+文書の例を含める場合は、検査と実行の両コマンドに --doc を付ける。testCheckReport と testResults の版 2 を要求し、通常のテストと実行する例のエフェクトの和を確認する。check/error の例は実行の許可を増やさない。四モード、公開の取り込み、不完全な結果、集計は[実行前の検査](references/inspection.md)を参照する。
 
 `test --check` は `--allow-effects`、`--max-call-stack`、すべての `--wasm-*` オプションを拒否する。`--check` のない `test --report=json` は使い方の誤りである。非実行の検査は `test` や `testSummary` の行を書かない。部分結果、終了状態、実行するテストの集計を扱うときは、[実行前の検査](references/inspection.md)を読む。
 
@@ -125,7 +127,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 実験的な `@external("wasm", "path.wasm", "export")` の関数は、取り込みのないバイナリの Component Model のコンポーネントを使い、本体も `end function` も持たない。具体的なレコードとデータ型、引数のない構成子の `Set` で表すフラグ、WIT に対応するキーを持つ `Map` を境界越しに渡せる。外部のリソース型には `uses State` が必要であり、ほかの外部呼び出しは純粋である。生成したアダプタは、詰めて格納したバイト数を数え、それとは別に、同じ `--wasm-transfer` の値で値の構築量の論理的な上限を設ける。`references/idioms.md` の WIT の例と上限を参照する。
 - 文字列補間は `"${expression}"` と書く。コメントは `//` で始まる。
 - `null` も例外もループの文もない。`Option`、`try` を伴う `Result`、および `List.map`・`List.fold`・`List.forEach` か再帰を使う。
-- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Json.Codec`、`Failure`、`Test.Property`、`Csv`、`Regex`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
+- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Json.Codec`、`Failure`、`Test.Property`、`Csv`、`Regex`、`Scope`、`Range`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
 - エフェクトを直接または呼び出しを通して行う関数は、すべてそのエフェクトを `uses` の後に並べる。ネットワークのエフェクト（`Http.Connect`、`Http.Listen`）は `IO.All` に含まれない。
 - 値が `Unit` でない文は誤りである。各 `Result` を、`try`、`match`、`bind _ <-` のどれかで処理する。
 - `Process.shell` は、その文字列を `/bin/sh -c` で実行する。POSIX の sh だけを書く。bash の配列、`[[ ]]`、`{a,b}` の展開、`$'...'` は使わない。シェルの機能が要らないときは、引数の並びを渡す `Process.run` を使う。
@@ -159,6 +161,18 @@ end function
 5 three
 first: one
 ```
+
+## 検査済みの値と局所の構築器
+
+不透明型には公開の作成・検査関数を使う。構成子、更新、パターン、自動アクセサは所有モジュール内だけで使える（外では E0340）。Regex/Scope の直接呼び出しは、テスト内でも既知の不正な入力を拒否する。実行時 Error のテストには通常の関数の引数を経由させる。Range は定数にも実行時の Result.Error を保つ。Scope が保証するのは表記の所属であり、権限、DNS/ファイルの実体、IO の成功ではない。references/common-mistakes.md と、生成参照の Scope.md / Range.md を参照する。
+
+Benitoite.StringBuilder、Benitoite.ListBuilder、Benitoite.BytesBuilder を明示的に取り込む。構築器は第二級の値である。対応する種類を注釈した局所 bind と直接の new() で宣言し、専用の操作だけを直接呼ぶ。copy/length を含む全操作に State を要する。通常の関数への引数渡し、返却、格納、比較、文字列への埋め込み、ラムダ・lazy・部分適用・ハンドラ節への捕捉はできない。コールバックを作る前に copy や length を束縛し、appendAll の前に断片列を作る。コピーは不変の構造を保つが、参照を持つ要素のセルは共有する。State の消去、clear/reserve/finish、ネイティブのバッファによる高速化の保証はない。シグネチャは生成参照の各 Builder モジュールを参照する。
+
+## コレクションと連結の関数を選ぶ
+
+コンテナが既知なら List.map/fold、Option.map/andThen、Result.map/andThen/mapError を使う。一つの関数を複数のコンテナで使う場合だけ、必要最小のクラス制約を要求する。一引数には Trait.Functor、Trait.Applicative、Trait.Monad、二引数には Trait.Functor2、Trait.Applicative2、Trait.Monad2 を使い、Benitoite.Trait を明示的に取り込む。二引数クラスは F[A, X] の X を保って写し、標準実装は Result である。一引数の Monad や Traversable に Result を渡せるようにはならない。
+
+andThen/flatMap は成功値から同じエラー型の計算を続ける。異なるエラー型は Result.mapError でそろえる。try … or return は呼び出し側へ失敗を返し、or die は報告して実行を終え、Failure.toResult は型付き Failure.Fail[E] を Result に変換して、囲む効果上限から処理した Fail を除く。標準 Fail の E0506 には Benitoite.Unofficial.Failure を取り込み、main または @test 関数内で Failure.toResult を呼び、その入口の uses から処理した Fail を外してほかのエフェクトを保つ。利用者定義の Fail や Log は専用のハンドラを要する。表示・比較・結合は意味で選ぶ。数値の toString を機械的に Show へ、組み込みの Float 比較を Order[Float] へ置き換えない。[具体的なコンテナと汎用のコンテナ](references/idioms.md#具体的なコンテナと汎用のコンテナ)に検査済みの例がある。
 
 ## テスト
 
@@ -203,6 +217,10 @@ end function
 
 純粋な JSON の変換には Benitoite.Unofficial.Json.Codec を取り込む。基本型とコンテナの関数は Result[..., Codec.ConversionError] を返す。Integer と Float の種類は厳密に区別し、有限でない Float は拒否する。List と Map は最初の添字かキーの失敗で止まる。ConversionError は、外側から内側へ Field/Index/Key の経路を持つ。Show は経路と種類を報告し、入力値を自動では表示しない。codec には Fail は不要である。アプリケーションの境界で Failure.fromResult を明示的に選ぶ。
 
-純粋な性質の試行には Benitoite.Unofficial.Test.Property を取り込み、通常の @test 一つから `Property.check(config: ..., gen: ..., shrinker: ..., property: ...)` を呼ぶ。性質は Result[Unit, String] を返し、すべてのコールバックは純粋である。実行時の停止と中断はそのまま伝播する。Error を照合し、`Property.formatFailure(failure: ..., show: ...)` をテストの String のエラーとして返す。show の型は `function(value: T) -> String` である。test --check はコールバックを実行しない。Config は明示的な seed と、両端を含む予算 trials 1〜10000、size 0〜10000、maxShrinks 0〜100000 を使う。不正な設定ではコールバックを呼ばない。Integer の生成は両端を含み、Float の生成は有限値に限る。入れ子のコンテナの size は、資源全体の上限ではない。縮小は循環も含め、すべての候補の試行を数える。縮小後の入力が最小であるとは約束しない。再現のため config、規則の版、元と縮小後の入力と説明を残す。Gen/Shrinker のフィールドと各 API は、`references/stdlib/Test.Property.md` を参照する。
+純粋な性質の試行には Benitoite.Unofficial.Test.Property を取り込み、通常の @test 一つから `Property.check(config: ..., gen: ..., shrinker: ..., property: ...)` を呼ぶ。性質は Result[Unit, String] を返し、全コールバックは純粋である。実行時の停止と中断はそのまま伝播する。Error を照合し、Property.formatFailure(failure: ..., show: ...) をテストの String のエラーとして返す。show の型は function(value: T) -> String である。test --check はコールバックを実行しない。
 
-ソースのリポジトリには、レコードの codec と Gen/Shrinker 関数のための開発用の derive がある（tools/derive/README.md を参照）。配布した実行ファイルと Skill だけの環境では、Codec と Property の API を使って関数を直接書く。
+Config は明示した seed と、両端を含む予算 trials 1〜10000、size 0〜10000、maxShrinks 0〜100000、maxShrinkWork 0〜1000000 を使う。五つのフィールドをすべて指定する。小さな例では maxShrinkWork: 10000 から始める。この推奨値は最終の性能測定で確認する。不正な設定はコールバックを呼ばない。Shrinker.candidates は List ではなく ShrinkStep（Done/Yield/Skip）を返す。全候補の List を先に作らず、遅延した継続を書く。最初の candidates と各継続は一単位の仕事、各候補への性質の呼び出しは一単位の仕事と一回の縮小に数える。どちらかの予算が零なら縮小器を呼ばない。失敗した候補からやり直しても両計数を累積する。予算を使い切った後は Done の確認だけのために継続を呼ばない。予算はコールバック内部の時間や確保を制限しない。
+
+Integer の生成は両端を含み、Float の生成は有限値に限る。入れ子のコンテナの size は資源全体の上限ではない。縮小は循環も含め、全候補の試行を数え、最小の反例を約束しない。再現には config、libraryVersion（2.0.0）、生成コードの GENERATOR_VERSION、手書きのソース、元と縮小後の入力と説明を残す。同じ seed だけではライブラリの版をまたいで反例を再現できない。Gen/Shrinker のフィールドと各 API は、references/stdlib/Test.Property.md を参照する。
+
+ソースのリポジトリには、レコードの codec、Gen/Shrinker 関数、明示的に要求した Show/Order 実装を生成する開発用の derive がある（tools/derive/README.md）。Show/Order の指定は独立した真偽値である。対象は循環せず型パラメータを持たないレコードに限り、各フィールドに対応する辞書を要する。Show は宣言順と各値の引用に従い、Order は最初の非 Equal で止まる。組み込みの等値、キー制約、直列化形式は提供しない。既存の手書き実装を保護する。不透明なレコードも所有モジュール内で Show/Order を明示的に要求できるが、適用前に表示の内容を確認する。宣言の inventory と生成記録は版 2、設定は版 1 である。古い記録は新しい preview を確認して移す。不透明型には手書きの検査済み作成関数を使い、不透明なフィールドには独自の codec/generator を指定する。配布した実行ファイルと Skill だけの環境では、Codec と Property の API を使って関数を直接書く。

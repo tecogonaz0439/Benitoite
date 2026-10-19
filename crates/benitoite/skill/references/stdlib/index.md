@@ -63,3 +63,8 @@ Parameter names in these declarations are part of the function contract. Label e
 | [Failure](Failure.md) | unofficial | `import Benitoite.Unofficial.Failure` | Typed, non-resumable failures. |
 | [Json.Codec](Json.Codec.md) | unofficial | `import Benitoite.Unofficial.Json.Codec` | Pure, explicit JSON conversions. |
 | [Test.Property](Test.Property.md) | unofficial | `import Benitoite.Unofficial.Test.Property` | Pure property trials with explicit random state and bounded shrinking. |
+| [Scope](Scope.md) | unofficial | `import Benitoite.Unofficial.Scope` | Checks host and absolute-path spelling against an explicit scope. |
+| [Range](Range.md) | unofficial | `import Benitoite.Unofficial.Range` | Pure inclusive Integer range checks. |
+| [StringBuilder](StringBuilder.md) | standard | `import Benitoite.StringBuilder` | Function-local string construction. |
+| [ListBuilder](ListBuilder.md) | standard | `import Benitoite.ListBuilder` | Function-local list construction. |
+| [BytesBuilder](BytesBuilder.md) | standard | `import Benitoite.BytesBuilder` | Function-local bytes construction. |

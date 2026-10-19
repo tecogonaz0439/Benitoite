@@ -1,0 +1,9 @@
+// spec: 01-06 定数の型（初回リリース版）
+// 関門: CLIの診断の位置・const由来・失敗分類を守る。型検査の単体テストはJSON出力に届かない。
+import Benitoite.Unofficial.Regex
+const first: String = "["
+const pattern: String = first
+function main() -> Unit
+  bind _ <- Regex.compile(source: pattern)
+  bind _ <- Regex.compile(r"\w{1000}")
+end function

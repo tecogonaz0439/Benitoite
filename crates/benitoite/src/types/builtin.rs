@@ -12,9 +12,9 @@ pub enum BuiltinTypeClass {
     Basic,
     /// `List`・`Map`・`Set`・`Bytes`。等値かどうかは要素の型で決まる（`Bytes` は常に等値）
     Collection,
-    /// 中身を見せない型。等値の型でない
+    /// 等値を持たない組み込みの不透明型
     Opaque,
-    /// リソースの型。中身を見せない型であり、`with` で束縛できる
+    /// リソースの型。不透明型であり、`with` で束縛できる
     Resource,
 }
 

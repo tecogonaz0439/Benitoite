@@ -257,7 +257,16 @@ fn invalid_or_oversized_patterns_return_nonempty_error_reasons() {
         let call = CallCtx::new(ctx, None, None, None);
         let pure = call.pure_ctx();
         let ctx = pure.values();
-        for source in ["(", r"(a)\1", "(?=a)", r"\w{1000}"] {
+        let cases: serde_json::Value = serde_json::from_str(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/checked-regex.json"
+        )))
+        .unwrap();
+        for case in cases.as_array().unwrap() {
+            let source = case
+                .get("source")
+                .and_then(serde_json::Value::as_str)
+                .unwrap();
             let result = compile(pure, text(ctx, source)).unwrap();
             let reason = ctx.str(payload(ctx, result, tags::RESULT_ERROR)).unwrap();
             assert!(!reason.is_empty());
@@ -343,10 +352,10 @@ end function
     );
 }
 
-// 関門: 不正なリテラルの実行時の扱い（設計書 03-08「Regex」）、生の置換文字列、03-08 の
+// 関門: 動的な不正パターンの実行時の扱い（設計書 03-08「Regex」）、生の置換文字列、03-08 の
 // extractDates の組み合わせを実経路で守る。単体テストは検査の段や List.map を通らない。
 #[test]
-fn scripts_accept_invalid_pattern_literals_and_extract_dates_and_literal_replacements() {
+fn scripts_observe_dynamic_pattern_errors_and_extract_dates_and_literal_replacements() {
     run_script(
         r#"
 import Benitoite.Unofficial.Regex
@@ -354,11 +363,11 @@ function extractDates(text: String) -> Result[List[String], String]
   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
   return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value) end lambda))
 end function
-function invalid() -> Result[Regex.Pattern, String]
-  return Regex.compile(r"[")
+function invalid(source: String) -> Result[Regex.Pattern, String]
+  return Regex.compile(source)
 end function
 function main() -> Result[Unit, String]
-  bind rejected <- match invalid() with
+  bind rejected <- match invalid(r"[") with
     case Result.Error(reason) -> reason <> ""
     case Result.Ok(_) -> false
   end match

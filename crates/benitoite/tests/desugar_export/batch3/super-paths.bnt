@@ -1,0 +1,22 @@
+trait Root[T]
+  function root(value: T) -> Integer
+end trait
+trait Left[T: Root]
+  function left(value: T) -> Integer
+end trait
+trait Right[T: Root]
+  function right(value: T) -> Integer
+end trait
+trait Diamond[T: Left & Right]
+  function diamond(value: T) -> Integer
+end trait
+function first[T: Left & Right](value: T) -> Integer
+  return Root.root(value)
+end function
+function direct[T: Diamond & Root](value: T) -> Integer
+  return Root.root(value)
+end function
+function inherited[T: Diamond](value: T) -> Integer
+  bind f <- Root.root
+  return f(value)
+end function

@@ -1,5 +1,6 @@
 //! 宣言の検査と型の要約（設計書 02-05「検査の単位と手順」「宣言の検査」）。
 
+use super::body_map::BodyBindingMap;
 use super::limits::{MAX_TYPE_DEPTH, TypeBudget, TypeLimit};
 use super::{MainInfo, TypeckOutput};
 use crate::base::{BindingId, BindingMap, ModuleId, NodeId, SourceTable, Span};
@@ -17,8 +18,8 @@ use std::collections::{BTreeMap, BTreeSet};
 /// 定義の型パラメータの番号。囲む定義の分を先に置く（`types` のモジュールの説明）。
 #[derive(Clone, Default)]
 pub(super) struct Scope {
-    pub params: BindingMap<(u32, ParamKind)>,
-    pub effects: BindingMap<u32>,
+    pub params: BodyBindingMap<(u32, ParamKind)>,
+    pub effects: BodyBindingMap<u32>,
 }
 
 /// 宣言の段の文脈。T1〜T3 が宣言を追加・検査するための共通の入口。
@@ -28,6 +29,8 @@ pub(super) struct Decls<'a> {
     pub sources: &'a SourceTable,
     pub resolved: &'a ResolveOutput,
     pub out: TypeckOutput,
+    pub checked_args: super::checked_args::CheckedArgsState,
+    pub const_origins: BindingMap<BTreeSet<BindingId>>,
     pub diagnostics: Vec<Diagnostic>,
     pub scopes: BTreeMap<NodeId, Scope>,
     pub invalid: BTreeSet<BindingId>,
@@ -87,6 +90,8 @@ impl<'a> Decls<'a> {
             sources,
             resolved,
             out: TypeckOutput::default(),
+            checked_args: super::checked_args::CheckedArgsState::default(),
+            const_origins: BindingMap::default(),
             diagnostics: vec![],
             scopes: BTreeMap::new(),
             invalid: BTreeSet::new(),

@@ -54,7 +54,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `tools/derive/` | レコードの JSON 変換と Property の生成器・縮小器を通常の関数として生成し、管理領域と生成記録を照合する開発用の道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。先に `derive_inventory` の example をビルドする。使い方は同ディレクトリの `README.md` |
 | `tools/source-migrate/` | ソースの移行に共通するホスト抽出・元の UTF-8 バイト位置・ハッシュ・編集範囲・diff・再適用の検証（Python） | 候補の意味と承認は各移行器が判断する。使い方と自己検査は同ディレクトリの `README.md` |
 | `tools/try-actions-migrate/` | try の AST から処置の移行候補を抽出し、役割の分類・manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。die の契約変更、生成断片、検査入力は自動承認しない。使い方と自己検査は同ディレクトリの `README.md` |
-| `tools/bench/` | ベンチマークと測定の道具、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
+| `tools/bench/` | ベンチマークと測定の道具、版どうしの比較（`compare/` の short・targets・full）、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
 | `assets/brand/` | ロゴ・アイコン・ワードマークの画像（SVG と PNG）と、作り直す道具（`make_logos.py`）。キャラクターの案 A・B・C の画像は `mascots/`。将来の Web サイトや README に貼るためのもの（`reference/Benitoite-brand/` と `reference/benitoite-mascots/` からの写し。色と書体は `README.md`、キャラクターの案は `mascots/README-ja.txt`） | 画像を手で直さず、`make_logos.py` で作り直す |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |
 | `formal/` | 形式検証の段階 2 の Lean 4 のプロジェクト。コア計算（`docs/design/01-spec/01-12-core-calculus.md`）の形式化した規則と、形式化した範囲の脱糖の規則と網羅性の判定の手順の正。進行と保存・エフェクトの健全性・脱糖の型の保存（性質 1）・網羅性の判定と表層の検査の関数の健全性の定理（`docs/design/07-quality/07-04-formal-semantics.md`） | 形式化した規則を変えるときは、Lean の定義と 01-12 の写しを同じ変更で直し、既定の `lake build` が `sorry` なしで通ることと、定義・言明・仮定のレビューを処理系へ進む条件にする。内外の判定と Lean 先行は 07-04「01-12 との対応」に従う。`check.sh` の `formal_build` はこのビルドだけであり、Rust と Lean の接続と最終の関係状態の全比較は独立の `check-formal.sh` で実行または引用する |

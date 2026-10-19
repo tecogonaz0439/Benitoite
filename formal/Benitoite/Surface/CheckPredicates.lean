@@ -78,6 +78,7 @@ mutual
     | .withE _ _ b => blockExits b
     | _ => false
   def blockExits : Block → Bool
+    | .builderBind _ _ rest => blockExits rest
     | .last e => exprExits e
     | .seq e rest => exprExits e || blockExits rest
     | .bind _ _ _ rest | .discard _ rest | .bindPat _ _ _ _ rest => blockExits rest
@@ -95,6 +96,7 @@ mutual
     | .paren e => by simp [exprExits, Expr.Exits, exprExits_spec e]
     | .matchE _ _ a => by simp [exprExits, Expr.Exits, armsExits_spec a]
     | .withE _ _ b => by simp [exprExits, Expr.Exits, blockExits_spec b]
+    | .builderOp _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .local _ => by simp [exprExits, Expr.Exits]
     | .constE _ _ => by simp [exprExits, Expr.Exits]
     | .funName _ _ _ => by simp [exprExits, Expr.Exits]
@@ -143,6 +145,7 @@ mutual
   theorem blockExits_spec : (b : Block) → (blockExits b = true ↔ b.Exits)
     | .last e => by simp [blockExits, Block.Exits, exprExits_spec e]
     | .seq e b => by simp [blockExits, Block.Exits, exprExits_spec e, blockExits_spec b]
+    | .builderBind _ _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
     | .bind _ _ _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
     | .discard _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
     | .bindPat _ _ _ _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
@@ -209,6 +212,7 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
         | elseIf hn => exact (isIf_spec n).mpr hn
   | .raise _ _ => by constructor <;> intro h <;> cases h
   | .handleFail _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .builderOp _ _ _ _ => by constructor <;> intro h <;> cases h
   | .local _ => by constructor <;> intro h <;> cases h
   | .constE _ _ => by constructor <;> intro h <;> cases h
   | .funName _ _ _ => by constructor <;> intro h <;> cases h

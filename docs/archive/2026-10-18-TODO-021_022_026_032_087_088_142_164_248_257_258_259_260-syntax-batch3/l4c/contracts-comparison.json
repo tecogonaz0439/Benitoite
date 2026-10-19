@@ -1,0 +1,195 @@
+{
+  "base": "319cc56c0f39da57c9c0f4db7aae275af2bf3150",
+  "unchanged_files_and_definitions": [
+    {
+      "path": "formal/Benitoite/Surface/Typing.lean",
+      "identical_to_base": true,
+      "sha256": "5eefe97a98b8c319955fb71d04a573c38ec496325593748a1f92b6e8b05e5308"
+    },
+    {
+      "path": "formal/Benitoite/Surface/WellFormed.lean",
+      "identical_to_base": true,
+      "sha256": "1f746c7c552caa794cb7ff586e3179500e5b0a95b5bdd28f20e63943823fe237"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Theorems.lean",
+      "identical_to_base": true,
+      "sha256": "acc6012252e8941e5c614d41d71db6cc33da05116fad8ac6414826d7795cf23a"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckProgramSound.lean",
+      "identical_to_base": true,
+      "sha256": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTablesSound.lean",
+      "identical_to_base": true,
+      "sha256": "fae2c01974bdc5bb96e64481863442aed701b109f6cbdd475109aa211bb9a60e"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Syntax.lean",
+      "identical_to_base": true,
+      "sha256": "6b1a6d421d5ed5186dbbfa36aa2bc93b4a7462c2a8b712eae0a8e187f894f8f1"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Desugar.lean",
+      "identical_to_base": true,
+      "sha256": "c1f34dd8f2a591ea07377229c2c1cfe7e6166ed8ecfb33f387b79a72fabcd652"
+    },
+    {
+      "path": "formal/Benitoite/Surface/BuilderFree.lean",
+      "identical_to_base": true,
+      "sha256": "9a4298ca0c084b7372c5422bcc6f46c7d976e4f910840d44a6199224debd0374"
+    },
+    {
+      "path": "formal/Benitoite/Release/Assumptions.lean",
+      "identical_to_base": true,
+      "sha256": "784d842d6f692d538d0c903c272b91dcc1891831ece5dcb4405fae3d0ac3762a"
+    },
+    {
+      "path": "formal/Benitoite/Release/Syntax.lean",
+      "identical_to_base": true,
+      "sha256": "73da9bdfea258236b1d53e44c8fbfa4237bbddffff05cbd923cca85ecfb28739"
+    },
+    {
+      "path": "formal/Benitoite/Release/Typing.lean",
+      "identical_to_base": true,
+      "sha256": "7692203ff350ba35fd0f06204ad61eda633b5eb49692b599590041b45453e346"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "declaration": "Input.Sound",
+      "identical_to_base": true,
+      "sha256": "2b5e9b15436646e724451589a1ae9b00e4fd68de9366d8110c360478d7c95ee7"
+    }
+  ],
+  "public_theorems": [
+    {
+      "name": "checkExpr_sound",
+      "statement_identical_to_base": true,
+      "sha256": "9e664f121d3c3ed2b1a602b7a9108a168c05914267a9ab09f9d8d6c14232fddf"
+    },
+    {
+      "name": "checkBlock_sound",
+      "statement_identical_to_base": true,
+      "sha256": "67d1f229c15f7e0195715aea9f9ced2cc53cc7047be21705ef800094ff818a4d"
+    },
+    {
+      "name": "checkExpr_single",
+      "statement_identical_to_base": true,
+      "sha256": "d344804c79b5f8925471f2acea8a7947a77d1fe4bf7fbcf98f620f310a9f7d4c"
+    },
+    {
+      "name": "checkBlock_single",
+      "statement_identical_to_base": true,
+      "sha256": "b75e416482232edde863f150550dd587731cfd78f91a76a36ec0ddd33924d4eb"
+    },
+    {
+      "name": "checkArms_sound",
+      "statement_identical_to_base": true,
+      "sha256": "15deb29966bb22c480bba470fba1eb7da7adfd1e0307da6c5efcf9d363d6c9e3"
+    },
+    {
+      "name": "checkClauses_sound",
+      "statement_identical_to_base": true,
+      "sha256": "ce2d390dd5e0769deefb514f8dc0e9db047685684e1472ee55516e8d99d217fc"
+    },
+    {
+      "name": "checkTypes_sound",
+      "statement_identical_to_base": true,
+      "sha256": "72c7f0c211326ed4cddb34f39308eec12ce41dfbf1c034745009dd0944a7b1d2"
+    },
+    {
+      "name": "checkEach_sound",
+      "statement_identical_to_base": true,
+      "sha256": "b6e7dfebbdc814dbe4ff7066d39928784c65703d89f84c7d1adc49dfd24522bd"
+    },
+    {
+      "name": "checkHoleArgs_sound",
+      "statement_identical_to_base": true,
+      "sha256": "4a89ff327130c28c6b5237c0665954d5579bfe1009366e1285ec9e67997053b0"
+    },
+    {
+      "name": "checkDict_sound",
+      "statement_identical_to_base": true,
+      "sha256": "7e818780b6f9915b05db0c3d86882a7042603f1beca8ea4f423b03563de2ce29"
+    },
+    {
+      "name": "checkDicts_sound",
+      "statement_identical_to_base": true,
+      "sha256": "5e299debcadc0c1ea7d03bf77fdf78391c6b5c70749fbd0b056eae0a439d6816"
+    },
+    {
+      "name": "checkDef_sound",
+      "statement_identical_to_base": true,
+      "sha256": "9140f07c712fd3341c0170acaea8adee317d655b357b78a9eac04a84c93501f9"
+    },
+    {
+      "name": "checkImpl_sound",
+      "statement_identical_to_base": true,
+      "sha256": "5ce7a850a1715c7b8a6245b09ed0dc875972d2100c2aab6b86266338aa861460"
+    }
+  ],
+  "checker_comparison": {
+    "threaded_contexts_erased_body_identical_to_base": true,
+    "erased_arguments": [
+      "Δ",
+      "none :: Δ",
+      "List.replicate δ.length none ++ Δ"
+    ],
+    "body_sha256": "1c2924a3c69bc5678627f5dfd0ea802c3d8b23e8d4b7550f5e91c84b76b3e04a",
+    "note": "Only recursive context arguments were erased; checks, return values, state operations, error reasons, paths, and order are identical. This is a source comparison, not a new semantic equivalence theorem."
+  },
+  "existing_examples": [
+    {
+      "path": "formal/Benitoite/Surface/CheckExamples.lean",
+      "identical_to_base": true,
+      "examples": 95,
+      "sha256": "1e6ab9883761ef47aeab25cf3c57c238968fbe9a218609f3dad2d862b7e1412d"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckToolsExamples.lean",
+      "identical_to_base": true,
+      "examples": 173,
+      "sha256": "dcbe4a66c58618711996c9a316dde61cbb0e99ef6acb3200b53ef4a97c465578"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "identical_to_base": true,
+      "examples": 14,
+      "sha256": "e2581b4e94a96a77ffca5d9102f7b8239d832dd192142e8fdd03f90ef64a4eef"
+    },
+    {
+      "path": "formal/Benitoite/Surface/FailureExamples.lean",
+      "identical_to_base": true,
+      "examples": 30,
+      "sha256": "425ae7a6ca96755b7931d2ca5db15e3275ea6655de8954300eb667217fbf6ef3"
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteExamples.lean",
+      "identical_to_base": true,
+      "examples": 13,
+      "sha256": "f0f6057c7ed70059b1dfdd3631bdceb801126d75cfc91d48c9bd346e25f428bd"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Monad2Examples.lean",
+      "identical_to_base": true,
+      "examples": 0,
+      "sha256": "fe96a45c91d1f520e18e28e44843f4c8619b78b23215c763dce5b0acddae651a"
+    },
+    {
+      "path": "formal/Benitoite/Surface/NoFailCheckExamples.lean",
+      "identical_to_base": true,
+      "examples": 4,
+      "sha256": "efcfe9c666a769eb8ad01a72def7a07358ba240ca2302763202ae3c9dcc778a5"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckCounterexamples.lean",
+      "identical_to_base": true,
+      "examples": 4,
+      "sha256": "b1e832b8adeef92f2a20159d435bc71400a2b892b109dbdb1f56b802316bcf2a"
+    }
+  ],
+  "new_assumptions": false,
+  "weakened_public_theorems": false
+}

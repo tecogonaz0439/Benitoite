@@ -483,6 +483,68 @@ fn run_failure_contracts_are_checked_before_effect_limits() {
     }
 }
 
+// 関門: 標準Failの解決先だけに実行可能な対処を案内する契約を実CLIで守る。
+// 既存の拒否テストはhelpを検査せず、同名の利用者エフェクトへの誤案内を捕まえない。
+#[test]
+fn failure_entry_help_uses_resolved_standard_effect() {
+    let directory = TestDirectory::new();
+    for (import, effect, operation, standard) in [
+        (
+            "import Benitoite.Unofficial.Failure\n",
+            "Failure.Fail[String]",
+            "Failure.raise(\"bad\")",
+            true,
+        ),
+        (
+            "import Benitoite.Unofficial.Failure as F\n",
+            "F.Fail[String]",
+            "F.raise(\"bad\")",
+            true,
+        ),
+        (
+            "effect Fail\n  function raise(message: String) -> Unit\nend effect\n",
+            "Fail",
+            "raise(\"bad\")",
+            false,
+        ),
+        (
+            "effect Log\n  function write(message: String) -> Unit\nend effect\n",
+            "Log",
+            "write(\"bad\")",
+            false,
+        ),
+    ] {
+        for (attribute, name, subcommand) in [("", "main", "check"), ("@test\n", "example", "test")]
+        {
+            let source = format!(
+                "{import}{attribute}function {name}() -> Unit uses {effect}\n  {operation}\nend function\n"
+            );
+            let script = directory.write("help.bnt", &source);
+            let mut invocation = command();
+            invocation.args([subcommand, "--diagnostics=json"]);
+            if subcommand == "test" {
+                invocation.arg("--check");
+            }
+            let output = invocation.arg(script).output().unwrap();
+            assert_eq!(exit_code(&output), 2, "{output:?}");
+            let diagnostic: serde_json::Value = serde_json::from_slice(&output.stderr).unwrap();
+            assert_eq!(diagnostic["code"], "E0506");
+            let expected_effect = effect.strip_suffix("[String]").unwrap_or(effect);
+            let mut expected = vec![serde_json::json!({
+                "message": format!("handle `{expected_effect}` with `handle ... with` inside `{name}`"),
+                "edits": [],
+            })];
+            if standard {
+                expected.push(serde_json::json!({
+                    "message": format!("or convert the failure with Failure.toResult inside `{name}`"),
+                    "edits": [],
+                }));
+            }
+            assert_eq!(diagnostic["helps"], serde_json::json!(expected));
+        }
+    }
+}
+
 // 作成時の関門: 単一報告の完全性・契約・元ソース・診断を CLI の境界で守る。
 // 既存の check は成功時に情報を出さないため、誤った空集合や再描画の退行を捕まえない。
 // 実ファイルと既存の CLI を使い、内部の表やテスト用の API には依存しない。
@@ -623,7 +685,7 @@ fn main_check_reports_sources_without_execution() {
         ("bom", Some(b"\xef\xbb\xbf// source\nfunction main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("dependency-package", Some(b"import Tk.Helper\nfunction main() -> Unit\nend function\n"), Some(&[]), "present", None, true, &[
             ("package.bnt", b"// root config\ndependency Tk\n    path \"deps/kit\"\nend dependency\n"),
-            ("deps/kit/package.bnt", b"language \"0.0.8\"\npackage Kit\nend package\n"),
+            ("deps/kit/package.bnt", b"language \"0.0.9\"\npackage Kit\nend package\n"),
             ("deps/kit/Helper.bnt", b"import Benitoite.Unofficial.IO.Process\npublic function unused() -> Unit\n    bind action <- Process.shell\nend function\n"),
         ]),
     ]);
@@ -1451,7 +1513,7 @@ fn cli_process_contracts() {
                     "dirty": env!("BENITOITE_EMBEDDED_DIRTY_PROVENANCE")
                 }
             },
-            "formats": { "version": [1], "diagnostics": [1], "testResults": [1], "checkReport": [1], "testCheckReport": [1], "effectLimit": [1], "loaderEnvironment": [1], "skillList": [1], "skillDocument": [1] },
+            "formats": { "version": [1], "diagnostics": [1], "testResults": [1, 2], "checkReport": [1], "testCheckReport": [1, 2], "effectLimit": [1], "loaderEnvironment": [1], "skillList": [1], "skillDocument": [1] },
             "loaderEnvironment": {
                 "schemaVersion": 1,
                 "mode": "always",
@@ -2700,4 +2762,56 @@ fn test_check_report_catches_tool_panics_as_a_single_report() {
         report["diagnosticTargets"],
         serde_json::json!([{"diagnosticIndex":0,"targetId":null}])
     );
+}
+
+// 作成時の関門: プロセスの引数解釈・埋め込みbundle・報告の接続を守る。
+// test_commandの直接呼び出しだけでは実CLIの配線漏れを捕まえられない。
+#[test]
+fn test_doc_uses_version_two_and_keeps_check_nonexecuting() {
+    let directory = TestDirectory::new();
+    let fence = "\x60\x60\x60";
+    let source = format!(
+        "//! {fence}benitoite\n//! import Benitoite.Unofficial.IO.Console\n//! function main() -> Unit uses Console.Write\n//!   Console.writeLine(\"doc output\")\n//! end function\n//! {fence}\n//! {fence}output\n//! doc output\n//! {fence}\n"
+    );
+    let script = directory.write("Docs.bnt", &source);
+    let checked = command()
+        .args(["test", "--doc", "--check", "--report=json"])
+        .arg(&script)
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&checked), 0, "{checked:?}");
+    assert!(checked.stderr.is_empty());
+    let report: serde_json::Value = serde_json::from_slice(&checked.stdout).unwrap();
+    assert_eq!(report["schemaVersion"], 2);
+    assert_eq!(report["executed"], false);
+    assert_eq!(report["targets"][0]["docExamples"][0]["mode"], "run");
+    let executed = command()
+        .args([
+            "test",
+            "--doc",
+            "--diagnostics=json",
+            "--allow-effects=Console.Write",
+        ])
+        .arg(&script)
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&executed), 0, "{executed:?}");
+    assert!(executed.stderr.is_empty());
+    let lines = String::from_utf8(executed.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(lines.len(), 3);
+    assert_eq!(lines[0]["kind"], "docExample");
+    assert_eq!(lines[0]["stdout"], "doc output\n");
+    assert_eq!(lines[1]["kind"], "docSummary");
+    assert_eq!(lines[2]["kind"], "testSummary");
+    let rejected = command()
+        .args(["fmt", "--doc"])
+        .arg(&script)
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&rejected), 2);
+    assert!(String::from_utf8_lossy(&rejected.stderr).contains("not accepted by"));
 }

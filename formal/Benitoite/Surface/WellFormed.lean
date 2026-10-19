@@ -31,6 +31,8 @@ end
 mutual
   def Expr.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Expr → Prop
     | .local i => i < nv
+    | .builderOp _ i args refs => i < nv ∧
+        refs.ForRefs (Val.VarsIn nt pe) ∧ args.Scoped nt pe nv
     -- P5: 型の範囲は使用位置のまま、値の変数は 0 個で本体を検査する。
     | .constE a body => Ty.VarsIn nt pe a ∧ body.Scoped nt pe 0
     | .funName _ ts es | .primName _ ts es =>
@@ -119,6 +121,7 @@ mutual
         body.Scoped (nt + ntys) pe (nv + 1 + ndicts + n) ∧ rest.Scoped nt pe nv
 
   def Block.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Block → Prop
+    | .builderBind k r rest => Ty.VarsIn nt pe k.contents ∧ r.ForRefs (Val.VarsIn nt pe) ∧ rest.Scoped nt pe (nv + 1)
     | .empty => True
     | .last e | .lastDiscard e => e.Scoped nt pe nv
     | .lastBind _ t e => Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv

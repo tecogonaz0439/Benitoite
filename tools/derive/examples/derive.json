@@ -15,7 +15,8 @@
       "property": {
         "generator": "genPerson",
         "shrinker": "shrinkPerson"
-      }
+      },
+      "show": true
     },
     {
       "source": "Address.bnt",
@@ -28,7 +29,9 @@
       "property": {
         "generator": "genAddress",
         "shrinker": "shrinkAddress"
-      }
+      },
+      "show": true,
+      "order": true
     }
   ]
 }

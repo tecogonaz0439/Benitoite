@@ -1,0 +1,82 @@
+{
+  "base": "1bba862b44c13ad78aafeb2273778ebd3a5da637",
+  "head": "1bba862b44c13ad78aafeb2273778ebd3a5da637",
+  "state": "uncommitted K4 implementation; no commits made",
+  "changed_tracked_files": [
+    "crates/benitoite/skill/references/stdlib/index.md",
+    "crates/benitoite/src/cli/tools/skill/bundle.rs",
+    "crates/benitoite/src/prelude/mod.rs",
+    "crates/benitoite/tests/checked_args.rs",
+    "crates/benitoite/tests/desugar_export/batch3.rs",
+    "docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/decisions.md",
+    "docs/design/01-spec/01-06-type-system.md",
+    "docs/design/03-interop/03-06-stdlib.md",
+    "docs/reference/benitoite.md"
+  ],
+  "untracked_files_at_start_of_work": [
+    "crates/benitoite/skill/references/stdlib/Range.md",
+    "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "crates/benitoite/testdata/stdlib/range.bnt",
+    "crates/benitoite/testdata/stdlib/range.exit",
+    "crates/benitoite/testdata/stdlib/range.mode",
+    "crates/benitoite/testdata/stdlib/range.stdout",
+    "crates/benitoite/tests/desugar_export/batch3/range.bnt",
+    "docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/k4/results.md"
+  ],
+  "changed_input_sha256": {
+    "crates/benitoite/skill/references/stdlib/Range.md": "18603ca92e1cc6f3d77abcfd61562f4526434191745b18d3323c455f563f7aa8",
+    "crates/benitoite/skill/references/stdlib/index.md": "48ba76ec015636f04f57f1b0eec90ac9aeb8fa16753783e70779c9eec0d4ace1",
+    "crates/benitoite/src/cli/tools/skill/bundle.rs": "4a90935c28f6fb79fbab7e7dbd073d6b2d8f9ade1f922d44fb68cb506f51aa85",
+    "crates/benitoite/src/prelude/mod.rs": "f24c839475513460a190a75cdd2da2908ac003a7d709bdfaab7ba39797008b0b",
+    "crates/benitoite/src/prelude/stdlib/Range.bnt": "dec2030abe238e8e76185044e45ba087d3bc3fa5afc2c2a82021d9eb690b6df9",
+    "crates/benitoite/testdata/stdlib/range.bnt": "49dadd1a5baecdfb14fd23a2df408c50d06c40d33c61f8b14e2e31b13d3b1205",
+    "crates/benitoite/testdata/stdlib/range.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "crates/benitoite/testdata/stdlib/range.mode": "b5004f26a852b0d60ec1237432c1a33c2307ff2458c374d9d99749d045c7feb9",
+    "crates/benitoite/testdata/stdlib/range.stdout": "24ab9e07cf4730064c564304a7c43f7810c9cf2cabd791ced99fa86dda2f3517",
+    "crates/benitoite/tests/checked_args.rs": "6fe4367ea2ea0c1eb0a1d938eca9e62e22a28e344b785ef793b606cbf6a7b214",
+    "crates/benitoite/tests/desugar_export/batch3.rs": "71b029b7255dac6a6e9e4475ae5e393ea735df0f73c98ecfde1e4ee3cc78b6cc",
+    "crates/benitoite/tests/desugar_export/batch3/range.bnt": "734a5a1e7e97fab04fa06dcaa4e67cc76dab4c09db64611db2a3a3d624f47bfe",
+    "docs/design/01-spec/01-06-type-system.md": "2e95dacf907859993b5cc807e2ab88bc853163a73f434c03d0dcf92b1d1f801b",
+    "docs/design/03-interop/03-06-stdlib.md": "efe8f872ff11d323fa71e11b85dcf221911d4484fb5cc202240ae55c88f33d01",
+    "docs/reference/benitoite.md": "97545f8ddd5f5c6c487f6a9ba17129010e4374c9d5c288962298ae1b45da6404"
+  },
+  "uncommitted_tracked_input_diff_sha256": "2d9167c9919f746696c1edb2942e31e5d930a4655ef66488330bba7fe56eb814",
+  "record_only_files": [
+    "docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/k4/results.md",
+    "docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/decisions.md"
+  ],
+  "toolchains": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "python": "Python 3.9.6"
+  },
+  "input_sets": {
+    "crates/benitoite": {
+      "files": 3963,
+      "path_and_content_manifest_sha256": "38ef657d282485ba7bcb7289cdf671b37808ebb8967ec83e34af68f96665bdff"
+    },
+    "docs/design": {
+      "files": 48,
+      "path_and_content_manifest_sha256": "384ce5d601716502bcb3aa00e517f9a4cd42db2091f17254d3f79628cbf5874c"
+    },
+    "docs/reference": {
+      "files": 3,
+      "path_and_content_manifest_sha256": "c561435f803b301d05ef774eb01042ae4bdc8fbfb97f44260e4631acd2f0c1c6"
+    },
+    "scripts/check": {
+      "files": 3,
+      "path_and_content_manifest_sha256": "c099d2d2549d7ceec99d5a0a7db4a1bb53746f37621312e9b9da403cf43bdcb5"
+    },
+    "tools/spec-coverage": {
+      "files": 2,
+      "path_and_content_manifest_sha256": "01369f353cc239035534b32805e411926a46bb6994eb8e0e8c8ed8a333eaf6e2"
+    }
+  },
+  "configuration_sha256": {
+    "Cargo.toml": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+    "Cargo.lock": "65f9601ccba708d3d79d06524271c2cc1d31e2f9fabb87e44b3aa9a3c38fb1a1",
+    "rust-toolchain.toml": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+    "scripts/check.sh": "1ee91909900762ec11c81ad3659ebe6ab6da12a2356fa363128f6b18b4f099fa"
+  },
+  "manifest_encoding": "Each aggregate hashes sorted UTF-8 path + NUL + SHA-256 hex + LF entries. Unchanged files are supplied by base; modified and untracked inputs have individual hashes above."
+}

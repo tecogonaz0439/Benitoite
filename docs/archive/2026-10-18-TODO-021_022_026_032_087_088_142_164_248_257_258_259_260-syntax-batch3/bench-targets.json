@@ -1,0 +1,3548 @@
+{
+  "schema_version": 1,
+  "description": "0.0.9 design.md 16.2–16.4 numerical targets; 16.5 observational only; public internal counts/profile analysis remain manual",
+  "sections": [
+    "16.2",
+    "16.3",
+    "16.4",
+    "16.5"
+  ],
+  "states": [
+    "old",
+    "map",
+    "solve",
+    "final"
+  ],
+  "min_samples": 10,
+  "targets": [
+    {
+      "label": "R17 map/old I(10000)",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "map",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "map",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "old",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "old",
+            "metric": "cli"
+          }
+        }
+      },
+      "limit": 0.25
+    },
+    {
+      "label": "R17 map I(10000)/I(5000)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "map",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "map",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-5000-0",
+            "state": "map",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "map",
+            "metric": "cli"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R17 map I(20000)/I(10000)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-20000-0",
+            "state": "map",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "map",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "map",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "map",
+            "metric": "cli"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R17 final/old I(10000)",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "final",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "final",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "old",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "old",
+            "metric": "cli"
+          }
+        }
+      },
+      "limit": 0.25
+    },
+    {
+      "label": "R17 final I(10000)/I(5000)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "final",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "final",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-5000-0",
+            "state": "final",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "final",
+            "metric": "cli"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R17 final I(20000)/I(10000)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-20000-0",
+            "state": "final",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "final",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "functions-main-10000-0",
+            "state": "final",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "case": "functions-main-0-0",
+            "state": "final",
+            "metric": "cli"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "small control-16.3 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small control-16.3 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small control-16.3 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small control-16.3 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "control-16.3",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-0-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-0-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-0-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-0-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-10-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-10-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-10-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-10-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-10-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-10-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-100-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-100-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-100-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-100-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-100-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-100-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-1000-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-1000-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-1000-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-1000-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-main-1000-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-main-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-main-1000-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-0-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-0-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-0-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-0-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-10-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-10-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-10-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-10-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-10-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-10-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-100-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-100-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-100-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-100-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-100-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-100-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-1000-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-1000-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-1000-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-1000-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-args-1000-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-args-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-args-1000-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-0-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-0-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-0-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-0-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-10-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-10-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-10-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-10-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-10-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-10-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-10-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-100-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-100-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-100-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-100-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-100-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-100-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-100-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-1000-0 map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-1000-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-1000-0 solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-1000-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small functions-modules-1000-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "functions-modules-1000-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "functions-modules-1000-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-0 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-0 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-0 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-0 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-0 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-0 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-0 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-0 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-0 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-0 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-100 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-100 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-100 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-100 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-100 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-100 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-100 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-100 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-100 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-100 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-100 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-100 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-300 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-300 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-300 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-0-300 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-300 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-300 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-300 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small higher-1-300 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-300 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-300 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-300 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small classes-300 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-8 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-8 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-8 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-8 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-8",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-8 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-8 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-8 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-8 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-8",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-16 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-16 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-16 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-16 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-16",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-16 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-16 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-16 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-16 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-16",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-32 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-32 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-32 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-32 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-32",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-32 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-32 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-32 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-32 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-32",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-64 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-64 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-64 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-0-64 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-0-64",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-64 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-64 final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-64 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "small depth-1-64 final-solve",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "depth-1-64",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-fib map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-fib",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-fib",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-fib solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-fib",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-fib",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-fib final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-fib",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-fib",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-loop map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-loop",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-loop",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-loop solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-loop",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-loop",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-loop final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-loop",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-loop",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-string map-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-string",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-string",
+        "state": "map",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-string solve-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-string",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-string",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R17 existing-string final-old",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "existing-string",
+        "state": "old",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "existing-string",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 higher-0 typeck(900) solve/map",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "higher-0-900",
+          "state": "solve",
+          "metric": "typeck"
+        },
+        "right": {
+          "op": "median",
+          "case": "higher-0-900",
+          "state": "map",
+          "metric": "typeck"
+        }
+      },
+      "limit": 0.75
+    },
+    {
+      "label": "R19 higher-0 typeck(1800) solve/map",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "higher-0-1800",
+          "state": "solve",
+          "metric": "typeck"
+        },
+        "right": {
+          "op": "median",
+          "case": "higher-0-1800",
+          "state": "map",
+          "metric": "typeck"
+        }
+      },
+      "limit": 0.75
+    },
+    {
+      "label": "R19 higher-0 I(900)/I(450)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-0-900",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-0-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-0-450",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-0-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R19 higher-0 I(1800)/I(900)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-0-1800",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-0-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-0-900",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-0-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R19 higher-1 typeck(900) solve/map",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "higher-1-900",
+          "state": "solve",
+          "metric": "typeck"
+        },
+        "right": {
+          "op": "median",
+          "case": "higher-1-900",
+          "state": "map",
+          "metric": "typeck"
+        }
+      },
+      "limit": 0.75
+    },
+    {
+      "label": "R19 higher-1 typeck(1800) solve/map",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "higher-1-1800",
+          "state": "solve",
+          "metric": "typeck"
+        },
+        "right": {
+          "op": "median",
+          "case": "higher-1-1800",
+          "state": "map",
+          "metric": "typeck"
+        }
+      },
+      "limit": 0.75
+    },
+    {
+      "label": "R19 higher-1 I(900)/I(450)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-1-900",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-1-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-1-450",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-1-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R19 higher-1 I(1800)/I(900)",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-1-1800",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-1-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "case": "higher-1-900",
+            "state": "solve",
+            "metric": "typeck"
+          },
+          "right": {
+            "op": "median",
+            "case": "higher-1-0",
+            "state": "solve",
+            "metric": "typeck"
+          }
+        }
+      },
+      "limit": 2.5
+    },
+    {
+      "label": "R19 classes typeck(900) solve/map",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "classes-900",
+          "state": "solve",
+          "metric": "typeck"
+        },
+        "right": {
+          "op": "median",
+          "case": "classes-900",
+          "state": "map",
+          "metric": "typeck"
+        }
+      },
+      "limit": 0.75
+    },
+    {
+      "label": "R19 classes typeck(1800) solve/map",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "classes-1800",
+          "state": "solve",
+          "metric": "typeck"
+        },
+        "right": {
+          "op": "median",
+          "case": "classes-1800",
+          "state": "map",
+          "metric": "typeck"
+        }
+      },
+      "limit": 0.75
+    },
+    {
+      "label": "R22 seven/all-ok final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-seven-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-seven-88-20-1000-all-ok",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 seven/all-ok final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-seven-256-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-seven-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 seven/always-error final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-seven-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-seven-88-20-1000-always-error",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 seven/always-error final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-seven-256-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-seven-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 distinct/all-ok final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-distinct-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-distinct-88-20-1000-all-ok",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 distinct/all-ok final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-distinct-256-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-distinct-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 distinct/always-error final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-distinct-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-distinct-88-20-1000-always-error",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 distinct/always-error final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-distinct-256-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-distinct-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 zero/all-ok final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-zero-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-zero-88-20-1000-all-ok",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 zero/all-ok final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-zero-256-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-zero-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 zero/always-error final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-zero-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-zero-88-20-1000-always-error",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 zero/always-error final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-zero-256-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-zero-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 max/all-ok final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-max-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-max-88-20-1000-all-ok",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 max/all-ok final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-max-256-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-max-88-20-1000-all-ok",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 max/always-error final/old n=88",
+      "kind": "ratio",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-max-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-max-88-20-1000-always-error",
+          "state": "old",
+          "metric": "cli"
+        }
+      },
+      "limit": 0.5
+    },
+    {
+      "label": "R22 max/always-error final 256/88",
+      "kind": "growth",
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "median",
+          "case": "property-max-256-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        },
+        "right": {
+          "op": "median",
+          "case": "property-max-88-20-1000-always-error",
+          "state": "final",
+          "metric": "cli"
+        }
+      },
+      "limit": 4
+    },
+    {
+      "label": "R22 shrinks budget",
+      "kind": "invariant",
+      "select": {
+        "section": "16.4"
+      },
+      "field": "shrinks",
+      "parameter": "ms",
+      "minimum": 0
+    },
+    {
+      "label": "R22 shrinkWork budget",
+      "kind": "invariant",
+      "select": {
+        "section": "16.4"
+      },
+      "field": "shrinkWork",
+      "parameter": "mw",
+      "minimum": 0
+    },
+    {
+      "label": "R19 small higher-0-0 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-0-0 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-0-100 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-0-100 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-0-300 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-0-300 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-0-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-1-0 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-1-0 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-1-100 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-1-100 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-1-300 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small higher-1-300 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "higher-1-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small classes-0 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small classes-0 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-0",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small classes-100 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small classes-100 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-100",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small classes-300 solve-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "solve",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "R19 small classes-300 final-map",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "map",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "case": "classes-300",
+        "state": "final",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    }
+  ],
+  "tier": "targets",
+  "cases": [
+    "functions-main-0-0",
+    "functions-main-0-1",
+    "functions-main-10-0",
+    "functions-main-10-1",
+    "functions-main-100-0",
+    "functions-main-100-1",
+    "functions-main-1000-0",
+    "functions-main-1000-1",
+    "functions-main-1250-0",
+    "functions-main-1250-1",
+    "functions-main-2500-0",
+    "functions-main-2500-1",
+    "functions-main-5000-0",
+    "functions-main-5000-1",
+    "functions-main-10000-0",
+    "functions-main-10000-1",
+    "functions-main-20000-0",
+    "functions-main-20000-1",
+    "functions-args-0-0",
+    "functions-args-0-1",
+    "functions-args-10-0",
+    "functions-args-10-1",
+    "functions-args-100-0",
+    "functions-args-100-1",
+    "functions-args-1000-0",
+    "functions-args-1000-1",
+    "functions-args-10000-0",
+    "functions-args-10000-1",
+    "functions-modules-0-0",
+    "functions-modules-0-1",
+    "functions-modules-10-0",
+    "functions-modules-10-1",
+    "functions-modules-100-0",
+    "functions-modules-100-1",
+    "functions-modules-1000-0",
+    "functions-modules-1000-1",
+    "functions-modules-10000-0",
+    "functions-modules-10000-1",
+    "existing-fib",
+    "existing-loop",
+    "existing-string",
+    "higher-0-0",
+    "higher-1-0",
+    "classes-0",
+    "higher-0-100",
+    "higher-1-100",
+    "classes-100",
+    "higher-0-300",
+    "higher-1-300",
+    "classes-300",
+    "higher-0-450",
+    "higher-1-450",
+    "higher-0-900",
+    "higher-1-900",
+    "classes-900",
+    "higher-0-1800",
+    "higher-1-1800",
+    "classes-1800",
+    "depth-0-8",
+    "depth-1-8",
+    "depth-0-16",
+    "depth-1-16",
+    "depth-0-32",
+    "depth-1-32",
+    "depth-0-64",
+    "depth-1-64",
+    "f1-nofail-call",
+    "f1-join-effects",
+    "control-16.3",
+    "property-seven-24-0-0-all-ok",
+    "property-seven-24-0-0-always-error",
+    "property-seven-24-0-1-all-ok",
+    "property-seven-24-0-1-always-error",
+    "property-seven-24-1-0-all-ok",
+    "property-seven-24-1-0-always-error",
+    "property-seven-24-1-1-all-ok",
+    "property-seven-24-1-1-always-error",
+    "candidates-seven-24",
+    "property-distinct-24-0-0-all-ok",
+    "property-distinct-24-0-0-always-error",
+    "property-distinct-24-0-1-all-ok",
+    "property-distinct-24-0-1-always-error",
+    "property-distinct-24-1-0-all-ok",
+    "property-distinct-24-1-0-always-error",
+    "property-distinct-24-1-1-all-ok",
+    "property-distinct-24-1-1-always-error",
+    "candidates-distinct-24",
+    "property-zero-24-0-0-all-ok",
+    "property-zero-24-0-0-always-error",
+    "property-zero-24-0-1-all-ok",
+    "property-zero-24-0-1-always-error",
+    "property-zero-24-1-0-all-ok",
+    "property-zero-24-1-0-always-error",
+    "property-zero-24-1-1-all-ok",
+    "property-zero-24-1-1-always-error",
+    "candidates-zero-24",
+    "property-max-24-0-0-all-ok",
+    "property-max-24-0-0-always-error",
+    "property-max-24-0-1-all-ok",
+    "property-max-24-0-1-always-error",
+    "property-max-24-1-0-all-ok",
+    "property-max-24-1-0-always-error",
+    "property-max-24-1-1-all-ok",
+    "property-max-24-1-1-always-error",
+    "candidates-max-24",
+    "property-seven-88-20-1000-all-ok",
+    "property-seven-88-20-1000-always-error",
+    "candidates-seven-88",
+    "property-distinct-88-20-1000-all-ok",
+    "property-distinct-88-20-1000-always-error",
+    "candidates-distinct-88",
+    "property-zero-88-20-1000-all-ok",
+    "property-zero-88-20-1000-always-error",
+    "candidates-zero-88",
+    "property-max-88-20-1000-all-ok",
+    "property-max-88-20-1000-always-error",
+    "candidates-max-88",
+    "property-seven-256-20-1000-all-ok",
+    "property-seven-256-20-1000-always-error",
+    "candidates-seven-256",
+    "property-distinct-256-20-1000-all-ok",
+    "property-distinct-256-20-1000-always-error",
+    "candidates-distinct-256",
+    "property-zero-256-20-1000-all-ok",
+    "property-zero-256-20-1000-always-error",
+    "candidates-zero-256",
+    "property-max-256-20-1000-all-ok",
+    "property-max-256-20-1000-always-error",
+    "candidates-max-256",
+    "order-string-candidates",
+    "order-string-all-ok",
+    "order-string-always-error",
+    "order-map-candidates",
+    "order-map-all-ok",
+    "order-map-always-error",
+    "order-record-candidates",
+    "order-record-all-ok",
+    "order-record-always-error",
+    "control-16.4",
+    "build-string-builder-0-0",
+    "build-string-builder-all-0-0",
+    "build-string-concatenate-0-0",
+    "build-string-join-0-0",
+    "build-string-builder-0-1",
+    "build-string-builder-all-0-1",
+    "build-string-concatenate-0-1",
+    "build-string-builder-0-4",
+    "build-string-builder-all-0-4",
+    "build-string-concatenate-0-4",
+    "build-string-builder-8-0",
+    "build-string-builder-all-8-0",
+    "build-string-concatenate-8-0",
+    "build-string-join-8-0",
+    "build-string-builder-8-1",
+    "build-string-builder-all-8-1",
+    "build-string-concatenate-8-1",
+    "build-string-builder-8-4",
+    "build-string-builder-all-8-4",
+    "build-string-concatenate-8-4",
+    "build-string-builder-128-0",
+    "build-string-builder-all-128-0",
+    "build-string-concatenate-128-0",
+    "build-string-join-128-0",
+    "build-string-builder-128-1",
+    "build-string-builder-all-128-1",
+    "build-string-concatenate-128-1",
+    "build-string-builder-128-4",
+    "build-string-builder-all-128-4",
+    "build-string-concatenate-128-4",
+    "build-string-builder-1024-0",
+    "build-string-builder-all-1024-0",
+    "build-string-concatenate-1024-0",
+    "build-string-join-1024-0",
+    "build-string-builder-1024-1",
+    "build-string-builder-all-1024-1",
+    "build-string-concatenate-1024-1",
+    "build-string-builder-1024-4",
+    "build-string-builder-all-1024-4",
+    "build-string-concatenate-1024-4",
+    "build-list-builder-0-0",
+    "build-list-builder-all-0-0",
+    "build-list-concatenate-0-0",
+    "build-list-fold-0-0",
+    "build-list-builder-0-1",
+    "build-list-builder-all-0-1",
+    "build-list-concatenate-0-1",
+    "build-list-builder-0-4",
+    "build-list-builder-all-0-4",
+    "build-list-concatenate-0-4",
+    "build-list-builder-8-0",
+    "build-list-builder-all-8-0",
+    "build-list-concatenate-8-0",
+    "build-list-fold-8-0",
+    "build-list-builder-8-1",
+    "build-list-builder-all-8-1",
+    "build-list-concatenate-8-1",
+    "build-list-builder-8-4",
+    "build-list-builder-all-8-4",
+    "build-list-concatenate-8-4",
+    "build-list-builder-128-0",
+    "build-list-builder-all-128-0",
+    "build-list-concatenate-128-0",
+    "build-list-fold-128-0",
+    "build-list-builder-128-1",
+    "build-list-builder-all-128-1",
+    "build-list-concatenate-128-1",
+    "build-list-builder-128-4",
+    "build-list-builder-all-128-4",
+    "build-list-concatenate-128-4",
+    "build-list-builder-1024-0",
+    "build-list-builder-all-1024-0",
+    "build-list-concatenate-1024-0",
+    "build-list-fold-1024-0",
+    "build-list-builder-1024-1",
+    "build-list-builder-all-1024-1",
+    "build-list-concatenate-1024-1",
+    "build-list-builder-1024-4",
+    "build-list-builder-all-1024-4",
+    "build-list-concatenate-1024-4",
+    "build-bytes-builder-0-0",
+    "build-bytes-builder-all-0-0",
+    "build-bytes-concatenate-0-0",
+    "build-bytes-builder-0-1",
+    "build-bytes-builder-all-0-1",
+    "build-bytes-concatenate-0-1",
+    "build-bytes-builder-0-4",
+    "build-bytes-builder-all-0-4",
+    "build-bytes-concatenate-0-4",
+    "build-bytes-builder-8-0",
+    "build-bytes-builder-all-8-0",
+    "build-bytes-concatenate-8-0",
+    "build-bytes-builder-8-1",
+    "build-bytes-builder-all-8-1",
+    "build-bytes-concatenate-8-1",
+    "build-bytes-builder-8-4",
+    "build-bytes-builder-all-8-4",
+    "build-bytes-concatenate-8-4",
+    "build-bytes-builder-128-0",
+    "build-bytes-builder-all-128-0",
+    "build-bytes-concatenate-128-0",
+    "build-bytes-builder-128-1",
+    "build-bytes-builder-all-128-1",
+    "build-bytes-concatenate-128-1",
+    "build-bytes-builder-128-4",
+    "build-bytes-builder-all-128-4",
+    "build-bytes-concatenate-128-4",
+    "build-bytes-builder-1024-0",
+    "build-bytes-builder-all-1024-0",
+    "build-bytes-concatenate-1024-0",
+    "build-bytes-builder-1024-1",
+    "build-bytes-builder-all-1024-1",
+    "build-bytes-concatenate-1024-1",
+    "build-bytes-builder-1024-4",
+    "build-bytes-builder-all-1024-4",
+    "build-bytes-concatenate-1024-4",
+    "control-16.5"
+  ]
+}

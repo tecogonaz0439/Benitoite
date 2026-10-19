@@ -32,7 +32,7 @@ public function distance(a: String, b: String) -> Integer
 function add(a: Integer, b: Integer) -> Integer
 ```
 
-【決定】外部の型（WIT の resource に当たる型）は、`@external("wasm", "パス", "インターフェース#resource") type 名前` と宣言する。右辺と型パラメータを持たない。関数と同じく公開の指定と `@deprecated` を付けられる。01-10 のリソースの型には含めず、`with` には使えない。等値・鍵・順序の制約を満たさず、`Show` の既定の実装も持たない。型クラスの実装は利用者の型と同じ規則で書ける。理由: 中身を見せない値を回収で管理し、外部の操作の後始末を定めるリソースの型と区別するためである。
+【決定】外部の型（WIT の resource に当たる型）は、`@external("wasm", "パス", "インターフェース#resource") type 名前` と宣言する。右辺と型パラメータを持たない。関数と同じく公開の指定と `@deprecated` を付けられる。01-10 のリソースの型には含めず、`with` には使えない。等値・鍵・順序の制約を満たさず、`Show` の既定の実装も持たない。型クラスの実装は利用者の型と同じ規則で書ける。理由: 不透明型の値を回収で管理し、外部の操作の後始末を定めるリソースの型と区別するためである。
 
 ```text
 @external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#cell")

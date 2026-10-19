@@ -8,6 +8,9 @@ function extractDates(text: String) -> Result[List[String], String]
   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
   return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value) end lambda))
 end function
+function invalid(source: String) -> Boolean
+  return Result.isError(Regex.compile(source))
+end function
 function main() -> Result[Unit, String] uses Console.Write
   bind dates <- try extractDates("日付 2026-09-28 と 2026-10-08")
   Console.writeLine(Trait.Show.show(dates))
@@ -21,6 +24,6 @@ function main() -> Result[Unit, String] uses Console.Write
   Console.writeLine(Regex.replaceFirst(pattern: pattern, text: text, replacement: r"$1"))
   Console.writeLine(Regex.replaceAll(pattern: pattern, text: text, replacement: "X"))
   Console.writeLine(Trait.Show.show(Regex.split(pattern: pattern, text: text)))
-  Console.writeLine(Trait.Show.show(Regex.isMatch(pattern: pattern, text: text) and Result.isError(Regex.compile("["))))
+  Console.writeLine(Trait.Show.show(Regex.isMatch(pattern: pattern, text: text) and invalid("[")))
   return Result.Ok(())
 end function

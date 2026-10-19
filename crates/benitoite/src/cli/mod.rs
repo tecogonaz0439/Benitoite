@@ -166,6 +166,7 @@ Options:
   --deny-warnings           treat warnings as errors
   --report=json             (check, test --check) write a single JSON inspection report to stdout
   --allow-effects=<names>   (run, test) allowed atomic effects, comma-separated; empty means none
+  --doc                     (test) include documentation examples
   --check                   (test) type-check without running tests; (fmt) report files that would change
 ";
     /// `--version` の出力。`{version}` は処理系の版、`{unicode}` は文字の分類と変換が従う Unicode の版
@@ -479,9 +480,9 @@ pub fn execute(command: Command, env: CliEnv) -> u8 {
                 "formats": {
                     "version": [1],
                     "diagnostics": [1],
-                    "testResults": [1],
+                    "testResults": [1, 2],
                     "checkReport": [1],
-                    "testCheckReport": [1],
+                    "testCheckReport": [1, 2],
                     "effectLimit": [1],
                     "loaderEnvironment": [1],
                     "skillList": [1],

@@ -1,8 +1,9 @@
 //! 型の確定後に辞書を解く。実装の上位の辞書も同じ手順を使う（設計書 02-05「型クラスの制約の解決」）。
 use super::{class_name, collect::show, constraint_name, parameter_edit};
-use crate::base::{BindingId, ModuleId, NodeId, NodeMap, Span};
+use crate::base::{BindingId, ModuleId, NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
 use crate::typeck::{
+    body_map::BodyNodeMap,
     context::Body,
     decls::{Decls, Scope},
     infer::*,
@@ -40,7 +41,19 @@ pub(super) enum Failure {
     Suppressed,
     Limit,
 }
-fn path(d: &Decls<'_>, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
+fn path(d: &Decls<'_>, solver: &Solver, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
+    let key = (from, to);
+    if let Some(path) = solver.superclass_paths.borrow().get(&key) {
+        return path.clone();
+    }
+    let result = uncached_path(d, from, to);
+    solver
+        .superclass_paths
+        .borrow_mut()
+        .insert(key, result.clone());
+    result
+}
+fn uncached_path(d: &Decls<'_>, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
     let mut pending = VecDeque::from([(from, vec![])]);
     let mut seen = BTreeSet::new();
     while let Some((class, path)) = pending.pop_front() {
@@ -117,7 +130,7 @@ fn resolve_normalized(
         let mut best: Option<(usize, Vec<BindingId>)> = None;
         for (i, c) in scheme.class_constraints.iter().enumerate() {
             if c.param == index
-                && let Some(path) = path(d, c.class, class)
+                && let Some(path) = path(d, solver, c.class, class)
                 && best.as_ref().is_none_or(|(_, old)| path.len() < old.len())
             {
                 best = Some((i, path));
@@ -138,7 +151,7 @@ fn resolve_normalized(
         if let Some(constraints) = solver.clause_constraints.get(clause) {
             for (i, c) in constraints.iter().enumerate() {
                 if c.param == *index
-                    && let Some(path) = path(d, c.class, class)
+                    && let Some(path) = path(d, solver, c.class, class)
                     && best.as_ref().is_none_or(|(_, old)| path.len() < old.len())
                 {
                     best = Some((i, path));
@@ -318,7 +331,10 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
 }
 
 // 補助の検査でも節の型パラメータと診断の操作名を保つ（設計書 02-05「型クラスの制約の解決」）。
-pub(super) type ClauseBounds<'a> = (&'a NodeMap<Vec<TypeParamInfo>>, &'a NodeMap<(String, Span)>);
+pub(super) type ClauseBounds<'a> = (
+    &'a BodyNodeMap<Vec<TypeParamInfo>>,
+    &'a BodyNodeMap<(String, Span)>,
+);
 
 pub(super) fn check_bounds(
     d: &mut Decls<'_>,

@@ -27,10 +27,42 @@ All examples import the IO modules under `Benitoite.Unofficial`, because those m
 - [Command-line arguments and environment variables](#command-line-arguments-and-environment-variables)
 - [HTTP](#http)
 - [Collections](#collections)
+- [Concrete and generic containers](#concrete-and-generic-containers)
 - [Records and data types](#records-and-data-types)
 - [Writing tests](#writing-tests)
 - [Numeric widths and conversions](#numeric-widths-and-conversions)
 - [WASM external functions and WIT types](#wasm-external-functions-and-wit-types)
+
+## Concrete and generic containers
+
+Prefer concrete functions when the container is known: `List.map/fold`, `Option.map/andThen`, and `Result.map/andThen/mapError`. For a function shared by multiple containers, require the smallest class that provides the operations used. `Functor` supplies map, `Applicative` adds pure/apply, and `Monad` adds flatMap. Their two-parameter counterparts preserve the second type of `F[A, X]`. Import `Benitoite.Trait` to name the classes; `Result` itself stays in the prelude.
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function twice[F[_, _]: Trait.Functor2, X](x: F[Integer, X]) -> F[Integer, X]
+  return Trait.Functor2.map(x: x, f: lambda(value) return value * 2 end lambda)
+end function
+
+function main() -> Unit uses Console.Write
+  bind concrete: Result[Integer, String] <- Result.map(r: Result.Ok(3), f: lambda(value) return value * 2 end lambda)
+  bind generic: Result[Integer, String] <- twice(Result.Ok(3))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: concrete, fallback: 0)))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: generic, fallback: 0)))
+end function
+```
+
+```output
+6
+6
+```
+
+`Trait.Monad2` includes `Applicative2` and `Functor2`, so a function that also needs flatMap can use its inherited map. The standard implementation is `Result`; a user-defined two-parameter data type can implement the same classes. `Applicative2.pure` may need a result annotation such as `Result[Integer, String]` to determine the error type. `Applicative2.apply` prefers an error in `fs` to an error in `x`, and calls the wrapped function once only when both are Ok. Both argument expressions still run in source order. When writing its type, keep the parentheses in `Result[(function(value: A) -> B uses E), X]` to separate the effect row from `X`.
+
+There is no partial application of type constructors: `Result` cannot be passed to a one-parameter `Monad` or `Traversable`. A fully applied transparent alias is expanded as usual; a bare alias is not a separate type constructor or a way to select another dictionary.
+
+Use `andThen/flatMap` to pass a successful value to another computation with the same error type; use `Result.mapError` to align error types explicitly. `try … or return` returns a failure to the caller; `or die` reports it and ends the run. `Failure.toResult` handles typed Fail and returns a value, removing the handled Fail from the enclosing `uses` bound. Choose display, comparison, and combination functions by meaning: `Show` can quote text and is not numeric `toString`, and `Order[Float]` defines a total order including NaN that differs from built-in comparisons.
 
 ## Program shape and error handling
 
@@ -117,6 +149,11 @@ once and returns `Result[T, E]`, keeping effects other than `Failure.Fail[E]`.
 The callback's remaining row must exclude Fail; this condition comes from the
 signature. Neither conversion requires Show or equality. Annotate the result binding
 or callback type if E cannot be inferred; function calls have no explicit type arguments.
+
+An E0506 on standard Fail can be fixed with toResult inside main or the @test
+function. Remove the handled Fail from the entry's uses and retain other effects.
+Result.andThen/flatMap only chains Result values; it does not handle Fail. The
+toResult help does not apply to Log or a user-defined effect with the same name.
 
 Place toResult outside List.map to stop the entire map at the first raised failure.
 Its non-resumable clause skips the remaining computation and releases nested with

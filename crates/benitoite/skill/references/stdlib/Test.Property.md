@@ -5,9 +5,23 @@ Status: unofficial. Import it with `import Benitoite.Unofficial.Test.Property`. 
 Refer to its declarations as `Property.<name>`, for example `Property.Gen`.
 
 Pure property trials with explicit random state and bounded shrinking.
-Keep size small for List, String, and Map shrinking: candidate generation and
-deduplication can cost more than quadratic time in the input length; maxShrinks
-bounds candidate trials, not this work.
+Budgets count candidate trials and individual generation/continuation calls.
+Callback time and allocation still depend on the input and callback implementation.
+
+```benitoite test
+import Benitoite.Unofficial.Test.Property
+@test
+function propertyExample() -> Unit uses Assert.Check
+  bind config <- Property.Config(seed: 42, trials: 3, size: 4, maxShrinks: 10, maxShrinkWork: 20)
+  bind result <- Property.check(config: config, gen: Property.constant(7), shrinker: Property.shrinkInteger(), property: lambda(value)
+    return if value = 7 then Result.Ok(()) else Result.Error("expected seven") end if
+  end lambda)
+  match result with
+    case Result.Ok(_) -> return ()
+    case Result.Error(_) -> Assert.fail("property failed")
+  end match
+end function
+```
 
 ```benitoite
 public record Gen[T]
@@ -19,11 +33,33 @@ A pure generator. Direct calls interpret size according to the stored function.
 
 ```benitoite
 public record Shrinker[T]
-  candidates: function(value: T) -> List[T]
+  candidates: function(value: T) -> ShrinkStep[T]
 end record
 ```
 
-Finite ordered candidates; check does not require equality on T.
+Ordered steps; check does not require equality on T.
+
+```benitoite
+public data ShrinkStep[T]
+  Done
+  Yield(T, function() -> ShrinkStep[T])
+  Skip(function() -> ShrinkStep[T])
+end data
+```
+
+One pure shrinking step. Continuations are called only when the consumer advances.
+
+```benitoite
+public function mapSteps[A, B](steps: ShrinkStep[A], f: function(value: A) -> B) -> ShrinkStep[B]
+```
+
+Maps yielded values, preserving Skip and deferring every continuation.
+
+```benitoite
+public function appendSteps[T](left: ShrinkStep[T], right: function() -> ShrinkStep[T]) -> ShrinkStep[T]
+```
+
+Appends a deferred sequence; reaching left's Done returns a Skip before calling right.
 
 ```benitoite
 public record Config
@@ -31,10 +67,11 @@ public record Config
   trials: Integer
   size: Integer
   maxShrinks: Integer
+  maxShrinkWork: Integer
 end record
 ```
 
-Trial budget: trials 1..10000, size 0..10000, maxShrinks 0..100000.
+Inclusive budgets: trials 1..10000, size 0..10000, maxShrinks 0..100000, maxShrinkWork 0..1000000.
 
 ```benitoite
 public record Counterexample[T]
@@ -45,6 +82,7 @@ public record Counterexample[T]
   originalMessage: String
   message: String
   shrinks: Integer
+  shrinkWork: Integer
   limitReached: Boolean
   libraryVersion: String
 end record

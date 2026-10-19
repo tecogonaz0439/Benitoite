@@ -650,3 +650,111 @@ end function
         }
     }
 }
+
+#[path = "fixtures/scope.rs"]
+mod scope_cases;
+
+// 四問: 独立入力で成功時の全保存欄と六失敗・優先順・Showを公開実行経路で守る。
+// 静的拒否の表だけでは、私有builtinの配線・Result/Pair・標準ラッパー・射影を通らない。
+// 通常の引数を通じて実行時Errorを観察し、差し込み口は増やさない。
+#[test]
+fn scope_checked_values_preserve_inputs_and_runtime_errors() {
+    use scope_cases::quoted as q;
+    let mut source = String::from(
+        r#"
+import Benitoite.Unofficial.Scope
+import Benitoite.Trait
+function dynamicHost(pattern: String, host: String) -> Result[Scope.CheckedHost, Scope.ScopeError]
+ return Scope.checkHost(pattern: pattern, host: host)
+end function
+function dynamicPath(pattern: String, path: String) -> Result[Scope.CheckedPath, Scope.ScopeError]
+ return Scope.checkPath(pattern: pattern, path: path)
+end function
+function dynamicEndpoint(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[Scope.CheckedEndpoint, Scope.ScopeError]
+ return Scope.checkEndpoint(hostPattern: hostPattern, host: host, minimumPort: minimumPort, maximumPort: maximumPort, port: port)
+end function
+function main() -> Result[Unit, String]
+"#,
+    );
+    for (i, case) in scope_cases::cases().into_iter().enumerate() {
+        let kind = case.get("kind").unwrap().as_str().unwrap();
+        let result = case.get("result").unwrap().as_str().unwrap();
+        let pattern = q(case.get("pattern").unwrap().as_str().unwrap());
+        let target = q(case.get("target").unwrap().as_str().unwrap());
+        let expected = if result == "ok" {
+            let p = q(case.get("expectedPattern").unwrap().as_str().unwrap());
+            let t = q(case.get("expectedTarget").unwrap().as_str().unwrap());
+            let comparison = match kind {
+                "host" => format!("Scope.hostPattern(value) = {p} and Scope.host(value) = {t}"),
+                "path" => format!("Scope.pathPattern(value) = {p} and Scope.path(value) = {t}"),
+                _ => format!(
+                    "Scope.endpointHostPattern(value) = {p} and Scope.endpointHost(value) = {t} and Scope.endpointMinimumPort(value) = {} and Scope.endpointMaximumPort(value) = {} and Scope.endpointPort(value) = {}",
+                    case.get("minimum").unwrap(),
+                    case.get("maximum").unwrap(),
+                    case.get("port").unwrap()
+                ),
+            };
+            format!("case Result.Ok(value) -> {comparison}\n case Result.Error(_) -> false")
+        } else {
+            let error = match result {
+                "InvalidPattern" => format!(
+                    "Scope.ScopeError.InvalidPattern(input, reason) -> input = {pattern} and String.byteLength(reason) > 0"
+                ),
+                "InvalidTarget" => format!(
+                    "Scope.ScopeError.InvalidTarget(input, reason) -> input = {target} and String.byteLength(reason) > 0"
+                ),
+                "OutsideScope" => {
+                    format!("Scope.ScopeError.OutsideScope(p, t) -> p = {pattern} and t = {target}")
+                }
+                "InvalidPortRange" => format!(
+                    "Scope.ScopeError.InvalidPortRange(lo, hi) -> lo = {} and hi = {}",
+                    case.get("minimum").unwrap(),
+                    case.get("maximum").unwrap()
+                ),
+                "InvalidPort" => format!(
+                    "Scope.ScopeError.InvalidPort(port) -> port = {}",
+                    case.get("port").unwrap()
+                ),
+                _ => format!(
+                    "Scope.ScopeError.PortOutsideScope(lo, hi, port) -> lo = {} and hi = {} and port = {}",
+                    case.get("minimum").unwrap(),
+                    case.get("maximum").unwrap(),
+                    case.get("port").unwrap()
+                ),
+            };
+            format!(
+                "case Result.Ok(_) -> false\n case Result.Error(error) ->\n String.byteLength(Trait.Show.show(error)) <= 4096 and match error with\n case {error}\n case _ -> false\n end match"
+            )
+        };
+        source.push_str(&format!(" bind good{i} <- match dynamic{}({}) with\n {expected}\n end match\n if not good{i} then return Result.Error(\"scope case {i}\") end if\n", scope_cases::operation(&case), scope_cases::arguments(&case)));
+    }
+    source.push_str(r#"
+ bind original <- String.repeat(s: "あ", n: 3000)
+ bind preserved <- match dynamicHost(pattern: "localhost", host: original) with
+   case Result.Error(Scope.ScopeError.InvalidTarget(value, _)) -> value = original
+   case _ -> false
+ end match
+ if not preserved then return Result.Error("scope original input") end if
+ bind shown <- Trait.Show.show(Scope.ScopeError.InvalidPattern("a\"\n", "why"))
+ if shown <> "InvalidPattern(\"a\\\"\\n\", \"why\")" then return Result.Error(shown) end if
+ bind long <- Trait.Show.show(Scope.ScopeError.OutsideScope(String.repeat(s: "é", n: 5000), String.repeat(s: "\u{0}", n: 5000)))
+ if String.byteLength(long) > 4096 or not String.endsWith(s: long, suffix: "...") then return Result.Error("scope show limit") end if
+ if not String.startsWith(s: long, prefix: "OutsideScope(\"") or not String.endsWith(s: long, suffix: "\")...") then return Result.Error("scope show delimiters") end if
+ bind escaped <- Trait.Show.show(Scope.ScopeError.InvalidPattern(String.repeat(s: "\u{0}", n: 5000), String.repeat(s: "\\\"\nあ", n: 5000)))
+ if String.byteLength(escaped) > 4096 or not String.endsWith(s: escaped, suffix: "\")...") then return Result.Error("scope escaped show delimiters") end if
+ if not String.contains(s: escaped, part: "\\u{0}") or String.contains(s: escaped, part: "\\u{...") then return Result.Error("scope show partial escape") end if
+
+ return Result.Ok(())
+end function
+"#);
+    let program = compile(&source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let output = Arc::new(Mutex::new(Vec::new()));
+        let end = run::run_program(&program, environment(mode, Arc::clone(&output)));
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
+        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
+        assert!(output.lock().unwrap().is_empty());
+    }
+}

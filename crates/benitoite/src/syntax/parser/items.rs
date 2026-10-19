@@ -48,15 +48,39 @@ impl<'a> DocStore<'a> {
     fn collect(&mut self, first: usize, end: usize) -> Option<DocComment> {
         let lines = self.comments.get(first..end)?;
         let span = lines.first()?.span.to(lines.last()?.span);
-        let text = lines
-            .iter()
-            .map(|c| c.text.as_str())
-            .collect::<Vec<_>>()
-            .join("\n");
+        let mut text = String::new();
+        let mut mapping = Vec::with_capacity(lines.len());
+        for (index, comment) in lines.iter().enumerate() {
+            if index != 0 {
+                text.push('\n');
+            }
+            let start = text.len();
+            text.push_str(&comment.text);
+            let mut raw = comment.span;
+            let end = usize::try_from(raw.end.0).ok()?;
+            let newline = match self.text.get(end..) {
+                Some(rest) if rest.starts_with(b"\r\n") => 2,
+                Some(rest) if rest.starts_with(b"\n") => 1,
+                _ => 0,
+            };
+            raw.end = BytePos(raw.end.0.saturating_add(newline));
+            mapping.push(DocLine {
+                text: start..text.len(),
+                span: raw,
+                content: Span {
+                    start: BytePos(comment.span.start.0.saturating_add(3)),
+                    ..comment.span
+                },
+            });
+        }
         if let Some(used) = self.used.get_mut(first..end) {
             used.fill(true);
         }
-        Some(DocComment { span, text })
+        Some(DocComment {
+            span,
+            text,
+            lines: mapping,
+        })
     }
     pub(super) fn take_for(
         &mut self,
@@ -197,7 +221,7 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
         let accepted = match attr.name.text.as_str() {
             "test" | "builtin" => function,
             "external" => function || matches!(decl.item, Item::ExternalType(_)),
-            "extensible" => matches!(decl.item, Item::Data(_) | Item::Record(_)),
+            "extensible" | "opaque" => matches!(decl.item, Item::Data(_) | Item::Record(_)),
             "deprecated" => allowed,
             _ => true,
         };
@@ -208,6 +232,36 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
                     .arg("name", &attr.name.text)
                     .arg("what", what)
                     .primary(attr.span)
+                    .build(),
+            );
+        }
+    }
+    if let Some(opaque) = decl.attrs.iter().find(|attr| attr.name.text == "opaque") {
+        if !attribute_reported(p, opaque.span)
+            && matches!(decl.item, Item::Data(_) | Item::Record(_))
+            && decl.public.is_none()
+        {
+            p.suppressed = false;
+            p.report(
+                DiagBuilder::new(DiagCode::E0820)
+                    .primary(opaque.span)
+                    .build(),
+            );
+        }
+        for other in decl
+            .attrs
+            .iter()
+            .filter(|attr| matches!(attr.name.text.as_str(), "extensible" | "external"))
+        {
+            p.suppressed = false;
+            p.report(
+                DiagBuilder::new(DiagCode::E0819)
+                    .arg("other", &other.name.text)
+                    .primary(if other.span.start > opaque.span.start {
+                        other.span
+                    } else {
+                        opaque.span
+                    })
                     .build(),
             );
         }
@@ -571,7 +625,7 @@ fn attribute_name_error(p: &Parser, name: &Name) -> Option<Diagnostic> {
                 .help("remove")
                 .build(),
         ),
-        "test" | "deprecated" | "builtin" | "external" | "extensible" => None,
+        "test" | "deprecated" | "builtin" | "external" | "extensible" | "opaque" => None,
         _ => Some(
             DiagBuilder::new(DiagCode::E0801)
                 .arg("name", &name.text)
@@ -583,6 +637,7 @@ fn attribute_name_error(p: &Parser, name: &Name) -> Option<Diagnostic> {
 }
 fn attribute_args_error(p: &Parser, attr: &Attribute) -> Option<Diagnostic> {
     let d = match attr.name.text.as_str() {
+        "opaque" if !attr.args.is_empty() => DiagBuilder::new(DiagCode::E0818).help("remove"),
         "extensible" if !attr.args.is_empty() => DiagBuilder::new(DiagCode::E0817).help("remove"),
         "external" if attr.args.len() != 3 => DiagBuilder::new(DiagCode::E0809).help("form"),
         "external" if attr.args.first().is_some_and(|arg| arg.value != "wasm") => {
@@ -1250,6 +1305,63 @@ mod tests {
         ] {
             let out = user(&format!("@deprecated(\"use another\")\n{decl}"));
             assert!(out.diagnostics.is_empty(), "{decl}: {:?}", out.diagnostics);
+        }
+    }
+
+    // 属性の適用条件は構文解析の公開結果で確かめる。他の段ではこの拒否に到達しない。
+    #[test]
+    fn opaque_attribute_contract() {
+        for declaration in [
+            "record R\n raw: Integer\nend record",
+            "data D\n C(Integer)\nend data",
+        ] {
+            for visibility in ["public", "public(package)"] {
+                for attribute in ["@opaque", "@opaque()", "@opaque @deprecated(\"old\")"] {
+                    let out = user(&format!("{attribute}\n{visibility} {declaration}"));
+                    assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+                    assert_eq!(out.module.decls[0].attrs[0].name.text, "opaque");
+                }
+            }
+        }
+        for (source, expected) in [
+            (
+                "@opaque\nrecord R\n raw: Integer\nend record",
+                vec![DiagCode::E0820],
+            ),
+            (
+                "@opaque(\"x\")\npublic data D\n C\nend data",
+                vec![DiagCode::E0818],
+            ),
+            (
+                "@opaque(x)\npublic data D\n C\nend data",
+                vec![DiagCode::E0220],
+            ),
+            (
+                "@opaque @opaque\npublic data D\n C\nend data",
+                vec![DiagCode::E0803],
+            ),
+            (
+                "@opaque @extensible\npublic data D\n C\nend data",
+                vec![DiagCode::E0819],
+            ),
+            (
+                "@extensible @opaque\npublic record R\n raw: Integer\nend record",
+                vec![DiagCode::E0819],
+            ),
+            (
+                "@opaque\npublic type Alias = Integer",
+                vec![DiagCode::E0802],
+            ),
+            (
+                "@opaque\nfunction f() -> Unit\n ()\nend function",
+                vec![DiagCode::E0802],
+            ),
+            (
+                "@opaque @external(\"wasm\", \"x.wasm\", \"t\")\npublic type X",
+                vec![DiagCode::E0802, DiagCode::E0819],
+            ),
+        ] {
+            assert_eq!(codes(&user(source)), expected, "{source}");
         }
     }
 

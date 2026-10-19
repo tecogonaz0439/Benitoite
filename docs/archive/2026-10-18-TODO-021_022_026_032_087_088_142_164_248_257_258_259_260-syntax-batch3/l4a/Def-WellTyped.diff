@@ -1,0 +1,8 @@
+--- Def.WellTyped (B_WORK)
++++ Def.WellTyped (L4a)
+@@ -1,4 +1,4 @@
+ def Def.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (d : Def) : Prop :=
+   NamesWF d.names d.params ∧
+   (d.body.Exits ∨ d.ret = .base .unit) ∧
+-    HasBlockQ D B opPrim (Qsig d.params d.ret d.eff) d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff
++    HasBlockQ D B opPrim (Qsig d.params d.ret d.eff) [] d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff

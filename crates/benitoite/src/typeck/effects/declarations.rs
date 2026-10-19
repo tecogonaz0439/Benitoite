@@ -105,14 +105,17 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
                             matches!(b.kind, crate::resolve::BindingKind::Effect)
                         }) =>
                     {
-                        d.diagnostics.push(
-                            DiagBuilder::new(DiagCode::E0506)
-                                .arg("function", &f.name.text)
-                                .arg("effect", path(effect))
-                                .primary(effect.span)
-                                .help("handle")
-                                .build(),
-                        );
+                        let mut diagnostic = DiagBuilder::new(DiagCode::E0506)
+                            .arg("function", &f.name.text)
+                            .arg("effect", path(effect))
+                            .primary(effect.span)
+                            .help("handle");
+                        // 同名の利用者エフェクトをFailの捕捉へ案内しない
+                        // （設計書 02-10「修正案」）。
+                        if Some(id) == d.resolved.stdlib("Benitoite.Failure.Fail") {
+                            diagnostic = diagnostic.help("to_result");
+                        }
+                        d.diagnostics.push(diagnostic.build());
                     }
                     EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {
                         if b.def().is_some_and(|b| b.module == ["Assert"]) {

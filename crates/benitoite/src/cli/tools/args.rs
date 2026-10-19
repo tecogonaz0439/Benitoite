@@ -26,6 +26,8 @@ pub struct PathArgs {
     pub deny_warnings: bool,
     /// `--check`（`test` は非実行の検査、`fmt` は変更の有無の確認）
     pub check: bool,
+    /// 入口のdocの例も検査・実行する（test だけ）。
+    pub doc: bool,
     /// 与えた順のパス（一つ以上）
     pub paths: Vec<PathBuf>,
 }
@@ -64,6 +66,7 @@ pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, 
         max_call_stack: None,
         deny_warnings: false,
         check: false,
+        doc: false,
         paths: Vec::new(),
     };
     let mut seen: Vec<String> = Vec::new();
@@ -86,6 +89,7 @@ pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, 
                         | "--max-call-stack"
                         | "--deny-warnings"
                         | "--check"
+                        | "--doc"
                         | "--report"
                         | "--allow-effects"
                 ) {
@@ -174,6 +178,7 @@ mod tests;
 pub(in crate::cli) struct TestParseError {
     pub detail: String,
     pub report: Option<crate::cli::ReportFormat>,
+    pub doc: bool,
     pub paths: Vec<PathBuf>,
 }
 
@@ -195,6 +200,7 @@ fn parse_test_options(
         max_call_stack: None,
         deny_warnings: false,
         check: false,
+        doc: false,
         paths: Vec::new(),
     };
     let mut wasm = crate::cli::WasmOptions::default();
@@ -227,6 +233,7 @@ fn parse_test_options(
                     | "--max-call-stack"
                     | "--deny-warnings"
                     | "--check"
+                    | "--doc"
                     | "--allow-effects"
             ) && !(accept_wasm && crate::cli::WasmOptions::accepts(name))
             {
@@ -247,6 +254,7 @@ fn parse_test_options(
                 }
                 ("--deny-warnings", None) => parsed.deny_warnings = true,
                 ("--check", None) => parsed.check = true,
+                ("--doc", None) => parsed.doc = true,
                 ("--allow-effects", setting) => {
                     let separate = separate.as_ref().map(|value| value.to_string_lossy());
                     let setting = setting
@@ -299,6 +307,7 @@ fn parse_test_options(
         Err(TestParseError {
             detail,
             report,
+            doc: parsed.doc,
             paths: parsed.paths,
         })
     } else {

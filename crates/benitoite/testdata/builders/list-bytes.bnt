@@ -1,0 +1,21 @@
+// spec: 01-06 関数内の構築器
+import Benitoite.ListBuilder as LB
+import Benitoite.BytesBuilder as BB
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses State, Console.Write
+  bind xs: LB[Integer] <- LB.new()
+  LB.append(builder: xs, value: 1)
+  bind before <- LB.copy(xs)
+  LB.appendAll(values: [2, 3], builder: xs)
+  bind snapshot <- lazy List.length(before) end lazy
+  bind make <- lambda()
+    bind bs: BB <- BB.new()
+    BB.append(builder: bs, value: 0xffu8)
+    BB.appendAll(bytes: Bytes.fromList([0x00u8]), builder: bs)
+    return BB.copy(bs)
+  end lambda
+  Console.writeLine(Integer.toString(Lazy.force(snapshot)))
+  Console.writeLine(Integer.toString(LB.length(xs)))
+  Console.writeLine(Bytes.toHex(make()))
+end function

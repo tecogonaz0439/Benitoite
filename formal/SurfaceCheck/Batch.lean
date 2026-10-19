@@ -36,6 +36,7 @@ def bump (c : Counts) (category : String) : Counts :=
   | _ => { c with mismatched := c.mismatched + 1 }
 
 def tag : Benitoite.Surface.Expr → String
+  | .builderOp _ _ _ _ => "builderOp"
   | .lazyE _ => "lazyE"
   | .returnE _ _ => "returnE"
   | .resume _ _ => "resume"

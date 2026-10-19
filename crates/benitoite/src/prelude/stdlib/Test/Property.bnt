@@ -1,7 +1,21 @@
 //! Pure property trials with explicit random state and bounded shrinking.
-//! Keep size small for List, String, and Map shrinking: candidate generation and
-//! deduplication can cost more than quadratic time in the input length; maxShrinks
-//! bounds candidate trials, not this work.
+//! Budgets count candidate trials and individual generation/continuation calls.
+//! Callback time and allocation still depend on the input and callback implementation.
+//!
+//! ```benitoite test
+//! import Benitoite.Unofficial.Test.Property
+//! @test
+//! function propertyExample() -> Unit uses Assert.Check
+//!   bind config <- Property.Config(seed: 42, trials: 3, size: 4, maxShrinks: 10, maxShrinkWork: 20)
+//!   bind result <- Property.check(config: config, gen: Property.constant(7), shrinker: Property.shrinkInteger(), property: lambda(value)
+//!     return if value = 7 then Result.Ok(()) else Result.Error("expected seven") end if
+//!   end lambda)
+//!   match result with
+//!     case Result.Ok(_) -> return ()
+//!     case Result.Error(_) -> Assert.fail("property failed")
+//!   end match
+//! end function
+//! ```
 
 import Benitoite.Unofficial.IO.Random
 
@@ -10,17 +24,43 @@ public record Gen[T]
   run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]
 end record
 
-/// Finite ordered candidates; check does not require equality on T.
+/// Ordered steps; check does not require equality on T.
 public record Shrinker[T]
-  candidates: function(value: T) -> List[T]
+  candidates: function(value: T) -> ShrinkStep[T]
 end record
 
-/// Trial budget: trials 1..10000, size 0..10000, maxShrinks 0..100000.
+/// One pure shrinking step. Continuations are called only when the consumer advances.
+public data ShrinkStep[T]
+  Done
+  Yield(T, function() -> ShrinkStep[T])
+  Skip(function() -> ShrinkStep[T])
+end data
+
+/// Maps yielded values, preserving Skip and deferring every continuation.
+public function mapSteps[A, B](steps: ShrinkStep[A], f: function(value: A) -> B) -> ShrinkStep[B]
+  return match steps with
+    case ShrinkStep.Done -> ShrinkStep.Done
+    case ShrinkStep.Yield(value, next) -> ShrinkStep.Yield(f(value), lambda() return mapSteps(steps: next(), f: f) end lambda)
+    case ShrinkStep.Skip(next) -> ShrinkStep.Skip(lambda() return mapSteps(steps: next(), f: f) end lambda)
+  end match
+end function
+
+/// Appends a deferred sequence; reaching left's Done returns a Skip before calling right.
+public function appendSteps[T](left: ShrinkStep[T], right: function() -> ShrinkStep[T]) -> ShrinkStep[T]
+  return match left with
+    case ShrinkStep.Done -> ShrinkStep.Skip(right)
+    case ShrinkStep.Yield(value, next) -> ShrinkStep.Yield(value, lambda() return appendSteps(left: next(), right: right) end lambda)
+    case ShrinkStep.Skip(next) -> ShrinkStep.Skip(lambda() return appendSteps(left: next(), right: right) end lambda)
+  end match
+end function
+
+/// Inclusive budgets: trials 1..10000, size 0..10000, maxShrinks 0..100000, maxShrinkWork 0..1000000.
 public record Config
   seed: Integer
   trials: Integer
   size: Integer
   maxShrinks: Integer
+  maxShrinkWork: Integer
 end record
 
 /// A failing input and its replay information. reduced is not necessarily minimal.
@@ -32,6 +72,7 @@ public record Counterexample[T]
   originalMessage: String
   message: String
   shrinks: Integer
+  shrinkWork: Integer
   limitReached: Boolean
   libraryVersion: String
 end record
@@ -190,138 +231,199 @@ end function
 
 /// Tries zero, then successive halves toward zero, without negating the input.
 public function shrinkInteger() -> Shrinker[Integer]
-  return Shrinker(candidates: lambda(value)
-    return if value = 0 then [] else integerHalves(value: value div 2, acc: [0]) end if
-  end lambda)
+  return Shrinker(candidates: lambda(value) return integerSteps(value) end lambda)
 end function
 
-function integerHalves(value: Integer, acc: List[Integer]) -> List[Integer]
+function integerSteps(value: Integer) -> ShrinkStep[Integer]
   if value = 0 then
-    return acc
+    return ShrinkStep.Done
   end if
-  return integerHalves(value: value div 2, acc: List.append(xs: acc, x: value))
+  return ShrinkStep.Yield(0, lambda() return integerHalves(value div 2) end lambda)
+end function
+
+function integerHalves(value: Integer) -> ShrinkStep[Integer]
+  if value = 0 then
+    return ShrinkStep.Done
+  end if
+  return ShrinkStep.Yield(value, lambda() return integerHalves(value div 2) end lambda)
 end function
 
 /// Tries zero and a finite half; zero has no candidates. Non-finite inputs try zero.
 public function shrinkFloat() -> Shrinker[Float]
-  return Shrinker(candidates: lambda(value)
-    if value = 0.0 then
-      return []
-    end if
-    if Float.isNaN(value - value) then
-      return [0.0]
-    end if
-    bind half <- value / 2.0
-    return if half = 0.0 or half = value then [0.0] else [0.0, half] end if
-  end lambda)
+  return Shrinker(candidates: lambda(value) return floatSteps(value) end lambda)
+end function
+
+function floatSteps(value: Float) -> ShrinkStep[Float]
+  if value = 0.0 then
+    return ShrinkStep.Done
+  end if
+  if Float.isNaN(value - value) then
+    return ShrinkStep.Yield(0.0, lambda() return ShrinkStep.Done end lambda)
+  end if
+  return uniqueSteps(original: value, steps: ShrinkStep.Yield(0.0, lambda()
+    return ShrinkStep.Yield(value / 2.0, lambda() return ShrinkStep.Done end lambda)
+  end lambda), seen: [])
 end function
 
 /// Shrinks true to false; false has no candidates.
 public function shrinkBoolean() -> Shrinker[Boolean]
-  return Shrinker(candidates: lambda(value) return if value then [false] else [] end if end lambda)
+  return Shrinker(candidates: lambda(value) return booleanSteps(value) end lambda)
+end function
+
+function booleanSteps(value: Boolean) -> ShrinkStep[Boolean]
+  return if value then ShrinkStep.Yield(false, lambda() return ShrinkStep.Done end lambda) else ShrinkStep.Done end if
 end function
 
 /// Shrinks to None first, then shrinks the contained value; removes duplicates.
 public function shrinkOption[T: equality](element: Shrinker[T]) -> Shrinker[Option[T]]
   return Shrinker(candidates: lambda(value)
-    return match value with
-      case Option.None -> []
-      case Option.Some(x) ->
-        bind candidates <- Shrinker.candidates(element)
-        unique(original: value, values: List.prepend(xs: List.map(xs: candidates(x), f: some), x: Option.None))
-    end match
+    return optionSteps(value: value, element: Shrinker.candidates(element))
   end lambda)
+end function
+
+function optionSteps[T: equality](value: Option[T], element: function(value: T) -> ShrinkStep[T]) -> ShrinkStep[Option[T]]
+  return match value with
+    case Option.None -> ShrinkStep.Done
+    case Option.Some(x) -> uniqueSteps(original: value, steps: ShrinkStep.Yield(Option.None, lambda() return mapSteps(steps: element(x), f: some) end lambda), seen: [])
+  end match
 end function
 
 /// Tries empty, contiguous deletions of halving widths, then one element at a time.
 public function shrinkList[T: equality](element: Shrinker[T]) -> Shrinker[List[T]]
   return Shrinker(candidates: lambda(value)
-    bind deletions <- deleteWidths(xs: value, width: List.length(value) div 2, collected: if List.isEmpty(value) then [] else [[]] end if)
-    bind replacements <- replaceElements(xs: value, element: element, i: 0, collected: deletions)
-    return unique(original: value, values: replacements)
+    return listShrinkSteps(value: value, element: Shrinker.candidates(element))
   end lambda)
 end function
 
-function deleteWidths[T](xs: List[T], width: Integer, collected: List[List[T]]) -> List[List[T]]
-  if width = 0 then
-    return collected
+function listShrinkSteps[T: equality](value: List[T], element: function(value: T) -> ShrinkStep[T]) -> ShrinkStep[List[T]]
+  if List.isEmpty(value) then
+    return ShrinkStep.Done
   end if
-  bind next <- List.fold(xs: List.range(start: 0, stop: List.length(xs) - width + 1), initial: collected, f: lambda(acc, value)
-    return List.append(xs: acc, x: removePart(xs: xs, start: value, width: width))
+  return uniqueSteps(original: value, steps: ShrinkStep.Yield([], lambda()
+    return deleteSteps(xs: value, element: element, length: List.length(value), width: List.length(value) div 2, i: 0)
+  end lambda), seen: [])
+end function
+
+function deleteSteps[T](xs: List[T], element: function(value: T) -> ShrinkStep[T], length: Integer, width: Integer, i: Integer) -> ShrinkStep[List[T]]
+  if width = 0 then
+    return ShrinkStep.Skip(lambda() return replaceSteps(xs: xs, element: element, i: 0) end lambda)
+  end if
+  if i > length - width then
+    return ShrinkStep.Skip(lambda() return deleteSteps(xs: xs, element: element, length: length, width: width div 2, i: 0) end lambda)
+  end if
+  return ShrinkStep.Yield(removePart(xs: xs, start: i, width: width), lambda()
+    return deleteSteps(xs: xs, element: element, length: length, width: width, i: i + 1)
   end lambda)
-  return deleteWidths(xs: xs, width: width div 2, collected: next)
 end function
 
 function removePart[T](xs: List[T], start: Integer, width: Integer) -> List[T]
   return List.concatenate(xs: List.take(xs: xs, n: start), ys: List.drop(xs: xs, n: start + width))
 end function
 
-function replaceElements[T](xs: List[T], element: Shrinker[T], i: Integer, collected: List[List[T]]) -> List[List[T]]
+function replaceSteps[T](xs: List[T], element: function(value: T) -> ShrinkStep[T], i: Integer) -> ShrinkStep[List[T]]
   return match List.get(xs: xs, i: i) with
-    case Option.None -> collected
-    case Option.Some(x) ->
-      bind candidates <- Shrinker.candidates(element)
-      bind next <- List.fold(xs: candidates(x), initial: collected, f: lambda(acc, value)
-        return List.append(xs: acc, x: List.concatenate(xs: List.append(xs: List.take(xs: xs, n: i), x: value), ys: List.drop(xs: xs, n: i + 1)))
-      end lambda)
-      replaceElements(xs: xs, element: element, i: i + 1, collected: next)
+    case Option.None -> ShrinkStep.Done
+    case Option.Some(x) -> ShrinkStep.Skip(lambda()
+      return appendSteps(left: mapSteps(steps: element(x), f: lambda(value)
+        return List.concatenate(xs: List.append(xs: List.take(xs: xs, n: i), x: value), ys: List.drop(xs: xs, n: i + 1))
+      end lambda), right: lambda() return replaceSteps(xs: xs, element: element, i: i + 1) end lambda)
+    end lambda)
   end match
 end function
 
-function unique[T: equality](original: T, values: List[T]) -> List[T]
-  return List.fold(xs: values, initial: [], f: lambda(acc, value)
-    return if value = original or List.contains(xs: acc, x: value) then acc else List.append(xs: acc, x: value) end if
-  end lambda)
+// 候補生成、原値との比較、既出との比較をそれぞれ別の段へ分ける。
+// SetやOrderではなくequalityと初出順を保つ（設計書 06-04「プロパティベーステスト」）。
+function uniqueSteps[T: equality](original: T, steps: ShrinkStep[T], seen: List[T]) -> ShrinkStep[T]
+  return match steps with
+    case ShrinkStep.Done -> ShrinkStep.Done
+    case ShrinkStep.Skip(next) -> ShrinkStep.Skip(lambda() return uniqueSteps(original: original, steps: next(), seen: seen) end lambda)
+    case ShrinkStep.Yield(value, next) -> ShrinkStep.Skip(lambda()
+      if value = original then
+        return ShrinkStep.Skip(lambda() return uniqueSteps(original: original, steps: next(), seen: seen) end lambda)
+      end if
+      if List.isEmpty(seen) then
+        return ShrinkStep.Yield(value, lambda() return uniqueSteps(original: original, steps: next(), seen: [value]) end lambda)
+      end if
+      return ShrinkStep.Skip(lambda() return compareSeen(original: original, value: value, next: next, seen: seen, remaining: seen) end lambda)
+    end lambda)
+  end match
+end function
+
+function compareSeen[T: equality](original: T, value: T, next: function() -> ShrinkStep[T], seen: List[T], remaining: List[T]) -> ShrinkStep[T]
+  return match List.head(remaining) with
+    case Option.None -> ShrinkStep.Yield(value, lambda() return uniqueSteps(original: original, steps: next(), seen: List.append(xs: seen, x: value)) end lambda)
+    case Option.Some(previous) ->
+      if value = previous then
+        ShrinkStep.Skip(lambda() return uniqueSteps(original: original, steps: next(), seen: seen) end lambda)
+      else
+        bind rest <- List.drop(xs: remaining, n: 1)
+        if List.isEmpty(rest) then
+          ShrinkStep.Yield(value, lambda() return uniqueSteps(original: original, steps: next(), seen: List.append(xs: seen, x: value)) end lambda)
+        else
+          ShrinkStep.Skip(lambda() return compareSeen(original: original, value: value, next: next, seen: seen, remaining: rest) end lambda)
+        end if
+      end if
+  end match
 end function
 
 /// Shrinks by Unicode scalar deletions and scalar values, never UTF-8 byte fragments.
 public function shrinkString() -> Shrinker[String]
   return Shrinker(candidates: lambda(value)
-    bind candidates <- Shrinker.candidates(shrinkList(shrinkCharacter()))
-    return List.map(xs: candidates(String.characters(value)), f: charactersToString)
+    return mapSteps(steps: listShrinkSteps(value: String.characters(value), element: characterSteps), f: charactersToString)
   end lambda)
 end function
 
-function shrinkCharacter() -> Shrinker[Character]
-  return Shrinker(candidates: lambda(value)
-    bind candidates <- Shrinker.candidates(shrinkInteger())
-    return scalarCandidates(numbers: candidates(Character.toInteger(value)))
-  end lambda)
+function characterSteps(value: Character) -> ShrinkStep[Character]
+  return scalarSteps(integerSteps(Character.toInteger(value)))
 end function
 
-function scalarCandidates(numbers: List[Integer]) -> List[Character]
-  return List.fold(xs: numbers, initial: [], f: lambda(acc, value)
-    return match Character.fromInteger(value) with
-      case Option.None -> acc
-      case Option.Some(c) -> List.append(xs: acc, x: c)
-    end match
-  end lambda)
+function scalarSteps(numbers: ShrinkStep[Integer]) -> ShrinkStep[Character]
+  return match numbers with
+    case ShrinkStep.Done -> ShrinkStep.Done
+    case ShrinkStep.Skip(next) -> ShrinkStep.Skip(lambda() return scalarSteps(next()) end lambda)
+    case ShrinkStep.Yield(value, next) -> ShrinkStep.Skip(lambda()
+      return match Character.fromInteger(value) with
+        case Option.None -> ShrinkStep.Skip(lambda() return scalarSteps(next()) end lambda)
+        case Option.Some(c) -> ShrinkStep.Yield(c, lambda() return scalarSteps(next()) end lambda)
+      end match
+    end lambda)
+  end match
 end function
 
 /// Deletes keys in key order, then shrinks one value at a time in key order.
 public function shrinkStringMap[T: equality](value: Shrinker[T]) -> Shrinker[Map[String, T]]
-  return mapShrinker(element: value)
+  return mapShrinker(value)
 end function
 
 function mapShrinker[T: equality](element: Shrinker[T]) -> Shrinker[Map[String, T]]
-  return Shrinker(candidates: lambda(value) return mapCandidates(original: value, element: element) end lambda)
+  return Shrinker(candidates: lambda(value)
+    return mapShrinkSteps(original: value, element: Shrinker.candidates(element))
+  end lambda)
 end function
 
-function mapCandidates[T: equality](original: Map[String, T], element: Shrinker[T]) -> List[Map[String, T]]
+function mapShrinkSteps[T: equality](original: Map[String, T], element: function(value: T) -> ShrinkStep[T]) -> ShrinkStep[Map[String, T]]
+  // Map.toListは候補の列ではなく鍵順の入力である。
   bind pairs <- Map.toList(original)
-  bind deleted <- List.map(xs: pairs, f: lambda(value) return Map.remove(m: original, k: Pair.first(value)) end lambda)
-  return unique(original: original, values: replaceMapValues(original: original, element: element, pairs: pairs, i: 0, collected: deleted))
+  return uniqueSteps(original: original, steps: deleteMapSteps(original: original, element: element, pairs: pairs, remaining: pairs), seen: [])
 end function
 
-function replaceMapValues[T](original: Map[String, T], element: Shrinker[T], pairs: List[Pair[String, T]], i: Integer, collected: List[Map[String, T]]) -> List[Map[String, T]]
-  return match List.get(xs: pairs, i: i) with
-    case Option.None -> collected
-    case Option.Some(pair) ->
-      bind candidates <- Shrinker.candidates(element)
-      bind next <- List.fold(xs: candidates(Pair.second(pair)), initial: collected, f: lambda(acc, value)
-        return List.append(xs: acc, x: Map.set(m: original, k: Pair.first(pair), value: value))
-      end lambda)
-      replaceMapValues(original: original, element: element, pairs: pairs, i: i + 1, collected: next)
+function deleteMapSteps[T](original: Map[String, T], element: function(value: T) -> ShrinkStep[T], pairs: List[Pair[String, T]], remaining: List[Pair[String, T]]) -> ShrinkStep[Map[String, T]]
+  return match List.head(remaining) with
+    case Option.None -> ShrinkStep.Skip(lambda() return replaceMapSteps(original: original, element: element, remaining: pairs) end lambda)
+    case Option.Some(pair) -> ShrinkStep.Yield(Map.remove(m: original, k: Pair.first(pair)), lambda()
+      return deleteMapSteps(original: original, element: element, pairs: pairs, remaining: List.drop(xs: remaining, n: 1))
+    end lambda)
+  end match
+end function
+
+function replaceMapSteps[T](original: Map[String, T], element: function(value: T) -> ShrinkStep[T], remaining: List[Pair[String, T]]) -> ShrinkStep[Map[String, T]]
+  return match List.head(remaining) with
+    case Option.None -> ShrinkStep.Done
+    case Option.Some(pair) -> ShrinkStep.Skip(lambda()
+      return appendSteps(left: mapSteps(steps: element(Pair.second(pair)), f: lambda(value)
+        return Map.set(m: original, k: Pair.first(pair), value: value)
+      end lambda), right: lambda() return replaceMapSteps(original: original, element: element, remaining: List.drop(xs: remaining, n: 1)) end lambda)
+    end lambda)
   end match
 end function
 
@@ -336,6 +438,9 @@ public function check[T](config: Config, gen: Gen[T], shrinker: Shrinker[T], pro
   if Config.maxShrinks(config) < 0 or Config.maxShrinks(config) > 100000 then
     return Result.Error(CheckFailure.InvalidConfig("maxShrinks must be in 0..100000"))
   end if
+  if Config.maxShrinkWork(config) < 0 or Config.maxShrinkWork(config) > 1000000 then
+    return Result.Error(CheckFailure.InvalidConfig("maxShrinkWork must be in 0..1000000"))
+  end if
   return trials(config: config, gen: gen, shrinker: shrinker, property: property, generator: Random.fromSeed(Config.seed(config)), trial: 1)
 end function
 
@@ -349,29 +454,44 @@ function trials[T](config: Config, gen: Gen[T], shrinker: Shrinker[T], property:
   return match property(value) with
     case Result.Ok(_) -> trials(config: config, gen: gen, shrinker: shrinker, property: property, generator: Pair.second(pair), trial: trial + 1)
     case Result.Error(message) ->
-      bind failure <- Counterexample(config: config, trial: trial, original: value, reduced: value, originalMessage: message, message: message, shrinks: 0, limitReached: false, libraryVersion: "1.0.0")
+      bind failure <- Counterexample(config: config, trial: trial, original: value, reduced: value, originalMessage: message, message: message, shrinks: 0, shrinkWork: 0, limitReached: false, libraryVersion: "2.0.0")
       Result.Error(CheckFailure.Falsified(reduce(failure: failure, shrinker: shrinker, property: property)))
   end match
 end function
 
 function reduce[T](failure: Counterexample[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String]) -> Counterexample[T]
-  if Counterexample.shrinks(failure) >= Config.maxShrinks(Counterexample.config(failure)) then
-    return Counterexample(..failure, limitReached: true)
-  end if
-  bind candidates <- Shrinker.candidates(shrinker)
-  return tryCandidates(failure: failure, shrinker: shrinker, property: property, remaining: candidates(Counterexample.reduced(failure)))
+  return advance(failure: failure, shrinker: shrinker, property: property, next: lambda()
+    bind candidates <- Shrinker.candidates(shrinker)
+    return candidates(Counterexample.reduced(failure))
+  end lambda)
 end function
 
-function tryCandidates[T](failure: Counterexample[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String], remaining: List[T]) -> Counterexample[T]
-  return match List.head(remaining) with
-    case Option.None -> failure
-    case Option.Some(value) ->
-      if Counterexample.shrinks(failure) >= Config.maxShrinks(Counterexample.config(failure)) then
+function budgetReached[T](failure: Counterexample[T]) -> Boolean
+  bind config <- Counterexample.config(failure)
+  return Counterexample.shrinks(failure) >= Config.maxShrinks(config) or Counterexample.shrinkWork(failure) >= Config.maxShrinkWork(config)
+end function
+
+// 呼ぶ直前に数え、予算を使い切った後にDoneを調べるための呼び出しもしない。
+// 相互の駆動は末尾呼び出しに保つ（設計書 06-04「プロパティベーステスト」）。
+function advance[T](failure: Counterexample[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String], next: function() -> ShrinkStep[T]) -> Counterexample[T]
+  if budgetReached(failure) then
+    return Counterexample(..failure, limitReached: true)
+  end if
+  bind counted <- Counterexample(..failure, shrinkWork: Counterexample.shrinkWork(failure) + 1)
+  return tryCandidates(failure: counted, shrinker: shrinker, property: property, remaining: next())
+end function
+
+function tryCandidates[T](failure: Counterexample[T], shrinker: Shrinker[T], property: function(value: T) -> Result[Unit, String], remaining: ShrinkStep[T]) -> Counterexample[T]
+  return match remaining with
+    case ShrinkStep.Done -> failure
+    case ShrinkStep.Skip(next) -> advance(failure: failure, shrinker: shrinker, property: property, next: next)
+    case ShrinkStep.Yield(value, next) ->
+      if budgetReached(failure) then
         return Counterexample(..failure, limitReached: true)
       end if
-      bind counted <- Counterexample(..failure, shrinks: Counterexample.shrinks(failure) + 1)
+      bind counted <- Counterexample(..failure, shrinks: Counterexample.shrinks(failure) + 1, shrinkWork: Counterexample.shrinkWork(failure) + 1)
       match property(value) with
-        case Result.Ok(_) -> tryCandidates(failure: counted, shrinker: shrinker, property: property, remaining: List.drop(xs: remaining, n: 1))
+        case Result.Ok(_) -> advance(failure: counted, shrinker: shrinker, property: property, next: next)
         case Result.Error(message) -> reduce(failure: Counterexample(..counted, reduced: value, message: message), shrinker: shrinker, property: property)
       end match
   end match
@@ -385,8 +505,8 @@ public function formatFailure[T](failure: CheckFailure[T], show: function(value:
       bind config <- Counterexample.config(example)
       "Property counterexample (library " + Counterexample.libraryVersion(example) + ")\nseed=" + Integer.toString(Config.seed(config))
         + " trials=" + Integer.toString(Config.trials(config)) + " size=" + Integer.toString(Config.size(config))
-        + " maxShrinks=" + Integer.toString(Config.maxShrinks(config)) + " trial=" + Integer.toString(Counterexample.trial(example))
-        + " shrinks=" + Integer.toString(Counterexample.shrinks(example)) + " limitReached=" + (if Counterexample.limitReached(example) then "true" else "false" end if)
+        + " maxShrinks=" + Integer.toString(Config.maxShrinks(config)) + " maxShrinkWork=" + Integer.toString(Config.maxShrinkWork(config)) + " trial=" + Integer.toString(Counterexample.trial(example))
+        + " shrinks=" + Integer.toString(Counterexample.shrinks(example)) + " shrinkWork=" + Integer.toString(Counterexample.shrinkWork(example)) + " limitReached=" + (if Counterexample.limitReached(example) then "true" else "false" end if)
         + "\noriginal: " + show(Counterexample.original(example)) + "\noriginal message: " + Counterexample.originalMessage(example)
         + "\nreduced: " + show(Counterexample.reduced(example)) + "\nmessage: " + Counterexample.message(example)
   end match

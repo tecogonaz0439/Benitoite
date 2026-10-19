@@ -1,0 +1,11 @@
+--- ImplDecl.WellTyped (B_WORK)
++++ ImplDecl.WellTyped (L4a)
+@@ -5,7 +5,7 @@
+     (∀ s, (id.supers s).isSome = decide (s ∈ cd.supers)) ∧
+     (∀ m ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧
+       (body.Exits ∨ id.methTy ms ms.ret = .base .unit) ∧
+-      HasBlockQ (D.withView (views m)) B opPrim (Qsig ms.params ms.ret ms.eff) (ms.tparams ++ id.tparams)
++      HasBlockQ (D.withView (views m)) B opPrim (Qsig ms.params ms.ret ms.eff) [] (ms.tparams ++ id.tparams)
+         (binds (id.dictTys.map (Ty.shift ms.tparams.length 0) ++ ms.params.map (id.methTy ms)))
+         (some (id.methTy ms ms.ret)) .tail body (id.methTy ms ms.ret) (Eff.substAt ms.tparams.length [id.target] [] ms.eff)) ∧
+     (∀ s ∈ cd.supers, ∃ u, id.supers s = some u ∧

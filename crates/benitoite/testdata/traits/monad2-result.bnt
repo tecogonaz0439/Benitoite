@@ -1,0 +1,97 @@
+// spec: 01-06 標準の型クラス（初回リリース版）
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function six(value: Integer) -> Integer
+  return value * 6
+end function
+
+function keep(value: Integer) -> Result[Integer, String]
+  return Result.Ok(value)
+end function
+
+function reject(value: Integer) -> Result[Integer, String]
+  return Result.Error("callback")
+end function
+
+function generic[F[_, _]: Trait.Monad2, X](x: F[Integer, X]) -> F[Integer, X]
+  bind map <- Trait.Functor2.map
+  return map(f: six, x: x)
+end function
+
+function chained[F[_, _]: Trait.Monad2, X](x: F[Integer, X], f: function(value: Integer) -> F[Integer, X]) -> F[Integer, X]
+  bind flatMap <- Trait.Monad2.flatMap
+  return flatMap(f: f, x: x)
+end function
+
+function wrap[F[_, _]: Trait.Monad2, X](x: Integer) -> F[Integer, X]
+  bind pure <- Trait.Applicative2.pure
+  return pure(x)
+end function
+
+function display(x: Result[Integer, String]) -> Unit uses Console.Write
+  Console.writeLine(match x with
+    case Result.Ok(value) -> "Ok:${value}"
+    case Result.Error(error) -> "Error:" + error
+  end match)
+end function
+
+function observed(value: Integer) -> Integer uses Console.Write
+  Console.writeLine("callback")
+  return value * 6
+end function
+
+function functions(ok: Boolean) -> Result[(function(value: Integer) -> Integer uses Console.Write), String] uses Console.Write
+  Console.writeLine("fs")
+  return if ok then Result.Ok(observed) else Result.Error("function") end if
+end function
+
+function argument(ok: Boolean) -> Result[Integer, String] uses Console.Write
+  Console.writeLine("x")
+  return if ok then Result.Ok(7) else Result.Error("input") end if
+end function
+
+function demand(condition: Boolean) -> Result[Unit, String]
+  return if condition then Result.Ok(()) else Result.Error("pure law") end if
+end function
+
+function laws(x: Result[Integer, String]) -> Result[Unit, String]
+  bind pure: Result[Integer, String] <- Trait.Applicative2.pure(7)
+  bind _ <- try demand(Trait.Monad2.flatMap(x: pure, f: keep) = keep(7)) or return
+  bind _ <- try demand(Trait.Monad2.flatMap(x: x, f: keep) = x) or return
+  bind _ <- try demand(Trait.Monad2.flatMap(x: Trait.Monad2.flatMap(x: x, f: keep), f: reject) = Trait.Monad2.flatMap(x: x, f: lambda(value) return Trait.Monad2.flatMap(x: keep(value), f: reject))) or return
+  bind _ <- try demand(Trait.Functor2.map(x: x, f: lambda(value) return value) = x) or return
+  bind _ <- try demand(Trait.Functor2.map(x: Trait.Functor2.map(x: x, f: six), f: six) = Trait.Functor2.map(x: x, f: lambda(value) return six(six(value)))) or return
+  bind _ <- try demand(Trait.Functor2.map(x: x, f: six) = Trait.Monad2.flatMap(x: x, f: lambda(value) return Result.Ok(six(value)))) or return
+  bind fs: Result[(function(value: Integer) -> Integer), String] <- Result.Ok(six)
+  bind _ <- try demand(Trait.Applicative2.apply(fs: fs, x: x) = Trait.Monad2.flatMap(x: fs, f: lambda(value) return Trait.Functor2.map(x: x, f: value))) or return
+  return Result.Ok(())
+end function
+
+function main() -> Result[Unit, String] uses Console.Write
+  display(generic(Result.Ok(7)))
+  display(generic(Result.Error("input")))
+  display(chained(x: Result.Ok(7), f: keep))
+  display(chained(x: Result.Ok(7), f: reject))
+  display(chained(x: Result.Error("input"), f: keep))
+  bind pure: Result[Integer, String] <- wrap(7)
+  display(pure)
+  display(Trait.Applicative2.apply(fs: functions(true), x: argument(true)))
+  display(Trait.Applicative2.apply(fs: functions(true), x: argument(false)))
+  display(Trait.Applicative2.apply(fs: functions(false), x: argument(true)))
+  display(Trait.Applicative2.apply(x: argument(false), fs: functions(false)))
+  display(Trait.Applicative2.apply(x: argument(true), fs: functions(true)))
+  display(Trait.Functor2.map(f: observed, x: Result.Error("input")))
+  display(Trait.Functor2.map(x: Result.Ok(7), f: observed))
+  display(Trait.Monad2.flatMap(x: Result.Error("input"), f: lambda(value)
+    Console.writeLine("unexpected callback")
+    return Result.Ok(value)
+  end lambda))
+  display(Trait.Monad2.flatMap(x: Result.Ok(7), f: lambda(value)
+    Console.writeLine("flat callback")
+    return Result.Ok(value)
+  end lambda))
+  bind _ <- try laws(Result.Ok(7)) or return
+  bind _ <- try laws(Result.Error("input")) or return
+  return Result.Ok(())
+end function

@@ -1,6 +1,8 @@
 //! 組み込みの関数（設計書 02-08「組み込みの関数の呼び出し」、02-09「組み込みの操作とハンドラ表」、03-01）。
 //! iface.rs: 型付きの形、table.rs: 組み込みの表、funcs: 組み込みの関数の本体。
 
+pub(crate) mod checked_regex;
+pub(crate) mod checked_scope;
 pub mod funcs;
 pub mod iface;
 pub mod table;

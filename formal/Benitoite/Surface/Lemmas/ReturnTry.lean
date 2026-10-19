@@ -220,20 +220,21 @@ theorem desugar_tryOptionDie (pos : Position) (t : Ty) (cs cn : ConName)
 
 /-- Result の die は囲む R を要求せず、辞書の表示・説明・終了を型付けする。 -/
 theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
-    (hwf : p.WellFormed) {view C Γ R pos ok err cdo cde e t et ε dict showMethod exit message}
+    (hwf : p.WellFormed) {view C Γ Γc R pos ok err cdo cde e t et ε dict showMethod exit message}
     (hco : p.cons ok = some cdo) (hce : p.cons err = some cde)
     (hno : cdo.ntys = 2) (hne : cde.ntys = 2)
     (hao : cdo.args = [.tvar 0]) (hae : cde.args = [.tvar 1]) (hdata : cdo.data = cde.data)
-    (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
+    (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
       (desugarExpr op .other e) (.data cdo.data [t, et]) ε)
     (hc : TyOK C.length (.data cdo.data [t, et]))
     (hex : Exhaustive p.declarations.patternProgram (.data cdo.data [t, et])
       [.con ok [.var], .con err [.var]])
+    (hΓc : RenOk Γ Γc id)
     (hd : DieShowOk (p.declarationsFor view) B C Γ dict showMethod et)
     (hx : DieExitOk B C exit t)
-    (hm : ∀ m, message = some m → HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none
+    (hm : ∀ m, message = some m → HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γc) none
       (desugarExpr op .other m) (.base .string) Eff.empty) :
-    HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
+    HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
       (desugarExpr op pos (.tryResultDie t ok err dict showMethod exit e message))
       t (Eff.union ε (Eff.single "Process.Exit")) := by
   have ht := hc.1
@@ -251,17 +252,19 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
     simpa [hae, Ty.subst, Ty.substAt, Eff.substAt, hetzero] using
       (PatTys.cons (P := desugarProgram op p) (PatTy.P_Var (a := et)) PatTys.nil)
   obtain ⟨cl, cd, ms, hd, hcl, hms, htp, hneff, hn, hp, hr, hε⟩ := hd
-  have hv := (DictEv.HasType.toVal (Q := Q) op hd).rename
-    (RenOk.shift [some et, some (.data cdo.data [t, et])] Γ)
+  have hdict := (DictEv.HasType.toVal (Q := Q) op hd).rename hΓc
+  simp only [Val.rename_id] at hdict
+  have hv := hdict.rename
+    (RenOk.shift [some et, some (.data cdo.data [t, et])] Γc)
   have hshow : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C
-      (some et :: some (.data cdo.data [t, et]) :: Γ) R
+      (some et :: some (.data cdo.data [t, et]) :: Γc) R
       (.meth (dict.toVal.rename (· + 2)) showMethod [] [] [.var 0]) (.base .string) Eff.empty := by
     have hargs : HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C
-        (some et :: some (.data cdo.data [t, et]) :: Γ) [.var 0]
+        (some et :: some (.data cdo.data [t, et]) :: Γc) [.var 0]
         (ms.params.map (Ty.subst ([] ++ [et]) [])) := by
       simpa [hp, Ty.subst, Ty.substAt, Eff.substAt, hetzero] using
         (HasTypeVsQ.cons (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C)
-          (Γ := some et :: some (.data cdo.data [t, et]) :: Γ)
+          (Γ := some et :: some (.data cdo.data [t, et]) :: Γc)
           (.V_Var rfl (clean_notCont het)) HasTypeVsQ.nil)
     simpa [hr, hε, Ty.subst, Ty.substAt, Eff.substAt_empty] using
       (HasTypeCQ.C_Meth (R := R) hv (classDecl_desugared hcl) hms
@@ -278,7 +281,7 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
       (HasTypeCQ.weakenEff (HasTypeCQ.C_Return (.V_Var rfl (clean_notCont ht))) (Eff.empty_sub _))
       (HasTypeArmsQ.mkArm_cons hperr ?_ (.nil hw))
     have hmsg : ∀ m, (message.map (desugarExpr op .other)) = some m →
-        HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none m (.base .string) Eff.empty := by
+        HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γc) none m (.base .string) Eff.empty := by
       intro m h
       obtain ⟨msg, hmsg, rfl⟩ := Option.map_eq_some_iff.mp h
       exact hm msg hmsg

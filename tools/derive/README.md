@@ -5,9 +5,9 @@ uses the real declaration inventory and formatter, and shares byte-range edits,
 diffs, input validation, and replay receipts with
 [source-migrate](../source-migrate/README.md).
 
-**Current availability:** region management, JSON record conversion, and Property
-generator/shrinker templates are implemented. JSON and Property may be requested
-independently or together in the same managed region.
+**Current availability:** region management, JSON record conversion, Property
+generator/shrinker templates, and ordinary Show/Order implementations are implemented.
+Each feature may be requested independently or together in the same managed region.
 There is no `generationInfo` function, `--force`, or `detach` command.
 
 Build the readers when their Rust inputs change:
@@ -31,10 +31,33 @@ functions; the [runnable example](examples/People.bnt) and its
 There is no new public `benitoite` subcommand. A relative `--config` is relative
 to the current working directory, and `source` paths are relative to `--root`.
 
+## 0.0.9 version transition
+
+The combined migration is described in the [0.0.9 release notes](../../CHANGELOG.md#009-san-benito).
+These versions identify different contracts:
+
+| Contract | Current version |
+|---|---|
+| Interpreter | `0.0.9` |
+| Derive configuration | `1` |
+| Declaration inventory | `2` |
+| Manifest / persistent generation record / semantic hash | `2` |
+| GENERATOR_VERSION | `2.0.0-syntax-batch3` |
+| Property.libraryVersion | `2.0.0` |
+| Property template revision | `2` |
+| Show / Order template revisions | `1` / `1` |
+
+Finish pending old apply/recovery with the saved old tool, then rebuild both
+binaries and make one fresh preview for the combined transition. Review its
+source diff and new record before applying that exact manifest's SHA-256. The
+[record migration protocol](#markers-records-and-review-artifacts) authenticates
+old bodies and refuses old manifests; normal check/test and derive check are
+both required. The checked-in example already uses the versions above.
+
 ## Configuration and declaration input
 
 [config.example.json](config.example.json) illustrates the version 1 settings
-including both JSON and Property. Use
+including JSON, Property, Show and Order. Use
 [examples/derive.json](examples/derive.json) for an executable combined configuration.
 The schema and resolved inventory are defined in the
 [inventory contract](../../crates/benitoite/examples/derive_inventory/README.md).
@@ -42,7 +65,7 @@ The Rust reader rejects duplicate and unknown keys, invalid target declarations,
 unknown fields, incomplete custom function pairs, and duplicate JSON keys. Python
 does not parse type syntax or implement another type resolver. It follows resolved
 record edges through the type tree to detect cycles and hash transitive records.
-Both templates check supported types, dependency targets, visibility,
+Templates check supported types, dependency targets, visibility,
 and custom signature compatibility before producing review artifacts.
 
 The inventory reads declarations without resolving or checking bodies. Its
@@ -99,7 +122,8 @@ benitoite check tools/derive/examples/People.bnt
 benitoite test tools/derive/examples/People.bnt
 ```
 
-The generated source and persistent record are checked in. To regenerate, use
+The generated source and version 2 persistent record are checked in. They use
+Property library 2.0.0; the first command verifies both record and source. To regenerate, use
 the preview/review/apply commands above with the example's root and config.
 
 ## Property generation contracts
@@ -114,8 +138,10 @@ A referenced record needs a Property target, and must be public across modules.
 
 Each field receives the same size, in declaration order, and the random state
 returned by the preceding field. Container sizes bound each container, not the
-total nested value. Shrinking concatenates candidates in declaration order,
-changing exactly one field at a time. The built-in scalar and container rules
+total nested value. Shrinking maps and appends ShrinkStep sequences in declaration
+order, changing exactly one field at a time. Each field shrinker factory and its
+candidates callback are deferred until that field is reached; a low work budget
+does not evaluate later fields. The built-in scalar and container rules
 are those of [Property](../../crates/benitoite/src/prelude/stdlib/Test/Property.bnt).
 Field relationships are not inferred: use a handwritten generator and shrinker
 for the entire record when relationships must be preserved.
@@ -140,6 +166,47 @@ no identification function is generated. The library failure retains original
 and reduced inputs and messages, but a lossy show function cannot reconstruct
 the input. Preserve a concrete counterexample as a fixed test for long-term use.
 
+## Show and Order generation contracts
+
+Set `"show": true` and/or `"order": true` on a target. Omitted or false flags
+generate nothing for that class; values other than booleans are rejected.
+Neither JSON nor Property is required for a Show/Order-only target.
+The tool imports `Benitoite.Trait` when needed, reusing an existing alias by
+resolved module identity. It emits ordinary `implement Trait.Show[Record]`
+and `implement Trait.Order[Record]` declarations in the record's owner module,
+then passes their source through the normal formatter.
+
+Show uses the local type name, field names and declaration order. For example,
+`Person(name: "Ada", age: 7)` is displayed with the String field's quotes and
+escapes supplied by its own Show dictionary. The display is not a serialization
+format. Order compares fields in declaration order and returns the first
+non-Equal result, evaluating later fields only after Equal. All equal fields
+produce Equal. This does not imply builtin equality or a `key` constraint.
+
+Targets must be noncyclic records without type parameters. Empty record
+declarations are rejected by the language parser with E0201; the tool does not
+relax that rule. A field may use a handwritten dictionary for a data type or
+a polymorphic container. The tool follows the resolved implementation heads
+and their class constraints; missing dictionaries return
+`derive.missing_implementation`. The normal check after apply remains required
+for bodies and builtin constraints. Generated dependencies must explicitly
+request the corresponding class: Show does not imply Order or request Show
+for another record. Dependencies are generated before their dependents.
+
+Handwritten implementations, implementations in another region, and polymorphic
+implementations with the same resolved class/type head block generation with
+`derive.overlapping_implementation` and the previous location. Input declarations
+already containing duplicates retain the compiler's E0702 diagnostic. Only an
+implementation for the same target and class in its authenticated previous
+generated region may be replaced. Handwritten bytes outside the region are kept.
+
+Private, package-public and public records use the same generation scheme;
+`implement` does not acquire a public modifier. An opaque record may explicitly
+request Show/Order in its owner module. Review the `traitTarget` row in
+`generated.json`, including its `opaque` flag, to approve revealing its fields.
+Combining that request with automatic JSON or Property construction rejects
+the entire request with `derive.opaque_target`.
+
 ## Markers, records, and review artifacts
 
 Each region uses exact complete comment lines:
@@ -163,7 +230,8 @@ markers are rejected. An existing region without its generation record is treate
 as handwritten code. A changed body is rejected rather than overwritten.
 
 The persistent record is `<config-stem>.generated.json` beside the config. It
-contains `version: 1`, `generatorVersion`, and ordered `targets`. Each target
+contains `version: 2`, `inventoryVersion: 2`, `hashVersion: 2`,
+`generatorVersion: "2.0.0-syntax-batch3"`, and ordered `targets`. Each target
 contains `source`, `region`, the resolved `type`, and these SHA-256 hashes:
 
 | Key | Input |
@@ -178,17 +246,57 @@ Positions, annotation spelling, and source metadata are excluded from structural
 hashes. Comments and whitespace in declarations therefore do not require
 regeneration. Raw input hashes for a reviewed apply still include those bytes.
 Changing the management rules or templates requires a `GENERATOR_VERSION` bump.
-Some resolved type text in the inventory currently comes from the interpreter's
-internal debug rendering. An interpreter build that changes that rendering can
-therefore make `check` report a mismatch without any declaration change. Run
-preview, confirm that the diff and record change only as expected, and apply.
+Semantic hashes explicitly select typed structure, canonical identities, normalized
+visibility and opaque/access boundaries, field order, selected custom signatures,
+and normalized configuration. Metadata, source positions, display text, package
+display names, and unrelated functions are excluded. Canonical JSON uses UTF-8,
+sorted object keys, no whitespace, ensure_ascii=false, and no non-finite numbers.
+Target rows also record `inventoryVersion`, `hashVersion`, `fieldOrder`, selected
+`templates` and their revisions, `propertyLibraryVersion` (currently `2.0.0`),
+and `implementationDependencies` (empty for JSON/Property-only targets).
+Show/Order dependencies record resolved classes, target trees, declaring modules,
+parameter kinds/bounds, class constraints and method signatures, or the selected
+generated target/region and template revision. Source positions and display
+metadata are excluded. `traitTarget` records the explicit class selections and
+opaque status for review. Each Show/Order template starts at revision `1` within
+the combined version `2.0.0-syntax-batch3` transition. The Property template
+uses revision `2` for the ShrinkStep API.
+
+Version 1 records require migration: `check` returns `derive.migration_required`
+without writing. Finish any pending old apply/recovery with the saved old tool
+and its manifest/receipt first. New `preview` includes the previous record in `manifest.migration` and marks its
+semantic hashes incomparable, so old input/record hashes remain visible for
+review rather than silently gaining a new approval. It authenticates the existing region
+against the old `outputSha256` before proposing replacements; mismatching bytes
+return `derive.modified_region`. Old semantic hashes are never recalculated as
+new approvals. Review the source diff **and** the version 2 record, then apply
+the new manifest by its exact reviewed SHA-256. A record-only migration may
+have an empty source diff. New apply refuses old manifests with
+`derive.incompatible_manifest`; receipts remain bound to the exact manifest
+hash, so an old receipt cannot authorize a new plan. Reapply and recovery after
+a final record-write failure retain the same protocol.
+
+The checked-in People/Address example has completed this combined migration.
+Person requests Show, while Address requests Show and Order; Person.scores
+contains a Map without an Order dictionary, so Person does not request Order.
+Old List-returning shrinkers must be rewritten as deferred ShrinkStep sequences;
+there is no default adapter that first constructs the complete list. Config now
+requires maxShrinkWork and Counterexample includes shrinkWork after shrinks.
+Seed alone does not reproduce a counterexample across these rule changes; retain
+Property.libraryVersion, GENERATOR_VERSION, config, handwritten sources and
+the concrete input.
+
+Opaque target types require handwritten checked construction. JSON decoding
+and Property generator/shrinker generation are refused for opaque records/data,
+even in the owner module. Normal records containing opaque fields require
+explicit custom encode/decode or gen/shrink functions for those whole fields.
 
 `preview` writes three review artifacts to a fresh output location; apply adds
 the receipt:
 
 | Artifact | Content |
 | --- | --- |
-| `manifest.json` | Version 1 plan: generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
+| `manifest.json` | Version 2 plan (inventory/hash version 2): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
 | `changes.diff` | Unified source diff from source-migrate; empty for a record-only change. |
 | `generated.json` | Proposed new generation record for review. |
 | `manifest.json.receipt.json` | After apply: reviewed manifest hash and post-apply hashes for all filesystem inputs. |

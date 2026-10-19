@@ -9,7 +9,11 @@ use crate::resolve::ResolveOutput;
 use crate::syntax::ast::BinOp;
 use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId as B};
 use crate::types::*;
-use std::collections::{BTreeMap, BTreeSet};
+use std::cell::RefCell;
+use std::collections::{BTreeMap, BTreeSet, HashSet};
+
+mod effect_key;
+use effect_key::EffectConstraintKey;
 
 // 子を左から順に展開し、親の型は子をすべて作ってから組み立てる。
 // 作業の枠はヒープに置き、型の深さに比例する Rust の再帰を使わない（02-03）。
@@ -55,6 +59,8 @@ struct EffectState {
     failures: Vec<ITy>,
     origins: BTreeMap<Elem, Span>,
 }
+type SuperPaths =
+    BTreeMap<(crate::base::BindingId, crate::base::BindingId), Option<Vec<crate::base::BindingId>>>;
 type Escape = (NodeId, u32);
 type LateFailure = (DiagCode, ITy, ITy, Reason, Option<Escape>);
 type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
@@ -74,6 +80,9 @@ pub(super) struct Solver {
     no_fail: Vec<(IEffect, Span)>,
     failure_reported: std::collections::HashSet<(Span, DiagCode)>,
     effects: Vec<EffectConstraint>,
+    effect_index: HashSet<EffectConstraintKey>,
+    // 宣言集合が固定した本体の検査の間だけ使う。推論結果は記憶しない。
+    pub(super) superclass_paths: RefCell<SuperPaths>,
     required: Vec<(ITy, Reason)>,
     // 宣言の型への流れ込む制約（`return` など）が先に結び付けた型変数と、その理由。
     // 呼び出しの戻り値の食い違い、パターンの失敗の移し替え、宣言どうしの食い違いの判定に使う
@@ -474,27 +483,42 @@ impl Solver {
         out
     }
     fn finalize_failure_type(&self, t: &ITy) -> Ty {
-        match self.zonk(t) {
+        self.finalize_failure_type_normalized(&self.zonk(t))
+    }
+    // 子は入口の zonk で正規化済みなので、部分木を改めて展開しない。
+    // 潜在効果は zonk が未正規化のまま保持するため、finalize_effect の各 Fail の入口で
+    // 正規化する（設計書 02-05「制約の解決」）。
+    #[inline(never)]
+    fn finalize_failure_type_normalized(&self, t: &ITy) -> Ty {
+        match t {
             ITy::Var(_) | ITy::Error => super::decls::unit(),
             ITy::Con(c, ts) => Ty::Con(
-                c,
-                ts.iter().map(|t| self.finalize_failure_type(t)).collect(),
+                *c,
+                ts.iter()
+                    .map(|t| self.finalize_failure_type_normalized(t))
+                    .collect(),
             ),
             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
                 param_names: self.contract_names(&f.contract).unwrap_or_default(),
                 params: f
                     .params
                     .iter()
-                    .map(|t| self.finalize_failure_type(t))
+                    .map(|t| self.finalize_failure_type_normalized(t))
                     .collect(),
-                ret: self.finalize_failure_type(&f.ret),
+                ret: self.finalize_failure_type_normalized(&f.ret),
                 effects: self.finalize_effect(&f.effect),
             })),
-            ITy::Param(i) => Ty::Param(i),
-            ITy::Rigid { clause, index } => Ty::Rigid { clause, index },
+            ITy::Param(i) => Ty::Param(*i),
+            ITy::Rigid { clause, index } => Ty::Rigid {
+                clause: *clause,
+                index: *index,
+            },
             ITy::App(h, ts) => {
-                let ts = ts.iter().map(|t| self.finalize_failure_type(t)).collect();
-                match self.head(h) {
+                let ts = ts
+                    .iter()
+                    .map(|t| self.finalize_failure_type_normalized(t))
+                    .collect();
+                match self.head(*h) {
                     Some(TyHead::Con(c)) => Ty::Con(c, ts),
                     Some(TyHead::Param(i)) => Ty::App(i, ts),
                     None => super::decls::unit(),
@@ -719,9 +743,17 @@ impl Solver {
                 reason.clone(),
                 Some((found.clone(), expected.clone())),
             );
-            if !self.effects.contains(&constraint) {
-                self.effects.push(constraint);
-            }
+            self.register_effect(constraint, true);
+        }
+    }
+    // 通常の包含制約は重複も登録順に保持する。関数型の不変な一致だけが
+    // 既存の全登録制約との重複を省く（設計書 02-05「制約の解決」）。
+    fn register_effect(&mut self, constraint: EffectConstraint, unique: bool) {
+        let inserted = self
+            .effect_index
+            .insert(EffectConstraintKey::new(&constraint));
+        if !unique || inserted {
+            self.effects.push(constraint);
         }
     }
     fn flow(&mut self, a: &ITy, b: &ITy, r: &Reason) -> Result<bool, DiagCode> {
@@ -748,7 +780,7 @@ impl Solver {
                 } else {
                     (e, x.effect.clone())
                 };
-                self.effects.push((sub, sup, r.clone(), Some((a, b))));
+                self.register_effect((sub, sup, r.clone(), Some((a, b))), false);
                 Ok(true)
             }
             (ITy::Fn(x), ITy::Fn(y)) => {
@@ -760,8 +792,10 @@ impl Solver {
                     self.equal(a, b, r)?;
                 }
                 self.equal(&x.ret, &y.ret, r)?;
-                self.effects
-                    .push((x.effect.clone(), y.effect.clone(), r.clone(), Some((a, b))));
+                self.register_effect(
+                    (x.effect.clone(), y.effect.clone(), r.clone(), Some((a, b))),
+                    false,
+                );
                 Ok(true)
             }
             _ => {
@@ -1209,7 +1243,7 @@ impl Solver {
         for c in constraints {
             match c {
                 Constraint::EffSub { sub, sup, reason } => {
-                    self.effects.push((sub, sup, reason, None))
+                    self.register_effect((sub, sup, reason, None), false)
                 }
                 Constraint::Equal {
                     ref found,
@@ -1291,7 +1325,7 @@ impl Solver {
             for c in std::mem::take(&mut ctx.constraints) {
                 match c {
                     Constraint::EffSub { sub, sup, reason } => {
-                        self.effects.push((sub, sup, reason, None));
+                        self.register_effect((sub, sup, reason, None), false);
                     }
                     Constraint::Equal { .. } | Constraint::Flow { .. } => {
                         self.solve_pair(ctx, c, &mut deferred);
@@ -1795,15 +1829,15 @@ impl Solver {
             .effects
             .iter()
             .any(|(sub, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
+        let mut pending: Vec<_> = (0..self.effects.len()).collect();
         loop {
             let mut changed = false;
             // 型を先に結び、Fail 以外の残りだけを行へ伝える。節の出力の Fail を
             // 本体の上限に混ぜない（設計書 02-05「制約の解決」）。
-            for (sub, sup, r, pair) in if has_failures {
-                self.effects.clone()
-            } else {
-                vec![]
-            } {
+            for index in pending.iter().copied().filter(|_| has_failures) {
+                let Some((sub, sup, r, pair)) = self.effects.get(index).cloned() else {
+                    continue;
+                };
                 if pair
                     .as_ref()
                     .is_some_and(|(a, b)| self.contains_error(a) || self.contains_error(b))
@@ -1920,6 +1954,11 @@ impl Solver {
             if !changed {
                 break;
             }
+            // equal は型・契約名・行を同時に結ぶ。依存を取りこぼして診断を
+            // 早く確定しないよう、次の巡も全番号を登録順に一度ずつ処理する。
+            // 巡の途中で加わった制約はここから Fail の処理へ参加する。
+            pending.clear();
+            pending.extend(0..self.effects.len());
         }
     }
     fn solve_effects(&mut self, ctx: &mut Body<'_, '_>) {
@@ -1938,6 +1977,7 @@ impl Solver {
             }
         }
         let mut reported = BTreeSet::new();
+        self.effect_index.clear();
         let items = std::mem::take(&mut self.effects);
         for (sub, sup, r, pair) in items {
             if pair

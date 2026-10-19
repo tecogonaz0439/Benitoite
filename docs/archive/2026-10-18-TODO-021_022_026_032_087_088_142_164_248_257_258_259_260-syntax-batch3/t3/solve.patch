@@ -1,0 +1,664 @@
+diff --git a/crates/benitoite/src/typeck/body_map.rs b/crates/benitoite/src/typeck/body_map.rs
+new file mode 100644
+index 00000000..fc2e0300
+--- /dev/null
++++ b/crates/benitoite/src/typeck/body_map.rs
+@@ -0,0 +1,44 @@
++//! 本体・宣言の局所番号だけを保持する表（設計書 02-05「検査の単位と手順」）。
++
++use crate::base::{BindingId, NodeId};
++use std::collections::BTreeMap;
++
++// 番号はプログラム全体で振られる。本体ごとの空き領域を確保せず、
++// 診断と出力の走査順は密な表と同じ番号の昇順にする。
++macro_rules! body_map {
++    ($name:ident, $id:ty) => {
++        /// 全体番号を保ったまま、本体・宣言内に存在する要素だけを持つ表。
++        #[derive(Clone)]
++        pub(super) struct $name<T> {
++            entries: BTreeMap<$id, T>,
++        }
++
++        impl<T> Default for $name<T> {
++            fn default() -> Self {
++                Self {
++                    entries: BTreeMap::new(),
++                }
++            }
++        }
++
++        impl<T> $name<T> {
++            /// 未登録の番号は `None` とする。
++            pub(super) fn get(&self, id: $id) -> Option<&T> {
++                self.entries.get(&id)
++            }
++
++            /// 同じ番号を更新した場合は前の値を返す。
++            pub(super) fn insert(&mut self, id: $id, value: T) -> Option<T> {
++                self.entries.insert(id, value)
++            }
++
++            /// 登録された要素を番号の昇順で辿る。
++            pub(super) fn iter(&self) -> impl Iterator<Item = ($id, &T)> {
++                self.entries.iter().map(|(id, value)| (*id, value))
++            }
++        }
++    };
++}
++
++body_map!(BodyNodeMap, NodeId);
++body_map!(BodyBindingMap, BindingId);
+diff --git a/crates/benitoite/src/typeck/context.rs b/crates/benitoite/src/typeck/context.rs
+index 187b0a87..ef5bf334 100644
+--- a/crates/benitoite/src/typeck/context.rs
++++ b/crates/benitoite/src/typeck/context.rs
+@@ -1,9 +1,10 @@
+ //! 本体ごとに作って捨てる推論の文脈（設計書 02-05「検査の単位と手順」）。
++use super::body_map::{BodyBindingMap, BodyNodeMap};
+ use super::decls::{Decls, Scope};
+ use super::infer::*;
+ use super::solve::Solver;
+ use super::{HandleInfo, TryKind};
+-use crate::base::{BindingId, BindingMap, ModuleId, NodeId, NodeMap, Span};
++use crate::base::{BindingId, ModuleId, NodeId, Span};
+ use crate::diag::Diagnostic;
+ use crate::syntax::ast::{Block, Expr, Pattern};
+ use crate::types::*;
+@@ -57,22 +58,22 @@ pub(super) struct Body<'a, 'd> {
+     pub scheme: Scheme,
+     pub solver: Solver,
+     pub constraints: Vec<Constraint>,
+-    pub locals: BindingMap<ITy>,
+-    pub expr_types: NodeMap<ITy>,
+-    pub source_effects: NodeMap<IEffect>,
++    pub locals: BodyBindingMap<ITy>,
++    pub expr_types: BodyNodeMap<ITy>,
++    pub source_effects: BodyNodeMap<IEffect>,
+     pub expr_spans: HashMap<NodeId, Span>,
+-    pub call_plans: NodeMap<super::CallPlan>,
++    pub call_plans: BodyNodeMap<super::CallPlan>,
+     pub named_calls: Vec<super::calls::PendingCall>,
+     /// 位置呼び出しでも、未知の契約を出力前に拒否するための呼ぶ値と位置。
+     pub call_contracts: Vec<(ITy, Span, Span)>,
+-    pub type_args: NodeMap<(Vec<IArg>, Vec<IEffect>)>,
+-    pub operand_types: NodeMap<ITy>,
+-    pub interp_types: NodeMap<ITy>,
+-    pub lambda_effects: NodeMap<IEffect>,
+-    pub try_kinds: NodeMap<(TryKind, TryConstraintAction)>,
+-    pub die_shows: NodeMap<DictExpr>,
++    pub type_args: BodyNodeMap<(Vec<IArg>, Vec<IEffect>)>,
++    pub operand_types: BodyNodeMap<ITy>,
++    pub interp_types: BodyNodeMap<ITy>,
++    pub lambda_effects: BodyNodeMap<IEffect>,
++    pub try_kinds: BodyNodeMap<(TryKind, TryConstraintAction)>,
++    pub die_shows: BodyNodeMap<DictExpr>,
+     pub die_message_boundary: bool,
+-    pub handlers: NodeMap<HandleInfo>,
++    pub handlers: BodyNodeMap<HandleInfo>,
+     pub failure_handles: Vec<(NodeId, ITy, Span)>,
+     pub clauses: Vec<ClauseContext>,
+     /// プレースホルダの展開が継続を隠している間の E0509 の補助。
+@@ -80,12 +81,12 @@ pub(super) struct Body<'a, 'd> {
+     /// 現在の `return` が抜ける境界。診断で戻り値の持ち主を示す。
+     pub return_owner: ReturnOwner,
+     /// 制約を解く時点で、各 `try` の戻り先の境界を引く。
+-    pub try_owners: NodeMap<ReturnOwner>,
++    pub try_owners: BodyNodeMap<ReturnOwner>,
+     /// 節を辿り終えた後の制約の解決でも、操作が宣言した組み込みの制約を引く
+     /// （設計書 02-05「型とエフェクトの表現」）。
+-    pub clause_params: NodeMap<Vec<TypeParamInfo>>,
++    pub clause_params: BodyNodeMap<Vec<TypeParamInfo>>,
+     /// 操作の書いた名前と節の位置。剛な型の脱出の診断で出どころを示す。
+-    pub clause_ops: NodeMap<(String, Span)>,
++    pub clause_ops: BodyNodeMap<(String, Span)>,
+     pub matches: Vec<(MatchInfo, ITy)>,
+     pub lambda_returns: Vec<(Block, ITy)>,
+     pub bindings: Vec<(Pattern, ITy)>,
+@@ -116,28 +117,28 @@ impl<'a, 'd> Body<'a, 'd> {
+             scheme,
+             solver,
+             constraints: vec![],
+-            locals: BindingMap::default(),
+-            expr_types: NodeMap::default(),
+-            source_effects: NodeMap::default(),
++            locals: BodyBindingMap::default(),
++            expr_types: BodyNodeMap::default(),
++            source_effects: BodyNodeMap::default(),
+             expr_spans: HashMap::new(),
+-            call_plans: NodeMap::default(),
++            call_plans: BodyNodeMap::default(),
+             named_calls: vec![],
+             call_contracts: vec![],
+-            type_args: NodeMap::default(),
+-            operand_types: NodeMap::default(),
+-            interp_types: NodeMap::default(),
+-            lambda_effects: NodeMap::default(),
+-            try_kinds: NodeMap::default(),
+-            die_shows: NodeMap::default(),
++            type_args: BodyNodeMap::default(),
++            operand_types: BodyNodeMap::default(),
++            interp_types: BodyNodeMap::default(),
++            lambda_effects: BodyNodeMap::default(),
++            try_kinds: BodyNodeMap::default(),
++            die_shows: BodyNodeMap::default(),
+             die_message_boundary: false,
+-            handlers: NodeMap::default(),
++            handlers: BodyNodeMap::default(),
+             failure_handles: vec![],
+             clauses: vec![],
+             placeholder_boundary: false,
+             return_owner: ReturnOwner::Function,
+-            try_owners: NodeMap::default(),
+-            clause_params: NodeMap::default(),
+-            clause_ops: NodeMap::default(),
++            try_owners: BodyNodeMap::default(),
++            clause_params: BodyNodeMap::default(),
++            clause_ops: BodyNodeMap::default(),
+             matches: vec![],
+             lambda_returns: vec![],
+             bindings: vec![],
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index 6153e0ce..b4c88b47 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -1,5 +1,6 @@
+ //! 宣言の検査と型の要約（設計書 02-05「検査の単位と手順」「宣言の検査」）。
+ 
++use super::body_map::BodyBindingMap;
+ use super::limits::{MAX_TYPE_DEPTH, TypeBudget, TypeLimit};
+ use super::{MainInfo, TypeckOutput};
+ use crate::base::{BindingId, BindingMap, ModuleId, NodeId, SourceTable, Span};
+@@ -17,8 +18,8 @@ use std::collections::{BTreeMap, BTreeSet};
+ /// 定義の型パラメータの番号。囲む定義の分を先に置く（`types` のモジュールの説明）。
+ #[derive(Clone, Default)]
+ pub(super) struct Scope {
+-    pub params: BindingMap<(u32, ParamKind)>,
+-    pub effects: BindingMap<u32>,
++    pub params: BodyBindingMap<(u32, ParamKind)>,
++    pub effects: BodyBindingMap<u32>,
+ }
+ 
+ /// 宣言の段の文脈。T1〜T3 が宣言を追加・検査するための共通の入口。
+diff --git a/crates/benitoite/src/typeck/mod.rs b/crates/benitoite/src/typeck/mod.rs
+index 2531ada3..04382877 100644
+--- a/crates/benitoite/src/typeck/mod.rs
++++ b/crates/benitoite/src/typeck/mod.rs
+@@ -154,6 +154,7 @@ pub fn typecheck(
+     decls::check(modules, asts, sources, resolved, require_main)
+ }
+ 
++mod body_map;
+ mod calls;
+ mod consts;
+ mod context;
+diff --git a/crates/benitoite/src/typeck/solve.rs b/crates/benitoite/src/typeck/solve.rs
+index c6d730a7..dd28bc02 100644
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -9,7 +9,11 @@ use crate::resolve::ResolveOutput;
+ use crate::syntax::ast::BinOp;
+ use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId as B};
+ use crate::types::*;
+-use std::collections::{BTreeMap, BTreeSet};
++use std::cell::RefCell;
++use std::collections::{BTreeMap, BTreeSet, HashSet};
++
++mod effect_key;
++use effect_key::EffectConstraintKey;
+ 
+ // 子を左から順に展開し、親の型は子をすべて作ってから組み立てる。
+ // 作業の枠はヒープに置き、型の深さに比例する Rust の再帰を使わない（02-03）。
+@@ -55,6 +59,8 @@ struct EffectState {
+     failures: Vec<ITy>,
+     origins: BTreeMap<Elem, Span>,
+ }
++type SuperPaths =
++    BTreeMap<(crate::base::BindingId, crate::base::BindingId), Option<Vec<crate::base::BindingId>>>;
+ type Escape = (NodeId, u32);
+ type LateFailure = (DiagCode, ITy, ITy, Reason, Option<Escape>);
+ type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
+@@ -74,6 +80,9 @@ pub(super) struct Solver {
+     no_fail: Vec<(IEffect, Span)>,
+     failure_reported: std::collections::HashSet<(Span, DiagCode)>,
+     effects: Vec<EffectConstraint>,
++    effect_index: HashSet<EffectConstraintKey>,
++    // 宣言集合が固定した本体の検査の間だけ使う。推論結果は記憶しない。
++    pub(super) superclass_paths: RefCell<SuperPaths>,
+     required: Vec<(ITy, Reason)>,
+     // 宣言の型への流れ込む制約（`return` など）が先に結び付けた型変数と、その理由。
+     // 呼び出しの戻り値の食い違い、パターンの失敗の移し替え、宣言どうしの食い違いの判定に使う
+@@ -474,27 +483,42 @@ impl Solver {
+         out
+     }
+     fn finalize_failure_type(&self, t: &ITy) -> Ty {
+-        match self.zonk(t) {
++        self.finalize_failure_type_normalized(&self.zonk(t))
++    }
++    // 子は入口の zonk で正規化済みなので、部分木を改めて展開しない。
++    // 潜在効果は zonk が未正規化のまま保持するため、finalize_effect の各 Fail の入口で
++    // 正規化する（設計書 02-05「制約の解決」）。
++    #[inline(never)]
++    fn finalize_failure_type_normalized(&self, t: &ITy) -> Ty {
++        match t {
+             ITy::Var(_) | ITy::Error => super::decls::unit(),
+             ITy::Con(c, ts) => Ty::Con(
+-                c,
+-                ts.iter().map(|t| self.finalize_failure_type(t)).collect(),
++                *c,
++                ts.iter()
++                    .map(|t| self.finalize_failure_type_normalized(t))
++                    .collect(),
+             ),
+             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+                 param_names: self.contract_names(&f.contract).unwrap_or_default(),
+                 params: f
+                     .params
+                     .iter()
+-                    .map(|t| self.finalize_failure_type(t))
++                    .map(|t| self.finalize_failure_type_normalized(t))
+                     .collect(),
+-                ret: self.finalize_failure_type(&f.ret),
++                ret: self.finalize_failure_type_normalized(&f.ret),
+                 effects: self.finalize_effect(&f.effect),
+             })),
+-            ITy::Param(i) => Ty::Param(i),
+-            ITy::Rigid { clause, index } => Ty::Rigid { clause, index },
++            ITy::Param(i) => Ty::Param(*i),
++            ITy::Rigid { clause, index } => Ty::Rigid {
++                clause: *clause,
++                index: *index,
++            },
+             ITy::App(h, ts) => {
+-                let ts = ts.iter().map(|t| self.finalize_failure_type(t)).collect();
+-                match self.head(h) {
++                let ts = ts
++                    .iter()
++                    .map(|t| self.finalize_failure_type_normalized(t))
++                    .collect();
++                match self.head(*h) {
+                     Some(TyHead::Con(c)) => Ty::Con(c, ts),
+                     Some(TyHead::Param(i)) => Ty::App(i, ts),
+                     None => super::decls::unit(),
+@@ -719,9 +743,17 @@ impl Solver {
+                 reason.clone(),
+                 Some((found.clone(), expected.clone())),
+             );
+-            if !self.effects.contains(&constraint) {
+-                self.effects.push(constraint);
+-            }
++            self.register_effect(constraint, true);
++        }
++    }
++    // 通常の包含制約は重複も登録順に保持する。関数型の不変な一致だけが
++    // 既存の全登録制約との重複を省く（設計書 02-05「制約の解決」）。
++    fn register_effect(&mut self, constraint: EffectConstraint, unique: bool) {
++        let inserted = self
++            .effect_index
++            .insert(EffectConstraintKey::new(&constraint));
++        if !unique || inserted {
++            self.effects.push(constraint);
+         }
+     }
+     fn flow(&mut self, a: &ITy, b: &ITy, r: &Reason) -> Result<bool, DiagCode> {
+@@ -748,7 +780,7 @@ impl Solver {
+                 } else {
+                     (e, x.effect.clone())
+                 };
+-                self.effects.push((sub, sup, r.clone(), Some((a, b))));
++                self.register_effect((sub, sup, r.clone(), Some((a, b))), false);
+                 Ok(true)
+             }
+             (ITy::Fn(x), ITy::Fn(y)) => {
+@@ -760,8 +792,10 @@ impl Solver {
+                     self.equal(a, b, r)?;
+                 }
+                 self.equal(&x.ret, &y.ret, r)?;
+-                self.effects
+-                    .push((x.effect.clone(), y.effect.clone(), r.clone(), Some((a, b))));
++                self.register_effect(
++                    (x.effect.clone(), y.effect.clone(), r.clone(), Some((a, b))),
++                    false,
++                );
+                 Ok(true)
+             }
+             _ => {
+@@ -1209,7 +1243,7 @@ impl Solver {
+         for c in constraints {
+             match c {
+                 Constraint::EffSub { sub, sup, reason } => {
+-                    self.effects.push((sub, sup, reason, None))
++                    self.register_effect((sub, sup, reason, None), false)
+                 }
+                 Constraint::Equal {
+                     ref found,
+@@ -1291,7 +1325,7 @@ impl Solver {
+             for c in std::mem::take(&mut ctx.constraints) {
+                 match c {
+                     Constraint::EffSub { sub, sup, reason } => {
+-                        self.effects.push((sub, sup, reason, None));
++                        self.register_effect((sub, sup, reason, None), false);
+                     }
+                     Constraint::Equal { .. } | Constraint::Flow { .. } => {
+                         self.solve_pair(ctx, c, &mut deferred);
+@@ -1795,15 +1829,15 @@ impl Solver {
+             .effects
+             .iter()
+             .any(|(sub, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
++        let mut pending: Vec<_> = (0..self.effects.len()).collect();
+         loop {
+             let mut changed = false;
+             // 型を先に結び、Fail 以外の残りだけを行へ伝える。節の出力の Fail を
+             // 本体の上限に混ぜない（設計書 02-05「制約の解決」）。
+-            for (sub, sup, r, pair) in if has_failures {
+-                self.effects.clone()
+-            } else {
+-                vec![]
+-            } {
++            for index in pending.iter().copied().filter(|_| has_failures) {
++                let Some((sub, sup, r, pair)) = self.effects.get(index).cloned() else {
++                    continue;
++                };
+                 if pair
+                     .as_ref()
+                     .is_some_and(|(a, b)| self.contains_error(a) || self.contains_error(b))
+@@ -1920,6 +1954,11 @@ impl Solver {
+             if !changed {
+                 break;
+             }
++            // equal は型・契約名・行を同時に結ぶ。依存を取りこぼして診断を
++            // 早く確定しないよう、次の巡も全番号を登録順に一度ずつ処理する。
++            // 巡の途中で加わった制約はここから Fail の処理へ参加する。
++            pending.clear();
++            pending.extend(0..self.effects.len());
+         }
+     }
+     fn solve_effects(&mut self, ctx: &mut Body<'_, '_>) {
+@@ -1938,6 +1977,7 @@ impl Solver {
+             }
+         }
+         let mut reported = BTreeSet::new();
++        self.effect_index.clear();
+         let items = std::mem::take(&mut self.effects);
+         for (sub, sup, r, pair) in items {
+             if pair
+diff --git a/crates/benitoite/src/typeck/traits/solve.rs b/crates/benitoite/src/typeck/traits/solve.rs
+index 2a7763ff..6cb86ba5 100644
+--- a/crates/benitoite/src/typeck/traits/solve.rs
++++ b/crates/benitoite/src/typeck/traits/solve.rs
+@@ -1,8 +1,9 @@
+ //! 型の確定後に辞書を解く。実装の上位の辞書も同じ手順を使う（設計書 02-05「型クラスの制約の解決」）。
+ use super::{class_name, collect::show, constraint_name, parameter_edit};
+-use crate::base::{BindingId, ModuleId, NodeId, NodeMap, Span};
++use crate::base::{BindingId, ModuleId, NodeId, Span};
+ use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
+ use crate::typeck::{
++    body_map::BodyNodeMap,
+     context::Body,
+     decls::{Decls, Scope},
+     infer::*,
+@@ -40,7 +41,19 @@ pub(super) enum Failure {
+     Suppressed,
+     Limit,
+ }
+-fn path(d: &Decls<'_>, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
++fn path(d: &Decls<'_>, solver: &Solver, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
++    let key = (from, to);
++    if let Some(path) = solver.superclass_paths.borrow().get(&key) {
++        return path.clone();
++    }
++    let result = uncached_path(d, from, to);
++    solver
++        .superclass_paths
++        .borrow_mut()
++        .insert(key, result.clone());
++    result
++}
++fn uncached_path(d: &Decls<'_>, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
+     let mut pending = VecDeque::from([(from, vec![])]);
+     let mut seen = BTreeSet::new();
+     while let Some((class, path)) = pending.pop_front() {
+@@ -117,7 +130,7 @@ fn resolve_normalized(
+         let mut best: Option<(usize, Vec<BindingId>)> = None;
+         for (i, c) in scheme.class_constraints.iter().enumerate() {
+             if c.param == index
+-                && let Some(path) = path(d, c.class, class)
++                && let Some(path) = path(d, solver, c.class, class)
+                 && best.as_ref().is_none_or(|(_, old)| path.len() < old.len())
+             {
+                 best = Some((i, path));
+@@ -138,7 +151,7 @@ fn resolve_normalized(
+         if let Some(constraints) = solver.clause_constraints.get(clause) {
+             for (i, c) in constraints.iter().enumerate() {
+                 if c.param == *index
+-                    && let Some(path) = path(d, c.class, class)
++                    && let Some(path) = path(d, solver, c.class, class)
+                     && best.as_ref().is_none_or(|(_, old)| path.len() < old.len())
+                 {
+                     best = Some((i, path));
+@@ -318,7 +331,10 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
+ }
+ 
+ // 補助の検査でも節の型パラメータと診断の操作名を保つ（設計書 02-05「型クラスの制約の解決」）。
+-pub(super) type ClauseBounds<'a> = (&'a NodeMap<Vec<TypeParamInfo>>, &'a NodeMap<(String, Span)>);
++pub(super) type ClauseBounds<'a> = (
++    &'a BodyNodeMap<Vec<TypeParamInfo>>,
++    &'a BodyNodeMap<(String, Span)>,
++);
+ 
+ pub(super) fn check_bounds(
+     d: &mut Decls<'_>,
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index 6e2e3576..db961cf2 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -49,6 +49,8 @@
+ 
+ 本体の文脈 `Body` は、宣言側のモジュールの ID を明示的に受け取る。関数・実装メソッド・定数では名前解決の束縛から引き、型クラスの制約の補助検査では呼び出し側の本体または実装の所属を渡す。内側の lambda・ガード・lazy は同じ文脈を使い、所属を変えない。理由: 本体の持ち主を表すノードの有無から所属を推測すると、定数や内側の式の扱いが分かれるためである。
+ 
++本体内のノード番号の表 `BodyNodeMap` と局所束縛の表 `BodyBindingMap` は、実在する番号だけを `BTreeMap` に保持する。宣言ごとの `Scope` の型・エフェクトパラメータも `BodyBindingMap` に保持する。どちらもプログラム全体の番号を鍵とし、番号の昇順で走査する。理由: 全体の番号までの空き領域を本体・宣言ごとに確保・走査すると、小さな関数の数に対して費用が二乗で増えるためである。
++
+ 型表の `AdtDef.extensible` は、`data`・レコード宣言の `@extensible` を反映する。指定のない宣言では `false` である。
+ 
+ 標準の Result・Option の宣言には指定を許さない。解決済みの標準型の束縛番号で識別し、指定があれば型表へ登録する前に処理系の不具合として報告して検査を止める。利用者の同名の型にはこの制限を適用しない。理由: 失敗を伝播する標準型が閉じているという前提を、変更された標準ライブラリのソースにも適用するためである。
+@@ -75,6 +77,8 @@
+ | リテラルの値 | リテラルの式とリテラルのパターンのノード番号 | 型検査器が範囲を確かめて求めた値（`-n` の形は符号を含めた値） | 脱糖 |
+ | 範囲のパターンの両端 | 範囲のパターンのノード番号 | 両端の値 | 脱糖 |
+ 
++`TypeckOutput` のノード・束縛の表は、従来どおり全体番号を鍵とする密な `base::NodeMap`・`base::BindingMap` である。`Body::finish` は本体内の表に実在する要素だけを辿り、型とエフェクトを確定して同じ番号で全体の表へ移す。未登録の番号は欠けたままとし、番号を詰め直さない。
++
+ 【決定】呼び出しの対応表は、引数の式を辿る順を変えず、脱糖が保存した値の参照を宣言順へ配置するために使う。位置引数の呼び出し、直接の構成子、プレースホルダとパイプの自動挿入にも対応表を記録する。名前付き引数の AST を検査する補助は、既知の契約への未知・重複・不足と、対応する引数型を検査する。未知・重複・不足がある呼び出しから引数型の制約を派生させない。名前付き引数の解析からこの検査へ接続し、対応が誤っている位置から型不一致を連鎖させない。理由: 各段で対応を再推測せず、検査した結果を脱糖へ渡すためである。
+ 
+ このほか型検査器は、型の宣言、型クラスの宣言、実装、エフェクトの宣言の表と、`main` の情報（束縛の番号と、戻り値の型が `Result[Unit, String]` か）を出力する。`main` の情報は、`main` を検査する経路で誤りがなかったときだけ出力する。
+@@ -156,6 +160,8 @@
+ 
+ ### 型とエフェクトの表現
+ 
++`Body` の推論中の型・エフェクト・呼び出しと節の補助情報は、前述の本体内の疎な表に保存する。`check_type_limits` はその表に実在する型だけを番号順に再検査する。型クラスの補助検査も、同じ表から節の型パラメータと操作の位置を引く。
++
+ 【決定】幅付きの数は、組み込みの型の番号で区別する。組み込みの正の名前と別名は名前解決で同じ番号に結び付け、推論に別の型として持ち込まない。型の診断には、数の型の名前の表の表示名を使う（[名前解決とモジュール読込](02-04-resolver.md)の「標準ライブラリのソースの持ち方」）。型クラスの実装の重なりも同じ番号で判定するため、例えば `Integer` と `Integer64` に同じ型クラスを別々に実装することはできない。
+ 
+ 【方針】推論の中で扱う型は、次のいずれかである。
+@@ -286,6 +292,12 @@
+ 
+ 同じ手順の中の制約は、生成した順に解く。制約は、本体を先頭から辿り、各構文の子を左から右に辿り終えた後にその構文の制約を生成する。関数の本体の制約は、本体を辿り終えた後に生成する。
+ 
++【決定】効果の包含制約は登録順の列を正本とし、関数型の単一化で加える重複の照合には私有の構造キーの索引を使う。キーは生の推論変数番号、関数の契約名、Fail列の順、固定の効果、理由の種類と全欄、元位置、型の対を保持し、既存の制約の等号と同じ意味にする。通常の包含制約は重複も登録順に保持する。キーに正規化後の可変の推論結果を使わない。理由: 理由や使用位置の異なる制約をまとめず、重複の線形探索を除くためである。
++
++【決定】効果の伝播は登録番号の待ち行列で行い、一巡のFailの処理では開始時の番号を一度ずつ登録順に処理する。列全体を複製せず、その番号の一項だけを複製する。次に通常の行の効果を登録順に伝え、行またはFailの伝播が変わった場合は全登録番号を次の巡へ再投入する。巡の途中に加わった制約のFailは次の巡で処理する。理由: 単一化による型・契約名・行の変更の依存を部分的に追跡すると、診断を確定する順序が変わるおそれがあるためである。
++
++【決定】Failの型を確定するときは、入口で一度、現在の推論状態に従って型変数・型構成子・契約名を置き換える（zonk）。正規化済みの型引数・関数の引数と戻り値を辿って確定型を作り、子の部分木を再びzonkしない。zonkが正規化せずに保持する潜在効果は、通常の効果の確定を通し、その中の各Fail型の入口で正規化する。未知型・誤りの型・未確定の型構成子は回復用のUnitとし、剛な型と型パラメータは保持する。可変の推論状態をまたいで確定結果を記憶しない。理由: 同じ部分木の反復した正規化を避け、型の深さに伴う確定の費用を減らすためである。
++
+ 【方針】型の制約は、次のように解く。
+ 
+ - 等しい: 単一化（unification）する。型変数を、それ自身を含む型と等しくする必要が生じたら誤りとする（出現検査、occurs check）。関数の型どうしの単一化では、引数の個数が違えば誤りとし、エフェクトは含まれる制約を両方向に加える。型構成子の適用は、前述の「型とエフェクトの表現」の規則で単一化する。
+@@ -351,6 +363,8 @@ Die は Process.Exit を式のエフェクトへ加える。説明は元の字
+ 5. τ が型変数のままなら誤りとし、型注釈を書くよう示す。
+ 6. それ以外（関数の型、型構成子を表す型パラメータの適用 `F[A]`）は、実装がないものとして誤りとする。
+ 
++【決定】上位の型クラスへの道筋は、宣言集合が固定した一つの本体の検査に限り、出発と到着のクラスの組で記憶する。道筋がない結果も含め、元の幅優先探索の結果を使う。候補の辞書と上位クラスの走査は宣言順を保ち、型や行の単一化の結果は記憶しない。理由: 繰り返す道筋の探索を除き、同じ長さの候補で先に宣言した制約を選ぶ規則を保つためである。
++
+ 孤立した実装と重なる実装は誤りとしてあるので、2 で引く実装は高々一つである。組み込みの制約（`equality`・`key`・`ordered`）は型クラスの制約ではなく、等値・鍵・集まりの制約として解き、辞書を持たない。
+ 
+ 【方針】一つの型クラスの制約を解く仕事量に予算を設ける（[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」）。仕事量は、解く途中で作る辞書の求め方の部品ごとに 1 と、2 で実装の型パラメータに写す型の節の数の合計で数え、上限を 32,768 とする。型の節は、型構成子の適用と関数の型の引数と戻り値を一節ずつ数える。部品の子の制約も親と同じ予算で数えるので、入れ子の段ごとに倍になる辞書も一つの制約の予算に収まらなければ止まる。上限を超えた制約は誤り（`E0715`）とし、診断は制約が生じた位置を示す。一つの使用（メソッドや制約を持つ関数を使った一つの位置）の制約のどれかで上限を超えたら、その使用の残りの制約は解かず、`E0715` を一度だけ出す。実装の上位の型クラスの制約（「実装の検査」）も、制約ごとに同じ予算で解く。理由: 同じ型パラメータに二つ以上の制約を求める実装を入れ子にすると、辞書の部品の数は入れ子の段ごとに倍になる。型の節を数えるのは、部品の数が少なくても大きな型を写す辞書を止めるためである。上限は、リポジトリのソース（標準ライブラリ・ゴールデンテスト・例など）で測った仕事量の最大（14）の約 2,300 倍である。
+diff --git a/crates/benitoite/src/typeck/solve/effect_key.rs b/crates/benitoite/src/typeck/solve/effect_key.rs
+new file mode 100644
+index 00000000..f0faede9
+--- /dev/null
++++ b/crates/benitoite/src/typeck/solve/effect_key.rs
+@@ -0,0 +1,156 @@
++//! 生の推論構造と理由を保つ制約の索引キー（設計書 02-05「制約の解決」）。
++use super::EffectConstraint;
++use crate::base::{BindingId, NodeId, Span};
++use crate::syntax::ast::{BinOp, UnOp};
++use crate::typeck::infer::*;
++use crate::types::{EffectSet, TyCon};
++use std::mem::{Discriminant, discriminant};
++
++// 前置順の列に種類と子の個数を残すため、異なる木を同じキーにしない。
++// 型変数・行・契約名を解決せず、登録後も変わらない構造だけを写す。
++#[derive(PartialEq, Eq, Hash)]
++enum Part {
++    Var(TyVar),
++    Con(TyCon, usize),
++    Fn(IContract, usize),
++    Param(u32),
++    App(IHead, usize),
++    Rigid(NodeId, u32),
++    Error,
++    Effect(EffectSet, Option<EffInfer>, usize),
++}
++enum Pending<'a> {
++    Ty(&'a ITy),
++    Effect(&'a IEffect),
++}
++#[derive(PartialEq, Eq, Hash)]
++enum Detail {
++    Empty,
++    Index(u32),
++    Bin(BinOp),
++    Un(UnOp),
++    Name(String),
++    Binding(BindingId),
++}
++#[derive(PartialEq, Eq, Hash)]
++struct ReasonKey {
++    kind: Discriminant<ReasonKind>,
++    detail: Detail,
++    span: Span,
++    related: Option<Span>,
++    declared: bool,
++    int_literal: Option<String>,
++}
++impl ReasonKey {
++    fn new(reason: &Reason) -> Self {
++        let detail = match &reason.kind {
++            ReasonKind::CallArg { index } => Detail::Index(*index),
++            ReasonKind::Operands { op }
++            | ReasonKind::Logic { op }
++            | ReasonKind::Operator { op } => match op {
++                OpName::Bin(op) => Detail::Bin(*op),
++                OpName::Un(op) => Detail::Un(*op),
++            },
++            ReasonKind::BuiltinParam { name } | ReasonKind::ParamBound { name } => {
++                Detail::Name(name.clone())
++            }
++            ReasonKind::RecordField { field } => Detail::Binding(*field),
++            ReasonKind::ClassUse { class } | ReasonKind::ImplSuper { class } => {
++                Detail::Binding(*class)
++            }
++            ReasonKind::Call
++            | ReasonKind::IfCondition
++            | ReasonKind::IfBranches
++            | ReasonKind::IfNoElse
++            | ReasonKind::MatchArms
++            | ReasonKind::MatchGuard
++            | ReasonKind::Pattern
++            | ReasonKind::Alternatives
++            | ReasonKind::ListElement
++            | ReasonKind::ListSpread
++            | ReasonKind::BindAnnotation
++            | ReasonKind::LambdaReturn
++            | ReasonKind::LambdaUses
++            | ReasonKind::Return
++            | ReasonKind::FnBody
++            | ReasonKind::FnUses
++            | ReasonKind::ExprStmt
++            | ReasonKind::Interp
++            | ReasonKind::CallEffect
++            | ReasonKind::RecordBase
++            | ReasonKind::Try
++            | ReasonKind::WithResource
++            | ReasonKind::WithState
++            | ReasonKind::LazyBody
++            | ReasonKind::DieMessage
++            | ReasonKind::HandleBody
++            | ReasonKind::HandleClause
++            | ReasonKind::Resume
++            | ReasonKind::ConstValue
++            | ReasonKind::FailureType => Detail::Empty,
++        };
++        Self {
++            kind: discriminant(&reason.kind),
++            detail,
++            span: reason.span,
++            related: reason.related,
++            declared: match reason.priority {
++                Priority::Declared => true,
++                Priority::Normal => false,
++            },
++            int_literal: reason.int_literal.clone(),
++        }
++    }
++}
++
++#[derive(PartialEq, Eq, Hash)]
++pub(super) struct EffectConstraintKey {
++    parts: Vec<Part>,
++    reason: ReasonKey,
++    has_pair: bool,
++}
++impl EffectConstraintKey {
++    pub(super) fn new((sub, sup, reason, pair): &EffectConstraint) -> Self {
++        let mut pending = Vec::new();
++        if let Some((a, b)) = pair {
++            pending.push(Pending::Ty(b));
++            pending.push(Pending::Ty(a));
++        }
++        pending.push(Pending::Effect(sup));
++        pending.push(Pending::Effect(sub));
++        let mut parts = Vec::new();
++        while let Some(next) = pending.pop() {
++            match next {
++                Pending::Effect(e) => {
++                    parts.push(Part::Effect(e.fixed.clone(), e.var, e.failures.len()));
++                    pending.extend(e.failures.iter().rev().map(Pending::Ty));
++                }
++                Pending::Ty(t) => match t {
++                    ITy::Var(v) => parts.push(Part::Var(*v)),
++                    ITy::Con(c, args) => {
++                        parts.push(Part::Con(*c, args.len()));
++                        pending.extend(args.iter().rev().map(Pending::Ty));
++                    }
++                    ITy::App(h, args) => {
++                        parts.push(Part::App(*h, args.len()));
++                        pending.extend(args.iter().rev().map(Pending::Ty));
++                    }
++                    ITy::Fn(f) => {
++                        parts.push(Part::Fn(f.contract.clone(), f.params.len()));
++                        pending.push(Pending::Effect(&f.effect));
++                        pending.push(Pending::Ty(&f.ret));
++                        pending.extend(f.params.iter().rev().map(Pending::Ty));
++                    }
++                    ITy::Param(i) => parts.push(Part::Param(*i)),
++                    ITy::Rigid { clause, index } => parts.push(Part::Rigid(*clause, *index)),
++                    ITy::Error => parts.push(Part::Error),
++                },
++            }
++        }
++        Self {
++            parts,
++            reason: ReasonKey::new(reason),
++            has_pair: pair.is_some(),
++        }
++    }
++}

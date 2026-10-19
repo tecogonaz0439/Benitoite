@@ -171,41 +171,41 @@ end
 
 
 def ExprComputes (q : Input) (e : Expr) : Prop :=
-  ∀ mode C Γ R p path, q.Sound → e.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → ComputesIn q (Inferred.AtomsIn q.atoms) (checkExprR q mode C Γ R p path e)
+  ∀ mode Δ C Γ R p path, q.Sound → e.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → ComputesIn q (Inferred.AtomsIn q.atoms) (checkExprR q mode Δ C Γ R p path e)
 
 def BlockComputes (q : Input) (b : Block) : Prop :=
-  ∀ mode C Γ R p path, q.Sound → b.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → ComputesIn q (Inferred.AtomsIn q.atoms) (checkBlockR q mode C Γ R p path b)
+  ∀ mode Δ C Γ R p path, q.Sound → b.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → ComputesIn q (Inferred.AtomsIn q.atoms) (checkBlockR q mode Δ C Γ R p path b)
 
 def TypesComputes (q : Input) (es : Exprs) : Prop :=
-  ∀ mode C Γ R path index ts, q.Sound → es.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → Tys.AtomsIn q.atoms ts →
-    ComputesIn q (Eff.AtomsIn q.atoms) (checkTypesR q mode C Γ R path index es ts)
+  ∀ mode Δ C Γ R path index ts, q.Sound → es.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → Tys.AtomsIn q.atoms ts →
+    ComputesIn q (Eff.AtomsIn q.atoms) (checkTypesR q mode Δ C Γ R path index es ts)
 
 def EachComputes (q : Input) (es : Exprs) : Prop :=
-  ∀ mode C Γ R path index a, q.Sound → es.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → a.AtomsIn q.atoms →
-    ComputesIn q (Eff.AtomsIn q.atoms) (checkEachR q mode C Γ R path index es a)
+  ∀ mode Δ C Γ R path index a, q.Sound → es.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → a.AtomsIn q.atoms →
+    ComputesIn q (Eff.AtomsIn q.atoms) (checkEachR q mode Δ C Γ R path index es a)
 
 def HolesComputes (q : Input) (args : HoleArgs) : Prop :=
-  ∀ mode C Γ R path index ts, q.Sound → args.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → Tys.AtomsIn q.atoms ts →
-    ComputesIn q (Eff.AtomsIn q.atoms) (checkHoleArgsR q mode C Γ R path index args ts)
+  ∀ mode Δ C Γ R path index ts, q.Sound → args.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → Tys.AtomsIn q.atoms ts →
+    ComputesIn q (Eff.AtomsIn q.atoms) (checkHoleArgsR q mode Δ C Γ R path index args ts)
 
 def ArmsComputes (q : Input) (arms : Arms) : Prop :=
-  ∀ mode C Γ R p path a b, q.Sound → arms.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → a.AtomsIn q.atoms → b.AtomsIn q.atoms →
-    ComputesIn q (Eff.AtomsIn q.atoms) (checkArmsR q mode C Γ R p path arms a b)
+  ∀ mode Δ C Γ R p path a b, q.Sound → arms.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → a.AtomsIn q.atoms → b.AtomsIn q.atoms →
+    ComputesIn q (Eff.AtomsIn q.atoms) (checkArmsR q mode Δ C Γ R p path arms a b)
 
 def ClausesComputes (q : Input) (cs : Clauses) : Prop :=
-  ∀ mode C Γ R path t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
-    ComputesIn q (Eff.AtomsIn q.atoms) (checkClausesR q mode C Γ R path cs t ε)
+  ∀ mode Δ C Γ R path t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
+    ComputesIn q (Eff.AtomsIn q.atoms) (checkClausesR q mode Δ C Γ R path cs t ε)
 
 def ClauseTypesComputes (q : Input) (cs : Clauses) : Prop :=
-  ∀ C Γ R path t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
-    ComputesIn q (Ty.AtomsIn q.atoms) (inferClauseTypesR q C Γ R path cs t ε)
+  ∀ Δ C Γ R path t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
+    ComputesIn q (Ty.AtomsIn q.atoms) (inferClauseTypesR q Δ C Γ R path cs t ε)
 
 end Benitoite.Surface.Check

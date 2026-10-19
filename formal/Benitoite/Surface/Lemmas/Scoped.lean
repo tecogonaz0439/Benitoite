@@ -1,5 +1,6 @@
 import Benitoite.Surface.Lemmas.ScopedSupport
 import Benitoite.Surface.Lemmas.ExtensionsScoped
+import Benitoite.Surface.Lemmas.BuilderLower
 
 /-! 脱糖の出力は、入力の型変数とエフェクト変数の範囲を保つ。 -/
 namespace Benitoite.Surface
@@ -63,11 +64,21 @@ theorem dieFailure_scoped {nt pe t exit depth cause message}
   | some m => exact ⟨Comp.VarsIn.renameScoped _ _ (hm m rfl),
       Comp.VarsIn.renameScoped _ _ hc, ⟨⟨ht, trivial⟩, trivial⟩, trivial, trivial⟩
 
+/-!
+この帰納は任意の Δ・nt・pe・nv について示す。結論の VarsIn は通常環境を参照せず、
+fillBuilders も脱糖の番号と局所数を変えないので、セル環境にも同じ言明を使う。
+Aligned/Clean は型保存の内部の前提であり、ここでは要求しない
+（設計書 01-12「構築器の局所文脈と旧構文の意味」）。
+-/
 mutual
-  theorem HasTypeQ.desugar_scoped {C Γ R pos e a ε nt pe nv}
-      (h : HasTypeQ D B op Q C Γ R pos e a ε) (sc : e.Scoped nt pe nv) :
+  theorem HasTypeQ.desugar_scoped {Δb : BuilderCtx} {C Γ R pos e a ε nt pe nv}
+      (h : HasTypeQ D B op Q Δb C Γ R pos e a ε) (sc : e.Scoped nt pe nv) :
       Comp.VarsIn nt pe (desugarExpr op pos e) := by
     match h with
+    | .E_BuilderOp hr ha =>
+        apply sequence_scoped (HasTypesQ.desugar_scoped ha sc.2.2)
+        intro vs hv
+        exact builderFinish_scoped sc.2.1 hv _
     | .E_Local _ _ => trivial
     | .E_Const (body := body) h =>
         simpa only [desugarExpr] using HasTypeQ.desugar_scoped (e := body) h sc.2
@@ -227,8 +238,8 @@ mutual
     | .E_Resume _ he => exact ⟨HasTypeQ.desugar_scoped he sc.2, trivial, trivial⟩
     | .E_Sub h _ _ _ => exact HasTypeQ.desugar_scoped h sc
 
-  theorem HasTypesQ.desugar_scoped {C Γ R es as ε nt pe nv}
-      (h : HasTypesQ D B op Q C Γ R es as ε) (sc : es.Scoped nt pe nv) :
+  theorem HasTypesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R es as ε nt pe nv}
+      (h : HasTypesQ D B op Q Δb C Γ R es as ε) (sc : es.Scoped nt pe nv) :
       ∀ m ∈ desugarExprs op es, Comp.VarsIn nt pe m := by
     match h with
     | .nil => intro m hm; cases hm
@@ -238,8 +249,8 @@ mutual
         · exact HasTypeQ.desugar_scoped h sc.1
         · exact HasTypesQ.desugar_scoped hs sc.2 m hm
 
-  theorem HasEachQ.desugar_scoped {C Γ R es a ε nt pe nv}
-      (h : HasEachQ D B op Q C Γ R es a ε) (sc : es.Scoped nt pe nv) :
+  theorem HasEachQ.desugar_scoped {Δb : BuilderCtx} {C Γ R es a ε nt pe nv}
+      (h : HasEachQ D B op Q Δb C Γ R es a ε) (sc : es.Scoped nt pe nv) :
       ∀ m ∈ desugarExprs op es, Comp.VarsIn nt pe m := by
     match h with
     | .nil => intro m hm; cases hm
@@ -249,8 +260,8 @@ mutual
         · exact HasTypeQ.desugar_scoped h sc.1
         · exact HasEachQ.desugar_scoped hs sc.2 m hm
 
-  theorem HasHoleArgsQ.desugar_scoped {C Γ R args as ε nt pe nv}
-      (h : HasHoleArgsQ D B op Q C Γ R args as ε) (sc : args.Scoped nt pe nv) (n : Nat) :
+  theorem HasHoleArgsQ.desugar_scoped {Δb : BuilderCtx} {C Γ R args as ε nt pe nv}
+      (h : HasHoleArgsQ D B op Q Δb C Γ R args as ε) (sc : args.Scoped nt pe nv) (n : Nat) :
       ∀ m ∈ desugarHoleArgs op n args, Comp.VarsIn nt pe m := by
     match h with
     | .nil => intro m hm; cases hm
@@ -265,8 +276,8 @@ mutual
         · trivial
         · exact HasHoleArgsQ.desugar_scoped hs sc.2 n m hm
 
-  theorem HasArmsQ.desugar_scoped {C Γ R pos arms a b ε nt pe nv}
-      (h : HasArmsQ D B op Q C Γ R pos arms a b ε) (sc : arms.Scoped nt pe nv) :
+  theorem HasArmsQ.desugar_scoped {Δb : BuilderCtx} {C Γ R pos arms a b ε nt pe nv}
+      (h : HasArmsQ D B op Q Δb C Γ R pos arms a b ε) (sc : arms.Scoped nt pe nv) :
       Arm.VarsInList nt pe (desugarArms op pos arms) := by
     match h with
     | .nil _ => trivial
@@ -278,21 +289,23 @@ mutual
           Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.2.1),
           HasArmsQ.desugar_scoped hs sc.2.2⟩
 
-  theorem HasClausesQ.desugar_scoped {C Γ R cs t ε nt pe nv}
-      (h : HasClausesQ D B op Q C Γ R cs t ε) (sc : cs.Scoped nt pe nv) :
+  theorem HasClausesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R cs t ε nt pe nv}
+      (h : HasClausesQ D B op Q Δb C Γ R cs t ε) (sc : cs.Scoped nt pe nv) :
       Clause.VarsInList nt pe (desugarClauses op cs) := by
     match h with
     | .nil => trivial
     | .cons _ _ _ _ _ hb hs =>
         exact ⟨HasBlockQ.desugar_scoped hb sc.1, HasClausesQ.desugar_scoped hs sc.2⟩
 
-  theorem HasBlockQ.desugar_scoped {C Γ R pos body a ε nt pe nv}
-      (h : HasBlockQ D B op Q C Γ R pos body a ε) (sc : body.Scoped nt pe nv) :
+  theorem HasBlockQ.desugar_scoped {Δb : BuilderCtx} {C Γ R pos body a ε nt pe nv}
+      (h : HasBlockQ D B op Q Δb C Γ R pos body a ε) (sc : body.Scoped nt pe nv) :
       Comp.VarsIn nt pe (desugarBlock op pos body) := by
     match h with
     | .B_LastPat _ _ _ _ he => exact ⟨HasTypeQ.desugar_scoped he sc.2, trivial, trivial, trivial⟩
     | .B_BindPat _ _ _ _ he hb => exact ⟨HasTypeQ.desugar_scoped he sc.2.1, trivial,
         Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.2.2), trivial⟩
+    | .B_BuilderBind _ _ _ _ hb =>
+        exact ⟨builderNew_scoped sc.2.1, HasBlockQ.desugar_scoped hb sc.2.2⟩
     | .B_Empty => trivial
     | .B_Last h => exact HasTypeQ.desugar_scoped h sc
     | .B_LastBind h => exact ⟨HasTypeQ.desugar_scoped h sc.2, trivial⟩

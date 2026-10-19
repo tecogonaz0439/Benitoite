@@ -82,6 +82,35 @@ end trait
 Applicatives whose computations can depend on earlier values.
 
 ```benitoite
+public trait Functor2[F[_, _]]
+  /// Applies `f` to the successful value inside `x`, keeping its second type.
+  function map[A, B, X, effect E](x: F[A, X], f: function(value: A) -> B uses E) -> F[B, X] uses E
+end trait
+```
+
+Two-parameter containers whose first value can be transformed while keeping the second type.
+
+```benitoite
+public trait Applicative2[F[_, _]: Functor2]
+  /// Wraps `x`. Annotate the result when its second type cannot be inferred.
+  function pure[A, X](x: A) -> F[A, X]
+  /// Applies the wrapped function to `x`; the Result implementation prefers an error in `fs`.
+  function apply[A, B, X, effect E](fs: F[(function(value: A) -> B uses E), X], x: F[A, X]) -> F[B, X] uses E
+end trait
+```
+
+Two-parameter functors that can wrap a value and apply a wrapped function.
+
+```benitoite
+public trait Monad2[F[_, _]: Applicative2]
+  /// Applies `f` to the successful value inside `x`, keeping its second type.
+  function flatMap[A, B, X, effect E](x: F[A, X], f: function(value: A) -> F[B, X] uses E) -> F[B, X] uses E
+end trait
+```
+
+Two-parameter applicatives whose computations can depend on earlier values.
+
+```benitoite
 public trait Foldable[F[_]]
   /// Combines the values from the first with `f`, starting from `initial`.
   function fold[A, B, effect E](x: F[A], initial: B, f: function(acc: B, value: A) -> B uses E) -> B uses E

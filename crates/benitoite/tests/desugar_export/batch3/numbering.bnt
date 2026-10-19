@@ -1,0 +1,25 @@
+import Benitoite.StringBuilder
+import Benitoite.Trait
+
+effect Echo
+  function echo[T: Trait.Show](value: T) -> Integer
+end effect
+function received[T: Trait.Show](value: T) -> (function(x: T) -> String) uses State
+  bind b: StringBuilder <- StringBuilder.new()
+  return Trait.Show.show
+end function
+function numbering() -> Integer uses State
+  return handle
+    echo(3)
+  with
+    case echo(value) ->
+      bind b: StringBuilder <- StringBuilder.new()
+      bind n <- 9
+      bind _ <- Trait.Show.show(value)
+      resume(n)
+  end handle
+end function
+function main() -> Result[Unit, String] uses State
+  return if numbering() = 9 and received(1)(7) = "7"
+    then Result.Ok(()) else Result.Error("numbering") end if
+end function

@@ -46,6 +46,7 @@ theorem nodeComputes (q : Input) (node : ComputeNode) : NodeComputes q node := b
     cases node with
     | expr e =>
       cases e with
+      | builderOp => apply computes_builderOp <;> compute_child ih
       | «local» => apply computes_local <;> compute_child ih
       | «constE» => apply computes_const <;> compute_child ih
       | «funName» => apply computes_funName <;> compute_child ih
@@ -87,28 +88,28 @@ theorem nodeComputes (q : Input) (node : ComputeNode) : NodeComputes q node := b
       | «handleE» => apply computes_handle <;> compute_child ih
       | «resume» => apply computes_resume <;> compute_child ih
       | negInt =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | negFloat =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | negDecimal =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | negInteger8 =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | negInteger16 =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | negInteger32 =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | negFloat32 =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | unit =>
-        intro mode C Γ R p path hq he hΓ hR
+        intro mode Δ C Γ R p path hq he hΓ hR hB
         exact computes_guard (computes_pure ⟨trivial, emptyEff_atoms _⟩)
       | tryResultDie =>
         apply computes_tryResultDie
@@ -129,10 +130,10 @@ theorem nodeComputes (q : Input) (node : ComputeNode) : NodeComputes q node := b
           | (apply computes_pipe_call hl <;> compute_child ih)
           | (apply computes_pipe_conCall hl <;> compute_child ih)
           | exact computes_pipe_conValue hl
-          | (intro mode C Γ R p path hq he hΓ hR
+          | (intro mode Δ C Γ R p path hq he hΓ hR hB
              have he := pipe_computes_atoms.mp he
              apply computes_guard
-             exact computes_pipe_value hl hr hq he.1 he.2 hΓ hR)
+             exact computes_pipe_value hl hr hB hq he.1 he.2 hΓ hR)
     | exprs es =>
       cases es with
       | nil => exact ⟨computes_types_nil, computes_each_nil⟩
@@ -164,6 +165,7 @@ theorem nodeComputes (q : Input) (node : ComputeNode) : NodeComputes q node := b
         · apply computes_clauseTypes_cons <;> compute_child ih
     | block body =>
       cases body with
+      | builderBind => apply computes_block_builderBind <;> compute_child ih
       | empty => exact computes_block_empty
       | last => apply computes_block_last <;> compute_child ih
       | lastBind => apply computes_block_lastBind <;> compute_child ih
@@ -183,17 +185,17 @@ theorem inferClauseTypesR_computes (q : Input) (cs : Clauses) : ClauseTypesCompu
   (nodeComputes q (.clauses cs)).2
 
 /-- 反復の各stepは空の要求から検査するので、外側の状態の支持を要求しない。 -/
-theorem handlerStep_atoms {q C Γ R path cs t e out s s'}
-    (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
+theorem handlerStep_atoms {q Δ C Γ R path cs t e out s s'}
+    (hB : BuilderInvariant q C Γ Δ) (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (ht : t.AtomsIn q.atoms) (he : e.AtomsIn q.atoms)
     (h : (do
-      let (actual, st) ← (checkClausesR q .relaxed C Γ R path cs t e).run {}
+      let (actual, st) ← (checkClausesR q .relaxed Δ C Γ R path cs t e).run {}
       modify fun outer => { outer with requests := outer.requests ++
         (st.requests.filter (fun r => !(clauseKeys Γ.length cs).contains r.1)) }
       pure (union q actual (requestedEffect q (clauseKeys Γ.length cs) st.requests)) : Checking Eff)
         s = .ok (out, s')) : out.AtomsIn q.atoms := by
   obtain ⟨⟨actual, st⟩, hcs, h⟩ := checking_lift_bind_ok h
-  have hs := (checkClausesR_computes q cs .relaxed C Γ R path t e hq hc hΓ hR ht he)
+  have hs := (checkClausesR_computes q cs .relaxed Δ C Γ R path t e hq hc hΓ hR hB ht he)
     {} st actual (requests_atoms_nil _) hcs
   obtain ⟨u, mid, hu, h⟩ := checking_bind_ok h
   have eq := (checking_pure_ok h).1

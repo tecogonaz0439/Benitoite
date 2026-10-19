@@ -1,4 +1,5 @@
 import Benitoite.Surface.CheckSupport
+import Benitoite.Surface.BuilderCheck
 import Benitoite.Surface.AdmissibleCheck
 import Benitoite.Surface.SingleFailCheck
 
@@ -202,15 +203,21 @@ def guardInferred (q : Input) (path : List Nat) (x : Checking Inferred)
   else throw ⟨path, "invalid input annotations or environment"⟩
 
 mutual
-  def checkExprR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkExprR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (p : Position) (path : List Nat) (e : Expr) : Checking Inferred :=
     guardInferred q path (match e with
+    | .builderOp o i args refs => do
+        require path "State is missing from the checked atom support" (q.atoms.contains (.name stateEff))
+        require path "invalid local builder or operation references"
+          (refs.check q.atoms q.D q.B q.satDec q.admitsDec q.noFailRows C Δ i)
+        let ε ← checkTypesR q mode Δ C Γ R (child path 0) 0 args (o.params refs.kind)
+        pure (o.result refs.kind, union q ε (singleEff q.atoms (.name stateEff)))
     | .local i => do
         let a ← lookup path "local is missing or hidden" ((Γ[i]?).join)
         require path "continuations cannot be used as ordinary locals" (notCont a)
         pure (a, emptyEff)
     | .constE a body => do
-        let ε ← accept q C.length (child path 0) a (← checkExprR q mode C [] R .other (child path 0) body)
+        let ε ← accept q C.length (child path 0) a (← checkExprR q mode [] C [] R .other (child path 0) body)
         acceptEff q (child path 0) emptyEff ε
         pure (a, emptyEff)
     | .funName f ts es => do
@@ -269,13 +276,13 @@ mutual
         pure (.fn ["error"] [e] t (singleFailure q.atoms e), emptyEff)
     | .handleFail E t body clause => do
         require path "Fail handler types are not well formed" (cleanTy q.atoms C.length E && cleanTy q.atoms C.length t)
-        let eb ← accept q C.length (child path 0) t (← checkBlockR q mode C Γ R .other (child path 0) body)
+        let eb ← accept q C.length (child path 0) t (← checkBlockR q mode Δ C Γ R .other (child path 0) body)
         let rest := remainingEffect eb
         require path "Fail handler remainder violates NoFail" (noFailCheck q.atoms q.noFailRows rest)
         acceptEff q path (union q (singleFailure q.atoms E) rest) eb
         let env := none :: some (shiftTy q.atoms 1 0 E) :: Γ.map (Option.map (shiftTy q.atoms 1 0))
         let eh ← accept q (C.length + 1) (child path 1) (shiftTy q.atoms 1 0 t)
-          (← checkBlockR q mode (({} : TParam) :: C) env (R.map (shiftTy q.atoms 1 0)) .other (child path 1) clause)
+          (← checkBlockR q mode [] (({} : TParam) :: C) env (R.map (shiftTy q.atoms 1 0)) .other (child path 1) clause)
         let ec := substEffAt q.atoms 0 [.base .unit] [] eh
         require path "Fail clause effect mentions its rigid result type"
           (wfTys q.atoms C.length ec.fails && effEq q.atoms (shiftEff q.atoms 1 0 ec) eh)
@@ -324,19 +331,19 @@ mutual
     | .negInteger32 _ => pure (.base .integer32, emptyEff)
     | .negFloat32 _ => pure (.base .float32, emptyEff)
     | .unit => pure (.base .unit, emptyEff)
-    | .paren e => checkExprR q mode C Γ R p (child path 0) e
+    | .paren e => checkExprR q mode Δ C Γ R p (child path 0) e
     | .conCall c ts args => do
         let cd ← lookup path "unknown constructor" (q.D.cons c)
           (fun _ => true)
         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
-        let ε ← checkTypesR q mode C Γ R (child path 0) 0 args (substParams q.atoms ts [] cd.args)
+        let ε ← checkTypesR q mode Δ C Γ R (child path 0) 0 args (substParams q.atoms ts [] cd.args)
         pure (.data cd.data ts, ε)
     | .record c ts positions args => do
         let cd ← lookup path "unknown record constructor" (q.D.cons c)
           (fun _ => true)
         require path "record type argument count mismatch" (ts.length == cd.ntys)
         require path "record fields are not a permutation" (natPerm positions (List.range cd.args.length))
-        let ε ← checkTypesR q mode C Γ R (child path 0) 0 args (fieldTypes (substParams q.atoms ts [] cd.args) positions)
+        let ε ← checkTypesR q mode Δ C Γ R (child path 0) 0 args (fieldTypes (substParams q.atoms ts [] cd.args) positions)
         pure (.data cd.data ts, ε)
     | .recordUpdate c ts n positions base args => do
         let cd ← lookup path "unknown record constructor" (q.D.cons c)
@@ -347,26 +354,26 @@ mutual
         require path "record update has duplicate fields" (natNodup positions)
         require path "record field is outside the record" (positionsInRange positions n)
         let a := Ty.data cd.data ts
-        let εb ← accept q C.length (child path 0) a (← checkExprR q mode C Γ R .other (child path 0) base)
-        let εa ← checkTypesR q mode C Γ R (child path 1) 0 args (fieldTypes (substParams q.atoms ts [] cd.args) positions)
+        let εb ← accept q C.length (child path 0) a (← checkExprR q mode Δ C Γ R .other (child path 0) base)
+        let εa ← checkTypesR q mode Δ C Γ R (child path 1) 0 args (fieldTypes (substParams q.atoms ts [] cd.args) positions)
         require path "record update pattern is not exhaustive"
           (recordUpdateExhaustive q.D q.ctors cd ts c n positions)
         pure (a, union q εb εa)
     | .call f labels positions args => do
-        let (a, εf) ← checkExprR q mode C Γ R .other (child path 0) f
+        let (a, εf) ← checkExprR q mode Δ C Γ R .other (child path 0) f
         let (names, ps, r, εcall) ← fnView (child path 0) a
         require path "call labels and positions do not match the contract" (callOk names ps false labels positions)
-        let εargs ← checkTypesR q mode C Γ R (child path 1) 0 args (sourceTypes ps positions)
+        let εargs ← checkTypesR q mode Δ C Γ R (child path 1) 0 args (sourceTypes ps positions)
         pure (r, union q εf (union q εargs εcall))
     | .pipe lhs rhs =>
         match rhs with
         | .call f labels positions args => do
-            let (a, εf) ← checkExprR q mode C Γ R .other (child (child path 1) 0) f
+            let (a, εf) ← checkExprR q mode Δ C Γ R .other (child (child path 1) 0) f
             let (names, params, r, εcall) ← fnView (child (child path 1) 0) a
             let t ← lookup (child (child path 1) 0) "pipe call has no first parameter" params.head?
-            let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
+            let εl ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) lhs)
             require (child path 1) "pipe labels and positions do not match the contract" (callOk names params true labels positions)
-            let εargs ← checkTypesR q mode C Γ R (child (child path 1) 1) 0 args (sourceTypes params positions)
+            let εargs ← checkTypesR q mode Δ C Γ R (child (child path 1) 1) 0 args (sourceTypes params positions)
             pure (r, union q εl (union q εf (union q εargs εcall)))
         | .conCall c ts args => do
             let cd ← lookup (child path 1) "unknown pipe constructor" (q.D.cons c)
@@ -374,8 +381,8 @@ mutual
             require (child path 1) "constructor type argument count mismatch" (ts.length == cd.ntys)
             let ps := substParams q.atoms ts [] cd.args
             let t ← lookup (child path 1) "pipe constructor has no first parameter" ps.head?
-            let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
-            let εargs ← checkTypesR q mode C Γ R (child (child path 1) 0) 0 args ps.tail
+            let εl ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) lhs)
+            let εargs ← checkTypesR q mode Δ C Γ R (child (child path 1) 0) 0 args ps.tail
             pure (.data cd.data ts, union q εl εargs)
         | .conValue c ts names ps => do
             let cd ← lookup (child path 1) "unknown pipe constructor" (q.D.cons c)
@@ -386,26 +393,26 @@ mutual
             require (child path 1) "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams q.atoms ts [] cd.args))
             require (child path 1) "bare pipe constructor must be unary" (ps.length == 1)
             let t ← lookup (child path 1) "pipe constructor has no parameter" ps.head?
-            let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
+            let εl ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) lhs)
             pure (.data cd.data ts, εl)
         | rhs => do
             require (child path 1) "invalid pipe value" (pipeValue rhs)
-            let (a, εf) ← checkExprR q mode C Γ R .other (child path 1) rhs
+            let (a, εf) ← checkExprR q mode Δ C Γ R .other (child path 1) rhs
             let (names, ps, r, εcall) ← fnView (child path 1) a
             require (child path 1) "pipe value must have one parameter and one name"
               ((ps.length == 1) && (names.length == 1))
             let t ← lookup (child path 1) "pipe value has no parameter" ps.head?
-            let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
+            let εl ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) lhs)
             pure (r, union q εl (union q εf εcall))
     | .partialCall f names args r ε => do
         require path "partial call has no holes" (nonemptyList args.holeTypes)
-        let (a, εf) ← checkExprR q mode C (hideConts Γ) (some r) .other (child path 0) f
+        let (a, εf) ← checkExprR q mode [] C (hideConts Γ) (some r) .other (child path 0) f
         let (calleeNames, ps, r0, εcall) ← fnView (child path 0) a
         require path "partial call contract annotation mismatch" (names == calleeNames)
         require path "partial call labels and positions do not match the contract"
           (callOk names ps false args.labels args.positions)
         require path "partial call hole names are not well formed" (namesWF (args.holeNames names) args.holeTypes)
-        let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 1) 0 args (sourceTypes ps args.positions)
+        let εargs ← checkHoleArgsR q mode [] C (hideConts Γ) (some r) (child path 1) 0 args (sourceTypes ps args.positions)
         require path "partial call result type mismatch" (tyLe q.atoms r0 r)
         acceptEff q path ε (union q εf (union q εargs εcall))
         pure (.fn (args.holeNames names) args.holeTypes r ε, emptyEff)
@@ -419,7 +426,7 @@ mutual
         let names := args.holeNames (positionalNames args.positions.length)
         require path "partial constructor hole names are not well formed" (namesWF names args.holeTypes)
         let r := Ty.data cd.data ts
-        let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 0) 0 args (substParams q.atoms ts [] cd.args)
+        let εargs ← checkHoleArgsR q mode [] C (hideConts Γ) (some r) (child path 0) 0 args (substParams q.atoms ts [] cd.args)
         require path "partial constructor effect is not well formed" (cleanTys q.atoms C.length εargs.fails)
         pure (.fn names args.holeTypes r (Eff.normWith q.atoms εargs), emptyEff)
     | .binary o t lhs rhs => do
@@ -434,8 +441,8 @@ mutual
         require path "binary operator parameter names mismatch" (names == ["left", "right"])
         require path "binary operator parameter types mismatch" (tysEq q.atoms ps [t, t])
         acceptEff q path emptyEff ε
-        let εl ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
-        let εr ← accept q C.length (child path 1) t (← checkExprR q mode C Γ R .other (child path 1) rhs)
+        let εl ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) lhs)
+        let εr ← accept q C.length (child path 1) t (← checkExprR q mode Δ C Γ R .other (child path 1) rhs)
         pure (r, union q εl εr)
     | .neg t e => do
         require path "negation type is not allowed" (Operator.neg.allowed t)
@@ -448,33 +455,33 @@ mutual
         require path "negation type arguments are not admitted" (q.admitsDec b C ts)
         require path "negation primitive type mismatch"
           (tyEq q.atoms (fnTyCheck q.atoms s.names s.params s.ret s.eff ts []) (.fn ["value"] [t] t emptyEff))
-        let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
+        let ε ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) e)
         pure (t, ε)
     | .not e => do
-        let ε ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode C Γ R .other (child path 0) e)
+        let ε ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode Δ C Γ R .other (child path 0) e)
         pure (.base .boolean, ε)
     | .and lhs rhs | .or lhs rhs => do
-        let εl ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode C Γ R .other (child path 0) lhs)
-        let εr ← accept q C.length (child path 1) (.base .boolean) (← checkExprR q mode C Γ R p (child path 1) rhs)
+        let εl ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode Δ C Γ R .other (child path 0) lhs)
+        let εr ← accept q C.length (child path 1) (.base .boolean) (← checkExprR q mode Δ C Γ R p (child path 1) rhs)
         pure (.base .boolean, union q εl εr)
     | .list a es => do
         require path "list element type is not well formed" (wfTy q.atoms C.length a)
-        let ε ← checkEachR q mode C Γ R (child path 0) 0 es a
+        let ε ← checkEachR q mode Δ C Γ R (child path 0) 0 es a
         pure (.list a, ε)
     | .listSpread a f before spread after => do
         require path "list element type is not well formed" (wfTy q.atoms C.length a)
         require (child path 0) "list concatenation is not a direct callee" (isDirect f)
         let εf ← accept q C.length (child path 0) (.fn ["xs", "ys"] [.list a, .list a] (.list a) emptyEff)
-          (← checkExprR q mode C Γ R .other (child path 0) f)
+          (← checkExprR q mode Δ C Γ R .other (child path 0) f)
         acceptEff q (child path 0) emptyEff εf
-        let εb ← checkEachR q mode C Γ R (child path 1) 0 before a
-        let εs ← accept q C.length (child path 2) (.list a) (← checkExprR q mode C Γ R .other (child path 2) spread)
-        let εa ← checkEachR q mode C Γ R (child path 3) 0 after a
+        let εb ← checkEachR q mode Δ C Γ R (child path 1) 0 before a
+        let εs ← accept q C.length (child path 2) (.list a) (← checkExprR q mode Δ C Γ R .other (child path 2) spread)
+        let εa ← checkEachR q mode Δ C Γ R (child path 3) 0 after a
         pure (.list a, union q εb (union q εs εa))
     | .interpolation parts es fs => do
         require path "interpolation type is not allowed" (interpAllowed parts)
-        let ε ← checkTypesR q mode C Γ R (child path 0) 0 es (InterpPart.exprTypes parts)
-        let εf ← checkTypesR q mode C Γ R (child path 1) 0 fs (InterpPart.converterTypes parts)
+        let ε ← checkTypesR q mode Δ C Γ R (child path 0) 0 es (InterpPart.exprTypes parts)
+        let εf ← checkTypesR q mode Δ C Γ R (child path 1) 0 fs (InterpPart.converterTypes parts)
         acceptEff q (child path 1) emptyEff εf
         require (child path 1) "interpolation converter is not a direct callee" (allDirect fs)
         require path "interpolation string addition is invalid"
@@ -484,41 +491,41 @@ mutual
         require path "lambda contract names are not well formed" (namesWF names ps)
         require path "lambda body does not exit" (lamBodyOk body r)
         let εb ← accept q C.length (child path 0) r
-          (← checkBlockR q mode C (binds ps ++ hideConts Γ) (some r) .tail (child path 0) body)
+          (← checkBlockR q mode [] C (binds ps ++ hideConts Γ) (some r) .tail (child path 0) body)
         acceptEff q (child path 0) ε εb
         pure (.fn names ps r ε, emptyEff)
     | .ite cond yes no => do
-        let εc ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode C Γ R .other (child path 0) cond)
-        let (ay, εy) ← checkBlockR q mode C Γ R p (child path 1) yes
-        let (an, εn) ← checkBlockR q mode C Γ R p (child path 2) no
+        let εc ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode Δ C Γ R .other (child path 0) cond)
+        let (ay, εy) ← checkBlockR q mode Δ C Γ R p (child path 1) yes
+        let (an, εn) ← checkBlockR q mode Δ C Γ R p (child path 2) no
         let a ← join q C.length path ay an
         pure (a, union q εc (union q εy εn))
     | .elseIf cond yes no => do
         require (child path 2) "else-if continuation is not an if" (isIf no)
-        let εc ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode C Γ R .other (child path 0) cond)
-        let (ay, εy) ← checkBlockR q mode C Γ R p (child path 1) yes
-        let (an, εn) ← checkExprR q mode C Γ R p (child path 2) no
+        let εc ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode Δ C Γ R .other (child path 0) cond)
+        let (ay, εy) ← checkBlockR q mode Δ C Γ R p (child path 1) yes
+        let (an, εn) ← checkExprR q mode Δ C Γ R p (child path 2) no
         let a ← join q C.length path ay an
         pure (a, union q εc (union q εy εn))
     | .ifOnly cond yes => do
-        let εc ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode C Γ R .other (child path 0) cond)
-        let εy ← accept q C.length (child path 1) (.base .unit) (← checkBlockR q mode C Γ R p (child path 1) yes)
+        let εc ← accept q C.length (child path 0) (.base .boolean) (← checkExprR q mode Δ C Γ R .other (child path 0) cond)
+        let εy ← accept q C.length (child path 1) (.base .unit) (← checkBlockR q mode Δ C Γ R p (child path 1) yes)
         pure (.base .unit, union q εc εy)
     | .matchE b e arms => do
         require path "match has no arms" (nonemptyArms arms)
-        let (a, εe) ← checkExprR q mode C Γ R .other (child path 0) e
-        let εarms ← checkArmsR q mode C Γ R p (child path 1) arms a b
+        let (a, εe) ← checkExprR q mode Δ C Γ R .other (child path 0) e
+        let εarms ← checkArmsR q mode Δ C Γ R p (child path 1) arms a b
         require path "match is not exhaustive" (matchExhaustive q.D q.ctors a arms)
         pure (b, union q εe εarms)
     | .returnE a e => do
         let r ← lookup path "return is outside a function" R
         match p with
         | .tail =>
-            let ε ← accept q C.length (child path 0) r (← checkExprR q mode C Γ (some r) .tail (child path 0) e)
+            let ε ← accept q C.length (child path 0) r (← checkExprR q mode Δ C Γ (some r) .tail (child path 0) e)
             pure (r, ε)
         | .other =>
             require path "return annotation is not well formed" (wfTy q.atoms C.length a)
-            let ε ← accept q C.length (child path 0) r (← checkExprR q mode C Γ (some r) .other (child path 0) e)
+            let ε ← accept q C.length (child path 0) r (← checkExprR q mode Δ C Γ (some r) .other (child path 0) e)
             pure (a, ε)
     | .tryResult retArgs ok err e => do
         let cdo ← lookup path "unknown Result success constructor" (q.D.cons ok)
@@ -530,7 +537,7 @@ mutual
         let r ← lookup path "try is outside a function" R
         require path "Result return type mismatch" (tyEq q.atoms r (.data cdo.data retArgs))
         let errTy := (retArgs[1]?).getD (.base .unit)
-        let (a, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        let (a, ε) ← checkExprR q mode Δ C Γ R .other (child path 0) e
         match a with
         | .data d [t, e'] =>
             require (child path 0) "Result input type mismatch" ((d == cdo.data) && tyEq q.atoms e' errTy)
@@ -546,7 +553,7 @@ mutual
         require path "Option return argument count mismatch" (retArgs.length == 1)
         let r ← lookup path "try is outside a function" R
         require path "Option return type mismatch" (tyEq q.atoms r (.data cds.data retArgs))
-        let (a, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        let (a, ε) ← checkExprR q mode Δ C Γ R .other (child path 0) e
         match a with
         | .data d [t] =>
             require (child path 0) "Option input type mismatch" (d == cds.data)
@@ -559,7 +566,7 @@ mutual
         require path "invalid Result constructors"
           ((cdo.ntys == 2) && (cde.ntys == 2) && tysEq q.atoms cdo.args [.tvar 0] &&
             tysEq q.atoms cde.args [.tvar 1] && (cdo.data == cde.data))
-        let (a, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        let (a, ε) ← checkExprR q mode Δ C Γ R .other (child path 0) e
         match a with
         | .data d [actual, et] =>
             require (child path 0) "Result die input type mismatch"
@@ -567,7 +574,7 @@ mutual
             require path "Result try is not exhaustive" (tryResultExhaustive q.D q.ctors d t et ok err)
             checkDieShow q C Γ (child path 2) dict method et
             checkDieExit q C path exit t
-            checkDieMessageR q mode C Γ (child path 1) message
+            checkDieMessageR q mode Δ C Γ (child path 1) message
             pure (t, union q ε (singleEff q.atoms (.name "Process.Exit")))
         | _ => throw ⟨child path 0, "try input is not a Result"⟩
     | .tryOptionDie t someCon noneCon exit e message => do
@@ -576,36 +583,36 @@ mutual
         require path "invalid Option constructors"
           ((cds.ntys == 1) && (cdn.ntys == 1) && tysEq q.atoms cds.args [.tvar 0] &&
             cdn.args.isEmpty && (cds.data == cdn.data))
-        let (a, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        let (a, ε) ← checkExprR q mode Δ C Γ R .other (child path 0) e
         match a with
         | .data d [actual] =>
             require (child path 0) "Option die input type mismatch"
               ((d == cds.data) && tyEq q.atoms actual t)
             require path "Option try is not exhaustive" (tryOptionExhaustive q.D q.ctors d t someCon noneCon)
             checkDieExit q C path exit t
-            checkDieMessageR q mode C Γ (child path 1) message
+            checkDieMessageR q mode Δ C Γ (child path 1) message
             pure (t, union q ε (singleEff q.atoms (.name "Process.Exit")))
         | _ => throw ⟨child path 0, "try input is not an Option"⟩
     | .withE o e body => do
         require path "with type is not a resource" (q.B.isResource o)
         require path "State effect is outside atoms" (q.atoms.contains (.name stateEff))
-        let εe ← accept q C.length (child path 0) (.opaque o) (← checkExprR q mode C Γ R .other (child path 0) e)
-        let (a, εb) ← checkBlockR q mode C (some (.opaque o) :: Γ) R .other (child path 1) body
+        let εe ← accept q C.length (child path 0) (.opaque o) (← checkExprR q mode Δ C Γ R .other (child path 0) e)
+        let (a, εb) ← checkBlockR q mode (none :: Δ) C (some (.opaque o) :: Γ) R .other (child path 1) body
         pure (a, union q εe (union q εb (singleEff q.atoms (.name stateEff))))
     | .lazyE body => do
-        let (a, ε) ← checkBlockR q mode C (hideConts Γ) none .other (child path 0) body
+        let (a, ε) ← checkBlockR q mode [] C (hideConts Γ) none .other (child path 0) body
         acceptEff q (child path 0) emptyEff ε
         pure (.lazy a, emptyEff)
     | .handleE body cs => do
-        let (t0, εbody) ← checkBlockR q mode C Γ R .other (child path 0) body
+        let (t0, εbody) ← checkBlockR q mode Δ C Γ R .other (child path 0) body
         let h := handled q.D.patternProgram q.B cs.skeleton
         let initial := diffEff q.atoms εbody h
         -- 型の探索で生じた要求は捨て、確定した型での反復で集め直す。
-        let (t, _) ← (inferClauseTypesR q C Γ R (child path 1) cs t0 initial).run {}
+        let (t, _) ← (inferClauseTypesR q Δ C Γ R (child path 1) cs t0 initial).run {}
         let keys := clauseKeys Γ.length cs
         let ε ← fixedEffectsR q path
           (fun ε => do
-            let (actual, st) ← (checkClausesR q .relaxed C Γ R (child path 1) cs t ε).run {}
+            let (actual, st) ← (checkClausesR q .relaxed Δ C Γ R (child path 1) cs t ε).run {}
             modify fun outer => { outer with requests :=
               outer.requests ++ st.requests.filter (fun r => !keys.contains r.1) }
             pure (union q actual (requestedEffect q keys st.requests)))
@@ -613,7 +620,7 @@ mutual
         -- 自分の継続は厳密に検査し、外側の継続には外側の印を使う。
         let saved := (← get).strictConts
         modify fun st => { st with strictConts := keys ++ saved }
-        let _ ← checkClausesR q mode C Γ R (child path 1) cs t ε
+        let _ ← checkClausesR q mode Δ C Γ R (child path 1) cs t ε
         modify fun st => { st with strictConts := saved }
         require (child path 0) "handler body result type mismatch" (cleanTy q.atoms C.length t && tyLe q.atoms t0 t)
         acceptEff q (child path 0) (union q ε h) εbody
@@ -622,7 +629,7 @@ mutual
         let a ← lookup path "continuation is missing or hidden" ((Γ[k]?).join)
         match a with
         | .cont b t ε =>
-            let εarg ← accept q C.length (child path 0) b (← checkExprR q mode C Γ R .other (child path 0) e)
+            let εarg ← accept q C.length (child path 0) b (← checkExprR q mode Δ C Γ R .other (child path 0) e)
             let key := Γ.length - (k + 1)
             if mode == .strict || (← get).strictConts.contains key then
               acceptEff q (child path 0) ε εarg
@@ -631,83 +638,90 @@ mutual
             pure (t, ε)
         | _ => throw ⟨path, "resume local is not a continuation"⟩) true
 
-  def checkBlockR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkBlockR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (p : Position) (path : List Nat) (body : Block) : Checking Inferred :=
     guardInferred q path (match body with
+    | .builderBind k refs rest => do
+        require path "invalid builder content type" (cleanTy q.atoms C.length k.contents && singleTyCheck q.atoms q.noFailRows k.contents)
+        require path "missing State atom" (q.atoms.elem (.name stateEff))
+        require path "invalid builder declaration references"
+          (tyEq q.atoms k.contents refs.kind.contents && refs.check q.atoms q.D q.B q.satDec q.admitsDec q.noFailRows C (some k :: Δ) 0)
+        let (a, ε) ← checkBlockR q mode (some k :: Δ) C (none :: Γ) R p (child path 0) rest
+        pure (a, union q (singleEff q.atoms (.name stateEff)) ε)
     | .empty => pure (.base .unit, emptyEff)
-    | .last e => checkExprR q mode C Γ R p (child path 0) e
+    | .last e => checkExprR q mode Δ C Γ R p (child path 0) e
     | .lastBind _ t e => do
-        let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
+        let ε ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) e)
         pure (.base .unit, ε)
     | .lastDiscard e => do
-        let (_, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        let (_, ε) ← checkExprR q mode Δ C Γ R .other (child path 0) e
         pure (.base .unit, ε)
     | .bind _ t e rest => do
-        let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
-        let (a, εs) ← checkBlockR q mode C (some t :: Γ) R p (child path 1) rest
+        let ε ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) e)
+        let (a, εs) ← checkBlockR q mode (none :: Δ) C (some t :: Γ) R p (child path 1) rest
         pure (a, union q ε εs)
     | .discard e rest => do
-        let (_, ε) ← checkExprR q mode C Γ R .other (child path 0) e
-        let (a, εs) ← checkBlockR q mode C Γ R p (child path 1) rest
+        let (_, ε) ← checkExprR q mode Δ C Γ R .other (child path 0) e
+        let (a, εs) ← checkBlockR q mode Δ C Γ R p (child path 1) rest
         pure (a, union q ε εs)
     | .seq e rest => do
-        let ε ← accept q C.length (child path 0) (.base .unit) (← checkExprR q mode C Γ R .other (child path 0) e)
+        let ε ← accept q C.length (child path 0) (.base .unit) (← checkExprR q mode Δ C Γ R .other (child path 0) e)
         require (child path 0) "expression before another statement always exits" (!exprExits e)
-        let (a, εs) ← checkBlockR q mode C Γ R p (child path 1) rest
+        let (a, εs) ← checkBlockR q mode Δ C Γ R p (child path 1) rest
         pure (a, union q ε εs)
     | .lastPat _ pat t e => do
         require path "binding pattern is trivial or invalid" (nontrivial pat && patternValid pat)
         let _ ← lookup path "binding pattern type mismatch" (surfacePatTy q.atoms q.D pat t)
         require path "binding pattern is not exhaustive" (bindingExhaustive q.D q.ctors t pat)
-        let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
+        let ε ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) e)
         pure (.base .unit, ε)
     | .bindPat _ pat t e rest => do
         require path "binding pattern is trivial or invalid" (nontrivial pat && patternValid pat)
         let δ ← lookup path "binding pattern type mismatch" (surfacePatTy q.atoms q.D pat t)
         require path "binding pattern is not exhaustive" (bindingExhaustive q.D q.ctors t pat)
-        let ε ← accept q C.length (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
-        let (a, εs) ← checkBlockR q mode C (binds δ ++ Γ) R p (child path 1) rest
+        let ε ← accept q C.length (child path 0) t (← checkExprR q mode Δ C Γ R .other (child path 0) e)
+        let (a, εs) ← checkBlockR q mode (List.replicate δ.length none ++ Δ) C (binds δ ++ Γ) R p (child path 1) rest
         pure (a, union q ε εs)) true
 
   /-- 説明は外側の return と継続を隠す。内側の lambda は通常の境界を作る。 -/
-  def checkDieMessageR (q : Input) (mode : ResumeMode) (C : List TParam)
+  def checkDieMessageR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam)
       (Γ : List (Option Ty)) (path : List Nat) : Option Expr → Checking Unit
     | none => pure ()
     | some message => do
         let ε ← accept q C.length path (.base .string)
-          (← checkExprR q mode C (hideConts Γ) none .other path message)
+          (← checkExprR q mode Δ C (hideConts Γ) none .other path message)
         acceptEff q path emptyEff ε
 
-  def checkTypesR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkTypesR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) (index : Nat) : Exprs → List Ty → Checking Eff
     | .nil, [] => pure emptyEff
     | .cons e es, a :: as => do
-        let ε ← accept q C.length (child path index) a (← checkExprR q mode C Γ R .other (child path index) e)
-        let εs ← checkTypesR q mode C Γ R path (index + 1) es as
+        let ε ← accept q C.length (child path index) a (← checkExprR q mode Δ C Γ R .other (child path index) e)
+        let εs ← checkTypesR q mode Δ C Γ R path (index + 1) es as
         pure (union q ε εs)
     | _, _ => throw ⟨path, "argument count mismatch"⟩
 
-  def checkEachR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkEachR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) (index : Nat) : Exprs → Ty → Checking Eff
     | .nil, _ => pure emptyEff
     | .cons e es, a => do
-        let ε ← accept q C.length (child path index) a (← checkExprR q mode C Γ R .other (child path index) e)
-        let εs ← checkEachR q mode C Γ R path (index + 1) es a
+        let ε ← accept q C.length (child path index) a (← checkExprR q mode Δ C Γ R .other (child path index) e)
+        let εs ← checkEachR q mode Δ C Γ R path (index + 1) es a
         pure (union q ε εs)
 
-  def checkHoleArgsR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkHoleArgsR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) (index : Nat) : HoleArgs → List Ty → Checking Eff
     | .nil, [] => pure emptyEff
     | .expr _ _ e args, a :: as => do
-        let ε ← accept q C.length (child path index) a (← checkExprR q mode C Γ R .other (child path index) e)
-        let εs ← checkHoleArgsR q mode C Γ R path (index + 1) args as
+        let ε ← accept q C.length (child path index) a (← checkExprR q mode Δ C Γ R .other (child path index) e)
+        let εs ← checkHoleArgsR q mode Δ C Γ R path (index + 1) args as
         pure (union q ε εs)
     | .hole _ _ t args, a :: as => do
         require (child path index) "hole annotation type mismatch" (cleanTy q.atoms C.length a && tyLe q.atoms t a)
-        checkHoleArgsR q mode C Γ R path (index + 1) args as
+        checkHoleArgsR q mode Δ C Γ R path (index + 1) args as
     | _, _ => throw ⟨path, "hole argument count mismatch"⟩
 
-  def checkArmsR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkArmsR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (p : Position) (path : List Nat) : Arms → Ty → Ty → Checking Eff
     | .nil, _, b => do
         require path "match result type is not well formed" (wfTy q.atoms C.length b)
@@ -721,13 +735,13 @@ mutual
         | none => pure ()
         | some g =>
             let εg ← accept q C.length (child path 0) (.base .boolean)
-              (← checkExprR q mode C (hideConts env) none .other (child path 0) g)
+              (← checkExprR q mode (List.replicate δ.length none ++ Δ) C (hideConts env) none .other (child path 0) g)
             acceptEff q (child path 0) emptyEff εg
-        let ε ← accept q C.length (child path 1) b (← checkBlockR q mode C env R p (child path 1) body)
-        let εs ← checkArmsR q mode C Γ R p (child path 2) rest a b
+        let ε ← accept q C.length (child path 1) b (← checkBlockR q mode (List.replicate δ.length none ++ Δ) C env R p (child path 1) body)
+        let εs ← checkArmsR q mode Δ C Γ R p (child path 2) rest a b
         pure (union q ε εs)
 
-  def checkClausesR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+  def checkClausesR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) : Clauses → Ty → Eff → Checking Eff
     | .nil, _, _ => pure emptyEff
     | .cons o n ntys body rest ndicts, t, ε => do
@@ -740,18 +754,18 @@ mutual
         let env := some (.cont sg.ret result (shiftEff q.atoms ntys 0 ε)) ::
           (binds sg.params ++ Γ.map (Option.map (shiftTy q.atoms ntys 0)))
         let εb ← accept q (sg.tparams ++ C).length (child path 0) result
-          (← checkBlockR q mode (sg.tparams ++ C) env (R.map (shiftTy q.atoms ntys 0)) .other (child path 0) body)
+          (← checkBlockR q mode [] (sg.tparams ++ C) env (R.map (shiftTy q.atoms ntys 0)) .other (child path 0) body)
         let εouter := substEffAt q.atoms 0 (List.replicate ntys (.base .unit)) [] εb
         -- 探索中の候補は節の効果をまだ覆わない。内外の包含は確定後に検査する。
         if mode == .strict || (← get).strictConts.contains (Γ.length + ndicts + n) then do
           acceptEff q (child path 0) (shiftEff q.atoms ntys 0 ε) εb
           acceptEff q (child path 0) ε εouter
         else pure ()
-        let εs ← checkClausesR q mode C Γ R (child path 1) rest t ε
+        let εs ← checkClausesR q mode Δ C Γ R (child path 1) rest t ε
         pure (union q εouter εs)
 
   /-- 節の型を外側に戻し、ずらし直して一致することを確かめてから結ぶ。 -/
-  def inferClauseTypesR (q : Input) (C : List TParam) (Γ : List (Option Ty))
+  def inferClauseTypesR (q : Input) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) : Clauses → Ty → Eff → Checking Ty
     | .nil, t, _ => pure t
     | .cons o n ntys body rest ndicts, t, ε => do
@@ -763,85 +777,85 @@ mutual
         let result := shiftTy q.atoms ntys 0 t
         let env := some (.cont sg.ret result (shiftEff q.atoms ntys 0 ε)) ::
           (binds sg.params ++ Γ.map (Option.map (shiftTy q.atoms ntys 0)))
-        let (a, _) ← checkBlockR q .relaxed (sg.tparams ++ C) env (R.map (shiftTy q.atoms ntys 0)) .other (child path 0) body
+        let (a, _) ← checkBlockR q .relaxed [] (sg.tparams ++ C) env (R.map (shiftTy q.atoms ntys 0)) .other (child path 0) body
         let outer := substTy q.atoms (List.replicate ntys (.base .unit)) [] a
         require (child path 0) "handler result mentions an operation type parameter"
           (tyEq q.atoms (shiftTy q.atoms ntys 0 outer) a)
         let t' ← join q C.length (child path 0) t outer
-        inferClauseTypesR q C Γ R (child path 1) rest t' ε
+        inferClauseTypesR q Δ C Γ R (child path 1) rest t' ε
 end
 
-/-- 公開の入口は空の状態から始める。厳密な検査の型と契約を保つ。 -/
-def checkExprQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+/-- Q 付きの内部入口は状態だけを空にする。公開入口は Δ も空にする。 -/
+def checkExprQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (p : Position) (path : List Nat) (e : Expr) : Result Inferred :=
-  (checkExprR q mode C Γ R p path e).run' {}
+  (checkExprR q mode Δ C Γ R p path e).run' {}
 
-def checkBlockQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+def checkBlockQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (p : Position) (path : List Nat) (body : Block) : Result Inferred :=
-  (checkBlockR q mode C Γ R p path body).run' {}
+  (checkBlockR q mode Δ C Γ R p path body).run' {}
 
-def checkTypesQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+def checkTypesQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (es : Exprs) (ts : List Ty) : Result Eff :=
   guardResult path true
-    ((checkTypesR q mode C Γ R path 0 es ts).run' {})
+    ((checkTypesR q mode Δ C Γ R path 0 es ts).run' {})
 
-def checkEachQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+def checkEachQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (es : Exprs) (a : Ty) : Result Eff :=
   guardResult path true
-    ((checkEachR q mode C Γ R path 0 es a).run' {})
+    ((checkEachR q mode Δ C Γ R path 0 es a).run' {})
 
-def checkHoleArgsQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+def checkHoleArgsQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (args : HoleArgs) (ts : List Ty) : Result Eff :=
   guardResult path true
-    ((checkHoleArgsR q mode C Γ R path 0 args ts).run' {})
+    ((checkHoleArgsR q mode Δ C Γ R path 0 args ts).run' {})
 
-def checkArmsQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+def checkArmsQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (p : Position) (path : List Nat) (arms : Arms) (a b : Ty) : Result Eff :=
   guardResult path true
-    ((checkArmsR q mode C Γ R p path arms a b).run' {})
+    ((checkArmsR q mode Δ C Γ R p path arms a b).run' {})
 
-def checkClausesQ (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
+def checkClausesQ (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (cs : Clauses) (t : Ty) (ε : Eff) : Result Eff :=
   guardResult path true
-    ((checkClausesR q mode C Γ R path cs t ε).run' {})
+    ((checkClausesR q mode Δ C Γ R path cs t ε).run' {})
 
-def inferClauseTypesQ (q : Input) (C : List TParam) (Γ : List (Option Ty))
+def inferClauseTypesQ (q : Input) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (cs : Clauses) (t : Ty) (ε : Eff) : Result Ty :=
   guardResult path true
-    ((inferClauseTypesR q C Γ R path cs t ε).run' {})
+    ((inferClauseTypesR q Δ C Γ R path cs t ε).run' {})
 
 /-- 宣言の外の従来の入口は、NoFail を仮定しない。 -/
 def checkExpr (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (p : Position) (path : List Nat) (e : Expr) : Result Inferred :=
-  checkExprQ { q with noFailRows := [] } mode C Γ R p path e
+  checkExprQ { q with noFailRows := [] } mode [] C Γ R p path e
 
 def checkBlock (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (p : Position) (path : List Nat) (body : Block) : Result Inferred :=
-  checkBlockQ { q with noFailRows := [] } mode C Γ R p path body
+  checkBlockQ { q with noFailRows := [] } mode [] C Γ R p path body
 
 def checkTypes (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (es : Exprs) (ts : List Ty) : Result Eff :=
-  checkTypesQ { q with noFailRows := [] } mode C Γ R path es ts
+  checkTypesQ { q with noFailRows := [] } mode [] C Γ R path es ts
 
 def checkEach (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (es : Exprs) (a : Ty) : Result Eff :=
-  checkEachQ { q with noFailRows := [] } mode C Γ R path es a
+  checkEachQ { q with noFailRows := [] } mode [] C Γ R path es a
 
 def checkHoleArgs (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (args : HoleArgs) (ts : List Ty) : Result Eff :=
-  checkHoleArgsQ { q with noFailRows := [] } mode C Γ R path args ts
+  checkHoleArgsQ { q with noFailRows := [] } mode [] C Γ R path args ts
 
 def checkArms (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (p : Position) (path : List Nat) (arms : Arms) (a b : Ty) : Result Eff :=
-  checkArmsQ { q with noFailRows := [] } mode C Γ R p path arms a b
+  checkArmsQ { q with noFailRows := [] } mode [] C Γ R p path arms a b
 
 def checkClauses (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (cs : Clauses) (t : Ty) (ε : Eff) : Result Eff :=
-  checkClausesQ { q with noFailRows := [] } mode C Γ R path cs t ε
+  checkClausesQ { q with noFailRows := [] } mode [] C Γ R path cs t ε
 
 def inferClauseTypes (q : Input) (C : List TParam) (Γ : List (Option Ty))
     (R : Option Ty) (path : List Nat) (cs : Clauses) (t : Ty) (ε : Eff) : Result Ty :=
-  inferClauseTypesQ { q with noFailRows := [] } C Γ R path cs t ε
+  inferClauseTypesQ { q with noFailRows := [] } [] C Γ R path cs t ε
 
 /-- 定義の宣言した戻り値型とエフェクトで本体を受け入れる。 -/
 def checkDef (q : Input) (path : List Nat) (d : Def) : Result Unit := do
@@ -851,7 +865,7 @@ def checkDef (q : Input) (path : List Nat) (d : Def) : Result Unit := do
   require path "function contract names are not well formed" (namesWF d.names d.params)
   require path "function body does not exit" (lamBodyOk d.body d.ret)
   let ε ← accept bodyQ d.tparams.length (child path 0) d.ret
-    (← checkBlockQ bodyQ .strict d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail (child path 0) d.body)
+    (← checkBlockQ bodyQ .strict [] d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail (child path 0) d.body)
   acceptEff bodyQ (child path 0) d.eff ε
 
 /-- 実装の実名は位置による局所束縛へ変換する前に保持する。 -/
@@ -888,7 +902,7 @@ def checkMethods (q : Input) (path : List Nat) (id : ImplInput) (cd : ClassDecl)
           let params := ms.params.map (substTyAt q.atoms ms.tparams.length [id.target] [])
           require methodPath "implementation method body does not exit" (lamBodyOk body result)
           let ε ← accept { bodyQ with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } (ms.tparams ++ id.tparams).length methodPath result
-            (← checkBlockQ { bodyQ with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } .strict (ms.tparams ++ id.tparams)
+            (← checkBlockQ { bodyQ with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } .strict [] (ms.tparams ++ id.tparams)
               (binds (id.dictTys.map (shiftTy q.atoms ms.tparams.length 0) ++ params))
               (some result) .tail methodPath body)
           acceptEff { bodyQ with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } methodPath (substEffAt q.atoms ms.tparams.length [id.target] [] ms.eff) ε

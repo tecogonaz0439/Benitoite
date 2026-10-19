@@ -87,7 +87,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
     }
     // 依存先が失敗した定数は後続へ渡さない。参照の循環は名前解決が拒む（02-04「宣言の検査」）。
     let mut failed = BTreeSet::new();
-    let mut budget = EvalBudget::default();
+    let mut budget = EvalBudget::traced();
     while !pending.is_empty() {
         let mut progress = false;
         let ids = pending.keys().copied().collect::<Vec<_>>();
@@ -110,8 +110,11 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 failed.insert(id);
                 continue;
             }
+            budget.origins.clear();
             match eval(d, &c.value, &mut budget) {
                 Ok(v) => {
+                    d.const_origins
+                        .insert(id, std::mem::take(&mut budget.origins));
                     d.out.consts.insert(id, v);
                 }
                 Err(EvalError::Arithmetic(span, condition)) => {
@@ -171,7 +174,7 @@ fn contains_param(ty: &Ty) -> bool {
         }
     }
 }
-fn std_call(d: &Decls<'_>, e: &Expr, name: &str) -> bool {
+pub(super) fn std_call(d: &Decls<'_>, e: &Expr, name: &str) -> bool {
     let Expr::Name(n) = e else {
         return false;
     };
@@ -310,11 +313,19 @@ impl EvalLimit {
     }
 }
 #[derive(Default)]
-struct EvalBudget {
+pub(super) struct EvalBudget {
     limits: EvalLimits,
     used: usize,
+    trace: bool,
+    origins: BTreeSet<BindingId>,
 }
 impl EvalBudget {
+    pub(super) fn traced() -> Self {
+        Self {
+            trace: true,
+            ..Self::default()
+        }
+    }
     fn charge(&mut self, bytes: usize, span: Span) -> Result<(), EvalError> {
         self.used = self
             .used
@@ -426,6 +437,35 @@ fn eval(d: &Decls<'_>, e: &Expr, budget: &mut EvalBudget) -> EvalResult {
         | Expr::Error(_) => Err(EvalError::Unavailable),
     }
 }
+/// 取得不能と資源上限を、不良な定数式から区別する（設計書 02-05「定数の検査と評価」）。
+pub(super) enum ConstKnowledge {
+    Known {
+        value: V,
+        argument_span: Span,
+        const_origins: BTreeSet<BindingId>,
+    },
+    Unknown,
+    BudgetExceeded,
+    Invalid,
+}
+
+pub(super) fn argument(d: &Decls<'_>, e: &Expr, budget: &mut EvalBudget) -> ConstKnowledge {
+    if bad_shape(d, e).is_some() {
+        return ConstKnowledge::Unknown;
+    }
+    budget.origins.clear();
+    match eval(d, e, budget) {
+        Ok(value) => ConstKnowledge::Known {
+            value,
+            argument_span: e.span(),
+            const_origins: std::mem::take(&mut budget.origins),
+        },
+        Err(EvalError::Limit(..)) => ConstKnowledge::BudgetExceeded,
+        Err(EvalError::Unavailable) => ConstKnowledge::Unknown,
+        Err(EvalError::Arithmetic(..) | EvalError::Duplicate { .. }) => ConstKnowledge::Invalid,
+    }
+}
+
 fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult {
     if let Expr::Name(n) = c.callee.as_ref()
         && let Some(id) = d.reference(n.id)
@@ -540,7 +580,7 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult
 }
 // 名前付きのソース順から引数の位置を推測しない。標準の束縛を照合した呼び出しだけで
 // 宣言の名前を使う（設計書 02-05「定数の検査と評価」「警告」）。
-fn standard_argument<'a>(c: &'a CallExpr, index: usize, name: &str) -> Option<&'a Expr> {
+pub(super) fn standard_argument<'a>(c: &'a CallExpr, index: usize, name: &str) -> Option<&'a Expr> {
     if c.args.iter().any(|a| matches!(a, Arg::Named(_))) {
         c.args
             .iter()
@@ -1127,7 +1167,7 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
     });
     ctx.diagnostics.extend(diagnostics);
 }
-fn visit_block(b: &Block, f: &mut impl FnMut(&Expr)) {
+pub(super) fn visit_block<'a>(b: &'a Block, f: &mut impl FnMut(&'a Expr)) {
     for s in &b.stmts {
         match s {
             Stmt::Expr(e) => visit_expr(e, f),
@@ -1137,7 +1177,7 @@ fn visit_block(b: &Block, f: &mut impl FnMut(&Expr)) {
     }
 }
 // 呼び出し側の検査は If 自体を対象にしないので、else if の子だけを同じ順序で辿る。
-fn visit_if(i: &IfExpr, f: &mut impl FnMut(&Expr)) {
+fn visit_if<'a>(i: &'a IfExpr, f: &mut impl FnMut(&'a Expr)) {
     visit_expr(&i.cond, f);
     visit_block(&i.then_block, f);
     if let Some(b) = &i.else_branch {
@@ -1147,7 +1187,7 @@ fn visit_if(i: &IfExpr, f: &mut impl FnMut(&Expr)) {
         }
     }
 }
-fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
+fn visit_expr<'a>(e: &'a Expr, f: &mut impl FnMut(&'a Expr)) {
     f(e);
     match e {
         Expr::Paren(p) => visit_expr(&p.inner, f),
@@ -1234,6 +1274,12 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
 fn eval_name(d: &Decls<'_>, n: &NameExpr, budget: &mut EvalBudget) -> EvalResult {
     let id = d.reference(n.id).ok_or(EvalError::Unavailable)?;
     if let Some(v) = d.out.consts.get(id) {
+        if budget.trace && !budget.origins.contains(&id) {
+            // BTreeSetの節点・辺の保存領域を保守的に数える。推移的な集合は保存しない
+            // （設計書 02-05「定数の検査と評価」）。
+            budget.charge(64, n.span)?;
+            budget.origins.insert(id);
+        }
         return budget.clone_value(v, n.span);
     }
     let Some(BindingKind::Ctor { data, tag }) = d.resolved.bindings.get(id).map(|b| b.kind) else {
@@ -1525,7 +1571,10 @@ mod tests {
                 list_len,
                 budget: 4096,
             };
-            let mut budget = EvalBudget { limits, used: 0 };
+            let mut budget = EvalBudget {
+                limits,
+                ..EvalBudget::default()
+            };
             let result = binary(
                 BinOp::Add,
                 V::String("ab".into()),
@@ -1538,7 +1587,10 @@ mod tests {
             } else {
                 assert!(matches!(result, Err(EvalError::Limit(s, EvalLimit::String)) if s == span));
             }
-            let mut budget = EvalBudget { limits, used: 0 };
+            let mut budget = EvalBudget {
+                limits,
+                ..EvalBudget::default()
+            };
             let value = V::List(vec![V::Integer(1), V::Integer(2)]);
             let result = budget.clone_value(&value, span);
             if list_ok {
@@ -1594,6 +1646,7 @@ mod tests {
                         ..EvalLimits::default()
                     },
                     used: 0,
+                    ..EvalBudget::default()
                 };
                 assert!(duplicate_key_warnings(d, l, false, &mut budget).is_empty());
             },
@@ -1614,6 +1667,7 @@ mod tests {
                         ..EvalLimits::default()
                     },
                     used: 0,
+                    ..EvalBudget::default()
                 };
                 let result = eval(d, e, &mut budget);
                 if allowed {
@@ -1644,6 +1698,7 @@ mod tests {
                     ..EvalLimits::default()
                 },
                 used: 0,
+                ..EvalBudget::default()
             };
             assert!(
                 matches!(eval(d, e, &mut budget), Ok(V::String(text)) if text == fragment.repeat(5))

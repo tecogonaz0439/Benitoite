@@ -6,6 +6,13 @@ Refer to its declarations as `List.<name>`, for example `List.length`.
 
 Functions on `List`. Lists are made with list literals and these functions.
 
+```benitoite test
+@test
+function listExample() -> Unit uses Assert.Check
+  Assert.equal(actual: List.map(xs: [1, 2, 3], f: lambda(value) return value * 2), expected: [2, 4, 6])
+end function
+```
+
 ```benitoite
 public function length[T](xs: List[T]) -> Integer
 ```

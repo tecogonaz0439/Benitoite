@@ -1,0 +1,37 @@
+// 設計書 03-06「Range」。
+// 関門: 独立期待値で閉区間・失敗順・全保存欄・再検査とVM/参照実行器の接続を守る。
+import Benitoite.Trait
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.IO.Console
+
+function describe(result: Result[Range.CheckedInteger, Range.RangeError]) -> String
+  return match result with
+    case Result.Ok(checked) -> "Ok(${Range.minimum(checked)}, ${Range.maximum(checked)}, ${Range.value(checked)})"
+    case Result.Error(error) -> Trait.Show.show(error)
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(describe(Range.checkInteger(minimum: 0, maximum: 10, value: 10)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 0, maximum: 10, value: 0)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 0, maximum: 10, value: 5)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 10, maximum: 0, value: 5)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 0, maximum: 10, value: 11)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 0, maximum: 10, value: -1)))
+  Console.writeLine(describe(Range.checkInteger(minimum: -7, maximum: -7, value: -7)))
+  Console.writeLine(describe(Range.checkInteger(minimum: -9223372036854775808, maximum: 9223372036854775807, value: -9223372036854775808)))
+  Console.writeLine(describe(Range.checkInteger(minimum: -9223372036854775808, maximum: 9223372036854775807, value: 9223372036854775807)))
+  Console.writeLine(describe(Range.checkInteger(minimum: -9223372036854775808, maximum: -9223372036854775808, value: -9223372036854775808)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 9223372036854775807, maximum: 9223372036854775807, value: 9223372036854775807)))
+  Console.writeLine(describe(Range.checkInteger(minimum: 9223372036854775807, maximum: -9223372036854775808, value: 0)))
+  Console.writeLine(describe(Range.checkInteger(minimum: -10, maximum: -1, value: -11)))
+  Console.writeLine(describe(Range.checkInteger(minimum: -10, maximum: -1, value: 0)))
+  match Range.checkInteger(minimum: 0, maximum: 10, value: 10) with
+    case Result.Ok(checked) ->
+      Console.writeLine(describe(Range.checkInteger(minimum: Range.minimum(checked), maximum: Range.maximum(checked), value: Range.value(checked))))
+      Console.writeLine(describe(Range.checkInteger(minimum: 0, maximum: 9, value: Range.value(checked))))
+      Console.writeLine(describe(Range.checkInteger(minimum: 10, maximum: 10, value: Range.value(checked))))
+    case Result.Error(error) -> Console.writeLine(Trait.Show.show(error))
+  end match
+  Console.writeLine(Trait.Show.show(Result.ok(Range.checkInteger(minimum: 0, maximum: 10, value: 11)) = Option.None))
+end function

@@ -18,6 +18,9 @@ use std::collections::{BTreeMap, BTreeSet};
 mod builtin_export;
 pub use builtin_export::{complete_stdlib, named_builtin_tables};
 
+#[path = "builders.rs"]
+mod builder_export;
+
 #[path = "named_calls.rs"]
 pub(super) mod named_calls;
 
@@ -216,6 +219,7 @@ enum Position {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum SurfaceSlot {
     Local(BindingId),
+    Builder(BindingId),
     Continuation,
     Ignored,
     Dictionary(usize),
@@ -1540,6 +1544,45 @@ impl Surface<'_> {
         tagged("withE", json!({"o":o,"bound":bound,"body":body}))
     }
     fn call(&mut self, v: &a::CallExpr, env: &[SurfaceSlot]) -> Value {
+        if let Some(op) = self.p.types.builder_ops.get(v.id).cloned() {
+            let index = env
+                .iter()
+                .rev()
+                .position(|slot| *slot == SurfaceSlot::Builder(op.builder.0))
+                .expect("builder not in lexical environment");
+            let args: Vec<_> = op
+                .args
+                .iter()
+                .map(|id| {
+                    let expr = v
+                        .args
+                        .iter()
+                        .filter_map(|a| match a {
+                            a::Arg::Expr(e) => Some(e),
+                            a::Arg::Named(n) => match &n.value {
+                                a::ArgValue::Expr(e) => Some(e),
+                                a::ArgValue::Placeholder(_) => None,
+                            },
+                            a::Arg::Placeholder(_) => None,
+                        })
+                        .find(|e| e.id() == *id)
+                        .expect("missing builder argument");
+                    self.expr(expr, env)
+                })
+                .collect();
+            use benitoite::resolve::builders::BuilderOp;
+            let name = match op.op {
+                BuilderOp::Append => "append",
+                BuilderOp::AppendAll => "appendAll",
+                BuilderOp::Copy => "copy",
+                BuilderOp::Length => "length",
+            };
+            let refs = self.builder_refs(&op.kind, &op.refs);
+            return tagged(
+                "builderOp",
+                json!({"op":name,"index":index,"args":args,"refs":refs}),
+            );
+        }
         let mut ctor = None;
         if let a::Expr::Name(n) = v.callee.as_ref() {
             let id = self.reference(n.id);
@@ -1596,6 +1639,20 @@ impl Surface<'_> {
                 }
             }
             a::Stmt::Bind(b) => {
+                if let Some(decl) = self.p.types.builders.get(b.id).cloned() {
+                    let kind = match &decl.kind {
+                        benitoite::typeck::BuilderKind::String => json!("string"),
+                        benitoite::typeck::BuilderKind::List(t) => {
+                            tagged("list", json!({"element":self.ty(t)}))
+                        }
+                        benitoite::typeck::BuilderKind::Bytes => json!("bytes"),
+                    };
+                    let refs = self.builder_refs(&decl.kind, &decl.refs);
+                    let mut local = env.to_vec();
+                    local.push(SurfaceSlot::Builder(decl.id.0));
+                    let rest = self.statements(rest, &local, position);
+                    return tagged("builderBind", json!({"kind":kind,"refs":refs,"rest":rest}));
+                }
                 let expr = self.expr(&b.value, env);
                 let ty = self.node_ty(b.id);
                 let shadow = b.mode == a::BindMode::Shadow;
@@ -2640,7 +2697,7 @@ pub fn named_stdlib_declarations(
         match value {
             Value::Array(xs) => xs.iter().for_each(|x| references(x, names)),
             Value::Object(xs) => {
-                for tag in ["funName", "funDicts"] {
+                for tag in ["funName", "funDicts", "funRef"] {
                     if let Some(name) = xs.get(tag).and_then(|x| x["name"].as_str()) {
                         names.insert(name.to_owned());
                     }

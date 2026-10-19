@@ -24,6 +24,19 @@ pub struct ErrorNode {
 pub struct DocComment {
     pub span: Span,
     pub text: String,
+    /// 結合した本文と、接頭辞・改行を除く前の各行の対応。
+    pub lines: Vec<DocLine>,
+}
+
+/// doc本文の一行のUTF-8バイト範囲と元ソースの対応（設計書 02-02「docの位置対応」）。
+#[derive(Clone, PartialEq, Debug)]
+pub struct DocLine {
+    /// DocComment.text内の範囲。結合の改行は含めない。
+    pub text: std::ops::Range<usize>,
+    /// 接頭辞と、存在すればCRLF/LFを含む元の行。行頭の字下げは含めない。
+    pub span: Span,
+    /// 接頭辞だけを除いた本文。直後の空白はまだ含む。
+    pub content: Span,
 }
 
 // ---------------- モジュールと宣言 ----------------

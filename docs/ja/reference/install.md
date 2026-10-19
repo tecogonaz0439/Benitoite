@@ -1,8 +1,8 @@
 # Benitoite のインストール
 
-> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
-この文書では、`benitoite` `0.0.8` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
+この文書では、`benitoite` `0.0.9` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
 
 ## 対応するシステム
 
@@ -30,20 +30,20 @@ Benitoite のリポジトリの GitHub Releases のページにある各リリ�
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.8-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.0.9-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 ハッシュを確かめる。macOS では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 Linux では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 ハッシュが一致すると、コマンドはファイル名の後に `OK` を表示する。一致しないときは、アーカイブをダウンロードし直し、そのアーカイブは使わない。
@@ -55,16 +55,16 @@ grep "benitoite-0.0.8-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 アーカイブを新しいディレクトリに展開し、展開した `benitoite` を、`~/.local/bin` など `PATH` にあるディレクトリへ移す。
 
 ```sh
-mkdir benitoite-0.0.8
-tar -xzf "benitoite-0.0.8-$TARGET.tar.gz" -C benitoite-0.0.8
+mkdir benitoite-0.0.9
+tar -xzf "benitoite-0.0.9-$TARGET.tar.gz" -C benitoite-0.0.9
 mkdir -p ~/.local/bin
-find benitoite-0.0.8 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.0.9 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 `benitoite` を再配布するときは、アーカイブの `LICENSE-MIT`、`LICENSE-APACHE`、`THIRD_PARTY_LICENSES` を残しておく。`benitoite --licenses` は、同じ `THIRD_PARTY_LICENSES` を表示する。
 
-`benitoite --version` は、最初の行に `benitoite 0.0.8` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
+`benitoite --version` は、最初の行に `benitoite 0.0.9` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
 
 エージェントやハーネスでは、`benitoite --version=json` で版・ビルド・対応する形式の情報を問い合わせる。このオプションは最初かつ唯一の引数として指定する。リリースの版から機能を推測せず、必要な `formats` のキーと解釈できる整数の版を確かめる。出力は UTF-8 の単一 JSON オブジェクトと末尾の LF である。成功は終了状態 0、使い方の誤りは 2、処理系の不具合は 3、出力の失敗は 1 になる。欄は[版と対応する形式](benitoite.md#版と対応する形式)、不明な値の意味は[ビルド情報](#ビルド情報)を参照する。
 
@@ -147,6 +147,12 @@ Skill が説明するのは、一緒に配られた版の `benitoite` だけで�
 
 呼び出しの規則と関数の契約は、[関数とラムダ](benitoite.md#6-関数とラムダ)を参照する。同じ実行ファイルからインストールした Skill で、パラメータ名とコールバックの契約を調べる。
 
+### 0.0.8 から 0.0.9 への更新
+
+この版はソースコードだけを配る。下の手順でビルドし、新しい実行ファイルから Skill を再インストールする。language 宣言と依存のハッシュを更新する前に、[0.0.9 の移行案内](../../../CHANGELOG.md#009-san-benito)を読む。Regex の定数拒否、Scope の表記の検査、Range の実行時 Error、追加する @opaque の境界を確認する。構築器は State を要し、捕捉できない。文書例を使うハーネスは --doc を指定し、報告の版 2 に対応する必要がある。通常の呼び出しは版 1 を保つ。
+
+Property の手書き Shrinker は、遅延した継続による ShrinkStep の列へ移し、Config.maxShrinkWork を指定する。再現には Counterexample.shrinkWork と libraryVersion 2.0.0 も保持する。開発用の derive を使う場合は、旧版の復旧を先に終え、reader と CLI をビルドし直す。新しく作った版 2 の manifest と生成記録を確認し、その manifest の正確な SHA-256 を指定して適用する。設定の版は 1 のままである。[生成の一括移行](../../../tools/derive/README.md#markers-records-and-review-artifacts)も参照する。seed と道具・ライブラリの版に加え、具体的な反例と手書きのソースを保存する。Skill の再インストールや language の変更だけでは、コードや生成記録は移行されない。
+
 ## ソースからのビルド
 
 `cargo` を含む Rust のツールチェインが必要である（最低の版は、リポジトリの `Cargo.toml` の `rust-version` を参照する）。
@@ -198,4 +204,4 @@ rm ~/.local/bin/benitoite
 
 インストールのときに `--project` や `--agent` を使ったときは、`uninstall` にも同じオプションを渡す。
 
-> 注記: `0.0.1` から `0.0.8` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。
+> 注記: `0.0.1` から `0.0.9` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。

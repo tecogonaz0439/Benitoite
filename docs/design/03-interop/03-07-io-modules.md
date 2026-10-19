@@ -253,7 +253,7 @@ end record
 | `Random.shuffleWith(generator, xs)` | `function[T](generator: Random.Generator, xs: List[T]) -> Pair[List[T], Random.Generator]` | 要素を並べ替えたリストと、次の生成器 |
 
 - `Random.integer` と `Random.nextInteger` は、`high` が `low` 以下なら実行時エラーとする。
-- `Random.Generator` は中身を見せない型であり、等値の型ではない。生成器の関数は、エフェクトを持たない純粋な関数であり、同じ生成器からは同じ値を返す。
+- `Random.Generator` は不透明型であり、等値の型ではない。生成器の関数は、エフェクトを持たない純粋な関数であり、同じ生成器からは同じ値を返す。
 - 生成器のアルゴリズムは、種を SplitMix64 で広げ、xoshiro256** で値を作るものとする。範囲の中の値への変換の手順も仕様で固定し、同じ種からは処理系の版によらず同じ列を作る。手順は次のとおりである。以下の x は、xoshiro256** が次に返す 64 ビットの符号なしの値である。
   - 種は、64 ビットの 2 の補数として符号なしの値に読み替えて SplitMix64 に与え、SplitMix64 が続けて返す 4 個の値を xoshiro256** の状態とする。`Random.Generate` の隠れた生成器の種は、OS の乱数から得た 64 ビットの値である。
   - `low` 以上 `high` 未満の整数: 幅 n = high − low を符号なしの 64 ビットで求める。x が 2^64 − (2^64 mod n) 未満なら low + (x mod n) とし、そうでなければ次の x でやり直す。

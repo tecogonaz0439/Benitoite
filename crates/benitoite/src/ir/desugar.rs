@@ -19,6 +19,7 @@ use crate::types::{ConstValue, EffectSet, Scheme, Ty, TyCon, TypeArg, TypeArgs};
 use super::InternalError;
 use super::core_ir::*;
 
+mod builders;
 mod decls;
 mod dicts;
 #[cfg(test)]

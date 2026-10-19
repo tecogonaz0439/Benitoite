@@ -2,6 +2,7 @@
 //! 02-11「テストの実行」）。テストは一つずつ別の実行として順に動かす。
 
 mod check_report;
+mod docs;
 pub mod report;
 pub(super) use check_report::usage_error as check_usage_error;
 
@@ -125,6 +126,9 @@ pub(super) fn run_test_with_externals(
     env: CliEnv,
     externals: crate::external::stats::ExecutionOptions,
 ) -> u8 {
+    if args.doc {
+        return docs::run(args, env, externals);
+    }
     if args.report.is_some() {
         return check_report::run(args, env);
     }
@@ -666,69 +670,16 @@ impl Runner<'_> {
 
     fn execute_prepared(&mut self, entry: &EntrySpec, prepared: Prepared) -> Flow {
         let sources = prepared.result.sources;
-        let Some(Ok(compiled)) = prepared.compiled else {
+        let Some(Ok(mut compiled)) = prepared.compiled else {
             return self.internal(&sources, "check", "validated compilation result missing");
         };
-        for PreparedTest { test, proto } in compiled.tests {
+        for PreparedTest { test, proto } in std::mem::take(&mut compiled.tests) {
             if self.interrupt.requested() {
                 return Flow::Interrupted;
             }
-            let stdout = Arc::new(Mutex::new(Vec::new()));
-            let stderr = Arc::new(Mutex::new(Vec::new()));
-            let end = run::run_test_with_externals(
-                &compiled.program,
-                TestTarget {
-                    proto,
-                    kind: test.kind,
-                    assert: Arc::clone(&compiled.assert),
-                },
-                RunEnv {
-                    input: compiled.input.clone(),
-                    stdin: StdinSource::Empty,
-                    stdout: OutputTarget::Capture(Arc::clone(&stdout)),
-                    stderr: OutputTarget::Capture(Arc::clone(&stderr)),
-                    interrupt: Box::new(self.interrupt.clone()),
-                    // `RuntimeParts` は Clone できないので、テストごとの `RunEnv` には常に実際の実装を使う
-                    // （設計書 02-11「テストの実行」）。
-                    parts: None,
-                    mode: self.env.mode,
-                    vm: crate::vm::VmConfig {
-                        max_call_stack_bytes: self.max_call_stack,
-                        ..crate::vm::VmConfig::default()
-                    },
-                    heap: self.env.heap,
-                    dev_panic_after_first_write: false,
-                },
-                self.externals.clone(),
-            );
-            match end.run.end {
-                EndKind::Interrupted => {
-                    for diag in &end.run.reports {
-                        write_report(&self.env, self.format, &sources, diag);
-                    }
-                    return Flow::Interrupted;
-                }
-                EndKind::Internal => {
-                    for diag in &end.run.reports {
-                        write_report(&self.env, self.format, &sources, diag);
-                    }
-                    return Flow::Exit(EXIT_INTERNAL);
-                }
-                EndKind::Returned
-                | EndKind::MainError
-                | EndKind::Stopped
-                | EndKind::Exited(_)
-                | EndKind::CheckFailed => {}
-            }
-            let failure = match failure_of(&compiled.program, &test, end) {
-                Ok(failure) => failure,
-                Err(message) => return self.internal(&sources, text::STAGE_TEST, message),
-            };
-            let result = TestResult {
-                test,
-                failure,
-                stdout: take_bytes(&stdout),
-                stderr: take_bytes(&stderr),
+            let result = match self.execute_test(&compiled, test, proto, &sources) {
+                Ok(result) => result,
+                Err(flow) => return flow,
             };
             let count = if result.failure.is_some() {
                 &mut self.summary.failed
@@ -744,6 +695,72 @@ impl Runner<'_> {
             self.write_result(&entry.display_name, &result, &sources);
         }
         Flow::Continue
+    }
+
+    fn execute_test(
+        &self,
+        compiled: &Compiled,
+        test: TestFn,
+        proto: crate::bytecode::program::ProtoIdx,
+        sources: &SourceTable,
+    ) -> Result<TestResult, Flow> {
+        let stdout = Arc::new(Mutex::new(Vec::new()));
+        let stderr = Arc::new(Mutex::new(Vec::new()));
+        let end = run::run_test_with_externals(
+            &compiled.program,
+            TestTarget {
+                proto,
+                kind: test.kind,
+                assert: Arc::clone(&compiled.assert),
+            },
+            RunEnv {
+                input: compiled.input.clone(),
+                stdin: StdinSource::Empty,
+                stdout: OutputTarget::Capture(Arc::clone(&stdout)),
+                stderr: OutputTarget::Capture(Arc::clone(&stderr)),
+                interrupt: Box::new(self.interrupt.clone()),
+                // `RuntimeParts` は Clone できないので、テストごとの `RunEnv` には常に実際の実装を使う
+                // （設計書 02-11「テストの実行」）。
+                parts: None,
+                mode: self.env.mode,
+                vm: crate::vm::VmConfig {
+                    max_call_stack_bytes: self.max_call_stack,
+                    ..crate::vm::VmConfig::default()
+                },
+                heap: self.env.heap,
+                dev_panic_after_first_write: false,
+            },
+            self.externals.clone(),
+        );
+        match end.run.end {
+            EndKind::Interrupted => {
+                for diag in &end.run.reports {
+                    write_report(&self.env, self.format, sources, diag);
+                }
+                return Err(Flow::Interrupted);
+            }
+            EndKind::Internal => {
+                for diag in &end.run.reports {
+                    write_report(&self.env, self.format, sources, diag);
+                }
+                return Err(Flow::Exit(EXIT_INTERNAL));
+            }
+            EndKind::Returned
+            | EndKind::MainError
+            | EndKind::Stopped
+            | EndKind::Exited(_)
+            | EndKind::CheckFailed => {}
+        }
+        let failure = match failure_of(&compiled.program, &test, end) {
+            Ok(failure) => failure,
+            Err(message) => return Err(self.internal(sources, text::STAGE_TEST, message)),
+        };
+        Ok(TestResult {
+            test,
+            failure,
+            stdout: take_bytes(&stdout),
+            stderr: take_bytes(&stderr),
+        })
     }
 
     fn write_result(&mut self, file: &str, result: &TestResult, sources: &SourceTable) {
@@ -925,6 +942,17 @@ fn compile_tests(
         stage: error.stage,
         message: error.message,
     })?;
+    compile_selected(program, tests, sources, entry, working_directory, allowed)
+}
+
+fn compile_selected(
+    program: &CheckedProgram,
+    tests: Vec<TestFn>,
+    sources: &Arc<SourceTable>,
+    entry: &EntrySpec,
+    working_directory: &Path,
+    allowed: Option<&crate::cli::EffectLimit>,
+) -> Result<Compiled, PrepareError> {
     if let Some(allowed) = allowed {
         let diagnostics = tests
             .iter()

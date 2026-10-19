@@ -9,8 +9,11 @@ fn used_prims(value: &Value, names: &mut BTreeSet<String>) {
     match value {
         Value::Array(xs) => xs.iter().for_each(|v| used_prims(v, names)),
         Value::Object(xs) => {
-            for tag in ["prim", "primName"] {
-                if let Some(name) = value.get(tag).and_then(|v| v["name"].as_str()) {
+            for tag in ["prim", "primName", "newRef", "getRef", "setRef"] {
+                if let Some(name) = value
+                    .get(tag)
+                    .and_then(|v| v["name"].as_str().or_else(|| v["ref"]["name"].as_str()))
+                {
                     names.insert(name.to_owned());
                 }
             }

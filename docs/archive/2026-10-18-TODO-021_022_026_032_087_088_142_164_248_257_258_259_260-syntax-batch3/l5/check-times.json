@@ -1,0 +1,88 @@
+[
+  {
+    "name": "work-dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "234006521fef80e881e9cba982e9e128c6a8ff40",
+      "--only",
+      "formal_build,spec_examples,spec_tally",
+      "--dry-run"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_status": 0,
+    "elapsed_seconds": 0.011
+  },
+  {
+    "name": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "234006521fef80e881e9cba982e9e128c6a8ff40",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_status": 1,
+    "elapsed_seconds": 44.181
+  },
+  {
+    "name": "formal-retry-dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "234006521fef80e881e9cba982e9e128c6a8ff40",
+      "--only",
+      "formal_build",
+      "--dry-run"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_status": 0,
+    "elapsed_seconds": 0.01
+  },
+  {
+    "name": "formal-retry",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "234006521fef80e881e9cba982e9e128c6a8ff40",
+      "--only",
+      "formal_build"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_status": 0,
+    "elapsed_seconds": 0.785
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l5/axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_status": 0,
+    "elapsed_seconds": 0.696
+  },
+  {
+    "name": "internal-axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l5/internal-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_status": 0,
+    "elapsed_seconds": 0.656
+  }
+]

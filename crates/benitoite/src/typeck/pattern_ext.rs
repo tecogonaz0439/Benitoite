@@ -870,7 +870,7 @@ mod tests {
                     files.extend([
                         (
                             "package.bnt",
-                            "language \"0.0.8\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                            "language \"0.0.9\"\ndependency Dep\n path \"dep\"\nend dependency\n",
                         ),
                         (
                             "dep/package.bnt",

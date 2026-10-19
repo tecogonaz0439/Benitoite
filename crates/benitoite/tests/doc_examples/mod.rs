@@ -31,53 +31,8 @@ use benitoite::runtime::heap::HeapConfig;
 use benitoite::runtime::run::{NoInterrupt, OutputTarget, StdinSource};
 use benitoite::vm::ExecMode;
 
-/// 文書の中のコードブロック。`line` は開きの行（1 から数える）である。
-pub struct Block {
-    info: String,
-    line: usize,
-    body: String,
-}
-
-pub fn blocks(text: &str) -> Vec<Block> {
-    let mut result = Vec::new();
-    let mut open: Option<Block> = None;
-    for (index, line) in text.lines().enumerate() {
-        match open.as_mut() {
-            None => {
-                if let Some(info) = line.strip_prefix("```") {
-                    open = Some(Block {
-                        info: info.trim().to_string(),
-                        line: index + 1,
-                        body: String::new(),
-                    });
-                }
-            }
-            Some(block) => {
-                if line == "```" {
-                    result.push(open.take().unwrap());
-                } else {
-                    block.body.push_str(line);
-                    block.body.push('\n');
-                }
-            }
-        }
-    }
-    assert!(open.is_none(), "unclosed code block");
-    result
-}
-
-pub enum Check {
-    Run {
-        stdout: String,
-        stderr: String,
-        exit: u8,
-    },
-    Static,
-    Test,
-    Error {
-        lines: Vec<String>,
-    },
-}
+use benitoite::cli::tools::doc_examples::Expectation as Check;
+use benitoite::cli::tools::doc_examples::{self as shared, Format};
 
 pub struct Example {
     pub document: &'static str,
@@ -88,87 +43,38 @@ pub struct Example {
 }
 
 pub fn examples(document: &'static str, text: &str) -> Result<Vec<Example>, String> {
-    let blocks = blocks(text);
+    let parsed_blocks = shared::blocks(text);
+    assert!(parsed_blocks.is_ok(), "{document}: unclosed code block");
+    let blocks = parsed_blocks.unwrap();
     let mut result = Vec::new();
     let mut files = Vec::new();
     let mut index = 0;
     while let Some(block) = blocks.get(index) {
-        index += 1;
         let at = format!("{document}:{}", block.line);
-        let next = blocks.get(index);
-        let check = match block.info.as_str() {
-            "files" => {
-                let (first, content) = block.body.split_once('\n').unwrap_or((&block.body, ""));
-                let name = first
-                    .strip_prefix("name: ")
-                    .ok_or_else(|| format!("{at}: a files block starts with `name: <name>`"))?;
-                files.push((name.to_string(), content.to_string()));
-                continue;
+        if block.info == "files" {
+            let (first, content) = block.body.split_once('\n').unwrap_or((&block.body, ""));
+            let name = first
+                .strip_prefix("name: ")
+                .ok_or_else(|| format!("{at}: a files block starts with `name: <name>`"))?;
+            files.push((name.to_string(), content.to_string()));
+            index += 1;
+            continue;
+        }
+        match shared::example(&blocks, index, Format::Markdown)
+            .map_err(|error| format!("{at}: {}", error.reason))?
+        {
+            Some((example, next)) => {
+                result.push(Example {
+                    document,
+                    line: example.line,
+                    source: example.source,
+                    files: std::mem::take(&mut files),
+                    check: example.expectation,
+                });
+                index = next;
             }
-            "benitoite" => {
-                let output = next
-                    .filter(|b| b.info == "output")
-                    .ok_or_else(|| format!("{at}: a `benitoite` example needs an `output` block after it (or use `benitoite check`)"))?;
-                index += 1;
-                let mut lines: Vec<&str> = output.body.lines().collect();
-                // 最後の行が `exit N`（N は数）のときだけ終了状態とみなす。
-                let code = lines
-                    .last()
-                    .and_then(|l| l.strip_prefix("exit "))
-                    .and_then(|c| c.parse::<u8>().ok());
-                if code.is_some() {
-                    lines.pop();
-                }
-                let exit = code.unwrap_or(0);
-                let stdout = lines.iter().map(|l| format!("{l}\n")).collect();
-                // 標準エラー出力は、続く `stderr` のブロックと比べる（なければ空であること）。
-                let stderr = match blocks.get(index).filter(|b| b.info == "stderr") {
-                    Some(b) => {
-                        index += 1;
-                        b.body.clone()
-                    }
-                    None => String::new(),
-                };
-                Check::Run {
-                    stdout,
-                    stderr,
-                    exit,
-                }
-            }
-            "benitoite check" => Check::Static,
-            "benitoite test" => Check::Test,
-            "benitoite error" => {
-                let diagnostic = next.filter(|b| b.info == "diagnostic").ok_or_else(|| {
-                    format!("{at}: a `benitoite error` example needs a `diagnostic` block after it")
-                })?;
-                index += 1;
-                Check::Error {
-                    lines: diagnostic
-                        .body
-                        .lines()
-                        .filter(|l| !l.trim().is_empty())
-                        .map(str::to_string)
-                        .collect(),
-                }
-            }
-            info if info.starts_with("benitoite") => {
-                return Err(format!("{at}: unknown info string `{info}`"));
-            }
-            "output" | "diagnostic" | "stderr" => {
-                return Err(format!(
-                    "{at}: an `{}` block without an example before it",
-                    block.info
-                ));
-            }
-            _ => continue,
-        };
-        result.push(Example {
-            document,
-            line: block.line,
-            source: block.body.clone(),
-            files: std::mem::take(&mut files),
-            check,
-        });
+            None => index += 1,
+        }
     }
     if !files.is_empty() {
         return Err(format!(

@@ -164,6 +164,7 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     c["targets"][0]["fields"] = json!({"name":{"encode":"Helpers.text","decode":"Helpers.text"},"opaque":{"encode":"Benitoite.Unofficial.Failure.toResult","decode":"Benitoite.Unofficial.Failure.toResult"}});
     let bytes = serde_json::to_vec(&c).unwrap();
     let first = derive_inventory::inventory(&p.0, &c, &bytes).unwrap();
+    assert_eq!(first["version"], 2);
     let target = &first["targets"][0];
     let failure = &target["customFunctions"]["Benitoite.Unofficial.Failure.toResult"];
     assert_eq!(failure["name"], "Benitoite.Failure.toResult");
@@ -189,7 +190,7 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     );
     assert_eq!(
         target["customFunctions"]["Helpers.text"]["signature"]["returnType"],
-        json!({"tag":"builtin","name":"String"})
+        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.String.String"},"arguments":[]})
     );
     assert_eq!(target["module"], "People");
     assert_eq!(target["public"], true);
@@ -201,20 +202,23 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
             .collect::<Vec<_>>(),
         ["name", "address", "history", "opaque"]
     );
-    assert_eq!(fields[0]["type"], json!({"tag":"builtin","name":"String"}));
+    assert_eq!(
+        fields[0]["type"],
+        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.String.String"},"arguments":[]})
+    );
     assert_eq!(
         fields[1]["type"],
-        json!({"tag":"record","name":"Other.Address"})
+        json!({"tag":"application","head":{"tag":"named","name":"Other.Address"},"arguments":[]})
     );
     assert_eq!(
         fields[2]
-            .pointer("/type/element/element/value/name")
+            .pointer("/type/arguments/0/arguments/0/arguments/1/head/name")
             .unwrap(),
         "Other.Address"
     );
-    assert_eq!(fields[3]["type"]["tag"], "unsupported");
+    assert_eq!(fields[3]["type"]["tag"], "function");
     assert_eq!(
-        fields[3]["type"]["original"],
+        fields[3]["metadata"]["original"],
         "function(value: Integer) -> Integer"
     );
     assert_eq!(
@@ -235,8 +239,8 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
         "city"
     );
     assert_eq!(
-        first["functions"]["People.pending"]["signature"]["returnType"]["resolved"],
-        "Unit"
+        first["functions"]["People.pending"]["signature"]["returnType"],
+        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.Unit"},"arguments":[]})
     );
     p.write("Other.bnt","public record Address\n city: String\n zip: Integer\nend record\npublic function text(value: String) -> String\n return missingGenerated()\nend function\n");
     let second = derive_inventory::inventory(&p.0, &c, &bytes).unwrap();
@@ -262,4 +266,160 @@ fn config_rejects_duplicate_unknown_and_incomplete_settings() {
         );
     }
     assert!(derive_inventory::config::read(&serde_json::to_vec(&config()).unwrap()).is_ok());
+}
+
+// 四問: 宣言だけの収集でもopaqueの所有元・印・完全な内部型表を渡す契約を守る。
+// 公開契約で内部型を漏れと誤判定する変更、メンバー表を消す変更で失敗する。
+// 本体を辿る通常のcheckだけでは生成道具の境界を確かめられない。既存公開APIを使う。
+#[test]
+fn opaque_declarations_keep_representation_and_owner_but_hide_its_contract() {
+    let p = Project::new();
+    p.write("main.bnt", "import Model\n");
+    let model = "record Hidden\n value: Integer\nend record\n@opaque\npublic record Box[T]\n raw: T\n hidden: Hidden\nend record\n@opaque\npublic(package) data Secret\n A(Hidden)\n B\nend data\npublic function identity(value: Box[Integer]) -> Box[Integer]\n return value\nend function\n";
+    p.write("Model.bnt", model);
+    let result = collect_declarations(&p.entry(), &RealFs);
+    assert!(result.inventory.is_some(), "{:?}", result.diagnostics);
+    let inv = result.inventory.unwrap();
+    for name in ["Box", "Secret"] {
+        let (id, binding) = inv
+            .resolved
+            .bindings
+            .iter()
+            .find(|(_, b)| b.name == name && b.opaque)
+            .unwrap();
+        assert_eq!(
+            inv.modules.get(binding.module).unwrap().name.dotted(),
+            "Model"
+        );
+        let adt = inv.types.adts.adts.get(id).unwrap();
+        if name == "Box" {
+            assert_eq!(adt.record.as_ref().unwrap().len(), 2);
+        } else {
+            assert_eq!(adt.ctors.len(), 2);
+        }
+    }
+    // opaqueの内部だけを免除する。公開する関数の署名のE0329は残す。
+    p.write(
+        "Model.bnt",
+        &format!(
+            "{model}\npublic function leak() -> Hidden\n return missingBody()\nend function\n"
+        ),
+    );
+    let result = collect_declarations(&p.entry(), &RealFs);
+    assert!(result.inventory.is_none());
+    let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).collect();
+    assert_eq!(errors.len(), 1, "{errors:?}");
+    assert_eq!(errors[0].code, Some(benitoite::diag::DiagCode::E0329));
+}
+
+#[test]
+fn opaque_types_keep_nominal_equality_and_nonempty_coverage() {
+    use benitoite::diag::DiagCode as C;
+    let p = Project::new();
+    p.write("Model.bnt", "@opaque\npublic data Secret\n A(Integer)\n B\nend data\n@opaque\npublic record Callback\n run: function() -> Unit\nend record\n");
+    for (source, code) in [
+        (
+            "function f(x: Model.Secret) -> Boolean\n return x = x\nend function",
+            None,
+        ),
+        (
+            "function f(x: Model.Secret) -> Unit\n match x with\n case _ -> ()\n end match\nend function",
+            None,
+        ),
+        (
+            "function f(x: Model.Secret) -> Unit\n match x with\n case _ if false -> ()\n end match\nend function",
+            Some(C::E0601),
+        ),
+        (
+            "function f(x: Model.Callback) -> Boolean\n return x = x\nend function",
+            Some(C::E0406),
+        ),
+    ] {
+        p.write("main.bnt", &format!("import Model\n{source}\n"));
+        let result = pipeline::check(
+            &p.entry(),
+            &RealFs,
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        let errors: Vec<_> = result
+            .diagnostics
+            .iter()
+            .filter(|d| d.is_error())
+            .map(|d| d.code)
+            .collect();
+        assert_eq!(
+            errors,
+            code.into_iter().map(Some).collect::<Vec<_>>(),
+            "{source}: {:?}",
+            result.diagnostics
+        );
+    }
+}
+
+// 四問: 版2の種類・多相署名・匿名実装と不透明型の境界を、宣言情報の入口で観察する。
+// Debug出力への退行やimplementの欠落、opaqueの取り落としで失敗する。
+// 旧版のレコード中心の例は二引数クラスと匿名実装を読まない。テスト用の公開APIは足さない。
+#[test]
+fn inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries() {
+    let p = Project::new();
+    p.write("People.bnt", "import Benitoite.Trait\nimport Benitoite.StringBuilder as SB\n@opaque\npublic record Person\n value: Integer64\nend record\n@opaque\npublic data Secret\n Secret(String)\nend data\npublic record Box[T]\n value: T\nend record\npublic trait Readable[T]\n function read(value: T) -> String\nend trait\n// benitoite-derive:begin traits\nimplement[T] Readable[Box[T]]\n function read(value: Box[T]) -> String\n  return missingGenerated()\n end function\nend implement\n// benitoite-derive:end traits\npublic function call[F[_, _], A, E, effect EF](f: function(value: A) -> F[A, E] uses EF, value: A) -> F[A, E] uses EF\n return missingGenerated()\nend function\n");
+    let c = config();
+    let inv = derive_inventory::inventory(&p.0, &c, &serde_json::to_vec(&c).unwrap()).unwrap();
+    let target = &inv["targets"][0];
+    assert_eq!(target["opaque"], true);
+    assert_eq!(target["canConstruct"], true);
+    assert_eq!(target["canInspect"], true);
+    assert_eq!(target["visibility"], "public");
+    assert_eq!(inv["types"]["People.Secret"]["opaque"], true);
+    assert_eq!(inv["types"]["People.Secret"]["kind"], "data");
+    assert_eq!(inv["types"]["People.Box"]["arity"], 1);
+    assert_eq!(
+        target["fields"][0]["type"]["head"]["name"],
+        "Benitoite.Integer.Integer"
+    );
+    assert_eq!(
+        inv["records"]["People.Box"]["fields"][0]["type"],
+        json!({"tag":"parameter","index":0})
+    );
+    let sig = &inv["functions"]["People.call"]["signature"];
+    assert_eq!(
+        sig["typeParams"][0]["kind"],
+        json!({"tag":"constructor","arity":2})
+    );
+    assert_eq!(
+        sig["returnType"]["head"],
+        json!({"tag":"parameter","index":0})
+    );
+    assert_eq!(sig["params"][0]["type"]["effects"]["vars"], json!([0]));
+    let impls = inv["implementations"].as_array().unwrap();
+    let i = impls
+        .iter()
+        .find(|i| i["class"] == "People.Readable")
+        .unwrap();
+    assert_eq!(i["target"]["head"]["name"], "People.Box");
+    assert_eq!(
+        i["target"]["arguments"][0],
+        json!({"tag":"parameter","index":0})
+    );
+    assert_eq!(i["methods"][0]["name"], "read");
+    assert_eq!(i["sourceRegion"], "traits");
+    assert!(
+        inv["declarations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|d| d["kind"] == "stringBuilder" && d["module"] == "People")
+    );
+    let result = impls
+        .iter()
+        .find(|i| i["class"] == "Benitoite.Trait.Monad2")
+        .unwrap();
+    assert_eq!(result["sourceRegion"], Value::Null);
+    assert_eq!(
+        result["target"],
+        json!({"tag":"named","name":"Benitoite.Result.Result"})
+    );
 }

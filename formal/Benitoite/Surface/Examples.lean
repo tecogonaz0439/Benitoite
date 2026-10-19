@@ -67,7 +67,7 @@ private theorem mainExpr_typed (Γ : List (Option Ty)) (R : Option Ty) (pos : Po
     simpa [chooseImpl, Ty.subst, Ty.substAt, Eff.substAt, intTy] using h
   have hm : HasType program.declarations builtins opPrim [] Γ R .other
       methodValue (.fn ["left", "right"] [intTy, intTy] intTy Eff.empty) Eff.empty := by
-    have h := HasType.E_MethName (Q := Qempty) (opPrim := opPrim) (R := R) (p := Position.other)
+    have h := HasType.E_MethName (Δ := []) (Q := Qempty) (opPrim := opPrim) (R := R) (p := Position.other)
       (m := "choose") (cd := chooseClass) (ms := chooseSig) (ss := []) (es := []) (us := [])
       (names := ["left", "right"]) (ps := [intTy, intTy]) hd rfl rfl
       (by simp [chooseSig, NamesWF]) rfl ⟨rfl, by intro i t tp hi _; cases hi⟩ rfl .nil
@@ -82,7 +82,7 @@ private theorem mainExpr_typed (Γ : List (Option Ty)) (R : Option Ty) (pos : Po
     simpa [methodValue, chooseSig, Ty.subst, Ty.substAt, Eff.substAt_empty, Ty.shift, intTy] using h (by simp [SingleTy, SingleTys, SingleEff, SingleFail, chooseSig, intTy, Ty.subst, Ty.substAt, Ty.shift, Eff.empty, Eff.fails])
   have hr : HasType program.declarations builtins opPrim [] Γ R .other
       readCall intTy (Eff.single "Read") := by
-    have hop := HasType.E_Op (Q := Qempty) (D := program.declarations) (B := builtins) (opPrim := opPrim)
+    have hop := HasType.E_Op (Δ := []) (Q := Qempty) (D := program.declarations) (B := builtins) (opPrim := opPrim)
       (C := []) (Γ := Γ) (R := R) (p := Position.other) (o := "read") (od := readOp) (ts := [])
       rfl (by simp [readOp, NamesWF]) ⟨rfl, by intro i t tp hi _; cases hi⟩ rfl
     have he : Eff.substAt 0 [] [] (Eff.single "Read") = Eff.single "Read" :=
@@ -189,7 +189,7 @@ private theorem program_wellTyped : program.WellTyped builtins opPrim := by
           have hq : Qsig mainDef.params mainDef.ret mainDef.eff = Qempty := by
             funext i; apply propext
             simp [mainDef, Qsig, QTys, QTy, QEff, Qempty, Eff.empty]
-          change HasBlockQ _ _ _ (Qsig mainDef.params mainDef.ret mainDef.eff) _ _ _ _ _ _ _
+          change HasBlockQ _ _ _ (Qsig mainDef.params mainDef.ret mainDef.eff) [] _ _ _ _ _ _ _
           rw [hq]
           simpa [mainDef, FunDecl.dictTys, binds, Program.declarationsFor, program, Program.declarations, Declarations.withView] using
             HasBlockQ.B_LastDiscard (p := Position.tail) (mainExpr_typed [] (some (.base .unit)) .other)⟩
@@ -218,7 +218,7 @@ private theorem program_wellTyped : program.WellTyped builtins opPrim := by
           have hq : Qsig chooseSig.params chooseSig.ret chooseSig.eff = Qempty := by
             funext i; apply propext
             simp [chooseSig, Qsig, QTys, QTy, QEff, Qempty, Eff.empty]
-          change HasBlockQ _ _ _ (Qsig chooseSig.params chooseSig.ret chooseSig.eff) _ _ _ _ _ _ _
+          change HasBlockQ _ _ _ (Qsig chooseSig.params chooseSig.ret chooseSig.eff) [] _ _ _ _ _ _ _
           rw [hq]
           simpa [chooseImpl, chooseSig, ImplDecl.methTy, ImplSig.dictTys, Ty.substAt,
             Ty.shift, intTy, Eff.substAt_empty, binds, Qsig, QTys, QTy, QEff, Qempty, Eff.empty] using ht
@@ -513,13 +513,14 @@ example : HasType dieProgram.declarations dieBuiltins opPrim [] [some resultTy]
   exact CheckTools.tryResultExhaustive_sound dieCtors_complete (by decide)
 
 -- R=None では直接の return を型付けできず、型の包含でも隠せない。
-private theorem noReturnWithoutTarget {D B op C Γ R pos e t ε}
-    (h : HasType D B op C Γ R pos e t ε) :
+private theorem noReturnWithoutTarget {D B op Δ C Γ R pos e t ε}
+    (h : HasTypeQ D B op Qempty Δ C Γ R pos e t ε) :
     ∀ a value, e = .returnE a value → R ≠ none := by
   match h with
   | .E_ReturnTail _ => intro _ _ _ hn; cases hn
   | .E_ReturnOther _ _ => intro _ _ _ hn; cases hn
   | .E_Sub h _ _ _ => exact noReturnWithoutTarget h
+  | .E_BuilderOp .. => intro _ _ he; cases he
   | .E_Local .. => intro _ _ he; cases he
   | .E_Const .. => intro _ _ he; cases he
   | .E_Fun .. => intro _ _ he; cases he
@@ -580,12 +581,13 @@ example : ¬ HasType dieProgram.declarations dieBuiltins opPrim [] (hideConts re
   exact noReturnWithoutTarget h _ _ rfl rfl
 
 -- 外側の継続への resume は説明の環境に残らず、包含でも利用可能にならない。
-private theorem resume_requires_binding {D B op C Γ R pos e t ε}
-    (h : HasType D B op C Γ R pos e t ε) :
+private theorem resume_requires_binding {D B op Δ C Γ R pos e t ε}
+    (h : HasTypeQ D B op Qempty Δ C Γ R pos e t ε) :
     ∀ k value, e = .resume k value → Γ[k]? ≠ some none := by
   match h with
   | .E_Resume hk _ => intro _ _ he hn; cases he; rw [hk] at hn; cases hn
   | .E_Sub h _ _ _ => exact resume_requires_binding h
+  | .E_BuilderOp .. => intro _ _ he; cases he
   | .E_Local .. => intro _ _ he; cases he
   | .E_Const .. => intro _ _ he; cases he
   | .E_Fun .. => intro _ _ he; cases he

@@ -1,0 +1,22 @@
+// spec: 01-03 公開（初回リリース版）
+// spec: 01-06 等値の型
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+import Model as M
+type Alias = M.Positive
+function keep(value: Alias) -> Option[M.Positive]
+  return Option.Some(value)
+end function
+function main() -> Unit uses Console.Write
+  bind original <- M.make(3)
+  bind updated <- M.update(value: original, raw: 7)
+  bind wrapped <- keep(updated)
+  bind result <- match wrapped with
+    case Option.Some(value) -> M.value(value)
+    case Option.None -> 0
+  end match
+  bind _ <- match updated with
+    case _ -> ()
+  end match
+  Console.writeLine("${M.value(original)},${result},${M.inspect(M.secret(9))},${original = original},${Trait.Show.show(original)}")
+end function

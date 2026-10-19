@@ -1,4 +1,5 @@
 import Benitoite.Surface.Syntax
+import Benitoite.Surface.BuilderLower
 import Benitoite.Release.Subst
 
 /-!
@@ -148,6 +149,9 @@ mutual
   def desugarExpr (opPrim : OpPrim) (p : Position) : Expr → Comp
     -- 01-12「名前とリテラル」: 局所の束縛の名前 x | return x
     | .local i => .ret (.var i)
+    | .builderOp op i args refs =>
+        let ms := desugarExprs opPrim args
+        sequence ms (builderFinish op (i + ms.length) refs)
     -- 01-12「トップレベルの定数」:
     -- 定数 `const k: A = e` の名前 `k` を、`⟦e⟧` に置き換える。
     -- `e` の中の定数の名前も同じく置き換える。
@@ -394,6 +398,7 @@ mutual
         .mk o (ndicts + n) ntys (desugarBlock opPrim .other body) :: desugarClauses opPrim rest
 
   def desugarBlock (opPrim : OpPrim) (p : Position) : Block → Comp
+    | .builderBind _ r rest => .letIn (builderNew r) (desugarBlock opPrim p rest)
     -- 01-12「ブロック」: { } | return ()
     | .empty => .ret (.const .unit)
     -- 同節: { e }（最後の文が式） | ⟦e⟧

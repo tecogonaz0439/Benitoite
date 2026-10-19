@@ -1,0 +1,10 @@
+function apply[A, B, effect E](value: A, f: function(value: A) -> B uses E) -> B uses E
+  return f(value)
+end function
+function successful() -> Integer
+  bind x <- apply(value: 1, f: lambda(value) return value + 1 end lambda)
+  return apply(value: x, f: lambda(value) return value + 1 end lambda)
+end function
+function coverage(x: Integer) -> Integer
+  return match x with case _ -> x end match
+end function

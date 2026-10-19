@@ -1,0 +1,89 @@
+//! Pure inclusive Integer range checks. Success retains both bounds and the value; bounds may differ between values of the same CheckedInteger type.
+//!
+//! ```benitoite test
+//! import Benitoite.Unofficial.Range
+//! @test
+//! function rangeExample() -> Unit uses Assert.Check
+//!   match Range.checkInteger(minimum: 1, maximum: 10, value: 10) with
+//!     case Result.Ok(value) ->
+//!       Assert.equal(actual: Range.minimum(value), expected: 1)
+//!       Assert.equal(actual: Range.maximum(value), expected: 10)
+//!       Assert.equal(actual: Range.value(value), expected: 10)
+//!     case Result.Error(_) -> Assert.fail("inclusive bound did not match")
+//!   end match
+//!   match Range.checkInteger(minimum: 10, maximum: 1, value: 0) with
+//!     case Result.Error(Range.RangeError.InvalidBounds(low, high)) ->
+//!       Assert.equal(actual: low, expected: 10)
+//!       Assert.equal(actual: high, expected: 1)
+//!     case _ -> Assert.fail("reversed bounds must take priority")
+//!   end match
+//! end function
+//! ```
+//!
+//! Invalid constant inputs are still Result.Error values, so this checks successfully.
+//!
+//! ```benitoite check
+//! import Benitoite.Unofficial.Range
+//! function main() -> Unit
+//!   bind result <- Range.checkInteger(minimum: 1, maximum: 10, value: 11)
+//!   return ()
+//! end function
+//! ```
+//!
+//! ```benitoite error
+//! import Benitoite.Unofficial.Range
+//! function main() -> Unit
+//!   bind value <- Range.CheckedInteger(minimum: 1, maximum: 10, value: 5)
+//!   return ()
+//! end function
+//! ```
+//! ```diagnostic
+//! E0340
+//! ```
+
+import Benitoite.Trait
+
+/// An Integer together with the inclusive bounds it satisfies. Use checkInteger and the public projections.
+@opaque
+public record CheckedInteger
+  minimum: Integer
+  maximum: Integer
+  value: Integer
+end record
+
+/// InvalidBounds takes priority over OutOfRange. Failures retain the original inputs.
+public data RangeError
+  InvalidBounds(Integer, Integer)
+  OutOfRange(Integer, Integer, Integer)
+end data
+
+/// Checks minimum <= value <= maximum, rejecting reversed bounds first. Constant invalid inputs still return Result.Error. No upper-bound addition is used.
+public function checkInteger(minimum: Integer, maximum: Integer, value: Integer) -> Result[CheckedInteger, RangeError]
+  return if minimum > maximum then Result.Error(RangeError.InvalidBounds(minimum, maximum))
+  else if value < minimum or value > maximum then Result.Error(RangeError.OutOfRange(minimum, maximum, value))
+  else Result.Ok(CheckedInteger(minimum: minimum, maximum: maximum, value: value)) end if
+end function
+
+/// Returns the inclusive lower bound retained by the check.
+public function minimum(value: CheckedInteger) -> Integer
+  return CheckedInteger.minimum(value)
+end function
+
+/// Returns the inclusive upper bound retained by the check.
+public function maximum(value: CheckedInteger) -> Integer
+  return CheckedInteger.maximum(value)
+end function
+
+/// Returns the checked Integer. Call checkInteger again to check it against different bounds.
+public function value(value: CheckedInteger) -> Integer
+  return CheckedInteger.value(value)
+end function
+
+implement Trait.Show[RangeError]
+  function show(x: RangeError) -> String
+    return match x with
+      case RangeError.InvalidBounds(minimum, maximum) -> "InvalidBounds(${minimum}, ${maximum})"
+      case RangeError.OutOfRange(minimum, maximum, value) -> "OutOfRange(${minimum}, ${maximum}, ${value})"
+    end match
+  end function
+end implement

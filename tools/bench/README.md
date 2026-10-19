@@ -533,3 +533,25 @@ target/release/benitoite run --wasm-stats \
 RSS は POSIX の `wait4` が返す子プロセスの最大使用量から取得してバイトに揃える。CLI の記録には、`--wasm-stats` の経路・燃料・転送量・構築量・メモリをそのまま残す。保存した numbers 版の統計には経路と構築量がないため、`unreported_stats` に欠けた欄を記録し、経路と構築量を推測して補わない。呼び出し数と結果はその版でも検査する。例は呼び出しごとの燃料と、補助の転送バッファ全長・構築量を直接記録する。型付き・動的の転送量・構築量は例では `null` とし、CLI の統計と区別する。
 
 段別計時は最終版の小さい入力の費用であり、CLI 全体の時間の内訳でも、大きい入力の型付き・動的の性能比較でもない。最大 RSS はプロセス全体の値であり、関数ごとの使用量ではない。例の純粋な関数は既定の燃料・転送予算と StoreLimits のメモリ上限を使うが、本番の Store 全体の合計を数える制限器は使わない。資源上限の検証には処理系のテストを使う。`--quick` の時間を性能の評価に使わない。
+
+
+## 版どうしの比較（compare/）
+
+`compare/run.py` は複数のコミットを git archive からビルドし、同じ入力を交互に測る。ビルドは完全 ID・構成・toolchain・Cargo.lock のハッシュで使い回す。状態は `--state <名前>=<リビジョン>` を繰り返して指定する。関数数・制約数と Fail の深さ・縮小・構築器と、既存8本のスクリプトの run を含む。任意の改造の目標は JSON に書く。[詳しい使い方と族・目標の追加方法](compare/README.md)を参照する。他の言語との比較には従来の `run.py` を使う。
+
+| 段 | 選ぶ場面 | 時間の目安（ビルドは別） | 内容 |
+|---|---|---|---|
+| short | 通常の改造の末。性能に関わる改造は必須、他は任意 | キャッシュ使用時15分以内 | 開始版と候補の2状態、全族の代表点、既定5標本。10%か2 msの大きい方を超える退行の疑いと、判定不能を一覧にする |
+| targets | 性能目標を約束した改造 | 目標ファイルによる | JSON が名指しする点だけ、既定10標本 |
+| full | バイナリ配布前などの要所 | 数時間 | 全族・全点、既定10標本と RSS/alloc の別実行。`--confirm-full` が必要 |
+
+`--quick` は段とは別の試走指定である。出力照合・小さい入力・既定2標本から、本測定の見込みを節・族ごとに出す。short は実入力の出力照合で校正し、15分を超える見込みなら標本採取前に停止する。本測定は見込みを示し、静かな計算機の条件と設計者の了承を得てから行う。
+
+```sh
+python3 tools/bench/compare/run.py --tier short --quick \
+  --state before=<開始版> --state after=<候補> --out target/bench/trial
+python3 tools/bench/compare/run.py --tier short \
+  --state before=<開始版> --state after=<候補> --name my-change
+```
+
+`--section runtime` で実行時の族だけに絞れる。`--tier targets --targets <改造>/bench-targets.json` で改造の判定を行う。`--estimate-from <quick記録>` は測定せず見込みだけを出す。記録は `results/<実測日>-<候補短ID>-<名前>/` の Markdown・線形 SVG 付き HTML・manifest・全標本、試走は target/ 以下に置く。既存の gate.py による VM 等の性能の関門は引き続き別に実施する。

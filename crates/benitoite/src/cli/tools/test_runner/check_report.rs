@@ -48,6 +48,7 @@ struct Target {
     shell: ShellReference,
     status: Option<Status>,
     effects: BTreeSet<String>,
+    docs: Option<docs::Batch>,
 }
 
 struct Context<'a> {
@@ -57,6 +58,7 @@ struct Context<'a> {
     diagnostics: Vec<Diagnostic>,
     status: Status,
     active: Option<usize>,
+    doc: bool,
 }
 
 fn report_error(error: InternalError) -> Box<Diagnostic> {
@@ -81,9 +83,14 @@ fn requested(paths: &[PathBuf]) -> Vec<Value> {
 }
 
 /// 認識済みの test の報告モードで使い方の誤りを返す。
-pub(in crate::cli::tools) fn usage_error(env: &CliEnv, paths: &[PathBuf], detail: &str) -> u8 {
+pub(in crate::cli::tools) fn usage_error(
+    env: &CliEnv,
+    paths: &[PathBuf],
+    detail: &str,
+    doc: bool,
+) -> u8 {
     let value = json!({
-        "schemaVersion": 1, "kind": "testCheckReport", "producer": crate::cli::build_info::producer(),
+        "schemaVersion": if doc { 2 } else { 1 }, "kind": "testCheckReport", "producer": crate::cli::build_info::producer(),
         "status": "usageError", "complete": false, "targetsComplete": false, "executed": false,
         "requestedTargets": requested(paths), "targets": [], "sources": [], "sourceSets": [],
         "aggregateEffects": null,
@@ -101,7 +108,7 @@ fn internal(message: &str) -> InternalError {
     }
 }
 
-fn inspect_value(
+pub(super) fn inspect_value(
     inspected: TestInspection,
     checked: &CheckResult,
 ) -> Result<(Value, ShellReference, BTreeSet<String>), InternalError> {
@@ -182,6 +189,7 @@ fn prepare_all(
             shell: ShellReference::Unknown,
             status: None,
             effects: BTreeSet::new(),
+            docs: None,
         })
         .collect();
     if let Err(failure) = selection.completion {
@@ -226,12 +234,23 @@ fn prepare_all(
             context.status = Status::Interrupted;
             break;
         }
-        let prepared = prepare_entry(
-            &target.selected.entry,
-            args.deny_warnings,
-            PrepareMode::Inspect,
-            &env.working_directory,
-        )?;
+        let prepared = if args.doc {
+            let (prepared, batch) = docs::prepare(
+                &target.selected.entry,
+                args.deny_warnings,
+                PrepareMode::Inspect,
+                &env.working_directory,
+            )?;
+            target.docs = Some(batch);
+            prepared
+        } else {
+            prepare_entry(
+                &target.selected.entry,
+                args.deny_warnings,
+                PrepareMode::Inspect,
+                &env.working_directory,
+            )?
+        };
         let mut checked = prepared.result;
         if let Some(error) = prelude_error(&checked) {
             let message =
@@ -289,6 +308,31 @@ fn prepare_all(
         target.shell = shell;
         target.effects = effects;
         target.status = Some(Status::Ok);
+        if let Some(batch) = &target.docs {
+            for example in &batch.examples {
+                target.effects.extend(example.execution_effects().cloned());
+                if !example.complete() {
+                    let status = if example
+                        .checked
+                        .diagnostics
+                        .iter()
+                        .any(|d| d.kind == crate::diag::ReportKind::Internal)
+                    {
+                        Status::InternalError
+                    } else {
+                        Status::CheckError
+                    };
+                    target.status = Some(status);
+                    context.status = status;
+                    if status == Status::InternalError {
+                        break;
+                    }
+                }
+            }
+        }
+        if context.status == Status::InternalError {
+            break;
+        }
     }
     context.active = None;
     Ok(())
@@ -317,7 +361,42 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
             "processShellReference": shell, "shellReferenceScope": "checkedProgram"
         }));
         all_sources.extend(target.sources.iter().cloned());
-        source_sets.push(json!({ "targetId": id, "sourceIds": target.source_ids }));
+        let mut ids = target.source_ids.clone();
+        if context.doc
+            && let Some(target_value) = targets.last_mut()
+        {
+            target_value["docExamples"] = Value::Null;
+            target_value["ignoredDocBlocks"] = Value::Null;
+        }
+        if let Some(batch) = &target.docs {
+            let mut examples = Vec::new();
+            for (doc_index, example) in batch.examples.iter().enumerate() {
+                examples.push(example.check_value(&id, doc_index)?);
+                let doc_sources = example.source_values(&id, doc_index);
+                ids.extend(
+                    doc_sources
+                        .iter()
+                        .filter_map(|source| source["sourceId"].as_str().map(str::to_owned)),
+                );
+                all_sources.extend(doc_sources);
+                if !matches!(
+                    example.example.expectation,
+                    super::super::doc_examples::Expectation::Error { .. }
+                ) {
+                    for diagnostic in &example.checked.diagnostics {
+                        diagnostic_targets.push(json!({"diagnosticIndex": diagnostics.len(), "targetId": id, "docExampleId": example.id}));
+                        diagnostics.push(diagnostic_value(diagnostic, &example.checked.sources)?);
+                    }
+                }
+            }
+            if let Some(target_value) = targets.last_mut()
+                && batch.complete
+            {
+                target_value["docExamples"] = Value::Array(examples);
+                target_value["ignoredDocBlocks"] = json!(batch.ignored);
+            }
+        }
+        source_sets.push(json!({ "targetId": id, "sourceIds": ids }));
         for diagnostic in &target.diagnostics {
             diagnostic_targets.push(json!({"diagnosticIndex": diagnostics.len(), "targetId": id}));
             diagnostics.push(diagnostic.clone());
@@ -329,7 +408,7 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
         diagnostics.push(diagnostic_value(diagnostic, &SourceTable::new())?);
     }
     Ok(json!({
-        "schemaVersion": 1, "kind": "testCheckReport", "producer": crate::cli::build_info::producer(),
+        "schemaVersion": if context.doc { 2 } else { 1 }, "kind": "testCheckReport", "producer": crate::cli::build_info::producer(),
         "status": context.status.as_str(), "complete": context.status == Status::Ok, "targetsComplete": context.targets_complete, "executed": false,
         "requestedTargets": requested(context.paths), "targets": targets, "sources": all_sources, "sourceSets": source_sets,
         "aggregateEffects": if context.status == Status::Ok { json!({"basis": "declaredUpperBound", "expanded": aggregate}) } else { Value::Null },
@@ -351,6 +430,7 @@ pub(super) fn run(args: PathArgs, mut env: CliEnv) -> u8 {
         diagnostics: Vec::new(),
         status: Status::InternalError,
         active: None,
+        doc: args.doc,
     };
     let response = panic_boundary::catch(|| {
         if env.dev_panic == crate::cli::DevPanic::Tool {

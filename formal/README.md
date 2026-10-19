@@ -58,6 +58,27 @@ LEAN
 lake env lean /tmp/axioms.lean
 ```
 
+0.0.9で加えた小モデルと構築器の補題は、上の既存30件とは別に確かめる。
+
+```sh
+cat > /tmp/batch3-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Checked.Scope.erase_makeEndpoint
+#print axioms Benitoite.Checked.Range.erase_make
+#print axioms Benitoite.Library.ResultLaws.flatMap_left_identity
+#print axioms Benitoite.Library.ResultLaws.flatMap_right_identity
+#print axioms Benitoite.Surface.Monad2Examples.desugared_typed
+#print axioms Benitoite.Surface.HasTypeQ.desugar
+#print axioms Benitoite.Surface.builderOp_desugar_typed
+#print axioms Benitoite.Surface.builders_no_capture
+#print axioms Benitoite.Surface.builders_block_no_capture
+#print axioms Benitoite.Surface.builders_ordinary_result
+LEAN
+lake env lean /tmp/batch3-axioms.lean
+```
+
+`builders_ordinary_result`は既存のcleanによる型の範囲条件の再確認であり、セルの逸出の禁止を主張しない。
+
 ## 状態
 
 段階 A は 2026-09-30 に完了した。`Core/Theorems.lean` の五つの定理に `sorry` はなく、使う公理は `propext` と `Quot.sound` だけである。
@@ -70,7 +91,7 @@ lake env lean /tmp/axioms.lean
 
 Releaseの効果は名前・行の関数と失敗型の列を持つ表現Bへ移行した。内部の正規形を型とストアの整形式で要求し、既存の主要定理と検査器の健全性の言明を保つ。検査器はFail内部までの有限支持を使い、Legacyでない型も受け付ける。入力の注釈は正規化せず、計算した型だけを正規化する。六実行ファイルは計算できる写しを使い、数学上のRelease.step/runのnoncomputableな定義には依存しない。対応と保証の範囲は07-04「01-12との対応」に記す。
 
-交換の読者はcorpus 8・9・10・11、builtins・stdlib・coverage・coverage-programの各2・3・4を受理する。旧版に後の版の情報を混ぜた場合の拒否と、対象外の分類を保つ。名前・行の効果は集合として読み、型内部も同じ読者で変換する。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側で原子の符号順へ整列して重複を除く。比較は両辺の列自体を正規化し、支持の一覧にない要素を捨てない。契約名・引数・節の並びは保持する。Rust側に同じ符号や列順を要求しない。
+交換の読者はcorpus 8・9・10・11・12、builtins・stdlib・coverage・coverage-programの各2・3・4を受理する。旧版に後の版の情報を混ぜた場合の拒否と、対象外の分類を保つ。名前・行の効果は集合として読み、型内部も同じ読者で変換する。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側で原子の符号順へ整列して重複を除く。比較は両辺の列自体を正規化し、支持の一覧にない要素を捨てない。契約名・引数・節の並びは保持する。Rust側に同じ符号や列順を要求しない。
 
 旧形式の独立入力は次の四つで検査する。`test_named_exchange.py` はcorpus 8/9/10と他四形式2/3の六入口で、型内部の複数の名前・行の順序と重複に依存しない結果、脱糖の不一致と固定順序の書き戻しも確認する。
 
@@ -85,6 +106,7 @@ python3 -B formal/tests/test_width_exchange.py
 
 ```sh
 python3 -B formal/tests/test_batch2_exchange.py
+python3 -B formal/tests/test_batch3_exchange.py
 ```
 
 この独立入力は七定義と、Failを含む型・文字全域を六入口で検査する。`--rust-dir target/formal-batch2-op` または `--rust-dir target/formal-batch2-failure` は、局所Rust出力の五形式（corpus.json・builtins.json・stdlib.json・coverage.json・coverage-program.json）を追加で読む。ファイル不在・旧版・空の比較を成功扱いせず、Cargoを起動しない。Rustの通常出力は11/4であり、辞書付き操作の実ソースは `export_batch2_op` が `target/formal-batch2-op/` へ五形式を出力する。通常節はfailureType=null、行のnoFail=falseであり、Failの原子はまだ出力しない。独立したFailの入力の成功を、Rustの型付きの失敗の比較の証拠には使わない。
@@ -141,10 +163,21 @@ python3 -B formal/tests/test_batch2_exchange.py
 | `Benitoite/Release/Lemmas/Dict.lean` | 実装のメソッドの型の置き換えの合成、E-Super の一歩が型を保つこと | |
 | `Benitoite/Release/Lemmas/Progress.lean` / `EffectSound.lean` / `StepSound.lean` | 進行、エフェクトの健全性、`step` の健全性 | |
 
+0.0.9の独立した小証明は次のモジュールに置く。主定理の保証とは区別する。
+
+| ファイル | 内容 | 01-12 の節 |
+|---|---|---|
+| `Benitoite/Checked/Access.lean` / `Scope.lean` / `Range.lean` | 所有元による公開境界、解析済みScopeの所属と保存、整数閉区間の成功・失敗と証拠の消去 | 検査済みの通常値の小証明 |
+| `Benitoite/Library/ResultLaws.lean` | 純粋なResultの三法則とmap/applyとの一致 | 二引数の型クラスとResult |
+
 段階 C（`Benitoite/Surface/`）は、型の情報を付けた表層の構文と、`Benitoite.Release` への脱糖を定め、脱糖の型の保存（性質 1）を証明する。段階 B の定義と証明は変えない。ただし段階 C7 は、パターンの拡張をコア計算に加えるために、`Release` の `match` を置き換えて性質 2・3 の証明を直した。
 
 | ファイル | 内容 | 01-12 の節 |
 |---|---|---|
+| `Benitoite/Surface/Monad2Examples.lean` | 二引数クラス・Result・利用者型と上位辞書を本体の判断へ接続する例 | 二引数の型クラスとResult |
+| `Benitoite/Surface/BuilderSyntax.lean` / `Builders.lean` / `BuilderFree.lean` | 構築器の種類・構築器の種類の表・参照先、環境の整列とセルへの対応、旧構文の意味 | 構築器の分類と環境の対応 |
+| `Benitoite/Surface/BuilderCheck.lean` / `BuilderLower.lean` / `BuilderExamples.lean` | 参照先の検査、三種の展開、copy・分岐・継続の例 | 構築器の専用操作と脱糖 |
+| `Benitoite/Surface/Lemmas/Builders.lean` / `BuilderLower.lean` | 束縛追加・型の範囲条件の保存、セル操作と純粋関数の型付け | 構築器の分類と環境の対応、構築器の専用操作と脱糖 |
 | `Benitoite/Surface/Syntax.lean` | 型の情報を付けた表層の構文（局所の束縛は内側から数えた番号。分岐の選択肢 `Alternative`・ガード、パターンの条件 `Pattern.Valid`）、必ず抜ける文、宣言、フィールドを取り出す関数の表と名前の検索 `lookupFun` | 型の情報を付けた表層の構文と型付け |
 | `Benitoite/Surface/Typing.lean` | 表層の型付け、プログラムの入口の条件 | 型の情報を付けた表層の構文と型付け |
 | `Benitoite/Surface/WellFormed.lean` | 型・エフェクト・局所の束縛の番号の範囲、レコードの条件 `RecordsOk` | （番号で表したために要る条件） |
@@ -155,6 +188,7 @@ python3 -B formal/tests/test_batch2_exchange.py
 | `Benitoite/Surface/Lemmas/Dict.lean` / `SubstClean.lean` / `CallHead.lean` | 辞書の根拠の型付けを継続を隠した環境へ移すこと、任意の位置の型の置き換えが範囲を保つこと、制約を持つ関数とメソッドの名前の型付けの逆転と呼び出しの頭の型付け | |
 | `Benitoite/Surface/Lemmas/Calls.lean` / `Patterns.lean` | 呼び出しの組み立ての型付けと範囲、パターンの型付けと網羅性を構成子の表の等しいプログラムの間で移すこと、パターンの束縛の下での弱化 | |
 | `Benitoite/Surface/Lemmas/Sequence.lean` / `Typing.lean` / `Program.lean` | 引数の並びの `let` と番号、式・ブロックの型の保存、プログラム全体の三つの性質と入口の型付け | |
+| `Benitoite/Surface/Lemmas/BuilderCapture.lean` / `BuilderCaptureAll.lean` / `BuilderCaptureCompose.lean` / `BuilderNoCapture.lean` | コアの自由参照と捕捉、脱糖の合成、任意の構築器の種類の表のもとでの全式・ブロックの捕捉禁止 | 構築器の局所宣言と捕捉 |
 | `Benitoite/Surface/Lemmas/Extensions.lean` / `ExtensionsScoped.lean` | リストの展開と文字列補間が加える `let` と、断片・式・呼ぶ値の並びの型付け、型の変数とエフェクト変数の範囲の保存 | |
 | `Benitoite/Surface/Lemmas/Records.lean` | レコードの位置の並べ替え、更新とフィールドを取り出す関数のパターンの束縛の番号と網羅性、取り出す関数の定義の型付け | |
 | `Benitoite/Exchange/Syntax.lean` / `Convert.lean` | 脱糖の差分テストの交換用の表現（JSON）と、表層の構文・`Release` の項との変換 | |

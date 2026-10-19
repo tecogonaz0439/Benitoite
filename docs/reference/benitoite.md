@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.8`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.9`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.8`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.9`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
@@ -126,6 +126,7 @@ For `run` and `check`, options come after the command and before the script path
 | `--deny-warnings` | Treat warnings as errors in `check`, `run`, and `test`. | off |
 | `--report=json` | For `check` and `test --check`, write a single JSON inspection report to standard output. See [Inspection reports](#inspection-reports). | off |
 | `--allow-effects=<names>` or `--allow-effects <names>` | For `run` and executing `test`, compare each entry function's declared effects against an allowed set before execution. See [Effect limits before execution](#effect-limits-before-execution). | no limit |
+| `--doc` | For `test`, include documentation examples. See [Documentation examples](#documentation-examples). | off |
 | `--check` | For `test`, check without running tests. For `fmt`, report the files that would change, without rewriting them. | off |
 
 The four `--wasm-*` options for `run` and executing `test` are described under [Execution limits and statistics](#execution-limits-and-statistics).
@@ -155,7 +156,7 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "unicodeVersion": "17.0.0",
   "build": {
     "commit": null,
@@ -166,9 +167,9 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "formats": {
     "version": [1],
     "diagnostics": [1],
-    "testResults": [1],
+    "testResults": [1, 2],
     "checkReport": [1],
-    "testCheckReport": [1],
+    "testCheckReport": [1, 2],
     "effectLimit": [1],
     "loaderEnvironment": [1],
     "skillList": [1],
@@ -187,7 +188,7 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
 
 `build.commit` is a full lowercase hexadecimal Git object ID or `null`. `build.dirty` is a boolean or `null`; `null` means unknown, not a clean tree. Dirty state is not collected automatically: an unspecified build input gives `provenance.dirty: "notCollected"`. An explicit build input, including an explicit unknown value, gives `"environment"`. Commit provenance is `"environment"`, `"git"`, or `"unknown"`. These are values embedded at build time, not observations of the runtime environment. See [Build information](install.md#build-information) for inputs, monitoring limits, and when to rebuild.
 
-`diagnostics: [1]` and `testResults: [1]` refer to the existing JSON Lines formats, including `kind: "die"`, `code: null`, and test `failure.die`. Those lines have no added `schemaVersion` or initial version record. `checkReport` and `testCheckReport` describe the single-object reports below. `effectLimit` versions the option syntax, set comparison, and `E0512` contract; it is not an output object. `loaderEnvironment` describes the [explicit environment restriction](#io-and-network-behavior). `skillList` and `skillDocument` describe [embedded Skill queries](install.md#read-the-skill-without-installing-it).
+`diagnostics: [1]` and version 1 of `testResults` refer to the existing JSON Lines formats, including `kind: "die"`, `code: null`, and test `failure.die`. Those lines have no added `schemaVersion` or initial version record. `checkReport` and `testCheckReport` describe the single-object reports below. `effectLimit` versions the option syntax, set comparison, and `E0512` contract; it is not an output object. `loaderEnvironment` describes the [explicit environment restriction](#io-and-network-behavior). `skillList` and `skillDocument` describe [embedded Skill queries](install.md#read-the-skill-without-installing-it).
 
 Removing fields or changing their types, required presence, or meaning changes the corresponding format version, as does adding a classification that requires a new interpretation of success. An optional field that can be ignored without changing the meaning may be added within the same format version. Treat unknown formats, statuses, and effect names as unsupported, not as success or an empty effect set.
 
@@ -210,7 +211,7 @@ Each report is one UTF-8 JSON object followed by LF on standard output. It inclu
 
 | Common field | Meaning |
 |---|---|
-| `schemaVersion`, `kind` | Integer `1`; `"checkReport"` or `"testCheckReport"`. |
+| `schemaVersion`, `kind` | Integer `1` for `"checkReport"` and ordinary `"testCheckReport"`; integer `2` for `test --doc` inspection. |
 | `producer` | `{name, version, build}`, with the same version and build information as the version query. |
 | `status` | `"ok"`, `"checkError"`, `"usageError"`, or `"internalError"`; test inspection can also return `"interrupted"`. |
 | `complete` | True only when selection, every target's check, and contract extraction have succeeded. |
@@ -497,7 +498,7 @@ From lowest to highest precedence:
 
 `==`, `!=`, `&&`, `||`, `!`, and `%` do not exist. `div` rounds toward zero and the sign of `mod` follows the dividend: `-7 div 2` is `-3` and `-7 mod 2` is `-1`. For rounding down, use `Integer.floorDivide` and `Integer.floorModulo`. Integer types have no `/`; use a floating-point or decimal conversion for a fractional result.
 
-`=` and `<>` compare values of *equality types*: types that contain no function type and no opaque type (`IOError`, `NetworkError`, `Reference`, `Lazy`, `Task`, resources, external types, `Regex.Pattern`, and others). Lists, maps, sets, options, results, records, and data types are compared by their contents. `<`, `<=`, `>`, and `>=` work only on all the numeric types, `Character`, and `String`. `Float` and `Float32` comparison follow IEEE 754: NaN is not equal to anything, even to itself, so use the corresponding `isNaN` function to detect it.
+`=` and `<>` compare values of *equality types*: types with no function types and no built-in opaque types without equality such as `IOError` (`NetworkError`, `Reference`, `Lazy`, `Task`, resources, `Regex.Pattern`, and others are also excluded), and no external types. Lists, maps, sets, options, results, records, and data types are compared by their contents. `<`, `<=`, `>`, and `>=` work only on all the numeric types, `Character`, and `String`. `Float` and `Float32` comparison follow IEEE 754: NaN is not equal to anything, even to itself, so use the corresponding `isNaN` function to detect it.
 
 Operands are evaluated from left to right.
 
@@ -783,6 +784,16 @@ A B almost nothing C
 
 Data types and records can have type parameters: `data Tree[T]` with constructors `Leaf` and `Node(Tree[T], T, Tree[T])`.
 
+### Opaque types
+
+An *opaque type* keeps its constructors private to its declaring module. This includes `@opaque` data types and records, built-in types such as `IOError`, `NetworkError`, `Reference`, `Lazy`, `Task`, resources, `Regex.Pattern`, and external types. Opacity alone does not prohibit equality: `@opaque` data types and records follow the equality rules for their contents.
+
+Put `@opaque` before a `public data`, `public record`, or package-public declaration to expose the type while keeping its representation inside the declaring module. `@opaque()` is also accepted. Type parameters and `@deprecated` are supported. Arguments report `E0818` (`E0220` for non-string arguments), duplicates report `E0803`, other declaration kinds report `E0802`, and private declarations report `E0820`. Combining it with `@extensible` or `@external` reports `E0819` at the later attribute.
+
+Outside the declaring module, including another module of the same package, constructor references, calls, values, partial applications and patterns, record construction, updates and patterns, and generated field accessors report `E0340`. Use the module's public construction and inspection functions. Import aliases and type aliases preserve the original owner. Type annotations, type arguments, passing values, variable bindings, and wildcard matches remain available.
+
+The representation can use private helper types, but public functions and methods must still satisfy the usual visibility checks on their signatures (`E0329`). The attribute does not validate a public factory or prevent public functions from returning representation details. Equality and key constraints follow the ordinary internal structure of the type, and exhaustiveness still uses its complete constructor set. Adding the attribute to an existing public type can break callers that construct, update, inspect, or match its representation.
+
 ### Extensible types
 
 Put the argument-free attribute `@extensible` before a `data` or `record` declaration, before `public` or `public(package)` if present. It can also be used on private declarations and alongside `@deprecated`. `@extensible()` is accepted as the same attribute; the formatter keeps the parentheses. Arguments report `E0817` (or `E0220` for non-string arguments), duplicates report `E0803`, and use on another kind of declaration reports `E0802`. Attributes before individual constructors are not allowed (`E0201`).
@@ -829,6 +840,29 @@ Adding `@extensible` to a closed type can reject external matches and destructur
 ## 8. Constants and type aliases
 
 `const` declares a constant at the top level. The type is required, and the value must be computable before the program runs: literals, other constants, constructors, records, lists, operators, interpolation of constants, and `Map.fromList`, `Set.fromList`, `Map.empty()`, `Set.empty()`. Refer to a constant by its name, without parentheses.
+
+Top-level constant evaluation accounts for storage of direct constant references as well as evaluated values. Programs with many constant dependencies may therefore reach the evaluation limit (E0435) earlier than in 0.0.8.
+
+A direct call to the standard `Regex.compile` also checks a known constant `source`. A syntax error is E0457; the same compilation limit used at runtime is E0458. An import alias still refers to the standard binding. This does not permit `Regex.compile` in a top-level `const` (E0433), and it does not propagate local `bind` values or evaluate arbitrary pure functions.
+
+Direct calls to `Scope.checkHost`, `Scope.checkPath`, and `Scope.checkEndpoint` also reject known invalid arguments. E0459 identifies a malformed pattern, E0460 a malformed target, E0461 invalid port bounds or a port outside 0..65535, and E0462 a target outside its supplied condition. Known parts are checked even when other arguments are dynamic: Endpoint checks host membership when its two strings are known and port membership when its three integers are known. A rejected call would return `Result.Error` for every possible value of the unknown arguments. See [Scope](#scope) for its spelling rules and guarantees.
+
+Dynamic arguments, local function values, partial application, placeholders, higher-order calls, and pipes keep runtime checking. The additional check has its own 64 MiB evaluation budget shared across the program; regex compilation provisionally allows 1 MiB of source per pattern and 8 MiB in total, reusing identical inputs. Exceeding these check budgets leaves the call for runtime; it is not E0458. An accepted call still returns `Result[Regex.Pattern, String]` and still compiles at runtime. To observe an invalid pattern's `Result.Error`, including in tests, pass it through a normal function parameter:
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Regex
+function parse(source: String) -> Result[Regex.Pattern, String]
+  return Regex.compile(source)
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show(Result.isError(parse("["))))
+end function
+```
+```output
+true
+```
 
 `type Name = Type` declares another name for a type. It does not create a new type.
 
@@ -986,10 +1020,6 @@ An effect is part of the type of a function value: `function(text: String) -> Un
 
 ## 11. Effect handlers
 
-An operation can constrain its value type parameters with traits and built-in constraints, for example `function render[T: Trait.Show](value: T) -> String`. Callers select the implementation; a handler clause can use the declared methods for any caller type. Several constraints use `&`, including supertraits. The constraints add no public arguments. Operations cannot declare type constructor parameters, effect variables, or their own `uses`.
-
-A constrained operation can also be stored as a function value, partially applied with `_`, or used on the right of `|>`. Its function type keeps only the declared public parameters and the operation effect. A lambda inside a clause can capture the declared constraints, including supertraits; nested clauses keep their own constraints. Named arguments are evaluated once in source order before they are placed in declaration order.
-
 You can declare your own effects. An `effect` declaration lists its operations, which are called like functions. `handle body with case operation(arguments) -> clause end handle` runs `body` and, whenever the body calls one of the listed operations, runs the clause instead. In the clause, `resume(value)` continues the body, with `value` as the result of the operation. A clause that does not call `resume` ends the `handle` with its own value. `resume` is written directly in the clause; it cannot appear in a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders (a `handle` written there can resume its own clauses).
 
 ```benitoite
@@ -1020,6 +1050,10 @@ end function
 log: items: 3
 total: 500
 ```
+
+An operation can constrain its value type parameters with traits and built-in constraints, for example `function render[T: Trait.Show](value: T) -> String`. Callers select the implementation; a handler clause can use the declared methods for any caller type. Several constraints use `&`, including supertraits. The constraints add no public arguments. Operations cannot declare type constructor parameters, effect variables, or their own `uses`.
+
+A constrained operation can also be stored as a function value, partially applied with `_`, or used on the right of `|>`. Its function type keeps only the declared public parameters and the operation effect. A lambda inside a clause can capture the declared constraints, including supertraits; nested clauses keep their own constraints. Named arguments are evaluated once in source order before they are placed in declaration order.
 
 Operations of built-in effects, such as `File.readText` or `Process.run`, can be handled in the same way. This is how tests replace the outside world ([Tests](#16-tests)). A handler that handles only some operations of an effect does not remove the effect from the type. Functions whose effects include `State` (`Reference`, `TaskGroup`, `Task.await`, and the `close…` functions) cannot be handled.
 
@@ -1112,6 +1146,38 @@ the number 3
 ```
 
 An implementation applies to the whole program. An implementation must be in the module of the class or of the type, and two implementations cannot overlap. The standard classes, such as `Show`, `Order`, `Monoid`, `Functor`, and `Monad`, are in the module `Benitoite.Trait`.
+
+`Functor2`, `Applicative2`, and `Monad2` take a two-parameter type constructor, written `F[_, _]`. They transform the first type of `F[A, X]` and keep the second type `X`. `Applicative2` includes `Functor2`, and `Monad2` includes `Applicative2`. All three have standard implementations for `Result` and require an explicit `import Benitoite.Trait`.
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function twice[F[_, _]: Trait.Monad2, X](x: F[Integer, X]) -> F[Integer, X]
+  return Trait.Functor2.map(x: x, f: lambda(value) return value * 2 end lambda)
+end function
+
+function main() -> Unit uses Console.Write
+  bind result: Result[Integer, String] <- twice(Result.Ok(3))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: result, fallback: 0)))
+end function
+```
+
+```output
+6
+```
+
+| Class | Method signatures (inside `Benitoite.Trait`) |
+|---|---|
+| `Functor2[F[_, _]]` | `function map[A, B, X, effect E](x: F[A, X], f: function(value: A) -> B uses E) -> F[B, X] uses E` |
+| `Applicative2[F[_, _]: Functor2]` | `function pure[A, X](x: A) -> F[A, X]`; `function apply[A, B, X, effect E](fs: F[(function(value: A) -> B uses E), X], x: F[A, X]) -> F[B, X] uses E` |
+| `Monad2[F[_, _]: Applicative2]` | `function flatMap[A, B, X, effect E](x: F[A, X], f: function(value: A) -> F[B, X] uses E) -> F[B, X] uses E` |
+
+For Result, map delegates to `Result.map`, flatMap to `Result.andThen`, and pure returns Ok. Annotate the result of pure when `X` cannot be inferred, for example `bind value: Result[Integer, String] <- Trait.Applicative2.pure(3)`. Apply returns the error from `fs` first, then the error from `x`; it calls the wrapped function once only when both are Ok. Both argument expressions are evaluated in source order. Parentheses around the function type in `Result[(function(value: A) -> B uses E), X]` separate the effect row from the second type argument and are preserved by `fmt`.
+
+A user-defined two-parameter data type with the successful value first can implement the same classes. Methods can be used as values, and an inherited method uses the superclass dictionary. Matching method types alone does not establish the laws for an arbitrary implementation. Fully applied transparent aliases expand to their underlying type; a bare alias cannot be passed as a type constructor or given an independent dictionary. Type constructors cannot be partially applied, so `Result` cannot be passed to one-parameter `Monad` or `Traversable` functions.
+
+Prefer `List.map/fold`, `Option.map/andThen`, and `Result.map/andThen/mapError` when the concrete container is known; require only the smallest class needed for generic code. `andThen/flatMap` continues from a successful value with the same error type (use mapError to align different error types). `try … or return` returns a failure, `or die` ends the run, and `Failure.toResult` handles typed Fail and returns a Result while removing that Fail from the enclosing effect bound. For display and comparison, choose by meaning: numeric `toString` and `Show`, and built-in Float comparisons and `Order[Float]`, are not interchangeable.
 
 `IOError`, `NetworkError`, `Json.ParseError`, and `Csv.ParseError` have standard `Trait.Show` implementations. Each returns exactly its type's `message` string, without adding quotes, line or column numbers, or other location information. The implementations for IOError and NetworkError live in `Benitoite.Trait`; the ParseError implementations live in Json and Csv. Explicit calls to `Trait.Show.show` require `import Benitoite.Trait`. In contrast, `or die` connects its Show reference internally. Ordinary `Show[String]` still adds quotes and escapes.
 
@@ -1256,6 +1322,29 @@ Here two entries were selected and neither started. `filesNotRun` counts all ent
 
 The exit status of executing `test` is 0 when all tests pass, 1 when a test fails, 2 for check errors, effect-limit rejection, compilation limits, unreadable files, and usage errors, 3 for an internal error, and 130 when interrupted. When several apply, the first in the order 130, 3, 2, 1 is used. Output failures exit with 1. Non-executing `test --check` uses the [inspection statuses](#inspection-reports), with or without a JSON report.
 
+### Documentation examples
+
+Use `benitoite test --doc <path>...` to include the selected entry files' `///` and `//!` examples. Ordinary tests run first within each entry, followed by examples in source order. Imported modules and embedded standard-library docs are not recursively collected. Selection, directory roots, package boundaries, and explicit duplicates follow ordinary test selection.
+
+Each example is an independent module. Write its imports, declarations, `main` or `@test`, and `uses` explicitly. The entry's language/dependency environment and import root are inherited; its imports and private declarations are not. Import an ordinary module to test its public API, including the boundaries of its opaque types. A source that contains `main` cannot be imported by its own examples (E0320); use a self-contained example or an importable library module. Diagnostics point back into the original comments.
+
+| Fence info | Behavior |
+|---|---|
+| `benitoite test` | Check and run the example's `@test` functions, with ordinary Assert behavior. |
+| `benitoite check` | Check types and effects without executing functions. |
+| `benitoite error` | Require static rejection and a following `diagnostic` fence. Each nonempty expected line must occur in the diagnostics; at least one line must be a recognized E code. |
+| `benitoite` | Check and run `main`; require a following `output` fence with exact UTF-8 stdout, including the final newline. An optional `stderr` fence is exact too; omission requires empty stderr. |
+
+Unmarked and `text` fences are ignored. Unsupported Benitoite marks, missing expectations, and unclosed fences are E0260. Comment examples do not support files blocks, hidden lines, prompts, or nonzero exit expectations. Ordinary `test` does not parse these examples for execution.
+
+All entries and executable examples are prepared before any execution, including any `--allow-effects` comparison. The permitted set covers ordinary tests and test/run examples only; check/error examples add no execution permissions. Each execution gets fresh heap, task, and resource state, empty stdin, and captured stdout/stderr. Static effect limits do not provide OS isolation.
+
+`test --doc --check` checks all four modes but runs no tests or main functions and does not measure output. Add `--report=json` to get `testCheckReport` version 2. Version 2 retains ordinary Target.tests and adds `docExamples` and `ignoredDocBlocks`. Each example has `id` (path:line:doc:index), `mode`, original `location`, virtual `sourceId`, `status`, `complete`, `effects`, `tests`, `expectedDiagnosticCodes`, and `observedDiagnostics`. Unknown arrays/effects are null; successful empty values are empty arrays. Expected rejection is a successful example, stored only in observedDiagnostics. Unexpected rejection or a diagnostic expectation mismatch makes the target and report incomplete, with checkError and exit 2. Source sets include original comments and the virtual input; diagnosticTargets identifies example diagnostics with docExampleId.
+
+Execution with `--doc --diagnostics=json` uses `testResults` version 2: `docExample` lines carry id/mode/location/outcome/stdout/stderr/failure/tests, followed by a `docSummary` with discovered test/run/check/error counts and ignoredBlocks, then the final `testSummary`. The final passed/failed counts combine ordinary test functions and completed examples, counting an example containing multiple tests once. A diagnostic or output mismatch fails that example with exit 1 and later examples continue. No examples is a valid zero-example success.
+
+Query `formats.testCheckReport` and `formats.testResults` for `[1,2]` support. Calls without `--doc` keep version 1, including its original JSON Lines; a version 1 consumer must omit `--doc`. JSON Lines gain no schemaVersion or initial version record. `--check` emits no execution result or summary lines, and existing option conflicts remain errors.
+
 ### Pure property trials
 
 Import `Benitoite.Unofficial.Test.Property` for pure generators, shrinkers, and
@@ -1269,7 +1358,7 @@ import Benitoite.Unofficial.Test.Property
 @test("integer addition agrees with multiplication")
 function addition() -> Result[Unit, String]
   bind gen <- try Property.integer(low: -100, high: 100)
-  bind config <- Property.Config(seed: 17, trials: 100, size: 8, maxShrinks: 100)
+  bind config <- Property.Config(seed: 17, trials: 100, size: 8, maxShrinks: 100, maxShrinkWork: 10000)
   bind result <- Property.check(config: config, gen: gen, shrinker: Property.shrinkInteger(), property: lambda(value)
     return if value + value = value * 2 then Result.Ok(()) else Result.Error("addition disagrees") end if
   end lambda)
@@ -1282,14 +1371,16 @@ end function
 
 `Gen[T]` is a public record with
 `run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]`;
-`Shrinker[T]` has `candidates: function(value: T) -> List[T]`. Import
+`Shrinker[T]` has `candidates: function(value: T) -> ShrinkStep[T]`. Import
 `Benitoite.Unofficial.IO.Random` when writing a generator by hand. Pass each returned
 random state to the next draw. Both callbacks and the property must be pure;
 Assert, IO, typed Fail, and exit cannot run inside them. Runtime errors and
 interruptions propagate normally, without becoming counterexamples.
 
 `Config` allows any Integer seed, trials from 1 to 10000, size from 0 to 10000,
-and maxShrinks from 0 to 100000, all inclusive. Invalid settings return
+maxShrinks from 0 to 100000, and maxShrinkWork from 0 to 1000000, all inclusive.
+Every Config must supply all five fields; 10000 is the suggested initial
+maxShrinkWork for small examples, pending final performance measurements. Invalid settings return
 `CheckFailure.InvalidConfig(String)` before calling any callback. Each trial
 gets the same size. A direct `Gen.run` call uses its stored function's size
 contract; built-in string/list/map generators require size in 0..10000.
@@ -1318,24 +1409,52 @@ A mapped Gen needs a separately supplied Shrinker; no inverse is inferred.
 Handwritten Gen, Shrinker, and check need no equality constraint and may handle
 function values.
 
-The first property `Result.Error` starts shrinking. Passing candidates are skipped;
-a failing candidate becomes the current input and restarts the candidate sequence.
-Every candidate trial counts toward maxShrinks, including repeats and cycles.
-Zero skips the shrinker entirely and records the limit as reached. The budget
-bounds callback invocations, not a callback's own execution time or memory use.
-Keep size small for built-in List, String, and Map shrinking: generating and
-deduplicating candidates can cost more than quadratic time in the input length,
-and maxShrinks does not bound that work.
+`ShrinkStep[T]` represents one pure step using `Done`,
+`Yield(T, function() -> ShrinkStep[T])`, or
+`Skip(function() -> ShrinkStep[T])`. Call a stored continuation only when you
+want to advance. `mapSteps[A, B](steps: ShrinkStep[A],
+f: function(value: A) -> B) -> ShrinkStep[B]` transforms a yielded value,
+preserves Skip, and defers the continuation. `appendSteps[T](left: ShrinkStep[T],
+right: function() -> ShrinkStep[T]) -> ShrinkStep[T]` keeps the left sequence's
+values and Skips. When left is Done, it returns `Skip(right)`; right is called
+only when that Skip is advanced. Neither helper requires equality, and neither
+traverses the whole sequence before returning.
+
+Built-in shrinkers use steps for candidate generation and deduplication.
+Each comparison against the original or one previously accepted candidate is a
+separate step; intermediate comparisons return Skip. The last comparison may
+return Yield. They preserve equality and first-occurrence order. Neither the
+public entry point nor element shrinkers collect all candidates into a List.
+
+The first property `Result.Error` starts shrinking. Passing candidates advance
+the current continuation; a failing candidate updates the input and message and
+restarts the candidate sequence. Every candidate property call counts as one
+shrink and one work unit. The initial `candidates(value)` call and each
+continuation call also cost one work unit, counted immediately before calling.
+Generating a candidate, comparing once, advancing internal state, or obtaining
+Done is one step. Returning Skip or Yield after a comparison adds no extra unit.
+Ordinary trials and the initial failure do not consume the shrinking budgets.
+Both counters accumulate across restarts, including repeated or cyclic candidates.
+
+If either budget is zero, the shrinker is never called. Once either budget is
+exhausted, no further generation, comparison, or property call starts. A known
+Done completes with `limitReached=false`, even exactly at the limit; an unknown
+continuation gives true without calling it just to find out. An untried Yield
+is never adopted as a failing input. Budgets count calls, not execution time or
+allocation inside a callback or structural comparison. Keep container size small;
+these operations can still be expensive, and user callbacks may not terminate.
 
 `CheckFailure.Falsified(Counterexample[T])` carries `config`, the first failing
 1-based `trial`, `original`, `reduced`, `originalMessage`, `message`, `shrinks`,
-`limitReached`, and `libraryVersion` (currently `1.0.0`). The reduced input still
+`shrinkWork`, `limitReached`, and `libraryVersion` (currently `2.0.0`). The reduced input still
 fails with its recorded message; it need not be the smallest counterexample.
 `formatFailure(failure, show)` includes these budgets and replay data, plus concrete
 original/reduced inputs using `show: function(value: T) -> String`.
 Use the same seed, config, library rules, property, and handwritten callbacks to
 replay. This does not extend Random.fromSeed's cross-version contract to changed
-Property rules. A lossy show function cannot guarantee full reconstruction;
+Property rules. The same seed alone does not reproduce an old counterexample.
+Save libraryVersion, GENERATOR_VERSION for generated code, the full config,
+handwritten function sources, and the concrete counterexample. A lossy show function cannot guarantee full reconstruction;
 keep important concrete failures as fixed examples. For record generator/shrinker
 code generation, see [Record generators and shrinkers](#record-generators-and-shrinkers).
 
@@ -1372,6 +1491,45 @@ An `or die` report has `kind: "die"`, `severity: "error"`, and `code: null`, wit
 
 Tell diagnostics apart by `code` and the JSON fields, not by the message: messages and the contents of helps may change even in patch versions. A code that has been removed is never reused with another meaning.
 
+For E0506, an entry must handle its declared user effects. The standard `Failure.Fail[E]` also has a conversion to a value:
+
+```benitoite error
+import Benitoite.Unofficial.Failure
+
+function main() -> Unit uses Failure.Fail[String]
+  return Failure.raise("bad")
+end function
+```
+
+```diagnostic
+error[E0506]
+handle `Failure.Fail` with `handle ... with` inside `main`
+or convert the failure with Failure.toResult inside `main`
+```
+
+Import `Benitoite.Unofficial.Failure` and catch the failure with `Failure.toResult` inside `main` or the `@test` function. Remove the handled Fail from that entry's `uses`; keep any other effects, such as `Console.Write` below. The failure now becomes `Result.Error`, so the entry passes the checks and can run:
+
+```benitoite
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind result: Result[Unit, String] <- Failure.toResult(body: lambda()
+    return Failure.raise("bad")
+  end lambda)
+  match result with
+    case Result.Ok(_) -> return ()
+    case Result.Error(message) -> Console.writeLine("handled: ${message}")
+  end match
+end function
+```
+
+```output
+handled: bad
+```
+
+`Result.andThen`/`flatMap` chains existing Result values; it does not catch Fail. The conversion help is specific to the standard Fail. Other user effects, such as Log or a user-defined effect named Fail, need their own handler.
+
 ### Calls, function contracts, and lambdas
 
 | Code | Meaning and correction |
@@ -1406,6 +1564,8 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Reference`, `Lazy`, `Task`, `TaskGroup`, `State` | prelude | Mutable cells, explicit laziness, tasks, and the effect `State` |
 | `Assert` | prelude | Checks in tests |
 | `IO` | prelude | The effect `IO.All` |
+| `StringBuilder` | `import Benitoite.StringBuilder` | Dedicated local string construction; all operations require State |
+| `ListBuilder`, `BytesBuilder` | Import each module explicitly | Dedicated local list/byte construction; all operations require State |
 | `Trait` | `import Benitoite.Trait` | Standard type classes |
 | `IO.Console` | `import Benitoite.Unofficial.IO.Console` | Standard input and output |
 | `IO.File` | `import Benitoite.Unofficial.IO.File` | Files and directories |
@@ -1419,6 +1579,8 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Test.Property` | `import Benitoite.Unofficial.Test.Property` | Pure generators, shrinkers, and property trials |
 | `Json.Codec` | `import Benitoite.Unofficial.Json.Codec` | Pure Result-based JSON conversion |
 | `Csv` | `import Benitoite.Unofficial.Csv` | CSV (RFC 4180) |
+| `Scope` | `import Benitoite.Unofficial.Scope` | Checked hosts, absolute paths, and inclusive port ranges, retaining their conditions |
+| `Range` | `import Benitoite.Unofficial.Range` | Checked inclusive Integer ranges, retaining both bounds and the value |
 | `Regex` | `import Benitoite.Unofficial.Regex` | Regular expressions; finding one match takes time proportional to the input length times the pattern size, and finding all matches can take time proportional to the square of the input length |
 | `Encoding` | `import Benitoite.Unofficial.Encoding` | Base64 |
 | `Hash` | `import Benitoite.Unofficial.Hash` | SHA-256 hash values of bytes |
@@ -1504,7 +1666,68 @@ book: 2000
 food: 300
 ```
 
+### Function-local builders
+
+Import `Benitoite.StringBuilder` and declare a builder with an annotated local bind and a direct `new()` call. A builder is a second-class value: it cannot be stored in an ordinary variable, returned from a function, or captured by a lambda or lazy expression. `StringBuilder` names its kind, not an ordinary type. All five operations require `State`, including `copy` and `byteLength`.
+
+```benitoite
+import Benitoite.StringBuilder
+
+function main() -> Unit uses State
+  bind b: StringBuilder <- StringBuilder.new()
+  StringBuilder.append(builder: b, text: "a")
+  bind before <- StringBuilder.copy(b)
+  StringBuilder.appendAll(texts: ["b", "c"], builder: b)
+  bind after <- StringBuilder.copy(b)
+  bind size <- StringBuilder.byteLength(b)
+end function
+```
+
+```output
+exit 0
+```
+
+`append` takes a String; `appendAll` takes a List[String] and adds its elements in order without a separator. Both return Unit. `copy` returns the current immutable String, and `byteLength` returns its UTF-8 byte count. In the example, `before` remains `"a"`, `after` is `"abc"`, and `size` is 3. Copy may share immutable storage; later appends replace the builder's contents. Each ordinary argument is evaluated once in source order before the current contents are read. A size-limit failure during concatenation stops the run with the existing runtime error; the builder is never left partially updated.
+
+Import `Benitoite.ListBuilder` or `Benitoite.BytesBuilder` explicitly to use the corresponding kind of second-class builder. Declare `bind xs: ListBuilder[T] <- ListBuilder.new()` with an explicit ordinary element type T, or `bind bs: BytesBuilder <- BytesBuilder.new()`. Each starts empty and all operations require State.
+
+| Direct operation | ListBuilder[T] | BytesBuilder |
+|---|---|---|
+| `append(builder: b, value: value)` | Append one T | Append one Byte |
+| `appendAll(builder: b, …)` | `values: List[T]` | `bytes: Bytes` |
+| `copy(b)` | Immutable List[T] | Immutable Bytes |
+| `length(b)` | Element count as Integer | Byte count as Integer |
+
+Both append operations return Unit, evaluate each ordinary argument once before reading the current contents, and update only after successful size checks. Copy preserves the list or byte structure across later appends. A copied List[Reference[T]] still shares its element cells, so updating one of those cells is visible through the snapshot. These operations use the same restrictions below as StringBuilder; operation and target kinds must match.
+
+```benitoite
+import Benitoite.ListBuilder
+import Benitoite.BytesBuilder
+
+function main() -> Unit uses State
+  bind xs: ListBuilder[Integer] <- ListBuilder.new()
+  ListBuilder.append(value: 1, builder: xs)
+  bind before <- ListBuilder.copy(xs)
+  ListBuilder.appendAll(builder: xs, values: [2, 3])
+  bind bs: BytesBuilder <- BytesBuilder.new()
+  BytesBuilder.append(builder: bs, value: 0xffu8)
+  BytesBuilder.appendAll(bytes: Bytes.fromList([0x00u8]), builder: bs)
+  bind bytes <- BytesBuilder.copy(bs)
+end function
+```
+```output
+exit 0
+```
+
+A builder cannot be returned, passed to an ordinary function, stored, compared, or interpolated (E0464). Its kind cannot be used in ordinary annotations, type arguments, data fields, or Failure.Fail arguments. Lambda, lazy, partial-application, and handler-clause boundaries reject references to outer builders (E0465). Partial application includes both the callee expression and fixed arguments. Bind a copy or length before creating the function value, or declare a new builder inside the boundary. Ordinary branches and handler bodies can use builders from their enclosing block. Guards, die messages, and lazy bodies still require purity; even a builder declared inside a lazy body would require State.
+
+Operations require direct calls; function values, holes, and pipes are rejected (E0466). The declaration requires both the dedicated annotation and a matching direct new call (E0463). Import aliases referring to the same standard module are accepted. A final builder bind produces Unit and still requires State. Build dynamic fragment lists before calling appendAll; a List.forEach callback cannot capture the builder. There is no clear, reserve, finish, or State-elimination rule.
+
 ## 20. Compatibility
+
+### Migrating to 0.0.9
+
+See the [0.0.9 migration guide](../../CHANGELOG.md#009-san-benito) for Regex/Scope constant rejection, Range errors, opaque boundaries, builder restrictions, documentation report versions, and the combined inventory/generation/Property transition. Review source and dependencies before updating language declarations and hashes; rebuild and reinstall the matching Skill.
 
 ### Version policy
 
@@ -1515,7 +1738,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.8` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.9` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1527,7 +1750,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.8"
+language "0.0.9"
 
 package Textkit
   license "MIT"
@@ -1545,7 +1768,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.8"
+language "0.0.9"
 
 dependency Textkit
   path "packages/textkit"
@@ -1577,7 +1800,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.8"
+language "0.0.9"
 ```
 
 ```benitoite check
@@ -1588,7 +1811,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.8`, a declaration of `0.0.8` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.9`, a declaration of `0.0.9` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -1831,6 +2054,29 @@ the codec itself requires no Fail effect. JSON text parsing remains a separate
 Result with ParseError. Arbitrary JSON spelling and representation across
 parse/stringify are outside the conversion roundtrip guarantee.
 
+### Generated Show and Order implementations
+
+The development [derive tool](../../tools/derive/README.md) also accepts independent
+`"show": true` and `"order": true` target settings. It emits ordinary implementations
+in the record's declaring module. Show formats the local record name and fields
+in declaration order, delegating each value's quoting and escaping to its Show
+dictionary. Order compares fields in that order and stops at the first non-Equal
+result; otherwise it returns Equal. Equal does not establish builtin equality
+or a key constraint, and Show output is not a serialization format.
+
+Targets must be noncyclic records without type parameters. Every field needs
+the requested dictionary; another generated record needs its own explicit
+selection for that class. Handwritten implementations for field types can be
+used. Existing implementations outside the authenticated target region block
+generation. Empty record declarations remain syntax errors. Opaque records may
+explicitly request Show/Order within their owner module: review the opaque flag
+and selected classes in the proposed record before approving their display.
+Automatic JSON/Property construction of the opaque target remains refused.
+Use preview, review, apply with the exact manifest hash, normal check/test and
+derive check for these implementations too. The checked-in People/Address
+example has completed the combined API migration with a version 2 record and
+Property library 2.0.0. Person requests Show; Address requests Show and Order.
+
 ### Record generators and shrinkers
 
 The same derive configuration can request `property.generator` and
@@ -1852,3 +2098,108 @@ and shrinker for the entire record. For a saved failure report, attach the
 the Property failure's seed/config, library version, and concrete inputs. Replay
 also depends on unchanged type structures, generation settings, custom
 functions, and the property. No generator-identification function is emitted.
+
+
+### Range
+
+Import `Benitoite.Unofficial.Range`. All functions are pure. `CheckedInteger` is an opaque record retaining `minimum: Integer`, `maximum: Integer`, and `value: Integer`. Use these public functions; external construction, updates, patterns, and automatic field accessors are rejected with E0340.
+
+| Function | Result |
+|---|---|
+| `checkInteger(minimum: Integer, maximum: Integer, value: Integer)` | `Result[CheckedInteger, RangeError]` |
+| `minimum(value: CheckedInteger)` | The retained inclusive lower bound |
+| `maximum(value: CheckedInteger)` | The retained inclusive upper bound |
+| `value(value: CheckedInteger)` | The retained Integer |
+
+The check first returns `Result.Error(RangeError.InvalidBounds(minimum, maximum))` for reversed bounds. Otherwise it returns `Result.Error(RangeError.OutOfRange(minimum, maximum, value))` if the value lies outside the inclusive range, or `Result.Ok` retaining all three inputs. `RangeError` is a closed data type with these two public constructors and a `Trait.Show` implementation displaying the constructor name and inputs, such as `OutOfRange(0, 10, 11)`.
+
+Equal bounds describe a single value. Both Integer endpoints, -9223372036854775808 and 9223372036854775807, are supported without adding one to the upper bound. There is no implicit conversion to Integer or range-aware arithmetic. Bounds can differ between values of the same `CheckedInteger` type: inspect them or call `checkInteger` again with the required bounds. Use `Result.ok` when an Option is sufficient.
+
+Range returns ordinary `Result.Error` even for invalid constant arguments. It is excluded from the extra static checks for Scope and Regex. This does not extend the expressions allowed in a top-level `const`.
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  match Range.checkInteger(minimum: 0, maximum: 10, value: 10) with
+    case Result.Ok(checked) ->
+      Console.writeLine(Integer.toString(Range.minimum(checked)))
+      Console.writeLine(Integer.toString(Range.maximum(checked)))
+      Console.writeLine(Integer.toString(Range.value(checked)))
+    case Result.Error(error) -> Console.writeLine(Trait.Show.show(error))
+  end match
+  match Range.checkInteger(minimum: 0, maximum: 10, value: 11) with
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+    case Result.Error(error) -> Console.writeLine(Trait.Show.show(error))
+  end match
+end function
+```
+```output
+0
+10
+10
+OutOfRange(0, 10, 11)
+```
+
+### Scope
+
+Import `Benitoite.Unofficial.Scope`. All its functions are pure. The opaque records `CheckedHost`, `CheckedPath`, and `CheckedEndpoint` can be passed as ordinary values; their constructors, updates, patterns, and automatic field accessors are private to Scope (E0340). Use the public checks and projections:
+
+| Function | Contract |
+|---|---|
+| `checkHost(pattern: String, host: String)` | `Result[CheckedHost, ScopeError]` |
+| `checkPath(pattern: String, path: String)` | `Result[CheckedPath, ScopeError]` |
+| `checkEndpoint(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer)` | `Result[CheckedEndpoint, ScopeError]` |
+| `host(value: CheckedHost)`, `hostPattern(value: CheckedHost)` | `String` |
+| `path(value: CheckedPath)`, `pathPattern(value: CheckedPath)` | `String` |
+| `endpointHost(value: CheckedEndpoint)`, `endpointHostPattern(value: CheckedEndpoint)` | `String` |
+| `endpointPort(value: CheckedEndpoint)`, `endpointMinimumPort(value: CheckedEndpoint)`, `endpointMaximumPort(value: CheckedEndpoint)` | `Integer` |
+
+Hosts contain nonempty ASCII alphanumeric/hyphen labels separated by dots, with no edge hyphens, empty labels, trailing dot, URL, port suffix, IPv6, non-ASCII, or NUL. Four all-decimal labels are rejected as IPv4 form regardless of their numerical range. `localhost` is accepted. The patterns are an exact host, `*.host` for exactly one preceding label, and `**.host` for one or more preceding labels. Both wildcards exclude the stem itself. Successful host checks store lowercase pattern and target. DNS length standards are outside this contract.
+
+Paths use absolute slash-separated spelling. `/` is accepted; other trailing slashes, empty components, `.`/`..`, NUL, and backslash are rejected. Other Unicode characters keep their spelling. A pattern is exact or ends in `/**`; stars elsewhere in a pattern are rejected. `/data/reports/**` includes `/data/reports` and its children, while `/data/reports-old` is outside. `/**` includes the root and all accepted paths. Stars in a target path are ordinary characters. Successful checks preserve both path strings exactly.
+
+Endpoint bounds satisfy `0 <= minimumPort <= maximumPort <= 65535`, and the port must lie in the inclusive range. Equal endpoints are allowed. All three integers are preserved. Checks report the first failure in this order: pattern form, target form, bounds, port form, host/path membership, port membership. `ScopeError` has six public constructors, retaining the original inputs:
+
+- `InvalidPattern(pattern, reason)` and `InvalidTarget(target, reason)`; the reason is English.
+- `InvalidPortRange(minimumPort, maximumPort)` and `InvalidPort(port)`.
+- `OutsideScope(pattern, target)` and `PortOutsideScope(minimumPort, maximumPort, port)`.
+
+Its `Trait.Show` implementation quotes and escapes strings, and limits displayed inputs and the final message to 4096 UTF-8 bytes, using `...` for truncation. Stored inputs are kept in full. To change a condition or target, call the check again. A type name alone does not identify a particular pattern or range.
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+function main() -> Result[Unit, String] uses Console.Write
+  bind checked <- try Scope.checkHost(pattern: "*.EXAMPLE.COM", host: "API.EXAMPLE.COM") |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error) end lambda)
+  Console.writeLine(Scope.host(checked))
+  Console.writeLine(Scope.hostPattern(checked))
+  return Result.Ok(())
+end function
+```
+```output
+api.example.com
+*.example.com
+```
+
+Known invalid direct arguments are rejected with E0459–E0462, even in tests or when a `match` handles the Error. To inspect a dynamic Error, pass the input through an ordinary function parameter:
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+function inspect(pattern: String, host: String) -> Result[Scope.CheckedHost, Scope.ScopeError]
+  return Scope.checkHost(pattern: pattern, host: host)
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show(Result.isError(inspect(pattern: "*.example.com", host: "a.b.example.com"))))
+end function
+```
+```output
+true
+```
+
+Success means the saved target spelling satisfies the saved condition. It does not grant permission, identify DNS resolution or filesystem/link targets, guarantee isolation, prevent later changes, validate URLs or redirects, or guarantee IO success. Existing IO functions continue to accept `String` and `Integer`; explicitly pass the projected value when using a checked target.

@@ -1,4 +1,4 @@
-//! 外部生成へ解決済みの宣言を version 1 の JSON で渡す（設計書 03-06「外部生成の宣言情報」）。
+//! 外部生成へ解決済みの宣言を version 2 の JSON で渡す（設計書 03-06「外部生成の宣言情報」）。
 #[path = "derive_inventory/mod.rs"]
 mod derive_inventory;
 

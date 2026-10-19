@@ -70,8 +70,13 @@ impl Resolver<'_> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     pub(super) fn bind_statement(&mut self, ctx: &mut Ctx, stmt: &BindStmt) {
-        self.expr(ctx, &stmt.value);
-        if let Some(ty) = &stmt.ty {
+        let builder = self.builder_bind(ctx, stmt);
+        if builder.is_none() {
+            self.expr(ctx, &stmt.value);
+        }
+        if builder.is_none()
+            && let Some(ty) = &stmt.ty
+        {
             self.ty(ctx, ty);
         }
         let vars = self.pattern(ctx, &stmt.pattern);
@@ -133,7 +138,20 @@ impl Resolver<'_> {
             self.out.diagnostics.push(diagnostic);
         }
         for (node, name) in vars {
-            self.add_local(ctx, node, name, LocalKind::BindVar);
+            let id = self.add_local(ctx, node, name, LocalKind::BindVar);
+            if let Some(class) = builder {
+                self.out.builder_binds.insert(stmt.id, id);
+                self.out.builder_decls.insert(
+                    id,
+                    super::builders::BuilderDecl {
+                        class,
+                        bind: stmt.id,
+                        id: super::builders::BuilderId(id),
+                        span: name.span,
+                        boundary: ctx.builder_boundary.map_or(ctx.owner, |b| b.0),
+                    },
+                );
+            }
         }
     }
 

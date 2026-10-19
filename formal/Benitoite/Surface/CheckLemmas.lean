@@ -1,4 +1,5 @@
 import Benitoite.Surface.Check
+import Benitoite.Surface.Builders
 
 /-! 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
 成功経路の分解と、型付けの相互帰納法で共有する原子集合の補題。 -/
@@ -13,6 +14,43 @@ structure Input.Sound (q : Input) : Prop where
   admits : AdmitsDecSound q.B q.admitsDec
   operators : OpPrimTypeArgs q.opPrim
   constructors : CtorsComplete q.D.patternProgram q.ctors
+
+/-- 検査の再帰に渡す分類表の内部条件。公開入口の空表ではすべてを内部で閉じる。
+型付きの専用操作が返す内容の型にも、環境と同じ範囲・支持・単一 Fail を要求する
+（設計書 01-12「構築器の分類と環境の対応」）。 -/
+structure BuilderInvariant (q : Input) (C : List TParam) (Γ : List (Option Ty)) (Δ : BuilderCtx) : Prop where
+  aligned : BuilderCtx.Aligned Γ Δ
+  clean : BuilderCtx.Clean C.length Δ
+  atoms : BuilderCtx.AtomsIn q.atoms Δ
+  single : BuilderCtx.Single (NoFailCtxOf q.noFailRows) Δ
+
+namespace BuilderInvariant
+
+theorem empty (q : Input) (C : List TParam) (Γ : List (Option Ty)) : BuilderInvariant q C Γ [] :=
+  ⟨BuilderCtx.aligned_empty _, BuilderCtx.clean_empty _, BuilderCtx.atomsIn_empty _, BuilderCtx.single_empty _⟩
+
+theorem value {q C Γ Δ} (h : BuilderInvariant q C Γ Δ) (t : Option Ty) :
+    BuilderInvariant q C (t :: Γ) (none :: Δ) :=
+  ⟨BuilderCtx.aligned_value h.aligned t, BuilderCtx.clean_value h.clean,
+    BuilderCtx.atomsIn_value h.atoms, BuilderCtx.single_value h.single⟩
+
+theorem builder {q C Γ Δ k} (h : BuilderInvariant q C Γ Δ)
+    (hc : TyOK C.length k.contents) (ha : k.contents.AtomsIn q.atoms)
+    (hs : SingleTy (NoFailCtxOf q.noFailRows) k.contents) :
+    BuilderInvariant q C (none :: Γ) (some k :: Δ) :=
+  ⟨BuilderCtx.aligned_builder h.aligned k, BuilderCtx.clean_builder h.clean hc,
+    BuilderCtx.atomsIn_builder h.atoms ha, BuilderCtx.single_builder h.single hs⟩
+
+theorem values {q C Γ Δ} (h : BuilderInvariant q C Γ Δ) (ts : List Ty) :
+    BuilderInvariant q C (binds ts ++ Γ) (List.replicate ts.length none ++ Δ) := by
+  refine ⟨?_, BuilderCtx.all_values h.clean _, BuilderCtx.all_values h.atoms _, BuilderCtx.all_values h.single _⟩
+  simpa only [binds, List.length_map, List.length_reverse] using BuilderCtx.aligned_values h.aligned (binds ts)
+
+theorem hide {q C Γ Δ} (h : BuilderInvariant q C Γ Δ) :
+    BuilderInvariant q C (hideConts Γ) Δ :=
+  ⟨BuilderCtx.aligned_hideConts h.aligned, h.clean, h.atoms, h.single⟩
+
+end BuilderInvariant
 
 /-- view の選択は宣言の原子集合や構成子の完全性を変えない。
 本体の指定を替えた入力にも同じ健全性の契約を渡す。 -/
@@ -296,39 +334,39 @@ theorem acceptEff_handled_sound {q path ε actual u} {cs : Clauses} (ha : actual
     (union_sub_union ((Eff.support_iff _).mp he).2 (by trivial))
   exact Finite.unionEff_fails_support ((Eff.support_iff _).mp he).2 (by trivial)
 
-theorem accept_expr {q C Γ R p path e a ε expected out}
-    (ht : HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e a ε)
+theorem accept_expr {q Δ C Γ R p path e a ε expected out}
+    (ht : HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e a ε)
     (ha : a.AtomsIn q.atoms) (he : expected.AtomsIn q.atoms)
     (h : accept q C.length path expected (a, ε) = .ok out) :
-    HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e expected out := by
+    HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e expected out := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
   subst out
   exact .E_Sub ht hle (Eff.Sub.refl _) (accept_clean he h)
 
-theorem accept_block {q C Γ R p path body a ε expected out}
-    (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body a ε)
+theorem accept_block {q Δ C Γ R p path body a ε expected out}
+    (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body a ε)
     (ha : a.AtomsIn q.atoms) (he : expected.AtomsIn q.atoms)
     (h : accept q C.length path expected (a, ε) = .ok out) :
-    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body expected out := by
+    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected out := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
   subst out
   exact .B_Sub ht hle (Eff.Sub.refl _) (accept_clean he h)
 
-theorem accept_expr_eff {q C Γ R p path e a ε expected out allowed u}
-    (ht : HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e a ε)
+theorem accept_expr_eff {q Δ C Γ R p path e a ε expected out allowed u}
+    (ht : HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e a ε)
     (ha : a.AtomsIn q.atoms) (he : expected.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms) (hallowed : allowed.AtomsIn q.atoms)
     (h : accept q C.length path expected (a, ε) = .ok out)
     (hf : acceptEff q path allowed out = .ok u) :
-    HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e expected allowed := by
+    HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e expected allowed := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
   subst out; exact .E_Sub ht hle (acceptEff_sound hε (by assumption) hf) (accept_clean he h)
 
-theorem accept_block_eff {q C Γ R p path body a ε expected out allowed u}
-    (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body a ε)
+theorem accept_block_eff {q Δ C Γ R p path body a ε expected out allowed u}
+    (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body a ε)
     (ha : a.AtomsIn q.atoms) (he : expected.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms) (hallowed : allowed.AtomsIn q.atoms)
     (h : accept q C.length path expected (a, ε) = .ok out)
     (hf : acceptEff q path allowed out = .ok u) :
-    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body expected allowed := by
+    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected allowed := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
   subst out; exact .B_Sub ht hle (acceptEff_sound hε (by assumption) hf) (accept_clean he h)
 
@@ -499,14 +537,14 @@ theorem methTy_fun_eq (id : ImplDecl) (ms : MethSig) :
     id.methTy ms = Ty.substAt ms.tparams.length [id.target] [] := rfl
 
 /-- 子の式の受け入れと後続の成功を、型付けと原子集合の条件へ分解する。 -/
-theorem checking_accept_expr_ok {q C Γ R p path e expected s s' out}
+theorem checking_accept_expr_ok {q Δ C Γ R p path e expected s s' out}
     {f : Eff → Checking α}
-    (hs : ∀ s s' a ε, checkExprR q .strict C Γ R p path e s = .ok ((a, ε), s') →
-      HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms)
+    (hs : ∀ s s' a ε, checkExprR q .strict Δ C Γ R p path e s = .ok ((a, ε), s') →
+      HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms)
     (he : expected.AtomsIn q.atoms)
-    (h : (do let ε ← accept q C.length path expected (← checkExprR q .strict C Γ R p path e)
+    (h : (do let ε ← accept q C.length path expected (← checkExprR q .strict Δ C Γ R p path e)
              f ε) s = .ok (out, s')) :
-    ∃ ε mid, HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p e expected ε ∧
+    ∃ ε mid, HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e expected ε ∧
       ε.AtomsIn q.atoms ∧ f ε mid = .ok (out, s') ∧
       Ty.VarsIn C.length (fun _ => True) expected := by
   obtain ⟨⟨a, ε⟩, mid, hc, h⟩ := checking_bind_ok h
@@ -518,14 +556,14 @@ theorem checking_accept_expr_ok {q C Γ R p path e expected s s' out}
   exact ⟨ε, mid, accept_expr ht.1 ht.2.1 he ha', ht.2.2, hf, accept_clean he ha'⟩
 
 /-- ブロックの受け入れについても、終了状態を後続へ引き渡す。 -/
-theorem checking_accept_block_ok {q C Γ R p path body expected s s' out}
+theorem checking_accept_block_ok {q Δ C Γ R p path body expected s s' out}
     {f : Eff → Checking α}
-    (hs : ∀ s s' a ε, checkBlockR q .strict C Γ R p path body s = .ok ((a, ε), s') →
-      HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms)
+    (hs : ∀ s s' a ε, checkBlockR q .strict Δ C Γ R p path body s = .ok ((a, ε), s') →
+      HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body a ε ∧ a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms)
     (he : expected.AtomsIn q.atoms)
-    (h : (do let ε ← accept q C.length path expected (← checkBlockR q .strict C Γ R p path body)
+    (h : (do let ε ← accept q C.length path expected (← checkBlockR q .strict Δ C Γ R p path body)
              f ε) s = .ok (out, s')) :
-    ∃ ε mid, HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) C Γ R p body expected ε ∧
+    ∃ ε mid, HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected ε ∧
       ε.AtomsIn q.atoms ∧ f ε mid = .ok (out, s') ∧
       Ty.VarsIn C.length (fun _ => True) expected := by
   obtain ⟨⟨a, ε⟩, mid, hc, h⟩ := checking_bind_ok h
@@ -576,5 +614,14 @@ theorem eff_eq_empty_of_sub {ε : Eff} (h : Eff.Sub ε Eff.empty) : ε = Eff.emp
     | cons x xs =>
       have hm : Eff.memFail ε x := ⟨x, by rw [hf]; exact List.mem_cons_self, rfl⟩
       exact False.elim ((Eff.memFail_empty x).mp (h.2 x hm))
+
+/-- 宣言のない中間状態では、任意の専用操作を公開の空分類表で拒否する。 -/
+theorem builderOp_empty_rejected {q mode C Γ R p path o i args refs s a s'}
+    (h : checkExprR q mode [] C Γ R p path (.builderOp o i args refs) s = .ok (a, s')) : False := by
+  have h := guardInferred_ok h
+  obtain ⟨u, _, h⟩ := checking_lift_bind_ok h
+  obtain ⟨u, hr, _⟩ := checking_lift_bind_ok h
+  have hr := (require_ok hr).1
+  simp [BuilderRefs.check, BuilderCtx.kindAt] at hr
 
 end Benitoite.Surface.Check

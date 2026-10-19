@@ -1,4 +1,5 @@
 import Benitoite.Release.BuiltinTable
+import Benitoite.Surface.BuilderSyntax
 import Benitoite.Release.Coverage
 
 /-!
@@ -293,6 +294,8 @@ def sourceTypes (params : List Ty) (positions : List Nat) : List Ty :=
 mutual
   inductive Expr where
     | local (i : Nat)
+    /-- セルは専用位置から読み、通常引数だけを Exprs に保持する。 -/
+    | builderOp (op : BuilderOp) (i : Nat) (args : Exprs) (refs : BuilderRefs)
     /-- 01-12「トップレベルの定数」。宣言の型と本体を参照の位置に埋め込む（P5）。
     本体の中の定数参照も埋め込んだ有限の木。型引数を受け取らず、局所変数を捕えない。 -/
     | constE (ty : Ty) (body : Expr)
@@ -407,6 +410,7 @@ mutual
     | cons (op : OpRef) (arity ntys : Nat) (body : Block) (rest : Clauses) (dictCount : Nat := 0)
 
   inductive Block where
+    | builderBind (kind : BuilderKind) (refs : BuilderRefs) (rest : Block)
     | empty
     | last (e : Expr)
     | lastBind (kind : BindKind) (boundTy : Ty) (e : Expr)
@@ -482,6 +486,7 @@ mutual
     | _ => False
 
   def Block.Exits : Block → Prop
+    | .builderBind _ _ rest => rest.Exits
     | .last e => e.Exits
     | .seq e rest => e.Exits ∨ rest.Exits
     | .bind _ _ _ rest | .discard _ rest | .bindPat _ _ _ _ rest => rest.Exits

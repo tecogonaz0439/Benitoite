@@ -66,6 +66,7 @@ pub mod network_error;
 pub mod path;
 pub mod random;
 pub mod regex;
+pub(crate) mod scope;
 pub mod time;
 
 pub mod boolean;
@@ -153,6 +154,7 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
     unsigned_integer64::DECLS,
     float32::DECLS,
     width_bits::DECLS,
+    scope::DECLS,
 ];
 
 #[cfg(test)]

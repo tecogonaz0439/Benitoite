@@ -2208,3 +2208,60 @@ fn record_values_with_named_annotations_do_not_depend_on_statement_order() {
         }
     }
 }
+
+// 四問: 公開型の受け渡しと内部表現へのアクセスの境界を、実際の名前解決の出力で守る。
+// 値化・穴・パイプ・パターンのいずれかが共通判定を迂回すれば失敗する。
+// 従来の公開検査は型名と内部表現を分けず、この契約を検査できない。公開入口だけを使う。
+#[test]
+fn opaque_representation_is_private_to_its_declaring_module() {
+    let module = "@opaque\npublic record Positive[T]\n raw: T\nend record\n\n@opaque\npublic(package) data Secret\n A(Integer)\n B\nend data\n\n@opaque\npublic data Token\n Token(Integer)\nend data\n";
+    for (body, code) in [
+        ("bind _ <- P.Positive(raw: 1)", Some(DiagCode::E0340)),
+        ("bind _ <- P.Positive(..x, raw: 1)", Some(DiagCode::E0340)),
+        ("bind _ <- P.Positive", Some(DiagCode::E0340)),
+        ("bind _ <- P.Positive(_)", Some(DiagCode::E0340)),
+        ("bind _ <- P.Positive.raw(x)", Some(DiagCode::E0340)),
+        ("bind _ <- P.Positive.raw", Some(DiagCode::E0340)),
+        ("bind _ <- P.Positive.raw(_)", Some(DiagCode::E0340)),
+        ("bind _ <- x |> P.Positive.raw()", Some(DiagCode::E0340)),
+        ("bind P.Positive(raw: y) <- x", Some(DiagCode::E0340)),
+        (
+            "match x with\n case P.Positive(_) -> ()\nend match",
+            Some(DiagCode::E0340),
+        ),
+        ("bind _ <- P.Secret.A(1)", Some(DiagCode::E0340)),
+        ("bind _ <- P.Secret.A", Some(DiagCode::E0340)),
+        ("bind _ <- P.Secret.A(_)", Some(DiagCode::E0340)),
+        ("bind _ <- 1 |> P.Secret.A()", Some(DiagCode::E0340)),
+        (
+            "match s with\n case P.Secret.A(_) -> ()\n case _ -> ()\nend match",
+            Some(DiagCode::E0340),
+        ),
+        ("bind _ <- P.Token(1)", Some(DiagCode::E0340)),
+        ("bind _ <- P.Secret.missing", Some(DiagCode::E0303)),
+        ("bind _ <- x\nmatch s with\n case _ -> ()\nend match", None),
+    ] {
+        for import in ["import Positive as P", "import Positive"] {
+            let source = format!(
+                "{import}\ntype Alias = P.Positive[Integer]\nfunction f(x: Alias, s: P.Secret) -> Unit\n{body}\nend function\n"
+            );
+            let source = if import == "import Positive" {
+                source.replace("P.", "Positive.")
+            } else {
+                source
+            };
+            let (_, out, _) = resolve_files(&[("main.bnt", &source), ("Positive.bnt", module)]);
+            let errors: Vec<_> = out.diagnostics.iter().filter(|d| d.is_error()).collect();
+            if let Some(code) = code {
+                assert_eq!(errors.len(), 1, "{body}: {errors:?}");
+                assert_eq!(errors[0].code, Some(code), "{body}: {errors:?}");
+                if code == DiagCode::E0340 {
+                    assert_eq!(errors[0].secondary.len(), 1);
+                    assert!(!errors[0].helps.is_empty());
+                }
+            } else {
+                assert!(errors.is_empty(), "{body}: {errors:?}");
+            }
+        }
+    }
+}

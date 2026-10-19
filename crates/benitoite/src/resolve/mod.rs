@@ -113,6 +113,8 @@ pub struct Binding {
     pub public: bool,
     /// `public(package)` を付けたか。構成子・欄・メソッド・操作は包む宣言の値を受け継ぐ
     pub package: bool,
+    /// Data/Record自身だけが持つ `@opaque` の印。構成子・欄は親型から引く。
+    pub opaque: bool,
     /// `@deprecated` の文字列
     pub deprecated: Option<String>,
 }
@@ -120,6 +122,10 @@ pub struct Binding {
 /// 名前解決の出力（02-04「束縛と表」）。
 #[derive(Debug, Default)]
 pub struct ResolveOutput {
+    /// 通常の型・値ではない局所宣言と直接操作（02-05「出力」）。
+    pub builder_decls: BindingMap<builders::BuilderDecl>,
+    pub builder_binds: NodeMap<BindingId>,
+    pub builder_calls: NodeMap<builders::BuilderCall>,
     /// 束縛の表: 束縛の番号 → 束縛
     pub bindings: BindingMap<Binding>,
     /// 参照の表: 名前を使う箇所のノード番号 → 束縛の番号。解決できなかった名前は載せない
@@ -247,6 +253,7 @@ impl Level {
     }
 }
 
+pub mod builders;
 mod checks;
 mod collect;
 mod imports;

@@ -99,6 +99,8 @@ pub struct HandleInfo {
 /// 明示引数のソース順から宣言の位置への対応（02-05「出力」）。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct CallPlan {
+    /// ソースが名前の直接呼び出しなら、その解決済み束縛。パイプ・穴・間接呼び出しは `None`。
+    pub direct_callee: Option<BindingId>,
     /// 呼ぶ関数のパラメータの個数。
     pub arity: u32,
     /// 明示引数ごとの宣言位置。挿入引数は含めない。
@@ -109,9 +111,53 @@ pub struct CallPlan {
     pub hole_names: Vec<String>,
 }
 
+/// 第二級の値である構築器の種類。通常の型構成子ではない。
+#[derive(Clone, PartialEq, Debug)]
+pub enum BuilderKind {
+    String,
+    List(Ty),
+    Bytes,
+}
+
+/// 型付きの構築器宣言。参照先は解決済みの標準束縛で保持する。
+#[derive(Clone, Debug)]
+pub struct BuilderDecl {
+    pub id: crate::resolve::builders::BuilderId,
+    pub kind: BuilderKind,
+    pub span: crate::base::Span,
+    pub refs: BuilderRefs,
+}
+
+/// 専用展開に使う標準の宣言。型付き表層を交換するまで失わない。
+#[derive(Clone, Debug)]
+pub struct BuilderRefs {
+    pub new: BindingId,
+    pub get: BindingId,
+    pub set: BindingId,
+    pub join: BindingId,
+    /// 単一要素の追記、または小さな断片の構築。
+    pub single: Option<BindingId>,
+    /// Bytes の空値。他の分類では定数を使う。
+    pub empty: Option<BindingId>,
+    pub length: BindingId,
+}
+
+/// 直接操作と、対象・通常引数のソース順。
+#[derive(Clone, Debug)]
+pub struct BuilderOperation {
+    pub builder: crate::resolve::builders::BuilderId,
+    pub kind: BuilderKind,
+    pub op: crate::resolve::builders::BuilderOp,
+    pub args: Vec<crate::base::NodeId>,
+    pub refs: BuilderRefs,
+}
+
 /// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。各段へ渡す表は設計書 02-05「出力」で定める。
 #[derive(Debug, Default)]
 pub struct TypeckOutput {
+    /// 第二級の値である構築器と直接操作。通常の Ty の表へ構築器を載せない。
+    pub builders: NodeMap<BuilderDecl>,
+    pub builder_ops: NodeMap<BuilderOperation>,
     pub call_plans: NodeMap<CallPlan>,
     pub expr_types: NodeMap<Ty>,
     pub type_args: NodeMap<TypeArgs>,
@@ -154,7 +200,10 @@ pub fn typecheck(
     decls::check(modules, asts, sources, resolved, require_main)
 }
 
+mod body_map;
+mod builders;
 mod calls;
+mod checked_args;
 mod consts;
 mod context;
 mod decls;

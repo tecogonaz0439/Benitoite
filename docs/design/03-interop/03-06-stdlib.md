@@ -14,6 +14,8 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 
 ## 仕様
 
+【決定】`Regex.compile` の既知の定数引数は、標準束縛への直接呼び出しで追加検査する。Resultと実行時検査は保つ。対象となる呼び出し形と予算は[型検査](../02-impl/02-05-typechecker.md)の「本体の後の検査」、APIは[テキストとデータの処理](03-08-text-and-data.md)の「Regex」で定める。
+
 関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
 
 【決定】標準関数の外側の契約名は、標準ライブラリの `.bnt` の宣言を正とする。型の内側のコールバックは、単一の値に `value`、畳み込みに `acc, value`、Map に `key, value` または `acc, key, value`、失敗の値に `error`、HTTP に `request`、Regex に `matched` を使う。レコードの取り出す関数は `value` とする。既存の `Integer.toString(n)` や型クラスの `show(x)` などの公開名は維持し、高階の契約名が異なる場合は明示のラムダで合わせる。
@@ -41,8 +43,11 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 | 部分 | モジュール・型・エフェクト | 使い方 |
 |---|---|---|
 | prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`、各幅の数とその別名）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
+| 関数内の構築器 | `Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`（後述の「StringBuilder」） | 各モジュールを明示importし、専用の注釈付きbindと直接操作を使う |
 | 標準の型クラス | `Benitoite.Trait`（後述の「標準の型クラス（初回リリース版）」） | `import Benitoite.Trait` で取り込み、`Trait.Monad.flatMap` と書く |
 | 型付きの失敗 | `Benitoite.Failure`（[エラー処理](../01-spec/01-09-errors.md#型付きの失敗と-result-の変換)） | `import Benitoite.Unofficial.Failure` で取り込み、raise/fromResult/toResult を使う |
+| 条件と対象の保持 | `Benitoite.Scope`（後述の「Scope」） | `import Benitoite.Unofficial.Scope` で取り込み、`Scope.checkHost` と書く |
+| 整数の閉区間の検査 | `Benitoite.Range`（後述の「Range」） | `import Benitoite.Unofficial.Range` で取り込み、`Range.checkInteger` と書く |
 | 性質の試行 | `Benitoite.Test.Property`（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)） | `import Benitoite.Unofficial.Test.Property` で取り込み、`Property.check` と書く |
 | IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.Unofficial.IO.Console` で取り込み、`Console.writeLine` と書く |
 | ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)） | `import Benitoite.Unofficial.Network.Http` で取り込み、`Http.get` と書く |
@@ -71,8 +76,8 @@ end function
 
 | 状態 | モジュール | 取り込み方 |
 |---|---|---|
-| 標準 | prelude のすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait` | prelude は import なしで使う。`Benitoite.Trait` は `import Benitoite.Trait` で取り込む |
-| 非公式 | `Benitoite.Test.Property`、`Benitoite.Failure`、`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
+| 標準 | prelude のすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait`・`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder` | prelude は import なしで使う。他はモジュールごとに明示importする |
+| 非公式 | `Benitoite.Scope`・`Benitoite.Range`、`Benitoite.Test.Property`、`Benitoite.Failure`、`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
 
 - 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは prelude に入らない。
 - 非公式のモジュールを `import Benitoite.IO.Console` と書くこと、標準のモジュールを `import Benitoite.Unofficial.Trait` と書くことは、どちらも標準ライブラリにないモジュールの取り込みの誤りである。診断は、その版で正しい取り込みの名前を修正案として示す（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
@@ -106,6 +111,64 @@ end function
 【決定】文字列かリストを新しく作る組み込みの関数（`String.repeat`・`String.join`・`String.replace`・`String.fromCharacters`・`String.split`・`String.lines`・`String.characters`・`String.toUppercase`・`String.toLowercase`・`List.range`・`List.prepend`・`List.append`・`List.concatenate` など）と、`String` の `+` は、結果の大きさを値を作る前に計算し、処理系の上限を超えるときは、値を作らずに資源の不足で停止する（[評価意味論](../01-spec/01-08-evaluation.md)）。理由: 実行環境のメモリが尽きると、評価意味論の停止の手順によらずに終わる。処理系が自ら設けた上限で止めれば、その手順で停止できる。
 
 【方針】上限は、文字列が 2^30 バイト、リストが 2^24 要素である。上限の値と、結果の大きさの計算の仕方は[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」で定める。
+
+### Scope
+
+【決定】`Benitoite.Scope` は、ホスト・パス・ポートの字面と、明示した条件への所属を検査する純粋な非公式モジュールである。三つの公開型を不透明型の `@opaque public record` とし、構築・更新・パターン・自動アクセサは宣言モジュールの中だけで使う。公開関数のパラメータ名と型は次のとおりである。
+
+| 関数 | 型 |
+|---|---|
+| `checkHost` | `function(pattern: String, host: String) -> Result[CheckedHost, ScopeError]` |
+| `checkPath` | `function(pattern: String, path: String) -> Result[CheckedPath, ScopeError]` |
+| `checkEndpoint` | `function(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[CheckedEndpoint, ScopeError]` |
+| `host`・`hostPattern` | `function(value: CheckedHost) -> String` |
+| `path`・`pathPattern` | `function(value: CheckedPath) -> String` |
+| `endpointHost`・`endpointHostPattern` | `function(value: CheckedEndpoint) -> String` |
+| `endpointPort`・`endpointMinimumPort`・`endpointMaximumPort` | `function(value: CheckedEndpoint) -> Integer` |
+
+CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhostPattern/host/minimumPort/maximumPort/portを宣言順に保存する。ホストの条件と対象はASCIIの小文字に揃え、パスの条件と対象は受理した字面を保つ。整数は入力をそのまま保つ。変更する場合は公開の検査関数で再検査する。同じ型名の値でも、保存する条件は値ごとに異なる。
+
+ホストは、ASCIIの英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非ASCII、NUL、URL、ポート付き、IPv6を拒否する。四つのラベルがすべて十進数字だけなら、数の範囲を問わずIPv4形式として拒否する。localhostは認める。DNSの長さの規格への適合は保証しない。パターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）だけであり、後二者は幹自身を含まない。
+
+パスはスラッシュ区切りの絶対形式であり、根 `/` を認める。根以外の末尾スラッシュ、空要素、`.`・`..`、NUL、逆斜線を拒否し、その他のUnicode文字を保つ。パターンは完全一致か末尾 `/**` の木だけであり、他の位置の `*` を拒否する。`/data/reports/**` は幹自身と任意段の子を含み、`/data/reports-old` を含まない。`/**` は根とすべての受理したパスを含む。対象側の `*` は普通の文字である。
+
+ポートは `0 ≤ minimumPort ≤ maximumPort ≤ 65535`、`0 ≤ port ≤ 65535` を満たさなければならない。所属は両端を含む `minimumPort ≤ port ≤ maximumPort` であり、一点区間も認める。失敗の優先順はパターンの形式、対象の形式、端点の妥当性、portの妥当性、ホスト・パスの所属、ポートの所属である。閉じた公開dataのScopeErrorには次の構成子を置く。
+
+| 構成子 | 保持する入力 |
+|---|---|
+| `InvalidPattern(String, String)` | 元のパターン、英語のreason |
+| `InvalidTarget(String, String)` | 元の対象、英語のreason |
+| `InvalidPortRange(Integer, Integer)` | minimumPort、maximumPort |
+| `InvalidPort(Integer)` | port |
+| `OutsideScope(String, String)` | 元のパターン、元の対象 |
+| `PortOutsideScope(Integer, Integer, Integer)` | minimumPort、maximumPort、port |
+
+ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のShowで引用・エスケープする。表示用の入力をUTF-8の境目で4096バイト以内へ省略し、引用後の各引数を2000バイト以内へ収める。引用後に長すぎる場合は、引用前の入力をUTF-8の境目で半分へ縮めて `...` を加え、引用し直す。構成子名・括弧・引用符・完成したエスケープを残し、省略時は閉じ括弧の後にも `...` を付ける。最終結果は4096バイト以内とする。保存した入力自体は切り詰めない。
+
+形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。静的検査は借用した入力の判定までとし、成功文字列を複製しない。実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。VM値・構成子の固定タグは追加しない。
+
+直接呼び出しでは既知の部分を追加検査する。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
+
+成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
+
+### Range
+
+【決定】`Benitoite.Range` は、整数の閉区間を検査する純粋な非公式モジュールである。`import Benitoite.Unofficial.Range` で取り込む。`CheckedInteger` は不透明型の `@opaque public record` とし、`minimum: Integer`・`maximum: Integer`・`value: Integer` をこの順で保存する。外部からの構築・更新・パターン・自動アクセサの使用をE0340で拒否し、型注釈と通常の値の受け渡しを許す。
+
+| 公開関数 | 型 |
+|---|---|
+| `checkInteger` | `function(minimum: Integer, maximum: Integer, value: Integer) -> Result[CheckedInteger, RangeError]` |
+| `minimum` | `function(value: CheckedInteger) -> Integer` |
+| `maximum` | `function(value: CheckedInteger) -> Integer` |
+| `value` | `function(value: CheckedInteger) -> Integer` |
+
+`checkInteger` は、`minimum > maximum` なら `RangeError.InvalidBounds(minimum, maximum)` を返す。端点が逆転しておらず、`value < minimum` または `value > maximum` なら `RangeError.OutOfRange(minimum, maximum, value)` を返す。それ以外では三入力をそのまま保持したCheckedIntegerをOkで返し、各射影は対応する入力を返す。RangeErrorは、この二構成子を持つ閉じた公開dataである。手書きのShowは `InvalidBounds(10, 0)`・`OutOfRange(0, 10, 11)` のように構成子名と全入力を表示する。
+
+両端を含み、等しい端点は一点区間として認める。Integerの最小値・最大値も端点に使える。比較だけで検査し、上端に1を加えない。理由: 最大のIntegerを含む閉区間でも、端点の変換によるあふれを起こさず検査できるためである。
+
+成功が表すのは、保存した端点に値が収まることである。同じCheckedInteger型でも値ごとに端点が異なるので、特定の区間を要求する関数は端点を確認するか、`value` で取り出した整数を新しい端点で再検査する。Integerへの暗黙変換や範囲付きの演算は提供しない。成否だけ要る場合は `Result.ok` でOptionへ変換できる。
+
+定数引数が逆転または範囲外でも、通常のResult.Errorを返す。Scope・Regexの定数引数の追加拒否の対象には含めない。トップレベルconstに書ける式は従来の規則に従う。実装は標準ソースの通常の関数・レコード・data・比較・Callであり、新しいVM値や範囲付きの型・エフェクトは加えない。
 
 ### Integer
 
@@ -300,7 +363,7 @@ end function
 
 ### Task と TaskGroup（初回リリース版）
 
-【決定】タスクを起動して結果を待つ `Task` モジュールの関数と、タスクの集まりのリソースの型 `TaskGroup` は、[並行処理](../01-spec/01-11-concurrency.md)で定める。どれも組み込みで実装する。`Task` と `TaskGroup` は prelude に入る。`Task.await`・`TaskGroup.open`・`TaskGroup.spawn`・`Task.race`・`Task.withTimeout` の型は、prelude の `State` を含む。`Task.all`・`Task.allOk` の型は、受け取った関数のエフェクトだけを持つ。型は[並行処理](../01-spec/01-11-concurrency.md)で定める。これらはエフェクトの操作ではなく組み込みの関数であり、ハンドラで処理できない。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける。時間の経過を待つ関数は `Benitoite.IO.Clock` の `Clock.sleep` である。`Task[T]` は中身を見せない型であり、等値の型ではない。HTTP のサーバとクライアントは[ネットワークのモジュール](03-09-network.md)で定める。
+【決定】タスクを起動して結果を待つ `Task` モジュールの関数と、タスクの集まりのリソースの型 `TaskGroup` は、[並行処理](../01-spec/01-11-concurrency.md)で定める。どれも組み込みで実装する。`Task` と `TaskGroup` は prelude に入る。`Task.await`・`TaskGroup.open`・`TaskGroup.spawn`・`Task.race`・`Task.withTimeout` の型は、prelude の `State` を含む。`Task.all`・`Task.allOk` の型は、受け取った関数のエフェクトだけを持つ。型は[並行処理](../01-spec/01-11-concurrency.md)で定める。これらはエフェクトの操作ではなく組み込みの関数であり、ハンドラで処理できない。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける。時間の経過を待つ関数は `Benitoite.IO.Clock` の `Clock.sleep` である。`Task[T]` は不透明型であり、等値の型ではない。HTTP のサーバとクライアントは[ネットワークのモジュール](03-09-network.md)で定める。
 
 ### Reference と Lazy（初回リリース版）
 
@@ -450,6 +513,9 @@ end function
 | `Functor[F[_]]` | — | `function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E` |
 | `Applicative[F[_]]` | `Functor` | `function pure[A](x: A) -> F[A]`<br>`function apply[A, B, effect E](fs: F[function(value: A) -> B uses E], x: F[A]) -> F[B] uses E` |
 | `Monad[F[_]]` | `Applicative` | `function flatMap[A, B, effect E](x: F[A], f: function(value: A) -> F[B] uses E) -> F[B] uses E` |
+| `Functor2[F[_, _]]` | — | `function map[A, B, X, effect E](x: F[A, X], f: function(value: A) -> B uses E) -> F[B, X] uses E` |
+| `Applicative2[F[_, _]]` | `Functor2` | `function pure[A, X](x: A) -> F[A, X]`<br>`function apply[A, B, X, effect E](fs: F[(function(value: A) -> B uses E), X], x: F[A, X]) -> F[B, X] uses E` |
+| `Monad2[F[_, _]]` | `Applicative2` | `function flatMap[A, B, X, effect E](x: F[A, X], f: function(value: A) -> F[B, X] uses E) -> F[B, X] uses E` |
 | `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(acc: B, value: A) -> B uses E) -> B uses E` |
 | `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(value: A) -> G[B] uses E) -> G[F[B]] uses E` |
 
@@ -463,11 +529,16 @@ end function
 | `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
 | `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
 | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
+| `Functor2`・`Applicative2`・`Monad2` | `Result` |
 
-- `Result[T, X]` は型引数を二つとるので、型構成子を引数にとる型クラスを実装できない。型の部分適用がないからである（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。
+- `Result` は二引数版の三クラスを実装する。一引数版の `Functor`・`Applicative`・`Monad`・`Traversable` へは、型の部分適用がないので渡せない（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。
 - 利用者の型の実装は `implement` で書く。実装を導出する仕組みは設けない。
 - メソッドの既定の実装はない。型クラスから派生する関数も置かない。
 - 演算子と文字列補間は、型クラスを使わない。`Order` を実装した型に `<` は使えず、`Show` を実装した型の値を文字列補間に埋め込むことはできない。
+
+【決定】`Result` の `Functor2.map` は `Result.map`、`Monad2.flatMap` は `Result.andThen` に委ねる。`Applicative2.pure` は `Result.Ok` を返す。`Applicative2.apply` は、`fs` が `Error` ならそのエラーを返し、`fs` が `Ok` で `x` が `Error` なら `x` のエラーを返す。両方が `Ok` のときだけ中の関数を一度呼ぶ。引数式自体は通常の呼び出しと同じくソース順で両方を評価する。
+
+関数型の型引数を囲む括弧は、`uses E, X` をエフェクトの並びとして読む文法との区切りである。第二の型 `X` は各メソッドの型パラメータであり、クラスの対象は裸の `Result` である。`pure` の `X` が推論できない場合は結果に型注釈を付ける。利用者の二引数の型にも同じクラスを実装できる。実装の型が合うことだけでは任意の実装の法則は保証しない。
 
 【方針】`Show.show` は、次に定める失敗型を除き、値を式の書き方に近い文字列で表す。
 
@@ -536,6 +607,10 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 
 【決定】リストの処理系のテストは、無作為に選んだ操作の列を、リストと単純なモデル（Rust の `Vec`）の両方に同じ順に適用し、要素の並びと長さが一致することを確かめる（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。テストはデバッグビルドで実行するので、操作のたびに一つ目の不変条件も確かめられる。
 
+### Propertyの候補の合成
+
+【決定】明示importするTest.Propertyは、通常のdataである `ShrinkStep[T]` と、純粋な `mapSteps`・`appendSteps` を公開する。Done・Yield・Skipの続きはゼロ引数の関数で保持し、利用者が進めるまで呼ばない。mapStepsは候補の型を変えられ、appendStepsは左の終了後に右を呼ぶ段を返す。型へequalityを要求しない。標準専用のVM値やエフェクトを加えず、通常の関数と型・エフェクトの検査を通す。候補順・比較の段・Shrinker・checkの予算は[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)で定める。
+
 ### 標準ライブラリのソースの書き方
 
 【決定】Failure.fromResult は通常の match、Failure.toResult は通常の handle として Failure.bnt に定義する。標準専用の表から得るのは Fail と raise の宣言であり、fromResult/toResult の型と NoFail の条件は通常の標準ソースのシグネチャから得る。
@@ -545,7 +620,7 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 - 利用者から見える関数・型・型クラス・エフェクトには `public` を付ける。補助の関数は `public` を付けずに書き、そのモジュールの中からだけ使う。
 - 組み込みの関数は、本体のない関数の宣言に属性 `@builtin("名前")` を付けて宣言する。名前は処理系の組み込みの関数の表の鍵であり、型は宣言のシグネチャで与える。`@builtin` は標準ライブラリのソースでだけ書ける。本体のない関数の宣言は、`@builtin` か `@external`（[外部の関数](03-10-external-functions.md)）を付けたときだけ書ける。
 - 順序の比較演算子の型の集まりの制約は、組み込みの制約 `ordered` として書く（[型システム](../01-spec/01-06-type-system.md)）。
-- 中身を見せない組み込みの型（`Integer`・`List`・`Map` など）、操作を持たないエフェクト `State`、まとめたエフェクト `IO.All` は、ソースに宣言を置かず、処理系の表で与える。
+- 組み込みの型（`Integer`・`List`・`Map` など）、操作を持たないエフェクト `State`、まとめたエフェクト `IO.All` は、ソースに宣言を置かず、処理系の表で与える。
 - ほかのモジュールの関数は、利用者のモジュールと同じく import して使う。
 - リストを辿る処理は、添字を累積の引数に持つ末尾再帰で書き、結果のリストは `List.append` で末尾に加えて作る。
 
@@ -579,20 +654,36 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 
 ### 外部生成の宣言情報
 
-【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 1 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は builtin・record・list・map・option・unsupported に分け、未対応型には解決した型の表示と元の注釈・位置を残す。型の別名は通常の型検査の処理で展開し、標準の Option は綴りでなく解決した同一性で区別する。
+【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 2 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。
+
+【決定】可視性はprivate・package・publicへ正規化し、互換のpublic/package欄との不一致を拒否する。opaqueと生成先からのcanConstruct/canInspectを明示する。生成先は型の宣言元のモジュールであり、宣言情報に表現を保持していても、不透明型自身のJSON復号・Property生成器・縮小器の自動生成を認めない。通常のレコードの不透明型の欄には、欄全体を扱う手書きのカスタム関数を要求する。理由: 宣言元での構築可否だけでは、検査を伴う作成経路の不変条件を守れないためである。
 
 JSON 変換を要求する target では Json.Codec、Property を要求する target では Test.Property を仮想の入口に加え、依存先も含めて生成後に必要となる標準ソースを全入力へ含める。JSON にはモジュールの説明と先頭の宣言の終了バイト位置、既存の import の別名と解決先、生成名の衝突を調べるための宣言一覧も含める。詳しい欄と設定は [example の契約](../../../crates/benitoite/examples/derive_inventory/README.md)で定める。正常時は終了0、宣言・入力・対象の誤りは1、引数と設定の書式の誤りは2とし、失敗時には JSON を出さず標準エラー出力に説明を書く。この入口は宣言の情報を読むものであり、ソースの生成・編集は行わない。
+
+【決定】targetの`show`・`order`は独立した真偽値とし、trueの場合だけTraitを仮想の入口へ加える。省略とfalseは生成を要求しない。JSON・Propertyを指定せず、Show・Orderだけを要求してもよい。未知・重複のキーと真偽値以外は設定の誤りとして終了2にする。
 
 ### 外部生成の管理と照合
 
 【決定】開発用の `tools/derive/derive.py` は、宣言情報を使う生成関数から本文を受け取り、`preview`・確認済み manifest の `apply`・再生成の `check` で管理する。CLI の引数・設定・記録の書式は [道具の契約](../../../tools/derive/README.md)で定める。JSON 変換の生成を提供する（[Json.Codec](03-08-text-and-data.md#jsoncodec)）。レコードの生成器・縮小器も提供する（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)）。JSON と Property は単独でも、同じ領域へ合わせても生成できる。
 
+【決定】型パラメータのない非循環レコードに、明示したShow・Orderの通常のimplementを生成する。Showは局所型名と宣言順の欄名を表示し、各値の引用・エスケープを欄のShowへ委ねる。Orderは宣言順に比較し、最初の非Equalで返り、それより後の欄は比較しない。すべてEqualならEqualを返す。表示の復元可能性、OrderのEqualから組み込み等値やkeyの成立は保証しない。空レコードの宣言は構文仕様どおりE0201で拒否する。
+
+【決定】欄に必要な辞書は、解決済みの実装の頭・型引数・クラス制約を辿って確認する。依存する生成対象には対応するShow・Orderの明示要求を必要とし、依存先を先に生成する。dataや型パラメータのある欄も手書きの辞書があれば使える。辞書がなければderive.missing_implementation、既存の同じクラス・型の頭の実装と衝突すれば、位置を添えたderive.overlapping_implementationで拒否する。既に宣言が重複した入力は通常のE0702を保つ。本体・組み込みの制約は適用後の通常のcheck/testで検査する。
+
+【決定】生成先は型の宣言モジュールとし、private・package・publicの型に同じimplementを使う。不透明レコードのShow・Orderも、この場所での明示要求なら受理し、生成記録のtraitTargetにopaqueと選択したクラスを示す。JSON・Propertyも要求した場合は、無検査の構築を黙って除外せず要求全体を拒否する。同じ対象・クラスの、前回記録と本文のハッシュで認証した管理領域内の実装だけを置換できる。領域外・別領域の実装と手書きは保護する。
+
 【決定】型を宣言した `.bnt` の管理領域は、完全な行の `// benitoite-derive:begin <region>` と `// benitoite-derive:end <region>` で囲む。印のない初回は原則として末尾への追加を提案し、既存領域は印の内側だけを編集する。重複・入れ子・片方だけの印、記録のない既存領域、記録の出力ハッシュと異なる本文は拒否する。領域外のバイト列を保ち、必要な import も領域内に置く。既存の import は解決済みのモジュールの同一性で再利用し、関数名と別名の衝突は書き込み前に報告する。
 
 【決定】新たな import が必要な初回の領域は、モジュールの説明と先頭の宣言・既存の import の後、最初の通常の宣言の前へ置く。同じソースの新たな import は、この領域へ集める。既存領域がすべて宣言の後にあり、新規領域もない場合は import の追加を拒否し、利用者が宣言の前へ import を書いて再度 preview する。理由: 本番の parser は宣言の後の import を拒否するため、末尾への生成だけでは通常の検査を通らないからである。
 
-【決定】設定と同じディレクトリの `<設定のstem>.generated.json` に、版、道具の版、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。位置・元の型の表記・コメント・空白は構造ハッシュに含めない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
+【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版2・inventoryVersion 2・hashVersion 2・道具の版2.0.0-syntax-batch3、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
 
 【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用と receipt の保存後に生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
 
+【決定】旧記録のcheckは変更せずderive.migration_requiredを返し、旧manifestの新版applyはderive.incompatible_manifestで拒否する。未完の旧applyは旧道具で復旧してから、新previewで旧記録の出力ハッシュと現在の本文を照合する。不一致はderive.modified_regionで拒否する。一致した本文から新記録と差分を提案し、確認済みの新manifestを適用する。旧意味ハッシュを新版の承認として読み替えない。理由: 手書きの差分と確認した生成規則の対応を保つためである。
+
 管理の解除は本文を残し、印・設定の当該 target・記録の当該 target を手で除く。残る target の生成の `check` と通常の `check`・`test` を行う。上書きを強制する入口と専用の管理解除コマンドは設けない。
+
+### StringBuilder
+
+【決定】`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`はpreludeに含めず、明示importする標準モジュールである。ソースはモジュールのdocだけを持ち、通常の型や関数の宣言を偽造しない。分類名と五つの専用操作の契約は、ロード済みの標準ModuleIdと照合する私有の登録表から名前解決する。同じ表とdocからSkillの参照・索引・bundleを生成する。公開する操作は[関数内の構築器](../01-spec/01-06-type-system.md#関数内の構築器)で定める。

@@ -152,6 +152,14 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
         super::consts::warnings(&mut ctx, block);
     }
     ctx.finish();
+    if !d
+        .diagnostics
+        .iter()
+        .skip(before)
+        .any(super::consts::prevents_evaluation)
+    {
+        super::checked_args::check(d, block);
+    }
 }
 
 #[inline(never)]
@@ -231,6 +239,9 @@ pub(super) fn name(ctx: &mut Body<'_, '_>, e: &NameExpr, direct_with: bool) -> I
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
 pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) -> ITy {
+    if let Some(call) = ctx.decls.resolved.builder_calls.get(e.id).copied() {
+        return super::builders::operation(ctx, e, call);
+    }
     if let Expr::Name(n) = e.callee.as_ref()
         && let Some(id) = ctx.decls.reference(n.id)
     {
@@ -1381,6 +1392,10 @@ fn pattern_path(p: &CtorPat) -> String {
 
 #[inline(never)]
 fn bind_stmt(ctx: &mut Body<'_, '_>, bind: &BindStmt) {
+    if let Some(id) = ctx.decls.resolved.builder_binds.get(bind.id).copied() {
+        super::builders::declaration(ctx, bind, id);
+        return;
+    }
     let annotation = bind.ty.as_ref().map(|ann| ctx.annotation(ann));
     let t = ctx.expr(&bind.value);
     let target = if let Some(ann) = &bind.ty {

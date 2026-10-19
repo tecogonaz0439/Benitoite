@@ -340,6 +340,9 @@ impl State<'_> {
         inserted: Option<CoreVal>,
         span: Span,
     ) -> Result<Comp, InternalError> {
+        if let Some(op) = self.types.builder_ops.get(e.id).cloned() {
+            return self.builder_operation(e, &op);
+        }
         let plan = self.call_plan(e, inserted.is_some())?;
         if e.args.iter().any(|a| a.placeholder().is_some()) {
             return self.placeholder(e, span);
@@ -796,6 +799,14 @@ impl State<'_> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     fn binding_stmt(&mut self, b: &ast::BindStmt) -> Result<StatementWrap, InternalError> {
+        if let Some(decl) = self.types.builders.get(b.id).cloned() {
+            let bound = self.builder_new(&decl, b.span)?;
+            let ast::Pattern::Var(p) = &b.pattern else {
+                return Err(error("builder declaration without a variable"));
+            };
+            let var = self.local(p.id, Some(p.name.text.clone()), bound.ty.clone())?;
+            return Ok(StatementWrap::Let(var, bound, b.span));
+        }
         let bound = self.expr(&b.value, Position::Other)?;
         self.binding_wrap(b, bound)
     }

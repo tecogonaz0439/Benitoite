@@ -1,5 +1,6 @@
 //! JSON への変換は通常の型の表を読む。型の解決は行わない（設計書 03-06「外部生成の宣言情報」）。
 pub mod config;
+mod schema;
 pub mod text;
 use benitoite::{
     base::{BindingId, Span},
@@ -7,7 +8,7 @@ use benitoite::{
     pipeline::declarations::{DeclarationInventory, collect_declarations},
     resolve::{BindingKind, DeclSite},
     syntax::ast::{self, Item, RecordDecl},
-    types::{EffectName, Scheme, Ty, TyCon, TyNames, builtin::BuiltinTypeId as B},
+    types::{Scheme, Ty, TyCon, TyNames},
 };
 use config::{Error, string};
 use serde_json::{Value, json};
@@ -109,45 +110,6 @@ impl Output<'_> {
             effect_params: &scheme.effect_params,
         })
     }
-    fn ty(&self, ty: &Ty, span: Span, scheme: &Scheme) -> Value {
-        match ty {
-            Ty::Con(TyCon::Builtin(id), args)
-                if [B::STRING, B::BOOLEAN, B::INTEGER, B::FLOAT].contains(id)
-                    && args.is_empty() =>
-            {
-                json!({"tag":"builtin","name":id.def().map(|d|d.name)})
-            }
-            Ty::Con(TyCon::Builtin(B::LIST), args) if args.len() == 1 => {
-                json!({"tag":"list","element":args.first().map(|t|self.ty(t,span,scheme))})
-            }
-            Ty::Con(TyCon::Builtin(B::MAP), args)
-                if args.len() == 2
-                    && args.first() == Some(&Ty::Con(TyCon::Builtin(B::STRING), vec![])) =>
-            {
-                json!({"tag":"map","key":{"tag":"builtin","name":"String"},"value":args.get(1).map(|t|self.ty(t,span,scheme))})
-            }
-            Ty::Con(TyCon::Adt(id), args)
-                if Some(*id) == self.inv.resolved.stdlib("Benitoite.Option.Option")
-                    && args.len() == 1 =>
-            {
-                json!({"tag":"option","element":args.first().map(|t|self.ty(t,span,scheme))})
-            }
-            Ty::Con(TyCon::Adt(id), args)
-                if args.is_empty()
-                    && self
-                        .inv
-                        .types
-                        .adts
-                        .get(*id)
-                        .is_some_and(|a| a.record.is_some() && a.type_params.is_empty()) =>
-            {
-                json!({"tag":"record","name":self.name(*id)})
-            }
-            Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => {
-                json!({"tag":"unsupported","resolved":self.show(ty,scheme),"original":self.original(span),"span":self.span(span)})
-            }
-        }
-    }
     fn dependencies(&self, ty: &Ty, out: &mut Vec<String>) {
         match ty {
             Ty::Con(con, args) => {
@@ -206,12 +168,13 @@ impl Output<'_> {
             .fields;
         let fields = record.fields.iter().zip(types).map(|(f,t)| {
             self.dependencies(t,&mut deps);
-            json!({"name":f.name.text,"span":self.span(f.span),"typeSpan":self.span(f.ty.span()),"type":self.ty(t,f.ty.span(),scheme)})
-        }).collect::<Vec<_>>();
+            Ok(json!({"name":f.name.text,"span":self.span(f.span),"typeSpan":self.span(f.ty.span()),"type":self.ty(t,scheme)?,"metadata":{"original":self.original(f.ty.span()),"resolved":self.show(t,scheme),"span":self.span(f.ty.span())}}))
+        }).collect::<Result<Vec<_>, Error>>()?;
         Ok(
             json!({"type":self.name(id),"module":self.inv.modules.get(binding.module).map(|m|m.name.dotted()),
             "name":record.name.text,"span":self.span(record.span),"public":binding.public,"package":binding.package,
-            "typeParams":adt.type_params,"fields":fields,"dependencies":deps}),
+            "visibility":visibility(binding)?,"opaque":binding.opaque,"canConstruct":true,"canInspect":true,
+            "typeParams":type_params(&scheme.type_params),"fields":fields,"dependencies":deps}),
         )
     }
     fn function(&self, f: &benitoite::syntax::ast::FnDecl, id: BindingId) -> Result<Value, Error> {
@@ -227,26 +190,9 @@ impl Output<'_> {
             .bindings
             .get(id)
             .ok_or(text::MISSING_FUNCTION_BINDING)?;
-        let params = f.params.iter().zip(&s.params).map(|(p,t)|json!({"name":p.name.text,"type":self.ty(t,p.ty.as_ref().map_or(p.name.span, |t|t.span()),s)})).collect::<Vec<_>>();
-        let effects = s
-            .effects
-            .names
-            .iter()
-            .map(|e| match e {
-                EffectName::Builtin(id) => {
-                    json!({"builtin":id.def().map(|d|format!("{}.{}",d.module.join("."),d.name))})
-                }
-                EffectName::User(id) => json!({"name":self.name(*id)}),
-            })
-            .collect::<Vec<_>>();
         Ok(
             json!({"name":self.name(id),"span":self.span(f.span),"public":b.public,"package":b.package,
-            "signature":{"params":params,"returnType":self.ty(&s.ret,f.ret.span(),s),
-            "typeParams":s.type_params.iter().map(|p|json!({"name":p.name,"kind":format!("{:?}",p.kind),"builtin":p.builtin.map(|b|format!("{b:?}"))})).collect::<Vec<_>>(),
-            "effectParams":s.effect_params,"noFail":s.no_fail.iter().map(|v|v.0).collect::<Vec<_>>(),
-            "constraints":s.class_constraints.iter().map(|c|json!({"param":c.param,"class":self.name(c.class)})).collect::<Vec<_>>(),
-            "effects":{"names":effects,"vars":s.effects.vars.iter().map(|v|v.0).collect::<Vec<_>>(),
-            "failures":s.effects.failures.iter().map(|t|self.ty(t,f.uses.as_ref().map_or(f.ret.span(),|u|u.span),s)).collect::<Vec<_>>()}}}),
+            "visibility":visibility(b)?,"signature":self.signature(s)?}),
         )
     }
 }
@@ -287,6 +233,12 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
         }
         if target.get("property").is_some() {
             imports.insert("Benitoite.Unofficial.Test.Property".to_owned());
+        }
+        if ["show", "order"]
+            .iter()
+            .any(|key| target.get(*key).and_then(Value::as_bool) == Some(true))
+        {
+            imports.insert("Benitoite.Trait".to_owned());
         }
         imports.insert(module.to_owned());
         target_paths.insert(ty.to_owned(), path);
@@ -385,6 +337,7 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
         .collect::<BTreeMap<_, _>>();
     let mut records = BTreeMap::new();
     let mut functions = BTreeMap::new();
+    let (types, classes, implementations) = out.declaration_tables()?;
     for ast in &inv.asts {
         for top in &ast.decls {
             let Some(id) = inv.resolved.decls.get(top.item.id()).copied() else {
@@ -411,6 +364,12 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
     let mut rows = vec![];
     for target in targets {
         let name = string(target, "type")?;
+        if types.get(name).is_some_and(|t| {
+            t.get("opaque") == Some(&Value::Bool(true))
+                && t.get("kind").and_then(Value::as_str) == Some("data")
+        }) {
+            return Err(text::OPAQUE_TARGET.into());
+        }
         let mut record = records
             .get(name)
             .cloned()
@@ -535,9 +494,12 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
                 .chain(a.imports.iter().map(|i| i.id))
         })
         .collect::<BTreeSet<_>>();
-    let declarations = inv.resolved.bindings.iter().filter(|(_,b)|matches!(b.decl,DeclSite::Node(_)) && !matches!(b.kind,BindingKind::Local(_) | BindingKind::TypeParam{..} | BindingKind::EffectVar{..})).map(|(id,b)|json!({"name":out.name(id),"module":inv.modules.get(b.module).map(|m|m.name.dotted()),"topLevel":matches!(b.decl,DeclSite::Node(node) if top_level.contains(&node)),"kind":binding_kind(b.kind),"public":b.public,"package":b.package,"span":b.span.map(|s|out.span(s))})).collect::<Vec<_>>();
+    for (_, b) in inv.resolved.bindings.iter() {
+        visibility(b)?;
+    }
+    let declarations = inv.resolved.bindings.iter().filter(|(_,b)|matches!(b.decl,DeclSite::Node(_)) && !matches!(b.kind,BindingKind::Local(_) | BindingKind::TypeParam{..} | BindingKind::EffectVar{..})).map(|(id,b)|json!({"name":out.name(id),"module":inv.modules.get(b.module).map(|m|m.name.dotted()),"topLevel":matches!(b.decl,DeclSite::Node(node) if top_level.contains(&node)),"kind":out.declaration_kind(b.kind),"public":b.public,"package":b.package,"visibility":visibility(b).ok(),"span":b.span.map(|s|out.span(s))})).collect::<Vec<_>>();
     Ok(
-        json!({"version":1,"configSha256":hash(config_bytes),"targets":rows,"records":records,"functions":functions,"declarations":declarations,"modules":modules,"inputs":inputs}),
+        json!({"version":2,"types":types,"classes":classes,"implementations":implementations,"configSha256":hash(config_bytes),"targets":rows,"records":records,"functions":functions,"declarations":declarations,"modules":modules,"inputs":inputs}),
     )
 }
 
@@ -562,5 +524,45 @@ fn binding_kind(kind: BindingKind) -> &'static str {
         BindingKind::TypeParam { .. } => "typeParameter",
         BindingKind::EffectVar { .. } => "effectParameter",
         BindingKind::Local(_) => "local",
+    }
+}
+
+fn visibility(b: &benitoite::resolve::Binding) -> Result<&'static str, Error> {
+    match (b.public, b.package) {
+        (true, false) => Ok("public"),
+        (false, true) => Ok("package"),
+        (false, false) => Ok("private"),
+        (true, true) => Err(text::INVALID_SCHEMA.into()),
+    }
+}
+fn kind(k: benitoite::types::ParamKind) -> Value {
+    match k {
+        benitoite::types::ParamKind::Value => json!({"tag":"value"}),
+        benitoite::types::ParamKind::Ctor { arity } => json!({"tag":"constructor","arity":arity}),
+    }
+}
+fn type_params(ps: &[benitoite::types::TypeParamInfo]) -> Vec<Value> {
+    ps.iter().map(|p|json!({"name":p.name,"kind":kind(p.kind),"builtin":p.builtin.map(|b|match b {
+        benitoite::types::BuiltinConstraint::Equality => "equality", benitoite::types::BuiltinConstraint::Key => "key",
+        benitoite::types::BuiltinConstraint::Ordered => "ordered" })})).collect()
+}
+
+impl Output<'_> {
+    fn declaration_kind(&self, k: BindingKind) -> &'static str {
+        if let BindingKind::Module(id) = k
+            && let Some(m) = self
+                .inv
+                .modules
+                .get(id)
+                .filter(|m| m.kind == benitoite::modules::ModuleKind::Stdlib)
+        {
+            match m.name.dotted().as_str() {
+                "Benitoite.StringBuilder" => return "stringBuilder",
+                "Benitoite.ListBuilder" => return "listBuilder",
+                "Benitoite.BytesBuilder" => return "bytesBuilder",
+                _ => {}
+            }
+        }
+        binding_kind(k)
     }
 }

@@ -7,6 +7,10 @@
     clippy::indexing_slicing,
     clippy::arithmetic_side_effects
 )]
+#[path = "desugar_export/batch3.rs"]
+mod batch3;
+#[path = "golden/differential.rs"]
+mod differential;
 #[path = "desugar_export/exchange.rs"]
 mod exchange;
 #[path = "random_programs/generator.rs"]
@@ -329,7 +333,7 @@ fn write_exchange(
     stdlib_inputs: Vec<Value>,
     annotations: std::collections::BTreeMap<String, [usize; 2]>,
 ) -> Value {
-    let corpus = json!({"version":11,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    let corpus = json!({"version":12,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
         exchange::to_vec(&corpus).unwrap(),
@@ -429,7 +433,7 @@ impl CorpusStream {
     fn finish(self, output: &Path, stem: &str) {
         self.inputs.finish(
             &output.join(format!("{stem}-corpus.json")),
-            json!({"version":11,"operators":exchange::operators(),"annotations":self.annotations}),
+            json!({"version":12,"operators":exchange::operators(),"annotations":self.annotations}),
         );
         self.builtins.finish(
             &output.join(format!("{stem}-builtins.json")),
@@ -765,7 +769,7 @@ fn export_named_types_smoke() {
     );
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":11,"operators":exchange::operators(),
+    let corpus = json!({"version":12,"operators":exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-types-corpus.json"),
@@ -812,7 +816,7 @@ fn export_named_declarations_smoke() {
     let mut input = named::input("named-declarations", definitions);
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":11,"operators":exchange::operators(),
+    let corpus = json!({"version":12,"operators":exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-declarations-corpus.json"),
@@ -822,7 +826,7 @@ fn export_named_declarations_smoke() {
     named::write_tables(&output, "named-declarations", &p, &corpus["inputs"][0]);
 }
 
-// 関門: 実ソースの辞書の全呼び出しを11/4の五形式へ渡す。
+// 関門: 実ソースの辞書の全呼び出しを12/4の五形式へ渡す。
 // 対象外と空の比較は失敗にし、独立したLeanの六入口が結果を照合する。
 #[test]
 fn export_batch2_op() {

@@ -122,8 +122,15 @@ end
 def InterpParts.AtomsIn (atoms : List Atom) (parts : List InterpPart) : Prop :=
   ∀ t, .converted t ∈ parts → Ty.AtomsIn atoms t
 
+/-- 参照先の型引数も入力の支持に含める。 -/
+def builderValAtoms (atoms : List Atom) : Val → Prop
+  | .prim _ ts _ | .fnRef _ ts _ => Tys.AtomsIn atoms ts
+  | _ => True
+
 mutual
   def Expr.AtomsIn (atoms : List Atom) : Expr → Prop
+    | .builderOp _ _ args refs =>
+        refs.kind.contents.AtomsIn atoms ∧ refs.ForRefs (builderValAtoms atoms) ∧ args.AtomsIn atoms
     | .constE t e => t.AtomsIn atoms ∧ e.AtomsIn atoms
     | .funName _ ts es | .primName _ ts es =>
         Tys.AtomsIn atoms ts ∧ ∀ ε ∈ es, ε.AtomsIn atoms
@@ -174,6 +181,7 @@ mutual
     | .expr _ _ e es => e.AtomsIn atoms ∧ es.AtomsIn atoms
     | .hole _ _ t es => t.AtomsIn atoms ∧ es.AtomsIn atoms
   def Block.AtomsIn (atoms : List Atom) : Block → Prop
+    | .builderBind k r rest => k.contents.AtomsIn atoms ∧ r.kind.contents.AtomsIn atoms ∧ r.ForRefs (builderValAtoms atoms) ∧ rest.AtomsIn atoms
     | .empty => True
     | .last e | .lastDiscard e => e.AtomsIn atoms
     | .lastBind _ t e | .lastPat _ _ t e => t.AtomsIn atoms ∧ e.AtomsIn atoms

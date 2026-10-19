@@ -6,6 +6,34 @@ Refer to its declarations as `Failure.<name>`, for example `Failure.fromResult`.
 
 Typed, non-resumable failures. Import Benitoite.Unofficial.Failure explicitly.
 
+An entry cannot leave Fail unhandled. Import Failure, catch it with toResult,
+and remove the handled Fail from the entry's uses; other effects remain.
+Result.andThen/flatMap chains Result values rather than catching Fail.
+
+```benitoite error
+import Benitoite.Unofficial.Failure
+function main() -> Unit uses Failure.Fail[String]
+  return Failure.raise("bad")
+end function
+```
+```diagnostic
+E0506
+handle `Failure.Fail` with `handle ... with` inside `main`
+or convert the failure with Failure.toResult inside `main`
+```
+
+```benitoite test
+import Benitoite.Unofficial.Failure
+function work() -> Integer uses Failure.Fail[String]
+  return Failure.raise("bad")
+end function
+@test
+function failureExample() -> Unit uses Assert.Check
+  bind result: Result[Integer, String] <- Failure.toResult(body: lambda() return work() end lambda)
+  Assert.equal(actual: result, expected: Result.Error("bad"))
+end function
+```
+
 ```text
 Failure.raise[T, E]: function(error: E) -> T uses Failure.Fail[E]
 ```

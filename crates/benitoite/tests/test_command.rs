@@ -1392,14 +1392,14 @@ fn check_does_not_run_user_code_or_write_result_lines() {
 fn check_report_and_execution_select_the_same_entries_and_functions() {
     use serde_json::{Value, json};
     let dir = Directory::new("selection-parity");
-    dir.write("suite/package.bnt", "language \"0.0.8\"\n");
+    dir.write("suite/package.bnt", "language \"0.0.9\"\n");
     dir.write("suite/Lib/Text.bnt", "public function message() -> String\n  return \"hello\"\nend function\n@test\nfunction libTest() -> Unit\nend function\n");
     dir.write("suite/tests.bnt", "import Lib.Text\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n");
     dir.write(
         "suite/none.bnt",
         "function helper() -> Unit\nend function\n",
     );
-    dir.write("suite/deps/package.bnt", "language \"0.0.8\"\n");
+    dir.write("suite/deps/package.bnt", "language \"0.0.9\"\n");
     dir.write(
         "suite/deps/tests.bnt",
         "@test\nfunction packageTest() -> Unit\nend function\n",
@@ -1902,7 +1902,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.8\"\n");
+    dir.write("package.bnt", "language \"0.0.9\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -1913,7 +1913,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.8\"\npackage Textkit\nend package\n",
+        "language \"0.0.9\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -2325,6 +2325,10 @@ fn failure_entry_contracts_are_checked_before_test_execution() {
             assert_eq!(report["executed"], false);
             assert_eq!(report["aggregateEffects"], Value::Null);
             assert_eq!(report["diagnostics"][0]["code"], "E0506");
+            assert_eq!(
+                report["diagnostics"][0]["helps"][1]["message"],
+                "or convert the failure with Failure.toResult inside `unhandled`"
+            );
             assert_eq!(out.stderr, "");
         } else {
             let summary: Value = serde_json::from_str(&out.stdout).unwrap();
@@ -2334,6 +2338,10 @@ fn failure_entry_contracts_are_checked_before_test_execution() {
             assert_eq!(summary["failed"], 0);
             let diagnostic: Value = serde_json::from_str(&out.stderr).unwrap();
             assert_eq!(diagnostic["code"], "E0506");
+            assert_eq!(
+                diagnostic["helps"][1]["message"],
+                "or convert the failure with Failure.toResult inside `unhandled`"
+            );
         }
     }
     let accepted = dir.write("handled.bnt", "import Benitoite.Unofficial.Failure\n@test\nfunction handled() -> Unit uses Assert.Check\n  bind result: Result[Unit, String] <- Failure.toResult(body: lambda() return Failure.raise(\"stop\") end lambda)\n  Assert.fail(\"must not execute\")\nend function\n");
@@ -2352,6 +2360,33 @@ fn failure_entry_contracts_are_checked_before_test_execution() {
         report["aggregateEffects"]["expanded"],
         json!(["Assert.Check"])
     );
+    // 標準Failureのdocが増えても、利用者のtestへ再帰的に追加しない。
+    let success = dir.write("handled-success.bnt", "import Benitoite.Unofficial.Failure\n@test\nfunction handled() -> Unit uses Assert.Check\n  bind result: Result[Unit, String] <- Failure.toResult(body: lambda() return Failure.raise(\"stop\") end lambda)\n  Assert.equal(actual: result, expected: Result.Error(\"stop\"))\nend function\n");
+    let out = run(
+        &dir,
+        &[
+            "--doc",
+            "--diagnostics=json",
+            "--allow-effects=Assert.Check",
+            &success,
+        ],
+    );
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert!(out.stderr.is_empty(), "{}", out.stderr);
+    let rows: Vec<Value> = out
+        .stdout
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(rows.len(), 3);
+    assert_eq!(rows[0]["kind"], "test");
+    assert_eq!(
+        rows[1],
+        json!({"kind": "docSummary", "test": 0, "run": 0, "check": 0, "error": 0, "ignoredBlocks": 0})
+    );
+    assert_eq!(rows[2]["kind"], "testSummary");
+    assert_eq!(rows[2]["passed"], 1);
+    assert_eq!(rows[2]["failed"], 0);
 }
 
 // 作成時の関門: property_library が守る入力と候補の規則と分け、
@@ -2366,7 +2401,7 @@ fn property_results_use_ordinary_test_reports_and_check_never_runs_callbacks() {
 import Benitoite.Unofficial.Test.Property
 @test
 function falsified() -> Result[Unit, String]
-  bind result <- Property.check(config: Property.Config(seed: 17, trials: 1, size: 0, maxShrinks: 0), gen: Property.constant(8), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("bad:" + Integer.toString(value)) end lambda)
+  bind result <- Property.check(config: Property.Config(seed: 17, trials: 1, size: 0, maxShrinks: 0, maxShrinkWork: 10000), gen: Property.constant(8), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("bad:" + Integer.toString(value)) end lambda)
   return match result with
     case Result.Ok(_) -> Result.Ok(())
     case Result.Error(failure) -> Result.Error(Property.formatFailure(failure: failure, show: lambda(value) return Integer.toString(value) end lambda))
@@ -2374,7 +2409,7 @@ function falsified() -> Result[Unit, String]
 end function
 @test
 function crashes() -> Unit
-  bind result <- Property.check(config: Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 1), gen: Property.Gen(run: lambda(generator, size) return Pair(1 div size, generator) end lambda), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("not reached") end lambda)
+  bind result <- Property.check(config: Property.Config(seed: 0, trials: 1, size: 0, maxShrinks: 1, maxShrinkWork: 10000), gen: Property.Gen(run: lambda(generator, size) return Pair(1 div size, generator) end lambda), shrinker: Property.shrinkInteger(), property: lambda(value) return Result.Error("not reached") end lambda)
   return ()
 end function
 "#,
@@ -2407,4 +2442,469 @@ end function
         lines[2],
         json!({"kind":"testSummary","passed":0,"failed":2,"filesNotRun":0,"interrupted":false})
     );
+}
+
+#[test]
+fn ordinary_test_does_not_parse_documentation_examples() {
+    let dir = Directory::new("doc-not-selected");
+    let path = dir.write("main.bnt", "/// ```benitoite unknown\n/// no closing fence or expectation\n@test\nfunction ordinary() -> Unit uses Assert.Check\n  Assert.equal(actual: 1, expected: 1)\nend function\n");
+    let result = run(&dir, &[&path]);
+    assert_eq!(result.exit, 0, "{}", result.stderr);
+    assert!(result.stderr.is_empty(), "{}", result.stderr);
+    assert!(
+        result.stdout.contains("test result: ok. 1 passed"),
+        "{}",
+        result.stdout
+    );
+}
+
+// 作成時の関門: 公開CLIで発見・検査・実行・報告の同じ一覧と独立した公開境界を守る。
+// 通常testの試験ではdocを発見せず、抽出単体では実行抑止・許可・報告の退行を捕まえられない。
+fn documentation(mode: &str, code: &str, expectation: Option<(&str, &str)>) -> String {
+    let fence = "\x60\x60\x60";
+    let mut body = format!("{fence}benitoite{mode}\n{code}{fence}\n");
+    if let Some((kind, value)) = expectation {
+        body.push_str(&format!("{fence}{kind}\n{value}{fence}\n"));
+    }
+    body.lines().map(|line| format!("//! {line}\n")).collect()
+}
+
+fn json_lines(out: &Outcome) -> Vec<serde_json::Value> {
+    out.stdout
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect()
+}
+
+#[test]
+fn doc_modes_share_discovery_and_version_two_reports() {
+    let dir = Directory::new("doc-modes");
+    let mut source = documentation(
+        " test",
+        "@test\nfunction first() -> Unit uses Assert.Check\n  Assert.equal(actual: 2, expected: 2)\nend function\n@test\nfunction second() -> Unit\n  return ()\nend function\n",
+        None,
+    );
+    source.push_str(&documentation(" check",
+        "import Benitoite.Unofficial.IO.Console\nfunction unused() -> Unit uses Console.Read\n  bind _ <- Console.readLine()\n  return ()\nend function\n", None));
+    source.push_str(&documentation(
+        " error",
+        "function bad() -> Integer\n  return \"日本語\"\nend function\n",
+        Some(("diagnostic", "E0401\n")),
+    ));
+    source.push_str(&documentation("",
+        "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit uses Console.Write\n  Console.writeLine(\"hello\")\nend function\n", Some(("output", "hello\n"))));
+    source.push_str("//! \x60\x60\x60text\n//! skipped\n//! \x60\x60\x60\n");
+    source.push_str("@test\nfunction ordinary() -> Unit\n  return ()\nend function\n");
+    let file = dir.write("Docs.bnt", &source);
+    let checked = run(&dir, &["--doc", "--check", "--report=json", &file]);
+    assert_eq!(checked.exit, 0, "{} {}", checked.stdout, checked.stderr);
+    assert_eq!(checked.stderr, "");
+    let report: serde_json::Value = serde_json::from_str(&checked.stdout).unwrap();
+    assert_eq!(report["schemaVersion"], 2);
+    assert_eq!(report["complete"], true);
+    assert_eq!(report["executed"], false);
+    assert_eq!(
+        report["aggregateEffects"]["expanded"],
+        serde_json::json!(["Assert.Check", "Console.Write"])
+    );
+    assert_eq!(report["diagnostics"], serde_json::json!([]));
+    let target = &report["targets"][0];
+    assert_eq!(target["tests"].as_array().unwrap().len(), 1);
+    assert_eq!(target["ignoredDocBlocks"], 1);
+    let examples = target["docExamples"].as_array().unwrap();
+    assert_eq!(
+        examples
+            .iter()
+            .map(|e| e["mode"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        ["test", "check", "error", "run"]
+    );
+    assert_eq!(examples[0]["tests"].as_array().unwrap().len(), 2);
+    assert_eq!(
+        examples[0]["tests"][0]["location"]["file"],
+        "<dir>/Docs.bnt"
+    );
+    assert_eq!(examples[2]["status"], "ok");
+    assert_eq!(
+        examples[2]["expectedDiagnosticCodes"],
+        serde_json::json!(["E0401"])
+    );
+    assert!(
+        examples[2]["observedDiagnostics"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|d| d["code"] == "E0401")
+    );
+    for example in examples {
+        assert_eq!(example["complete"], true);
+        assert!(
+            report["sources"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|s| s["sourceId"] == example["sourceId"])
+        );
+    }
+    let executed = run(
+        &dir,
+        &[
+            "--doc",
+            "--diagnostics=json",
+            "--allow-effects=Assert.Check,Console.Write",
+            &file,
+        ],
+    );
+    assert_eq!(executed.exit, 0, "{} {}", executed.stdout, executed.stderr);
+    assert_eq!(executed.stderr, "");
+    let lines = json_lines(&executed);
+    assert_eq!(
+        lines
+            .iter()
+            .map(|line| line["kind"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        [
+            "test",
+            "docExample",
+            "docExample",
+            "docExample",
+            "docExample",
+            "docSummary",
+            "testSummary"
+        ]
+    );
+    assert_eq!(lines[1]["tests"].as_array().unwrap().len(), 2);
+    assert_eq!(lines[4]["stdout"], "hello\n");
+    assert_eq!(lines[4]["stderr"], "");
+    assert_eq!(
+        lines[5],
+        serde_json::json!({"kind":"docSummary", "test":1, "run":1, "check":1, "error":1, "ignoredBlocks":1})
+    );
+    assert_eq!(lines[6]["passed"], 5);
+    assert_eq!(lines[6]["failed"], 0);
+
+    let ordinary = run(&dir, &["--check", "--report=json", &file]);
+    let old: serde_json::Value = serde_json::from_str(&ordinary.stdout).unwrap();
+    assert_eq!(old["schemaVersion"], 1);
+    assert!(old["targets"][0].get("docExamples").is_none());
+}
+
+#[test]
+fn doc_prepares_all_entries_and_limits_before_any_execution() {
+    let dir = Directory::new("doc-preflight");
+    let writes = "import Benitoite.Unofficial.IO.File\nfunction main() -> Unit uses File.Write\n  bind _ <- File.writeText(path: \"marker.txt\", text: \"ran\")\n  return ()\nend function\n";
+    let good = dir.write(
+        "First.bnt",
+        &documentation("", writes, Some(("output", ""))),
+    );
+    let mut source = documentation("", writes, Some(("output", "")));
+    source.push_str(&documentation("",
+        "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit uses Console.Write\n  Console.writeLine(\"late\")\nend function\n", Some(("output", "late\n"))));
+    let late = dir.write("Later.bnt", &source);
+    for args in [
+        vec!["--doc", "--check", &good, &late],
+        vec!["--doc", "--check", "--report=json", &good, &late],
+    ] {
+        let out = run(&dir, &args);
+        assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+        assert!(!dir.0.join("marker.txt").exists());
+        assert!(!out.stdout.contains("\"kind\":\"docExample\""));
+        assert!(!out.stdout.contains("\"kind\":\"testSummary\""));
+    }
+    let denied = run(
+        &dir,
+        &[
+            "--doc",
+            "--allow-effects=File.Write",
+            "--diagnostics=json",
+            &good,
+            &late,
+        ],
+    );
+    assert_eq!(denied.exit, 2, "{} {}", denied.stdout, denied.stderr);
+    assert!(denied.stderr.contains("E0512"), "{}", denied.stderr);
+    assert!(denied.stderr.contains("Later.bnt"));
+    assert!(!dir.0.join("marker.txt").exists());
+    let lines = json_lines(&denied);
+    assert_eq!(lines.len(), 1);
+    assert_eq!(lines[0]["filesNotRun"], 2);
+    assert_eq!(lines[0]["passed"], 0);
+
+    let allowed = run(
+        &dir,
+        &[
+            "--doc",
+            "--allow-effects=File.Write,Console.Write",
+            &good,
+            &late,
+        ],
+    );
+    assert_eq!(allowed.exit, 0, "{} {}", allowed.stdout, allowed.stderr);
+    assert_eq!(fs::read_to_string(dir.0.join("marker.txt")).unwrap(), "ran");
+}
+
+#[test]
+fn doc_examples_use_public_imports_without_inheriting_private_names() {
+    let dir = Directory::new("doc-public");
+    let declarations = "import Benitoite.Unofficial.IO.Console\n@opaque\npublic record Secret\n  value: Integer\nend record\nfunction hidden() -> Integer\n  return 3\nend function\npublic function visible() -> Integer\n  return hidden()\nend function\n";
+    for (code, diagnostic) in [
+        (
+            "function f() -> Integer\n  return hidden()\nend function\n",
+            "E0301",
+        ),
+        (
+            "import Docs\nfunction f() -> Docs.Secret\n  return Docs.Secret(value: 1)\nend function\n",
+            "E0340",
+        ),
+        (
+            "function main() -> Unit uses Console.Write\n  Console.writeLine(\"no import\")\nend function\n",
+            "E0332",
+        ),
+        (
+            "import Docs\nfunction f() -> Integer\n  return Docs.hidden()\nend function\n",
+            "E0330",
+        ),
+    ] {
+        let file = dir.write(
+            "Docs.bnt",
+            &(documentation(
+                " error",
+                code,
+                Some(("diagnostic", &format!("{diagnostic}\n"))),
+            ) + declarations),
+        );
+        let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
+        assert_eq!(
+            out.exit, 0,
+            "{} {} for {diagnostic}",
+            out.stdout, out.stderr
+        );
+        assert_eq!(json_lines(&out).last().unwrap()["passed"], 1);
+    }
+    let source = documentation(
+        " test",
+        "import Docs\n@test\nfunction api() -> Unit uses Assert.Check\n  Assert.equal(actual: Docs.visible(), expected: 3)\nend function\n",
+        None,
+    ) + declarations;
+    let file = dir.write("Docs.bnt", &source);
+    let out = run(&dir, &["--doc", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+}
+
+#[test]
+fn doc_expectations_fail_per_example_and_keep_running() {
+    let dir = Directory::new("doc-failures");
+    let mut source = documentation(
+        " error",
+        "function bad() -> Integer\n  return \"wrong\"\nend function\n",
+        Some(("diagnostic", "E0402\n")),
+    );
+    source.push_str(&documentation(" test", "@test\nfunction fails() -> Unit uses Assert.Check\n  Assert.fail(\"失敗\")\nend function\n", None));
+    source.push_str(&documentation("", "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit uses Console.Write\n  Console.writeLine(\"newline\")\nend function\n", Some(("output", ""))));
+    source.push_str(&documentation(
+        " check",
+        "function good() -> Unit\n  return ()\nend function\n",
+        None,
+    ));
+    let file = dir.write("Docs.bnt", &source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let out = run_with(
+            &dir,
+            &["--doc", "--diagnostics=json", &file],
+            Box::new(NoInterrupt),
+            mode,
+        );
+        assert_eq!(out.exit, 1, "{} {}", out.stdout, out.stderr);
+        assert_eq!(out.stderr, "");
+        let lines = json_lines(&out);
+        assert_eq!(lines[0]["failure"]["reason"], "diagnosticMismatch");
+        assert_eq!(
+            lines[1]["tests"][0]["failure"]["primary"]["file"],
+            "<dir>/Docs.bnt"
+        );
+        assert_eq!(lines[2]["failure"]["reason"], "outputMismatch");
+        assert_eq!(lines[3]["outcome"], "ok");
+        assert_eq!(lines.last().unwrap()["failed"], 3);
+        assert_eq!(lines.last().unwrap()["passed"], 1);
+    }
+}
+
+#[test]
+fn doc_report_preserves_partial_unknowns_and_option_rejections() {
+    let dir = Directory::new("doc-partial");
+    let source = documentation(
+        " check",
+        "function bad() -> Integer\n  return \"wrong\"\nend function\n",
+        None,
+    ) + &documentation(
+        " check",
+        "function good() -> Unit\n  return ()\nend function\n",
+        None,
+    );
+    let file = dir.write("Docs.bnt", &source);
+    let out = run(&dir, &["--doc", "--check", "--report=json", &file]);
+    assert_eq!(out.exit, 2, "{} {}", out.stdout, out.stderr);
+    let report: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["complete"], false);
+    assert_eq!(report["aggregateEffects"], serde_json::Value::Null);
+    assert_eq!(
+        report["targets"][0]["docExamples"][0]["effects"],
+        serde_json::Value::Null
+    );
+    assert_eq!(
+        report["targets"][0]["docExamples"][0]["tests"],
+        serde_json::Value::Null
+    );
+    assert_eq!(
+        report["targets"][0]["docExamples"][1]["effects"]["expanded"],
+        serde_json::json!([])
+    );
+    assert_eq!(
+        report["targets"][0]["docExamples"][1]["tests"],
+        serde_json::json!([])
+    );
+    assert_eq!(
+        report["diagnosticTargets"][0]["docExampleId"],
+        report["targets"][0]["docExamples"][0]["id"]
+    );
+    assert_eq!(
+        report["diagnostics"][0]["primary"]["file"],
+        "<dir>/Docs.bnt"
+    );
+    for args in [
+        vec!["--doc", "--report=json", &file],
+        vec![
+            "--doc",
+            "--check",
+            "--report=json",
+            "--allow-effects=",
+            &file,
+        ],
+        vec!["--doc", "--doc", "--check", "--report=json", &file],
+        vec![
+            "--doc",
+            "--check",
+            "--report=json",
+            "--max-call-stack=1MiB",
+            &file,
+        ],
+    ] {
+        let out = run(&dir, &args);
+        assert_eq!(out.exit, 2);
+        let report: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+        assert_eq!(report["schemaVersion"], 2);
+        assert_eq!(report["status"], "usageError");
+        assert_eq!(report["executed"], false);
+    }
+    let malformed = dir.write("Malformed.bnt", "//! \x60\x60\x60benitoite\n//! function main() -> Unit\n//!   return ()\n//! end function\n//! \x60\x60\x60\n");
+    let out = run(&dir, &["--doc", "--check", "--report=json", &malformed]);
+    assert_eq!(out.exit, 2);
+    let report: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["diagnostics"][0]["code"], "E0260");
+    assert_eq!(report["targets"][0]["docExamples"], serde_json::Value::Null);
+}
+
+// 元入口の環境だけを継承し、通常のimport境界・収集範囲・実行入口の制限を保つ。
+#[test]
+fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs() {
+    let dir = Directory::new("doc-environment");
+    dir.write(
+        "deps/words/package.bnt",
+        "language \"0.0.9\"\npackage Words\nend package\n",
+    );
+    let imported_doc = documentation(
+        " test",
+        "@test\nfunction never() -> Unit uses Assert.Check\n  Assert.fail(\"imported docs must not run\")\nend function\n",
+        None,
+    );
+    dir.write(
+        "deps/words/Word.bnt",
+        &(imported_doc.clone() + "public function number() -> Integer\n  return 7\nend function\n"),
+    );
+    let source = documentation(
+        " test",
+        "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n",
+        None,
+    ) + "language \"0.0.9\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
+    let file = dir.write("Docs.bnt", &source);
+    let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert_eq!(json_lines(&out).last().unwrap()["passed"], 1);
+
+    // ディレクトリ選択の共通の根とpackage.bntの依存も引き継ぐ。
+    dir.write(
+        "package.bnt",
+        "language \"0.0.9\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
+    );
+    fs::remove_file(&file).unwrap();
+    dir.write("nested/Docs.bnt", &documentation(" test", "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n", None));
+    let out = run(
+        &dir,
+        &["--doc", "--diagnostics=json", &dir.0.display().to_string()],
+    );
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert_eq!(json_lines(&out).last().unwrap()["passed"], 1);
+
+    let source = documentation(" error", "import Entry\n", Some(("diagnostic", "E0320\n")))
+        + "function main() -> Unit\n  return ()\nend function\n";
+    let file = dir.write("Entry.bnt", &source);
+    let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert_eq!(json_lines(&out).last().unwrap()["passed"], 1);
+}
+
+// runにも通常入口の効果制限を適用し、stderr省略を空という期待として扱う。
+#[test]
+fn doc_run_checks_unhandled_effects_and_exact_stderr() {
+    let dir = Directory::new("doc-run-contract");
+    let code = "import Benitoite.Unofficial.Failure\nfunction main() -> Unit uses Failure.Fail[String]\n  Failure.raise(\"unhandled\")\nend function\n";
+    let file = dir.write("Docs.bnt", &documentation("", code, Some(("output", ""))));
+    for options in [
+        vec!["--doc", "--diagnostics=json", &file],
+        vec!["--doc", "--check", "--report=json", &file],
+    ] {
+        let out = run(&dir, &options);
+        assert_eq!(out.exit, 2, "{} {}", out.stdout, out.stderr);
+        assert!(format!("{}{}", out.stdout, out.stderr).contains("E0506"));
+    }
+    let code = "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit uses Console.Write\n  Console.writeErrorLine(\"diagnostic output\")\nend function\n";
+    let source = documentation("", code, Some(("output", "")));
+    let file = dir.write("Docs.bnt", &source);
+    let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
+    assert_eq!(out.exit, 1);
+    assert_eq!(json_lines(&out)[0]["stderr"], "diagnostic output\n");
+    let source = source + "//! \x60\x60\x60stderr\n//! diagnostic output\n//! \x60\x60\x60\n";
+    let file = dir.write("Docs.bnt", &source);
+    let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert_eq!(json_lines(&out)[0]["stderr"], "diagnostic output\n");
+    assert_eq!(out.stderr, "");
+}
+
+// 作成時の関門: doc固有の失敗詳細・期待不一致の説明にも端末制御文字を出さない。
+// 通常testの名前のエスケープのテストではdocの独立した報告経路に届かない。
+#[test]
+fn doc_text_reports_escape_control_characters_in_example_ids() {
+    let dir = Directory::new("doc-terminal");
+    let source = documentation(
+        " error",
+        "function bad() -> Integer\n  return \"wrong\"\nend function\n",
+        Some(("diagnostic", "E0402\n")),
+    );
+    let file = dir.write("doc\u{1b}[2J.bnt", &source);
+    for options in [vec!["--doc", &file], vec!["--doc", "--check", &file]] {
+        let out = run(&dir, &options);
+        assert_ne!(out.exit, 0);
+        assert!(
+            !out.stdout.contains('\u{1b}'),
+            "{}",
+            out.stdout.escape_debug()
+        );
+        assert!(
+            !out.stderr.contains('\u{1b}'),
+            "{}",
+            out.stderr.escape_debug()
+        );
+        assert!(format!("{}{}", out.stdout, out.stderr).contains("doc\\u{1B}[2J.bnt"));
+    }
 }

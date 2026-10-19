@@ -283,12 +283,15 @@ theorem opSig_clean (hwf : p.WellFormed)
 
 mutual
   /-- 型の付いた式の結果は継続型を含まない。エフェクトの包含は型のこの条件を保つ。 -/
-  theorem HasTypeQ.clean (hwf : p.WellFormed)
-      (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos e a ε pe}
-      (h : HasTypeQ (p.declarationsFor view) B op Q C Γ R pos e a ε)
+  theorem HasTypeQ.clean {Δb : BuilderCtx} {C} (hΔ : BuilderCtx.Clean C.length Δb) (hwf : p.WellFormed)
+      (hsig : ∀ b s, B.sig b = some s → s.Scoped) {Γ R pos e a ε pe}
+      (h : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R pos e a ε)
       (sc : e.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) : TyOK C.length a := by
     match h with
+    | .E_BuilderOp (op := o) hr _ =>
+        have hc := hΔ _ _ hr.1
+        cases o <;> first | exact hc | trivial
     | .E_Local hi hc => exact hΓ.value hi hc
     | .E_Const _ => exact scoped_clean sc.1
     | .E_Fun hd hn _ ht _ _ hrows _ =>
@@ -336,10 +339,10 @@ mutual
           ⟨fun _ _ => trivial, trivial⟩
     | .E_NullCon _ _ _ => exact scopedList_clean sc
     | .E_ConValue _ _ _ _ _ _ => exact ⟨sc.2.1, scopedList_clean sc.2.2, scopedList_clean sc.1, ⟨fun _ _ => trivial, trivial⟩, rfl⟩
-    | .E_PipeCall _ hf _ _ _ => exact (HasTypeQ.clean hwf hsig hf sc.2.1 hΓ hR).2.2.1
+    | .E_PipeCall _ hf _ _ _ => exact (HasTypeQ.clean hΔ hwf hsig hf sc.2.1 hΓ hR).2.2.1
     | .E_PipeConCall _ _ _ _ _ => exact scopedList_clean sc.2.1
     | .E_PipeConValue _ _ _ _ _ _ _ => exact scopedList_clean sc.2.1
-    | .E_PipeApply _ _ hf _ => exact (HasTypeQ.clean hwf hsig hf sc.2 hΓ hR).2.2.1
+    | .E_PipeApply _ _ hf _ => exact (HasTypeQ.clean hΔ hwf hsig hf sc.2 hΓ hR).2.2.1
     | .E_PartialCall _ _ _ hn _ _ _ _ => exact
         ⟨hn, scopedList_clean (HoleArgs.holeTypes_scoped _ sc.2.1), scoped_clean sc.2.2.1, scopedEff_clean sc.2.2.2.1, sc.2.2.2.2⟩
     | .E_PartialCon _ _ _ _ _ hn _ hl he => exact
@@ -359,11 +362,11 @@ mutual
         by simp [Eff.Canonical, Eff.singleFail, Eff.norm, Ty.norm_idem]⟩
     | .E_HandleFail _ _ _ _ _ _ _ => exact scoped_clean sc.2.1
     | .E_Unit => trivial
-    | .E_Paren h => exact HasTypeQ.clean hwf hsig h sc hΓ hR
+    | .E_Paren h => exact HasTypeQ.clean hΔ hwf hsig h sc hΓ hR
     | .E_ConCall _ _ _ => exact scopedList_clean sc.1
     | .E_Record _ _ _ _ => exact scopedList_clean sc.1
     | .E_RecordUpdate _ _ _ _ _ _ _ _ _ => exact scopedList_clean sc.1
-    | .E_Call hf _ _ _ => exact (HasTypeQ.clean hwf hsig hf sc.1 hΓ hR).2.2.1
+    | .E_Call hf _ _ _ => exact (HasTypeQ.clean hΔ hwf hsig hf sc.1 hΓ hR).2.2.1
     | .E_Binary (o := o) (ts := ts) (s := sg) _ _ hts hs hn ht _ _ heq _ _ =>
         have ss := hsig _ _ hs
         have hh := fnTy_clean hn (n := C.length) (ε := sg.eff) (ts := ts) (es := [])
@@ -381,49 +384,54 @@ mutual
     | .E_ListSpread _ _ _ _ _ _ => exact scoped_clean sc.1
     | .E_Interpolation _ _ _ _ _ => trivial
     | .E_Lam hn _ _ => exact ⟨hn, scopedList_clean sc.2.1, scoped_clean sc.2.2.1, scopedEff_clean sc.2.2.2.1, sc.2.2.2.2.1⟩
-    | .E_If _ hy _ _ => exact HasBlockQ.clean hwf hsig hy sc.2.1 hΓ hR
-    | .E_ElseIf _ hy _ _ _ => exact HasBlockQ.clean hwf hsig hy sc.2.1 hΓ hR
+    | .E_If _ hy _ _ => exact HasBlockQ.clean hΔ hwf hsig hy sc.2.1 hΓ hR
+    | .E_ElseIf _ hy _ _ _ => exact HasBlockQ.clean hΔ hwf hsig hy sc.2.1 hΓ hR
     | .E_IfOnly _ _ => trivial
     | .E_ReturnTail _ => exact hR _ rfl
     | .E_ReturnOther _ _ => exact scoped_clean sc.1
     | .E_TryResult _ _ _ _ _ _ _ _ he _ =>
-        exact (HasTypeQ.clean hwf hsig he sc.2 hΓ hR).1
+        exact (HasTypeQ.clean hΔ hwf hsig he sc.2 hΓ hR).1
     | .E_TryOption _ _ _ _ _ _ _ _ he _ =>
-        exact (HasTypeQ.clean hwf hsig he sc.2 hΓ hR).1
+        exact (HasTypeQ.clean hΔ hwf hsig he sc.2 hΓ hR).1
     | .E_TryResultDie (message := message) _ _ _ _ _ _ _ _ _ _ _ _ =>
         cases message <;> exact scoped_clean sc.1
     | .E_TryOptionDie (message := message) _ _ _ _ _ _ _ _ _ _ _ =>
         cases message <;> exact scoped_clean sc.1
     | .E_With _ _ hb =>
-        exact HasBlockQ.clean hwf hsig hb sc.2 (hΓ.cons trivial) hR
+        exact HasBlockQ.clean (BuilderCtx.clean_value hΔ) hwf hsig hb sc.2 (hΓ.cons trivial) hR
     | .E_Lazy (a := t) hb =>
-        exact HasBlockQ.clean (a := t) (R := none) hwf hsig hb
+        exact HasBlockQ.clean (a := t) (R := none) (BuilderCtx.clean_empty _) hwf hsig hb
           (by simpa only [Expr.Scoped, hideConts_length] using sc) hΓ.hide (by simp)
-    | .E_Handle hb _ _ => exact HasBlockQ.clean hwf hsig hb sc.1 hΓ hR
+    | .E_Handle hb _ _ => exact HasBlockQ.clean hΔ hwf hsig hb sc.1 hΓ hR
     | .E_Resume hk _ => exact (hΓ.cont hk).2
     | .E_Sub _ _ _ hw => exact hw
 
   /-- 束縛の続きでも、入力の型注釈から環境の不変条件を得る。 -/
-  theorem HasBlockQ.clean (hwf : p.WellFormed)
-      (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos body a ε pe}
-      (h : HasBlockQ (p.declarationsFor view) B op Q C Γ R pos body a ε)
+  theorem HasBlockQ.clean {Δb : BuilderCtx} {C} (hΔ : BuilderCtx.Clean C.length Δb) (hwf : p.WellFormed)
+      (hsig : ∀ b s, B.sig b = some s → s.Scoped) {Γ R pos body a ε pe}
+      (h : HasBlockQ (p.declarationsFor view) B op Q Δb C Γ R pos body a ε)
       (sc : body.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) : TyOK C.length a := by
     match h with
     | .B_LastPat _ _ _ _ _ => trivial
     | .B_BindPat _ _ hp _ _ hb =>
         have hδ := PatTy.clean hwf.2.2.1 hp (scoped_clean sc.1)
-        exact HasBlockQ.clean hwf hsig hb
+        exact HasBlockQ.clean (BuilderCtx.all_values hΔ _) hwf hsig hb
           (by simpa [binds_length, hp.length_eq, Pattern.binders] using sc.2.2)
           (hΓ.binds hδ) hR
+    | .B_BuilderBind _ hc _ _ hb =>
+        exact HasBlockQ.clean (BuilderCtx.clean_builder hΔ hc) hwf hsig hb sc.2.2
+          (by intro i t hi; cases i with
+              | zero => simp at hi
+              | succ i => exact hΓ i t hi) hR
     | .B_Empty => trivial
-    | .B_Last h => exact HasTypeQ.clean hwf hsig h sc hΓ hR
+    | .B_Last h => exact HasTypeQ.clean hΔ hwf hsig h sc hΓ hR
     | .B_LastBind _ => trivial
     | .B_LastDiscard _ => trivial
     | .B_Bind _ hb =>
-        exact HasBlockQ.clean hwf hsig hb sc.2.2 (hΓ.cons (scoped_clean sc.1)) hR
-    | .B_Discard _ hb => exact HasBlockQ.clean hwf hsig hb sc.2 hΓ hR
-    | .B_Seq _ _ hb => exact HasBlockQ.clean hwf hsig hb sc.2 hΓ hR
+        exact HasBlockQ.clean (BuilderCtx.clean_value hΔ) hwf hsig hb sc.2.2 (hΓ.cons (scoped_clean sc.1)) hR
+    | .B_Discard _ hb => exact HasBlockQ.clean hΔ hwf hsig hb sc.2 hΓ hR
+    | .B_Seq _ _ hb => exact HasBlockQ.clean hΔ hwf hsig hb sc.2 hΓ hR
     | .B_Sub _ _ _ hw => exact hw
 end
 

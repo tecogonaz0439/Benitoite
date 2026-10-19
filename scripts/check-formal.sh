@@ -125,10 +125,22 @@ printf '%s\n' '== formal: batch2 independent exchange'
 python3 -B formal/tests/test_batch2_exchange.py
 printf 'batch2 exchange: %ss\n' "$((SECONDS - batch2_start))"
 
+batch3_start=$SECONDS
+printf '%s\n' '== formal: batch3 independent exchange'
+python3 -B formal/tests/test_batch3_exchange.py
+printf 'batch3 independent exchange: %ss\n' "$((SECONDS - batch3_start))"
+
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'
 cargo test --test desugar_export -- --include-ignored --nocapture
 printf 'Rust export (including cargo): %ss\n' "$((SECONDS - export_start))"
+
+batch3_start=$SECONDS
+printf '%s\n' '== formal: batch3 Rust exchange'
+python3 -B formal/tests/test_batch3_exchange.py --rust-dir "$output_dir/batch3/b3"
+python3 -B crates/benitoite/tests/desugar_export/check_batch3.py \
+    --rust-dir "$output_dir/batch3/b3" --report "$output_dir/batch3/exchange-results.json"
+printf 'batch3 Rust exchange: %ss\n' "$((SECONDS - batch3_start))"
 
 diff_start=$SECONDS
 printf '%s\n' '== formal: desugarDiff'

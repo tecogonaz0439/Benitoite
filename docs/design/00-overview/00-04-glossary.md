@@ -209,15 +209,18 @@
 | 語 | 原語 | 定義 | 定める章 |
 |---|---|---|---|
 | 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。`handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 第二級の値 | second-class value | 通常の変数への格納・関数からの返却・ラムダやlazyへの捕捉ができない値。第一級の値（first-class value）と対になる語である。Benitoiteの構築器は第二級の値であり、専用の局所bindと直接操作に限って使える | [型システム](../01-spec/01-06-type-system.md)の「関数内の構築器」 |
+| 構築器 | builder | 関数内で内容を追記し、不変値の写しを取り出す第二級の値。StringBuilder・ListBuilder・BytesBuilderを明示importして使う。通常の型やReferenceの公開別名ではない | [型システム](../01-spec/01-06-type-system.md)の「関数内の構築器」 |
+| `ShrinkStep` | shrink step | Propertyの縮小候補を一段ずつ表すdata。Doneは終端、Skipは候補を出さず次へ進む段、Yieldは候補と次の段を返すもの。候補の検査数と段の取得数は別々の予算で数える | [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)の「プロパティベーステスト」 |
 | 選ばれない分岐 | — | 前の分岐のパターンがすべて照合してしまうために、決して選ばれない分岐。型検査の誤りとする | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
-| 等値の型 | — | `=` と `<>` を使える型。関数の型、中身を見せない prelude の型、外部の型を含まない型である。型パラメータは、組み込みの制約 `equality` を付けたときに等値の型として扱う | [型システム](../01-spec/01-06-type-system.md) |
-| 外部の型 | external type | WIT の resource に対応する、中身を見せない型。`@external` を付けた右辺のない `type` で宣言する。値を回収で管理し、宣言の型に含む外部の関数は `State` を持つ。等値の型ではなく、prelude の型でも 01-10 のリソースの型でもない | [外部の関数](../03-interop/03-10-external-functions.md) |
-| 中身を見せない prelude の型 | opaque type | 構成子を公開せず、パターンで分解できない prelude の型。`IOError`・`NetworkError`・`Reference[T]`・`Lazy[T]`・`Task[T]` と、リソースの型がある。等値の型ではない。標準ライブラリのモジュールが宣言する中身を見せない型（`Regex.Pattern`・`Regex.Match`・`Random.Generator`）も同じく扱う。外部の型も中身を見せず等値の型でないが、prelude の型には含めない | [型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md) |
+| 等値の型 | — | `=` と `<>` を使える型。関数の型、等値を持たない組み込みの不透明型、外部の型を含まない型である。型パラメータは、組み込みの制約 `equality` を付けたときに等値の型として扱う | [型システム](../01-spec/01-06-type-system.md) |
+| 外部の型 | external type | WIT の resource に対応する、不透明型。`@external` を付けた右辺のない `type` で宣言する。値を回収で管理し、宣言の型に含む外部の関数は `State` を持つ。等値の型ではなく、prelude の型でも 01-10 のリソースの型でもない | [外部の関数](../03-interop/03-10-external-functions.md) |
+| 不透明型 | opaque type | 構成子を宣言したモジュールの外へ公開しない型。`@opaque` のdata・レコード、組み込みの `IOError`・`NetworkError`・`Reference[T]`・`Lazy[T]`・`Task[T]`・リソースの型、標準ライブラリの `Regex.Pattern`・`Regex.Match`・`Random.Generator`、外部の型などを含む。不透明であることだけでは等値の可否は決まらない。`@opaque` の型は内部構造に従い、列挙した組み込みの型と外部の型は等値を持たない | [型システム](../01-spec/01-06-type-system.md)、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
 | 属性 | attribute | トップレベルの宣言の前に `@名前` の形で付けるもの。`@test` と `@deprecated` は型付けと評価の意味を変えず、処理系や道具による扱いを表す。`@external` は関数の本体か型の実体をコンポーネントが与えることを示す。標準ライブラリのソースだけに書ける `@builtin` は関数の本体を組み込みの実装が与えることを示す | [構文](../01-spec/01-02-syntax.md) |
 | テストの関数 | — | `@test` を付けた、引数のないトップレベルの関数。`benitoite test` が一つずつ別の実行として動かす | [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md) |
 | 組み込みのエフェクト | — | 処理系が操作を行うエフェクト。`Benitoite.IO` の下のモジュールが宣言する `Console.Write`・`Console.Read`・`File.Read`・`File.Write`・`Process.Run`・`Process.Exit`・`Process.Environment`・`Clock.Time`・`Random.Generate`、`Benitoite.Network.Http` が宣言するネットワークのエフェクト `Http.Listen`・`Http.Connect`、prelude の `State` である。テストの期待の確認を表す `Assert.Check` も組み込みのエフェクトだが、`IO.All` には含めない。ネットワークのエフェクトも `IO.All` に含めない | [エフェクト](../01-spec/01-07-effects.md) |
 | `IO.All` | — | prelude のモジュール `IO` が宣言する、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト。`uses IO.All` は、それらをすべて書いたのと同じ意味である。`Assert.Check` とネットワークのエフェクトは含まない | [エフェクト](../01-spec/01-07-effects.md) |
-| `NetworkError` | — | ネットワークの操作の失敗を表す、中身を見せない prelude の型。失敗の種類を `NetworkError.kind` で `NetworkErrorKind` の値として取り出せる。IO の失敗は `IOError` で表し、区別する | [エラー処理](../01-spec/01-09-errors.md) |
+| `NetworkError` | — | ネットワークの操作の失敗を表す、組み込みの不透明型。失敗の種類を `NetworkError.kind` で `NetworkErrorKind` の値として取り出せる。IO の失敗は `IOError` で表し、区別する | [エラー処理](../01-spec/01-09-errors.md) |
 | ネットワークの操作 | — | `Benitoite.Network` の下のモジュールのエフェクトの操作（HTTP の待ち受けと接続など）。本文で「IO」と書くときの `IO.All` の操作とは区別する。IO とネットワークの操作を合わせて、外部に作用する操作と呼ぶ | [エフェクト](../01-spec/01-07-effects.md)、[ネットワークのモジュール](../03-interop/03-09-network.md) |
 | 操作 | operation | エフェクトの宣言が定める、そのエフェクトを生じる関数。エフェクトを宣言したモジュールの関数であり、ほかの関数と同じく `モジュール名.操作名(引数)` の形で呼ぶ。組み込みのエフェクトの操作は、`Benitoite.IO` の下のモジュールの IO の関数と、`Benitoite.Network` の下のモジュールのネットワークの関数である | [エフェクト](../01-spec/01-07-effects.md) |
 | エフェクト変数 | effect variable | 関数の宣言で `effect E` と宣言し、使うたびにエフェクトの集合で置き換える名前。高階関数が、受け取る関数のエフェクトをそのまま自分のエフェクトとするために使う | [型システム](../01-spec/01-06-type-system.md) |
@@ -229,7 +232,8 @@
 | 型クラスの制約 | — | 型パラメータや型が、ある型クラスを実装していなければならないという条件。`[T: Show]` と書く。同じ位置に組み込みの制約も書ける | [型システム](../01-spec/01-06-type-system.md) |
 | 組み込みの制約 | — | 型パラメータが等値の型であること（`equality`）、または鍵の型であること（`key`）を求める制約。型クラスの制約と同じ位置に `[K: key]` と書く。型の構造から自動で満たされ、`implement` は要らない。辞書を渡さない | [型システム](../01-spec/01-06-type-system.md) |
 | 上位の型クラス | superclass | ある型クラスを実装する型が、あらかじめ実装していなければならない別の型クラス。`trait Monoid[T: Semigroup]` の `Semigroup` がこれに当たる。型クラスの制約は、上位の型クラスの制約を含む | [型システム](../01-spec/01-06-type-system.md) |
-| 標準の型クラス | — | 標準ライブラリのモジュール `Benitoite.Trait` に置く型クラス（`Show`・`Order`・`Semigroup`・`Monoid`・`Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable`）。prelude に入らず、import して使う。学習の目的のため、既存の関数との重複を原則 5 の例外として認めた | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
+| 標準の型クラス | — | 標準ライブラリのモジュール `Benitoite.Trait` に置く型クラス（`Show`・`Order`・`Semigroup`・`Monoid`・`Functor`・`Applicative`・`Monad`・`Functor2`・`Applicative2`・`Monad2`・`Foldable`・`Traversable`）。prelude に入らず、import して使う。学習の目的のため、既存の関数との重複を原則 5 の例外として認めた | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
+| 二引数の型クラス | type class for a binary type constructor | `F[_, _]`という二引数の型構成子を受け取る型クラス。標準のFunctor2・Applicative2・Monad2は、第二の型引数を保ち、第一の型引数についてmap・pure/apply・flatMapを提供する。Resultの実装では第二の型引数はエラーの型である | [標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準の型クラス（初回リリース版）」 |
 | 高カインド型 | higher-kinded type | 型構成子（`Option` のように、型を受け取って型を作るもの）を引数にとる型。型クラスの引数に `F[_]` と書く | [型システム](../01-spec/01-06-type-system.md) |
 | 孤立した実装 | orphan instance | 型クラスも対象の型も宣言していないモジュールに書いた実装。誤りとする | [型システム](../01-spec/01-06-type-system.md) |
 | 辞書渡し | dictionary passing | 型クラスの制約ごとに、実装のメソッドの組（辞書）を関数の隠れた引数として渡す、型クラスの実現の方式 | [型システム](../01-spec/01-06-type-system.md)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
@@ -309,3 +313,12 @@
 | 処理系の制限 | implementation limit | プログラムに誤りはないが、処理系の上限（レジスタの数など）を超えるために実行できないこと | [診断エンジン](../02-impl/02-10-diagnostics.md) |
 | 呼び出しの履歴 | call trace | 実行時エラーが起きた時点で残っている呼び出しの枠を、内側から並べたもの。末尾呼び出しで通った関数は現れない | [診断エンジン](../02-impl/02-10-diagnostics.md) |
 
+
+### 第二級の値の用語の出典
+
+第一級・第二級の区別は、Stracheyの1967年の講義ノート *Fundamental Concepts in Programming Languages* の3.5.1節「First and second class objects」に由来する。同節は、関数を変数へ代入したり、関数の結果として返したりできるかによって、その扱いを区別する。
+
+Osvaldほかの *Gentrification Gone too Far? Affordable 2nd-Class Values for Fun and (Co-)Effect*（OOPSLA 2016）の2節は、第二級の値を変数や欄へ格納せず、関数から返さず、第一級の関数の自由変数として捕捉しない規則を示す。Benitoiteではこの語を構築器に使い、通常の引数への受け渡しと、ラムダやlazyへの捕捉も認めない。
+
+- [Stracheyの講義ノート（1967年、2000年の再刊）](https://www.cs.cmu.edu/afs/cs/user/crary/www/819-f09/Strachey67.pdf)
+- [Osvaldほかの論文（OOPSLA 2016）](https://www.cs.purdue.edu/homes/rompf/papers/osvald-oopsla16.pdf)

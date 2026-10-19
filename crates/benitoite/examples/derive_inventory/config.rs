@@ -105,8 +105,15 @@ pub fn read(bytes: &[u8]) -> Result<Value, Error> {
     for t in targets {
         object(
             t,
-            &["source", "type", "region", "json", "property", "fields"],
+            &[
+                "source", "type", "region", "json", "property", "show", "order", "fields",
+            ],
         )?;
+        for key in ["show", "order"] {
+            if t.get(key).is_some_and(|v| !v.is_boolean()) {
+                return Err(text::expected_boolean(key).into());
+            }
+        }
         let source = string(t, "source")?;
         let ty = string(t, "type")?;
         let region = string(t, "region")?;

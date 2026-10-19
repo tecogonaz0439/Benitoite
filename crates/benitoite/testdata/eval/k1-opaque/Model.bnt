@@ -1,0 +1,39 @@
+// spec: 01-03 公開（初回リリース版）
+import Benitoite.Trait
+record Hidden
+  raw: Integer
+end record
+@opaque
+public record Positive
+  hidden: Hidden
+end record
+@opaque
+public(package) data Secret[T]
+  Item(T)
+  Empty
+end data
+public function make(value: Integer) -> Positive
+  return Positive(hidden: Hidden(raw: value))
+end function
+public function update(value: Positive, raw: Integer) -> Positive
+  return Positive(..value, hidden: Hidden(raw: raw))
+end function
+public function value(x: Positive) -> Integer
+  bind Positive(hidden: Hidden(raw: raw)) <- x
+  return raw
+end function
+public(package) function secret(value: Integer) -> Secret[Integer]
+  bind makeItem <- Secret.Item
+  return makeItem(value)
+end function
+public(package) function inspect(value: Secret[Integer]) -> Integer
+  return match value with
+    case Secret.Item(raw) -> raw
+    case Secret.Empty -> 0
+  end match
+end function
+implement Trait.Show[Positive]
+  function show(x: Positive) -> String
+    return "positive:${Hidden.raw(Positive.hidden(x))}"
+  end function
+end implement

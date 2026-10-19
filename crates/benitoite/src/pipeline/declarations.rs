@@ -27,6 +27,8 @@ pub struct DeclarationInventory {
     /// 宣言順・型注釈・元の位置。
     pub asts: Vec<Module>,
     /// 宣言・import・シグネチャの名前解決と可視性。
+    /// Data/RecordのBinding.opaqueとmoduleを保ち、生成先から内部表現を使えるか判定できる。
+    /// 内部の構成子・欄の表は削らない。
     pub resolved: ResolveOutput,
     /// 解決した型の構造・関数のシグネチャ・型クラスとエフェクト。
     /// 本体の表は空であり、`main` は実行可能な入口を保証しない。

@@ -39,7 +39,10 @@ It is accepted only as a failure action of `try`, not as a standalone expression
 `as`, file-header words, built-in constraint names, and attribute names are read specially only \
 in their own contexts. `extensible` is an ordinary identifier. The argument-free `@extensible` attribute \
 applies to data and record declarations. Outside their defining package, patterns must cover future \
-shapes with an unguarded variable or `_`.\n\n\
+shapes with an unguarded variable or `_`. The argument-free `@opaque` attribute applies to public or \
+package-public data and record declarations. It exposes the type and ordinary values while restricting \
+constructors, record updates, representation patterns, and field accessors to the declaring module. \
+Other modules of the same package are outside this boundary; use public construction and inspection functions.\n\n\
 A physical line break immediately after `return` always ends the statement, even inside parentheses \
 or before an operator on the next line. Comments and blank lines do not change this rule. \
 For an ordinary `return`, start the required value on the same physical line (otherwise E0201). Once the value \
@@ -422,6 +425,37 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
         }
         out.push_str(&format!("\n{}\n", text::LINE_TYPE_DISTINCT));
     }
+    if let [name] = module.path
+        && let Some(class) = crate::resolve::builders::BuilderClass::named(name)
+    {
+        for contract in class.operations() {
+            let parameters = contract
+                .labels
+                .iter()
+                .map(|label| match *label {
+                    "builder" => format!(
+                        "builder: {}{}",
+                        class.module(),
+                        if *name == "ListBuilder" { "[T]" } else { "" }
+                    ),
+                    "value" => format!(
+                        "value: {}",
+                        if *name == "ListBuilder" { "T" } else { "Byte" }
+                    ),
+                    "values" => "values: List[T]".to_owned(),
+                    "bytes" => "bytes: Bytes".to_owned(),
+                    "text" => "text: String".to_owned(),
+                    "texts" => "texts: List[String]".to_owned(),
+                    other => (*other).to_owned(),
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
+            out.push_str(&format!(
+                "\n```text\n{name}.{}({parameters}) -> {} uses State\n```\n",
+                contract.name, contract.result
+            ));
+        }
+    }
     if module.path == [crate::types::builtin::FAILURE.module] {
         let decl = crate::types::builtin::FAILURE;
         let s = decl.scheme();
@@ -463,7 +497,7 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
     Ok((doc, out))
 }
 
-/// 宣言の頭をソースのとおりに切り出す。型の使用条件を示す `@extensible` だけを `public` の前に残し、
+/// 宣言の頭をソースのとおりに切り出す。型の使用条件を示す `@extensible`・`@opaque` だけを `public` の前に残し、
 /// `@builtin` などの実装用の属性は含めない。
 /// 関数は戻りの型（`uses` があればその終わり）までとし、本体を除く。定数は型までとし、右辺を除く。
 /// 型・エフェクト・型クラスは、構成子・操作・メソッドの宣言を含む宣言の全体とする（設計書 06-06「同梱の Agent Skill の構成」）。
@@ -488,7 +522,7 @@ fn decl_head(source: &str, public: Span, decl: &TopDecl) -> Option<String> {
     let Some(attr) = decl
         .attrs
         .iter()
-        .find(|attr| attr.name.text == "extensible")
+        .find(|attr| matches!(attr.name.text.as_str(), "extensible" | "opaque"))
     else {
         return Some(head.to_string());
     };
@@ -513,10 +547,10 @@ fn decl_name(item: &Item) -> Option<&str> {
     Some(&name.text)
 }
 
-/// ドキュメントコメントの本文。各行の先頭の空白（`/// ` の後の空白）を除く。
+/// 接頭辞直後の一空白だけを除き、例や期待出力の字下げを保つ（設計書 02-02「docの位置対応」）。
 fn doc_text(text: &str) -> String {
     text.lines()
-        .map(str::trim_start)
+        .map(|line| line.strip_prefix(' ').unwrap_or(line))
         .collect::<Vec<_>>()
         .join("\n")
         .trim()
@@ -587,6 +621,12 @@ mod tests {
     #[test]
     fn doc_lines_lose_leading_spaces() {
         assert_eq!(doc_text(" One\n two"), "One\ntwo");
+        assert_eq!(
+            doc_text(
+                " ```benitoite check\n   const text: String = \"猫\"\n \n ```\n ```output\n   猫\n \n ```"
+            ),
+            "```benitoite check\n  const text: String = \"猫\"\n\n```\n```output\n  猫\n\n```"
+        );
     }
 
     #[test]

@@ -1,4 +1,4 @@
-language "0.0.8"
+language "0.0.9"
 /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
 public function slug(text: String) -> String
   bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")

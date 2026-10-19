@@ -1,0 +1,55 @@
+[
+  {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "6238140aaf5b9886447455f3009272e1aa7adb04",
+      "--only",
+      "formal_build,spec_examples,spec_tally",
+      "--dry-run"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 0.01
+  },
+  {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "6238140aaf5b9886447455f3009272e1aa7adb04",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "exit_code": 0,
+    "seconds": 12.311
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l2/axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "seconds": 0.735,
+    "log": "axioms.txt"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l2/new-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "seconds": 0.73,
+    "log": "new-axioms.txt"
+  }
+]

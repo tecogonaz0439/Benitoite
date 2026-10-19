@@ -55,7 +55,7 @@ fn write_named(
     }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":11,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(&json!({"version":12,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
@@ -116,6 +116,7 @@ fn export_named_calls_smoke() {
     assert_eq!(
         p.types.call_plans.get(call_id).unwrap(),
         &CallPlan {
+            direct_callee: p.resolved.refs.get(call.callee.id()).copied(),
             arity: 2,
             source_to_param: vec![1, 0],
             inserted_first: false,
@@ -194,6 +195,7 @@ fn export_named_static_calls_smoke() {
     let let_in = |bound: Value, body: Value| json!({"letIn":{"bound":bound,"body":body}});
     let names = vec!["a".into(), "b".into()];
     let plan = CallPlan {
+        direct_callee: None,
         arity: 2,
         source_to_param: vec![1, 0],
         inserted_first: false,
@@ -229,6 +231,7 @@ fn export_named_static_calls_smoke() {
         json!([[]]),
     );
     let plan = CallPlan {
+        direct_callee: None,
         arity: 2,
         source_to_param: vec![1],
         inserted_first: true,
@@ -261,6 +264,7 @@ fn export_named_static_calls_smoke() {
         json!([]),
     );
     let plan = CallPlan {
+        direct_callee: None,
         arity: 2,
         source_to_param: vec![1, 0],
         inserted_first: false,
@@ -643,12 +647,12 @@ fn export_extensible_package() {
     fs::create_dir_all(root.join("dep")).unwrap();
     fs::write(
         root.join("package.bnt"),
-        "language \"0.0.8\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+        "language \"0.0.9\"\ndependency Dep\n path \"dep\"\nend dependency\n",
     )
     .unwrap();
     fs::write(
         root.join("dep/package.bnt"),
-        "language \"0.0.8\"\npackage Dep\nend package\n",
+        "language \"0.0.9\"\npackage Dep\nend package\n",
     )
     .unwrap();
     fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();

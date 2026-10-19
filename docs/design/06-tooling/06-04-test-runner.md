@@ -34,7 +34,7 @@ end function
 【方針】テストの関数の規則は次のとおりである。
 
 - 型パラメータと引数を持たない。戻り値の型は `Unit` か `Result[Unit, String]` である。`Result[Unit, String]` のテストは、`Result.Error(message)` を返すと失敗する。`try` を使うテストは、この形にする。
-- エフェクトは、組み込みのエフェクト（[エフェクト](../01-spec/01-07-effects.md)）と `Assert.Check` の任意の集まりである。利用者が定義するエフェクトと `Failure.Fail[E]` は、テストの関数の中で処理しなければならない。未処理の Fail は非実行の検査でも E0506 として拒否し、検査報告の `expanded` と実行前の許可名には加えない。
+- エフェクトは、組み込みのエフェクト（[エフェクト](../01-spec/01-07-effects.md)）と `Assert.Check` の任意の集まりである。利用者が定義するエフェクトと `Failure.Fail[E]` は、テストの関数の中で処理しなければならない。未処理の Fail は非実行の検査でも E0506 として拒否し、検査報告の `expanded` と実行前の許可名には加えない。 標準 Fail に限り、既存の handle の案内に Failure.toResult の案内を加える。Benitoite.Unofficial.Failure を import し、入口の内部で捕捉して、受け止めた Fail を入口の uses から除く。ほかのエフェクトは残す。
 - `@test("説明")` の説明は、結果の報告でテストの名前として示す。説明を省いた `@test` では、関数の名前を示す。
 - テストの関数は、どのモジュールにも書ける。同じモジュールの非公開の関数も呼べる。ほかの関数から、テストの関数を普通の関数として呼んでもよい。
 - `run` はテストの関数を実行しない。テストの関数も、`check` と `run` の型検査の対象である。
@@ -146,6 +146,27 @@ end function
 - テストの中で `Process.exit` を呼ぶと、そのテストだけを終え、失敗として報告する。
 - 実行器が中断の要求（`SIGINT` など）を受けたら、実行中のテストを取り消してリソースを解放し、それまでの結果を報告して、終了状態 130 で終わる。テストの関数が値で終わった後に中断の印を見つけた場合も、そのテストの結果を報告せず、数にも入れずに中断として終える（[スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)の「テストの実行」）。
 
+### docの例
+
+【決定】`test --doc` は入口の `///` と `//!` から明示した例を一度抽出し、同じ一覧を検査・実行・効果報告・許可照合へ渡す。入口の選択は通常testと同じであり、import先や標準ライブラリのdocは再帰的に集めない。各入口では通常の@testを先に実行し、その後でdocの例を元の位置順に実行する。
+
+| フェンスの印 | test --doc | --check併用 |
+|---|---|---|
+| benitoite test | 例内の@testを通常と同じAssertの仕組みで実行 | 署名と型・エフェクトの検査だけ |
+| benitoite check | 型・エフェクトの検査だけ | 同じ |
+| benitoite errorと直後のdiagnostic | 静的な拒否と全期待行の包含を確認 | 同じ |
+| benitoiteと直後のoutput | mainを実行しstdout/stderrを照合 | mainの検査だけ。期待出力を実測済みにしない |
+
+【決定】各例は独立した仮想モジュールである。根・パッケージ・language/dependencyは元入口から継承し、元のimport・私有宣言・usesは補わない。公開APIを使う例は通常のimportを明記し、公開とopaqueの境界を通る。mainを持つ元入口へのimportはE0320で拒否する。元入口のmainや私有宣言を暗黙に使わず、自己完結した例かimport可能な公開モジュールの例を書く。診断の一次・補助位置と履歴は元コメントへ戻す。
+
+【決定】全入口・全実行例の準備と許可上限の照合を、最初の実行より前に終える。runのmainにも通常の入口と同じ未処理効果の制限を適用し、未処理Failと利用者エフェクトをE0506で拒否する。test/check/error例にも通常の型・エフェクト検査を適用する。例ごとに新しいヒープ・タスク・リソースを使い、stdinを空にしてstdout/stderrを捕捉する。エフェクト上限の照合は実行時のOS隔離ではない。
+
+【決定】outputのUTF-8バイト列は最終改行を含めて照合し、stderrの期待を省略したときは空を要求する。errorは静的な拒否が必須で、diagnosticの全非空行が診断に含まれることを確かめる。期待不一致は一例の失敗とし、後の例を実行する。非実行の検査では期待不一致をcheckError・終了状態2とする。例の形式不良はE0260である。
+
+【決定】例がないファイルは0例で成功する。実行の報告は通常testとdoc例を区別し、doc例の成功・失敗は例単位で数える。例内の複数の@testはtestsへ保持する。JSON LinesのdocExampleはid・mode・元location・outcome・stdout・stderr・failure・testsを持つ。docSummaryは発見したtest/run/check/errorの件数とignoredBlocksを持ち、末尾のtestSummaryの前に置く。testSummaryのpassed/failedは通常テストと完了したdoc例単位の和である。非実行の検査ではどの結果行・集計行も出さない。
+
+【決定】標準ソースのdocの代表例は `tests/stdlib_doc_examples.rs` で検査する。STDLIBの元ソースを構文解析し、共通の抽出部で公開・非公開の宣言を含む全docを収集する。例の位置を保ったdocだけの入力を同じ `test --doc` の準備・許可照合・実行部へ渡し、元の実装用宣言やimportを補わない。List・Option・Result・String・Failure・Property・Scope・Range・IOの固定した一覧と、test 9件・run 1件・check 1件・error 4件を照合し、0件の抽出を成功にしない。標準docの例は利用者のtestから再帰的に収集しない。
+
 ### テストの非実行の検査
 
 【決定】`test --check <パス>...` は、通常の `test` と同じ探索で入口を選び、各入口を読み込みから型検査後の外部宣言の静的な照合まで検査する。`main` を要求せず、テストのないファイルと空ディレクトリも受け付ける。通常の検査の誤りがあっても、ほかの入口の検査を続ける。処理系の不具合があればそこで終える。
@@ -160,7 +181,7 @@ end function
 
 【決定】同じ表示パスのファイルを直接指定とディレクトリ経由で選んだ場合も、入口とその根をそれぞれ保持する。明示した重複を報告で統合しない。走査ではリンクを除外するが、直接指定したファイルやディレクトリのリンクは辿る。理由: 報告する入口と、通常の `test` が検査・実行する入口との対応を保つためである。
 
-【決定】`Assert.Check` は各テストの宣言上限と全体の和の両方に含める。確認画面向けに処理系で省略しない。対応する報告形式は、`--version=json` の `formats.testCheckReport: [1]` で問い合わせられる。
+【決定】`Assert.Check` は各テストの宣言上限と全体の和の両方に含める。確認画面向けに処理系で省略しない。対応する報告形式は、`--version=json` の `formats.testCheckReport: [1, 2]` で問い合わせられる。
 
 ### 結果の報告
 
@@ -223,9 +244,9 @@ test result: FAILED. 12 passed; 1 failed
 
 【決定】非公式の `Benitoite.Test.Property` は、純粋な生成・縮小・性質の試行を通常の標準ソースで提供する。`import Benitoite.Unofficial.Test.Property` で取り込む。専用の属性や CLI の seed 指定は設けず、通常の `@test` 一件から `Property.check` の結果を返す。`test --check` は型とエフェクトの検査だけを行い、生成器・縮小器・性質を実行しない。
 
-`Gen[T]` は `run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]`、`Shrinker[T]` は `candidates: function(value: T) -> List[T]` を持つ公開レコードである。`Random` は `Benitoite.Unofficial.IO.Random` を指す。
+`Gen[T]` は `run: function(generator: Random.Generator, size: Integer) -> Pair[T, Random.Generator]`、`Shrinker[T]` は `candidates: function(value: T) -> ShrinkStep[T]` を持つ公開レコードである。`Random` は `Benitoite.Unofficial.IO.Random` を指す。
 
-`Config` の欄は `seed`・`trials`・`size`・`maxShrinks`（すべて Integer）であり、seed は全域、trials は1〜10000、size は0〜10000、maxShrinks は0〜100000を許す。`check[T](config, gen, shrinker, property)` の property の型は `function(value: T) -> Result[Unit, String]`、結果は `Result[Unit, CheckFailure[T]]` である。誤設定ならコールバックを一度も呼ばず `CheckFailure.InvalidConfig(String)` を返す。有効な設定では、返された Generator を次へ渡し、全試行へ同じ size を渡す。Gen.run の直接の呼び出しを丸める機構はなく、size の解釈は保持した関数の契約に従う。
+`Config` の欄は `seed`・`trials`・`size`・`maxShrinks`・`maxShrinkWork`（すべて Integer）であり、seed は全域、trials は1〜10000、size は0〜10000、maxShrinks は0〜100000、maxShrinkWork は0〜1000000を許す。`check[T](config, gen, shrinker, property)` の property の型は `function(value: T) -> Result[Unit, String]`、結果は `Result[Unit, CheckFailure[T]]` である。誤設定ならコールバックを一度も呼ばず `CheckFailure.InvalidConfig(String)` を返す。有効な設定では、返された Generator を次へ渡し、全試行へ同じ size を渡す。Gen.run の直接の呼び出しを丸める機構はなく、size の解釈は保持した関数の契約に従う。
 
 【決定】基本の生成器は `constant[T](value)`・`map[A,B](gen, f)`・`both[A,B](left, right)`・`integer(low, high)`・`boolean()`・`float()`・`string()`・`list[T](element)`・`option[T](element)`・`stringMap[T](value)` とする。integer だけは `Result[Gen[Integer], String]`、ほかは対応する Gen を返す。map の f は `function(value: A) -> B` とする。map は逆写像や縮小器を推測しない。both は左から右へ乱数状態を渡し、同じ size を使う。
 
@@ -237,20 +258,28 @@ string・list・stringMap は0〜sizeの長さ・要素数・抽選回数を使�
 
 【決定】縮小器は `shrinkInteger()`・`shrinkBoolean()`・`shrinkFloat()`・`shrinkString()` と、要素の Shrinker を受ける `shrinkList[T: equality](element)`・`shrinkOption[T: equality](element)`・`shrinkStringMap[T: equality](value)` とする。整数は0・元の値を0へ向けて繰り返し二分した値、Floatは0・半分の有限値、Booleanはtrueからfalseを候補にする。整数の最小値を符号反転せず、Floatの非有限値には0だけを候補にする。String/Listは空・連続する部分の削除・一要素ずつの縮小の順とし、削除幅は長さの半分から1へ二分し、同じ幅では先頭から順に位置を動かす。Stringはバイトでなくスカラー値を扱う。Mapは鍵順の一鍵ずつの削除・値の縮小、OptionはNone・中身の縮小の順とする。組み込みは元の値と等しい候補と既出の候補を除く。一般の Gen・Shrinker・check は等値制約を要求しない。
 
-組み込みの List・String・Map の縮小は、候補の生成と重複除去に元の長さの二乗を超える費用がかかる場合があるため、size は小さく保つ。maxShrinks は候補を試す回数を制限するが、候補列の生成の費用は制限しない。
+【決定】一段ずつの候補を表す公開の `ShrinkStep[T]` は `Done`・`Yield(T, function() -> ShrinkStep[T])`・`Skip(function() -> ShrinkStep[T])` の三構成子を持つ。Doneは終了、Yieldは一候補と続き、Skipは候補を返さず進む続きを表す。保持した関数は消費側が進めるときだけ呼ぶ。
 
-【決定】最初の性質の Error を見つけたら、現在値の候補を順に試す。Okなら次へ進み、Errorならその候補と説明を採用し、候補列の先頭から再開する。候補の試行のたびに総数を増やし、maxShrinksに達したら止める。0なら縮小器を呼ばず、上限到達を記録する。手書きの縮小器が同じ値や循環を返しても試行の予算を使う。コールバック自体の停止性や資源量の絶対上限は保証しない。実行時エラーと中断は通常の停止として伝わり、IO・Assert・exitを行う関数は純粋なコールバックの型に適合しない。
+`mapSteps[A,B](steps: ShrinkStep[A], f: function(value: A) -> B) -> ShrinkStep[B]` はYieldの値だけを写し、DoneとSkipを保つ。`appendSteps[T](left: ShrinkStep[T], right: function() -> ShrinkStep[T]) -> ShrinkStep[T]` は左の候補とSkipを順に保ち、左がDoneになった段では `Skip(right)` を返す。右を呼ぶのはそのSkipの続きへ進んだときである。どちらも続きからの再帰呼び出しを末尾位置に置き、候補全体を先に走査しない。入力・出力の型へequalityを要求しない。
 
-失敗は `CheckFailure.Falsified(Counterexample[T])` で返す。Counterexampleの欄はconfig・1起算のtrial・original・reduced・originalMessage・message・shrinks・limitReached・libraryVersionである。入力と対応する失敗の説明を保ち、reducedの最小性は保証しない。ライブラリの生成・縮小規則の版は `1.0.0` とする。
+標準の縮小処理は私有の補助関数で公開のShrinkStepを作り、候補を一つずつ返す。重複除去は原値との比較・既出の候補との比較を一回ずつ行い、比較の途中をSkipとして返す。最後の比較で初出だと分かればYieldを返してよい。equalityと候補の初出順を保つ。Stringのスカラー列とMapの鍵順の入力列の取得は、候補全体の生成とは区別する。
 
-`formatFailure[T](failure, show)` は `function(value: T) -> String` を受け、設定と版、元と縮小後の入力・説明、候補試行数と上限到達を文字列にする。通常の@testではこれをResult.Errorで一度返す。Assertへ接続する場合も試行の最後に一度だけ使う。
+【決定】公開Shrinkerも一段ずつのShrinkStepを返し、候補全体のListを先に作らない。初回のcandidates(value)と、Yield/Skipの続きを作る関数の一回の呼び出しを、それぞれ作業量1として実行直前に数える。候補の生成・原値または既出候補との比較一回・内部状態を一つ進める処理・Doneの取得を一段とする。比較した段でSkip/Yieldを構成することは別に数えない。候補へのpropertyの呼び出しは作業量1と試行数1を数える。通常の試行と最初の失敗は縮小予算に含めない。
 
-同じseed・config・生成と縮小の規則の版・性質・手書きの関数なら同じ順に試行する。表示関数が入力の情報を省けば、報告からの完全な復元は保証しない。長期の再現には具体的な入力を通常の固定例として残す。Random.fromSeedの版をまたぐ契約を、Propertyの規則の版をまたぐ保証へ広げない。
+【決定】最初の性質のErrorから縮小を始め、Okの候補なら現在の続きを進める。Errorなら候補と説明を採用し、候補列を作り直す。shrinksとshrinkWorkは再開後も累積する。maxShrinksまたはmaxShrinkWorkが0なら縮小器を呼ばず、上限到達を記録する。どちらかの予算が尽きたら次の生成・比較・propertyを呼ばない。Doneを取得済みなら上限と等しくてもlimitReachedはfalse、不明な続きがあればtrueであり、確認のためだけに続きを呼ばない。未試行のYieldを失敗値へ採用しない。手書きの同値・循環候補にも試行予算を使い、checkへ暗黙の等値比較を加えない。
+
+組み込みのList・String・Mapの縮小では、候補の生成・構造比較一回の内部の費用が値の大きさに依存する。予算はコールバック内部の停止性・CPU時間・確保量の絶対上限を保証しないため、sizeは小さく保つ。駆動は末尾呼び出しで書く。実行時エラーと中断は通常の停止として伝わり、IO・Assert・exitを行う関数は純粋なコールバックの型に適合しない。
+
+失敗は `CheckFailure.Falsified(Counterexample[T])` で返す。Counterexampleの欄はconfig・1起算のtrial・original・reduced・originalMessage・message・shrinks・shrinkWork・limitReached・libraryVersionである。入力と対応する失敗の説明を保ち、reducedの最小性は保証しない。ライブラリの生成・縮小規則の版は `2.0.0` とする。
+
+`formatFailure[T](failure, show)` は `function(value: T) -> String` を受け、設定と版、元と縮小後の入力・説明、候補試行数・作業量と上限到達を文字列にする。通常の@testではこれをResult.Errorで一度返す。Assertへ接続する場合も試行の最後に一度だけ使う。
+
+同じseed・config・生成と縮小の規則の版・性質・手書きの関数なら同じ順に試行する。表示関数が入力の情報を省けば、報告からの完全な復元は保証しない。長期の再現には具体的な入力を通常の固定例として残す。Random.fromSeedの版をまたぐ契約を、Propertyの規則の版をまたぐ保証へ広げない。同じseedだけでは旧版の反例を再現しない。libraryVersion・GENERATOR_VERSION・設定・手書き関数のソースと具体的な反例を保存する。
 
 開発用の宣言収集 example は型の構造を読むが、本体を検査しない。その成功は `test --check` の成功ではなく、テストの列挙・実行にもならない（[外部生成の宣言情報](../03-interop/03-06-stdlib.md#外部生成の宣言情報)）。外部生成の道具は、型パラメータのない非循環レコードからゼロ引数の `genPerson() -> Property.Gen[Person]`・`shrinkPerson() -> Property.Shrinker[Person]` の形の通常の関数を生成する。関数の可視性は型に合わせる。
 
-【決定】自動生成では String・Boolean・Integer 全域・有限 Float・List・String 鍵の Map・Option と、別の Property target に指定した非循環レコードを扱う。生成は宣言順に乱数状態を渡し、同じ size を各欄に使う。縮小は一欄だけを変えた候補を宣言順に連結する。欄ごとのカスタム関数は、純粋かつ単相なゼロ引数の `Gen[欄の型]`・`Shrinker[欄の型]` を返す対として指定し、シグネチャを生成前に照合する。レコード全体の欄間の条件は型の構造から保証せず、必要な場合は型全体の生成器・縮小器を手書きする。
+【決定】自動生成では String・Boolean・Integer 全域・有限 Float・List・String 鍵の Map・Option と、別の Property target に指定した非循環レコードを扱う。生成は宣言順に乱数状態を渡し、同じ size を各欄に使う。縮小は一欄だけを変えた候補を宣言順にmapStepsとappendStepsで連結する。各欄の縮小器を返す関数の評価とcandidatesの呼び出しも、その欄へ進むまで遅らせる。欄ごとのカスタム関数は、純粋かつ単相なゼロ引数の `Gen[欄の型]`・`Shrinker[欄の型]` を返す対として指定し、シグネチャを生成前に照合する。レコード全体の欄間の条件は型の構造から保証せず、必要な場合は型全体の生成器・縮小器を手書きする。
 
-Property 単独の入れ子 Option は区別を保つ。JSON と併用する場合は JSON の対応範囲も満たす必要がある。別モジュールのレコードは公開型とそのモジュールの公開の生成関数を使い、再帰型・型パラメータ・Show/Order の導出は扱わない。手順と設定は [生成道具](../../../tools/derive/README.md#property-generation-contracts) に定める。生成道具の版と設定ハッシュは生成記録に保存し、反例を報告するときはその記録を添える。同じ型の構造・設定・版・手書きの関数と性質を再現の条件に含める。
+Property 単独の入れ子 Option は区別を保つ。JSON と併用する場合は JSON の対応範囲も満たす必要がある。別モジュールのレコードは公開型とそのモジュールの公開の生成関数を使い、再帰型・型パラメータは扱わない。Show/Orderは独立した明示要求で生成する。手順と設定は [生成道具](../../../tools/derive/README.md#property-generation-contracts) に定める。生成道具の版と設定ハッシュは生成記録に保存し、反例を報告するときはその記録を添える。同じ型の構造・設定・版・手書きの関数と性質を再現の条件に含める。
 
 外部生成の自己検査は、管理領域の編集と照合に加え、生成した JSON 変換・生成器・縮小器を通常の check・test に渡す（[外部生成の管理と照合](../03-interop/03-06-stdlib.md#外部生成の管理と照合)）。生成領域を使う場合は道具の check で記録との一致も確かめる。通常のテスト実行器は生成記録を読まない。

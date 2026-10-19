@@ -1,0 +1,820 @@
+{
+  "base": "963040ed61b1af211cfb22e082060b6ca8c419a5",
+  "l1_start": "8f4bfce16dbfa08f8f3a61e1b0c504e94857d0d3",
+  "unchanged_model_files": {
+    "formal/Benitoite/Core/WellFormed.lean": {
+      "identical": true,
+      "sha256": "b50babbe487eda9d33e36a793973f588f5ee9d89796a5250ddab28323aaaabaf"
+    },
+    "formal/Benitoite/Core/Semantics.lean": {
+      "identical": true,
+      "sha256": "56e71e377f6c501e44986b50b89dc36d01717215bb69c6577c0191753f10e545"
+    },
+    "formal/Benitoite/Core/Syntax.lean": {
+      "identical": true,
+      "sha256": "5af519712cf3a502f2faae2dd35941162b0ee1e6977cddbd384fd02abe1255a1"
+    },
+    "formal/Benitoite/Core/Typing.lean": {
+      "identical": true,
+      "sha256": "1961dedf7c1c9357d8716bb9a7c72d4766f2a855f5ba125d2e7399c90e7dd590"
+    },
+    "formal/Benitoite/Core/Theorems.lean": {
+      "identical": true,
+      "sha256": "2041e3a25ef737450cedcb43b544125e5bf0215beab00046f0a5f9f8b2e724ce"
+    },
+    "formal/Benitoite/Core/Examples.lean": {
+      "identical": true,
+      "sha256": "5392e9aa8fbf6aa60e6e7493f05227aa004fb21ca4013f58e1c7bb0f8bdc392d"
+    },
+    "formal/Benitoite/Core/Assumptions.lean": {
+      "identical": true,
+      "sha256": "b8ff44048d1441ab6691ae448107e96ea369f8c79cceacd8a3b142ea851aa702"
+    },
+    "formal/Benitoite/Core/Subst.lean": {
+      "identical": true,
+      "sha256": "51039410b6ac969d92b3d99e357c5531f121739a1de8332da3b3a93f0d27b156"
+    },
+    "formal/Benitoite/Core/Lemmas/SubstTyping.lean": {
+      "identical": true,
+      "sha256": "0dff2b5cafee5a8c2c44c425f699e1da76288d25613e4303b9560899dc975f32"
+    },
+    "formal/Benitoite/Core/Lemmas/Compose.lean": {
+      "identical": true,
+      "sha256": "f26894297ae4425f57ac54ad2d37c3f1ee7148fa000c3d6af968f2ae13c7f26e"
+    },
+    "formal/Benitoite/Core/Lemmas/Canonical.lean": {
+      "identical": true,
+      "sha256": "7512ff93871d4f7f97af322bd4877c8bf45d4c02580789b4f2fa9fdc1eaddedc"
+    },
+    "formal/Benitoite/Core/Lemmas/Rename.lean": {
+      "identical": true,
+      "sha256": "b1c99e9c290a4ba74fd57dfd720d5fc3b3ed5a5ee190526932cfaf4402320f0e"
+    },
+    "formal/Benitoite/Core/Lemmas/Basic.lean": {
+      "identical": true,
+      "sha256": "976302b6e7688b5c2f4219f3dc2172d5e6dfd0b2f609b0c2a3a5a58727d1e222"
+    },
+    "formal/Benitoite/Core/Lemmas/TySubst.lean": {
+      "identical": true,
+      "sha256": "3ea6c5b279d4819f4a1f87a2700885cb19390f9cae0d8237d2f10840092ee76c"
+    },
+    "formal/Benitoite/Core/Lemmas/Preservation.lean": {
+      "identical": true,
+      "sha256": "28e11e9d490f339dee4caa9984309f0e3a4c84b323e232a897f4822b38d6f772"
+    },
+    "formal/Benitoite/Core/Lemmas/Inversion.lean": {
+      "identical": true,
+      "sha256": "04768bcb0f66501abd09f9bafb74b0b3aafe632a392f5a7a8677050aa901e577"
+    },
+    "formal/Benitoite/Surface/Check.lean": {
+      "identical": true,
+      "sha256": "9cd94f0a3a836cd53448f33fdbea7dc6b81a4f226629a63c3ef7e53ff50181ae"
+    },
+    "formal/Benitoite/Surface/FiniteTools.lean": {
+      "identical": true,
+      "sha256": "904b2f7d7afc0c76a139d30fc87fc174a06d53171e510b32042776f20871bf31"
+    },
+    "formal/Benitoite/Surface/CheckSoundControl.lean": {
+      "identical": true,
+      "sha256": "492d475d1743d66839366550b29d24cad9fb7420999202dfb225dce1cb5e2f43"
+    },
+    "formal/Benitoite/Surface/BuilderLower.lean": {
+      "identical": true,
+      "sha256": "1c953e5798ccf40fc2e61b7b05a6bc2a3203aca900496afbf58c0cf8945e2588"
+    },
+    "formal/Benitoite/Surface/BuilderFree.lean": {
+      "identical": true,
+      "sha256": "48e28130fa9c8678463432db5ce1729e824111d945855857594c5b9ba7260035"
+    },
+    "formal/Benitoite/Surface/WellFormed.lean": {
+      "identical": true,
+      "sha256": "bd88101f8336bc534074ecd4644dc4b92671ce53e32d85b62a22ec6d5be14156"
+    },
+    "formal/Benitoite/Surface/BuilderCheck.lean": {
+      "identical": true,
+      "sha256": "dd084a4e2667e23e82fa46014b086a772c241c88f1651269351dae6660b209d6"
+    },
+    "formal/Benitoite/Surface/CheckComputeControl.lean": {
+      "identical": true,
+      "sha256": "f480034930eb40bf1294219f5c4ee1a102bedefd328c054237a6d05ce7b762ef"
+    },
+    "formal/Benitoite/Surface/CheckTablesSound.lean": {
+      "identical": true,
+      "sha256": "fae2c01974bdc5bb96e64481863442aed701b109f6cbdd475109aa211bb9a60e"
+    },
+    "formal/Benitoite/Surface/CheckSoundCalls.lean": {
+      "identical": true,
+      "sha256": "833dd521ea3fd89c8a54e2562cc9fd48435f5a67d33bb97a328e5dbf613f88fc"
+    },
+    "formal/Benitoite/Surface/CheckPatterns.lean": {
+      "identical": true,
+      "sha256": "53eb52ccbfd3986cd2cbe3b51b9669b5665eae5e6cd33f5b121b0eab9e011223"
+    },
+    "formal/Benitoite/Surface/FiniteExamples.lean": {
+      "identical": true,
+      "sha256": "f0f6057c7ed70059b1dfdd3631bdceb801126d75cfc91d48c9bd346e25f428bd"
+    },
+    "formal/Benitoite/Surface/CheckCounterexamples.lean": {
+      "identical": true,
+      "sha256": "b1e832b8adeef92f2a20159d435bc71400a2b892b109dbdb1f56b802316bcf2a"
+    },
+    "formal/Benitoite/Surface/CheckSoundSequence.lean": {
+      "identical": true,
+      "sha256": "e8e315acb561cb2e413b3cf91dcaa5d8aab3020e15b016ef3c62dc283a845c56"
+    },
+    "formal/Benitoite/Surface/SingleFail.lean": {
+      "identical": true,
+      "sha256": "b57ca666f2d1b337f2908d532d96bab6041cb2107c3d3695186f0204a2de0ae2"
+    },
+    "formal/Benitoite/Surface/CheckTools.lean": {
+      "identical": true,
+      "sha256": "2fa96a1a1263e0c4179a62d3efb4162727d3259fe4acd3418e68a350a6a3b6b8"
+    },
+    "formal/Benitoite/Surface/CheckPredicates.lean": {
+      "identical": true,
+      "sha256": "5c21e1c822eb6eba32a1568290eadce626c46af2e4ae0079e4eef0dc6d617f25"
+    },
+    "formal/Benitoite/Surface/AdmissibleCheck.lean": {
+      "identical": true,
+      "sha256": "0aeec2cbde039bbaa082515c254286d777c038e38bf55038196c040f4a7dfdd7"
+    },
+    "formal/Benitoite/Surface/FailureExamples.lean": {
+      "identical": true,
+      "sha256": "425ae7a6ca96755b7931d2ca5db15e3275ea6655de8954300eb667217fbf6ef3"
+    },
+    "formal/Benitoite/Surface/FinitePredicates.lean": {
+      "identical": true,
+      "sha256": "2d572d183dfba436cb2fe6394da27d3b6f1a7ba09d6d7b02a7bf456d7e22b9a2"
+    },
+    "formal/Benitoite/Surface/Syntax.lean": {
+      "identical": true,
+      "sha256": "6e4aa73e79bf3704035e0f77b3339d4113cbd12a4e1f041f7c87201d188142fb"
+    },
+    "formal/Benitoite/Surface/CheckComputePipe.lean": {
+      "identical": true,
+      "sha256": "d1ed64017839c1b2dbc3806dd8f2cc0b2c1c4c6bbc8affc3f4661d5895b3f84b"
+    },
+    "formal/Benitoite/Surface/Typing.lean": {
+      "identical": true,
+      "sha256": "760c9fd345488cd0cc0e7e2a2a3bc21d6a316e293c32413889bf2b8f4d231c08"
+    },
+    "formal/Benitoite/Surface/CheckTables.lean": {
+      "identical": true,
+      "sha256": "a45ae83df6968d30f0ca7f1f44ebd108a925fcce8bebd07b1efa11db967bc9e7"
+    },
+    "formal/Benitoite/Surface/NoFailCheck.lean": {
+      "identical": true,
+      "sha256": "7e461a23d68297b613a219606a895241588e16963587a608e2b5c9edea2f6505"
+    },
+    "formal/Benitoite/Surface/CheckSoundDie.lean": {
+      "identical": true,
+      "sha256": "557a0406ed9d6cbe04a9bf7a886cc84eda2170b4a66dcd381e061a398c909a9c"
+    },
+    "formal/Benitoite/Surface/CheckToolsExamples.lean": {
+      "identical": true,
+      "sha256": "dcbe4a66c58618711996c9a316dde61cbb0e99ef6acb3200b53ef4a97c465578"
+    },
+    "formal/Benitoite/Surface/BuilderExamples.lean": {
+      "identical": true,
+      "sha256": "c3636b8d3eb387f1a536495efb37cfcc44b4e8113bd37d3d47ba384565b6b362"
+    },
+    "formal/Benitoite/Surface/CheckSoundDicts.lean": {
+      "identical": true,
+      "sha256": "b1c5766f88338123aac8d7f56cd949ee30d9619cc51f5740d5f0683d2678f8e7"
+    },
+    "formal/Benitoite/Surface/CheckComputeSound.lean": {
+      "identical": true,
+      "sha256": "83a4ab7b848f38c70c1b30177f523a6425118799a708da63c4be511df8e8fd75"
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean": {
+      "identical": true,
+      "sha256": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec"
+    },
+    "formal/Benitoite/Surface/CheckSoundBasicExpr.lean": {
+      "identical": true,
+      "sha256": "824875e041dc4a4785dbd5fb289f6e2ab589c170c5a7924a7062933853c2f0dd"
+    },
+    "formal/Benitoite/Surface/Theorems.lean": {
+      "identical": true,
+      "sha256": "acc6012252e8941e5c614d41d71db6cc33da05116fad8ac6414826d7795cf23a"
+    },
+    "formal/Benitoite/Surface/BuilderSyntax.lean": {
+      "identical": true,
+      "sha256": "8b7bc981a6dda53b56eb81f9206b79e108192c4ec639671562339777cf4eccba"
+    },
+    "formal/Benitoite/Surface/CheckLemmas.lean": {
+      "identical": true,
+      "sha256": "1ed0a661dc205cbe4b0ea150064dafdb26427b1a268245893349a12202dee725"
+    },
+    "formal/Benitoite/Surface/CheckComputeCalls.lean": {
+      "identical": true,
+      "sha256": "9bee964f60ae0127ea85067c066583a0a8e893cdd3375c4ebcfbf939df64fa76"
+    },
+    "formal/Benitoite/Surface/CheckExamples.lean": {
+      "identical": true,
+      "sha256": "1e6ab9883761ef47aeab25cf3c57c238968fbe9a218609f3dad2d862b7e1412d"
+    },
+    "formal/Benitoite/Surface/Monad2Examples.lean": {
+      "identical": true,
+      "sha256": "fe96a45c91d1f520e18e28e44843f4c8619b78b23215c763dce5b0acddae651a"
+    },
+    "formal/Benitoite/Surface/SingleFailCheck.lean": {
+      "identical": true,
+      "sha256": "42e555a2e25996d47c2117be8ca494a71bc2b181976c54fc9d961bfd670335c6"
+    },
+    "formal/Benitoite/Surface/NoFailCheckExamples.lean": {
+      "identical": true,
+      "sha256": "efcfe9c666a769eb8ad01a72def7a07358ba240ca2302763202ae3c9dcc778a5"
+    },
+    "formal/Benitoite/Surface/CheckInduction.lean": {
+      "identical": true,
+      "sha256": "877a7ca2b5e12eb82003d6cbdb78998933bca1dd6ec61c2f9151e5e5fd7dc6b4"
+    },
+    "formal/Benitoite/Surface/Examples.lean": {
+      "identical": true,
+      "sha256": "ebac7469024b02ea0a2d20914dc8942557473bf455ba3bba4d82e55524647b72"
+    },
+    "formal/Benitoite/Surface/CheckSoundCollections.lean": {
+      "identical": true,
+      "sha256": "f06a0a57398d7a4805eb1346ea99abc2a47e5d7c6dd70ad1f77f5368196ec127"
+    },
+    "formal/Benitoite/Surface/CheckSound.lean": {
+      "identical": true,
+      "sha256": "846cbe2e617fa50e476d3542feba7c8f673cf7468ab52b22083fbd8d81e1fa09"
+    },
+    "formal/Benitoite/Surface/Builders.lean": {
+      "identical": true,
+      "sha256": "f0c5dab3100770c1297c714492ed1b8d5d295e99560c3fead85b6952a83bc2be"
+    },
+    "formal/Benitoite/Surface/Desugar.lean": {
+      "identical": true,
+      "sha256": "78e39de346163f009bd086b080622232f8a61c20b8f77e8563588082ab000be7"
+    },
+    "formal/Benitoite/Surface/CheckComputeAtoms.lean": {
+      "identical": true,
+      "sha256": "ad3ad1407e955fa7c52ba21d2b891d6b1ee7252deef8239d49795ac5bb8f20e5"
+    },
+    "formal/Benitoite/Surface/CheckDictSupport.lean": {
+      "identical": true,
+      "sha256": "f92068ad0d760a31c515722d7e525c765c61f60532be1f143fd47bd60dc4d8b6"
+    },
+    "formal/Benitoite/Surface/CheckComputeCases.lean": {
+      "identical": true,
+      "sha256": "859e3776a39841c2f1d946d46809a752ef7dfc705fb25d86237f81dcf133062b"
+    },
+    "formal/Benitoite/Surface/CheckSupport.lean": {
+      "identical": true,
+      "sha256": "a3ef16d4933ec91b6a571f4d44fd4e7da6f9e172b7dee7c35943fe106b000569"
+    },
+    "formal/Benitoite/Surface/Lemmas/Extensions.lean": {
+      "identical": true,
+      "sha256": "472cd0ebfdcda53a9f5c734b2aa67213733709fd10b7bca62d016f920a83599a"
+    },
+    "formal/Benitoite/Surface/Lemmas/BuilderLower.lean": {
+      "identical": true,
+      "sha256": "9358bae9a6e201f177236883dddf5da31d6f5109e536f319a020dd54d1ee8d89"
+    },
+    "formal/Benitoite/Surface/Lemmas/CallHead.lean": {
+      "identical": true,
+      "sha256": "fc83720082b39691ae7f08b9b5f3a240c68118c7af04094ccce472b8a36dda63"
+    },
+    "formal/Benitoite/Surface/Lemmas/BuilderCapture.lean": {
+      "identical": true,
+      "sha256": "075263793c093503d5e989eac464269b38c3658a65e2b42173e977a5175e3016"
+    },
+    "formal/Benitoite/Surface/Lemmas/Records.lean": {
+      "identical": true,
+      "sha256": "15a1cba136cffbc11ce67d27fe37e891e076749e05e1be4bc2129c344f40bf4a"
+    },
+    "formal/Benitoite/Surface/Lemmas/Patterns.lean": {
+      "identical": true,
+      "sha256": "86f5afad7e1301ffaa03291511b7e63282ab649747f2c55e8d025bcefe405c2e"
+    },
+    "formal/Benitoite/Surface/Lemmas/Scoped.lean": {
+      "identical": true,
+      "sha256": "7380f6c8d2f3fa855b34ab5022dae98d0717daeb522d069b30357a9a32f12cc1"
+    },
+    "formal/Benitoite/Surface/Lemmas/Sequence.lean": {
+      "identical": true,
+      "sha256": "0f392568798eae7a2da053dbf7393c1228a3b6f41b4dbac8b27b9eeae6f22f96"
+    },
+    "formal/Benitoite/Surface/Lemmas/ReturnTry.lean": {
+      "identical": true,
+      "sha256": "2b74115742d1a3c933dfaa29cb5b71b5f56d352b3c1f144d21661553c41950dd"
+    },
+    "formal/Benitoite/Surface/Lemmas/Typing.lean": {
+      "identical": true,
+      "sha256": "76fc1488b02ec71d01eedee169ecd5c167923d8e9beb2acb6b9e4b5406bf4280"
+    },
+    "formal/Benitoite/Surface/Lemmas/Calls.lean": {
+      "identical": true,
+      "sha256": "16f66b77127dd3fdca40d597dea42fbbef0d4dd2e979df385b9e65787c55b49c"
+    },
+    "formal/Benitoite/Surface/Lemmas/ShiftClean.lean": {
+      "identical": true,
+      "sha256": "f5d3b8f1bf617af7f24777f3866b865038c3a98e10786dd9432b9bcfbf7306ab"
+    },
+    "formal/Benitoite/Surface/Lemmas/ScopedSupport.lean": {
+      "identical": true,
+      "sha256": "946fa5c322db2a5b03f023041b69380367103578a1449a17fe90ba870794de85"
+    },
+    "formal/Benitoite/Surface/Lemmas/NoFailSignature.lean": {
+      "identical": true,
+      "sha256": "44b0f36307d1e4f2ddff4d1b3ebf11cd46b25a5b432dcdf80eba0f8d480c08e0"
+    },
+    "formal/Benitoite/Surface/Lemmas/BuilderCaptureCompose.lean": {
+      "identical": true,
+      "sha256": "44f6500cae4829fcb44a752047b62a0b26f28f2515ba18e37f68e0a539569696"
+    },
+    "formal/Benitoite/Surface/Lemmas/Dict.lean": {
+      "identical": true,
+      "sha256": "9c0901c84527641e5a0788316185954f0823d25f9f7ad007bcadb3f8de7ef65c"
+    },
+    "formal/Benitoite/Surface/Lemmas/PatternSupport.lean": {
+      "identical": true,
+      "sha256": "3151ab12490d7cb192a05bf371d5485831992e581d6660a9201850ca7a0f3446"
+    },
+    "formal/Benitoite/Surface/Lemmas/SubstClean.lean": {
+      "identical": true,
+      "sha256": "e58dfe566d936b0f3be540df20744d56eaf4b77aa03b7cfcbdc5d926e8442e36"
+    },
+    "formal/Benitoite/Surface/Lemmas/BlockSequence.lean": {
+      "identical": true,
+      "sha256": "976759092e26b0f58a9939569e2fcd46238ed7bf5bc9f0d253657e524d8cffa7"
+    },
+    "formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean": {
+      "identical": true,
+      "sha256": "7a832d3e42ab53c1540d28791903b6dad95f383da58192e06cb1ec0cea859605"
+    },
+    "formal/Benitoite/Surface/Lemmas/ScopedRename.lean": {
+      "identical": true,
+      "sha256": "c1bf1fd2a674ea2af65f80d584293712f585115b7b1f15a2b35fd73efcbbca1e"
+    },
+    "formal/Benitoite/Surface/Lemmas/DictSupport.lean": {
+      "identical": true,
+      "sha256": "795b19036fc1d20f1b38c5a652b33c1a003ee796046ab690ca2451cbcac55276"
+    },
+    "formal/Benitoite/Surface/Lemmas/Program.lean": {
+      "identical": true,
+      "sha256": "aad155278be40f6e268886859b8f3164aa1ddb18bee3558d516ed99c77f029e1"
+    },
+    "formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean": {
+      "identical": true,
+      "sha256": "5f6daa390e7713d5c578eaeb812934513fa9d8d94fbdc611a4869757082d6727"
+    },
+    "formal/Benitoite/Surface/Lemmas/Builders.lean": {
+      "identical": true,
+      "sha256": "4d2c091ccc815fe4269ffa6dd457cafdb9d356f5a1a22fb102a06177e53abf59"
+    },
+    "formal/Benitoite/Surface/Lemmas/Invariants.lean": {
+      "identical": true,
+      "sha256": "9772a07d8c6812ca8c2869b20036da3166dda798ea5e9ccccec2a65330197e86"
+    },
+    "formal/Benitoite/Surface/Lemmas/ExtensionsScoped.lean": {
+      "identical": true,
+      "sha256": "b2ccc50460a223f78354b9743b643c97f4a5b6fc3e3e98bc315153862a42a85b"
+    },
+    "formal/Benitoite/Library/ResultLaws.lean": {
+      "identical": true,
+      "sha256": "a436b844421e9206af6c499af6579b9694de57e0def04e9e47b449d5977d6fa9"
+    },
+    "formal/Benitoite/Release/Finite.lean": {
+      "identical": true,
+      "sha256": "82f362948750a6fe625f1cc98df4687be6f09f7d7133f5d16403f4ec983301db"
+    },
+    "formal/Benitoite/Release/WellFormed.lean": {
+      "identical": true,
+      "sha256": "0059c02af1fdffcb4a12bb641f9ff3c0dec176474ae079f004bc8261bf8132e0"
+    },
+    "formal/Benitoite/Release/TypeSubstLemmas.lean": {
+      "identical": true,
+      "sha256": "d63b50d30a83949de1d2a12bc16e1b917ae506508ab7efa7da636021812d32ec"
+    },
+    "formal/Benitoite/Release/SubstEnv.lean": {
+      "identical": true,
+      "sha256": "213cc7df47f6d3f34729353788ce6d54b8f4abc36676cb76ad3afde90fd2c591"
+    },
+    "formal/Benitoite/Release/CoverageTypes.lean": {
+      "identical": true,
+      "sha256": "9b3db244cf13757490f8c1d743beb320ab830738240663bbed9d12c096980469"
+    },
+    "formal/Benitoite/Release/TypeComposition.lean": {
+      "identical": true,
+      "sha256": "0b78f8557a0bccb502091f144a8f8e6d2f5ad34df65bfae97755bc641b9180f6"
+    },
+    "formal/Benitoite/Release/Semantics.lean": {
+      "identical": true,
+      "sha256": "d20e085a4091e65acf09b4daa966c19a4c0ae5ce4b8cef0f89ae19b65ebc27c3"
+    },
+    "formal/Benitoite/Release/Coverage.lean": {
+      "identical": true,
+      "sha256": "7f4e8f921ea65f9513f4d03fea4edbc926aa68fc42287ed52986162d109451a6"
+    },
+    "formal/Benitoite/Release/TypeSupport.lean": {
+      "identical": true,
+      "sha256": "7bb1e72dfeec2e28402bc9317f735a975475663c78085855f6fad9d286d3dc16"
+    },
+    "formal/Benitoite/Release/FailureEffects.lean": {
+      "identical": true,
+      "sha256": "dc2deb2ebde5182635585c367cf0f221e36d34541b2a32eb7ade8fcb8267eac0"
+    },
+    "formal/Benitoite/Release/TypeBounds.lean": {
+      "identical": true,
+      "sha256": "9f62fd60bf01aa9c86593003a9e424d30bf516c8d547d4323913802d6aa7a578"
+    },
+    "formal/Benitoite/Release/LegacyCheck.lean": {
+      "identical": true,
+      "sha256": "ebeaf58e685928fb970eb543dd2a89526669ca74f4b7e09208c979a46779c595"
+    },
+    "formal/Benitoite/Release/TypeRegularity.lean": {
+      "identical": true,
+      "sha256": "1280daceb05d2a218ce7e3b43e1f63ebffd2e89432f9c809122e832298e8ff77"
+    },
+    "formal/Benitoite/Release/Effect.lean": {
+      "identical": true,
+      "sha256": "f913fd511cd20a492f30a1f38b036f71e699aa2ea195b3308591e2d52bb96cd6"
+    },
+    "formal/Benitoite/Release/NoFail.lean": {
+      "identical": true,
+      "sha256": "ff0e3cfc1dd962a6b27b9453756b09d5e57590eccff0d327f2b36ff4620871e2"
+    },
+    "formal/Benitoite/Release/BuiltinTable.lean": {
+      "identical": true,
+      "sha256": "1e082e0fe9ca72c1a453a857214eb2f503f64ed160de2ecca41f6b52c026ab6d"
+    },
+    "formal/Benitoite/Release/SubstExamples.lean": {
+      "identical": true,
+      "sha256": "632964eef1e8ef757f73e07294484fdad32c876a88b0c24847144a0f17fdbc77"
+    },
+    "formal/Benitoite/Release/FailureExamples.lean": {
+      "identical": true,
+      "sha256": "56a03cec17c9e8494ed4f8739b97414c5254e3ac2d6a51b5a704836180eaa95f"
+    },
+    "formal/Benitoite/Release/Syntax.lean": {
+      "identical": true,
+      "sha256": "73da9bdfea258236b1d53e44c8fbfa4237bbddffff05cbd923cca85ecfb28739"
+    },
+    "formal/Benitoite/Release/Typing.lean": {
+      "identical": true,
+      "sha256": "7692203ff350ba35fd0f06204ad61eda633b5eb49692b599590041b45453e346"
+    },
+    "formal/Benitoite/Release/Atom.lean": {
+      "identical": true,
+      "sha256": "cac69370c7b23ba5edaf9c81495207628e8eeb73e50136870f32a66efb4026fa"
+    },
+    "formal/Benitoite/Release/TypeCongruence.lean": {
+      "identical": true,
+      "sha256": "27dca2493b7e3bada1e91a8beff0733a35ff1da5c4619fbf67685fb32bb64d61"
+    },
+    "formal/Benitoite/Release/Model.lean": {
+      "identical": true,
+      "sha256": "d18e860c2a1f9dae331672ccf29471b3f72d0a2317dedd89f529c03d8ffbc614"
+    },
+    "formal/Benitoite/Release/Theorems.lean": {
+      "identical": true,
+      "sha256": "9d99ca03debaceb3c71dc86808b21a1278fb9a5550e66a411339378936681a12"
+    },
+    "formal/Benitoite/Release/TypeSubst.lean": {
+      "identical": true,
+      "sha256": "ee900a11c474d1552d964ea8e15dd0a58fa54526f4acd416feb702f822495c9f"
+    },
+    "formal/Benitoite/Release/TypeShift.lean": {
+      "identical": true,
+      "sha256": "6a91752bdc72e7ad5d203eb288a89fc646d948bd25abaa9a8981a62a9dc1507f"
+    },
+    "formal/Benitoite/Release/Admissible.lean": {
+      "identical": true,
+      "sha256": "a7c3308ea867adec36822465a39f28a2c39609468bd055220d9ddd80b2af805e"
+    },
+    "formal/Benitoite/Release/Normalize.lean": {
+      "identical": true,
+      "sha256": "2fee770cfd2f70ef38dd6da567ee4f74195f644311c2979e24bd0163e59a58a2"
+    },
+    "formal/Benitoite/Release/FiniteSupport.lean": {
+      "identical": true,
+      "sha256": "3955de7bcca6e0f2e18e17c55e1f8b1a9e5b34609d5e32b6a1b7e2c2621d31a1"
+    },
+    "formal/Benitoite/Release/CoverageExtension.lean": {
+      "identical": true,
+      "sha256": "4ccc7887d0668ad5e87b9b72f6a22673f1609c1ca09919182141faa80f097b39"
+    },
+    "formal/Benitoite/Release/TypeScopedSubst.lean": {
+      "identical": true,
+      "sha256": "beabe0b046155809625534abb6af89b0d92b4c348692b5328b31aeff145adfc7"
+    },
+    "formal/Benitoite/Release/Examples.lean": {
+      "identical": true,
+      "sha256": "671e32fe2921792159eb0faa2cf4ee44463a2b21b410f02812ae4dbd526d1201"
+    },
+    "formal/Benitoite/Release/Types.lean": {
+      "identical": true,
+      "sha256": "35c92c40d471fa9e6823abc7455845400c4c7ae1f6369ac150ce3384480267a8"
+    },
+    "formal/Benitoite/Release/TypeRows.lean": {
+      "identical": true,
+      "sha256": "c3c7960584ce3475cecf27ea7daca6c268e71900f5e642e1f255667a0efe310c"
+    },
+    "formal/Benitoite/Release/Assumptions.lean": {
+      "identical": true,
+      "sha256": "784d842d6f692d538d0c903c272b91dcc1891831ece5dcb4405fae3d0ac3762a"
+    },
+    "formal/Benitoite/Release/Subst.lean": {
+      "identical": true,
+      "sha256": "a85e76ea4495c07e0e092314ea041980d67e33db9aeeabd3473d1c59279e5f3e"
+    },
+    "formal/Benitoite/Release/TypeVariables.lean": {
+      "identical": true,
+      "sha256": "e46f939bf4e4c66adcfb891eac143a171a34e5ee57970a682ac74b46378b3d15"
+    },
+    "formal/Benitoite/Release/CoverageShow.lean": {
+      "identical": true,
+      "sha256": "e7c69c8a5fa4fa2d4083e2d84f6ca2b213757e8b0e2528e3be2ab409dc861219"
+    },
+    "formal/Benitoite/Release/Order/Atoms.lean": {
+      "identical": true,
+      "sha256": "f4e6ff0af0fcd31302de7350aaa948dfc74b6cef15eefb6bfcd30355f54e18b8"
+    },
+    "formal/Benitoite/Release/Order/SortUnique.lean": {
+      "identical": true,
+      "sha256": "86247aaf4b61a90065e0fe94f0a257be5b0791eaf9e76da0b33b66faebafb3e1"
+    },
+    "formal/Benitoite/Release/Order/Tree.lean": {
+      "identical": true,
+      "sha256": "44c87e0cb542fb55a7a0d3c754eb851624ab3ca3d3c961fd5318126deaeb0ffd"
+    },
+    "formal/Benitoite/Release/Order/Labels.lean": {
+      "identical": true,
+      "sha256": "f3567a65c8177481934b4d4e4ab824e7ff5346f64802203ef63db5263d54902a"
+    },
+    "formal/Benitoite/Release/Order/Types.lean": {
+      "identical": true,
+      "sha256": "392b14682cca6a3041a6f88ff53e94f414cfe497199bf3b0090f7884b13692f6"
+    },
+    "formal/Benitoite/Release/Order/Shift.lean": {
+      "identical": true,
+      "sha256": "1af11ada7ad453465a7e969ca381024e531d55621c2b2edc5957b42942e6d682"
+    },
+    "formal/Benitoite/Release/Order/FiniteAtoms.lean": {
+      "identical": true,
+      "sha256": "6a57378eb743fd672df5010d34996be6d5468c82f9222f274e308211be13855b"
+    },
+    "formal/Benitoite/Release/Lemmas/Names.lean": {
+      "identical": true,
+      "sha256": "2cdd1da3ed9aa7384ee9f0708c28faafceba063ee3a4575e8c61857299036f2a"
+    },
+    "formal/Benitoite/Release/Lemmas/PresBase.lean": {
+      "identical": true,
+      "sha256": "fd9ddeffe4b34ee172bf654e62295b693c802c92a58752e1f9b6f90f969b2b43"
+    },
+    "formal/Benitoite/Release/Lemmas/SubstTyping.lean": {
+      "identical": true,
+      "sha256": "838afcd276d5f485eeac45f625616fbdd782709feba8cfac3a93bfed811f3a12"
+    },
+    "formal/Benitoite/Release/Lemmas/VariableBind.lean": {
+      "identical": true,
+      "sha256": "73d146576df4c37a22d4d2414929c2261dbd6dceca43dfa8e1a91de4b2b1bf78"
+    },
+    "formal/Benitoite/Release/Lemmas/Canonical.lean": {
+      "identical": true,
+      "sha256": "197e5d1ce44bdc5270456b8bf57491c8baac7185c16996d4ac732692b86900d5"
+    },
+    "formal/Benitoite/Release/Lemmas/StoreLemmas.lean": {
+      "identical": true,
+      "sha256": "f203d4cbea3540e78b6a9f591a0735559d7440ef298a30ddfbdd14803c938d5a"
+    },
+    "formal/Benitoite/Release/Lemmas/Progress.lean": {
+      "identical": true,
+      "sha256": "bf5a7bffda97c2755eb95d451f5e3acee56bacdfed1c82db63a66a5cdae632bb"
+    },
+    "formal/Benitoite/Release/Lemmas/Rename.lean": {
+      "identical": true,
+      "sha256": "42f8c3318d1a74ce217489ce0e27fa7f63073c75864868760ae7ce1925250eb5"
+    },
+    "formal/Benitoite/Release/Lemmas/StepSound.lean": {
+      "identical": true,
+      "sha256": "265ac02f35ccba2001f2b5693269be9a04845e1ad6b197c69fd2a50f864f9c2d"
+    },
+    "formal/Benitoite/Release/Lemmas/ContLemmas.lean": {
+      "identical": true,
+      "sha256": "df8586130055186c90426532a7ae13f1a0cd0e9dddc36623f39a0ea4cf50fa89"
+    },
+    "formal/Benitoite/Release/Lemmas/FailureBase.lean": {
+      "identical": true,
+      "sha256": "9cbd70d861eea354696357a8f1e91208ccf7248db955cea6a8d57bc3f382f1ed"
+    },
+    "formal/Benitoite/Release/Lemmas/Basic.lean": {
+      "identical": true,
+      "sha256": "f18a83115df3df0de5fb071f7fe0315c316dd4c227821398650547f0f2292f3e"
+    },
+    "formal/Benitoite/Release/Lemmas/CoverageRuntime.lean": {
+      "identical": true,
+      "sha256": "cdce18390466a5bf39ecaf15821572bf7aa94dc0ff7b4d654623d322887c1176"
+    },
+    "formal/Benitoite/Release/Lemmas/NoFailContext.lean": {
+      "identical": true,
+      "sha256": "000b0cdf58840d2e160e621db9c19a45742e5db2a1b2c59f47cd2f2dc0f233dc"
+    },
+    "formal/Benitoite/Release/Lemmas/Dict.lean": {
+      "identical": true,
+      "sha256": "1a0241577ab66b95b55aeaa42d0dee90f316bab02e071afc6842a182969480c1"
+    },
+    "formal/Benitoite/Release/Lemmas/Irrelevant.lean": {
+      "identical": true,
+      "sha256": "e3575a89d67576d1a18034ba97e69a6b04c57df2e803716d7c535c578dbb5f65"
+    },
+    "formal/Benitoite/Release/Lemmas/TySubst.lean": {
+      "identical": true,
+      "sha256": "733778e4629fea9c8adee0fe5afad49c2dfa100f2b9c7ae167103b5056891482"
+    },
+    "formal/Benitoite/Release/Lemmas/PresMain.lean": {
+      "identical": true,
+      "sha256": "7a18e4d3c1594460cd3328ccd38a51496bbb54ff115d2ed720a830603fc5b5f7"
+    },
+    "formal/Benitoite/Release/Lemmas/TyLemmas.lean": {
+      "identical": true,
+      "sha256": "c53d4ed95ef2e351f9b82c68b5daad31c25e1c7966e59a5faabbdd5b8149073e"
+    },
+    "formal/Benitoite/Release/Lemmas/EffectSound.lean": {
+      "identical": true,
+      "sha256": "e8ea67492004a56b9c7b56487d2f648d7ac975a8717c40501a6124b92b7c8337"
+    },
+    "formal/Benitoite/Release/Lemmas/Preservation.lean": {
+      "identical": true,
+      "sha256": "13ae4264a01c42381d92803157b99426ff1455094009c1fb8b83085560e1762a"
+    },
+    "formal/Benitoite/Release/Lemmas/Closed.lean": {
+      "identical": true,
+      "sha256": "ef6b118b0051edd6b7efd18a9c8670776530c03be8b65fde76c7a466aed2dcb6"
+    },
+    "formal/Benitoite/Release/Lemmas/FailureCont.lean": {
+      "identical": true,
+      "sha256": "1db29c11653ad9290187bd755b1d78b9b0ba8677389cc32452f2511ac56eb8c6"
+    },
+    "formal/Benitoite/Release/Lemmas/Inversion.lean": {
+      "identical": true,
+      "sha256": "83f8e21a71611c95b35569638b992a9f8b2d178594b836641e5a15b6507b5dd3"
+    },
+    "formal/Benitoite/Release/Lemmas/PresHelpers.lean": {
+      "identical": true,
+      "sha256": "8275d2a090f4f34f1d22f88e9e1c9c99d1a315e18f143298fc1219f52be60d36"
+    },
+    "formal/Benitoite/Release/Lemmas/PresFailure.lean": {
+      "identical": true,
+      "sha256": "04afa1f06e06201720f81e04b8b97d1470dcaa764e31c75dddc23d766ca092e1"
+    },
+    "formal/Benitoite/Release/Lemmas/Regularity.lean": {
+      "identical": true,
+      "sha256": "834fe7d5064c50795de29db57a968a684bd42f51dc267f7e601e3ad91846a0e9"
+    },
+    "formal/Benitoite/Release/Lemmas/OuterC.lean": {
+      "identical": true,
+      "sha256": "7ca189ebd1cee1d1cc29f11c2281ac6e05ca882619c50532e487d5566af05021"
+    },
+    "formal/Benitoite/Release/Lemmas/TySubstMain.lean": {
+      "identical": true,
+      "sha256": "b3a1f0efadd4f8af6748a392052278a5ce9af43b17e008371c5e433e83ca5b60"
+    },
+    "formal/Benitoite/Checked/Access.lean": {
+      "identical": true,
+      "sha256": "e6a476056d5889fa5e2e38a8169932d58a6e47ea6e1542e62b4b75de6467836f"
+    },
+    "formal/Benitoite/Checked/Scope.lean": {
+      "identical": true,
+      "sha256": "691a010094a342a0095fe1d7758babc60189869346eb317d0960e47c6e17380f"
+    },
+    "formal/Benitoite/Checked/Range.lean": {
+      "identical": true,
+      "sha256": "1b2078a41019eef398a77592faa948a59de379ede6fd5ad9b7c22cd0b5dfab3b"
+    }
+  },
+  "public_declarations": {
+    "formal/Benitoite/Release/Theorems.lean:step_sound": {
+      "identical": true,
+      "declaration": "theorem step_sound (hb : B.Assumptions P) (oracle : Oracle) (rel : Val \u2192 Option ErrKind) (fresh : Store \u2192 Nat) (horacle : \u2200 b ts es ws o, B.ioResponse b ts es ws o \u2192 B.ioResponse b ts es ws (oracle b ts es ws)) (hrel : \u2200 v r, B.releaseResponse v r \u2192 B.releaseResponse v (rel v)) (hfresh : \u2200 \u03c3 : Store, (\u2203 n, \u2200 l, n \u2264 l \u2192 \u03c3 l = none) \u2192 \u03c3 (fresh \u03c3) = none) {s : State} {l : Option Event} {s' : State} : StateTy P B s \u2192 step P B oracle rel fresh s = some (l, s') \u2192 Step P B s l s' "
+    },
+    "formal/Benitoite/Release/Theorems.lean:progress": {
+      "identical": true,
+      "declaration": "theorem progress (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {s : State} : StateTy P B s \u2192 s.Final \u2228 \u2203 l s', Step P B s l s' "
+    },
+    "formal/Benitoite/Release/Theorems.lean:preservation": {
+      "identical": true,
+      "declaration": "theorem preservation (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {s : State} {l : Option Event} {s' : State} : StateTy P B s \u2192 Step P B s l s' \u2192 StateTy P B s' "
+    },
+    "formal/Benitoite/Release/Theorems.lean:effect_soundness": {
+      "identical": true,
+      "declaration": "theorem effect_soundness (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {m : Comp} {a : Ty} : HasTypeC P B StoreTy.empty [] [] none m a Eff.empty \u2192 m.ClosedNoEffVars \u2192 \u2200 s, Steps P B (.run m [] Store.empty) s \u2192 (\u2200 ev s', \u00ac Step P B s (some ev) s') \u2227 \u00ac UnhandledOp s "
+    },
+    "formal/Benitoite/Release/Theorems.lean:effect_soundness_noLamNames": {
+      "identical": true,
+      "declaration": "theorem effect_soundness_noLamNames (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {m : Comp} {a : Ty} : HasTypeC P B StoreTy.empty [] [] none m a Eff.empty \u2192 Comp.VarsInNoLamNames 0 (fun _ => False) m \u2192 \u2200 s, Steps P B (.run m [] Store.empty) s \u2192 (\u2200 ev s', \u00ac Step P B s (some ev) s') \u2227 \u00ac UnhandledOp s "
+    },
+    "formal/Benitoite/Surface/Theorems.lean:desugar_typed": {
+      "identical": true,
+      "declaration": "theorem desugar_typed {p : Program} {B : Builtins} {opPrim : OpPrim} (hwf : p.WellFormed) (hwt : p.WellTyped B opPrim) (hsig : \u2200 b s, B.sig b = some s \u2192 s.Scoped) : (desugarProgram opPrim p).WellFormed \u2227 (desugarProgram opPrim p).WellTyped B \u2227 (desugarProgram opPrim p).EffectsOk B "
+    },
+    "formal/Benitoite/Surface/Theorems.lean:surface_effect_soundness": {
+      "identical": true,
+      "declaration": "theorem surface_effect_soundness {p : Program} {B : Builtins} {opPrim : OpPrim} (hwf : p.WellFormed) (hwt : p.WellTyped B opPrim) (hb : B.Assumptions (desugarProgram opPrim p)) (hmain : p.HasMain Eff.empty) : \u2200 s, Steps (desugarProgram opPrim p) B (.run (.app (.fnRef \"main\" [] []) []) [] Store.empty) s \u2192 (\u2200 ev s', \u00ac Step (desugarProgram opPrim p) B s (some ev) s') \u2227 \u00ac UnhandledOp s "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkExpr_sound": {
+      "identical": true,
+      "declaration": "theorem checkExpr_sound {q C \u0393 R p path e a \u03b5} (hq : q.Sound) (he : e.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (h : checkExpr q .strict C \u0393 R p path e = .ok (a, \u03b5)) : HasType q.D q.B q.opPrim C \u0393 R p e a \u03b5 \u2227 a.AtomsIn q.atoms \u2227 \u03b5.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkBlock_sound": {
+      "identical": true,
+      "declaration": "theorem checkBlock_sound {q C \u0393 R p path body a \u03b5} (hq : q.Sound) (hb : body.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (h : checkBlock q .strict C \u0393 R p path body = .ok (a, \u03b5)) : HasBlock q.D q.B q.opPrim C \u0393 R p body a \u03b5 \u2227 a.AtomsIn q.atoms \u2227 \u03b5.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkArms_sound": {
+      "identical": true,
+      "declaration": "theorem checkArms_sound {q C \u0393 R p path arms a b \u03b5} (hq : q.Sound) (ha : arms.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (hin : a.AtomsIn q.atoms) (hout : b.AtomsIn q.atoms) (h : checkArms q .strict C \u0393 R p path arms a b = .ok \u03b5) : HasArms q.D q.B q.opPrim C \u0393 R p arms a b \u03b5 \u2227 \u03b5.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkClauses_sound": {
+      "identical": true,
+      "declaration": "theorem checkClauses_sound {q C \u0393 R path cs t \u03b5 actual} (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (ht : t.AtomsIn q.atoms) (h\u03b5 : \u03b5.AtomsIn q.atoms) (h : checkClauses q .strict C \u0393 R path cs t \u03b5 = .ok actual) : HasClauses q.D q.B q.opPrim C \u0393 R cs t \u03b5 \u2227 Eff.Sub actual \u03b5 \u2227 actual.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkTypes_sound": {
+      "identical": true,
+      "declaration": "theorem checkTypes_sound {q C \u0393 R path es ts \u03b5} (hq : q.Sound) (he : es.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (ht : Tys.AtomsIn q.atoms ts) (h : checkTypes q .strict C \u0393 R path es ts = .ok \u03b5) : HasTypes q.D q.B q.opPrim C \u0393 R es ts \u03b5 \u2227 \u03b5.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkEach_sound": {
+      "identical": true,
+      "declaration": "theorem checkEach_sound {q C \u0393 R path es a \u03b5} (hq : q.Sound) (he : es.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (ha : a.AtomsIn q.atoms) (h : checkEach q .strict C \u0393 R path es a = .ok \u03b5) : HasEach q.D q.B q.opPrim C \u0393 R es a \u03b5 \u2227 \u03b5.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkHoleArgs_sound": {
+      "identical": true,
+      "declaration": "theorem checkHoleArgs_sound {q C \u0393 R path args ts \u03b5} (hq : q.Sound) (ha : args.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (hR : ReturnAtoms q.atoms R) (ht : Tys.AtomsIn q.atoms ts) (h : checkHoleArgs q .strict C \u0393 R path args ts = .ok \u03b5) : HasHoleArgs q.D q.B q.opPrim C \u0393 R args ts \u03b5 \u2227 \u03b5.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkDict_sound": {
+      "identical": true,
+      "declaration": "theorem checkDict_sound {q C \u0393 path d a} (hq : q.Sound) (hd : d.AtomsIn q.atoms) (h\u0393 : Env.AtomsIn q.atoms \u0393) (h : checkDict q C \u0393 path d = .ok a) : DictEv.HasType q.D q.B C \u0393 d a \u2227 a.AtomsIn q.atoms "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkDicts_sound": {
+      "identical": true,
+      "declaration": "theorem checkDicts_sound {q C \u0393 path ds ts} (hq : q.Sound) (hd : DictEvs.AtomsIn q.atoms ds) (h\u0393 : Env.AtomsIn q.atoms \u0393) (ht : Tys.AtomsIn q.atoms ts) (h : checkDicts q C \u0393 path ds ts = .ok ()) : DictEv.HasTypes q.D q.B C \u0393 ds ts "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkDef_sound": {
+      "identical": true,
+      "declaration": "theorem checkDef_sound {q path d} (hq : q.Sound) (hd : d.AtomsIn q.atoms) (h : checkDef q path d = .ok ()) : Def.WellTyped q.D q.B q.opPrim d "
+    },
+    "formal/Benitoite/Surface/CheckSound.lean:checkImpl_sound": {
+      "identical": true,
+      "declaration": "theorem checkImpl_sound {q methods supers path id views} (hq : q.Sound) (hi : id.decl.AtomsIn q.atoms) (hn : ImplNamesComplete q id methods supers) (h : checkImpl q methods supers path id views = .ok ()) : ImplDecl.WellTyped q.D q.B q.opPrim id.decl views "
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean:checkProgram_under": {
+      "identical": true,
+      "declaration": "theorem checkProgram_under {q : Check.Input} {m : Materials} {names : Names} (hq : q.Sound) (hn : NamesComplete m.program names) (hd : \u2200 n d, m.program.defs n = some d \u2192 d.AtomsIn q.atoms) (hi : \u2200 n id, m.program.impls n = some id \u2192 id.AtomsIn q.atoms) (him : \u2200 n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id \u2192 Check.ImplNamesComplete q id names.methods names.supers) (hext : Extends q.D m.program.declarations) (h : checkProgram q m names = .ok ()) : CheckedUnder m.program q "
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean:checkProgram_contracts": {
+      "identical": true,
+      "declaration": "theorem checkProgram_contracts {m : Materials} {B sat admits op atoms} (hn : implNamesOk m m.names.methods m.names.supers = true) (h : checkProgram (m.input B sat admits op atoms) m m.names = .ok ()) : \u2200 n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id \u2192 id.ContractsMatch m.declarations "
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean:checkProgram_sound": {
+      "identical": true,
+      "declaration": "theorem checkProgram_sound {m : Materials} {S raw b select atoms} (hd : m.declarations.AtomsIn atoms) (hb : (builtins S (primEntries S raw) b).AtomsIn atoms) (hdefs : \u2200 n d, m.program.defs n = some d \u2192 d.body.AtomsIn atoms) (himpls : \u2200 n id, m.program.impls n = some id \u2192 ImplBodiesAtoms atoms id) (hc : constructorsOk m = true) (hn : implNamesOk m m.names.methods m.names.supers = true) (h : checkProgram (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw)) (makeOpPrim select) atoms) m m.names = .ok ()) : CheckedUnder m.program (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw)) (makeOpPrim select) atoms) "
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean:checkProgram_empty": {
+      "identical": true,
+      "declaration": "theorem checkProgram_empty {m : Materials} {S raw b select atoms} (hf : m.trustedFuns = []) (hi : m.trustedImpls = []) (hd : m.declarations.AtomsIn atoms) (hb : (builtins S (primEntries S raw) b).AtomsIn atoms) (hdefs : \u2200 n d, m.program.defs n = some d \u2192 d.body.AtomsIn atoms) (himpls : \u2200 n id, m.program.impls n = some id \u2192 ImplBodiesAtoms atoms id) (hc : constructorsOk m = true) (hn : implNamesOk m m.names.methods m.names.supers = true) (h : checkProgram (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw)) (makeOpPrim select) atoms) m m.names = .ok ()) : m.program.WellTyped (builtins S (primEntries S raw) b) (makeOpPrim select) "
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean:checkProgram_sound_contracts": {
+      "identical": true,
+      "declaration": "theorem checkProgram_sound_contracts {m : Materials} {S raw b select atoms} (hd : m.declarations.AtomsIn atoms) (hb : (builtins S (primEntries S raw) b).AtomsIn atoms) (hdefs : \u2200 n d, m.program.defs n = some d \u2192 d.body.AtomsIn atoms) (himpls : \u2200 n id, m.program.impls n = some id \u2192 ImplBodiesAtoms atoms id) (hc : constructorsOk m = true) (hn : implNamesOk m m.names.methods m.names.supers = true) (h : checkProgram (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw)) (makeOpPrim select) atoms) m m.names = .ok ()) : CheckedUnder m.program (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw)) (makeOpPrim select) atoms) \u2227 (\u2200 n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id \u2192 id.ContractsMatch m.declarations) "
+    },
+    "formal/Benitoite/Surface/CheckProgramSound.lean:checkProgram_empty_contracts": {
+      "identical": true,
+      "declaration": "theorem checkProgram_empty_contracts {m : Materials} {S raw b select atoms} (hf : m.trustedFuns = []) (hi : m.trustedImpls = []) (hd : m.declarations.AtomsIn atoms) (hb : (builtins S (primEntries S raw) b).AtomsIn atoms) (hdefs : \u2200 n d, m.program.defs n = some d \u2192 d.body.AtomsIn atoms) (himpls : \u2200 n id, m.program.impls n = some id \u2192 ImplBodiesAtoms atoms id) (hc : constructorsOk m = true) (hn : implNamesOk m m.names.methods m.names.supers = true) (h : checkProgram (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw)) (makeOpPrim select) atoms) m m.names = .ok ()) : m.program.WellTyped (builtins S (primEntries S raw) b) (makeOpPrim select) \u2227 (\u2200 n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id \u2192 id.ContractsMatch m.declarations) "
+    }
+  },
+  "premise_definitions": {
+    "formal/Benitoite/Surface/Typing.lean:Def.WellTyped": {
+      "before": "def Def.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (d : Def) : Prop :=\n  NamesWF d.names d.params \u2227\n  (d.body.Exits \u2228 d.ret = .base .unit) \u2227\n    HasBlockQ D B opPrim (Qsig d.params d.ret d.eff) d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff",
+      "after": "def Def.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (d : Def) : Prop :=\n  NamesWF d.names d.params \u2227\n  (d.body.Exits \u2228 d.ret = .base .unit) \u2227\n    HasBlockQ D B opPrim (Qsig d.params d.ret d.eff) [] d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff",
+      "identical": false,
+      "only_empty_delta_added": true
+    },
+    "formal/Benitoite/Surface/Typing.lean:ImplDecl.WellTyped": {
+      "before": "def ImplDecl.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (id : ImplDecl)\n    (views : MethName \u2192 CoverageView := fun _ => D.view) : Prop :=\n  \u2203 cd, D.classes id.cls = some cd \u2227\n    (\u2200 m, (id.methods m).isSome = (cd.methods m).isSome) \u2227\n    (\u2200 s, (id.supers s).isSome = decide (s \u2208 cd.supers)) \u2227\n    (\u2200 m ms, cd.methods m = some ms \u2192 \u2203 body, id.methods m = some body \u2227\n      (body.Exits \u2228 id.methTy ms ms.ret = .base .unit) \u2227\n      HasBlockQ (D.withView (views m)) B opPrim (Qsig ms.params ms.ret ms.eff) (ms.tparams ++ id.tparams)\n        (binds (id.dictTys.map (Ty.shift ms.tparams.length 0) ++ ms.params.map (id.methTy ms)))\n        (some (id.methTy ms ms.ret)) .tail body (id.methTy ms ms.ret) (Eff.substAt ms.tparams.length [id.target] [] ms.eff)) \u2227\n    (\u2200 s \u2208 cd.supers, \u2203 u, id.supers s = some u \u2227\n      DictEv.HasType D B id.tparams (binds id.dictTys) u (.dict s id.target))",
+      "after": "def ImplDecl.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (id : ImplDecl)\n    (views : MethName \u2192 CoverageView := fun _ => D.view) : Prop :=\n  \u2203 cd, D.classes id.cls = some cd \u2227\n    (\u2200 m, (id.methods m).isSome = (cd.methods m).isSome) \u2227\n    (\u2200 s, (id.supers s).isSome = decide (s \u2208 cd.supers)) \u2227\n    (\u2200 m ms, cd.methods m = some ms \u2192 \u2203 body, id.methods m = some body \u2227\n      (body.Exits \u2228 id.methTy ms ms.ret = .base .unit) \u2227\n      HasBlockQ (D.withView (views m)) B opPrim (Qsig ms.params ms.ret ms.eff) [] (ms.tparams ++ id.tparams)\n        (binds (id.dictTys.map (Ty.shift ms.tparams.length 0) ++ ms.params.map (id.methTy ms)))\n        (some (id.methTy ms ms.ret)) .tail body (id.methTy ms ms.ret) (Eff.substAt ms.tparams.length [id.target] [] ms.eff)) \u2227\n    (\u2200 s \u2208 cd.supers, \u2203 u, id.supers s = some u \u2227\n      DictEv.HasType D B id.tparams (binds id.dictTys) u (.dict s id.target))",
+      "identical": false,
+      "only_empty_delta_added": true
+    },
+    "formal/Benitoite/Surface/Typing.lean:Program.WellTyped": {
+      "before": "def Program.WellTyped (p : Program) (B : Builtins) (opPrim : OpPrim) : Prop :=\n  (\u2200 f d, p.defs f = some d \u2192 d.WellTyped (p.declarationsFor (p.functionViews f)) B opPrim) \u2227\n    (\u2200 l os, p.effects l = some os \u2192 B.effects l = none) \u2227\n    (\u2200 i id, p.impls i = some id \u2192 id.WellTyped p.declarations B opPrim (p.methodViews i))",
+      "after": "def Program.WellTyped (p : Program) (B : Builtins) (opPrim : OpPrim) : Prop :=\n  (\u2200 f d, p.defs f = some d \u2192 d.WellTyped (p.declarationsFor (p.functionViews f)) B opPrim) \u2227\n    (\u2200 l os, p.effects l = some os \u2192 B.effects l = none) \u2227\n    (\u2200 i id, p.impls i = some id \u2192 id.WellTyped p.declarations B opPrim (p.methodViews i))",
+      "identical": true,
+      "only_empty_delta_added": true
+    },
+    "formal/Benitoite/Surface/WellFormed.lean:Program.WellFormed": {
+      "before": "def Program.WellFormed (p : Program) : Prop :=\n  (\u2200 c names, p.conFields c = some names \u2192 \u2203 cd, p.cons c = some cd \u2227\n    NamesWF names cd.args \u2227 (\u2200 c' cd', p.cons c' = some cd' \u2192 cd'.data = cd.data \u2192 c' = c)) \u2227\n  (\u2200 f d, p.defs f = some d \u2192 d.Scoped) \u2227 (\u2200 c cd, p.cons c = some cd \u2192 cd.Scoped) \u2227\n    (\u2200 o od, p.ops o = some od \u2192 od.Scoped \u2227 od.DictionaryScoped) \u2227\n    (\u2200 l os o, p.effects l = some os \u2192 o \u2208 os \u2192 \u2203 od, p.ops o = some od \u2227 od.eff = l) \u2227\n    (\u2200 o od, p.ops o = some od \u2192 \u2203 os, p.effects od.eff = some os \u2227 o \u2208 os) \u2227\n    -- 01-12\u300c\u578b\u30af\u30e9\u30b9\u300d: \u578b\u30af\u30e9\u30b9\u306e\u30e1\u30bd\u30c3\u30c9\u306e\u5ba3\u8a00\u3068 D-Impl \u306e\u5b9a\u7fa9\u306e\u7bc4\u56f2\u3002\n    (\u2200 cl cd, p.classes cl = some cd \u2192 cd.Scoped) \u2227\n    (\u2200 i id, p.impls i = some id \u2192 id.Scoped p.declarations) \u2227 p.RecordsOk",
+      "after": "def Program.WellFormed (p : Program) : Prop :=\n  (\u2200 c names, p.conFields c = some names \u2192 \u2203 cd, p.cons c = some cd \u2227\n    NamesWF names cd.args \u2227 (\u2200 c' cd', p.cons c' = some cd' \u2192 cd'.data = cd.data \u2192 c' = c)) \u2227\n  (\u2200 f d, p.defs f = some d \u2192 d.Scoped) \u2227 (\u2200 c cd, p.cons c = some cd \u2192 cd.Scoped) \u2227\n    (\u2200 o od, p.ops o = some od \u2192 od.Scoped \u2227 od.DictionaryScoped) \u2227\n    (\u2200 l os o, p.effects l = some os \u2192 o \u2208 os \u2192 \u2203 od, p.ops o = some od \u2227 od.eff = l) \u2227\n    (\u2200 o od, p.ops o = some od \u2192 \u2203 os, p.effects od.eff = some os \u2227 o \u2208 os) \u2227\n    -- 01-12\u300c\u578b\u30af\u30e9\u30b9\u300d: \u578b\u30af\u30e9\u30b9\u306e\u30e1\u30bd\u30c3\u30c9\u306e\u5ba3\u8a00\u3068 D-Impl \u306e\u5b9a\u7fa9\u306e\u7bc4\u56f2\u3002\n    (\u2200 cl cd, p.classes cl = some cd \u2192 cd.Scoped) \u2227\n    (\u2200 i id, p.impls i = some id \u2192 id.Scoped p.declarations) \u2227 p.RecordsOk",
+      "identical": true,
+      "only_empty_delta_added": true
+    },
+    "formal/Benitoite/Surface/CheckLemmas.lean:Input.Sound": {
+      "before": "structure Input.Sound (q : Input) : Prop where\n  declarations : q.D.AtomsIn q.atoms\n  builtins : q.B.AtomsIn q.atoms\n  sat : SatDecSound q.B q.satDec\n  admits : AdmitsDecSound q.B q.admitsDec\n  operators : OpPrimTypeArgs q.opPrim\n  constructors : CtorsComplete q.D.patternProgram q.ctors",
+      "after": "structure Input.Sound (q : Input) : Prop where\n  declarations : q.D.AtomsIn q.atoms\n  builtins : q.B.AtomsIn q.atoms\n  sat : SatDecSound q.B q.satDec\n  admits : AdmitsDecSound q.B q.admitsDec\n  operators : OpPrimTypeArgs q.opPrim\n  constructors : CtorsComplete q.D.patternProgram q.ctors",
+      "identical": true,
+      "only_empty_delta_added": true
+    }
+  }
+}

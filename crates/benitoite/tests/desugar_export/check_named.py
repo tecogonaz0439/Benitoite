@@ -147,8 +147,10 @@ def check_named(directory, entry, versions):
         "matched": entry["definitions"], "mismatched": 0, "outside": 0, "excluded": 0}, stem)
     require(reports["builtinCheck"]["errors"] == [], stem)
     require(reports["surfaceCheck"]["result"] == {"ok": True}, stem)
+    # 実装のメソッドと上位辞書は表層では実装一件として検査するので、実装を含む例は surfaceChecks で数える。
+    surface_checks = entry.get("surfaceChecks", entry.get("scopes", {}).get("inScope", entry["definitions"]))
     require(reports["surfaceCheckAll"]["counts"] == {
-        "matched": entry.get("scopes", {}).get("inScope", entry["definitions"]), "q11": 0, "outOfScope": 0, "lazyRestriction": 0,
+        "matched": surface_checks, "q11": 0, "outOfScope": 0, "lazyRestriction": 0,
         "mismatched": 0, "preparationFailure": 0}, stem)
     if entry["coverage"] is not None:
         path = directory / f"{stem}-coverage.json"
@@ -172,7 +174,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 11, "width corpus version")
+    require(corpus["version"] == 12, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -505,7 +507,7 @@ def main():
     # 全件一致の条件と失敗の終了状態は維持する（設計書 07-04「01-12 との対応」）。
     report = run("coverageDiff", [coverage_dir / "named-all-corpus.json"], coverage_dir / "named-all-report.json")
     require({k: report[k] for k in manifest["allCoverageReport"]} == manifest["allCoverageReport"], "all independent coverage")
-    print("named export: manifest agrees; corpus 11, tables 4 and coverage 4 match all six entries")
+    print("named export: manifest agrees; corpus 12, tables 4 and coverage 4 match all six entries")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.8 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -30,10 +30,44 @@
 - [コマンド行の引数と環境変数](#コマンド行の引数と環境変数)
 - [HTTP](#http)
 - [コレクション](#コレクション)
+- [具体的なコンテナと汎用のコンテナ](#具体的なコンテナと汎用のコンテナ)
 - [レコードとデータ型](#レコードとデータ型)
 - [テストの書き方](#テストの書き方)
 - [数値のビット幅と変換](#数値のビット幅と変換)
 - [WASM の外部の関数と WIT の型](#wasm-の外部の関数と-wit-の型)
+
+## 具体的なコンテナと汎用のコンテナ
+
+コンテナが既知なら List.map/fold、Option.map/andThen、Result.map/andThen/mapError を使う。複数のコンテナで共用する関数には、使う操作を提供する最小のクラスを要求する。Functor は map、Applicative は pure/apply、Monad は flatMap を加える。二引数版は F[A, X] の第二の型を保つ。クラスの名前には Benitoite.Trait を取り込む。Result 自体は prelude にある。
+
+```benitoite
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function twice[F[_, _]: Trait.Functor2, X](x: F[Integer, X]) -> F[Integer, X]
+  return Trait.Functor2.map(x: x, f: lambda(value) return value * 2 end lambda)
+end function
+
+function main() -> Unit uses Console.Write
+  bind concrete: Result[Integer, String] <- Result.map(r: Result.Ok(3), f: lambda(value) return value * 2 end lambda)
+  bind generic: Result[Integer, String] <- twice(Result.Ok(3))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: concrete, fallback: 0)))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: generic, fallback: 0)))
+end function
+```
+
+
+```output
+6
+6
+```
+
+
+Trait.Monad2 は Applicative2 と Functor2 を含むため、flatMap も使う関数では継承した map を呼べる。標準実装は Result であり、利用者定義の二引数データ型も実装できる。Applicative2.pure にはエラー型を決める Result[Integer, String] のような結果の注釈が必要なことがある。Applicative2.apply は fs の Error を x より優先し、両方 Ok のときだけ包まれた関数を一度呼ぶ。引数式はソース順に評価する。型を書くときは `Result[(function(value: A) -> B uses E), X]` の括弧を保ち、効果行と X を分ける。
+
+型構成子の部分適用はない。Result を一引数の Monad や Traversable に渡せない。完全適用した透明な別名は通常どおり展開する。裸の別名は独立した型構成子や辞書を選ぶ方法にはならない。
+
+andThen/flatMap は成功値を同じエラー型の計算に渡し、エラー型の調整には Result.mapError を使う。try … or return は失敗を呼び出し側へ返し、or die は報告して実行を終える。Failure.toResult は型付き Fail を処理して値を返し、囲む uses の上限から処理した Fail を除く。表示・比較・結合の関数は意味で選ぶ。Show は文字列を引用することがあり数値の toString とは異なる。Order[Float] は NaN を含む全順序であり、組み込みの比較とは異なる。
 
 ## プログラムの形と誤りの扱い
 
@@ -117,6 +151,8 @@ not a port: http
 型付きの失敗には Benitoite.Unofficial.Failure を取り込む。Failure.fromResult(result) は Ok の値を返すか、元のエラーで失敗を発生させる。Failure.toResult(body) は body を一度呼び、Failure.Fail[E] 以外のエフェクトを残して Result[T, E] を返す。コールバックの残りの行は Fail を除外しなければならず、この条件はシグネチャから求める。どちらの変換にも Show と equality は要らない。E を推論できなければ、結果の束縛かコールバックの型に注釈を加える。呼び出しには明示的な型引数は書けない。
 
 List.map の外側に toResult を置くと、最初の失敗で map 全体を止める。非再開型の節は残りの計算を飛ばし、入れ子の with を内側から外側へそれぞれ一度解放する。解放の失敗は実行時エラーのままである。コールバックの通常の return と try は toResult へ戻り、その値を、返された Result も含めて Ok に包む。子タスクの内側ごとに toResult を置き、Task.all/allOk を通じて Result を返す。子は親の非再開型のハンドラを使えない（R0502）。lazy 本体の内部で失敗を処理すれば Result を記憶できる。未処理の Fail は本体を不純にする（E0503）。これらの変換は die、Process.Exit、実行時エラー、資源の上限、中断、取り消し、外部のトラップを捕捉しない。
+
+標準 Fail の E0506 は、main または @test の内部の toResult で対処できる。入口の uses から処理した Fail を外し、ほかの効果を保つ。Result.andThen/flatMap は Result 値の連結であり Fail を処理しない。この toResult の案内は Log や利用者定義の同名の効果には適用しない。
 
 ## 呼び出し、コールバックの契約、穴、パイプ
 

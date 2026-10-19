@@ -6,6 +6,14 @@ Refer to its declarations as `Option.<name>`, for example `Option.Option`.
 
 Optional values.
 
+```benitoite test
+@test
+function optionExample() -> Unit uses Assert.Check
+  Assert.equal(actual: Option.map(o: Option.Some(3), f: lambda(value) return value + 1), expected: Option.Some(4))
+  Assert.equal(actual: Option.unwrapOr(o: Option.None, fallback: 9), expected: 9)
+end function
+```
+
 ```benitoite
 public data Option[T]
   Some(T)

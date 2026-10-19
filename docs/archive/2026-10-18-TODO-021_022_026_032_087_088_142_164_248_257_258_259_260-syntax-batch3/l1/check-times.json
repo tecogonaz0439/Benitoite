@@ -1,0 +1,51 @@
+{
+  "dry_run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "8f4bfce16dbfa08f8f3a61e1b0c504e94857d0d3",
+      "--only",
+      "formal_build,spec_examples,spec_tally",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "seconds": 0.011101458999999998
+  },
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "8f4bfce16dbfa08f8f3a61e1b0c504e94857d0d3",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "exit": 0,
+    "seconds": 12.855223459
+  },
+  "axioms_after": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l1/axioms.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "seconds": 0.706974417
+  },
+  "checked_axioms": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l1/checked-axioms.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "seconds": 0.622356584
+  }
+}

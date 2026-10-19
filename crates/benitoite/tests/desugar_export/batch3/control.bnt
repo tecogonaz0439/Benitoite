@@ -1,0 +1,58 @@
+import Benitoite.StringBuilder
+import Benitoite.ListBuilder
+import Benitoite.BytesBuilder
+import Benitoite.Unofficial.Failure
+
+effect Ask
+  function ask() -> String
+end effect
+function ordered(left: String, right: String) -> String
+  return left + right
+end function
+function control() -> Integer uses State
+  bind b: StringBuilder <- StringBuilder.new()
+  StringBuilder.append(text: ordered(right: if true then
+    StringBuilder.append(builder: b, text: "R")
+    "b"
+  else "bad" end if, left: if true then
+    StringBuilder.append(builder: b, text: "L")
+    "a"
+  else "bad" end if), builder: b)
+  if true then StringBuilder.appendAll(builder: b, texts: ["c", "d"]) end if
+  match true with
+    case true -> StringBuilder.append(builder: b, text: "e")
+    case false -> ()
+  end match
+  bind snapshot <- StringBuilder.copy(b)
+  bind closure <- lambda() return snapshot end lambda
+  bind partial <- ordered(right: "!", left: snapshot)
+  // 呼び出すまで評価しない固定式にも、先に得た通常値だけを渡す。
+  bind action <- ordered(right: _, left: snapshot)
+  bind result <- handle
+    StringBuilder.append(builder: b, text: ask())
+    StringBuilder.copy(b)
+  with
+    case ask() ->
+      bind local: BytesBuilder <- BytesBuilder.new()
+      BytesBuilder.append(value: 0x01u8, builder: local)
+      BytesBuilder.appendAll(builder: local, bytes: Bytes.fromList([0x02u8]))
+      bind saved <- BytesBuilder.copy(local)
+      bind resumed <- resume("f")
+      resumed
+  end handle
+  bind recovered <- handle
+    Failure.raise("bad")
+  with
+    case Failure.raise(error) ->
+      bind local: ListBuilder[Integer] <- ListBuilder.new()
+      ListBuilder.append(builder: local, value: 1)
+      ListBuilder.appendAll(values: [2, 3], builder: local)
+      bind copy <- ListBuilder.copy(local)
+      ListBuilder.length(local)
+  end handle
+  return if result = "RLabcdef" and closure() = "RLabcde" and action("!") = partial
+    then recovered else -1 end if
+end function
+function main() -> Result[Unit, String] uses State
+  return if control() = 3 then Result.Ok(()) else Result.Error("control") end if
+end function

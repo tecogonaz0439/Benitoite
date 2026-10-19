@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Failure
+function apply[A, B, effect E](value: A, f: function(value: A) -> B uses E) -> B uses E
+  return f(value)
+end function
+function failed(error: String) -> Integer uses Failure.Fail[String]
+  return apply(value: error, f: lambda(value) return Failure.raise(value) end lambda)
+end function
+function capture() -> Result[Integer, String]
+  return Failure.toResult(body: lambda() return failed("error") end lambda)
+end function

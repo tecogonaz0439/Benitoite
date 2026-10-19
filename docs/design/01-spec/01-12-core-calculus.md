@@ -50,7 +50,7 @@
 ```text
 型          A, B ::= ι | O | D[Ā] | List[A] | (n̄:Ā) → B ! ε | α
 基本型      ι    ::= Integer | Float | String | Character | Boolean | Unit
-中身を見せない prelude の型
+等値を持たない組み込みの不透明型
             O    ::= IOError
 エフェクト  ε    ::= { e1, …, en }          （有限集合。n ≥ 0）
             e    ::= IO | ρ
@@ -81,8 +81,8 @@
 定義        d    ::= fn f[ᾱ; ρ̄](n̄; x1:A1, …, xn:An) : B ! ε = M
 ```
 
-- `D` は代数的データ型の名前であり、prelude の `Option` と `Result` を含む。
-- `O` は中身を見せない prelude の型であり、基本型にも代数的データ型にも含めない。
+- `D` は代数的データ型の名前であり、prelude の `Option` と `Result` を含む。`@opaque` のdata・レコードも内部構造を持つ `D` で表す。
+- `O` は等値を持たない組み込みの不透明型であり、基本型にも代数的データ型にも含めない。
 - 定数 `c` は、`Integer`・`Float`・`String`・`Character` の値、`true`、`false`、`()`、および IO の関数が返す `IOError` の値である。`Integer` の定数は負の値を含む。
 - `f[T̄; Ē]` と `b[T̄; Ē]` は、型パラメータを型 `T̄` で、エフェクト変数をエフェクトの集合 `Ē` で置き換えた関数を表す。
 - 分岐の選択肢は、分岐の最も外側のコンマで区切る。分岐の区切りの `|` とは別の記号である。一つの分岐のすべての選択肢は、同じ名前の変数を束縛する。ガードと本体の中では、それらの変数を使える。`match V { p ⇒ M }` のように、選択肢が一つでガードのない分岐も、この形の一つである。パターンが変数を束縛する順は、構成子の引数とリストの要素を左から辿った順（リストのパターンは、前の要素、残りの変数、後の要素の順）である。`formal/` の Lean の定義は変数を番号で表すので、各選択肢は、分岐の変数（最初の選択肢が束縛する順に並べたもの）ごとに、その選択肢の中の束縛の位置を指す対応（slots）を持つ。最初の選択肢の対応は恒等である。
@@ -870,12 +870,12 @@ T は成功時の型、ok・err・someCon・noneCon は解決済みの構成子�
 
 #### エフェクトの名前と開始状態
 
-【方針】初回リリース版のエフェクトの名前は、組み込みのエフェクトと、利用者が宣言したエフェクトである（[エフェクト](01-07-effects.md)）。どちらも、宣言したモジュールと名前の組で識別する（前述の「モジュール」）。表層の `IO.All` は、型検査で（脱糖の前に）、`State` と `Benitoite.IO` の下のすべての組み込みのエフェクトの名前の集合に置き換える。表層の `uses IO` は型検査の前の誤りであり（[エフェクト](01-07-effects.md)の「組み込みのエフェクト」）、コア計算に移さない。リソースの型と、標準ライブラリのモジュールが宣言する中身を見せない型（`Regex.Pattern` など）は、中身を見せない型として O に含める。
+【方針】初回リリース版のエフェクトの名前は、組み込みのエフェクトと、利用者が宣言したエフェクトである（[エフェクト](01-07-effects.md)）。どちらも、宣言したモジュールと名前の組で識別する（前述の「モジュール」）。表層の `IO.All` は、型検査で（脱糖の前に）、`State` と `Benitoite.IO` の下のすべての組み込みのエフェクトの名前の集合に置き換える。表層の `uses IO` は型検査の前の誤りであり（[エフェクト](01-07-effects.md)の「組み込みのエフェクト」）、コア計算に移さない。リソースの型と、標準ライブラリのモジュールが宣言する等値を持たない組み込みの不透明型（`Regex.Pattern` など）は、不透明型として O に含める。
 
 ```text
             e ::= L | ρ                    （L はエフェクトの名前）
             O ::= IOError | NetworkError | Task[A] | リソースの型
-                | 標準ライブラリのモジュールが宣言する中身を見せない型
+                | 標準ライブラリのモジュールが宣言する等値を持たない組み込みの不透明型
 ```
 
 Lean の段階 B の写しでは、原子 e が ε に属する命題を `Eff.mem ε e` と書く。空集合・単集合・和集合・エフェクト変数の置き換えの所属は、それぞれ `Eff.mem_empty`・`Eff.mem_single`・`Eff.mem_union`・`Eff.mem_substRho` で展開する。これらは本章の集合と置き換えの記法に対応する。
@@ -1064,6 +1064,164 @@ Failの節は、境界のエラー型Eを外側で固定し、結果型の変数
 `%dict1` 以降の内部名と利用者名の非衝突を支える字句規則は、型付きモデルの対象外である。型保存は、連結後の `coreNames` の整形式を範囲条件から受け取る。`E_Fun`・`E_FunDicts` もこの条件を局所的な前提に持つ。未使用の `conFields` と連結後の名前の条件を、関数本体の型付けだけから導いたとは扱わない。
 
 コアの実装メソッドと `Surface.ImplDecl` は位置による本体を持つため、実装側の実名と宣言名の一致は `ImplDecl.WellTyped` の射影だけからは得られない。実行可能な表層検査の `MethodInput.names` は射影前の実装側の名前を持ち、`checkImpl_contracts`・`checkProgram_contracts` は検査成功から実名の一致と整形式を保証する。実装側の名前へ宣言側の名前を転記して検査を済ませない。メソッド自身の制約の辞書には内部名を前置し、実装自身の辞書の個数と混同しない。
+
+### 検査済みの値の独立した小モデル
+
+【決定】`Benitoite.Checked.Access`・`Scope`・`Range` は、コア計算の型付けとは独立した小モデルである。以下はその定義と保証の写しであり、進行・保存・エフェクトの健全性、脱糖の型の保存、検査器と網羅性の健全性の前提や結論を変更しない。Rust・標準ライブラリとの対応は、独立した期待値との照合で確認する。理由: 公開境界や検査済み値の固有の意味を、本体の型保存だけから導いたと扱わないためである。
+
+`Access` は `Module = Owner = String` とし、解決済みの宣言元 owner と使用元 caller について `mayInspect owner caller = decide (owner = caller)` と定める。内部表現を隠した型について、型名の可視性を通った後の操作を扱う。型注釈・型引数・通常値の受け渡し・束縛・ワイルドカードは許す。構成子の値化・呼び出し・部分適用・パターン、レコードの構築・更新・パターン、アクセサは mayInspect に従う。`importAlias` は参照の綴りだけを変え、所有元を保つ。`mayInspect_iff`・`importAlias_preservesOwner`・`importAlias_preservesBoundary` がこの判定を示す。実際の名前解決や型名の可視性の検査全体は証明しない。
+
+`Scope` の入力は、ホストの小文字化と区切りの解析を済ませた `Word = List String` とする。ホストの列は通常のラベル順、パスの列は根からの要素順である。妥当性は次のように定める。
+
+| 述語 | 条件 |
+|---|---|
+| `ValidHostLabel` | 空文字列でなく、ASCIIの小文字英字・数字・ハイフンだけを含み、先頭と末尾がハイフンでない |
+| `ValidHostWord` | 空列でなく、全ラベルが妥当であり、四ラベルすべてが十進数字からなる形でない。数字の値の範囲は問わない |
+| `ValidHostPattern` | exact・one・manyの幹が `ValidHostWord` を満たす |
+| `ValidPathWord` | 各要素が空文字列・`.`・`..` でなく、`/`・逆斜線・NULを含まない。空列は根 `/` を表し、妥当である |
+| `ValidPathPattern` | exact・treeの幹が `ValidPathWord` を満たし、幹の要素に `*` を含まない。対象側の `*` は普通の文字として残す |
+
+この表は解析済み表現の条件であり、元の文字列からの解析や正規化の正しさの証明ではない。空ラベル・末尾ドット・相対パス・根以外の末尾 `/` などの字面から要素列への対応は、parserとの照合で確認する。
+
+ホストの所属 `HostMatches` は、幹 s と対象 h について、exactなら `h = s`、oneなら `∃ x, h = x :: s`、manyなら `∃ xs, xs ≠ [] ∧ h = xs ++ s` とする。パスの所属 `PathMatches` は、exactなら `p = s`、treeなら `∃ rest, p = s ++ rest` とする。Boolの `hostMatch`・`pathMatch` はそれぞれの述語と同値であり、任意の要素列で成立する。一段は頂点と二段以上を含まず、多段は頂点を含まない。パスのtreeは幹自身と根からの任意段の子を含み、要素の一部だけが一致する対象を含まない。
+
+`PortBounds lo hi` は `0 ≤ lo ∧ lo ≤ hi ∧ hi ≤ 65535`、`ValidPort port` は `0 ≤ port ∧ port ≤ 65535`、`PortMatches lo hi port` は `lo ≤ port ∧ port ≤ hi` とする。整数は数学上のIntを使い、負数も判定する。
+
+`CheckedHost`・`CheckedPath` はパターン・対象と、両者の妥当性・所属の証拠を持つ。`CheckedEndpoint` はホストのパターン・対象、minimumPort・maximumPort・portと、妥当性・端点・二つの所属の証拠を持つ。`makeHost`・`makePath`・`makeEndpoint` はExceptを返す。検査の優先順はパターンの妥当性、対象の妥当性、端点、port自体、ホスト／パスの所属、ポートの所属であり、各APIに存在する検査だけを順に行う。
+
+小モデルの失敗は、invalidPatternに解析済みパターン、invalidTargetに対象の列、invalidPortRangeに二端点、invalidPortにport、outsideScopeにパターンと対象、portOutsideScopeに二端点とportを保存する。Host/Pathの種類はパターンのタグで区別する。元の字面とparserのreasonは、この失敗の値の対象外である。
+
+`makeHost_ok`・`makePath_ok`・`makeEndpoint_ok` は成功時の全入力の保存と妥当性・所属を、各 `*_success_iff` は成功の存在と検査条件の同値を示す。パターン・対象の失敗の同値は先行検査の優先順を含む。`makeHost_error_iff`・`makePath_error_iff` は妥当な入力でのoutsideScopeと不所属の同値を示す。EndpointのinvalidBoundsの同値は形式を通った入力、invalidPortの同値はさらに端点を通った入力に限る。outsideの二つの同値はport自体まで妥当な入力に限り、ホストの不所属と、ホストが所属した後のポートの不所属を分ける。
+
+各 `erase_make*` は証拠を消したmakeの結果と、同じ検査順の `rawMake*` の一致を、成功・失敗の両方について示す。`projection_preserves` は対象・条件・端点・portの射影が保存した欄と一致することを示す。`unindexed_policy_counterexample` は、同じCheckedHost型の値から別のパターンへの所属が導けない例である。これらの定理は操作の許可、DNSの解決先、ファイルの存在・リンク先、検査後の変化、IOの成功を保証しない。
+
+`Range` は `InRange lo hi value = (lo ≤ value ∧ value ≤ hi)` とする。`CheckedInteger` はminimum・maximum・valueと閉区間への所属の証拠を持つ。`make` はまず端点の逆転を検査し、次に所属を検査する。invalidBoundsは二端点を、outOfRangeは三入力を保存する。`make_ok` は三入力の保存と所属、`make_invalidBounds_iff` はinvalidBoundsと `hi < lo` の同値、`make_outOfRange_iff` はoutOfRangeと `lo ≤ hi ∧ ¬ InRange lo hi value` の同値を示す。`erase_make` は証拠を消した三欄のレコードとrawMakeの一致、`project_minimum`・`project_maximum`・`project_value` は射影の一致を示す。
+
+`singleton_ok` は一点区間、`minInteger_endpoint_ok`・`maxInteger_endpoint_ok` は符号付き64ビットIntegerの両端の成功を示す。実装と結ぶ条件は、三入力がいずれも `-9223372036854775808 ≤ n ≤ 9223372036854775807` で表現可能であることである。比較だけを使い、上端に1を足さない。範囲付きの演算・静的な絞り込み・検査の除去はこの証明に含めない。
+
+### Resultの法則と二引数辞書の具体例
+
+【決定】`Benitoite.Library.ResultLaws` は、成功型が先の `Result A X` を使う独立した小モデルである。`ok a` と `error x` を値とし、map・pure・apply・flatMapを次のように定義する。量化するコールバックはLeanの純粋な関数である。
+
+| 操作 | 定義 |
+|---|---|
+| `map x f` | xがokなら `ok (f a)`、errorなら同じ失敗値を返す |
+| `pure a` | `ok a` |
+| `apply fs x` | fsがerrorならその失敗値を返す。fsが `ok f` なら `map x f` |
+| `flatMap x f` | xがokなら `f a`、errorなら同じ失敗値を返す |
+
+`flatMap_left_identity`・`flatMap_right_identity`・`flatMap_associativity` は、pureに関する左右の単位則と結合則を示す。`map_identity`・`map_composition` は恒等関数と合成の法則、`map_flatMap` はmapとflatMapの一致、`apply_flatMap` は `apply fs x = flatMap fs (fun f => map x f)` を示す。両方がerrorならfs側の失敗値を返す。
+
+小モデルのFunctor2・Applicative2・Monad2は、操作の型と上位辞書を欄に持つ。Resultの辞書から上位射影で選んだmap・pure・applyは、直接の定義と等しい。`dictionary_type_does_not_imply_law` は、二つの型引数を使わないBoolを返す型構成子について、pureがtrue、flatMapが常にfalseを返す辞書が左単位則を満たさないことを示す。任意の利用者辞書の法則を、辞書の型だけから導くことはできない。
+
+【決定】`Surface.Monad2Examples` は、既存のProgram・Declarations・Checkを使う本体の具体例である。map・apply・flatMapのメソッドでは型変数0・1・2をA・B・X、型変数3をFとし、コールバックと結果に同じエフェクト行を使う。pureではA・Xが0・1、Fが2である。Functor2、これを上位に持つApplicative2、さらにこれを上位に持つMonad2の署名と、Resultおよび利用者の二引数型UserResultの六実装を有限の宣言表に置く。信頼する関数・実装の宣言は補わない。
+
+`result_constructor_wf`・`result_constructor_sat` は、裸の `.ctor (.data "Result")` のTy.WFと空制約のSatAllを示す。`constructor_dictionary_checked` は、その型構成子を対象とする辞書と二段の上位射影を検査する。これらは型構成子の引数の個数を検査するkind検査の証明ではない。
+
+`program_checked` は、六実装と `F: Monad2` の辞書を受けて上位のmapを呼ぶ関数の全プログラム検査成功を示す。`program_typed` はその成功を既存の検査器の健全性へ接続する。`program_wellFormed` は番号と契約名の範囲条件を示し、`desugared_typed` は既存の性質1を適用する。辞書は値引数より前に置かれ、map/flatMapの値化では外側の辞書が二引数のラムダの下で番号2へ移る。
+
+具体的な入力は両型で各12件あり、map・flatMapの成功と失敗、コールバックの失敗、pure、applyの四つの成功／失敗の組、上位辞書を使う汎用関数を含む。`expressions_checked` はそれらの検査成功、`executions_expected` は脱糖後のコアの実行結果と独立した期待値の一致を示す。Xの不一致と別の型の辞書の使用は、該当する型の不一致として拒否する。
+
+Library.ResultLawsは本体の主定理の外にある小証明であり、Monad2Examplesだけが本体の判断へ接続する。どちらも既存の進行・保存・エフェクトの健全性・型保存・検査器や網羅性の健全性の前提と結論、Builtins.Assumptionsを変更しない。Rust・標準の`.bnt`との対応は独立した期待値との照合であり、これらの証明だけで実装との一致を結論しない。理由: 純粋なResultの法則と、辞書の型付け・脱糖・実行の保証を区別するためである。
+
+### 構築器の分類と環境の対応
+
+【決定】`Surface.BuilderSyntax`・`Surface.Builders`・`Surface.Lemmas.Builders` は、局所構築器の分類と参照先、通常変数とセルの環境の対応を定義する。専用操作Expr.builderOpを七判断と検査器へ接続している。専用宣言はBlock.builderBindであり、種類・参照先・後続のBlockを持つ。脱糖の内部補題はセル環境fillBuilders Γ Δを使い、公開の空Δでは従来のΓに戻る。構築器のRust出力との交換比較は未実施である。本節は基盤の定義と証明の写しであり、Δの扱いは次節に定める。
+
+構築器の分類 `BuilderKind` は `string`・`list T`・`bytes` であり、通常の `Release.Ty` の構成子とは分ける。`contents` はそれぞれString・List[T]・Bytes、`cell` はReference[contents]である。操作の分類 `BuilderOp` はappend・appendAll・copy・lengthの四つである。
+
+通常変数と専用名は一つのde Bruijnの番号を共有する。通常の環境Γは `List (Option Ty)`、分類表Δは `List (Option BuilderKind)` とし、先頭の位置をそろえる。`Δ.kindAt i = (Δ[i]?).join` と定義し、範囲外とnoneをどちらも構築器なしとして読む。ΔはΓより短くてよい。
+
+| 条件 | 定義 |
+|---|---|
+| `BuilderCtx.Aligned Γ Δ` | `Δ.length ≤ Γ.length`、かつ `Δ.kindAt i = some k` なら `Γ[i]? = some none` |
+| `BuilderCtx.Clean n Δ` | `Δ.kindAt i = some k` なら `TyOK n k.contents` |
+| `BuilderCtx.AtomsIn atoms Δ` | 同じ位置の内容の型が `Ty.Support (· ∈ atoms)` を満たす。既存の `Ty.AtomsIn` と同じ条件で、Failの型内部も含む |
+| `BuilderCtx.Single Q Δ` | 同じ位置の内容の型が `SingleTy Q` を満たす |
+
+通常束縛では `t :: Γ` と `none :: Δ`、専用束縛では `none :: Γ` と `some k :: Δ` を同時に追加して整列を保つ。Clean・AtomsIn・Singleも、追加するkの内容の型に各条件を課せば保存される。通常束縛を複数加えるときは、その個数のnoneをΔへ積む。`hideConts` はΔを変えず四条件を保ち、空Δでは任意のΓについて四条件が成り立つ。境界でΔを空にしても、Γのnoneは残る。
+
+`fillBuilders Γ Δ` はΓと同じ長さのコア環境である。Δのsome kに対応する位置をsome k.cellで埋め、残りの位置を保つ。空ΔならΓ、通常束縛を加えた先では `t :: fillBuilders Γ Δ`、専用束縛を加えた先では `some k.cell :: fillBuilders Γ Δ` となる。整列のもとで通常値のlookupを保ち、専用位置からセルの型を取得できる。これにより `RenOk Γ (fillBuilders Γ Δ) id` を導く。さらに `fillBuilders (hideConts Γ) Δ = hideConts (fillBuilders Γ Δ)` が成り立つ。元のΓのEnvClean・AtomsIn・SingleTyの条件は、Δの対応する条件と合わせてセル付き環境へ保存できる。
+
+【決定】`BuilderRefs` は種類別の参照先を持つ。三種類ともReference.new/get/setを保持し、Stringは加算・join・byteLength、Listはappend・concatenate・length、Bytesはempty・fromList・concatenate・lengthを保持する。Referenceの参照は組み込み名と具体化する型引数、純粋な参照は組み込みまたは通常関数の名前と型引数で表す。行引数は空に固定する。
+
+`BuilderRefs.Ok D B C Q Δ i refs` は、`Δ.kindAt i = some refs.kind`、セルの三参照の条件、種類別の純粋な参照の条件の組である。セルの型引数は各々 `[contents]` とし、newは `(value: contents) → cell ! State`、getは `(reference: cell) → contents ! State`、setは `(reference: cell, value: contents) → Unit ! State` と照合する。純粋な参照の引数名・型は既存の標準関数の契約と照合し、効果は空とする。参照先が標準の関数そのものであることの同定はLeanの保証の外であり、Rustの解決済み束縛と交換の照合で確かめる。Leanが検査するのは契約の型と効果である。
+
+各参照のValidは宣言の存在、組み込みのrefNew/refGet/refSet/pureの種類、NamesWF、宣言した型・行変数の範囲、neffs=0、型引数の個数・Ty.WF・非継続型、admitsまたはSatAll、具体化後のSingleTyと関数型の一致を検査する。通常関数はさらにdictParams=[]を要求する。通常関数の範囲条件 `BuilderFunScoped` は本体を含めず署名を対象とする。行数0と署名の範囲条件から、任意の呼び出し側Qに対するPrimitiveAdmissibleまたはAdmissibleを導く。
+
+`surfaceTyped` はこれらの条件から既存のE_Prim・E_Funを導く。`builderRefs_typed` は、B.sigとD.funsの参照先をV_Prim・V_Funへ接続し、種類ごとの全参照にコアの型を付ける。通常関数の宣言は `funDecl_desugared` でコアへ移す。引数の型付けとC_Appから、それぞれの呼び出しにも同じ契約の型が付く。refNewの存在をBuiltins.Assumptionsへ足さず、Refs.Okが宣言表から検査する条件としている。公開の主定理の条件とBuiltins.Assumptionsを増やさない。理由: 専用名の分類とセルへの対応を内部の補題で確立し、通常のReferenceの型付け規則を使うためである。
+
+### 構築器の局所文脈と旧構文の意味
+
+【決定】表層の七判断HasTypeQ・HasTypesQ・HasEachQ・HasHoleArgsQ・HasArmsQ・HasClausesQ・HasBlockQは、Qの直後、Cの前に分類表Δを添字として持つ。式の判断は `HasTypeQ D B op Q Δ C Γ R p e a ε` である。公開のHasType等はQemptyと空Δを固定し、従来の引数順を保つ。Def.WellTypedとImplDecl.WellTypedの本体もQsigの直後に[]を渡す。Program.WellTypedはその本体の条件を使う。
+
+| 検査する部分 | 渡すΔ |
+|---|---|
+| lambda・lazy・通常の操作節・handleFailの節 | []。ΓのhideConts・型のshift・引数の追加は従来どおり |
+| partialCallのcalleeと固定引数、partialConの固定引数 | []。固定式を関数の呼び出し時に評価する境界である |
+| 定数参照に埋め込んだ本体 | []。Γも従来どおり空にする |
+| withの本体、通常bindの続き | none :: Δ |
+| builderBindの続き | some kind :: Δ。Γの同じ位置にはnoneを追加する |
+| パターン束縛の続き、matchの本体とガード | 束縛数だけnoneを先頭へ追加する。ガードのΓにはhideContsを適用する |
+| dieの説明 | 同じΔ。ΓはhideConts Γ、Rはnoneで、効果は空を要求する |
+| その他の部分式・ブロック、節の列の続き | 同じΔ。discardは表層の位置を増やさない |
+
+七判断の `congrΔ` は、すべてのiで `Δ.kindAt i = Δ'.kindAt i` なら同じ入力の導出をΔ'へ移せることを相互帰納で示す。通常束縛の下では両方にnoneを追加し、境界では両方を[]にする。
+
+`Surface.BuilderFree` は、Expr・Exprs・HoleArgs・Arms・Clauses・Blockの全構成子を明示し、境界を含め子にも専用構文がないことを要求する。七判断の `of_builderFree` は、この条件のもとで任意のΔへ導出を移す別の相互帰納である。`builderFree_iff` は任意Δと空Δの判断の同値を与える。builderOpではこの条件をFalseとし、専用操作を含まない入力だけに適用する。理由: 構築器を含まない入力では、分類表を増やしても通常の型判断と受理する入力を変えないためである。
+
+検査器のR/Q付きの内部関数もCの前にΔを受ける。R付き関数は上表に従って子へΔを渡し、Q付き関数は受けたΔをR付き関数へ渡す。従来の公開入口と宣言本体は[]を使う。
+
+`Check.BuilderInvariant q C Γ Δ` は、Aligned Γ Δ・Clean C.length Δ・AtomsIn q.atoms Δ・Single (NoFailCtxOf q.noFailRows) Δの四条件の組である。通常束縛を一つまたは複数加えるとき、四条件を分類表の保存補題で保つ。説明とガードでは整列をhideContsの下へ移し、残る三条件をそのまま使う。捕捉境界と閉じた定数の本体では、変換後のC・Γについて空Δの四条件を閉じる。
+
+strict・relaxedの支持保存は、任意のΔと四条件のもとで、結果の型・効果と継続への要求の支持を示す。節の型探索と効果の反復にも同じ条件を渡す。`mutualSoundness` の帰納で示す性質は、任意のΔと四条件のもとで、strictの成功からΔ付きの七判断と結果の型・効果の支持を導く。子の導出自体が必要なΔを持ち、空Δで得た全体の導出を旧構文の証拠で移す方式は使わない。式とブロックの内部入口では、同じ支持と結果の検査から単一Failを導く。公開の健全性11件・単一Fail・プログラム全体の定理は、空Δの四条件を内部で閉じ、従来の前提と結論を保つ。Input.Sound・WellFormed・Builtins.Assumptionsの条件は増やさない。理由: 専用位置から得る内容の型にも、通常の型と同じ範囲・支持・単一Failの条件を適用するためである。
+
+【決定】七判断の脱糖の内部補題は、Aligned Γ ΔとClean C.length Δのもとで、規則ごとの相互帰納によりセル環境fillBuilders Γ Δの導出を結論する。式・ブロックは同じ型と効果、式の列は同じ型列、穴は穴の束縛を加えた環境、分岐は照合対象の束縛を加えた環境、節は同じセル環境で型が付く。通常の束縛ではunder_value、複数のパターン束縛ではunder_bindsにより、帰納の結論とコアの束縛を一致させる。
+
+説明とガードの帰納には同じΔを渡し、fillBuilders_hideContsで接続する。lambda・lazy・通常節・Fail節・部分適用の子には空Δを渡す。その子のコアの導出を、既存のrenameとRenOk.up・hide・shiftEによりセル環境へ移す。型束縛のある節も、Δをシフトせず、通常環境の対応をshiftEnvの下へ移す。定数の閉じた本体は空環境から使用位置へ移す。直接の頭・補間・dieの表示では、表層の辞書証拠をコアへ変換してから恒等の番号対応で移す。脱糖の関数と局所番号は変えない。
+
+cleanの式/ブロックの相互帰納はClean Δを前提とし、通常束縛と空Δの境界で条件を保存する。scopedの七補題は任意Δ、型変数数nt、エフェクト変数の述語pe、局所数nvに対する相互帰納であり、結論の型・エフェクト変数の範囲条件は環境を引数に取らない。この言明はセル環境でも保つ。ShiftClean/SubstCleanは通常の型だけを扱い、Δの操作は加えない。
+
+HasType.desugarとHasBlock.desugarは、空Δの整列とClean、およびfillBuilders Γ [] = Γから従来の環境での結論を得る。プログラムの型保存と表層のエフェクト健全性の前提・結論は保つ。専用操作の型保存も同じ内部の帰納へ接続する。専用宣言も同じ型保存の帰納へ接続し、コアの捕捉禁止は後述の「構築器の局所宣言と捕捉」の定理で示す。Rustとの接続は、この段階の証明に含まない。理由: セル環境への対応は内部の帰納で示し、公開入口では空Δの条件を内部で閉じるためである。
+
+### 構築器の専用操作と脱糖
+
+【決定】型付き表層の `Expr.builderOp o i args refs` は、専用位置i、通常引数の列args、種類別の参照先refsを持つ。型付け規則E_BuilderOpは、Refs.Okと通常引数のHasTypesQを要求する。結果と引数の契約は次のとおりである。
+
+| 操作 | Stringの引数 | List[T]の引数 | Bytesの引数 | 結果 |
+|---|---|---|---|---|
+| append | String一つ | T一つ | Byte一つ | Unit |
+| appendAll | List[String]一つ | List[T]一つ | Bytes一つ | Unit |
+| copy | なし | なし | なし | 内容の型 |
+| length | なし | なし | なし | Integer |
+
+引数の効果をεとすると、全操作の効果はε ∪ {State}である。構築器の位置は通常環境Γのnoneに対応し、通常のlocalでは読めない。専用操作の結果は通常のRelease.Tyである。理由: セルだけを専用位置として追跡し、取り出した不変値は通常の型とエフェクトの規則で扱うためである。
+
+`Surface.BuilderLower` は、通常引数の脱糖をsequenceで一度ソース順に評価し、そのletの個数だけセル番号をずらしてbuilderFinishへ渡す。copyはget、lengthはgetの結果を長さの関数へ渡す。appendとappendAllは、引数の評価、get、純粋な合成、setの順にletで接続する。StringのappendAllは空の区切りによるjoinと加算、Listはappendまたはconcatenate、Bytesのappendは一要素リストのfromListとconcatenate、appendAllはconcatenateへ写す。getとsetの間で利用者の式を再評価しない。純粋な合成が失敗するとsetへ進まない。
+
+`builderCombine_typed`・`builderFinish_typed`・`builderOp_desugar_typed` は、Refs.Ok、整列、通常引数の帰納の結論から、fillBuilders環境で同じ型と効果を導く。通常の参照先の型付けと既存のrename・let・呼び出しの規則を使い、変換後の再検査で型保存を代用しない。Scopedはセル番号、すべての参照先の型引数、通常引数の範囲を検査する。cleanはΔの内容の型から操作の結果の条件を得る。ShiftCleanとSubstCleanは従来どおり通常の型だけを扱う。
+
+`Surface.BuilderCheck` は、専用位置の種類とRefs.Okの全条件を有限検査する。宣言そのものの型・行の範囲、種類、型引数の個数・範囲、通常関数の辞書の不在、制約、具体化後の単一Failと関数型の一致も検査する。宣言の最上位の効果へ追加の正規形条件は課さない。Expr.AtomsInは内容の型に加え、全参照先の型引数と通常引数の支持を要求する。strict/relaxedの支持保存と、strictの健全性の帰納には専用操作の子を直接接続し、結果の単一Failは既存の結果の検査から得る。Stateは消去しない。
+
+【決定】公開入口の分類表は空である。builderOp_empty_rejectedは、その入口で外側の宣言を持たない単独の専用操作の成功を否定する。builderBindの続きでは先頭に専用位置が加わり、通常の公開入口からも宣言と操作を組み合わせられる。BuilderExamplesは、三種類・四操作のstrict/relaxed、通常値化・種類・参照先・通常引数の誤り、宣言後の捕捉境界の拒否と先行copyの受理を確認する。有限実行では、引数の一度の評価とget/setの順序、合成の失敗時のセル保存、copyの安定性、分岐・複数セル、宣言を含むhandleとresumeを確認する。構築器のRust出力との交換比較は未実施である。
+
+### 構築器の局所宣言と捕捉
+
+【決定】B_BuilderBindは、refs.kind = kind、TyOK C.length kind.contents、SingleTy Q kind.contents、先頭の専用位置でのRefs.Ok、none :: Γとsome kind :: Δのもとでの後続の導出を前提とする。後続の型をT、効果をεとすると、宣言を含むブロックの型はT、効果は{State} ∪ εである。最後の宣言は後続.emptyであり、UnitとStateを返す。
+
+builderInitは空文字列、空のList、またはBytes.emptyの呼び出しを返す。builderNewはその値を内部のletで受け、Reference.newへ渡す。宣言全体はbuilderNewと後続の脱糖を外側のletで接続する。後続の先頭は一つのセルだけであり、初期値の一時変数はその番号空間に残らない。builderBlock_desugar_typedは、このletとfillBuilders.under_builderを使って型とStateの保存を導く。clean・scoped・congrΔ・旧構文のBuilderFree、検査器の支持保存と健全性も宣言の規則を持つ。
+
+検査器は内容のcleanTyと単一Fail、Stateの支持、宣言の種類と参照先を確認してから、先頭に専用位置を加えて後続を検査する。Block.AtomsInは内容と参照先の型引数と後続の支持、Block.Scopedは内容の型・参照先の範囲と一つ増えた局所番号での後続の範囲を要求する。宣言の後続は診断の子番号0であり、Walkもその位置を明示して辿る。
+
+Surface.Lemmas.BuilderCaptureのReadsは、コアのlamの引数、let、パターンの束縛、通常節の引数・辞書・継続、Fail節の二位置を除外して、外側の自由な番号を調べる。EnvReadsとReleaseの型付けの相互帰納は、Γのnoneの位置が自由参照に含まれないことを示す。builderExprBoundary_no_captureは、コアのlam・lazyCを生成する各部分導出について、実際の脱糖の全自由参照がその場所のΔの専用位置を避けることを結論する。部分適用のcallee・固定引数から生じる本体も含む。通常節とFail節にはbuilderClauses_no_captureとbuilderFailClause_no_captureを使う。これらの補題は公開入口の空Δに限らず、局所宣言を加えた先の部分導出にも適用できる。
+
+Surface.Lemmas.BuilderCaptureAllのCapturesは、通常の計算でセルを使うことを許し、コアのlam・lazyC・ハンドラの節の本体にはReadsを要求する。letとパターンの束縛の下では、liftReadsで新しい番号を除外し、残りを元の外側の番号へ戻す。BuilderCaptureComposeは、letChain・callComp・レコードの構築と更新・展開・補間・専用操作について、この条件の合成を証明する。
+
+BuilderNoCaptureのHasTypeQ.captures・HasTypesQ.captures・HasEachQ.captures・HasArmsQ.captures・HasBlockQ.capturesは、任意の述語pvとEnvReads pv Γのもとで、式・引数の並び・分岐・ブロックの脱糖がCaptures pvを満たすことを相互帰納で示す。穴の列の固定式もHasHoleArgsQ.capturesで接続する。空Δで型が付く生成境界と通常節・Fail節には、既存の型保存とΓのnoneの不参照を使う。通常の式の帰納には同じΔを渡し、専用宣言の後続には先頭のnoneとsome kindを追加する。
+
+builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads (fun i => Δ.kindAt i = none) Γを導き、脱糖した式またはブロックの全体にCapturesを結論する。Δは任意であり、局所宣言を加えた先の各部分導出にも、その場所のΓ・Δで適用する。内側で宣言するセルはそこでの束縛として区別する。公開入口の空Δだけを根拠にしない。builders_ordinary_resultは結果の通常型の条件TyOKを示し、Reference値一般の利用や、先にcopyした不変値の捕捉は制限しない。これは既存のcleanによる型の範囲条件の再確認であり、セルの逸出の禁止を主張しない。
+
+構築器の交換はcorpus 12で、builderBindのkind・refs・restとbuilderOpのop・index・args・refsを明示する。refsは種類別のセルと純粋な参照先、および型引数を保ち、indexはΓと同じ位置を表す。変換は番号を付け直さず、Δは宣言を辿って検査する際に作る。独立入力は通常値・辞書・継続とセルの位置を数え、境界の拒否と手書きの期待コアを照合する。交換の変換自体は上記の型保存・捕捉禁止の証明に含めない。Rustとの構築器の接続はこの段階には含まない。
 
 ### 確かめる性質
 

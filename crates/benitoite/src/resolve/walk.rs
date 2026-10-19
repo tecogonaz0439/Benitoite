@@ -147,6 +147,12 @@ impl Resolver<'_> {
 
     fn decl_signature(&mut self, module: ModuleId, top: &TopDecl) {
         let mut ctx = Ctx::new(module, top.item.id());
+        let opaque = self
+            .out
+            .decls
+            .get(top.item.id())
+            .and_then(|id| self.out.bindings.get(*id))
+            .is_some_and(|b| b.opaque);
         match &top.item {
             Item::Fn(d) => {
                 self.signature(
@@ -165,10 +171,16 @@ impl Resolver<'_> {
             }
             Item::Data(d) => {
                 self.type_parameters(&mut ctx, d.id, &d.type_params);
+                // 宣言の頭の公開契約を先に保存し、隠すのは内部表現だけにする
+                // （設計書 02-04「宣言の検査」）。
+                let head = opaque.then(|| ctx.used.clone());
                 for v in &d.variants {
                     for ty in &v.fields {
                         self.ty(&mut ctx, ty);
                     }
+                }
+                if let Some(head) = head {
+                    ctx.used = head;
                 }
             }
             Item::Alias(d) => {
@@ -181,8 +193,14 @@ impl Resolver<'_> {
             }
             Item::Record(d) => {
                 self.type_parameters(&mut ctx, d.id, &d.type_params);
+                // 宣言の頭の公開契約を先に保存し、隠すのは内部表現だけにする
+                // （設計書 02-04「宣言の検査」）。
+                let head = opaque.then(|| ctx.used.clone());
                 for f in &d.fields {
                     self.ty(&mut ctx, &f.ty);
+                }
+                if let Some(head) = head {
+                    ctx.used = head;
                 }
             }
             Item::Trait(d) => {
@@ -325,6 +343,9 @@ impl Resolver<'_> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     pub(super) fn expr(&mut self, ctx: &mut Ctx, expr: &Expr) {
+        if self.builder_expr(ctx, expr) {
+            return;
+        }
         match expr {
             Expr::Name(e) => {
                 self.name(ctx, e.id, &e.path, Position::Value);
@@ -343,27 +364,7 @@ impl Resolver<'_> {
                     }
                 }
             }
-            Expr::Call(e) => {
-                // レコード名の直接呼び出しには、従来のフィールド指定の規則を保つ。
-                // 関数値への束縛は別に許す（設計書 02-04「名前の引き方」）。
-                let record_values = ctx.record_values;
-                if matches!(e.callee.as_ref(), Expr::Name(_)) {
-                    ctx.record_values = false;
-                }
-                self.expr(ctx, &e.callee);
-                ctx.record_values = record_values;
-                for arg in &e.args {
-                    match arg {
-                        Arg::Expr(e) => self.expr(ctx, e),
-                        Arg::Placeholder(_) => {}
-                        Arg::Named(a) => {
-                            if let ArgValue::Expr(e) = &a.value {
-                                self.expr(ctx, e);
-                            }
-                        }
-                    }
-                }
-            }
+            Expr::Call(e) => self.resolve_call(ctx, e),
             Expr::Record(e) => self.resolve_named_record(ctx, e),
             Expr::Binary(e) => {
                 self.expr(ctx, &e.lhs);
@@ -393,13 +394,49 @@ impl Resolver<'_> {
                     self.expr(ctx, message);
                 }
             }
-            Expr::Lazy(e) => self.block(ctx, &e.body),
+            Expr::Lazy(e) => self.resolve_lazy(ctx, e),
             Expr::With(e) => self.resolve_with(ctx, e),
             Expr::Handle(e) => self.resolve_handle(ctx, e),
             Expr::Resume(e) => self.expr(ctx, &e.value),
             Expr::Lit(_) | Expr::Unit(_) | Expr::Error(_) => {}
         }
     }
+    #[inline(never)]
+    fn resolve_call(&mut self, ctx: &mut Ctx, e: &CallExpr) {
+        let saved = ctx.builder_boundary;
+        if e.args.iter().any(|a| a.placeholder().is_some()) {
+            ctx.builder_boundary = Some((e.id, super::text::BUILDER_PARTIAL, e.span));
+        }
+        // レコード名の直接呼び出しには、従来のフィールド指定の規則を保つ。
+        // 関数値への束縛は別に許す（設計書 02-04「名前の引き方」）。
+        let record_values = ctx.record_values;
+        if matches!(e.callee.as_ref(), Expr::Name(_)) {
+            ctx.record_values = false;
+        }
+        self.expr(ctx, &e.callee);
+        ctx.record_values = record_values;
+        for arg in &e.args {
+            match arg {
+                Arg::Expr(e) => self.expr(ctx, e),
+                Arg::Placeholder(_) => {}
+                Arg::Named(a) => {
+                    if let ArgValue::Expr(e) = &a.value {
+                        self.expr(ctx, e);
+                    }
+                }
+            }
+        }
+        ctx.builder_boundary = saved;
+    }
+
+    #[inline(never)]
+    fn resolve_lazy(&mut self, ctx: &mut Ctx, e: &LazyExpr) {
+        let saved = ctx.builder_boundary;
+        ctx.builder_boundary = Some((e.id, super::text::BUILDER_LAZY, e.span));
+        self.block(ctx, &e.body);
+        ctx.builder_boundary = saved;
+    }
+
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     pub(super) fn resolve_named_record(&mut self, ctx: &mut Ctx, e: &RecordExpr) {
@@ -434,6 +471,8 @@ impl Resolver<'_> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     fn resolve_lambda(&mut self, ctx: &mut Ctx, e: &LambdaExpr) {
+        let saved = ctx.builder_boundary;
+        ctx.builder_boundary = Some((e.id, super::text::BUILDER_LAMBDA, e.span));
         for param in &e.params {
             if let Some(ty) = &param.ty {
                 self.ty(ctx, ty);
@@ -449,6 +488,7 @@ impl Resolver<'_> {
         self.parameters(ctx, &e.params, LocalKind::LambdaParam);
         self.block(ctx, &e.body);
         ctx.scopes.pop();
+        ctx.builder_boundary = saved;
     }
 
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -483,7 +523,10 @@ impl Resolver<'_> {
                     seen.entry(name.text.clone()).or_insert(id);
                 }
             }
+            let saved = ctx.builder_boundary;
+            ctx.builder_boundary = Some((clause.id, super::text::BUILDER_CLAUSE, clause.span));
             self.block(ctx, &clause.body);
+            ctx.builder_boundary = saved;
             ctx.scopes.pop();
         }
     }

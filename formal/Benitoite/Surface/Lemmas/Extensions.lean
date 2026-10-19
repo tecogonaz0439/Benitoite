@@ -77,12 +77,13 @@ theorem StrHeadsTyped.rename {hs ts Δ ξ} (h : StrHeadsTyped P B Q C Γ hs ts)
   | nil => exact .nil
   | cons hh _ ih => exact .cons (hh.rename hr) ih
 
-theorem directHeads_typed {p : Program} {op C Γ R fs ts ε δ}
-    (h : HasTypesQ (p.declarationsFor view) B op Q C Γ R fs ts ε)
-    (hm : CompTypesQ (desugarProgram op p) B Q C Γ R δ (desugarExprs op fs) ts)
+theorem directHeads_typed {Δb : BuilderCtx} {p : Program} {op C Γ Γc R fs ts ε δ}
+    (hΓc : RenOk Γ Γc id)
+    (h : HasTypesQ (p.declarationsFor view) B op Q Δb C Γ R fs ts ε)
+    (hm : CompTypesQ (desugarProgram op p) B Q C Γc R δ (desugarExprs op fs) ts)
     (hd : fs.AllDirect)
     (ht : ∀ t ∈ ts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty) :
-    StrHeadsTyped (desugarProgram op p) B Q C Γ (directHeads fs) ts := by
+    StrHeadsTyped (desugarProgram op p) B Q C Γc (directHeads fs) ts := by
   match h with
   | .nil => exact .nil
   | .cons (a := t) hf hfs =>
@@ -91,8 +92,8 @@ theorem directHeads_typed {p : Program} {op C Γ R fs ts ε δ}
           obtain ⟨a, rfl⟩ := ht t (by simp)
           obtain ⟨head, hh⟩ := hd.1
           simp only [directHeads, hh, Option.getD_some]
-          exact .cons (directCallee_typed hh hf hm)
-            (directHeads_typed hfs hms hd.2 (fun t hm => ht t (by simp [hm])))
+          exact .cons (directCallee_typed hh hf hm hΓc)
+            (directHeads_typed hΓc hfs hms hd.2 (fun t hm => ht t (by simp [hm])))
 
 theorem converterTypes_fn (parts : List InterpPart) :
     ∀ t ∈ InterpPart.converterTypes parts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty := by

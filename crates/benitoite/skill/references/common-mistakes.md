@@ -534,3 +534,22 @@ end function
 ```output
 b
 ```
+
+
+## Constant regular expressions
+
+Direct `Regex.compile` calls with an invalid constant `source` fail with E0457 (syntax) or E0458 (runtime compiler limit), even inside a test or a `match`. Import aliases are checked too. A top-level `const` still cannot call `Regex.compile` (E0433). To test `Result.Error`, write a normal function taking a `String` and call `Regex.compile(source)` in its body, then pass the invalid pattern to that function. Dynamic input, local function values, holes and pipes retain runtime checking. Check-budget exhaustion also leaves runtime checking in place; a successful check does not remove `Result` or embed a compiled pattern.
+
+
+## Treating a checked scope as permission
+
+`Scope.checkHost`, `Scope.checkPath`, and `Scope.checkEndpoint` return opaque values retaining both condition and target. Use public projections and recheck changes; external construction, record update, patterns, and automatic accessors are E0340. A saved condition establishes spelling membership. Permission, DNS resolution, actual files and links, isolation, and IO success require separate decisions.
+
+Direct calls reject known malformed patterns (E0459), targets (E0460), ports or bounds (E0461), and known membership failures (E0462), including inside tests. Endpoint checks the known host pair and integer triple independently. For runtime Error tests, use a normal function taking the inputs as parameters. Local function values, placeholders, and pipes keep runtime checking. `*.example.com` matches one preceding label, `**.example.com` one or more; neither matches `example.com`. Path trees include their stem and match component boundaries.
+
+An opaque type keeps its constructors private to its declaring module. `@opaque` data types and records follow the equality rules for their contents; only built-in opaque types without equality (such as `IOError` and `Regex.Pattern`) and external types are excluded from equality.
+
+
+## Capturing a builder in a callback
+
+A builder is a second-class value, not an ordinary function argument or a stored mutable container. A lambda passed to List.forEach cannot capture it (E0465). Build immutable fragments with List.map first and pass the result to appendAll, or bind a snapshot/length before creating a callback. Import each builder module in the module that uses it, even if another module imports it. A direct annotated local new declaration is required (E0463); function values, holes and pipes for builder operations are E0466. State remains required for new, append, appendAll, copy and length.

@@ -1,0 +1,251 @@
+diff --git a/crates/benitoite/src/typeck/context.rs b/crates/benitoite/src/typeck/context.rs
+index 187b0a87..ef5bf334 100644
+--- a/crates/benitoite/src/typeck/context.rs
++++ b/crates/benitoite/src/typeck/context.rs
+@@ -1,9 +1,10 @@
+ //! 本体ごとに作って捨てる推論の文脈（設計書 02-05「検査の単位と手順」）。
++use super::body_map::{BodyBindingMap, BodyNodeMap};
+ use super::decls::{Decls, Scope};
+ use super::infer::*;
+ use super::solve::Solver;
+ use super::{HandleInfo, TryKind};
+-use crate::base::{BindingId, BindingMap, ModuleId, NodeId, NodeMap, Span};
++use crate::base::{BindingId, ModuleId, NodeId, Span};
+ use crate::diag::Diagnostic;
+ use crate::syntax::ast::{Block, Expr, Pattern};
+ use crate::types::*;
+@@ -57,22 +58,22 @@ pub(super) struct Body<'a, 'd> {
+     pub scheme: Scheme,
+     pub solver: Solver,
+     pub constraints: Vec<Constraint>,
+-    pub locals: BindingMap<ITy>,
+-    pub expr_types: NodeMap<ITy>,
+-    pub source_effects: NodeMap<IEffect>,
++    pub locals: BodyBindingMap<ITy>,
++    pub expr_types: BodyNodeMap<ITy>,
++    pub source_effects: BodyNodeMap<IEffect>,
+     pub expr_spans: HashMap<NodeId, Span>,
+-    pub call_plans: NodeMap<super::CallPlan>,
++    pub call_plans: BodyNodeMap<super::CallPlan>,
+     pub named_calls: Vec<super::calls::PendingCall>,
+     /// 位置呼び出しでも、未知の契約を出力前に拒否するための呼ぶ値と位置。
+     pub call_contracts: Vec<(ITy, Span, Span)>,
+-    pub type_args: NodeMap<(Vec<IArg>, Vec<IEffect>)>,
+-    pub operand_types: NodeMap<ITy>,
+-    pub interp_types: NodeMap<ITy>,
+-    pub lambda_effects: NodeMap<IEffect>,
+-    pub try_kinds: NodeMap<(TryKind, TryConstraintAction)>,
+-    pub die_shows: NodeMap<DictExpr>,
++    pub type_args: BodyNodeMap<(Vec<IArg>, Vec<IEffect>)>,
++    pub operand_types: BodyNodeMap<ITy>,
++    pub interp_types: BodyNodeMap<ITy>,
++    pub lambda_effects: BodyNodeMap<IEffect>,
++    pub try_kinds: BodyNodeMap<(TryKind, TryConstraintAction)>,
++    pub die_shows: BodyNodeMap<DictExpr>,
+     pub die_message_boundary: bool,
+-    pub handlers: NodeMap<HandleInfo>,
++    pub handlers: BodyNodeMap<HandleInfo>,
+     pub failure_handles: Vec<(NodeId, ITy, Span)>,
+     pub clauses: Vec<ClauseContext>,
+     /// プレースホルダの展開が継続を隠している間の E0509 の補助。
+@@ -80,12 +81,12 @@ pub(super) struct Body<'a, 'd> {
+     /// 現在の `return` が抜ける境界。診断で戻り値の持ち主を示す。
+     pub return_owner: ReturnOwner,
+     /// 制約を解く時点で、各 `try` の戻り先の境界を引く。
+-    pub try_owners: NodeMap<ReturnOwner>,
++    pub try_owners: BodyNodeMap<ReturnOwner>,
+     /// 節を辿り終えた後の制約の解決でも、操作が宣言した組み込みの制約を引く
+     /// （設計書 02-05「型とエフェクトの表現」）。
+-    pub clause_params: NodeMap<Vec<TypeParamInfo>>,
++    pub clause_params: BodyNodeMap<Vec<TypeParamInfo>>,
+     /// 操作の書いた名前と節の位置。剛な型の脱出の診断で出どころを示す。
+-    pub clause_ops: NodeMap<(String, Span)>,
++    pub clause_ops: BodyNodeMap<(String, Span)>,
+     pub matches: Vec<(MatchInfo, ITy)>,
+     pub lambda_returns: Vec<(Block, ITy)>,
+     pub bindings: Vec<(Pattern, ITy)>,
+@@ -116,28 +117,28 @@ impl<'a, 'd> Body<'a, 'd> {
+             scheme,
+             solver,
+             constraints: vec![],
+-            locals: BindingMap::default(),
+-            expr_types: NodeMap::default(),
+-            source_effects: NodeMap::default(),
++            locals: BodyBindingMap::default(),
++            expr_types: BodyNodeMap::default(),
++            source_effects: BodyNodeMap::default(),
+             expr_spans: HashMap::new(),
+-            call_plans: NodeMap::default(),
++            call_plans: BodyNodeMap::default(),
+             named_calls: vec![],
+             call_contracts: vec![],
+-            type_args: NodeMap::default(),
+-            operand_types: NodeMap::default(),
+-            interp_types: NodeMap::default(),
+-            lambda_effects: NodeMap::default(),
+-            try_kinds: NodeMap::default(),
+-            die_shows: NodeMap::default(),
++            type_args: BodyNodeMap::default(),
++            operand_types: BodyNodeMap::default(),
++            interp_types: BodyNodeMap::default(),
++            lambda_effects: BodyNodeMap::default(),
++            try_kinds: BodyNodeMap::default(),
++            die_shows: BodyNodeMap::default(),
+             die_message_boundary: false,
+-            handlers: NodeMap::default(),
++            handlers: BodyNodeMap::default(),
+             failure_handles: vec![],
+             clauses: vec![],
+             placeholder_boundary: false,
+             return_owner: ReturnOwner::Function,
+-            try_owners: NodeMap::default(),
+-            clause_params: NodeMap::default(),
+-            clause_ops: NodeMap::default(),
++            try_owners: BodyNodeMap::default(),
++            clause_params: BodyNodeMap::default(),
++            clause_ops: BodyNodeMap::default(),
+             matches: vec![],
+             lambda_returns: vec![],
+             bindings: vec![],
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index 6153e0ce..b4c88b47 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -1,5 +1,6 @@
+ //! 宣言の検査と型の要約（設計書 02-05「検査の単位と手順」「宣言の検査」）。
+ 
++use super::body_map::BodyBindingMap;
+ use super::limits::{MAX_TYPE_DEPTH, TypeBudget, TypeLimit};
+ use super::{MainInfo, TypeckOutput};
+ use crate::base::{BindingId, BindingMap, ModuleId, NodeId, SourceTable, Span};
+@@ -17,8 +18,8 @@ use std::collections::{BTreeMap, BTreeSet};
+ /// 定義の型パラメータの番号。囲む定義の分を先に置く（`types` のモジュールの説明）。
+ #[derive(Clone, Default)]
+ pub(super) struct Scope {
+-    pub params: BindingMap<(u32, ParamKind)>,
+-    pub effects: BindingMap<u32>,
++    pub params: BodyBindingMap<(u32, ParamKind)>,
++    pub effects: BodyBindingMap<u32>,
+ }
+ 
+ /// 宣言の段の文脈。T1〜T3 が宣言を追加・検査するための共通の入口。
+diff --git a/crates/benitoite/src/typeck/mod.rs b/crates/benitoite/src/typeck/mod.rs
+index 2531ada3..04382877 100644
+--- a/crates/benitoite/src/typeck/mod.rs
++++ b/crates/benitoite/src/typeck/mod.rs
+@@ -154,6 +154,7 @@ pub fn typecheck(
+     decls::check(modules, asts, sources, resolved, require_main)
+ }
+ 
++mod body_map;
+ mod calls;
+ mod consts;
+ mod context;
+diff --git a/crates/benitoite/src/typeck/traits/solve.rs b/crates/benitoite/src/typeck/traits/solve.rs
+index 2a7763ff..431ece1b 100644
+--- a/crates/benitoite/src/typeck/traits/solve.rs
++++ b/crates/benitoite/src/typeck/traits/solve.rs
+@@ -1,8 +1,9 @@
+ //! 型の確定後に辞書を解く。実装の上位の辞書も同じ手順を使う（設計書 02-05「型クラスの制約の解決」）。
+ use super::{class_name, collect::show, constraint_name, parameter_edit};
+-use crate::base::{BindingId, ModuleId, NodeId, NodeMap, Span};
++use crate::base::{BindingId, ModuleId, NodeId, Span};
+ use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
+ use crate::typeck::{
++    body_map::BodyNodeMap,
+     context::Body,
+     decls::{Decls, Scope},
+     infer::*,
+@@ -318,7 +319,10 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
+ }
+ 
+ // 補助の検査でも節の型パラメータと診断の操作名を保つ（設計書 02-05「型クラスの制約の解決」）。
+-pub(super) type ClauseBounds<'a> = (&'a NodeMap<Vec<TypeParamInfo>>, &'a NodeMap<(String, Span)>);
++pub(super) type ClauseBounds<'a> = (
++    &'a BodyNodeMap<Vec<TypeParamInfo>>,
++    &'a BodyNodeMap<(String, Span)>,
++);
+ 
+ pub(super) fn check_bounds(
+     d: &mut Decls<'_>,
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index 6e2e3576..35b98203 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -49,6 +49,8 @@
+ 
+ 本体の文脈 `Body` は、宣言側のモジュールの ID を明示的に受け取る。関数・実装メソッド・定数では名前解決の束縛から引き、型クラスの制約の補助検査では呼び出し側の本体または実装の所属を渡す。内側の lambda・ガード・lazy は同じ文脈を使い、所属を変えない。理由: 本体の持ち主を表すノードの有無から所属を推測すると、定数や内側の式の扱いが分かれるためである。
+ 
++本体内のノード番号の表 `BodyNodeMap` と局所束縛の表 `BodyBindingMap` は、実在する番号だけを `BTreeMap` に保持する。宣言ごとの `Scope` の型・エフェクトパラメータも `BodyBindingMap` に保持する。どちらもプログラム全体の番号を鍵とし、番号の昇順で走査する。理由: 全体の番号までの空き領域を本体・宣言ごとに確保・走査すると、小さな関数の数に対して費用が二乗で増えるためである。
++
+ 型表の `AdtDef.extensible` は、`data`・レコード宣言の `@extensible` を反映する。指定のない宣言では `false` である。
+ 
+ 標準の Result・Option の宣言には指定を許さない。解決済みの標準型の束縛番号で識別し、指定があれば型表へ登録する前に処理系の不具合として報告して検査を止める。利用者の同名の型にはこの制限を適用しない。理由: 失敗を伝播する標準型が閉じているという前提を、変更された標準ライブラリのソースにも適用するためである。
+@@ -75,6 +77,8 @@
+ | リテラルの値 | リテラルの式とリテラルのパターンのノード番号 | 型検査器が範囲を確かめて求めた値（`-n` の形は符号を含めた値） | 脱糖 |
+ | 範囲のパターンの両端 | 範囲のパターンのノード番号 | 両端の値 | 脱糖 |
+ 
++`TypeckOutput` のノード・束縛の表は、従来どおり全体番号を鍵とする密な `base::NodeMap`・`base::BindingMap` である。`Body::finish` は本体内の表に実在する要素だけを辿り、型とエフェクトを確定して同じ番号で全体の表へ移す。未登録の番号は欠けたままとし、番号を詰め直さない。
++
+ 【決定】呼び出しの対応表は、引数の式を辿る順を変えず、脱糖が保存した値の参照を宣言順へ配置するために使う。位置引数の呼び出し、直接の構成子、プレースホルダとパイプの自動挿入にも対応表を記録する。名前付き引数の AST を検査する補助は、既知の契約への未知・重複・不足と、対応する引数型を検査する。未知・重複・不足がある呼び出しから引数型の制約を派生させない。名前付き引数の解析からこの検査へ接続し、対応が誤っている位置から型不一致を連鎖させない。理由: 各段で対応を再推測せず、検査した結果を脱糖へ渡すためである。
+ 
+ このほか型検査器は、型の宣言、型クラスの宣言、実装、エフェクトの宣言の表と、`main` の情報（束縛の番号と、戻り値の型が `Result[Unit, String]` か）を出力する。`main` の情報は、`main` を検査する経路で誤りがなかったときだけ出力する。
+@@ -156,6 +160,8 @@
+ 
+ ### 型とエフェクトの表現
+ 
++`Body` の推論中の型・エフェクト・呼び出しと節の補助情報は、前述の本体内の疎な表に保存する。`check_type_limits` はその表に実在する型だけを番号順に再検査する。型クラスの補助検査も、同じ表から節の型パラメータと操作の位置を引く。
++
+ 【決定】幅付きの数は、組み込みの型の番号で区別する。組み込みの正の名前と別名は名前解決で同じ番号に結び付け、推論に別の型として持ち込まない。型の診断には、数の型の名前の表の表示名を使う（[名前解決とモジュール読込](02-04-resolver.md)の「標準ライブラリのソースの持ち方」）。型クラスの実装の重なりも同じ番号で判定するため、例えば `Integer` と `Integer64` に同じ型クラスを別々に実装することはできない。
+ 
+ 【方針】推論の中で扱う型は、次のいずれかである。
+diff --git a/crates/benitoite/src/typeck/body_map.rs b/crates/benitoite/src/typeck/body_map.rs
+new file mode 100644
+index 00000000..fc2e0300
+--- /dev/null
++++ b/crates/benitoite/src/typeck/body_map.rs
+@@ -0,0 +1,44 @@
++//! 本体・宣言の局所番号だけを保持する表（設計書 02-05「検査の単位と手順」）。
++
++use crate::base::{BindingId, NodeId};
++use std::collections::BTreeMap;
++
++// 番号はプログラム全体で振られる。本体ごとの空き領域を確保せず、
++// 診断と出力の走査順は密な表と同じ番号の昇順にする。
++macro_rules! body_map {
++    ($name:ident, $id:ty) => {
++        /// 全体番号を保ったまま、本体・宣言内に存在する要素だけを持つ表。
++        #[derive(Clone)]
++        pub(super) struct $name<T> {
++            entries: BTreeMap<$id, T>,
++        }
++
++        impl<T> Default for $name<T> {
++            fn default() -> Self {
++                Self {
++                    entries: BTreeMap::new(),
++                }
++            }
++        }
++
++        impl<T> $name<T> {
++            /// 未登録の番号は `None` とする。
++            pub(super) fn get(&self, id: $id) -> Option<&T> {
++                self.entries.get(&id)
++            }
++
++            /// 同じ番号を更新した場合は前の値を返す。
++            pub(super) fn insert(&mut self, id: $id, value: T) -> Option<T> {
++                self.entries.insert(id, value)
++            }
++
++            /// 登録された要素を番号の昇順で辿る。
++            pub(super) fn iter(&self) -> impl Iterator<Item = ($id, &T)> {
++                self.entries.iter().map(|(id, value)| (*id, value))
++            }
++        }
++    };
++}
++
++body_map!(BodyNodeMap, NodeId);
++body_map!(BodyBindingMap, BindingId);

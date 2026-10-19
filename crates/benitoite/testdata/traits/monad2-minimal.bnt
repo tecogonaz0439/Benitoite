@@ -1,0 +1,29 @@
+// spec: 01-06 高カインド型（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+
+trait Binary[F[_, _]]
+  function map[A, B, X](x: F[A, X], f: function(value: A) -> B) -> F[B, X]
+end trait
+
+implement Binary[Result]
+  function map[A, B, X](x: Result[A, X], f: function(value: A) -> B) -> Result[B, X]
+    return match x with
+      case Result.Ok(value) -> Result.Ok(f(value))
+      case Result.Error(error) -> Result.Error(error)
+    end match
+  end function
+end implement
+
+function twice[F[_, _]: Binary, X](x: F[Integer, X]) -> F[Integer, X]
+  return Binary.map(x: x, f: lambda(value) return value * 2 end lambda)
+end function
+
+function main() -> Unit uses Console.Write
+  bind ok: Result[Integer, String] <- twice(Result.Ok(3))
+  bind error: Result[Integer, String] <- twice(Result.Error("bad"))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: ok, fallback: -1)))
+  Console.writeLine(match error with
+    case Result.Ok(_) -> "unexpected"
+    case Result.Error(message) -> message
+  end match)
+end function

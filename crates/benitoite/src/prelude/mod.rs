@@ -337,4 +337,34 @@ pub const STDLIB: &[StdlibModuleSource] = &[
         unofficial: true,
         text: include_str!("stdlib/Test/Property.bnt"),
     },
+    StdlibModuleSource {
+        path: &["Scope"],
+        prelude: false,
+        unofficial: true,
+        text: include_str!("stdlib/Scope.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["Range"],
+        prelude: false,
+        unofficial: true,
+        text: include_str!("stdlib/Range.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["StringBuilder"],
+        prelude: false,
+        unofficial: false,
+        text: include_str!("stdlib/StringBuilder.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["ListBuilder"],
+        prelude: false,
+        unofficial: false,
+        text: include_str!("stdlib/ListBuilder.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["BytesBuilder"],
+        prelude: false,
+        unofficial: false,
+        text: include_str!("stdlib/BytesBuilder.bnt"),
+    },
 ];

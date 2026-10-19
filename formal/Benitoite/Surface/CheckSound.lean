@@ -13,7 +13,7 @@ theorem checkExpr_sound {q C Γ R p path e a ε}
     HasType q.D q.B q.opPrim C Γ R p e a ε ∧
       a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkExpr_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) he hΓ hR h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) he hΓ hR h
 
 theorem checkBlock_sound {q C Γ R p path body a ε}
     (hq : q.Sound) (hb : body.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
@@ -22,7 +22,7 @@ theorem checkBlock_sound {q C Γ R p path body a ε}
     HasBlock q.D q.B q.opPrim C Γ R p body a ε ∧
       a.AtomsIn q.atoms ∧ ε.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkBlock_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) hb hΓ hR h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) hb hΓ hR h
 
 /-- 公開入口の成功は、型付けに加えて具体化後の単一Failも保証する。 -/
 theorem checkExpr_single {q C Γ R p path e a ε}
@@ -30,13 +30,9 @@ theorem checkExpr_single {q C Γ R p path e a ε}
     (hR : ReturnAtoms q.atoms R)
     (h : checkExpr q .strict C Γ R p path e = .ok (a, ε)) :
     SingleTy Qempty a ∧ SingleEff Qempty ε := by
-  have typed := checkExpr_sound hq he hΓ hR h
-  obtain ⟨s', hh⟩ := run'_ok h
-  unfold checkExprR at hh
-  have checked := (guardInferred_result hh).2
-  simpa only [NoFailCtxOf_nil] using And.intro
-    ((singleTyCheck_spec a typed.2.1).mp checked.1)
-    ((singleEffCheck_spec ε typed.2.2).mp checked.2)
+  simpa only [NoFailCtxOf_nil] using checkExpr_single_of_mutual
+    (mutualSoundness ({ q with noFailRows := [] } : Input))
+    (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) he hΓ hR h
 
 /-- 文の列の合流も式と同じ位置で検査する。 -/
 theorem checkBlock_single {q C Γ R p path body a ε}
@@ -44,13 +40,9 @@ theorem checkBlock_single {q C Γ R p path body a ε}
     (hR : ReturnAtoms q.atoms R)
     (h : checkBlock q .strict C Γ R p path body = .ok (a, ε)) :
     SingleTy Qempty a ∧ SingleEff Qempty ε := by
-  have typed := checkBlock_sound hq hb hΓ hR h
-  obtain ⟨s', hh⟩ := run'_ok h
-  unfold checkBlockR at hh
-  have checked := (guardInferred_result hh).2
-  simpa only [NoFailCtxOf_nil] using And.intro
-    ((singleTyCheck_spec a typed.2.1).mp checked.1)
-    ((singleEffCheck_spec ε typed.2.2).mp checked.2)
+  simpa only [NoFailCtxOf_nil] using checkBlock_single_of_mutual
+    (mutualSoundness ({ q with noFailRows := [] } : Input))
+    (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) hb hΓ hR h
 
 theorem checkArms_sound {q C Γ R p path arms a b ε}
     (hq : q.Sound) (ha : arms.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
@@ -58,7 +50,7 @@ theorem checkArms_sound {q C Γ R p path arms a b ε}
     (h : checkArms q .strict C Γ R p path arms a b = .ok ε) :
     HasArms q.D q.B q.opPrim C Γ R p arms a b ε ∧ ε.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkArms_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) ha hΓ hR hin hout h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) ha hΓ hR hin hout h
 
 /-- 節の判断は許容 ε を使う。返した実際の和はその部分集合である。 -/
 theorem checkClauses_sound {q C Γ R path cs t ε actual}
@@ -68,7 +60,7 @@ theorem checkClauses_sound {q C Γ R path cs t ε actual}
     HasClauses q.D q.B q.opPrim C Γ R cs t ε ∧
       Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkClauses_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) hc hΓ hR ht hε h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) hc hΓ hR ht hε h
 
 theorem checkTypes_sound {q C Γ R path es ts ε}
     (hq : q.Sound) (he : es.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
@@ -76,7 +68,7 @@ theorem checkTypes_sound {q C Γ R path es ts ε}
     (h : checkTypes q .strict C Γ R path es ts = .ok ε) :
     HasTypes q.D q.B q.opPrim C Γ R es ts ε ∧ ε.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkTypes_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) he hΓ hR ht h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) he hΓ hR ht h
 
 theorem checkEach_sound {q C Γ R path es a ε}
     (hq : q.Sound) (he : es.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
@@ -84,7 +76,7 @@ theorem checkEach_sound {q C Γ R path es a ε}
     (h : checkEach q .strict C Γ R path es a = .ok ε) :
     HasEach q.D q.B q.opPrim C Γ R es a ε ∧ ε.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkEach_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) he hΓ hR ha h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) he hΓ hR ha h
 
 theorem checkHoleArgs_sound {q C Γ R path args ts ε}
     (hq : q.Sound) (ha : args.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
@@ -92,7 +84,7 @@ theorem checkHoleArgs_sound {q C Γ R path args ts ε}
     (h : checkHoleArgs q .strict C Γ R path args ts = .ok ε) :
     HasHoleArgs q.D q.B q.opPrim C Γ R args ts ε ∧ ε.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkHoleArgs_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (hq.withNoFailRows []) ha hΓ hR ht h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) ha hΓ hR ht h
 
 theorem checkDict_sound {q C Γ path d a}
     (hq : q.Sound) (hd : d.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)

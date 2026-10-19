@@ -1,9 +1,10 @@
 //! 本体ごとに作って捨てる推論の文脈（設計書 02-05「検査の単位と手順」）。
+use super::body_map::{BodyBindingMap, BodyNodeMap};
 use super::decls::{Decls, Scope};
 use super::infer::*;
 use super::solve::Solver;
 use super::{HandleInfo, TryKind};
-use crate::base::{BindingId, BindingMap, ModuleId, NodeId, NodeMap, Span};
+use crate::base::{BindingId, ModuleId, NodeId, Span};
 use crate::diag::Diagnostic;
 use crate::syntax::ast::{Block, Expr, Pattern};
 use crate::types::*;
@@ -57,22 +58,22 @@ pub(super) struct Body<'a, 'd> {
     pub scheme: Scheme,
     pub solver: Solver,
     pub constraints: Vec<Constraint>,
-    pub locals: BindingMap<ITy>,
-    pub expr_types: NodeMap<ITy>,
-    pub source_effects: NodeMap<IEffect>,
+    pub locals: BodyBindingMap<ITy>,
+    pub expr_types: BodyNodeMap<ITy>,
+    pub source_effects: BodyNodeMap<IEffect>,
     pub expr_spans: HashMap<NodeId, Span>,
-    pub call_plans: NodeMap<super::CallPlan>,
+    pub call_plans: BodyNodeMap<super::CallPlan>,
     pub named_calls: Vec<super::calls::PendingCall>,
     /// 位置呼び出しでも、未知の契約を出力前に拒否するための呼ぶ値と位置。
     pub call_contracts: Vec<(ITy, Span, Span)>,
-    pub type_args: NodeMap<(Vec<IArg>, Vec<IEffect>)>,
-    pub operand_types: NodeMap<ITy>,
-    pub interp_types: NodeMap<ITy>,
-    pub lambda_effects: NodeMap<IEffect>,
-    pub try_kinds: NodeMap<(TryKind, TryConstraintAction)>,
-    pub die_shows: NodeMap<DictExpr>,
+    pub type_args: BodyNodeMap<(Vec<IArg>, Vec<IEffect>)>,
+    pub operand_types: BodyNodeMap<ITy>,
+    pub interp_types: BodyNodeMap<ITy>,
+    pub lambda_effects: BodyNodeMap<IEffect>,
+    pub try_kinds: BodyNodeMap<(TryKind, TryConstraintAction)>,
+    pub die_shows: BodyNodeMap<DictExpr>,
     pub die_message_boundary: bool,
-    pub handlers: NodeMap<HandleInfo>,
+    pub handlers: BodyNodeMap<HandleInfo>,
     pub failure_handles: Vec<(NodeId, ITy, Span)>,
     pub clauses: Vec<ClauseContext>,
     /// プレースホルダの展開が継続を隠している間の E0509 の補助。
@@ -80,12 +81,12 @@ pub(super) struct Body<'a, 'd> {
     /// 現在の `return` が抜ける境界。診断で戻り値の持ち主を示す。
     pub return_owner: ReturnOwner,
     /// 制約を解く時点で、各 `try` の戻り先の境界を引く。
-    pub try_owners: NodeMap<ReturnOwner>,
+    pub try_owners: BodyNodeMap<ReturnOwner>,
     /// 節を辿り終えた後の制約の解決でも、操作が宣言した組み込みの制約を引く
     /// （設計書 02-05「型とエフェクトの表現」）。
-    pub clause_params: NodeMap<Vec<TypeParamInfo>>,
+    pub clause_params: BodyNodeMap<Vec<TypeParamInfo>>,
     /// 操作の書いた名前と節の位置。剛な型の脱出の診断で出どころを示す。
-    pub clause_ops: NodeMap<(String, Span)>,
+    pub clause_ops: BodyNodeMap<(String, Span)>,
     pub matches: Vec<(MatchInfo, ITy)>,
     pub lambda_returns: Vec<(Block, ITy)>,
     pub bindings: Vec<(Pattern, ITy)>,
@@ -116,28 +117,28 @@ impl<'a, 'd> Body<'a, 'd> {
             scheme,
             solver,
             constraints: vec![],
-            locals: BindingMap::default(),
-            expr_types: NodeMap::default(),
-            source_effects: NodeMap::default(),
+            locals: BodyBindingMap::default(),
+            expr_types: BodyNodeMap::default(),
+            source_effects: BodyNodeMap::default(),
             expr_spans: HashMap::new(),
-            call_plans: NodeMap::default(),
+            call_plans: BodyNodeMap::default(),
             named_calls: vec![],
             call_contracts: vec![],
-            type_args: NodeMap::default(),
-            operand_types: NodeMap::default(),
-            interp_types: NodeMap::default(),
-            lambda_effects: NodeMap::default(),
-            try_kinds: NodeMap::default(),
-            die_shows: NodeMap::default(),
+            type_args: BodyNodeMap::default(),
+            operand_types: BodyNodeMap::default(),
+            interp_types: BodyNodeMap::default(),
+            lambda_effects: BodyNodeMap::default(),
+            try_kinds: BodyNodeMap::default(),
+            die_shows: BodyNodeMap::default(),
             die_message_boundary: false,
-            handlers: NodeMap::default(),
+            handlers: BodyNodeMap::default(),
             failure_handles: vec![],
             clauses: vec![],
             placeholder_boundary: false,
             return_owner: ReturnOwner::Function,
-            try_owners: NodeMap::default(),
-            clause_params: NodeMap::default(),
-            clause_ops: NodeMap::default(),
+            try_owners: BodyNodeMap::default(),
+            clause_params: BodyNodeMap::default(),
+            clause_ops: BodyNodeMap::default(),
             matches: vec![],
             lambda_returns: vec![],
             bindings: vec![],

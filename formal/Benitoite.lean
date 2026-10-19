@@ -67,6 +67,8 @@ import Benitoite.Surface.Lemmas.Calls
 import Benitoite.Surface.Lemmas.DictSupport
 import Benitoite.Surface.Lemmas.CallHead
 import Benitoite.Surface.Lemmas.Typing
+import Benitoite.Surface.Lemmas.BuilderCapture
+import Benitoite.Surface.Lemmas.BuilderNoCapture
 import Benitoite.Surface.Lemmas.Extensions
 import Benitoite.Surface.Lemmas.Patterns
 import Benitoite.Surface.Lemmas.Records
@@ -122,3 +124,15 @@ import Benitoite.Release.FailureExamples
 import Benitoite.Surface.SingleFail
 import Benitoite.Surface.SingleFailCheck
 import Benitoite.Surface.FailureExamples
+
+import Benitoite.Checked.Access
+import Benitoite.Checked.Scope
+import Benitoite.Checked.Range
+
+import Benitoite.Library.ResultLaws
+import Benitoite.Surface.Monad2Examples
+
+import Benitoite.Surface.Builders
+import Benitoite.Surface.Lemmas.Builders
+
+import Benitoite.Surface.BuilderExamples

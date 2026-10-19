@@ -33,7 +33,7 @@ pub fn run_tool(tool: ToolCommand, args: Vec<OsString>, env: CliEnv) -> u8 {
                 code
             }
             Err(error) if error.report.is_some() => {
-                test_runner::check_usage_error(&env, &error.paths, &error.detail)
+                test_runner::check_usage_error(&env, &error.paths, &error.detail, error.doc)
             }
             Err(error) => super::usage_error(&env, &error.detail),
         },
@@ -89,6 +89,7 @@ pub fn print_licenses(env: &CliEnv) -> u8 {
 }
 
 pub mod args;
+pub mod doc_examples;
 pub mod formatter;
 
 pub mod test_runner;

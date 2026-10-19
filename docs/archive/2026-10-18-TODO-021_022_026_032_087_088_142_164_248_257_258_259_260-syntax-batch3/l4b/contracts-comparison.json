@@ -1,0 +1,77 @@
+{
+  "base": "65b5073d10f9ded82d21be685701aa47b4a3bc46",
+  "checks": [
+    {
+      "path": "formal/Benitoite/Surface/Typing.lean",
+      "identical_to_base": true,
+      "sha256": "5eefe97a98b8c319955fb71d04a573c38ec496325593748a1f92b6e8b05e5308"
+    },
+    {
+      "path": "formal/Benitoite/Surface/WellFormed.lean",
+      "identical_to_base": true,
+      "sha256": "1f746c7c552caa794cb7ff586e3179500e5b0a95b5bdd28f20e63943823fe237"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Check.lean",
+      "identical_to_base": true,
+      "sha256": "b579954be0f9c509e68036de209a369ac896d9ab0a061a61961405e6c5f4e993"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "identical_to_base": true,
+      "sha256": "d31ef81758ff32cf21a2de01f33f41d78cda2740b6f534961fd18dd707db7854"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSound.lean",
+      "identical_to_base": true,
+      "sha256": "e635adaf9b1c265a5302339007e3296ae0616e346c5f822adfe066c192e7e0b3"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckProgramSound.lean",
+      "identical_to_base": true,
+      "sha256": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Theorems.lean",
+      "identical_to_base": true,
+      "sha256": "acc6012252e8941e5c614d41d71db6cc33da05116fad8ac6414826d7795cf23a"
+    },
+    {
+      "path": "formal/Benitoite/Release/Assumptions.lean",
+      "identical_to_base": true,
+      "sha256": "784d842d6f692d538d0c903c272b91dcc1891831ece5dcb4405fae3d0ac3762a"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Desugar.lean",
+      "identical_to_base": true,
+      "sha256": "c1f34dd8f2a591ea07377229c2c1cfe7e6166ed8ecfb33f387b79a72fabcd652"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/SubstClean.lean",
+      "identical_to_base": true,
+      "sha256": "e58dfe566d936b0f3be540df20744d56eaf4b77aa03b7cfcbdc5d926e8442e36"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ShiftClean.lean",
+      "identical_to_base": true,
+      "sha256": "f5d3b8f1bf617af7f24777f3866b865038c3a98e10786dd9432b9bcfbf7306ab"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+      "example_statements_identical": true,
+      "count": 3,
+      "change": "Only reflexive RenOk proof arguments were supplied to the generalized helpers."
+    }
+  ],
+  "desugar_rules": {
+    "HasTypeQ": 56,
+    "HasTypesQ": 2,
+    "HasEachQ": 2,
+    "HasHoleArgsQ": 3,
+    "HasArmsQ": 3,
+    "HasClausesQ": 2,
+    "HasBlockQ": 10
+  },
+  "new_assumptions": false,
+  "weakened_public_theorems": false
+}

@@ -1,0 +1,73 @@
+[
+  {
+    "step": "dry",
+    "base": "5d8f848060ce0d4f76e8150224cb25d2151b77d6",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "5d8f848060ce0d4f76e8150224cb25d2151b77d6",
+      "--only",
+      "formal_build,spec_examples,spec_tally",
+      "--dry-run"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "started_utc": "2026-10-18T05:10:18.559842+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.014,
+    "log": "work-dry-run.txt"
+  },
+  {
+    "step": "work",
+    "base": "5d8f848060ce0d4f76e8150224cb25d2151b77d6",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "5d8f848060ce0d4f76e8150224cb25d2151b77d6",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite",
+    "started_utc": "2026-10-18T05:10:20.836662+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 25.785,
+    "log": "work.txt"
+  },
+  {
+    "step": "axioms",
+    "base": "5d8f848060ce0d4f76e8150224cb25d2151b77d6",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l4a/axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "started_utc": "2026-10-18T05:10:54.011762+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.695,
+    "log": "axioms.txt"
+  },
+  {
+    "step": "new-axioms",
+    "base": "5d8f848060ce0d4f76e8150224cb25d2151b77d6",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-18-TODO-021_022_026_032_087_088_142_164_248_257_258_259_260-syntax-batch3/l4a/new-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "started_utc": "2026-10-18T05:10:59.948628+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.703,
+    "log": "new-axioms.txt"
+  }
+]

@@ -6,6 +6,15 @@ Refer to its declarations as `Result.<name>`, for example `Result.Result`.
 
 Results of operations that may fail.
 
+```benitoite test
+@test
+function resultExample() -> Unit uses Assert.Check
+  bind start: Result[Integer, String] <- Result.Ok(3)
+  bind result <- Result.andThen(r: start, f: lambda(value) return Result.Ok(value + 1))
+  Assert.equal(actual: result, expected: Result.Ok(4))
+end function
+```
+
 ```benitoite
 public data Result[T, E]
   Ok(T)

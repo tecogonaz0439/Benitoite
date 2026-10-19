@@ -6,6 +6,14 @@ Refer to its declarations as `String.<name>`, for example `String.byteLength`.
 
 Functions on `String`, a sequence of Unicode scalar values.
 
+```benitoite test
+@test
+function stringExample() -> Unit uses Assert.Check
+  Assert.equal(actual: String.characterCount("猫🐈"), expected: 2)
+  Assert.equal(actual: String.byteLength("猫🐈"), expected: 7)
+end function
+```
+
 ```benitoite
 public function byteLength(s: String) -> Integer
 ```

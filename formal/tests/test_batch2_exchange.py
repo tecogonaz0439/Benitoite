@@ -138,10 +138,11 @@ class Batch2ExchangeTests(unittest.TestCase):
 
 
 def check_rust(directory):
-    """O2/F3 の出力が存在し、11/4 と六入口の実比較を満たすことを確かめる。"""
+    """O2/F3 の出力が存在し、今の版（12/4）と六入口の実比較を満たすことを確かめる。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
+    # Rust の出力は今の交換器の版で書かれる。0.0.9 で corpus は 12 になった（手書きの独立入力の 11 は旧版互換として別に読む）。
     for f, document in data.items():
-        if document['version'] != (11 if f == 'corpus' else 4):
+        if document['version'] != (12 if f == 'corpus' else 4):
             raise AssertionError(f'{f}: expected batch2 version')
     inputs = [i for i in data['corpus']['inputs'] if not i['excluded']]
     if not inputs or not any(i['definitions'] for i in inputs):

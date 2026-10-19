@@ -186,6 +186,45 @@ class PolicyTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.box.close()
 
+    def test_formal_batch3_entries_and_failure_propagation(self):
+        # 外部プロセスだけを代え、本物のシェルが独立入力と実ソースを両方呼ぶこと、
+        # 各入口の失敗を最後の成功で上書きしないことを確かめる。
+        with tempfile.TemporaryDirectory(prefix='benitoite-formal-policy-') as temporary:
+            root = Path(temporary)
+            (root / 'scripts').mkdir()
+            shutil.copy2(ROOT / 'scripts/check-formal.sh', root / 'scripts/check-formal.sh')
+            (root / 'formal/.lake/build/bin').mkdir(parents=True)
+            (root / 'external').mkdir()
+            for name in ('lake', 'cargo', 'python3'):
+                path = root / 'external' / name
+                path.write_text(EXTERNAL.replace("#!/usr/bin/env python3", "#!" + sys.executable, 1))
+                path.chmod(0o755)
+            for name in ('coverageDiff', 'coverageProgramDiff', 'desugarDiff', 'builtinCheck', 'surfaceCheckAll'):
+                path = root / 'formal/.lake/build/bin' / name
+                path.write_text(EXTERNAL.replace("#!/usr/bin/env python3", "#!" + sys.executable, 1))
+                path.chmod(0o755)
+            log = root / 'calls.jsonl'
+            env = dict(os.environ, PATH=str(root / 'external') + os.pathsep + os.environ['PATH'], POLICY_LOG=str(log))
+            for name in ('POLICY_FAIL', 'POLICY_CARGO', 'BENITOITE_DESUGAR_DIFF_DIR', 'BENITOITE_COVERAGE_DIFF_DIR'):
+                env.pop(name, None)
+            result = execute(['bash', 'scripts/check-formal.sh'], root, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            calls = [json.loads(line) for line in log.read_text().splitlines()]
+            independent = ['python3', '-B', 'formal/tests/test_batch3_exchange.py']
+            self.assertEqual(calls.count(independent), 1)
+            rust = [call for call in calls if call[:3] == independent and '--rust-dir' in call]
+            self.assertEqual(len(rust), 1)
+            self.assertTrue(rust[0][-1].endswith('/batch3/b3'))
+            checker = [call for call in calls if len(call) > 2 and call[2].endswith('/check_batch3.py')]
+            self.assertEqual(len(checker), 1)
+            self.assertEqual(checker[0][4], rust[0][-1])
+            for call in (independent, rust[0], checker[0]):
+                log.unlink()
+                failed = execute(['bash', 'scripts/check-formal.sh'], root,
+                                 dict(env, POLICY_FAIL=str(calls.index(call) + 1)))
+                self.assertEqual(failed.returncode, 17, failed.stderr)
+                self.assertEqual(len(log.read_text().splitlines()), calls.index(call) + 1)
+
     def test_legacy_contract(self):
         fixture = json.loads(FIXTURE.read_text())
         for name, arguments, change in legacy_cases():
