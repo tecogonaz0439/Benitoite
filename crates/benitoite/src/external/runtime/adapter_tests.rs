@@ -11,6 +11,15 @@ use crate::external::adapter::{
 use crate::external::{ComponentSource, WitPlan as P};
 use crate::runtime::heap::{Heap, HeapConfig};
 
+fn cached_counts(runtime: &ExternalRuntime) -> (usize, usize) {
+    let prepared = runtime.session.prepared.borrow();
+    let prepared = prepared.as_ref().unwrap();
+    (
+        prepared.components.values().map(Vec::len).sum(),
+        prepared.adapters.values().map(Vec::len).sum(),
+    )
+}
+
 fn append(table: &mut ExternalTable, export: &str, params: Vec<P>, result: Option<P>) -> u32 {
     let id = u32::try_from(table.functions.len()).unwrap();
     table.functions.push(ExternalRef {
@@ -139,6 +148,7 @@ fn core_instance_limits_choose_dynamic_before_entering_the_guest() {
             let mut runtime = ExternalRuntime::configured(
                 None,
                 super::super::stats::ExecutionOptions {
+                    session: None,
                     stats: Some(stats.clone()),
                     ..Default::default()
                 },
@@ -210,6 +220,7 @@ fn generation_fallback_for_one_function_preserves_other_adapter_calls() {
     let mut runtime = ExternalRuntime::configured(
         None,
         super::super::stats::ExecutionOptions {
+            session: None,
             stats: Some(stats.clone()),
             ..Default::default()
         },
@@ -298,8 +309,8 @@ fn adapter_and_resource_caches_coexist_and_pure_instances_are_fresh() {
             Some(9)
         );
     });
-    assert_eq!(runtime.components.iter().flatten().count(), 1);
-    assert_eq!(runtime.adapters.len(), 2);
+    assert_eq!(cached_counts(&runtime).0, 1);
+    assert_eq!(cached_counts(&runtime).1, 2);
     assert_eq!(runtime.stateful.iter().flatten().count(), 1);
 }
 
@@ -401,8 +412,8 @@ fn adapter_cache_keeps_construction_rules_sources_and_host_tags_distinct() {
             }
         }
     });
-    assert_eq!(runtime.adapters.len(), 5);
-    assert!(runtime.components.is_empty());
+    assert_eq!(cached_counts(&runtime).1, 5);
+    assert!(cached_counts(&runtime).0 == 0);
 }
 
 #[test]
@@ -432,15 +443,15 @@ fn adapter_arguments_fail_before_lazy_compile_and_guest_start() {
             adapted(&mut runtime, &table, 0, ctx, &[Value::Bool(true)], 64),
             Err(ExternalFailure::Stop(Stop::Internal(_)))
         ));
-        assert!(runtime.adapters.is_empty());
+        assert!(cached_counts(&runtime).1 == 0);
         assert!(matches!(
             adapted(&mut runtime, &table, 0, ctx, &[Value::UInt32(1)], 64),
             Err(ExternalFailure::Stop(Stop::Runtime(
                 RuntimeError::ExternalTrap { .. }
             )))
         ));
-        assert_eq!(runtime.adapters.len(), 1);
-        assert!(runtime.components.is_empty());
+        assert_eq!(cached_counts(&runtime).1, 1);
+        assert!(cached_counts(&runtime).0 == 0);
     });
 }
 
@@ -480,6 +491,7 @@ fn adapter_candidates_keep_the_remaining_type_budget_and_generation_fallback() {
     let mut runtime = ExternalRuntime::configured(
         None,
         super::super::stats::ExecutionOptions {
+            session: None,
             stats: Some(stats.clone()),
             ..Default::default()
         },
@@ -492,7 +504,7 @@ fn adapter_candidates_keep_the_remaining_type_budget_and_generation_fallback() {
             Some(19)
         );
     });
-    assert!(runtime.adapters.is_empty());
+    assert!(cached_counts(&runtime).1 == 0);
     let json = stats.json().unwrap();
     assert_eq!(json["routes"]["dynamic"], 1);
     assert_eq!(json["fallback_reasons"]["generation_limit"], 1);

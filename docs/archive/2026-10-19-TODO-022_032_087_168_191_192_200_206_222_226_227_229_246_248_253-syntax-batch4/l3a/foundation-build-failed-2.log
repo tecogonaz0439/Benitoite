@@ -1,0 +1,72 @@
+✖ [212/276] Building Benitoite.Release.FailureExamples (452ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/FailureExamples.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/FailureExamples.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/FailureExamples.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/FailureExamples.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/FailureExamples.setup.json --json
+error: Benitoite/Release/FailureExamples.lean:120:4: Type mismatch: After simplification, term
+  HasTypeCQ.C_Return hr
+ has type
+  HasTypeCQ program B Ψ Qempty [{ }] [none, some E] (Option.map (Ty.shift 1 0) R)
+    (Comp.ret (errorValue T E (Val.var 1))) (resultTy T E) (EffR.mk (fun x => false) [])
+but is expected to have type
+  HasTypeCQ program B Ψ.hideBuilders Qempty [{ }] [none, some E] (Option.map (Ty.shift 1 0) R)
+    (Comp.ret (errorValue T E (Val.var 1))) (resultTy T E) (EffR.mk (fun x => false) [])
+✔ [213/276] Built Benitoite.Surface.BuilderCheck (490ms)
+✔ [215/276] Built Benitoite.Surface.Check (1.3s)
+✔ [217/276] Built Benitoite.Surface.CheckTables (486ms)
+✔ [219/276] Built Benitoite.Surface.CheckLemmas (587ms)
+✔ [220/276] Built Benitoite.Surface.CheckCounterexamples (507ms)
+✔ [221/276] Built Benitoite.Surface.CheckComputeAtoms (529ms)
+✔ [222/276] Built Benitoite.Exchange.Convert (1.6s)
+✔ [224/276] Built Benitoite.Surface.CheckToolsExamples (1.7s)
+✔ [225/276] Built Benitoite.Surface.CheckComputeCases (1.1s)
+✔ [226/276] Built Benitoite.Surface.CheckComputeCalls (608ms)
+✔ [227/276] Built Benitoite.Exchange.IntegerExamples (942ms)
+✔ [228/276] Built Benitoite.Surface.CheckComputeControl (488ms)
+✔ [229/276] Built Benitoite.Exchange.Builtins (1.3s)
+✔ [231/276] Built DesugarDiff.Main (1.4s)
+ℹ [233/276] Replayed desugarDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [234/276] Built CoverageDiff.Main (1.5s)
+ℹ [236/276] Replayed coverageDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [237/276] Built Benitoite.Surface.CheckComputePipe (450ms)
+✔ [238/276] Built Benitoite.Exchange.CheckInput (1.1s)
+✔ [239/276] Built BuiltinCheck.Main (1.1s)
+ℹ [241/276] Replayed builtinCheck:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [242/276] Built CoverageProgramDiff.Main (1.1s)
+ℹ [244/276] Replayed coverageProgramDiff:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [246/276] Built Benitoite.Surface.CheckComputeSound (1.1s)
+✔ [247/276] Built SurfaceCheck.Main (791ms)
+ℹ [249/276] Replayed surfaceCheck:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [250/276] Built SurfaceCheck.Walk (919ms)
+✔ [252/276] Built SurfaceCheck.Batch (817ms)
+✔ [254/276] Built SurfaceCheck.Validation (680ms)
+✔ [256/276] Built SurfaceCheck.All (587ms)
+ℹ [258/276] Replayed surfaceCheckAll:exe
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [259/276] Built Benitoite.Surface.CheckInduction (3.3s)
+✔ [260/276] Built Benitoite.Surface.CheckDictSupport (789ms)
+✔ [261/276] Built Benitoite.Surface.CheckSoundSequence (539ms)
+✔ [262/276] Built Benitoite.Surface.CheckSoundBasicExpr (620ms)
+✔ [263/276] Built Benitoite.Surface.CheckSoundDie (585ms)
+✔ [264/276] Built Benitoite.Surface.CheckSoundCollections (437ms)
+✔ [265/276] Built Benitoite.Surface.CheckSoundCalls (682ms)
+✔ [266/276] Built Benitoite.Surface.CheckSoundControl (499ms)
+✔ [267/276] Built Benitoite.Surface.CheckSoundDicts (399ms)
+✔ [268/276] Built Benitoite.Surface.CheckSound (299ms)
+✔ [269/276] Built Benitoite.Surface.CheckTablesSound (347ms)
+✔ [270/276] Built Benitoite.Surface.CheckProgramSound (363ms)
+✔ [271/276] Built Benitoite.Surface.FailureExamples (1.4s)
+✔ [272/276] Built Benitoite.Surface.BuilderExamples (2.7s)
+✔ [273/276] Built Benitoite.Surface.Monad2Examples (2.9s)
+✔ [274/276] Built Benitoite.Surface.CheckExamples (5.2s)
+Some required targets logged failures:
+- Benitoite.Release.FailureExamples
+error: build failed

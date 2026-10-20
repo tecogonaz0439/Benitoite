@@ -523,3 +523,52 @@ fn regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion() {
     let result = check(&source);
     assert!(result.program.is_some(), "{:?}", result.diagnostics);
 }
+
+// 関門: here の特別扱いは解決済みの標準束縛と直接呼び出しに限る。
+// 値化・パイプの誤受理と、普通の引数診断を隠す退行を公開checkで捉える。
+#[test]
+fn source_location_requires_the_standard_direct_zero_argument_call() {
+    for (expression, expected) in [
+        ("SourceLocation.here()", vec![]),
+        ("SourceLocation.here", vec![C::E0467]),
+        ("(SourceLocation.here)", vec![C::E0467]),
+        ("(SourceLocation.here)()", vec![C::E0467]),
+        ("() |> SourceLocation.here", vec![C::E0467]),
+        ("() |> SourceLocation.here()", vec![C::E0467]),
+        ("() |> (SourceLocation.here())", vec![C::E0467]),
+        ("SourceLocation.here(1)", vec![C::E0402]),
+        ("SourceLocation.here(extra: 1)", vec![C::E0451]),
+        ("SourceLocation.here(_)", vec![C::E0402]),
+        ("SourceLocation.here(extra: _)", vec![C::E0451]),
+    ] {
+        let result = check(&format!(
+            "function sample() -> Unit\n bind _ <- {expression}\nend function\n"
+        ));
+        let codes = result
+            .diagnostics
+            .iter()
+            .filter(|d| d.is_error())
+            .filter_map(|d| d.code)
+            .collect::<Vec<_>>();
+        assert_eq!(codes, expected, "{expression}: {:?}", result.diagnostics);
+        assert_eq!(result.program.is_some(), expected.is_empty());
+    }
+    let alias = check(
+        "import Benitoite.Unofficial.SourceLocation as SL\nconst place: SL.Location = SL.here()\nfunction sample() -> SL.Location\n return SL.here()\nend function\n",
+    );
+    assert!(alias.program.is_some(), "{:?}", alias.diagnostics);
+    let user = pipeline::check_files(&[
+        ("main.bnt", b"import Places as SourceLocation\nfunction sample() -> Integer\n bind f <- SourceLocation.here\n return () |> f\nend function\n"),
+        ("Places.bnt", b"public function here(x: Unit) -> Integer\n return 7\nend function\n"),
+    ], CheckOptions { require_main: false, deny_warnings: false });
+    assert!(user.program.is_some(), "{:?}", user.diagnostics);
+}
+
+// 関門: Logの公開パラメータ名recordを通常の型・束縛・参照でも保ち、改行を失わない。
+#[test]
+fn log_record_parameter_is_an_ordinary_contextual_name() {
+    let result = check(
+        "function identity(record: Integer) -> Integer\n return record\nend function\nfunction caller(callback: function(record: Integer) -> Integer) -> Integer\n bind record <- callback(record: 3)\n return identity(record)\nend function\n",
+    );
+    assert!(result.program.is_some(), "{:?}", result.diagnostics);
+}

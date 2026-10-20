@@ -1,6 +1,6 @@
 # Benitoite とほかの言語の比較
 
-> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の仕方（tests/skill_examples.rs）:

@@ -322,7 +322,8 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             continue;
         };
         let ty = ctx.solver.finalize(&ty, ctx.decls.resolved);
-        let Ok(checked) = patterns::check_match(&ty, &arms, &ctx.decls.out.adts, &view) else {
+        let Ok(checked) = patterns::check_match_diagnostic(&ty, &arms, &ctx.decls.out.adts, &view)
+        else {
             ctx.diagnostic(coverage_stopped(
                 m.scrutinee,
                 super::text::COVERAGE_MATCH,
@@ -461,7 +462,7 @@ fn with_future_diagnostics(
 fn coverage_stopped(span: Span, subject: &str, help: &'static str) -> Diagnostic {
     DiagBuilder::new(DiagCode::E0609)
         .arg("subject", subject)
-        .arg("limit", super::limits::MAX_COVERAGE_WORK.to_string())
+        .arg("limit", super::text::coverage_limits())
         .primary(span)
         .help(help)
         .build()
@@ -870,7 +871,7 @@ mod tests {
                     files.extend([
                         (
                             "package.bnt",
-                            "language \"0.0.9\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                            "language \"0.0.10\"\ndependency Dep\n path \"dep\"\nend dependency\n",
                         ),
                         (
                             "dep/package.bnt",
@@ -1040,6 +1041,31 @@ mod tests {
         );
         expect(&source, &[(C::E0609, &pattern, 0)]);
     }
+    // 型検査の予算で止まる実ソースを使い、独立した型誤りを消す退行を防ぐ。
+    #[test]
+    fn match_budget_keeps_independent_type_errors() {
+        let mut source = String::from("record Units\n");
+        for i in 0..1100 {
+            source.push_str(&format!(" f{i}: Unit\n"));
+        }
+        let fields = (0..800)
+            .map(|i| format!("f{i}: ()"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        source.push_str(&format!("end record\nfunction f(n: Units) -> Unit\n match n with\n case Units({fields}, ..) -> ()\n end match\nend function\nfunction broken() -> Boolean\n return 1\nend function\n"));
+        let d = check(&source);
+        assert_eq!(
+            d.iter().map(|d| d.code).collect::<Vec<_>>(),
+            vec![Some(C::E0609), Some(C::E0401)]
+        );
+        let start = source.find("n with").unwrap();
+        let span = d[0].primary.as_ref().unwrap().span;
+        assert_eq!(
+            (span.start.0 as usize, span.end.0 as usize),
+            (start, start + 1)
+        );
+    }
+
     #[test]
     fn range_and_list_outputs_feed_lowering() {
         let commands = include_str!("../../testdata/patterns/f04_commands.bnt");
@@ -1101,12 +1127,87 @@ mod tests {
             match_source("Integer", " case x if x > 0 -> ()\n case _ -> ()"),
             "record Person\n name: String\n age: Integer\nend record\nfunction f(person: Person, xs: List[Integer]) -> Unit\n bind Pair(count, label) <- Pair(3, \"items\")\n bind Person(name: n, ..) <- person\n bind [..rest] <- xs\n bind [..] <- rest\n ()\nend function".into(),
             "data L\n Mk(L)\nend data\nfunction f(n: L) -> Unit\n match n with\n case L.Mk(_) -> ()\n end match\nend function".into(),
-            match_source("Integer", " case -9223372036854775808..9223372036854775807 -> ()\n case _ -> ()"),
+            match_source("Integer", " case -9223372036854775808..9223372036854775807 -> ()"),
             match_source("Character", " case 'a'..'z' -> ()\n case _ -> ()"),
             match_source("List[Integer]", " case [x, 0, ..rest], [..rest, 0, x] if x > 0 -> ()\n case _ -> ()"),
         ] { clean(&s); }
     }
     // 診断の位置・反例と入れ子の相関は、実ソースから型検査までを通して確かめる。
+    #[test]
+    fn integer_domain_source_contracts() {
+        let full = " case -9223372036854775808..9223372036854775807 -> ()";
+        for ty in ["Integer", "Integer64"] {
+            for arms in [
+                full,
+                " case -9223372036854775808..-1 -> ()\n case 0..9223372036854775807 -> ()",
+                " case -9223372036854775808..-1 -> ()\n case 0 -> ()\n case 1..9223372036854775807 -> ()",
+            ] {
+                clean(&match_source(ty, arms));
+                expect(
+                    &match_source(ty, &format!("{arms}\n case _ -> ()")),
+                    &[(C::E0602, "_", 0)],
+                );
+            }
+        }
+        for (arms, witness) in [
+            (
+                " case -9223372036854775808..-1 -> ()\n case 1..9223372036854775807 -> ()",
+                "0",
+            ),
+            (
+                " case -9223372036854775808..-3 -> ()\n case -1..1 -> ()\n case 3..9223372036854775807 -> ()",
+                "-2",
+            ),
+            (
+                " case -9223372036854775807..9223372036854775807 -> ()",
+                "-9223372036854775808",
+            ),
+            (
+                " case -9223372036854775808..9223372036854775806 -> ()",
+                "9223372036854775807",
+            ),
+            (" case x if x > 0 -> ()", "-9223372036854775808"),
+            (
+                " case -9223372036854775808..9223372036854775807 if true -> ()",
+                "-9223372036854775808",
+            ),
+        ] {
+            let source = match_source("Integer", arms);
+            let d = check(&source);
+            assert_eq!(
+                d.iter().map(|d| d.code).collect::<Vec<_>>(),
+                vec![Some(C::E0601)]
+            );
+            let start = source.find("n with").unwrap();
+            let span = d[0].primary.as_ref().unwrap().span;
+            assert_eq!(
+                (span.start.0 as usize, span.end.0 as usize),
+                (start, start + 1)
+            );
+            assert_eq!(
+                d[0].primary.as_ref().unwrap().text,
+                format!("`{witness}` is not matched")
+            );
+        }
+        clean(&match_source(
+            "Integer",
+            " case x if x > 0 -> ()\n case _ -> ()",
+        ));
+        clean(
+            "function f(n: Integer) -> Unit\n bind -9223372036854775808..9223372036854775807 <- n\n ()\nend function",
+        );
+        let source = "record Row\n a: Integer\n b: Integer\nend record\nfunction f(n: Row) -> Unit\n match n with\n case Row(a: -9223372036854775808..-1, b: -9223372036854775808..-1) -> ()\n case Row(a: 0..9223372036854775807, b: 0..9223372036854775807) -> ()\n end match\nend function";
+        let d = check(source);
+        assert_eq!(
+            d.iter().map(|d| d.code).collect::<Vec<_>>(),
+            vec![Some(C::E0601)]
+        );
+        assert_eq!(
+            d[0].primary.as_ref().unwrap().text,
+            "`Row(a: -9223372036854775808, b: 0)` is not matched"
+        );
+    }
+
     #[test]
     fn character_domain_source_contracts() {
         for source in [
@@ -1159,7 +1260,7 @@ mod tests {
         for (s,code,needle,witness) in [
             ("data Tree\n Leaf\n Node(Tree, Integer, Tree)\nend data\nfunction f(n: Tree) -> Unit\n match n with\n case Tree.Leaf -> ()\n end match\nend function".into(), C::E0601, "n with", "Tree.Node(_, _, _)"),
             (match_source("List[Integer]", " case [] -> ()\n case [x] -> ()"), C::E0601, "n with", "[_, _, ..]"),
-            (match_source("Integer", " case 0..9 -> ()\n case 10..100 -> ()\n case -100..-1 -> ()"), C::E0601, "n with", "_"),
+            (match_source("Integer", " case 0..9 -> ()\n case 10..100 -> ()\n case -100..-1 -> ()"), C::E0601, "n with", "-9223372036854775808"),
             ("function f(text: String) -> Unit\n bind Option.Some(x) <- Integer.parse(text)\nend function".into(), C::E0607, "Option.Some(x)", "Option.None"),
             ("function f(xs: List[Integer]) -> Unit\n bind [x] <- xs\nend function".into(), C::E0607, "[x]", "[]"),
         ] {

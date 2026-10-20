@@ -1,0 +1,54 @@
+BENITOITE_GOLDEN_FILTER=""
+golden: 801 cases; differential (golden run and bench): 285 matched
+check mode core IR: 65 matched
+gc-stress excluded: 0
+differential excluded: clock/random: 1
+  testdata/io/l40-clock-sleep.bnt
+differential excluded: network (tasks and runtime view): 10
+  testdata/network/address-in-use.bnt
+  testdata/network/redirect.bnt
+  testdata/network/respond-twice.bnt
+  testdata/network/routes-and-post.bnt
+  testdata/network/status-above-range.bnt
+  testdata/network/status-below-range.bnt
+  testdata/network/status-informational.bnt
+  testdata/network/todo194-json-parse-server.bnt
+  testdata/network/todo198-cancelled-accept-reregisters.bnt
+  testdata/network/unanswered-exchange.bnt
+differential excluded: reference list conversion cost: 1
+  testdata/eval/list_hof_long.bnt
+differential excluded: resource exhaustion: 4
+  testdata/eval/call_stack_limit.bnt
+  testdata/eval/value_too_large.bnt
+  testdata/external/large-table
+  testdata/external/memory
+differential excluded: runtime view (Process.runAttached): 1
+  testdata/io/l40-process-attached.bnt
+differential excluded: stdin: 5
+  testdata/io/c12-stdin-invalid-utf8.bnt
+  testdata/io/c12-stdin-lines.bnt
+  testdata/io/c12-stdin-remaining.bnt
+  testdata/io/l40-console-bytes.bnt
+  testdata/io/l40-console-lines.bnt
+differential excluded: unsupported builtin: 17
+  testdata/concurrency/c12-all-results.bnt
+  testdata/concurrency/c12-allok-results.bnt
+  testdata/concurrency/c12-cancelled-await.bnt
+  testdata/concurrency/c12-cancelled-reader.bnt
+  testdata/concurrency/c12-deadlock.bnt
+  testdata/concurrency/c12-group-join-await.bnt
+  testdata/concurrency/c12-group-released.bnt
+  testdata/concurrency/c12-inherited-handler.bnt
+  testdata/concurrency/c12-race-and-timeout.bnt
+  testdata/concurrency/inherited_operation_task_location.bnt
+  testdata/concurrency/r41-inherited-non-tail.bnt
+  testdata/concurrency/r41-task-error.bnt
+  testdata/external/resource
+  testdata/external/wit-docs-declarations
+  testdata/packages/json-wasm-same
+  testdata/packages/wasm-regex-same
+  ../../tools/bench/programs/tasks.bnt
+formatter properties: 649 checked, 100 excluded
+formatter properties excluded: command line error: 1
+formatter properties excluded: directory without main.bnt: 1
+formatter properties excluded: syntax error: 98

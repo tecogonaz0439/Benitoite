@@ -1,0 +1,9 @@
+function fixed() -> Integer
+ return 7
+end function
+function sample(callback: function(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer) -> function(d: Integer, b: Integer) -> Integer
+ return callback(d: _, c: fixed(), b: _, a: fixed())
+end function
+function all(callback: function(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer) -> function(d: Integer, c: Integer, b: Integer, a: Integer) -> Integer
+ return callback(d: _, c: _, b: _, a: _)
+end function

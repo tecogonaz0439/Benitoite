@@ -36,7 +36,7 @@ def role(path):
         return 'sample' if pathlib.Path(path).name in HANDWRITTEN else 'generator'
     if path == 'docs/reference/benitoite-minimal.md':
         return 'minimal_reference'
-    if path.startswith(('docs/20', 'tools/named-arguments-migrate/', 'tools/source-migrate/',
+    if path.startswith(('docs/20', 'tools/source-migrate/',
                         'tools/try-actions-migrate/')) or path == 'AGENTS.md':
         return 'history'
     if path.startswith('tools/bench/') and path.endswith('.bnt'):

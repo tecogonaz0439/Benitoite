@@ -12,6 +12,12 @@ enum Callee<'a> {
     Method(&'a ast::NameExpr),
 }
 
+// 穴の値参照だけは計算の束縛を作らない（設計書 02-06「脱糖」）。
+enum ArgPlan<C> {
+    Direct(Val<C>),
+    Evaluate(C),
+}
+
 struct ListParts {
     ty: Ty,
     elem: Ty,
@@ -21,6 +27,7 @@ struct ListParts {
 }
 
 enum StatementWrap {
+    Builder(BuilderId, BuilderKind, Span),
     Eval(Vec<(Var, Comp)>, Span),
     Let(Var, Comp, Span),
     Match {
@@ -57,6 +64,7 @@ impl State<'_> {
             ast::Expr::Lambda(e) => self.lambda(e),
             ast::Expr::Return(e) => self.return_expr(e, position),
             ast::Expr::Try(e) => self.try_expr(e),
+            ast::Expr::Block(e) => self.block(&e.body, position),
             ast::Expr::Lazy(e) => self.lazy(e),
             ast::Expr::With(e) => self.with(e, position),
             ast::Expr::Handle(e) => self.handle(e),
@@ -438,16 +446,17 @@ impl State<'_> {
             let mut args = vec![];
             for arg in &e.args {
                 args.push(if let Some(e) = arg.expr() {
-                    self.eval(e, &mut pending)?
+                    ArgPlan::Evaluate(self.expr(e, Position::Other)?)
                 } else if let Some(p) = arg.placeholder() {
                     let v = parameters
                         .next()
                         .ok_or_else(|| error("missing placeholder parameter"))?;
-                    bind(self, returned(variable(v, p.span)), &mut pending)?
+                    ArgPlan::Direct(variable(v, p.span))
                 } else {
                     return Err(error("invalid placeholder argument"));
                 });
             }
+            let args = self.sequence_args(args, &mut pending)?;
             let args = planned_arguments(&plan, None, args)?;
             let body = finish(pending, self.invoke(callee, args, span)?, span);
             Ok::<_, InternalError>(body)
@@ -480,6 +489,20 @@ impl State<'_> {
             ty,
             span,
         )))
+    }
+
+    fn sequence_args(
+        &mut self,
+        plans: Vec<ArgPlan<Comp>>,
+        pending: &mut Vec<(Var, Comp)>,
+    ) -> Result<Vec<CoreVal>, InternalError> {
+        plans
+            .into_iter()
+            .map(|plan| match plan {
+                ArgPlan::Direct(value) => Ok(value),
+                ArgPlan::Evaluate(comp) => bind(self, comp, pending),
+            })
+            .collect()
     }
 
     /// 01-12「呼び出し」のパイプの行。左辺を先に一度だけ評価する。
@@ -800,12 +823,10 @@ impl State<'_> {
     #[inline(never)]
     fn binding_stmt(&mut self, b: &ast::BindStmt) -> Result<StatementWrap, InternalError> {
         if let Some(decl) = self.types.builders.get(b.id).cloned() {
-            let bound = self.builder_new(&decl, b.span)?;
-            let ast::Pattern::Var(p) = &b.pattern else {
-                return Err(error("builder declaration without a variable"));
-            };
-            let var = self.local(p.id, Some(p.name.text.clone()), bound.ty.clone())?;
-            return Ok(StatementWrap::Let(var, bound, b.span));
+            let id = BuilderId(fresh(&mut self.builder_count)?);
+            self.builders.insert(decl.id.0, id);
+            let kind = builders::core_kind(&decl.kind);
+            return Ok(StatementWrap::Builder(id, kind, b.span));
         }
         let bound = self.expr(&b.value, Position::Other)?;
         self.binding_wrap(b, bound)
@@ -854,6 +875,16 @@ impl State<'_> {
     #[inline(never)]
     fn finish_statement(wrapper: StatementWrap, body: Comp) -> Comp {
         match wrapper {
+            StatementWrap::Builder(id, kind, span) => Comp {
+                ty: body.ty.clone(),
+                eff: body.eff.clone(),
+                origin: span,
+                kind: CompKind::BuilderLet {
+                    id,
+                    kind,
+                    body: Box::new(body),
+                },
+            },
             StatementWrap::Eval(pending, span) => finish(pending, body, span),
             StatementWrap::Let(var, bound, span) => let_comp(var, bound, body, span),
             StatementWrap::Match {

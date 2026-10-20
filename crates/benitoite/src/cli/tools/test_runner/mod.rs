@@ -166,6 +166,10 @@ pub(super) fn run_test_with_externals(
             }
         },
     };
+    let mut externals = externals;
+    externals.session = Some(Rc::new(crate::external::ExternalSession::new(
+        interrupt.shared_flag(),
+    )));
     let mut runner = Runner {
         env,
         format,
@@ -409,6 +413,7 @@ enum Flow {
 
 // 大きなスタックのスレッドで作り、呼び出し側へ返すもの。検査の AST はそのスレッドで捨てる。
 struct Prepared {
+    declaration_compilations: u64,
     result: CheckResult,
     compiled: Option<Result<Compiled, PrepareError>>,
     inspection: Option<Result<TestInspection, InternalError>>,
@@ -554,6 +559,9 @@ impl Runner<'_> {
     // 診断は準備時に一度だけ出し、上限付きでは全入口の開始条件として使う
     // （設計書 06-04「テストの実行」）。
     fn validate_prepared(&mut self, entry: &EntrySpec, prepared: &Prepared) -> Result<bool, u8> {
+        if let Some(stats) = &self.externals.stats {
+            stats.declarations_compiled(prepared.declaration_compilations);
+        }
         let sources = &prepared.result.sources;
         match report_check(
             &prepared.result,
@@ -874,7 +882,7 @@ fn prepare(
     mode: PrepareMode<'_>,
     working_directory: &Path,
 ) -> Prepared {
-    let checked = pipeline::check(
+    let (checked, declaration_compilations) = pipeline::check_with_external_compilation_count(
         entry,
         &crate::modules::RealFs,
         CheckOptions {
@@ -919,6 +927,7 @@ fn prepare(
         ));
     }
     Prepared {
+        declaration_compilations,
         result: CheckResult {
             sources: checked.sources,
             entry: checked.entry,

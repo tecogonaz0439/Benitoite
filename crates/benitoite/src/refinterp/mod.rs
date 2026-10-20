@@ -1,5 +1,6 @@
 //! コア計算の状態と遷移による参照インタプリタ（設計書 01-12、02-08「参照インタプリタ」）。
 
+mod builders;
 mod convert;
 mod eval;
 mod index;

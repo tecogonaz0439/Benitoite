@@ -60,6 +60,7 @@ pub(super) fn prepare_examples(
         examples: Vec::new(),
         ignored: extraction.ignored_blocks,
         complete: true,
+        declaration_compilations: 0,
     };
     for (index, example) in extraction.examples.into_iter().enumerate() {
         let line = source.line_col(example.span.start).line;
@@ -82,14 +83,22 @@ pub(super) fn prepare_examples(
             execution_module,
         );
         let require_main = matches!(example.expectation, Expectation::Run { .. });
-        let mut checked = pipeline::check(
+        let location_map = example.source_map.with_prefix(header.len());
+        let (mut checked, declaration_compilations) = pipeline::check_with_source_origin(
             &input.entry,
             &input,
             CheckOptions {
                 require_main,
                 deny_warnings,
             },
+            Some(pipeline::source_location::DocOrigin {
+                source,
+                map: &location_map,
+            }),
         );
+        batch.declaration_compilations = batch
+            .declaration_compilations
+            .saturating_add(declaration_compilations);
         // 元コメントもソース表に保持し、仮想入力はハッシュと位置の両方で識別可能にする。
         let original = checked.sources.iter().find_map(|(file, candidate)| {
             (candidate.name() == source.name() && candidate.text() == source.text()).then_some(file)

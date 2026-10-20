@@ -39,9 +39,41 @@ theorem SubstAgree.shiftEnv {Γ σ τ} (h : SubstAgree Γ σ τ) (k : Nat) :
   | none => simp at hoa
   | some b => exact h i b ho
 
+/-- 分類された局所番号での、専用置換の一致。 -/
+def LocalSubstAgree (Δ : LocalCtx) (ρ η : Nat → LocalRef) : Prop :=
+  ∀ i k, Δ.kindAt i = some k → ρ i = η i
+
+theorem LocalSubstAgree.empty (ρ η : Nat → LocalRef) : LocalSubstAgree [] ρ η := by
+  intro i k hi; simp [LocalCtx.kindAt] at hi
+
+theorem LocalSubstAgree.refl (Δ : LocalCtx) (ρ : Nat → LocalRef) : LocalSubstAgree Δ ρ ρ := by
+  intro i k hi; rfl
+
+theorem LocalSubstAgree.extend {Δ ρ η} (h : LocalSubstAgree Δ ρ η) (n : Nat) :
+    LocalSubstAgree (Δ.extend n) (upLocalSubst n ρ) (upLocalSubst n η) := by
+  intro i k hi
+  rw [LocalCtx.kindAt_extend] at hi
+  by_cases hn : i < n
+  · simp [hn] at hi
+  · simp only [hn, ↓reduceIte] at hi
+    simp [upLocalSubst, hn, h _ _ hi]
+
+theorem LocalSubstAgree.builder {Δ ρ η} (h : LocalSubstAgree Δ ρ η) (kind : BuilderKind) :
+    LocalSubstAgree (some kind :: Δ) (upLocalSubst 1 ρ) (upLocalSubst 1 η) := by
+  intro i k hi
+  cases i with
+  | zero => rfl
+  | succ i => simp [upLocalSubst, h i k (by simpa [LocalCtx.kindAt] using hi)]
+
+theorem LocalRef.HasKind.subst_congr {Ψ Δ r k ρ η} (h : HasKind Ψ Δ r k)
+    (hL : LocalSubstAgree Δ ρ η) : r.subst ρ = r.subst η := by
+  cases h with
+  | bound hi => exact hL _ _ hi
+  | loc hl => rfl
+
 mutual
-  theorem HasTypeVQ.subst_congr {P B Ψ C Γ v a σ τ}
-      (h : HasTypeVQ P B Ψ Q C Γ v a) (hs : SubstAgree Γ σ τ) : v.subst σ = v.subst τ := by
+  theorem HasTypeVQ.subst_congr {ρ η : Nat → LocalRef} {P B Ψ C Γ v a σ τ}
+      (h : HasTypeVQ P B Ψ Q C Γ v a) (hs : SubstAgree Γ σ τ) : v.subst σ ρ = v.subst τ η := by
     match h with
     | .V_Var hi _ => exact hs _ _ hi
     | .V_Const | .V_Fun .. | .V_Prim .. | .V_Op .. | .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes => rfl
@@ -49,74 +81,82 @@ mutual
       simp only [Val.subst]
       have h := hs.hide.up (binds ps)
       rw [binds_length] at h
-      rw [HasTypeCQ.subst_congr hb h]
-    | .V_Con _ _ ha => simp only [Val.subst, HasTypeVsQ.subst_congr ha hs]
-    | .V_List he _ => simp only [Val.subst, HasTypeEachQ.subst_congr he hs]
+      rw [HasTypeCQ.subst_congr (ρ := upLocalSubst ps.length ρ) (η := upLocalSubst ps.length η) hb h]
+    | .V_Con _ _ ha => simp only [Val.subst, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) ha hs]
+    | .V_List he _ => simp only [Val.subst, HasTypeEachQ.subst_congr (ρ := ρ) (η := η) he hs]
     | .V_Map hk hv .. =>
-      simp only [Val.subst, HasTypeEachQ.subst_congr hk hs, HasTypeEachQ.subst_congr hv hs]
-    | .V_Set he .. => simp only [Val.subst, HasTypeEachQ.subst_congr he hs]
-    | .V_Dict _ _ ha => simp only [Val.subst, HasTypeVsQ.subst_congr ha hs]
-    | .V_Super hv _ _ => simp only [Val.subst, HasTypeVQ.subst_congr hv hs]
-    | .V_Sub hv _ _ => exact HasTypeVQ.subst_congr hv hs
+      simp only [Val.subst, HasTypeEachQ.subst_congr (ρ := ρ) (η := η) hk hs, HasTypeEachQ.subst_congr (ρ := ρ) (η := η) hv hs]
+    | .V_Set he .. => simp only [Val.subst, HasTypeEachQ.subst_congr (ρ := ρ) (η := η) he hs]
+    | .V_Dict _ _ ha => simp only [Val.subst, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) ha hs]
+    | .V_Super hv _ _ => simp only [Val.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
+    | .V_Sub hv _ _ => exact HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs
 
-  theorem HasTypeVsQ.subst_congr {P B Ψ C Γ vs as σ τ}
+  theorem HasTypeVsQ.subst_congr {ρ η : Nat → LocalRef} {P B Ψ C Γ vs as σ τ}
       (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hs : SubstAgree Γ σ τ) :
-      Val.substList σ vs = Val.substList τ vs := by
+      Val.substList σ vs ρ = Val.substList τ vs η := by
     match h with
     | .nil => rfl
-    | .cons hv hvs => simp only [Val.substList, HasTypeVQ.subst_congr hv hs, HasTypeVsQ.subst_congr hvs hs]
+    | .cons hv hvs => simp only [Val.substList, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) hvs hs]
 
-  theorem HasTypeEachQ.subst_congr {P B Ψ C Γ vs a σ τ}
+  theorem HasTypeEachQ.subst_congr {ρ η : Nat → LocalRef} {P B Ψ C Γ vs a σ τ}
       (h : HasTypeEachQ P B Ψ Q C Γ vs a) (hs : SubstAgree Γ σ τ) :
-      Val.substList σ vs = Val.substList τ vs := by
+      Val.substList σ vs ρ = Val.substList τ vs η := by
     match h with
     | .nil => rfl
-    | .cons hv hvs => simp only [Val.substList, HasTypeVQ.subst_congr hv hs, HasTypeEachQ.subst_congr hvs hs]
+    | .cons hv hvs => simp only [Val.substList, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs, HasTypeEachQ.subst_congr (ρ := ρ) (η := η) hvs hs]
 
-  theorem HasTypeCQ.subst_congr {P B Ψ C Γ R m a e σ τ}
-      (h : HasTypeCQ P B Ψ Q C Γ R m a e) (hs : SubstAgree Γ σ τ) : m.subst σ = m.subst τ := by
+  theorem HasTypeCQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R m a e σ τ}
+      (h : HasTypeCQ P B Ψ Q C Γ R m a e Δl) (hs : SubstAgree Γ σ τ)
+      (hL : LocalSubstAgree Δl ρ η := by exact LocalSubstAgree.empty _ _) : m.subst σ ρ = m.subst τ η := by
     match h with
-    | .C_Return hv => simp only [Comp.subst, HasTypeVQ.subst_congr hv hs]
-    | .C_Sub hm .. | .C_Eff hm .. => exact HasTypeCQ.subst_congr hm hs
+    | .C_BuilderLet (kind := kind) _ hb =>
+      simp only [Comp.subst]
+      exact congrArg (Comp.builderLet kind) (HasTypeCQ.subst_congr hb (hs.up [none]) (hL.builder kind))
+    | .C_BuilderOp _ hr ha =>
+      simp only [Comp.subst, hr.subst_congr hL, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) ha hs]
+    | .C_Return hv => simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
+    | .C_Sub hm .. | .C_Eff hm .. => exact HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL
     | .C_Let (a := a) hm hn =>
       have hs' : SubstAgree (some a :: Γ) (upSubst 1 σ) (upSubst 1 τ) := hs.up [some a]
-      simp only [Comp.subst, HasTypeCQ.subst_congr hm hs, HasTypeCQ.subst_congr hn hs']
-    | .C_App hf ha => simp only [Comp.subst, HasTypeVQ.subst_congr hf hs, HasTypeVsQ.subst_congr ha hs]
+      simp only [Comp.subst, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL, HasTypeCQ.subst_congr (ρ := upLocalSubst 1 ρ) (η := upLocalSubst 1 η) hn hs' (hL.extend 1)]
+    | .C_App hf ha => simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hf hs, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) ha hs]
     | .C_If hv hm hn =>
-      simp only [Comp.subst, HasTypeVQ.subst_congr hv hs, HasTypeCQ.subst_congr hm hs,
-        HasTypeCQ.subst_congr hn hs]
+      simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL,
+        HasTypeCQ.subst_congr (ρ := ρ) (η := η) hn hs hL]
     | .C_Match hv ha _ =>
-      simp only [Comp.subst, HasTypeVQ.subst_congr hv hs, HasTypeArmsQ.subst_congr ha hs]
-    | .C_Lazy hm => simp only [Comp.subst, HasTypeCQ.subst_congr hm hs.hide]
-    | .C_Escape hv _ => simp only [Comp.subst, HasTypeVQ.subst_congr hv hs]
-    | .C_Use hv _ hm _ => simp only [Comp.subst, HasTypeVQ.subst_congr hv hs, HasTypeCQ.subst_congr hm hs]
+      simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs, HasTypeArmsQ.subst_congr (ρ := ρ) (η := η) ha hs hL]
+    | .C_Lazy hm => simp only [Comp.subst, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs.hide]
+    | .C_Escape hv _ => simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
+    | .C_Use hv _ hm _ => simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL]
     | .C_Handle hm _ hc =>
-      simp only [Comp.subst, HasTypeCQ.subst_congr hm hs, HasTypeClausesQ.subst_congr hc hs]
+      simp only [Comp.subst, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL, HasTypeClausesQ.subst_congr (ρ := ρ) (η := η) hc hs hL]
     | .C_Handle_Fail hm _ _ hc =>
-      simp only [Comp.subst, HasTypeCQ.subst_congr hm hs, HasFailureClause.subst_congr hc hs]
-    | .C_Resume hi hv => simp only [Comp.subst, Val.subst, hs _ _ hi, HasTypeVQ.subst_congr hv hs]
-    | .C_ResumeL _ hv => simp only [Comp.subst, Val.subst, HasTypeVQ.subst_congr hv hs]
+      simp only [Comp.subst, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL, HasFailureClause.subst_congr (ρ := ρ) (η := η) hc hs hL]
+    | .C_Resume hi hv => simp only [Comp.subst, Val.subst, hs _ _ hi, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
+    | .C_ResumeL _ hv => simp only [Comp.subst, Val.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
     | .C_Meth hv _ _ _ _ _ _ ha =>
-      simp only [Comp.subst, HasTypeVQ.subst_congr hv hs, HasTypeVsQ.subst_congr ha hs]
+      simp only [Comp.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) ha hs]
 
-  theorem HasTypeArmsQ.subst_congr {P B Ψ C Γ R arms a b e σ τ}
-      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b e) (hs : SubstAgree Γ σ τ) :
-      Arm.substList σ arms = Arm.substList τ arms := by
+  theorem HasTypeArmsQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R arms a b e σ τ}
+      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b e Δl) (hs : SubstAgree Γ σ τ)
+      (hL : LocalSubstAgree Δl ρ η := by exact LocalSubstAgree.empty _ _) :
+      Arm.substList σ arms ρ = Arm.substList τ arms η := by
     match h with
     | .nil _ => rfl
-    | .plain (δ := δ) hp hm ht =>
+    | .plain (alts := alts) (δ := δ) hp hm ht =>
       have hs' := hs.up (binds δ)
       rw [binds_length, hp.2.1] at hs'
-      simp only [Arm.substList, HasTypeCQ.subst_congr hm hs', HasTypeArmsQ.subst_congr ht hs]
-    | .guarded (δ := δ) hp hg hm ht =>
+      simp only [Arm.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hm hs' (by simpa [hp.2.1] using hL.extend δ.length), HasTypeArmsQ.subst_congr (ρ := ρ) (η := η) ht hs hL]
+    | .guarded (alts := alts) (δ := δ) hp hg hm ht =>
       have hs' := hs.up (binds δ)
       rw [binds_length, hp.2.1] at hs'
-      simp only [Arm.substList, HasTypeCQ.subst_congr hg hs'.hide,
-        HasTypeCQ.subst_congr hm hs', HasTypeArmsQ.subst_congr ht hs]
+      simp only [Arm.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hg hs'.hide (by simpa [hp.2.1] using hL.extend δ.length),
+        HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hm hs' (by simpa [hp.2.1] using hL.extend δ.length), HasTypeArmsQ.subst_congr (ρ := ρ) (η := η) ht hs hL]
 
-  theorem HasTypeClausesQ.subst_congr {P B Ψ C Γ R cs t e σ τ}
-      (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e) (hs : SubstAgree Γ σ τ) :
-      Clause.substList σ cs = Clause.substList τ cs := by
+  theorem HasTypeClausesQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R cs t e σ τ}
+      (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) (hs : SubstAgree Γ σ τ)
+      (hL : LocalSubstAgree Δl ρ η := by exact LocalSubstAgree.empty _ _) :
+      Clause.substList σ cs ρ = Clause.substList τ cs η := by
     match h with
     | .nil => rfl
     | .cons (sg := sg) (k := k) (n := n) _ _ hn _ _ hb ht =>
@@ -124,15 +164,16 @@ mutual
         (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 e)) :: binds sg.params)
       simp only [List.cons_append] at hs''
       simp only [List.length_cons, binds_length, ← hn] at hs''
-      simp only [Clause.substList, HasTypeCQ.subst_congr hb hs'', HasTypeClausesQ.subst_congr ht hs]
-  theorem HasFailureClause.subst_congr {P B Ψ C Γ E R h t e σ τ}
-      (hc : HasFailureClause P B Ψ Q C Γ E R h t e) (hs : SubstAgree Γ σ τ) :
-      Clause.substList σ h = Clause.substList τ h := by
+      simp only [Clause.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst (n + 1) ρ) (η := upLocalSubst (n + 1) η) hb hs'', HasTypeClausesQ.subst_congr (ρ := ρ) (η := η) ht hs hL]
+  theorem HasFailureClause.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ E R h t e σ τ}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t e Δl) (hs : SubstAgree Γ σ τ)
+      (_hL : LocalSubstAgree Δl ρ η := by exact LocalSubstAgree.empty _ _) :
+      Clause.substList σ h ρ = Clause.substList τ h η := by
     match hc with
     | .one _ _ _ hb =>
       have hs' := (hs.shiftEnv 1).up [none, some (E.shift 1 0)]
       simp only [List.length_cons, List.length_nil, List.cons_append, List.nil_append] at hs'
-      simp only [Clause.substList, HasTypeCQ.subst_congr hb hs']
+      simp only [Clause.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst 2 ρ) (η := upLocalSubst 2 η) hb hs']
 
 end
 
@@ -150,8 +191,8 @@ theorem SubstAgree.of_none {Γ : List (Option Ty)} {i : Nat} {σ τ : Nat → Va
 def IrrelevantSlot (m : Comp) (i : Nat) : Prop :=
   ∀ σ τ : Nat → Val, (∀ j, j ≠ i → σ j = τ j) → m.subst σ = m.subst τ
 
-theorem HasTypeCQ.irrelevant_slot {P B Ψ C Γ R m a e i}
-    (h : HasTypeCQ P B Ψ Q C Γ R m a e) (hi : Γ[i]? = some none) : IrrelevantSlot m i :=
-  fun _ _ hs => h.subst_congr (SubstAgree.of_none hi hs)
+theorem HasTypeCQ.irrelevant_slot {Δl : LocalCtx} {P B Ψ C Γ R m a e i}
+    (h : HasTypeCQ P B Ψ Q C Γ R m a e Δl) (hi : Γ[i]? = some none) : IrrelevantSlot m i :=
+  fun _ _ hs => h.subst_congr (SubstAgree.of_none hi hs) (LocalSubstAgree.refl _ _)
 
 end Benitoite.Release

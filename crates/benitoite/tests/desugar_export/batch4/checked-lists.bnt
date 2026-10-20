@@ -1,0 +1,48 @@
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.NonEmptyList
+import Benitoite.Trait
+
+function length(values: List[Integer]) -> Result[Range.CheckedLength[Integer], Range.LengthError]
+  return Range.checkLength(minimum: 2, maximum: 2, values: values)
+end function
+
+function lengthSummary(value: Range.CheckedLength[Integer]) -> Integer
+  return Range.lengthMinimum(value) + Range.lengthMaximum(value) + Range.checkedLength(value) + List.length(Range.lengthValues(value))
+end function
+
+function index(values: List[Integer]) -> Result[Range.CheckedIndex[Integer], Range.IndexError]
+  return Range.checkIndex(index: 1, values: values)
+end function
+
+function indexSummary(value: Range.CheckedIndex[Integer]) -> Integer
+  return Range.indexValue(value) + List.length(Range.indexValues(value)) + Range.get(value)
+end function
+
+function nonempty(values: List[Integer]) -> Result[NonEmptyList.NonEmptyList[Integer], NonEmptyList.EmptyListError]
+  return NonEmptyList.fromList(values)
+end function
+
+function mapped[effect E](value: NonEmptyList.NonEmptyList[Integer], f: function(value: Integer) -> String uses E) -> NonEmptyList.NonEmptyList[String] uses E
+  return NonEmptyList.map(value: value, f: f)
+end function
+
+function nonemptySummary(value: NonEmptyList.NonEmptyList[Integer]) -> Integer
+  return NonEmptyList.head(value) + List.length(NonEmptyList.tail(value)) + List.length(NonEmptyList.toList(value))
+end function
+
+function main() -> Result[Unit, String]
+  bind rejected <- match Range.checkIndex(index: -1, values: [10]) with
+    case Result.Error(Range.IndexError.OutOfBounds(i, n)) -> i = -1 and n = 1
+    case Result.Ok(_) -> false
+  end match
+  if not rejected then return Result.Error("negative index was accepted") end if
+  bind checkedLength <- try length([10, 20]) |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error)) or return
+  bind checkedIndex <- try index([10, 20]) |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error)) or return
+  bind checkedNonempty <- try nonempty([3, 4]) |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error)) or return
+  if lengthSummary(checkedLength) <> 8 or indexSummary(checkedIndex) <> 23 or nonemptySummary(checkedNonempty) <> 6 then
+    return Result.Error("projections changed")
+  end if
+  bind strings <- mapped(value: checkedNonempty, f: lambda(value) return Integer.toString(value))
+  if NonEmptyList.toList(strings) <> ["3", "4"] then return Result.Error("map changed") end if
+  return Result.Ok(())
+end function

@@ -1,5 +1,7 @@
 //! 型検査の診断に埋める固定の文言（設計書 02-10「文言の言語」）。
 
+pub(super) const MAIN_MODULE: &str = "main";
+pub(super) const STANDARD_PACKAGE: &str = "Benitoite";
 pub(super) const INTEGER_OVERFLOW: &str = "integer overflow";
 pub(super) const DECIMAL_OVERFLOW: &str = "Decimal overflow";
 pub(super) const DIVISION_BY_ZERO: &str = "division by zero";
@@ -8,6 +10,9 @@ pub(super) const FLOAT_TO_STRING: &str = "Float.toString";
 pub(super) const CHARACTER_TO_STRING: &str = "Character.toString";
 pub(super) const COVERAGE_MATCH: &str = "this `match` covers every value";
 pub(super) const COVERAGE_PATTERN: &str = "this pattern matches every value";
+pub(super) fn type_declaration(name: &str, file: &str, line: u32, column: u32) -> String {
+    format!("`{name}` is declared at {file}:{line}:{column}")
+}
 pub(super) fn future_shape(name: &str, record: bool) -> String {
     if record {
         format!("<future shape of {name}>")
@@ -84,4 +89,14 @@ pub(super) fn parameter_names(names: &[String]) -> String {
         .map(|n| format!("`{n}`"))
         .collect::<Vec<_>>()
         .join(", ")
+}
+
+/// E0609 は探索・列挙・記憶のいずれの上限でも同じ拒否を示す。
+pub(super) fn coverage_limits() -> String {
+    use super::limits::{
+        MAX_COVERAGE_ENUM_WORK, MAX_COVERAGE_KEY_BYTES, MAX_COVERAGE_MEMO_CELLS, MAX_COVERAGE_WORK,
+    };
+    format!(
+        "{MAX_COVERAGE_WORK} search cells, {MAX_COVERAGE_ENUM_WORK} enumeration/key steps, {MAX_COVERAGE_MEMO_CELLS} memo cells, {MAX_COVERAGE_KEY_BYTES} key bytes"
+    )
 }

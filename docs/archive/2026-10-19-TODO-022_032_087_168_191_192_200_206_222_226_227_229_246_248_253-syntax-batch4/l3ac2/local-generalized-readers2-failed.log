@@ -1,0 +1,269 @@
+✔ [47/105] Built Benitoite.Release.Lemmas.Closed (7.8s)
+✔ [52/105] Built Benitoite.Release.Lemmas.Inversion (13s)
+✔ [53/105] Built Benitoite.Release.Lemmas.Regularity (1.7s)
+✔ [54/105] Built Benitoite.Release.Lemmas.OuterC (1.9s)
+✔ [55/105] Built Benitoite.Release.Lemmas.SubstTyping (2.3s)
+✔ [56/105] Built Benitoite.Release.Lemmas.TySubst (378ms)
+✔ [57/105] Built Benitoite.Release.Lemmas.StoreLemmas (740ms)
+✖ [58/105] Building Benitoite.Release.Lemmas.FailureCont (5.5s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Lemmas/FailureCont.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.setup.json --json
+error: Benitoite/Release/Lemmas/FailureCont.lean:222:26: don't know how to synthesize implicit argument `Δ`
+  @HasFailureClause.one P B Qempty Ψ [] ?m.1898 [] E R✝ body t✝ ec✝ hew htw hecw
+    (Eq.mp
+      (congrFun'
+        (congrFun'
+          (congrFun'
+            (congrFun'
+              (congrFun'
+                (congrFun' (congrFun' (congrFun' (congrArg (@HasTypeCQ P B) (hideBuilders_idem Ψ)) Qempty) [{ }])
+                  (none :: some (Ty.shift 1 0 E) :: shiftEnv 1 []))
+                (Option.map (Ty.shift 1 0) R✝))
+              body)
+            (Ty.shift 1 0 t✝))
+          (Eff.shift 1 0 ec✝))
+        [])
+      hb)
+context:
+P : Program
+B : Builtins
+Ψ : StoreTy
+R : Option Ty
+ein : Eff
+E : Ty
+body : Comp
+k2 : List Frame
+a b : Ty
+Eb : Eff
+Re : Option Ty
+k0 : List Frame
+R✝ : Option Ty
+ε✝ ec✝ Rest✝ : Eff
+t✝ b✝ : Ty
+ε0✝ : Eff
+Re✝ : Option Ty
+hr : Rest✝.Sub ε✝
+hn : NoFail Qempty Rest✝
+he : ec✝.Sub ε✝
+hw : Ty.WF 0 t✝
+ht : ContTy P B Ψ R✝ ε✝ k2 t✝ b✝ ε0✝ Re✝
+ih :
+  ∀ {k1 : List Frame},
+    k1 ++ Frame.handleF [Clause.fail E body] :: k2 = k2 →
+      ∃ t Rh eout Rest ec,
+        HasFailureClause P B Ψ Qempty [] [] E Rh [Clause.fail E body] t ec ∧
+          NoFail Qempty Rest ∧
+            Rest.Sub eout ∧
+              ec.Sub eout ∧
+                Ty.WF 0 t ∧
+                  ContTy P B Ψ Rh eout k2 t b✝ ε0✝ Re✝ ∧
+                    ContTy P B Ψ R✝ ε✝ (k1 ++ [Frame.handleF [Clause.fail E body]]) t✝ t (captureEff Rest ec) Rh
+hew : Ty.WF [].length E
+htw : Ty.WF [].length t✝
+hecw : Eff.WF [].length ec✝
+hb :
+  HasTypeCQ P B Ψ.hideBuilders.hideBuilders Qempty [{ }] (none :: some (Ty.shift 1 0 E) :: shiftEnv 1 [])
+    (Option.map (Ty.shift 1 0) R✝) body (Ty.shift 1 0 t✝) (Eff.shift 1 0 ec✝)
+⊢ LocalCtx
+error: Benitoite/Release/Lemmas/FailureCont.lean:222:19: failed to infer `have` declaration type
+✔ [59/105] Built Benitoite.Release.CoverageTypes (1.1s)
+✖ [60/105] Building Benitoite.Release.Lemmas.PresHelpers (457ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Lemmas/PresHelpers.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresHelpers.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresHelpers.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/PresHelpers.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/PresHelpers.setup.json --json
+error: Benitoite/Release/Lemmas/PresHelpers.lean:139:14: don't know how to synthesize implicit argument `Δl`
+  @find ?m.413 Ψ C Γ R cs✝ t ε o c hrest hc
+context:
+P : Program
+B : Builtins
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+hs : List Clause
+t : Ty
+ε : Eff
+o : OpRef
+c : Clause
+h : HasTypeClauses P B Ψ C Γ R hs t ε
+o' : OpRef
+n k : Nat
+body : Comp
+cs✝ : List Clause
+sg✝ : OpSig
+hsg : opSig P B o' = some sg✝
+hnames : NamesWF sg✝.names sg✝.params
+hn : n = sg✝.params.length
+hk : k = sg✝.tparams.length
+hew : Eff.WF C.length ε
+hbody :
+  HasTypeCQ P B Ψ.hideBuilders Qempty (sg✝.tparams ++ C)
+    (some (sg✝.ret.cont (Ty.shift k 0 t) (Eff.shift k 0 ε)) :: (binds sg✝.params ++ shiftEnv k Γ))
+    (Option.map (Ty.shift k 0) R) body (Ty.shift k 0 t) (Eff.shift k 0 ε)
+hrest : HasTypeClausesQ P B Ψ Qempty C Γ R cs✝ t ε
+x✝ : Bool
+heq✝ : ((Clause.mk o' n k body).op == o) = false
+hc : List.find? (fun c => c.op == o) cs✝ = some c
+⊢ LocalCtx
+✖ [61/105] Building Benitoite.Release.Lemmas.TySubstMain (3.4s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Lemmas/TySubstMain.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.setup.json --json
+error: Benitoite/Release/Lemmas/TySubstMain.lean:756:16: don't know how to synthesize implicit argument `Δ`
+  @HasTypeCQ.C_Meth P B Ψ Q' (List.take c C) ?m.6097 (envSubst c ts' es' Γ) (Option.map (Ty.substAt c ts' es') R)
+    (Val.substTyAt c ts' es' v✝) cl✝ (Ty.substAt c ts' es' τ) cd✝ m✝ ms (List.map (Ty.substAt c ts' es') ss)
+    (List.map (Eff.substAt c ts' es') es) (Val.substTyAtList c ts' es' ws✝) hv' hcl hmeth hnames hsat''
+    (have hscope' := fun t ht =>
+      Exists.casesOn (List.mem_map.mp ht) fun u h =>
+        And.casesOn h fun hu right =>
+          Eq.ndrec (motive := fun t =>
+            t ∈ List.map (Ty.substAt c ts' es') (ss ++ [τ]) →
+              Ty.WF (List.take c C).length t ∧ ∀ (b r : Ty) (e : EffR), t ≠ b.cont r e)
+            (fun ht =>
+              ⟨substTy_wf hc hts hes' hsat.left (hscope u hu).left, Ty.substAt_notCont hts (hscope u hu).right⟩)
+            right ht;
+    Eq.mp
+      (forall_congr fun t =>
+        implies_congr
+          (congrFun'
+            (congrArg Membership.mem
+              (Eq.trans List.map_append
+                (congrArg (HAppend.hAppend (List.map (Ty.substAt c ts' es') ss))
+                  (Eq.trans List.map_cons (congrArg (List.cons (Ty.substAt c ts' es' τ)) List.map_nil)))))
+            t)
+          (Eq.refl (Ty.WF (List.take c C).length t ∧ ∀ (b r : Ty) (e : EffR), t ≠ b.cont r e)))
+      hscope')
+    (MethodRowsAdmissible.substTy hes hc hts hes' hsat.left hrow)
+    (id
+      (Eq.mp
+        (congrArg (HasTypeVsQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ) (Val.substTyAtList c ts' es' ws✝))
+          (congrFun'
+            (congrArg List.map
+              (congrFun'
+                (congrArg (Ty.substAt 0)
+                  (Eq.trans List.map_append
+                    (congrArg (HAppend.hAppend (List.map (Ty.substAt c ts' es') ss))
+                      (Eq.trans List.map_cons (congrArg (List.cons (Ty.substAt c ts' es' τ)) List.map_nil)))))
+                (List.map (Eff.substAt c ts' es') es)))
+            ms.params))
+        hws'))
+context:
+Q : NoFailCtx
+P : Program
+B : Builtins
+Δl : LocalCtx
+hwf : P.WellFormed
+hb : Builtins.Assumptions P B
+Q' : NoFailCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R✝ : Option Ty
+m : Comp
+a : Ty
+ε : Eff
+ts' : List Ty
+es' : List Eff
+c : Nat
+h : HasTypeCQ P B Ψ Q C Γ R✝ m a ε Δl
+hc : c ≤ C.length
+hts : ClosedArgs ts'
+hes' : ∀ (e : Eff), e ∈ es' → Eff.WF 0 e
+hsat : SatAll B [] ts' (List.drop c C)
+hΨ : StoreFix Ψ ts' es'
+hrow : RowTransport Q Q' es'
+htc : (List.take c C).length = c
+transportWF : ∀ {x : Ty}, Ty.WF C.length x → Ty.WF (List.take c C).length (Ty.substAt c ts' es' x)
+R : Option Ty
+v✝ : Val
+cl✝ : ClassName
+τ : Ty
+cd✝ : ClassDecl
+m✝ : MethName
+ms : MethSig
+ss : List Ty
+es : List Eff
+ws✝ : List Val
+hv : HasTypeVQ P B Ψ Q C Γ v✝ (Ty.dict cl✝ τ)
+hcl : P.classes cl✝ = some cd✝
+hmeth : cd✝.methods m✝ = some ms
+hnames : NamesWF ms.names ms.params
+hsat' : SatAll B (List.take c C ++ List.drop c C) ss ms.tparams
+hscope : ∀ (t : Ty), t ∈ ss ++ [τ] → Ty.WF C.length t ∧ ∀ (b r : Ty) (e : EffR), t ≠ b.cont r e
+hes : MethodRowsAdmissible C Q ms es
+hws : HasTypeVsQ P B Ψ Q C Γ ws✝ (List.map (Ty.subst (ss ++ [τ]) es) ms.params)
+hCsplit : C = List.take c C ++ List.drop c C
+hsc : ms.Scoped
+hlen : (ss ++ [τ]).length = ms.tparams.length + 1
+hF :
+  Ty.fn ms.names (List.map (Ty.substAt c ts' es') (List.map (Ty.substAt 0 (ss ++ [τ]) es) ms.params))
+      (Ty.substAt c ts' es' (Ty.substAt 0 (ss ++ [τ]) es ms.ret))
+      (Eff.substAt c ts' es' (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) =
+    Ty.fn ms.names
+      (List.map (Ty.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es))
+        ms.params)
+      (Ty.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es) ms.ret)
+      (Eff.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es) ms.eff)
+left✝ : ms.names = ms.names
+h1 :
+  List.map (Ty.substAt c ts' es') (List.map (Ty.substAt 0 (ss ++ [τ]) es) ms.params) =
+    List.map (Ty.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es))
+      ms.params
+h2 :
+  Ty.substAt c ts' es' (Ty.substAt 0 (ss ++ [τ]) es ms.ret) =
+    Ty.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es) ms.ret
+h3 :
+  Eff.substAt c ts' es' (Eff.substAt 0 (ss ++ [τ]) es ms.eff) =
+    Eff.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es) ms.eff
+hv' :
+  HasTypeVQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ) (Val.substTyAt c ts' es' v✝)
+    (Ty.dict cl✝ (Ty.substAt c ts' es' τ))
+hws' :
+  HasTypeVsQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ) (Val.substTyAtList c ts' es' ws✝)
+    (List.map (Ty.substAt 0 (List.map (Ty.substAt c ts' es') (ss ++ [τ])) (List.map (Eff.substAt c ts' es') es))
+      ms.params)
+hsat'' : SatAll B (List.take c C) (List.map (Ty.substAt c ts' es') ss) ms.tparams
+⊢ LocalCtx
+error: Benitoite/Release/Lemmas/TySubstMain.lean:756:13: failed to infer `have` declaration type
+error: Benitoite/Release/Lemmas/TySubstMain.lean:796:8: Type mismatch
+  hh
+has type
+  HasTypeCQ P B Ψ Q' (List.take c C) (binds (List.map (Ty.substAt c ts' es') δ✝) ++ envSubst c ts' es' Γ)
+    (Option.map (Ty.substAt c ts' es') R) (Comp.substTyAt c ts' es' body✝) (Ty.substAt c ts' es' b)
+    (Eff.substAt c ts' es' ε) (LocalCtx.extend δ✝.length Δl)
+but is expected to have type
+  HasTypeCQ P B Ψ Q' (List.take c C) (binds (List.map (Ty.substAt c ts' es') δ✝) ++ envSubst c ts' es' Γ)
+    (Option.map (Ty.substAt c ts' es') R) (Comp.substTyAt c ts' es' body✝) (Ty.substAt c ts' es' b)
+    (Eff.substAt c ts' es' ε) (LocalCtx.extend (List.map (Ty.substAt c ts' es') δ✝).length Δl)
+error: Benitoite/Release/Lemmas/TySubstMain.lean:804:10: 'change' tactic failed, pattern
+  HasTypeCQ ?m.6876 ?m.6877 ?m.6878 ?m.6879 ?m.6880 (hideConts (envSubst c ts' es' (?m.6882 ++ Γ))) ?m.6887 ?m.6888
+    ?m.6889 ?m.6890
+is not definitionally equal to target
+  HasTypeCQ P B Ψ Q' (List.take c C) (hideConts (List.map (Option.map (Ty.substAt c ts' es')) (binds δ✝ ++ Γ))) none
+    (Comp.substTyAt c ts' es' guard✝) (Ty.base BaseTy.boolean) Eff.empty (LocalCtx.extend δ✝.length Δl)
+error: Benitoite/Release/Lemmas/TySubstMain.lean:809:10: Type mismatch
+  hh
+has type
+  HasTypeCQ P B Ψ Q' (List.take c C) (binds (List.map (Ty.substAt c ts' es') δ✝) ++ envSubst c ts' es' Γ)
+    (Option.map (Ty.substAt c ts' es') R) (Comp.substTyAt c ts' es' body✝) (Ty.substAt c ts' es' b)
+    (Eff.substAt c ts' es' ε) (LocalCtx.extend δ✝.length Δl)
+but is expected to have type
+  HasTypeCQ P B Ψ Q' (List.take c C) (binds (List.map (Ty.substAt c ts' es') δ✝) ++ envSubst c ts' es' Γ)
+    (Option.map (Ty.substAt c ts' es') R) (Comp.substTyAt c ts' es' body✝) (Ty.substAt c ts' es' b)
+    (Eff.substAt c ts' es' ε) (LocalCtx.extend (List.map (Ty.substAt c ts' es') δ✝).length Δl)
+✔ [72/105] Built Benitoite.Release.Coverage (4.8s)
+✔ [73/105] Built Benitoite.Surface.Syntax (1.0s)
+✔ [74/105] Built Benitoite.Surface.Lemmas.NoFailSignature (463ms)
+✔ [75/105] Built Benitoite.Surface.WellFormed (570ms)
+✔ [76/105] Built Benitoite.Surface.Builders (611ms)
+✔ [77/105] Built Benitoite.Surface.Desugar (804ms)
+✔ [78/105] Built Benitoite.Surface.BuilderFree (2.9s)
+✔ [79/105] Built Benitoite.Surface.Typing (10s)
+✔ [89/105] Built Benitoite.Surface.Lemmas.DictSupport (395ms)
+✔ [94/105] Built Benitoite.Surface.FiniteTools (1.1s)
+✔ [95/105] Built Benitoite.Surface.CheckTools (432ms)
+✔ [96/105] Built Benitoite.Surface.FinitePredicates (665ms)
+✔ [97/105] Built Benitoite.Surface.CheckPredicates (1.8s)
+✔ [98/105] Built Benitoite.Surface.CheckPatterns (540ms)
+✔ [99/105] Built Benitoite.Surface.CheckSupport (2.9s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.FailureCont
+- Benitoite.Release.Lemmas.PresHelpers
+- Benitoite.Release.Lemmas.TySubstMain
+error: build failed

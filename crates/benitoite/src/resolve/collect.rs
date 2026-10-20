@@ -499,15 +499,6 @@ impl<'a> Resolver<'a> {
                 }
             }
             Item::Effect(d) => {
-                if self.modules.get(module).and_then(|m| m.name.0.last()) == Some(&name.text) {
-                    self.out.diagnostics.push(
-                        DiagBuilder::new(DiagCode::E0326)
-                            .arg("name", name.text.clone())
-                            .primary(name.span)
-                            .help("rename")
-                            .build(),
-                    );
-                }
                 let info = self.modules.get(module);
                 let path: Vec<&str> = info
                     .into_iter()
@@ -517,6 +508,15 @@ impl<'a> Resolver<'a> {
                 let builtin = info
                     .is_some_and(|m| matches!(m.kind, ModuleKind::Prelude | ModuleKind::Stdlib))
                     && find_builtin_effect(&path, &name.text).is_some();
+                if info.and_then(|m| m.name.0.last()) == Some(&name.text) && !builtin {
+                    self.out.diagnostics.push(
+                        DiagBuilder::new(DiagCode::E0326)
+                            .arg("name", name.text.clone())
+                            .primary(name.span)
+                            .help("rename")
+                            .build(),
+                    );
+                }
                 for (index, op) in d.ops.iter().enumerate() {
                     let index = self.index(index);
                     let child = self.node_binding(

@@ -1,0 +1,42 @@
+{
+  "exit": 0,
+  "seconds": 1.097653041,
+  "count": 269,
+  "baseline_count": 246,
+  "same_as_work_baseline": true,
+  "changed": {},
+  "initial_l1_count": 40,
+  "same_as_l1_initial": true,
+  "initial_changed": {},
+  "new_count": 23,
+  "new": {
+    "Benitoite.Checked.ListLength.checkLength_success_iff": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Checked.ListLength.checkLength_invalid_iff": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Checked.ListLength.checkLength_invalid_first": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Checked.ListLength.checkLength_outOfRange_iff": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Checked.ListLength.checkLength_projection": "does not depend on any axioms",
+    "Benitoite.Checked.ListIndex.checkIndex_success_iff": "depends on axioms: [propext, Quot.sound]",
+    "Benitoite.Checked.ListIndex.checkIndex_failure_iff": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Checked.ListIndex.checkIndex_projection": "depends on axioms: [propext, Quot.sound]",
+    "Benitoite.Checked.ListIndex.checkedIndex_get_eq": "depends on axioms: [propext, Quot.sound]",
+    "Benitoite.Checked.NonEmptyList.nonEmpty_success_iff": "depends on axioms: [propext, Quot.sound]",
+    "Benitoite.Checked.NonEmptyList.nonEmpty_failure_iff": "depends on axioms: [propext]",
+    "Benitoite.Checked.NonEmptyList.nonEmpty_from_to": "depends on axioms: [propext]",
+    "Benitoite.Checked.NonEmptyList.nonEmpty_to_from": "does not depend on any axioms",
+    "Benitoite.Checked.NonEmptyList.nonEmpty_head_tail": "does not depend on any axioms",
+    "Benitoite.Checked.NonEmptyList.nonEmpty_map": "does not depend on any axioms",
+    "Benitoite.Surface.LogExamples.emit_checked": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Surface.LogExamples.enabled_checked": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Surface.LogExamples.handled_checked": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Surface.LogExamples.forwarded_checked": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Surface.LogExamples.console_remains_checked": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Surface.LogExamples.incomplete_handler_retains_log": "depends on axioms: [propext,\n Classical.choice,\n Quot.sound]",
+    "Benitoite.Surface.LogExamples.program_checked": "depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "Benitoite.Surface.LogExamples.console_pure_rejected": "depends on axioms: [propext, Classical.choice, Quot.sound]"
+  },
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ]
+}

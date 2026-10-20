@@ -1,0 +1,47 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.03s
+     Running tests/io_modes.rs (target/debug/deps/io_modes-5f153f444c181e40)
+
+running 10 tests
+test log_default_output_is_ordered_escaped_and_filtered_in_both_modes ... ok
+test log_sink_failure_stops_before_the_next_sink ... ok
+test log_standard_handlers_preserve_order_attributes_and_outer_effects ... ok
+test concurrent_file_operations_collect_results_in_action_order ... ok
+test virtual_sleep_and_file_write_complete_in_either_order ... ok
+test runtime_error_during_reader_io_has_the_same_stop_report ... ok
+test stdin_prompts_are_transferred_before_each_read ... ok
+test reader_waits_alongside_computation ... ok
+test typed_failure_converted_in_children_keeps_io_and_action_order ... ok
+test inherited_handlers_intercept_or_pass_through_builtin_operations ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.30s
+
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-3a3dd538a2707493)
+
+running 13 tests
+test injected_parts_wait_for_output_before_reading_stdin ... ok
+test log_scalar_conversions_use_explicit_instances_and_evaluate_inputs_once ... ok
+test explicit_and_implicit_try_return_have_the_same_success_and_failure ... ok
+test process_exit_finishes_output_and_returns_the_requested_status ... ok
+test map_and_set_standard_traits_show_combine_and_empty ... ok
+test opaque_failures_show_their_messages_in_both_io_modes ... ok
+test narrow_integer_conversions_preserve_values_and_reject_invalid_input ... ok
+test narrow_integer_standard_functions_keep_floor_and_truncation_distinct ... ok
+test log_large_records_share_console_buffer_and_final_flush ... ok
+test scope_checked_values_preserve_inputs_and_runtime_errors ... ok
+test log_output_failure_uses_the_console_stop_and_exit_status ... ok
+test fixed_width_integer_standard_functions_report_overflow_and_zero_divisors ... ok
+test map_and_set_source_functions_call_in_key_order_once_and_use_the_results ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.45s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-1cb5cffac423d007)
+
+running 4 tests
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 49.16s
+

@@ -4,7 +4,7 @@ import Benitoite.Surface.Lemmas.ScopedSupport
 namespace Benitoite.Surface
 open Benitoite.Release
 
-variable {Q : NoFailCtx}
+variable {Q : NoFailCtx} {Δl : LocalCtx}
 
 
 /-- 頭の型付けは、辞書を除いた値引数と呼び出しの結果を表す。
@@ -33,7 +33,7 @@ abbrev CallHead.HasType (P : Release.Program) (B : Builtins) := CallHead.HasType
 theorem CallHead.HasTypeQ.apply {P B C Γ h names as a ε R ws}
     (hh : CallHead.HasTypeQ P B Q C Γ h names as a ε)
     (hw : HasTypeVsQ P B StoreTy.empty Q C Γ ws as) :
-    HasTypeCQ P B StoreTy.empty Q C Γ R (h.apply ws) a ε := by
+    HasTypeCQ P B StoreTy.empty Q C Γ R (h.apply ws) a ε Δl := by
   cases hh with
   | app hv hd hs => exact .C_Eff (.C_App hv (hd.append hw)) hs
   | meth hd hc hm hn ht hscope he hu hp hs =>
@@ -217,16 +217,16 @@ theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εc
     (xs : List (Option Ty)) (hlen : xs.length = inserted.length)
     (hp : (List.range inserted.length ++ positions).Perm (List.range ps.length))
     (hf : HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (callee.rename (· + shift))
-      (.fn names ps a εcall) ε)
+      (.fn names ps a εcall) ε (LocalCtx.extend xs.length Δl))
     (hd : ∀ h, directCallee f = some h → ∀ ys : List (Option Ty),
       CallHead.HasTypeQ P B Q C (ys ++ xs ++ Γ)
         (h.rename (· + (shift + ys.length))) names ps a εcall)
     (hi : HasTypeVsQ P B StoreTy.empty Q C (xs ++ Γ) inserted
       (sourceTypes ps (List.range inserted.length)))
-    (hms : CompTypesQ P B Q C Γ R ε ms (sourceTypes ps positions))
+    (hms : CompTypesQ P B Q C Γ R ε ms (sourceTypes ps positions) Δl)
     (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps positions))
     (he : Eff.Sub εcall ε) :
-    HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (callComp shift inserted f callee positions ms) a ε := by
+    HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (callComp shift inserted f callee positions ms) a ε (LocalCtx.extend xs.length Δl) := by
   have hm : ms.length = positions.length := by simpa only [sourceTypes_length] using hms.length
   have ordered := fun {Δ : List (Option Ty)} {vs} (hv : HasTypeVsQ P B StoreTy.empty Q C Δ vs
       (sourceTypes ps (List.range inserted.length ++ positions))) =>
@@ -248,6 +248,7 @@ theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εc
     · exact he
   · apply HasTypeCQ.C_Let hf
     rw [← hlen]
+    rw [LocalCtx.extend_add, Nat.add_comm 1 xs.length]
     apply letChain_typed hms (some (.fn names ps a εcall) :: xs)
     rw [hms.length]
     apply HasTypeCQ.weakenEff (δ := ε)
@@ -266,5 +267,40 @@ theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εc
           List.length_singleton, List.append_assoc, List.singleton_append, List.cons_append,
           List.nil_append] using ho
     · exact he
+
+/-- 穴を直接値として渡す呼び出しの型保存。通常の呼び出しの Let は変えない。 -/
+theorem callArgs_typed {R shift f callee positions plans names ps a ε εcall}
+    (hp : positions.Perm (List.range ps.length))
+    (hf : HasTypeCQ P B StoreTy.empty Q C Γ R (callee.rename (· + shift))
+      (.fn names ps a εcall) ε Δl)
+    (hd : ∀ h, directCallee f = some h → ∀ ys : List (Option Ty),
+      CallHead.HasTypeQ P B Q C (ys ++ Γ)
+        (h.rename (· + (shift + ys.length))) names ps a εcall)
+    (hm : ArgTypesQ P B Q C Γ R ε Δl plans (sourceTypes ps positions))
+    (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps positions))
+    (he : Eff.Sub εcall ε) :
+    HasTypeCQ P B StoreTy.empty Q C Γ R (callArgs shift f callee positions plans) a ε Δl := by
+  unfold callArgs
+  split
+  · rename_i h hh
+    simpa only [List.nil_append, List.append_nil, List.length_nil, LocalCtx.extend_zero, Nat.add_zero] using
+      sequenceArgs_typed hm hc [] (fun vs hv => by
+        apply HasTypeCQ.weakenEff (δ := ε)
+        · apply CallHead.HasTypeQ.apply
+          · simpa only [binds_length, hm.evals.length, List.append_nil] using
+              hd h hh (binds (argEvalTypes plans (sourceTypes ps positions)))
+          · simpa only [List.length_range, hp.length_eq] using recordFields_typed hp hv
+        · exact he)
+  · apply HasTypeCQ.C_Let hf
+    simpa only [List.length_singleton, LocalCtx.extend_add, List.singleton_append] using
+      sequenceArgs_typed hm hc [some (.fn names ps a εcall)] (fun vs hv => by
+        apply HasTypeCQ.weakenEff (δ := ε)
+        · apply HasTypeCQ.C_App (names := names) (as := ps) (ε := εcall)
+          · apply HasTypeVQ.V_Var
+            · rw [List.append_assoc, List.getElem?_append_right (by simp [binds_length, hm.evals.length])]
+              simp [binds_length, hm.evals.length]
+            · intro _ _ _ h; cases h
+          · simpa only [List.length_range, hp.length_eq] using recordFields_typed hp hv
+        · exact he)
 
 end Benitoite.Surface

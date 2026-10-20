@@ -46,6 +46,7 @@ import Benitoite.Release.Lemmas.Progress
 import Benitoite.Release.Lemmas.StepSound
 import Benitoite.Release.Lemmas.EffectSound
 import Benitoite.Release.Theorems
+import Benitoite.Release.Lemmas.LocalInvariant
 import Benitoite.Release.Examples
 import Benitoite.Release.BuiltinTable
 import Benitoite.Surface.Syntax
@@ -99,6 +100,7 @@ import Benitoite.Surface.CheckExamples
 import Benitoite.Surface.CheckCounterexamples
 import Benitoite.Exchange.Syntax
 import Benitoite.Exchange.Convert
+import Benitoite.Exchange.IntegerExamples
 import Benitoite.Exchange.Builtins
 import Benitoite.Exchange.CheckInput
 
@@ -128,6 +130,10 @@ import Benitoite.Surface.FailureExamples
 import Benitoite.Checked.Access
 import Benitoite.Checked.Scope
 import Benitoite.Checked.Range
+import Benitoite.Checked.ListLength
+import Benitoite.Checked.ListIndex
+import Benitoite.Checked.NonEmptyList
+import Benitoite.Surface.LogExamples
 
 import Benitoite.Library.ResultLaws
 import Benitoite.Surface.Monad2Examples
@@ -136,3 +142,13 @@ import Benitoite.Surface.Builders
 import Benitoite.Surface.Lemmas.Builders
 
 import Benitoite.Surface.BuilderExamples
+
+import Benitoite.Release.CoverageIntegerExamples
+
+import Benitoite.Release.LocalRef
+
+import Benitoite.Release.LocalScope
+
+import Benitoite.Release.BuilderExamples
+
+import Benitoite.Exchange.BuilderExamples

@@ -1,0 +1,38 @@
+[
+  {
+    "label": "named-all",
+    "command": [
+      "/Users/tecogonaz/src/Benitoite/formal/.lake/build/bin/coverageDiff",
+      "/Users/tecogonaz/src/Benitoite/target/coverage-diff/default/named-all-corpus.json",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t1/exchange/named-all-report.json"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0,
+    "count": 10020,
+    "seconds": 2.7040327090000003,
+    "inputs": [
+      {
+        "path": "target/coverage-diff/default/named-all-corpus.json",
+        "sha256": "5d47da475cf47bdffcf0159a1e5a1b1301870489a928e3dc96bc2e04c82a8041"
+      }
+    ]
+  },
+  {
+    "label": "future",
+    "command": [
+      "/Users/tecogonaz/src/Benitoite/formal/.lake/build/bin/coverageDiff",
+      "/Users/tecogonaz/src/Benitoite/target/coverage-diff/default/future-corpus.json",
+      "/Users/tecogonaz/src/Benitoite/docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t1/exchange/future-report.json"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0,
+    "count": 10028,
+    "seconds": 2.71014875,
+    "inputs": [
+      {
+        "path": "target/coverage-diff/default/future-corpus.json",
+        "sha256": "4405111b9c24c4d3316e1e53cf13658bcb976cc73572406fb92cf4059b24c0fa"
+      }
+    ]
+  }
+]

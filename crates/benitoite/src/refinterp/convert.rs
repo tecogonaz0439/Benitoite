@@ -5,6 +5,7 @@
 //! リソースも独自の番号で表す。セル・Lazy・継続は独自のストアで扱い、Force・Update は
 //! 評価器が raw を呼ばず評価する。関数を引数に取るタスクの起動は変換の前に Unsupported にする。
 
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use super::resources::{self, Resources, Shared};
@@ -16,8 +17,8 @@ use crate::builtins::table::call_builtin;
 use crate::builtins::{BuiltinId, builtin_decl};
 use crate::runtime::Stop;
 use crate::runtime::heap::{
-    CheckedLen, CtorTag, FieldsKind, Heap, HeapConfig, NoGcCtx, ObjKind, OpaqueData, RootIdx,
-    RootStack, Trace, Tracer, Value as HeapValue, ValueCtx,
+    CheckedLen, CtorTag, FieldsKind, Heap, HeapConfig, NoGcCtx, ObjId, ObjKind, OpaqueData,
+    RootIdx, RootStack, Trace, Tracer, Value as HeapValue, ValueCtx,
 };
 use crate::runtime::list;
 use std::cell::RefCell;
@@ -129,15 +130,17 @@ impl BuiltinBridge {
         let runtime = self.externals.as_mut().ok_or_else(invalid_conversion)?;
         let table = &self.external_table;
         let result = self.heap.epoch(|ctx| {
+            let mut references = Vec::new();
+            let mut session = ToHeapSession::default();
             let args = args
                 .iter()
                 .map(|v| {
-                    to_heap_with(
+                    session.convert(
                         ctx,
                         v,
                         "external argument",
                         &self.roots,
-                        &mut vec![],
+                        &mut references,
                         self.generation,
                     )
                 })
@@ -155,7 +158,7 @@ impl BuiltinBridge {
                     Stop::Internal("reference external call interrupted without a source".into())
                 }
             })?;
-            from_heap_with(ctx, value, &mut |_| Err(invalid_conversion()))
+            FromHeapSession::default().convert(ctx, value, &mut |_| Err(invalid_conversion()))
         });
         if self.heap.collect_requested() {
             self.heap.collect(&self.roots);
@@ -196,9 +199,10 @@ impl BuiltinBridge {
         let roots = &mut self.roots;
         let result = self.heap.epoch(|ctx| {
             let mut references = Vec::new();
+            let mut session = ToHeapSession::default();
             let args = args
                 .iter()
-                .map(|v| to_heap_with(ctx, v, decl.name, roots, &mut references, generation))
+                .map(|v| session.convert(ctx, v, decl.name, roots, &mut references, generation))
                 .collect::<Result<Vec<_>, _>>()?;
             let reply = call_builtin(
                 decl,
@@ -234,20 +238,24 @@ impl BuiltinBridge {
                 Reply::SpawnTasks(_) => return Ok(BuiltinOutcome::Unsupported(decl.name.into())),
                 Reply::Exit(status) => return Ok(BuiltinOutcome::Exited(status.0)),
             };
-            from_heap_with(ctx, value, &mut |v| {
-                if let Some(reference) = ctx.opaque::<RefValue>(v) {
-                    if reference.generation != generation {
-                        return Err(invalid_conversion());
+            FromHeapSession::default()
+                .convert(ctx, value, &mut |v| {
+                    if let Some(reference) = ctx.opaque::<RefValue>(v) {
+                        if reference.generation != generation {
+                            return Err(invalid_conversion());
+                        }
+                        references
+                            .get(
+                                usize::try_from(reference.index)
+                                    .map_err(|_| invalid_conversion())?,
+                            )
+                            .cloned()
+                            .ok_or_else(invalid_conversion)
+                    } else {
+                        Ok(Value::Opaque(roots.push(ctx, v).0))
                     }
-                    references
-                        .get(usize::try_from(reference.index).map_err(|_| invalid_conversion())?)
-                        .cloned()
-                        .ok_or_else(invalid_conversion)
-                } else {
-                    Ok(Value::Opaque(roots.push(ctx, v).0))
-                }
-            })
-            .map(BuiltinOutcome::Done)
+                })
+                .map(BuiltinOutcome::Done)
         });
         // ヒープの検証は回収のときに走るので、原因を探すときは gc-stress の構成で走らせる。
         if self.heap.collect_requested() {
@@ -271,7 +279,60 @@ impl Drop for BuiltinBridge {
     }
 }
 
+// 番地は識別にだけ使い、元の Rc を表と同じ区間だけ保持する。
+// 種類とタグを含め、同じ並びを異なる値として使った場合の混同を防ぐ
+// （設計書 02-08「参照インタプリタ」）。
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+enum RefKey {
+    Str(usize, usize),
+    Bytes(usize, usize),
+    Ctor(usize, u32),
+    List(usize),
+    Map(usize),
+    Set(usize),
+}
+impl RefKey {
+    fn of(value: &Value) -> Option<Self> {
+        match value {
+            Value::Str(s) => Some(Self::Str(Rc::as_ptr(s).cast::<u8>() as usize, s.len())),
+            Value::Bytes(s) => Some(Self::Bytes(Rc::as_ptr(s).cast::<u8>() as usize, s.len())),
+            Value::Ctor { tag, args } => Some(Self::Ctor(Rc::as_ptr(args) as usize, *tag)),
+            Value::List(v) => Some(Self::List(Rc::as_ptr(v) as usize)),
+            Value::Map(v) => Some(Self::Map(Rc::as_ptr(v) as usize)),
+            Value::Set(v) => Some(Self::Set(Rc::as_ptr(v) as usize)),
+            Value::Decimal(_)
+            | Value::Location(_)
+            | Value::Resource(_)
+            | Value::Opaque(_)
+            | Value::Dict { .. }
+            | Value::Int(_)
+            | Value::Float(_)
+            | Value::Byte(_)
+            | Value::Bool(_)
+            | Value::Char(_)
+            | Value::Unit
+            | Value::Func(_)
+            | Value::IoError { .. }
+            | Value::Int8(_)
+            | Value::Int16(_)
+            | Value::Int32(_)
+            | Value::UInt16(_)
+            | Value::UInt32(_)
+            | Value::UInt64(_)
+            | Value::Float32(_) => None,
+        }
+    }
+}
+
+#[derive(Default)]
+struct ToHeapSession<'e> {
+    // None は子を変換している途中を表し、再入を循環として拒む。
+    objects: HashMap<RefKey, Option<HeapValue<'e>>>,
+    retained: Vec<Value>,
+}
+
 enum ToHeap<'a> {
+    Remember(RefKey),
     Visit(&'a Value),
     Ctor { tag: u32, len: usize },
     List { len: usize },
@@ -280,144 +341,176 @@ enum ToHeap<'a> {
 }
 
 // 子を先に変換し、明示した作業列で親を組み立てる（AGENTS.md「実装の規約」の「再帰の深さ」）。
-fn to_heap_with<'e>(
-    ctx: &NoGcCtx<'e>,
-    value: &Value,
-    function: &'static str,
-    roots: &RootStack,
-    references: &mut Vec<Value>,
-    generation: u64,
-) -> Result<HeapValue<'e>, Stop> {
-    let mut pending = vec![ToHeap::Visit(value)];
-    let mut ready = Vec::new();
-    while let Some(step) = pending.pop() {
-        match step {
-            ToHeap::Visit(value) => match value {
-                Value::Decimal(d) => ready.push(ctx.alloc_decimal(*d)),
-                Value::Resource(id) => ready.push(HeapValue::Resource(*id)),
-                Value::Opaque(n) => {
-                    ready.push(roots.get(ctx, RootIdx(*n)).ok_or_else(invalid_conversion)?)
+impl<'e> ToHeapSession<'e> {
+    fn convert(
+        &mut self,
+        ctx: &NoGcCtx<'e>,
+        value: &Value,
+        function: &'static str,
+        roots: &RootStack,
+        references: &mut Vec<Value>,
+        generation: u64,
+    ) -> Result<HeapValue<'e>, Stop> {
+        let mut pending = vec![ToHeap::Visit(value)];
+        let mut ready = Vec::new();
+        while let Some(step) = pending.pop() {
+            match step {
+                ToHeap::Remember(key) => {
+                    let value = *ready.last().ok_or_else(invalid_conversion)?;
+                    self.objects.insert(key, Some(value));
                 }
-                Value::Map(items) if items.items.is_empty() => ready.push(HeapValue::EmptyMap),
-                Value::Map(items) => {
-                    pending.push(ToHeap::Map {
-                        len: items.items.len(),
-                    });
-                    pending.extend(items.items.iter().rev().map(ToHeap::Visit));
-                }
-                Value::Set(items) if items.items.is_empty() => ready.push(HeapValue::EmptySet),
-                Value::Set(items) => {
-                    pending.push(ToHeap::Set {
-                        len: items.items.len(),
-                    });
-                    pending.extend(items.items.iter().rev().map(ToHeap::Visit));
-                }
-                Value::Func(_) | Value::Location(_) => {
-                    let index =
-                        u32::try_from(references.len()).map_err(|_| invalid_conversion())?;
-                    references.push(value.clone());
-                    ready.push(ctx.alloc_opaque(RefValue { generation, index }));
-                }
-                Value::Dict { .. } => return Err(invalid_conversion()),
-                Value::Int(n) => ready.push(HeapValue::Int(*n)),
-                Value::Int8(n) => ready.push(HeapValue::Int8(*n)),
-                Value::Int16(n) => ready.push(HeapValue::Int16(*n)),
-                Value::Int32(n) => ready.push(HeapValue::Int32(*n)),
-                Value::UInt16(n) => ready.push(HeapValue::UInt16(*n)),
-                Value::UInt32(n) => ready.push(HeapValue::UInt32(*n)),
-                Value::UInt64(n) => ready.push(HeapValue::UInt64(*n)),
-                Value::Float32(n) => ready.push(HeapValue::Float32(*n)),
-                Value::Float(x) => ready.push(HeapValue::Float(*x)),
-                Value::Byte(b) => ready.push(HeapValue::Byte(*b)),
-                Value::Bool(b) => ready.push(HeapValue::Bool(*b)),
-                Value::Char(c) => ready.push(HeapValue::Char(*c)),
-                Value::Unit => ready.push(HeapValue::Unit),
-                Value::Str(s) => ready.push(ctx.alloc_str(s, function)?),
-                Value::Bytes(b) => ready.push(ctx.alloc_bytes(b, function)?),
-                Value::Ctor { tag, args } => {
-                    if args.items.is_empty() {
-                        ready.push(HeapValue::Tag(CtorTag(*tag)));
-                    } else {
-                        u32::try_from(args.items.len()).map_err(|_| invalid_conversion())?;
-                        pending.push(ToHeap::Ctor {
-                            tag: *tag,
-                            len: args.items.len(),
-                        });
-                        pending.extend(args.items.iter().rev().map(ToHeap::Visit));
+                ToHeap::Visit(value) => {
+                    if let Some(key) = RefKey::of(value) {
+                        if let Some(cached) = self.objects.get(&key) {
+                            ready.push(cached.ok_or_else(invalid_conversion)?);
+                            continue;
+                        }
+                        self.retained.push(value.clone());
+                        self.objects.insert(key, None);
+                        pending.push(ToHeap::Remember(key));
+                    }
+                    match value {
+                        Value::Decimal(d) => ready.push(ctx.alloc_decimal(*d)),
+                        Value::Resource(id) => ready.push(HeapValue::Resource(*id)),
+                        Value::Opaque(n) => {
+                            ready.push(roots.get(ctx, RootIdx(*n)).ok_or_else(invalid_conversion)?)
+                        }
+                        Value::Map(items) if items.items.is_empty() => {
+                            ready.push(HeapValue::EmptyMap)
+                        }
+                        Value::Map(items) => {
+                            pending.push(ToHeap::Map {
+                                len: items.items.len(),
+                            });
+                            pending.extend(items.items.iter().rev().map(ToHeap::Visit));
+                        }
+                        Value::Set(items) if items.items.is_empty() => {
+                            ready.push(HeapValue::EmptySet)
+                        }
+                        Value::Set(items) => {
+                            pending.push(ToHeap::Set {
+                                len: items.items.len(),
+                            });
+                            pending.extend(items.items.iter().rev().map(ToHeap::Visit));
+                        }
+                        Value::Func(_) | Value::Location(_) => {
+                            let index = u32::try_from(references.len())
+                                .map_err(|_| invalid_conversion())?;
+                            references.push(value.clone());
+                            ready.push(ctx.alloc_opaque(RefValue { generation, index }));
+                        }
+                        Value::Dict { .. } => return Err(invalid_conversion()),
+                        Value::Int(n) => ready.push(HeapValue::Int(*n)),
+                        Value::Int8(n) => ready.push(HeapValue::Int8(*n)),
+                        Value::Int16(n) => ready.push(HeapValue::Int16(*n)),
+                        Value::Int32(n) => ready.push(HeapValue::Int32(*n)),
+                        Value::UInt16(n) => ready.push(HeapValue::UInt16(*n)),
+                        Value::UInt32(n) => ready.push(HeapValue::UInt32(*n)),
+                        Value::UInt64(n) => ready.push(HeapValue::UInt64(*n)),
+                        Value::Float32(n) => ready.push(HeapValue::Float32(*n)),
+                        Value::Float(x) => ready.push(HeapValue::Float(*x)),
+                        Value::Byte(b) => ready.push(HeapValue::Byte(*b)),
+                        Value::Bool(b) => ready.push(HeapValue::Bool(*b)),
+                        Value::Char(c) => ready.push(HeapValue::Char(*c)),
+                        Value::Unit => ready.push(HeapValue::Unit),
+                        Value::Str(s) => ready.push(ctx.alloc_str(s, function)?),
+                        Value::Bytes(b) => ready.push(ctx.alloc_bytes(b, function)?),
+                        Value::Ctor { tag, args } => {
+                            if args.items.is_empty() {
+                                ready.push(HeapValue::Tag(CtorTag(*tag)));
+                            } else {
+                                u32::try_from(args.items.len())
+                                    .map_err(|_| invalid_conversion())?;
+                                pending.push(ToHeap::Ctor {
+                                    tag: *tag,
+                                    len: args.items.len(),
+                                });
+                                pending.extend(args.items.iter().rev().map(ToHeap::Visit));
+                            }
+                        }
+                        Value::List(items) => {
+                            let len = items.items.len();
+                            CheckedLen::elements(
+                                u64::try_from(len).map_err(|_| invalid_conversion())?,
+                                function,
+                            )?;
+                            pending.push(ToHeap::List { len });
+                            pending.extend(items.items.iter().rev().map(ToHeap::Visit));
+                        }
+                        Value::IoError { kind, reason } => {
+                            let reason = ctx.alloc_str(reason, function)?;
+                            ready.push(ctx.alloc_fields(FieldsKind::IoError, *kind, &[reason])?);
+                        }
                     }
                 }
-                Value::List(items) => {
-                    let len = items.items.len();
-                    CheckedLen::elements(
-                        u64::try_from(len).map_err(|_| invalid_conversion())?,
-                        function,
-                    )?;
-                    pending.push(ToHeap::List { len });
-                    pending.extend(items.items.iter().rev().map(ToHeap::Visit));
-                }
-                Value::IoError { kind, reason } => {
-                    let reason = ctx.alloc_str(reason, function)?;
-                    ready.push(ctx.alloc_fields(FieldsKind::IoError, *kind, &[reason])?);
-                }
-            },
-            ToHeap::Map { len } | ToHeap::Set { len } => {
-                let start = ready
-                    .len()
-                    .checked_sub(len)
-                    .ok_or_else(invalid_conversion)?;
-                let items = ready.get(start..).ok_or_else(invalid_conversion)?;
-                let value = match step {
-                    ToHeap::Map { .. } => {
-                        if len % 2 != 0 {
+                ToHeap::Map { len } | ToHeap::Set { len } => {
+                    let start = ready
+                        .len()
+                        .checked_sub(len)
+                        .ok_or_else(invalid_conversion)?;
+                    let items = ready.get(start..).ok_or_else(invalid_conversion)?;
+                    let value = match step {
+                        ToHeap::Map { .. } => {
+                            if len % 2 != 0 {
+                                return Err(invalid_conversion());
+                            }
+                            let pairs = items
+                                .as_chunks::<2>()
+                                .0
+                                .iter()
+                                .map(|[k, v]| (*k, *v))
+                                .collect::<Vec<_>>();
+                            crate::runtime::map::map_from_sorted(ctx, &pairs, function)?
+                        }
+                        ToHeap::Set { .. } => {
+                            crate::runtime::map::set_from_sorted(ctx, items, function)?
+                        }
+                        ToHeap::Remember(_)
+                        | ToHeap::Visit(_)
+                        | ToHeap::Ctor { .. }
+                        | ToHeap::List { .. } => {
                             return Err(invalid_conversion());
                         }
-                        let pairs = items
-                            .as_chunks::<2>()
-                            .0
-                            .iter()
-                            .map(|[k, v]| (*k, *v))
-                            .collect::<Vec<_>>();
-                        crate::runtime::map::map_from_sorted(ctx, &pairs, function)?
-                    }
-                    ToHeap::Set { .. } => {
-                        crate::runtime::map::set_from_sorted(ctx, items, function)?
-                    }
-                    ToHeap::Visit(_) | ToHeap::Ctor { .. } | ToHeap::List { .. } => {
-                        return Err(invalid_conversion());
-                    }
-                };
-                ready.truncate(start);
-                ready.push(value);
-            }
-            ToHeap::Ctor { tag, len } => {
-                let start = ready
-                    .len()
-                    .checked_sub(len)
-                    .ok_or_else(invalid_conversion)?;
-                let fields = ready.get(start..).ok_or_else(invalid_conversion)?;
-                let value = ctx.alloc_fields(FieldsKind::Ctor, tag, fields)?;
-                ready.truncate(start);
-                ready.push(value);
-            }
-            ToHeap::List { len } => {
-                let start = ready
-                    .len()
-                    .checked_sub(len)
-                    .ok_or_else(invalid_conversion)?;
-                let items = ready.get(start..).ok_or_else(invalid_conversion)?;
-                let value = list::from_values(ctx, items, function)?;
-                ready.truncate(start);
-                ready.push(value);
+                    };
+                    ready.truncate(start);
+                    ready.push(value);
+                }
+                ToHeap::Ctor { tag, len } => {
+                    let start = ready
+                        .len()
+                        .checked_sub(len)
+                        .ok_or_else(invalid_conversion)?;
+                    let fields = ready.get(start..).ok_or_else(invalid_conversion)?;
+                    let value = ctx.alloc_fields(FieldsKind::Ctor, tag, fields)?;
+                    ready.truncate(start);
+                    ready.push(value);
+                }
+                ToHeap::List { len } => {
+                    let start = ready
+                        .len()
+                        .checked_sub(len)
+                        .ok_or_else(invalid_conversion)?;
+                    let items = ready.get(start..).ok_or_else(invalid_conversion)?;
+                    let value = list::from_values(ctx, items, function)?;
+                    ready.truncate(start);
+                    ready.push(value);
+                }
             }
         }
+        if ready.len() != 1 {
+            return Err(invalid_conversion());
+        }
+        ready.pop().ok_or_else(invalid_conversion)
     }
-    if ready.len() != 1 {
-        return Err(invalid_conversion());
-    }
-    ready.pop().ok_or_else(invalid_conversion)
+}
+
+#[derive(Default)]
+struct FromHeapSession {
+    objects: HashMap<(ObjId, ObjKind), Option<Value>>,
 }
 
 enum FromHeap<'e> {
+    Remember((ObjId, ObjKind)),
     Visit(HeapValue<'e>),
     Ctor { tag: u32, len: usize },
     List { len: usize },
@@ -426,135 +519,178 @@ enum FromHeap<'e> {
 }
 
 // 区間が閉じる前に、ヒープを指さない値へ戻す。リストは公開 API で読む（設計書 02-08「参照インタプリタ」）。
-fn from_heap_with<'e>(
-    ctx: &ValueCtx<'e>,
-    value: HeapValue<'e>,
-    opaque: &mut impl FnMut(HeapValue<'e>) -> Result<Value, Stop>,
-) -> Result<Value, Stop> {
-    let mut pending = vec![FromHeap::Visit(value)];
-    let mut ready = Vec::new();
-    while let Some(step) = pending.pop() {
-        match step {
-            FromHeap::Visit(value) => match value {
-                HeapValue::Int(n) => ready.push(Value::Int(n)),
-                HeapValue::Int8(n) => ready.push(Value::Int8(n)),
-                HeapValue::Int16(n) => ready.push(Value::Int16(n)),
-                HeapValue::Int32(n) => ready.push(Value::Int32(n)),
-                HeapValue::UInt16(n) => ready.push(Value::UInt16(n)),
-                HeapValue::UInt32(n) => ready.push(Value::UInt32(n)),
-                HeapValue::UInt64(n) => ready.push(Value::UInt64(n)),
-                HeapValue::Float32(n) => ready.push(Value::Float32(n)),
-                HeapValue::Float(x) => ready.push(Value::Float(x)),
-                HeapValue::Byte(b) => ready.push(Value::Byte(b)),
-                HeapValue::Bool(b) => ready.push(Value::Bool(b)),
-                HeapValue::Char(c) => ready.push(Value::Char(c)),
-                HeapValue::Unit => ready.push(Value::Unit),
-                HeapValue::Tag(tag) => ready.push(Value::ctor(tag.0, Vec::new())),
-                HeapValue::EmptyList => ready.push(Value::list(Vec::new())),
-                HeapValue::Resource(id) => ready.push(Value::Resource(id)),
-                HeapValue::EmptyMap => ready.push(Value::Map(Rc::new(Values { items: vec![] }))),
-                HeapValue::EmptySet => ready.push(Value::Set(Rc::new(Values { items: vec![] }))),
-                HeapValue::Obj(_) => match ctx.kind(value).ok_or_else(invalid_conversion)? {
-                    ObjKind::Str => ready.push(Value::Str(Rc::from(
-                        ctx.str(value).ok_or_else(invalid_conversion)?,
-                    ))),
-                    ObjKind::Bytes => ready.push(Value::Bytes(Rc::from(
-                        ctx.bytes(value).ok_or_else(invalid_conversion)?,
-                    ))),
-                    ObjKind::Fields(FieldsKind::Ctor) => {
-                        let (_, tag) = ctx.fields_header(value).ok_or_else(invalid_conversion)?;
-                        let len = ctx.fields_len(value).ok_or_else(invalid_conversion)?;
-                        pending.push(FromHeap::Ctor {
-                            tag,
-                            len: usize::try_from(len).map_err(|_| invalid_conversion())?,
-                        });
-                        for i in (0..len).rev() {
-                            pending.push(FromHeap::Visit(
-                                ctx.field(value, i).ok_or_else(invalid_conversion)?,
-                            ));
+impl FromHeapSession {
+    fn convert<'e>(
+        &mut self,
+        ctx: &ValueCtx<'e>,
+        value: HeapValue<'e>,
+        opaque: &mut impl FnMut(HeapValue<'e>) -> Result<Value, Stop>,
+    ) -> Result<Value, Stop> {
+        let mut pending = vec![FromHeap::Visit(value)];
+        let mut ready: Vec<Value> = Vec::new();
+        while let Some(step) = pending.pop() {
+            match step {
+                FromHeap::Remember(key) => {
+                    let value = ready.last().ok_or_else(invalid_conversion)?.clone();
+                    self.objects.insert(key, Some(value));
+                }
+                FromHeap::Visit(value) => {
+                    if let HeapValue::Obj(_) = value {
+                        let key = (
+                            ctx.object_id(value).ok_or_else(invalid_conversion)?,
+                            ctx.kind(value).ok_or_else(invalid_conversion)?,
+                        );
+                        if let Some(cached) = self.objects.get(&key) {
+                            ready.push(cached.clone().ok_or_else(invalid_conversion)?);
+                            continue;
+                        }
+                        self.objects.insert(key, None);
+                        pending.push(FromHeap::Remember(key));
+                    }
+                    match value {
+                        HeapValue::Int(n) => ready.push(Value::Int(n)),
+                        HeapValue::Int8(n) => ready.push(Value::Int8(n)),
+                        HeapValue::Int16(n) => ready.push(Value::Int16(n)),
+                        HeapValue::Int32(n) => ready.push(Value::Int32(n)),
+                        HeapValue::UInt16(n) => ready.push(Value::UInt16(n)),
+                        HeapValue::UInt32(n) => ready.push(Value::UInt32(n)),
+                        HeapValue::UInt64(n) => ready.push(Value::UInt64(n)),
+                        HeapValue::Float32(n) => ready.push(Value::Float32(n)),
+                        HeapValue::Float(x) => ready.push(Value::Float(x)),
+                        HeapValue::Byte(b) => ready.push(Value::Byte(b)),
+                        HeapValue::Bool(b) => ready.push(Value::Bool(b)),
+                        HeapValue::Char(c) => ready.push(Value::Char(c)),
+                        HeapValue::Unit => ready.push(Value::Unit),
+                        HeapValue::Tag(tag) => ready.push(Value::ctor(tag.0, Vec::new())),
+                        HeapValue::EmptyList => ready.push(Value::list(Vec::new())),
+                        HeapValue::Resource(id) => ready.push(Value::Resource(id)),
+                        HeapValue::EmptyMap => {
+                            ready.push(Value::Map(Rc::new(Values { items: vec![] })))
+                        }
+                        HeapValue::EmptySet => {
+                            ready.push(Value::Set(Rc::new(Values { items: vec![] })))
+                        }
+                        HeapValue::Obj(_) => {
+                            match ctx.kind(value).ok_or_else(invalid_conversion)? {
+                                ObjKind::Str => ready.push(Value::Str(Rc::from(
+                                    ctx.str(value).ok_or_else(invalid_conversion)?,
+                                ))),
+                                ObjKind::Bytes => ready.push(Value::Bytes(Rc::from(
+                                    ctx.bytes(value).ok_or_else(invalid_conversion)?,
+                                ))),
+                                ObjKind::Fields(FieldsKind::Ctor) => {
+                                    let (_, tag) =
+                                        ctx.fields_header(value).ok_or_else(invalid_conversion)?;
+                                    let len =
+                                        ctx.fields_len(value).ok_or_else(invalid_conversion)?;
+                                    pending.push(FromHeap::Ctor {
+                                        tag,
+                                        len: usize::try_from(len)
+                                            .map_err(|_| invalid_conversion())?,
+                                    });
+                                    for i in (0..len).rev() {
+                                        pending.push(FromHeap::Visit(
+                                            ctx.field(value, i).ok_or_else(invalid_conversion)?,
+                                        ));
+                                    }
+                                }
+                                ObjKind::Fields(_) if list::is_list(ctx, value) => {
+                                    let items = list::to_vec(ctx, value)?;
+                                    pending.push(FromHeap::List { len: items.len() });
+                                    pending.extend(items.into_iter().rev().map(FromHeap::Visit));
+                                }
+                                ObjKind::Fields(FieldsKind::IoError) => {
+                                    let (_, kind) =
+                                        ctx.fields_header(value).ok_or_else(invalid_conversion)?;
+                                    if ctx.fields_len(value) != Some(1) {
+                                        return Err(invalid_conversion());
+                                    }
+                                    let reason =
+                                        ctx.field(value, 0).ok_or_else(invalid_conversion)?;
+                                    ready.push(Value::IoError {
+                                        kind,
+                                        reason: Rc::from(
+                                            ctx.str(reason).ok_or_else(invalid_conversion)?,
+                                        ),
+                                    });
+                                }
+                                ObjKind::Decimal => ready.push(Value::Decimal(
+                                    ctx.decimal(value).ok_or_else(invalid_conversion)?,
+                                )),
+                                ObjKind::Fields(FieldsKind::MapNode) => {
+                                    let pairs = crate::runtime::map::map_to_vec(ctx, value)?;
+                                    let len = pairs
+                                        .len()
+                                        .checked_mul(2)
+                                        .ok_or_else(invalid_conversion)?;
+                                    pending.push(FromHeap::Map { len });
+                                    for (k, v) in pairs.into_iter().rev() {
+                                        pending.push(FromHeap::Visit(v));
+                                        pending.push(FromHeap::Visit(k));
+                                    }
+                                }
+                                ObjKind::Fields(FieldsKind::SetNode) => {
+                                    let items = crate::runtime::map::set_to_vec(ctx, value)?;
+                                    pending.push(FromHeap::Set { len: items.len() });
+                                    pending.extend(items.into_iter().rev().map(FromHeap::Visit));
+                                }
+                                ObjKind::Opaque
+                                | ObjKind::Host
+                                | ObjKind::Fields(FieldsKind::NetworkError) => {
+                                    ready.push(opaque(value)?)
+                                }
+                                ObjKind::Cell
+                                | ObjKind::Fields(
+                                    FieldsKind::Func | FieldsKind::Dict | FieldsKind::ListNode,
+                                ) => {
+                                    return Err(invalid_conversion());
+                                }
+                            }
                         }
                     }
-                    ObjKind::Fields(_) if list::is_list(ctx, value) => {
-                        let items = list::to_vec(ctx, value)?;
-                        pending.push(FromHeap::List { len: items.len() });
-                        pending.extend(items.into_iter().rev().map(FromHeap::Visit));
-                    }
-                    ObjKind::Fields(FieldsKind::IoError) => {
-                        let (_, kind) = ctx.fields_header(value).ok_or_else(invalid_conversion)?;
-                        if ctx.fields_len(value) != Some(1) {
+                }
+                FromHeap::Map { len } | FromHeap::Set { len } => {
+                    let start = ready
+                        .len()
+                        .checked_sub(len)
+                        .ok_or_else(invalid_conversion)?;
+                    let items = Rc::new(Values {
+                        items: ready.split_off(start),
+                    });
+                    ready.push(match step {
+                        FromHeap::Map { .. } => Value::Map(items),
+                        FromHeap::Set { .. } => Value::Set(items),
+                        FromHeap::Remember(_)
+                        | FromHeap::Visit(_)
+                        | FromHeap::Ctor { .. }
+                        | FromHeap::List { .. } => {
                             return Err(invalid_conversion());
                         }
-                        let reason = ctx.field(value, 0).ok_or_else(invalid_conversion)?;
-                        ready.push(Value::IoError {
-                            kind,
-                            reason: Rc::from(ctx.str(reason).ok_or_else(invalid_conversion)?),
-                        });
-                    }
-                    ObjKind::Decimal => ready.push(Value::Decimal(
-                        ctx.decimal(value).ok_or_else(invalid_conversion)?,
-                    )),
-                    ObjKind::Fields(FieldsKind::MapNode) => {
-                        let pairs = crate::runtime::map::map_to_vec(ctx, value)?;
-                        let len = pairs.len().checked_mul(2).ok_or_else(invalid_conversion)?;
-                        pending.push(FromHeap::Map { len });
-                        for (k, v) in pairs.into_iter().rev() {
-                            pending.push(FromHeap::Visit(v));
-                            pending.push(FromHeap::Visit(k));
-                        }
-                    }
-                    ObjKind::Fields(FieldsKind::SetNode) => {
-                        let items = crate::runtime::map::set_to_vec(ctx, value)?;
-                        pending.push(FromHeap::Set { len: items.len() });
-                        pending.extend(items.into_iter().rev().map(FromHeap::Visit));
-                    }
-                    ObjKind::Opaque | ObjKind::Host | ObjKind::Fields(FieldsKind::NetworkError) => {
-                        ready.push(opaque(value)?)
-                    }
-                    ObjKind::Cell
-                    | ObjKind::Fields(FieldsKind::Func | FieldsKind::Dict | FieldsKind::ListNode) =>
-                    {
-                        return Err(invalid_conversion());
-                    }
-                },
-            },
-            FromHeap::Map { len } | FromHeap::Set { len } => {
-                let start = ready
-                    .len()
-                    .checked_sub(len)
-                    .ok_or_else(invalid_conversion)?;
-                let items = Rc::new(Values {
-                    items: ready.split_off(start),
-                });
-                ready.push(match step {
-                    FromHeap::Map { .. } => Value::Map(items),
-                    FromHeap::Set { .. } => Value::Set(items),
-                    FromHeap::Visit(_) | FromHeap::Ctor { .. } | FromHeap::List { .. } => {
-                        return Err(invalid_conversion());
-                    }
-                });
-            }
-            FromHeap::Ctor { tag, len } => {
-                let start = ready
-                    .len()
-                    .checked_sub(len)
-                    .ok_or_else(invalid_conversion)?;
-                let items = ready.split_off(start);
-                ready.push(Value::ctor(tag, items));
-            }
-            FromHeap::List { len } => {
-                let start = ready
-                    .len()
-                    .checked_sub(len)
-                    .ok_or_else(invalid_conversion)?;
-                let items = ready.split_off(start);
-                ready.push(Value::list(items));
+                    });
+                }
+                FromHeap::Ctor { tag, len } => {
+                    let start = ready
+                        .len()
+                        .checked_sub(len)
+                        .ok_or_else(invalid_conversion)?;
+                    let items = ready.split_off(start);
+                    ready.push(Value::ctor(tag, items));
+                }
+                FromHeap::List { len } => {
+                    let start = ready
+                        .len()
+                        .checked_sub(len)
+                        .ok_or_else(invalid_conversion)?;
+                    let items = ready.split_off(start);
+                    ready.push(Value::list(items));
+                }
             }
         }
+        if ready.len() != 1 {
+            return Err(invalid_conversion());
+        }
+        ready.pop().ok_or_else(invalid_conversion)
     }
-    if ready.len() != 1 {
-        return Err(invalid_conversion());
-    }
-    ready.pop().ok_or_else(invalid_conversion)
 }
 
 fn invalid_conversion() -> Stop {
@@ -592,10 +728,192 @@ mod tests {
         v: &Value,
         function: &'static str,
     ) -> Result<HeapValue<'e>, Stop> {
-        to_heap_with(ctx, v, function, &RootStack::new(), &mut Vec::new(), 0)
+        ToHeapSession::default().convert(ctx, v, function, &RootStack::new(), &mut Vec::new(), 0)
     }
     fn from_heap<'e>(ctx: &ValueCtx<'e>, v: HeapValue<'e>) -> Result<Value, Stop> {
-        from_heap_with(ctx, v, &mut |_| Err(invalid_conversion()))
+        FromHeapSession::default().convert(ctx, v, &mut |_| Err(invalid_conversion()))
+    }
+
+    builtin! {
+        /// 引数全体で同じ実在対象を一度だけ変換する契約を観察する。
+        name = "Test.sameObject",
+        pure fn same_object(ctx, a: HeapValue<'e>, b: HeapValue<'e>) -> bool {
+            Ok(ctx.object_id(a).is_some() && ctx.object_id(a) == ctx.object_id(b))
+        }
+    }
+    builtin! {
+        /// 戻り値で同じ実在対象を一度だけ戻す契約を観察する。
+        name = "Test.sharedResult",
+        pure fn shared_result(ctx, v: HeapValue<'e>) -> HeapValue<'e> {
+            ctx.alloc_fields(FieldsKind::Ctor, 17, &[v, v])
+        }
+    }
+
+    fn shared_inputs() -> Vec<Value> {
+        vec![
+            Value::Str(Rc::from("shared あ")),
+            Value::Bytes(Rc::from([0, 255].as_slice())),
+            Value::ctor(4, vec![Value::Int(7)]),
+            Value::list(vec![Value::Int(7)]),
+            Value::Map(Rc::new(Values {
+                items: vec![Value::Int(1), Value::Int(7)],
+            })),
+            Value::Set(Rc::new(Values {
+                items: vec![Value::Int(7)],
+            })),
+        ]
+    }
+
+    // 作成時の関門: 変換境界で引数間の共有と戻り値内の共有を別々に守る。
+    // 内容だけの往復では再展開を検出できず、公開の範囲や注入の口は増やさない。
+    #[test]
+    fn shared_arguments_reuse_heap_objects() {
+        let mut bridge = stress_bridge();
+        let mut io = TestIo {
+            directory: PathBuf::from("."),
+        };
+        for value in shared_inputs() {
+            for _ in 0..3 {
+                assert!(
+                    matches!(
+                        done(bridge.call_decl(
+                            &same_object::DECL,
+                            &[value.clone(), value.clone()],
+                            &mut io,
+                            None
+                        )),
+                        Value::Bool(true)
+                    ),
+                    "{value:?}"
+                );
+                assert!(bridge.heap.object_ids().is_empty());
+            }
+        }
+    }
+
+    #[test]
+    fn shared_results_reuse_reference_objects() {
+        let mut bridge = stress_bridge();
+        let mut io = TestIo {
+            directory: PathBuf::from("."),
+        };
+        for value in shared_inputs() {
+            let Value::Ctor { args, .. } =
+                done(bridge.call_decl(&shared_result::DECL, &[value], &mut io, None))
+            else {
+                panic!("pair")
+            };
+            let shared = match (&args.items[0], &args.items[1]) {
+                (Value::Str(a), Value::Str(b)) => Rc::ptr_eq(a, b),
+                (Value::Bytes(a), Value::Bytes(b)) => Rc::ptr_eq(a, b),
+                (Value::Ctor { args: a, .. }, Value::Ctor { args: b, .. })
+                | (Value::List(a), Value::List(b))
+                | (Value::Map(a), Value::Map(b))
+                | (Value::Set(a), Value::Set(b)) => Rc::ptr_eq(a, b),
+                _ => false,
+            };
+            assert!(shared, "{:?}", args.items);
+            assert!(bridge.heap.object_ids().is_empty());
+        }
+    }
+
+    // 作成時の関門: 内容の等値を全展開せず、共有した深い子と葉を観察する。
+    // 平坦な共有だけでは子の処理中に表を使い損ねる退行を検出できない。
+    #[test]
+    fn shared_deep_values_keep_children_and_small_observations() {
+        let depth = if cfg!(feature = "gc-stress") { 6 } else { 12 };
+        let mut value = Value::ctor(0, vec![Value::Int(7)]);
+        for _ in 0..depth {
+            value = Value::ctor(1, vec![value.clone(), value]);
+        }
+        let mut bridge = stress_bridge();
+        let mut io = TestIo {
+            directory: PathBuf::from("."),
+        };
+        let mut value = done(bridge.call_decl(&shared_result::DECL, &[value], &mut io, None));
+        for level in 0..=depth {
+            let Value::Ctor { tag, args } = &value else {
+                panic!("constructor")
+            };
+            assert_eq!(*tag, if level == 0 { 17 } else { 1 });
+            let (Value::Ctor { args: a, .. }, Value::Ctor { args: b, .. }) =
+                (&args.items[0], &args.items[1])
+            else {
+                panic!("shared children")
+            };
+            assert!(Rc::ptr_eq(a, b));
+            value = args.items[0].clone();
+        }
+        let Value::Ctor { tag, args } = value else {
+            panic!("leaf")
+        };
+        assert_eq!(tag, 0);
+        assert!(matches!(args.items.as_slice(), [Value::Int(7)]));
+        assert!(bridge.heap.object_ids().is_empty());
+    }
+
+    #[test]
+    fn shared_storage_keeps_value_kinds_and_constructor_tags_distinct() {
+        let items = Rc::new(Values {
+            items: vec![Value::Int(1), Value::Int(7)],
+        });
+        let input = Value::list(vec![
+            Value::Ctor {
+                tag: 42,
+                args: Rc::clone(&items),
+            },
+            Value::Ctor {
+                tag: 43,
+                args: Rc::clone(&items),
+            },
+            Value::List(Rc::clone(&items)),
+            Value::Map(Rc::clone(&items)),
+            Value::Set(items),
+        ]);
+        let mut bridge = stress_bridge();
+        let mut io = TestIo {
+            directory: PathBuf::from("."),
+        };
+        let Value::Ctor { args, .. } = done(bridge.call_decl(
+            &shared_result::DECL,
+            std::slice::from_ref(&input),
+            &mut io,
+            None,
+        )) else {
+            panic!("pair")
+        };
+        assert!(values_equal(&args.items[0], &input).unwrap());
+        assert!(bridge.heap.object_ids().is_empty());
+    }
+
+    builtin! {
+        /// 世代付きの参照を不透明な根の内側に保持する。
+        name = "Test.wrapReference",
+        pure fn wrap_reference(ctx, v: HeapValue<'e>) -> HeapValue<'e> {
+            ctx.alloc_fields(FieldsKind::NetworkError, 0, &[v])
+        }
+    }
+    builtin! {
+        /// 保存した前の呼び出しの参照を次の区間へ返す。
+        name = "Test.unwrapReference",
+        pure fn unwrap_reference(ctx, v: HeapValue<'e>) -> HeapValue<'e> {
+            ctx.field(v, 0).ok_or_else(invalid_conversion)
+        }
+    }
+    // 作成時の関門: 変換表を呼び出し間で使い回し、古いRefValueを復活させる退行を拒む。
+    #[test]
+    fn reference_generations_are_rejected_after_an_epoch() {
+        let mut bridge = stress_bridge();
+        let mut io = TestIo {
+            directory: PathBuf::from("."),
+        };
+        let wrapped =
+            done(bridge.call_decl(&wrap_reference::DECL, &[Value::Location(7)], &mut io, None));
+        assert!(matches!(wrapped, Value::Opaque(_)));
+        assert!(matches!(
+            bridge.call_decl(&unwrap_reference::DECL, &[wrapped], &mut io, None),
+            BuiltinOutcome::Stopped(Stop::Internal(_))
+        ));
     }
 
     // 作成時の関門: 変換でタグ・順序・文字・エラーの内容を失わないことと、非再帰を守る。
@@ -728,13 +1046,23 @@ mod tests {
     #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn million_element_lists_and_million_deep_constructors_round_trip_and_drop() {
         let mut heap = Heap::new(HeapConfig::default());
-        let input = Value::list((0..1_000_000).map(Value::Int).collect());
+        let list_len = if cfg!(feature = "gc-stress") {
+            64
+        } else {
+            1_000_000
+        };
+        let depth = if cfg!(feature = "gc-stress") {
+            16
+        } else {
+            1_000_000
+        };
+        let input = Value::list((0..list_len).map(Value::Int).collect());
         let output = round_trip(&mut heap, &input);
         assert!(values_equal(&input, &output).unwrap());
         drop(input);
         drop(output);
         let mut input = Value::Int(17);
-        for _ in 0..1_000_000 {
+        for _ in 0..depth {
             input = Value::ctor(3, vec![input]);
         }
         let output = round_trip(&mut heap, &input);

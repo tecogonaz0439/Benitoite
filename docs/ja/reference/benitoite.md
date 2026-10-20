@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,7 +16,7 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.9` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.10` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
 `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
@@ -100,7 +100,7 @@ benitoite --licenses
 | `skill` | 同梱の Agent Skill をインストール・削除する。または、インストールせずに埋め込み文書の一覧を取得し、本文を取り出す。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.9`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.10`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
 | `--version=json` | 版・ビルド・対応する形式の情報を一つの JSON オブジェクトとして出力する。最初の引数でなければならず、後続の引数は受け付けない。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
@@ -159,7 +159,7 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "unicodeVersion": "17.0.0",
   "build": {
     "commit": null,
@@ -232,7 +232,7 @@ benitoite test --check --report=json tests/
 
 成功した `main` は `{symbol: "main", location, effects, processShellReference, shellReferenceScope}` である。`tests` の各要素は `{function, description, location, effects}` であり、宣言順に並ぶ。テストの説明を省いた場合は `null`、空の説明を明示した場合は `""` になる。`location` は `{file, start, end, label: ""}` で関数名の位置を示す。start と end は、1 から数える `line` と `column`、元のソースでの 0 から数えるバイト位置 `offset` を含む。
 
-Effects オブジェクトは `{basis: "declaredUpperBound", expanded: [...]}` である。配列には組み込みの原子的なエフェクトの名前が、重複なく辞書順に並ぶ。本体で使わないものも含め、宣言した上限を報告する。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` へ展開し、HTTP のどちらのエフェクトも `Assert.Check` も含まない。テストの各契約、集計、後のエフェクトの上限の比較では `Assert.Check` を保持する。`main` での `Assert.Check` の宣言は検査の誤り（`E0415`）になる。処理していない `or die` は `Process.Exit` を要する。これをすべて処理し、宣言した上限から取り除けば、報告からも取り除かれる。単独の `try` や `or return` は終了のエフェクトを加えない。
+Effects オブジェクトは `{basis: "declaredUpperBound", expanded: [...]}` である。配列には組み込みの原子的なエフェクトの名前が、重複なく辞書順に並ぶ。本体で使わないものも含め、宣言した上限を報告する。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` へ展開し、Log も HTTP のどちらのエフェクトも `Assert.Check` も含まない。テストの各契約、集計、後のエフェクトの上限の比較では `Assert.Check` を保持する。`main` での `Assert.Check` の宣言は検査の誤り（`E0415`）になる。処理していない `or die` は `Process.Exit` を要する。これをすべて処理し、宣言した上限から取り除けば、報告からも取り除かれる。単独の `try` や `or return` は終了のエフェクトを加えない。
 
 main かテストに未処理の `Failure.Fail[E]` があれば、test --check も含め、検査の誤り E0506 になる。入口の内部で処理するか、Failure.toResult で変換する。Fail は IO.All、expanded、--allow-effects が受け付ける名前に含めない。報告とエフェクト上限のスキーマの版は変わらない。
 
@@ -267,7 +267,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 benitoite --allow-effects= pure.bnt
 ```
 
-最後のコマンドは空集合を許す。オプションは、[エフェクト](#10-エフェクト)にある 13 個の原子的な名前（`State` と `Assert.Check` を含む）を、任意の順にコンマで区切った一つの集合を受け付ける。名前の重複、空の要素、どの位置にある空白、未知の名前、利用者定義の名前、取り込みの別名、`IO.All`、`*` は拒否し、値の前後の空白を取り除かない。オプションは一度だけ指定できる。`check`、`test --check`、`fmt` は受け付けない。`run` のスクリプトのパスの後では、スクリプトの引数になる。
+最後のコマンドは空集合を許す。オプションは、[エフェクト](#10-エフェクト)にある 14 個の原子的な名前（`State` と `Assert.Check` を含む）を、任意の順にコンマで区切った一つの集合を受け付ける。名前の重複、空の要素、どの位置にある空白、未知の名前、利用者定義の名前、取り込みの別名、`IO.All`、`*` は拒否し、値の前後の空白を取り除かない。オプションは一度だけ指定できる。`check`、`test --check`、`fmt` は受け付けない。`run` のスクリプトのパスの後では、スクリプトの引数になる。
 
 新たに検査した宣言上限は、渡した集合の部分集合でなければならない。余分な名前の許可は受け付ける。不足するエフェクトがあると、該当する関数ごとに一つの `E0512` を、その位置、不足するエフェクト、許可集合とともに出し、実行前に終了状態 2 で終える。`--diagnostics=json` では、標準エラー出力の通常の診断行になり、標準出力に承認のオブジェクトは出さない。不明な契約を比較する前に、それ以前の型やエフェクトの誤りを優先する。
 
@@ -281,7 +281,7 @@ benitoite --allow-effects= pure.bnt
 
 ファイルのトップレベルには、`import` の宣言、その後に宣言（関数、定数、データ型、型の別名、レコード、型クラス、実装、エフェクト）をこの順に置く。実行するコードは関数の中にだけ書く。
 
-短いラムダ（[関数とラムダ](#6-関数とラムダ)を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで閉じる。`end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end trait`、`end implement`、`end effect`、`end handle`、`end with`、`end lazy` である。波括弧はなく、字下げに意味はない。文は改行で区切る。セミコロンはない。`return` の直後の物理改行は、括弧の中でも、次の行の先頭が継続用の演算子でも、常に文を終える。コメントや空行を挟んでも、この規則は変わらない。
+短いラムダ（[関数とラムダ](#6-関数とラムダ)を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで閉じる。`end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end trait`、`end implement`、`end effect`、`end handle`、`end with`、`end lazy`、`end block` である。波括弧はなく、字下げに意味はない。文は改行で区切る。セミコロンはない。`return` の直後の物理改行は、括弧の中でも、次の行の先頭が継続用の演算子でも、常に文を終える。コメントや空行を挟んでも、この規則は変わらない。
 
 ブロックの中では次のように書く。
 
@@ -293,6 +293,8 @@ benitoite --allow-effects= pure.bnt
 戻り値の型が `Unit` でない関数は、`return` で終わらなければならない（またはすべての分岐が値を返す `if` か `match` で終わる）。`if` の値、`match` の分岐の値、ハンドラの節の値、`with`・`handle`・`lazy` の本体の値は、その最後の式である。`if`、`match` の分岐、ハンドラの節、`with` か `handle` の本体の中の `return` は、それを含む関数から抜ける。`lazy` の本体と `match` のガードは、`return` も `try` も含められない。ただし、そこに書いた `lambda ... end lambda` の中は除く。プレースホルダ `_` を持つ呼び出しの引数は、この除外に当たらない。
 
 `//` は行末までのコメントを始める。宣言の前の `///` はその宣言の説明であり、ファイルの先頭の `//!` はモジュールの説明である。識別子には ASCII の英字、数字、`_` を使う。関数、値、引数の名前は小文字で始め、型、構成子、モジュール、エフェクトの名前は大文字で始める。
+
+`record` は、引数、引数のラベル、束縛、値の参照など、小文字の名前を要する位置でも使える。宣言の位置では引き続きレコードの宣言を始める。
 
 `die` は予約語であり、引数のラベル、フィールド、取り込みの別名、ドットの後の名前を含め、名前に使えない。`try e or die` と `try e or die(message)` の中でだけ受理し、単独の式にはできない。
 
@@ -535,6 +537,29 @@ end function
 
 型注釈のない関数パラメータを呼ぶとき、そのラベルから契約順を決めることはしない。同じ関数の本体内の制約で契約が確定しなければ、`g: function(a: Integer, b: Integer) -> Integer` などの型注釈を加える。注釈がなければ検査器は `E0455` を報告する。未使用のラムダや、一つの位置引数を渡す呼び出しでも同じである。検査済みの関数で不足している契約を、呼び出し元から後で補うことはできない。
 
+### ブロック式
+
+`block ... end block` は文の並びを一つの式にする。最後の式が値となり、空のブロックと最後が束縛のブロックの型は Unit となる。局所束縛の範囲は内側に限られ、エフェクトは各文の和となる。return の境界は作らず、`return` と `try ... or return` は囲む関数かラムダを作用先とする。lazy の本体やガードでの return と try の禁止は、その内側の block にも適用する。構築器を内側で宣言して操作できるが、最後に返すのは copy などの通常値とする。
+
+```benitoite
+import Benitoite.StringBuilder
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind text <- block
+    bind builder: StringBuilder <- StringBuilder.new()
+    StringBuilder.appendAll(builder: builder, texts: ["hello", " world"])
+    StringBuilder.copy(builder)
+  end block
+  Console.writeLine(text)
+end function
+```
+```output
+hello world
+```
+
+`block` は予約語であり、ドットの後の名前や引数ラベルにも使えない。既存の同名の識別子は改名する。
+
 ### 穴とパイプ
 
 呼び出しの直接の引数の `_` は、不足する引数を取る関数を作る。`Integer.maximum(a: _, b: 0)` の型は `function(a: Integer) -> Integer` である。各穴は対応するパラメータ名を引き継ぎ、複数の穴は記述順に並ぶ。`between(high: _, value: 3, low: _)` は `low, high` ではなく `high, low` を取る。位置構成子の直接の穴は、元の位置の名前を引き継ぐ。`Pair(_, "one")` は `arg1` を取る。呼ぶ関数の式と固定した引数の式を評価するのは、生成した関数を作るときではなく、その関数を呼ぶときである。これらの式の中の `return` と `try` は生成した関数に作用する。`resume` はこの境界を越えられない。
@@ -672,7 +697,7 @@ HI
 - コンマで区切った複数の選択肢 `case 1, 2 ->`。
 - ガードを後に続けたもの `case n if n > 0 ->`。
 
-Character の範囲は、Unicode スカラー値の全域を覆える。`case '\u{0}'..'\u{10ffff}' ->` 一つ、または `'\u{0}'..'\u{d7ff}'` と `'\u{e000}'..'\u{10ffff}'` の二つの範囲で、包括的な最後の分岐なしに網羅できる。レコード、構成子、リストの内部にも同じ規則を適用し、全域の範囲は bind のパターンにも使える。その後の包括的な分岐は E0602、コンマで並べた冗長な選択肢は E0608 で拒否する。ガード付きの分岐は網羅性を成立させない。Integer の範囲には、実装上の Integer の全域を覆っていても包括的な分岐が要る。未被覆の文字に対して E0601 は具体的なスカラー値を示す。例えば `'a'` だけの match なら `'\u{0}'` となる。
+Character の範囲は、Unicode スカラー値の全域を覆える。`case '\u{0}'..'\u{10ffff}' ->` 一つ、または `'\u{0}'..'\u{d7ff}'` と `'\u{e000}'..'\u{10ffff}'` の二つの範囲で、包括的な最後の分岐なしに網羅できる。レコード、構成子、リストの内部にも同じ規則を適用し、全域の範囲は bind のパターンにも使える。その後の包括的な分岐は E0602、コンマで並べた冗長な選択肢は E0608 で拒否する。ガード付きの分岐は網羅性を成立させない。Integer の -9223372036854775808 から 9223372036854775807 までを一つまたは隣接する複数の区間で覆う場合も網羅的となり、後続の包括的な分岐は E0602 となる。穴とガード付きの区間は別途覆う必要があり、E0601 は具体的な未被覆整数を示す。未被覆の文字に対して E0601 は具体的なスカラー値を示す。例えば `'a'` だけの match なら `'\u{0}'` となる。
 
 ```benitoite check
 function scalarHalf(c: Character) -> Integer
@@ -685,6 +710,19 @@ end function
 
 function main() -> Unit
   bind _ <- scalarHalf('\u{e000}')
+end function
+```
+
+```benitoite check
+function sign(n: Integer) -> Integer
+  return match n with
+    case -9223372036854775808..-1 -> -1
+    case 0..9223372036854775807 -> 1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- sign(0)
 end function
 ```
 
@@ -968,9 +1006,10 @@ ready
 | `Random.Generate` | 乱数の生成 |
 | `Http.Listen` | HTTP のサーバとしての接続の受け付け |
 | `Http.Connect` | HTTP のサーバへの接続 |
+| `Log` | 構造化ログの事象。Console.Write と IO.All から独立 |
 | `State` | プログラムの中の可変のセルと並行のタスク |
 | `Assert.Check` | テストでの期待の確かめ |
-| `IO.All` | `Console`、`File`、`Process`、`Clock`、`Random`、`State` のすべて（ネットワークのエフェクトは含まない） |
+| `IO.All` | `Console`、`File`、`Process`、`Clock`、`Random`、`State` のすべて（Log とネットワークのエフェクトは含まない） |
 
 エフェクトが示すのは、関数が行ってよい操作の*種類*であり、どのファイル、コマンド、ホストかではない。`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。この版は、スクリプトの実行中に操作を制限しない。信頼しないスクリプトはサンドボックスの中で実行する。`main` の読み手がスクリプトの行うことを見てとれるように、`IO.All` よりも個々のエフェクトを挙げるほうを選ぶ。
 
@@ -993,6 +1032,29 @@ error[E0501]
 `greet` に `uses Console.Write` を加えると、誤りは直る。
 
 エフェクトは関数の値の型の一部である。`function(text: String) -> Unit uses Console.Write` のように書く。
+
+### 構造化ログとソース位置
+
+`Log` と `SourceLocation` は prelude に含む非公式のモジュールである。 明示的に取り込む場合は Benitoite.Unofficial.Log と Benitoite.Unofficial.SourceLocation を使う。`Log.debug`、`info`、`warn`、`error` は `message: String`、`attributes: List[Log.Attribute]`、`location: SourceLocation.Location` を明示的に取り、Unit を返し Log を使う。操作は `Log.emit(record: Log.Record)` と `Log.enabled(level: Log.Level)` の二つである。`Log.Level` は Debug、Info、Warn、Error の順である。Error のログも実行を終了させない。
+
+```benitoite check
+function main() -> Unit uses Log
+  if Log.enabled(Log.Level.Debug) then
+    Log.debug(message: "starting", attributes: [Log.attribute(key: "count", value: 3)], location: SourceLocation.here())
+  end if
+  Log.info(message: "ready", attributes: [], location: SourceLocation.here())
+end function
+```
+
+`SourceLocation.here()` は純粋な零引数の直接呼び出しであり、書いた場所の位置へ展開する。行と列は 1 始まりの Unicode の位置、file は表示用のパスであり、絶対パスとは限らない。ラッパー内に書けばラッパーの位置となるため、呼び出し側の位置を保つには Location を明示的に受け取る。関数値、穴、パイプは E0467 となる。引数の個数やラベルの誤りは通常の呼び出しの診断を優先する。通常のレコード `Location(file: ..., line: ..., column: ...)` も作れる。SourceLocation の import 別名は使えるが、Log の as は E0339 となる。追加した prelude 名と衝突する利用者側の名前を確認する。
+
+捨てるレベルであっても、引数をソース順に一度ずつ先に評価する。重いメッセージの作成は Log.enabled で囲む。属性の順序とキーの重複を保つ。Log.attribute は Log.ToLogValue を使い、String、Boolean、幅付きの整数と浮動小数点数に標準実装がある。任意のレコードやコレクションを Show で暗黙に変換しない。
+
+未処理の Log は既定のロガーが受け、Info 以上を stderr へ `level=INFO source="app/Main.bnt:12:3" message="ready" attr."count"=3` と LF で出力する。制御文字、引用符、バックスラッシュはエスケープする。時刻、色、ソートは加えない。直接方式と要求方式は同じ書式と stderr のバッファを使い、出力・flush の失敗は通常の IO の失敗に従う。Log.enabled は選択したハンドラの閾値に従う。
+
+Log.withAttributes は共通属性を先頭へ加え、両操作を外側へ送り直す。Log.withTextLogger は minimum と body を取り、Log を処理して Console.Write を要する。Log.withSinks は sinks と body を取り、両操作を処理し、条件に合う `(minimum, sink)` の組をリスト順に一度ずつ呼ぶ。失敗は後続の sink より前に伝播し、空のリストは全事象を捨てる。sink の引数名は record であり、そのエフェクトは結果に残る。独自ハンドラも Log を取り除くには両操作を処理する。
+
+Log は IO.All、Console.Write、HTTP から独立している。宣言上限に残る場合は uses Log と、`--allow-effects` の正規名 Log を明記する。例は `benitoite run --allow-effects=Log script.bnt` である。完全なハンドラで Log を取り除いても、出力側の宣言エフェクトは残る。検査報告は未使用の宣言も含む上限を示し、レベルが無効であることから許可を推定しない。
 
 ## 11. エフェクトハンドラ
 
@@ -1434,6 +1496,8 @@ handled: bad
 
 `Result.andThen` / `flatMap` は既存の Result の値を連結する関数であり、Fail を捕捉しない。変換の案内は標準の Fail に限る。Log や利用者が定義した同名の Fail には、それぞれのハンドラが必要である。
 
+幅付き整数の標準関数も、被除数が未知でも既知の零除算に W0401、既知のあふれに W0402 を出す。符号付き最小値の absolute と floorDivide(minimum, -1) は警告し、floorModulo(minimum, -1) = 0 は警告しない。実行時の Result と停止の意味は変えない。--deny-warnings を使う場合は追加の警告を確認する。宣言由来の制約による下流の重複診断を抑え、独立した誤りは残す。同名の別の型はモジュールを含めて区別する。
+
 ### 呼び出し、関数の契約、ラムダ
 
 | コード | 意味と修正 |
@@ -1466,10 +1530,11 @@ prelude のモジュールは取り込みが要らない。ほかのモジュー
 | `Bytes`, `ByteOrder` | prelude | 変更できないバイト列 |
 | `IOError`, `IOErrorKind`, `NetworkError`, `NetworkErrorKind` | prelude | IO とネットワークの操作の失敗 |
 | `Reference`, `Lazy`, `Task`, `TaskGroup`, `State` | prelude | 可変のセル、明示遅延、タスク、エフェクト `State` |
+| `Log`, `SourceLocation` | prelude | 構造化ログと明示的な呼び出し位置 |
 | `Assert` | prelude | テストでの確かめ |
 | `IO` | prelude | エフェクト `IO.All` |
-| `StringBuilder` | `import Benitoite.StringBuilder` | 局所の文字列の構築。全操作に State を要する。 |
-| `ListBuilder`, `BytesBuilder` | 各モジュールを明示的に取り込む | 局所のリスト・バイト列の構築。全操作に State を要する。 |
+| `StringBuilder` | `import Benitoite.StringBuilder` | 局所の文字列の構築。専用操作は State を加えない。 |
+| `ListBuilder`, `BytesBuilder` | 各モジュールを明示的に取り込む | 局所のリスト・バイト列の構築。専用操作は State を加えない。 |
 | `Trait` | `import Benitoite.Trait` | 標準の型クラス |
 | `IO.Console` | `import Benitoite.Unofficial.IO.Console` | 標準入力と標準出力 |
 | `IO.File` | `import Benitoite.Unofficial.IO.File` | ファイルとディレクトリ |
@@ -1485,6 +1550,7 @@ prelude のモジュールは取り込みが要らない。ほかのモジュー
 | `Csv` | `import Benitoite.Unofficial.Csv` | CSV（RFC 4180） |
 | `Scope` | `import Benitoite.Unofficial.Scope` | 条件を保持する検査済みのホスト、絶対パス、ポートの閉区間。 |
 | `Range` | `import Benitoite.Unofficial.Range` | 端点と値を保持する検査済みの Integer の閉区間。 |
+| `NonEmptyList` | `import Benitoite.Unofficial.NonEmptyList` | 検査済みの非空リストと head/tail/map |
 | `Regex` | `import Benitoite.Unofficial.Regex` | 正規表現。一つの一致を探す時間は、入力の長さと正規表現の大きさの積に比例し、すべての一致を探す時間は、入力の長さの 2 乗に比例することがある |
 | `Encoding` | `import Benitoite.Unofficial.Encoding` | Base64 |
 | `Hash` | `import Benitoite.Unofficial.Hash` | バイト列の SHA-256 のハッシュ値 |
@@ -1572,12 +1638,12 @@ food: 300
 
 ### 関数内の構築器
 
-Benitoite.StringBuilder を取り込み、型注釈付きの局所 bind と直接の new() 呼び出しで構築器を宣言する。構築器は第二級の値（second-class value）であり、通常の変数への格納、関数からの返却、ラムダや lazy への捕捉はできない。StringBuilder は通常の型ではなく、構築器の種類を指す。copy と byteLength を含む五つの操作すべてに State を要する。
+Benitoite.StringBuilder を明示的に取り込み、種類の注釈を付けた局所 bind と直接の new() で宣言する。構築器は第二級の値であり、通常の値として格納・返却・ラムダや lazy への捕捉はできない。StringBuilder は通常の型ではなく構築器の種類を表す。宣言と専用操作は State を加えず、通常の引数のエフェクトだけを残す。
 
 ```benitoite
 import Benitoite.StringBuilder
 
-function main() -> Unit uses State
+function main() -> Unit
   bind b: StringBuilder <- StringBuilder.new()
   StringBuilder.append(builder: b, text: "a")
   bind before <- StringBuilder.copy(b)
@@ -1591,24 +1657,22 @@ end function
 exit 0
 ```
 
-append は String、appendAll は List[String] を取り、後者は区切りなしで要素順に加える。どちらも Unit を返す。copy は現在の不変の String、byteLength はその UTF-8 バイト数を返す。この例では before は "a" のまま、after は "abc"、size は 3 である。copy は不変の保存領域を共有してよい。後の追加は構築器の内容を置き換える。通常の各引数は現在の内容を読む前にソース順で一度評価する。連結中のサイズ上限超過は既存の実行時エラーで実行を止め、途中まで更新した状態は残さない。
+append は String、appendAll は List[String] を取り、順番に区切りなしで追加して Unit を返す。copy は現在の内容の不変な物理コピー、byteLength は UTF-8 のバイト数を返す。before は "a"、after は "abc"、size は 3 のまま保たれる。途中の copy を繰り返すと、その内容に比例する時間と容量を要する。通常の引数をソース順に一度ずつ評価してから内容を読み、上限検査と予約に成功してから更新する。上限超過は R0902、予約失敗は R0907 となり、途中まで更新した状態を残さない。
 
-対応する種類の第二級の構築器を使うには、Benitoite.ListBuilder または Benitoite.BytesBuilder を明示的に取り込む。通常の要素型 T を指定した `bind xs: ListBuilder[T] <- ListBuilder.new()`、または `bind bs: BytesBuilder <- BytesBuilder.new()` で宣言する。いずれも空から始め、全操作に State を要する。
+ListBuilder と BytesBuilder も各々明示的に取り込む。`bind xs: ListBuilder[T] <- ListBuilder.new()` は通常の要素型 T を要し、`bind bs: BytesBuilder <- BytesBuilder.new()` はバイト列の構築器を作る。どちらも空から始める。
 
 | 直接の操作 | ListBuilder[T] | BytesBuilder |
 |---|---|---|
-| `append(builder: b, value: value)` | T 一つを追加する | Byte 一つを追加する |
-| `appendAll(builder: b, …)` | `values: List[T]` | `bytes: Bytes` |
-| `copy(b)` | 不変の List[T] | 不変の Bytes |
-| `length(b)` | Integer の要素数 | Integer のバイト数 |
-
-両 append 操作は Unit を返す。通常の各引数を一度評価してから現在の内容を読み、サイズ検査を通った後だけ更新する。copy は後の追加を経てもリストやバイト列の構造を保つ。List[Reference[T]] のコピーは要素のセルを共有するため、そのセルの更新はコピーからも見える。下の制限は StringBuilder と共通で、操作の種類と対象の種類を一致させる。
+| append(builder: b, value: value) | T を一つ追加 | Byte を一つ追加 |
+| appendAll(builder: b, …) | values: List[T] | bytes: Bytes |
+| copy(b) | 不変の List[T] | 不変の Bytes |
+| length(b) | 要素数の Integer | バイト数の Integer |
 
 ```benitoite
 import Benitoite.ListBuilder
 import Benitoite.BytesBuilder
 
-function main() -> Unit uses State
+function main() -> Unit
   bind xs: ListBuilder[Integer] <- ListBuilder.new()
   ListBuilder.append(value: 1, builder: xs)
   bind before <- ListBuilder.copy(xs)
@@ -1623,11 +1687,17 @@ end function
 exit 0
 ```
 
-構築器の返却、通常の関数への引数渡し、格納、比較、文字列への埋め込みは E0464 となる。構築器の種類は通常の型注釈・型引数・データのフィールド・Failure.Fail の引数に使えない。ラムダ、lazy、部分適用、ハンドラ節の境界で外の構築器を参照すると E0465 となる。部分適用には呼び出し先の式と固定引数の両方を含む。関数値を作る前に copy や length を束縛するか、境界の内側で新しく宣言する。通常の分岐とハンドラ本体は、外側のブロックの構築器を使える。ガード、die の説明、lazy 本体には純粋性を要し、lazy 内で新しく宣言しても State が必要になる。
+copy 後の追記は既存のコピーを変えない。ただし List[Reference[T]] の要素のセルは共有する。通常の関数への引数渡し、返却、格納、比較、文字列補間は E0464 となり、通常の型注釈・型引数・データの欄・Failure.Fail の引数にも使えない。ラムダ・lazy・部分適用・ハンドラ節は外側の構築器を捕捉できない（E0465）。部分適用は呼ぶ式と固定引数の両方が対象である。先に copy や length の通常値を束縛するか、その境界の内側で新しい構築器を宣言する。通常の分岐と handle の本体は外側の構築器を使える。ガード・die の説明・lazy の本体は純粋でなければならず、内側で宣言した構築器も通常の引数が純粋な場合に限り使える。
 
-操作は直接呼び出す。関数値、穴、パイプは E0466 となる。宣言には専用の注釈と、それに合う直接の new 呼び出しの両方を要する（E0463）。同じ標準モジュールを指す取り込みの別名は使える。最後の構築器の bind は Unit を返し、State を要する。動的な断片列は appendAll の前に作る。List.forEach のコールバックは構築器を捕捉できない。clear、reserve、finish、State を消す規則はない。
+操作は直接呼び出しを要し、関数値・穴・パイプは E0466 となる。宣言には対応する注釈と直接の new を要する（E0463）。標準モジュールの import 別名は使える。最後の構築器の束縛は Unit となる。List.forEach のコールバックでは捕捉できないため、appendAll の前に断片のリストを作る。clear/reserve/finish はない。旧 uses State は受理するが、API を純粋へ変える場合は契約を明示的に変更する。Reference・タスク・IO・通常のリソースの解放のエフェクトは残る。
 
 ## 20. 互換性
+
+### 0.0.10 への移行
+
+language と依存のハッシュを更新する前に、[0.0.10 の移行案内](../../../CHANGELOG.md#0010-san-benito)を読む。block と同名の識別子、Integer 全域後の全体を覆う分岐、prelude の Log/SourceLocation との衝突を見直す。局所構築器は State を加えないため、公開契約を純粋へ変える場合は明示的に確認する。物理コピーの費用も考慮する。Log は IO.All と独立して宣言し、宣言上限に残るなら許可集合へ加える。幅付き整数の警告は --deny-warnings で拒否につながる。
+
+開発用 derive は inventory 2、設定 1、生成規則・manifest・receipt・記録 3（3.0.0-syntax-batch4）となり、Property.libraryVersion は 2.0.0 を保つ。未完の旧適用は保存した旧道具で先に復旧する。旧管理本文と記録のハッシュを照合し、新しい preview と manifest の正確なハッシュを確認して apply/check する。依存ハッシュの変更も自動承認しない。[derive の移行](../../../tools/derive/README.md#markers-records-and-review-artifacts)と、保管した[名前付き引数の移行道具の復元手順](../../archive/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/historical-tools/named-arguments-migrate/README.md)を参照する。対応する実行ファイルをビルドし直し、Skill を再インストールする。
 
 ### 0.0.9 への移行
 
@@ -1642,7 +1712,7 @@ Regex/Scope の定数拒否、Range の Error、不透明な境界、構築器�
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.1` から `0.0.9` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.10` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -1654,7 +1724,7 @@ Regex/Scope の定数拒否、Range の Error、不透明な境界、構築器�
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.9"
+language "0.0.10"
 
 package Textkit
   license "MIT"
@@ -1672,7 +1742,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.9"
+language "0.0.10"
 
 dependency Textkit
   path "packages/textkit"
@@ -1704,7 +1774,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.9"
+language "0.0.10"
 ```
 
 ```benitoite check
@@ -1715,7 +1785,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.9` では、`0.0.9` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.10` では、`0.0.10` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
@@ -1903,7 +1973,7 @@ public function bump(self: Cell, by: Integer) -> Integer uses State
 
 `run` と `test` は、これらの上限を変えるために `--wasm-memory=<size>`、`--wasm-fuel=<count>`、`--wasm-transfer=<size>` を受け付ける。大きさはバイト数、または整数に `KiB`、`MiB`、`GiB` の接尾辞を付けた値であり、範囲は 1 MiB から 4 GiB である。燃料は 1 から 2^64−1 までの十進整数である。不正な設定や重複した設定は、使い方の誤りになる（終了状態 2）。`run` では、これらのオプションをスクリプトのパスの前に置く。`test` はパスの間でも受け付ける。各テストの関数は、同じ設定の上限を使う。
 
-`--wasm-stats` は、終了時に標準エラー出力へ JSON を一行書き、設定した `limits`、明示的な `overrides`、`calls`、`functions`、`fuel`、`memory`、`arguments_transfer`、`results_transfer`、`stateful_instances`、`reached_limits` を含める。`routes`（`typed`、`adapter`、`dynamic`、`stateful` の呼び出し回数）、`fallback_reasons`、アダプタだけの `construction_bytes`、および数値の `code`、`requested`、`limit`、`calls` を持つ `adapter_failures` も含む。各消費量のオブジェクトは、`total`、`maximum`、`incomplete_calls` を持つ。`construction_bytes` は引数と結果の論理的な量を合計するので、その最大値は一回の呼び出しの合計の最大値であり、詰めて格納した転送のバイト数とは別である。`typed`、`dynamic`、`stateful` の呼び出しは、`construction_bytes` もその `incomplete_calls` も増やさない。構築量全体を測る前に止まったアダプタの呼び出しだけが、その欄を増やす。メモリの合計は増加を一度だけ数え、最大値は呼び出し全体か、状態を持つインスタンスの寿命全体を数える。引数の検証で拒んだ呼び出しも、呼び出し回数に含む。転送量の合計は、値を数えられた呼び出しだけを含み、消費量を得られなかった場合は `incomplete_calls` を増やす。動的な経路と `typed` の文字列の統計は、ホストの UTF-8 のバイト数を数える。これはゲストの値をホスト側の表現へ変換するときに計上したバイト数と異なることがある。アダプタの転送の統計は、詰めて格納したバイト列を数える。`test` は、すべてのテストの実行を一つの報告に集計し、テストごとの内訳は示さない。このオプションがなければ、出力は変わらない。公開の埋め込み API と参照インタプリタは、既定の上限を保つ。
+`--wasm-stats` は、終了時に標準エラー出力へ JSON を一行書き、設定した `limits`、明示的な `overrides`、`calls`、`functions`、`fuel`、`memory`、`arguments_transfer`、`results_transfer`、`stateful_instances`、`reached_limits` を含める。`routes`（`typed`、`adapter`、`dynamic`、`stateful` の呼び出し回数）、`fallback_reasons`、アダプタだけの `construction_bytes`、および数値の `code`、`requested`、`limit`、`calls` を持つ `adapter_failures` も含む。各消費量のオブジェクトは、`total`、`maximum`、`incomplete_calls` を持つ。`construction_bytes` は引数と結果の論理的な量を合計するので、その最大値は一回の呼び出しの合計の最大値であり、詰めて格納した転送のバイト数とは別である。`typed`、`dynamic`、`stateful` の呼び出しは、`construction_bytes` もその `incomplete_calls` も増やさない。構築量全体を測る前に止まったアダプタの呼び出しだけが、その欄を増やす。メモリの合計は増加を一度だけ数え、最大値は呼び出し全体か、状態を持つインスタンスの寿命全体を数える。引数の検証で拒んだ呼び出しも、呼び出し回数に含む。転送量の合計は、値を数えられた呼び出しだけを含み、消費量を得られなかった場合は `incomplete_calls` を増やす。動的な経路と `typed` の文字列の統計は、ホストの UTF-8 のバイト数を数える。これはゲストの値をホスト側の表現へ変換するときに計上したバイト数と異なることがある。アダプタの転送の統計は、詰めて格納したバイト列を数える。`test` は、すべてのテストの実行を一つの報告に集計し、テストごとの内訳は示さない。このオプションがなければ、出力は変わらない。公開の埋め込み API と参照インタプリタは、既定の上限を保つ。 `runtime_compilations.normal` と `runtime_compilations.adapter` は、それぞれの共有表へ実行用 Component を追加できた回数を数え、`test_declaration_compilations` は、テストの入口と文書の例の静的な宣言照合でコンパイルを試みた回数を別に数える。
 
 資源の上限の失敗以外のトラップ、ABI 違反、インスタンス化の失敗は、`R0601` で実行を止める。燃料の枯渇は `R0904`、メモリ・転送量・構築量の上限は `R0905` を報告する。後者には、達した上限と、分かる場合はアダプタの失敗した段階を示す注記を添える。テーブルの大きさとコアの対象数の上限は、資源の種類と必要数を添えて `R0906`、戻り値の大きさの上限は `R0902` を報告する。診断コードと失敗の分類は経路間で一致するが、トラップの文言は異なることがある。ゲストの ABI 違反は、アダプタが値をゲストに渡す形式へ変換するときやゲストを呼ぶときに現れることがある。これらの失敗は `Result.Error` に変換しない。宣言した `Result` を通してエラーを返すコンポーネントは、通常の値を返す。
 
@@ -1942,16 +2012,19 @@ preview の差分と manifest を確認し、確認済み manifest のハッシ�
 
 開発用の [derive](../../../tools/derive/README.md) は、対象ごとに独立した真偽値 show と order を受け付ける。レコードの宣言モジュールに通常の実装を生成する。Show は局所のレコード名とフィールドを宣言順で表示し、各値の引用とエスケープは対応する Show 辞書に委ねる。Order は同じ順に比較し、最初の非 Equal で止まる。すべて等しければ Equal を返す。Equal は組み込みの等値や key 制約を保証せず、Show の出力は直列化形式ではない。
 
-対象は循環せず型パラメータを持たないレコードに限る。各フィールドに要求した辞書が必要で、別の生成レコードもそのクラスを明示的に選ぶ。フィールドの型に手書きの実装を使える。認証済みの対象領域の外に既存実装があれば生成を拒否する。空のレコード宣言は引き続き構文エラーである。不透明なレコードも、所有モジュール内で Show/Order を明示的に要求できる。表示を了承する前に、提案する記録の opaque と選択したクラスを確認する。その不透明型の JSON/Property による自動構築は引き続き拒否する。
+対象は同じモジュール内の正則な自己・相互再帰と型パラメータを含められる。要求する辞書の制約を再帰する欄へ伝播し、phantom のパラメータには制約を足さない。各フィールドに要求した辞書が必要で、別の生成レコードもそのクラスを明示的に選ぶ。フィールドの型に手書きの実装を使える。認証済みの対象領域の外に既存実装があれば生成を拒否する。空のレコード宣言は引き続き構文エラーである。不透明なレコードも、所有モジュール内で Show/Order を明示的に要求できる。表示を了承する前に、提案する記録の opaque と選択したクラスを確認する。その不透明型の JSON/Property による自動構築は引き続き拒否する。
 
-preview、差分の確認、正確な manifest ハッシュを指定した apply、通常の check/test、derive check を行う。同梱の People/Address は、生成記録の版 2 と Property ライブラリ 2.0.0 への一括移行を終えている。Person は Show、Address は Show と Order を要求する。
+preview、差分の確認、正確な manifest ハッシュを指定した apply、通常の check/test、derive check を行う。同梱の People/Address は、生成記録の版 3 と Property ライブラリ 2.0.0 への一括移行を終えている。Person は Show、Address は Show と Order を要求する。
 
 ### レコードの生成器と縮小器
 
-同じ derive の設定で property.generator と property.shrinker を指定できる。JSON と同時にも、別々にも生成できる。レコードの Gen と Shrinker を返す、引数のない純粋な関数を生成する。フィールドは宣言順に乱数の状態を進め、同じ size を使う。縮小はその順で一度に一つのフィールドを変える。対応する型は String、Boolean、全域の Integer、有限の Float、循環しないレコード、List、String をキーとする Map、Option である。Property だけなら入れ子の Option にも対応する。依存レコードには、それ自体の Property の対象と、モジュールをまたぐ場合は公開の関数を要する。総称型と再帰型のレコードは生成しない。
+derive の property.generator と property.shrinker は独立して指定でき、同じモジュール内の正則な自己・相互再帰と型パラメータに対応する。使う型パラメータだけに宣言順の Gen/Shrinker 引数を加え、phantom には加えない。JSON は引き続き単相・非循環に限り、非対応の指定を黙って省かない。
 
-独自の fields.gen と fields.shrink は対で指定し、完全修飾の、単相で引数のない純粋な関数でなければならない。フィールドの型に合う Gen/Shrinker を返し、フィールド全体を置き換える。その本体と分布は利用者の責任である。フィールド間の関係は、レコード全体の生成器と縮小器を手で書いて扱う。失敗の報告には、Property の seed/config、ライブラリの版、具体的な入力に加え、generatorVersion と configSha256 を含む .generated.json の記録を添える。再現は、型の構造、生成の設定、独自の関数、性質が変わらないことにも依存する。生成器の識別用の関数は生成しない。
+生成器には有限の基底と正則な再帰の型引数を要する。size は枝ごとの深さではなく、生成するレコード節点の総予算である。Option や容器を通る辺は有限の基底になりうる。非正則な再帰、有限の基底のない必須の循環、閉じない制約は拒否する。乱数の状態は欄順に進め、再帰する factory は生成や候補の要求まで処理を遅らせる。
 
+縮小器は再帰する容器の内容の削除を先行し、その後に欄順で一つの欄を縮小する。必須のレコード欄は自分自身を縮小し、親を子で置き換えない。標準の葉と容器は自己候補を除き、再帰節点数を増やさない。制約のない型パラメータに独自 Shrinker を渡す場合、その入力自身を候補から除く責任は呼び出し側にある。独自コールバックの停止と大域的な最小性は保証しない。Show/Order の制約は宣言グラフへ伝播し、Order は組み込みの等値を導かない。
+
+独自の fields.gen/fields.shrink は対にし、完全修飾した純粋・単相・零引数の関数で欄全体を置き換える。版 3 の .generated.json（generatorVersion: 3.0.0-syntax-batch4）、config、libraryVersion 2.0.0、ソース、具体的な反例と独自関数を保存する。inventory は 2、設定は 1 のままである。旧本文のハッシュを照合してから新しい preview を確認し、旧 manifest で新版を適用しない。種だけでは生成規則の版をまたぐ分布を再現できない。[derive の手順](../../../tools/derive/README.md)に従う。
 
 ### Range
 
@@ -1998,6 +2071,47 @@ end function
 OutOfRange(0, 10, 11)
 ```
 
+
+### 検査済みの長さ・添字・非空リスト
+
+Benitoite.Unofficial.Range と Benitoite.Unofficial.NonEmptyList を明示的に取り込む。包む型は不透明であり、公開の検査関数と射影を使う。外部からの構築・更新・パターン・自動アクセサは E0340 となる。不正な定数入力も通常の Result.Error を返す。
+
+| 検査 | 成功値と射影（各射影の引数名は value） | 失敗の優先順 |
+|---|---|---|
+| Range.checkLength(minimum, maximum, values) | CheckedLength[T]。lengthMinimum、lengthMaximum、checkedLength、lengthValues | minimum が負か上下逆なら LengthError.InvalidBounds(minimum, maximum)、その後 OutOfRange(minimum, maximum, actualLength) |
+| Range.checkIndex(index, values) | CheckedIndex[T]。indexValue、indexValues、get | 負か長さ以上の零始まり添字は IndexError.OutOfBounds(index, length) |
+| NonEmptyList.fromList(values) | NonEmptyList[T]。toList、head、tail | EmptyListError.EmptyList |
+
+呼び出しでは複数引数にラベルを付ける。
+
+```benitoite test
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.NonEmptyList
+
+@test("checked lists retain their values")
+function checkedLists() -> Unit uses Assert.Check
+  match Range.checkLength(minimum: 2, maximum: 2, values: [10, 20]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: Range.checkedLength(checked), expected: 2)
+      Assert.equal(actual: Range.lengthValues(checked), expected: [10, 20])
+    case Result.Error(_) -> Assert.fail("valid length was rejected")
+  end match
+  match Range.checkIndex(index: 1, values: [10, 20]) with
+    case Result.Ok(checked) -> Assert.equal(actual: Range.get(checked), expected: 20)
+    case Result.Error(_) -> Assert.fail("valid index was rejected")
+  end match
+  match NonEmptyList.fromList([10, 20]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: NonEmptyList.head(checked), expected: 10)
+      Assert.equal(actual: NonEmptyList.tail(checked), expected: [20])
+    case Result.Error(_) -> Assert.fail("nonempty list was rejected")
+  end match
+end function
+```
+
+成功値は元の不変リストを保持する。get は検査済み添字だけを取り、リストや再検査を要さず保持した要素を返す。別のリストには再び検査を行う。要素の Reference は共有する。失敗は端点・個数・添字だけを保持し、リストは保持しない。エラー型には Show があるが、包む型にはない。要素型が許す場合、包む型の等値とキー順序は保存した内容に従う。
+
+NonEmptyList.head は T、tail は空でもよい List[T] を返す。map(value: ..., f: ...) は先頭から各要素に f(value: T) を一度ずつ適用し、エフェクトと失敗を伝播し、成功時は非空の結果を返す。通常の List と IO の引数型は変えない。
 
 ### Scope
 

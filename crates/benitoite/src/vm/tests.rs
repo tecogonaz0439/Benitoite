@@ -23,6 +23,9 @@ use crate::runtime::io::services::RunInput;
 use crate::runtime::{ResourceError, RuntimeError, Stop, Stream};
 use crate::vm::dispatch::test_support::{TestIo, constant, reachable_object_ids};
 
+#[path = "builder_tests.rs"]
+mod builder_tests;
+
 #[path = "verification_tests.rs"]
 mod verification_tests;
 

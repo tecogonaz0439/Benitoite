@@ -77,7 +77,273 @@ LEAN
 lake env lean /tmp/batch3-axioms.lean
 ```
 
+`Integer` の有界表現を支える境界と全域の変換も確認する。主定理の一覧への追加の確認であり、変換を新しい外部の仮定にしない。
+
+```sh
+cat > /tmp/batch4-integer-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Release.Integer64Value.toInt_bounds
+#print axioms Benitoite.Release.Integer64Literal.toValue
+#print axioms Benitoite.Release.Integer64Magnitude.negValue
+LEAN
+lake env lean /tmp/batch4-integer-axioms.lean
+```
+
+Integer の全域の判定は、`Coverage.integerBounds`・`integerAtoms`・`integerCovered`・`integerHasOther` に定義している。全域を覆う場合だけ `other` を除き、区間の分割・順序とガードの扱いを保つ。小区間と残りの値への所属の一意性、全域の被覆との同値を次の一覧で確認する。`Release/CoverageIntegerExamples.lean` は、穴・境界・相関・ガード・燃料切れを独立した期待値で検査し、既定 import に含まれる。Rust の整数の判定への接続と全比較はこの Lean の検査と区別する。
+
+```sh
+cat > /tmp/batch4-coverage-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Release.Coverage.segments_ends
+#print axioms Benitoite.Release.Coverage.segments_unique
+#print axioms Benitoite.Release.Coverage.integer_partition_unique
+#print axioms Benitoite.Release.Coverage.integer_atom_query
+#print axioms Benitoite.Release.Coverage.integer_covered_iff
+#print axioms Benitoite.Release.Coverage.integer_atoms_partition
+#print axioms Benitoite.Release.Coverage.integer_full_no_other
+#print axioms Benitoite.Release.Coverage.integer_shapes_complete
+#print axioms Benitoite.Release.Coverage.integer_interval_bounds
+#print axioms Benitoite.Release.usefulWithView_extension_exhaustive
+LEAN
+lake env lean /tmp/batch4-coverage-axioms.lean
+```
+
+
 `builders_ordinary_result`は既存のcleanによる型の範囲条件の再確認であり、セルの逸出の禁止を主張しない。
+
+専用セルの構文と捕捉境界の補題も、同じ既定 import で確認する。主定理の公理の一覧と別に、局所参照そのものの範囲保存と通常値の強化を含める。
+
+```sh
+cat > /tmp/batch4-local-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Release.hideBuilders_idem
+#print axioms Benitoite.Release.hideBuilders_ref
+#print axioms Benitoite.Release.hideBuilders_lazy
+#print axioms Benitoite.Release.hideBuilders_cont
+#print axioms Benitoite.Release.hideBuilders_sub
+#print axioms Benitoite.Release.hideBuilders_mono
+#print axioms Benitoite.Release.hideBuilders_strengthen_val
+#print axioms Benitoite.Release.hideBuilders_strengthen_vals
+#print axioms Benitoite.Release.hideBuilders_strengthen_each
+#print axioms Benitoite.Release.hideBuilders_weaken
+#print axioms Benitoite.Release.HasTypeClausesQ.hideBuilders
+#print axioms Benitoite.Release.HasFailureClause.hideBuilders
+#print axioms Benitoite.Release.StoreOk.builder_cell
+#print axioms Benitoite.Release.builder_store_extend
+#print axioms Benitoite.Release.SubstOk.hideBuilders
+#print axioms Benitoite.Release.StoreFix.hideBuilders
+#print axioms Benitoite.Release.LocalRef.rename_id
+#print axioms Benitoite.Release.LocalRef.subst_id
+#print axioms Benitoite.Release.LocalRef.rename_comp
+#print axioms Benitoite.Release.LocalRef.subst_comp
+#print axioms Benitoite.Release.LocalRef.Scoped.rename
+#print axioms Benitoite.Release.LocalRef.Scoped.subst
+#print axioms Benitoite.Release.LocalRef.Scoped.mono
+#print axioms Benitoite.Release.upRen_scoped
+#print axioms Benitoite.Release.upLocalSubst_scoped
+#print axioms Benitoite.Release.builderLocalSubst_scoped
+#print axioms Benitoite.Release.maxBuilderBytes_le_max64
+#print axioms Benitoite.Release.maxBuilderListLen_le_max64
+#print axioms Benitoite.Release.Model.assumptions
+LEAN
+lake env lean /tmp/batch4-local-axioms.lean
+```
+
+専用計算項を加えた状態の全走査、共有番号の範囲、通常値の捕捉禁止も確認する。`localRefs` の相互帰納は、内部の計算へ LocalCtx.Scoped と StoreTy.BuilderPlaces を渡し、捕捉境界では空 Δ と隠した Ψ を使う。C_BuilderLet/C_BuilderOp の型付けを進行・保存・エフェクトの健全性へ接続する。専用項の逆転、局所対応を渡す置換、分類内の List の要素型への型代入を以下で確認する。
+
+```sh
+cat > /tmp/batch4-dedicated-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Release.Arm.VarsInList.renameLocal
+#print axioms Benitoite.Release.Arm.VarsInList.substScoped
+#print axioms Benitoite.Release.Arm.VarsInList.widen
+#print axioms Benitoite.Release.Clause.VarsInList.renameLocal
+#print axioms Benitoite.Release.Clause.VarsInList.substScoped
+#print axioms Benitoite.Release.Clause.VarsInList.widen
+#print axioms Benitoite.Release.Comp.VarsIn.renameLocal
+#print axioms Benitoite.Release.Comp.VarsIn.substScoped
+#print axioms Benitoite.Release.Comp.VarsIn.widen
+#print axioms Benitoite.Release.Val.VarsIn.renameLocal
+#print axioms Benitoite.Release.Val.VarsIn.substScoped
+#print axioms Benitoite.Release.Val.VarsIn.widen
+#print axioms Benitoite.Release.Val.VarsInList.renameLocal
+#print axioms Benitoite.Release.Val.VarsInList.substScoped
+#print axioms Benitoite.Release.Val.VarsInList.widen
+#print axioms Benitoite.Release.HasTypeCQ.inv_builderLet
+#print axioms Benitoite.Release.HasTypeCQ.inv_builderOp
+#print axioms Benitoite.Release.dedicated_new_substitution
+#print axioms Benitoite.Release.dedicated_normal_instantiation
+#print axioms Benitoite.Release.LocalCtx.kindAt_extend
+#print axioms Benitoite.Release.HasFailureClause.localRefs
+#print axioms Benitoite.Release.HasTypeArmsQ.localRefs
+#print axioms Benitoite.Release.HasTypeCQ.localRefs
+#print axioms Benitoite.Release.HasTypeClausesQ.localRefs
+#print axioms Benitoite.Release.HasTypeEachQ.localRefs
+#print axioms Benitoite.Release.HasTypeVQ.localRefs
+#print axioms Benitoite.Release.HasTypeVsQ.localRefs
+#print axioms Benitoite.Release.builder_value_no_free_local
+LEAN
+lake env lean /tmp/batch4-dedicated-axioms.lean
+```
+
+専用セルの内容は `Release/BuilderContents.lean`、一操作は `BuilderExec.lean`、ストアと継続の補助は `Lemmas/BuilderStore.lean`、通常引数からの全域性・内容の型保存・閉性は `Lemmas/BuilderTyping.lean` にある。`LocalTyping.lean` は共有番号の分類を保つ付け替え・局所置換を証明する。`BuilderExamples.lean` は実行関数の Unicode のバイト長、追記順序、Byte の境界と原子的な失敗を確認し、既定 import に含める。
+
+CellOk と専用の型付け・Step/step を全主定理へ接続する。`Lemmas/LocalInvariant.lean` は、現在の項・枠・保存継続の専用参照が実在するセルを指すことと、型付き通常値の捕捉禁止を、任意の有限接頭辞の後に示す。通常 State/Fail/escape/release を保つ。表層はrefsを持たず、専用builderLet/builderOpへ脱糖する。専用操作は通常引数の効果だけを持ち、専用宣言は後続の効果を保つ。通常Referenceと解放のStateは残す。BuilderExamples は専用 new と通常 let の番号対応、モデル上の全有限接頭辞、節内の別セルを越える保存・再開、捕捉拒否とラムダ内の新しい宣言も確認する。物理 GC やメモリの即時返却は主張しない。追加の補題の公理は次の一覧で確認する。
+
+```sh
+cat > /tmp/batch4-builder-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Release.BuilderKind.limit_le_max64
+#print axioms Benitoite.Release.BuilderContents.lengthValue_toInt
+#print axioms Benitoite.Release.BuilderCellOk.empty
+#print axioms Benitoite.Release.BuilderCellOk.length_bound
+#print axioms Benitoite.Release.BuilderCellOk.snapshot_typed
+#print axioms Benitoite.Release.BuilderCellOk.length_typed
+#print axioms Benitoite.Release.builderCheckUpdate_bound
+#print axioms Benitoite.Release.builderCheckUpdate_validBytes
+#print axioms Benitoite.Release.builderCheckUpdate_overflow
+#print axioms Benitoite.Release.builder_copy_contents
+#print axioms Benitoite.Release.builder_length_contents
+#print axioms Benitoite.Release.snapshot_structure_stable
+#print axioms Benitoite.Release.LocalCtx.Scoped.nil
+#print axioms Benitoite.Release.LocalCtx.Scoped.extend
+#print axioms Benitoite.Release.LocalCtx.Scoped.builder
+#print axioms Benitoite.Release.StoreTy.BuilderPlaces.hidden
+#print axioms Benitoite.Release.LocalRef.HasKind.rename
+#print axioms Benitoite.Release.LocalRef.HasKind.subst
+#print axioms Benitoite.Release.LocalRef.HasKind.store
+#print axioms Benitoite.Release.LocalRef.HasKind.closed
+#print axioms Benitoite.Release.hideBuilders_no_builder
+#print axioms Benitoite.Release.LocalRenOk.empty
+#print axioms Benitoite.Release.LocalSubstOk.empty
+#print axioms Benitoite.Release.LocalRenOk.extend
+#print axioms Benitoite.Release.LocalRenOk.builder
+#print axioms Benitoite.Release.LocalRenOk.shift
+#print axioms Benitoite.Release.LocalSubstOk.extend
+#print axioms Benitoite.Release.LocalRenOk.builder_shift
+#print axioms Benitoite.Release.LocalSubstOk.builder
+#print axioms Benitoite.Release.LocalSubstOk.new
+#print axioms Benitoite.Release.LocalSubstOk.instantiate
+#print axioms Benitoite.Release.OrdinaryStoreEq.refl
+#print axioms Benitoite.Release.OrdinaryStoreEq.symm
+#print axioms Benitoite.Release.OrdinaryStoreEq.trans
+#print axioms Benitoite.Release.OrdinaryStoreEq.set_nonval
+#print axioms Benitoite.Release.builder_new_frame
+#print axioms Benitoite.Release.builder_update_frame
+#print axioms Benitoite.Release.builder_step_no_event
+#print axioms Benitoite.Release.builder_step_frame
+#print axioms Benitoite.Release.capture_builder_cell
+#print axioms Benitoite.Release.resume_builder_cell
+#print axioms Benitoite.Release.builder_frames_releases_nil
+#print axioms Benitoite.Release.drop_local_silent
+#print axioms Benitoite.Release.drop_local_frame
+#print axioms Benitoite.Release.escape_drop_local_silent
+#print axioms Benitoite.Release.error_drop_local_silent
+#print axioms Benitoite.Release.exit_drop_local_silent
+#print axioms Benitoite.Release.cont_local_store_weaken
+#print axioms Benitoite.Release.HasTypeVQ.canonical_string
+#print axioms Benitoite.Release.HasTypeVQ.canonical_byte
+#print axioms Benitoite.Release.HasTypeVQ.canonical_bytes
+#print axioms Benitoite.Release.HasTypeVQ.canonical_list
+#print axioms Benitoite.Release.HasTypeEachQ.append
+#print axioms Benitoite.Release.builderJoin_total
+#print axioms Benitoite.Release.builderCheckUpdate_typed
+#print axioms Benitoite.Release.builderCheckUpdate_reply_typed
+#print axioms Benitoite.Release.builderApply_total_typed
+#print axioms Benitoite.Release.builderCheckUpdate_closed
+#print axioms Benitoite.Release.BuilderContents.snapshot_closed
+#print axioms Benitoite.Release.builderApply_closed
+#print axioms Benitoite.Release.BuilderExamples.unicode_length
+#print axioms Benitoite.Release.BuilderExamples.string_appendAll
+#print axioms Benitoite.Release.BuilderExamples.list_appendAll
+#print axioms Benitoite.Release.BuilderExamples.byte_append
+#print axioms Benitoite.Release.BuilderExamples.invalid_byte_atomic
+#print axioms Benitoite.Release.BuilderExamples.overflow_atomic
+#print axioms Benitoite.Release.builder_store_extend
+#print axioms Benitoite.Release.StoreOk.builder_cell
+#print axioms Benitoite.Release.LocalRef.HasKind.allowed
+#print axioms Benitoite.Release.LocalSubstAgree.empty
+#print axioms Benitoite.Release.LocalSubstAgree.refl
+#print axioms Benitoite.Release.LocalSubstAgree.extend
+#print axioms Benitoite.Release.LocalSubstAgree.builder
+#print axioms Benitoite.Release.LocalRef.HasKind.subst_congr
+#print axioms Benitoite.Release.SubstOk.inst_prefix
+#print axioms Benitoite.Release.HasTypeCQ.instantiate_local
+#print axioms Benitoite.Release.LocalCtx.substTyAt_extend
+#print axioms Benitoite.Release.LocalRef.HasKind.substTy
+#print axioms Benitoite.Release.BuilderKind.contents_substTyAt
+#print axioms Benitoite.Release.BuilderOp.params_substTyAt
+#print axioms Benitoite.Release.BuilderOp.result_substTyAt
+#print axioms Benitoite.Release.StoreOk.builder_places
+#print axioms Benitoite.Release.ContTy.localRefs
+#print axioms Benitoite.Release.CellOk.localRefs
+#print axioms Benitoite.Release.StateTy.local_invariant
+#print axioms Benitoite.Release.local_steps_invariant
+#print axioms Benitoite.Release.capture_local_valid
+#print axioms Benitoite.Release.resume_local_valid
+#print axioms Benitoite.Release.BuilderExamples.dedicatedProgram_typed
+#print axioms Benitoite.Release.BuilderExamples.dedicatedProgram_run
+#print axioms Benitoite.Release.BuilderExamples.dedicatedProgram_prefixes
+#print axioms Benitoite.Release.BuilderExamples.resumedProgram_run
+#print axioms Benitoite.Release.BuilderExamples.dedicated_location_not_captured
+#print axioms Benitoite.Release.BuilderExamples.dedicated_inside_lambda
+LEAN
+lake env lean /tmp/batch4-builder-axioms.lean
+```
+
+
+
+
+表層とコアの共有番号の対応、挿入する通常束縛、局所深さと捕捉の補助も確認する。toLocal は末尾の利用不能な位置だけを省き、番号を変えない。公開の空 Δ の定理の前提・結論は保つ。表層からState/refsを除いた七判断・全checkerと型保存を接続している。交換13/5の読者と新版の独立入力を備える。Rustの構築器の専用コアへの移行と機能別の局所交換は実装済みであり、版全体の全比較も2026-10-21の `scripts/check-formal.sh`（`76ed2d5e`、2回目、終了0）で完了した。専用コアの独立した期待値は Surface.BuilderExamples.dedicated_lowering に置き、旧版12の構築器は版13での再生成を求めて拒否する。
+
+```sh
+cat > /tmp/batch4-lowering-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Surface.BuilderCtx.toLocal_kindAt
+#print axioms Benitoite.Surface.BuilderCtx.toLocal_values
+#print axioms Benitoite.Surface.LocalCtx.extend_add
+#print axioms Benitoite.Surface.letChain_typed
+#print axioms Benitoite.Surface.sequence_typed
+#print axioms Benitoite.Surface.letChain_scoped_local
+#print axioms Benitoite.Surface.sequence_scoped_local
+#print axioms Benitoite.Surface.callComp_scoped_local
+#print axioms Benitoite.Surface.builderFinish_typed
+#print axioms Benitoite.Surface.builderOp_desugar_typed
+#print axioms Benitoite.Surface.builderBlock_desugar_typed
+#print axioms Benitoite.Surface.builderFinish_scoped
+#print axioms Benitoite.Surface.HasTypeQ.desugar
+#print axioms Benitoite.Surface.HasBlockQ.desugar
+#print axioms Benitoite.Surface.HasTypeQ.desugar_scoped
+#print axioms Benitoite.Surface.HasBlockQ.desugar_scoped
+#print axioms Benitoite.Surface.LocalCtxReads.empty
+#print axioms Benitoite.Surface.LocalCtxReads.extend
+#print axioms Benitoite.Surface.LocalCtxReads.builder
+#print axioms Benitoite.Surface.HasTypeCQ.reads
+#print axioms Benitoite.Surface.builders_no_capture
+#print axioms Benitoite.Surface.builders_block_no_capture
+#print axioms Benitoite.Surface.BuilderExamples.dedicated_lowering
+#print axioms Benitoite.Surface.BuilderCtx.toLocal_nil
+#print axioms Benitoite.Surface.BuilderCtx.toLocal_value
+#print axioms Benitoite.Surface.BuilderCtx.toLocal_builder
+#print axioms Benitoite.Surface.RenOk.identity
+#print axioms Benitoite.Surface.LocalCtx.extend_zero
+#print axioms Benitoite.Surface.LocalCtx.extend_nil
+LEAN
+lake env lean /tmp/batch4-lowering-axioms.lean
+```
+
+表層の種類の照合と、Stateなしの通常関数の検査例も確認する。
+
+```sh
+cat > /tmp/batch4-surface-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Surface.BuilderKind.contents_injective
+#print axioms Benitoite.Surface.BuilderExamples.pure_program_checked
+LEAN
+lake env lean /tmp/batch4-surface-axioms.lean
+```
+
+`Release.snapshot_structure_stable` は、抽象モデルの値と内容が不変であることの確認であり、copyの二つの等式は定義から `rfl` で閉じる。`capture_local_valid`・`resume_local_valid` の第三の結論である専用セルの場所・内容の保存も、前提で後続ストアを `σ.set κ …` に固定しているため、`Store.set` の定義から得られる。後続の型と局所有効性の根拠は `preservation` と `StateTy.local_invariant` である。これらを物理表現の共有や書き換え、GCの独立した証拠とはしない。Rustとの対応には、String・Bytes・Listのcopy後に元の構築器へ追記しても取り出した値の内容が変わらないことと、継続の保存・再開時の専用セルの保持を、実ヒープと独立した期待値で確かめる必要がある。
 
 ## 状態
 
@@ -91,7 +357,18 @@ lake env lean /tmp/batch3-axioms.lean
 
 Releaseの効果は名前・行の関数と失敗型の列を持つ表現Bへ移行した。内部の正規形を型とストアの整形式で要求し、既存の主要定理と検査器の健全性の言明を保つ。検査器はFail内部までの有限支持を使い、Legacyでない型も受け付ける。入力の注釈は正規化せず、計算した型だけを正規化する。六実行ファイルは計算できる写しを使い、数学上のRelease.step/runのnoncomputableな定義には依存しない。対応と保証の範囲は07-04「01-12との対応」に記す。
 
-交換の読者はcorpus 8・9・10・11・12、builtins・stdlib・coverage・coverage-programの各2・3・4を受理する。旧版に後の版の情報を混ぜた場合の拒否と、対象外の分類を保つ。名前・行の効果は集合として読み、型内部も同じ読者で変換する。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側で原子の符号順へ整列して重複を除く。比較は両辺の列自体を正規化し、支持の一覧にない要素を捨てない。契約名・引数・節の並びは保持する。Rust側に同じ符号や列順を要求しない。
+corpus 12の構築器は版13での再生成を求めて拒否する。test_batch3_exchange.pyはその拒否と、構築器なしの11定義の意味を確認する。19構築器定義の意味の受理/拒否はtest_batch4_exchange.pyとbatch4-exchangeへ移した。旧corpus.jsonは旧版の拒否入力として保つ。Exchange.BuilderExamplesも新旧版の境界と手書きの専用コアを既定ビルドで確認する。
+
+交換13/5の独立入力は45定義・通常の網羅性6件・プログラム網羅性3件であり、六入口すべてへ接続している。構築器、blockの値とreturn、穴の直接参照と固定式の順序、有界Integerの両端と全域、Logの二操作・送り直し・Console.Writeの残存、展開済みの位置レコードを含む。範囲外のConst.integerは比較専用の期待コアと未使用の定数も含め共通の交換入口で拒否する。Integer64の型名は従来どおりIntegerへ正規化し、他の幅をこの検査に混ぜない。版と必須欄・捕捉・番号・効果の拒否は交換CLIで確認し、JSONの変換自体を主定理で証明したとは扱わない。
+
+```sh
+python3 -B formal/tests/test_batch4_exchange.py
+python3 -B formal/tests/test_batch3_exchange.py
+```
+
+各入力と六入口の件数・旧版からの移行対応・Rustの局所入力は[独立入力の説明](tests/batch4-exchange/README.md)にある。Rustの書き出しは13/5へ切り替え済みであり、構築器・block・Log・検査済みListの機能別の局所接続を済ませた。全件の版と件数はtests/desugar_exportのexchange-manifest.jsonとrouting-manifest.jsonで固定する。構築器を含む新規則との全比較と正式接続は、2026-10-21の `scripts/check-formal.sh` の2回目（`76ed2d5e`、終了0）で完了した。最後の全入力1,789件・73,836定義・Coverage 22,482件が一致し、機能別の本番parser入力も六入口で一致した。独立Coverageの入力は版4のままであり、プログラムsidecarの版5と区別する。既定lake buildと独立入力、公理比較はLean段の証拠であり、Rust全比較の証拠とは区別する。
+
+交換の読者はcorpus 8・9・10・11・12・13、builtins・stdlib・coverage・coverage-programの各2・3・4・5を受理する。旧版に後の版の情報を混ぜた場合の拒否と、対象外の分類を保つ。名前・行の効果は集合として読み、型内部も同じ読者で変換する。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側で原子の符号順へ整列して重複を除く。比較は両辺の列自体を正規化し、支持の一覧にない要素を捨てない。契約名・引数・節の並びは保持する。Rust側に同じ符号や列順を要求しない。
 
 旧形式の独立入力は次の四つで検査する。`test_named_exchange.py` はcorpus 8/9/10と他四形式2/3の六入口で、型内部の複数の名前・行の順序と重複に依存しない結果、脱糖の不一致と固定順序の書き戻しも確認する。
 
@@ -106,7 +383,6 @@ python3 -B formal/tests/test_width_exchange.py
 
 ```sh
 python3 -B formal/tests/test_batch2_exchange.py
-python3 -B formal/tests/test_batch3_exchange.py
 ```
 
 この独立入力は七定義と、Failを含む型・文字全域を六入口で検査する。`--rust-dir target/formal-batch2-op` または `--rust-dir target/formal-batch2-failure` は、局所Rust出力の五形式（corpus.json・builtins.json・stdlib.json・coverage.json・coverage-program.json）を追加で読む。ファイル不在・旧版・空の比較を成功扱いせず、Cargoを起動しない。Rustの通常出力は11/4であり、辞書付き操作の実ソースは `export_batch2_op` が `target/formal-batch2-op/` へ五形式を出力する。通常節はfailureType=null、行のnoFail=falseであり、Failの原子はまだ出力しない。独立したFailの入力の成功を、Rustの型付きの失敗の比較の証拠には使わない。
@@ -147,7 +423,8 @@ python3 -B formal/tests/test_batch3_exchange.py
 | `Benitoite/Release/Subst.lean` | 型の番号のずらしと置き換え、値の置き換え、パターンの照合（範囲とリストを含む）、分岐の選択肢の照合 `firstAlt` と束縛の並べ替え `selectSlots`、網羅性に数えるパターン `unguardedPats` | 構文、実行の規則 |
 | `Benitoite/Release/SubstEnv.lean` | 範囲外を恒等像で補った行の一般の合成、型と行の同時代入と合成、既存の cutoff 付き代入・移動との一致 | 同上 |
 | `Benitoite/Release/Typing.lean` | 組み込みの関数の型と制約、操作の型、型の正しさ、値・計算・節の型付け（選択肢の型付け `AltsTy`、分岐の型付け `HasTypeArms`） | 型付け規則、初回リリース版の拡張 |
-| `Benitoite/Release/WellFormed.lean` | 型とエフェクトの変数の範囲、宣言の範囲 | （番号で表したために要る条件） |
+| `Benitoite/Release/LocalRef.lean` / `LocalScope.lean` | 局所参照の付け替えと置換・範囲保存、LocalScoped/NoFreeBuildersと通常値の捕捉禁止 | 構築器の分類と環境の対応 |
+| `Benitoite/Release/WellFormed.lean` | 型・エフェクト変数と局所参照の範囲、宣言の範囲 | （番号で表したために要る条件） |
 | `Benitoite/Release/Semantics.lean` | 状態（照合の途中の状態 `matchRun` を含む）・遷移・遷移を計算する関数、継続（ガードの枠 `guardF`）・ストア・状態の型付け | 実行の規則、確かめる性質 |
 | `Benitoite/Release/Assumptions.lean` | 組み込みの関数について仮定する性質、エフェクトの宣言の整合 | 07-04「形式化で仮定するもの」 |
 | `Benitoite/Release/Theorems.lean` | 段階 B の定理（`step_sound`、進行、保存、エフェクトの健全性）と証明 | 確かめる性質 |
@@ -161,6 +438,7 @@ python3 -B formal/tests/test_batch3_exchange.py
 | `Benitoite/Release/Lemmas/ContLemmas.lean` / `StoreLemmas.lean` | 継続の型付けの逆転・分割・連結、`releases`、ストアの更新 | |
 | `Benitoite/Release/Lemmas/PresHelpers.lean` / `Preservation.lean` / `PresBase.lean` / `PresMain.lean` | 継続の末尾のエフェクトを固定した状態の型付け `StateTyE` と、その保存 | |
 | `Benitoite/Release/Lemmas/Dict.lean` | 実装のメソッドの型の置き換えの合成、E-Super の一歩が型を保つこと | |
+| `Benitoite/Release/Lemmas/LocalInvariant.lean` | 現在の項・保存継続の専用セルの有効性と通常値の捕捉禁止を有限接頭辞へ接続 | 構築器の専用セルの内容と上限 |
 | `Benitoite/Release/Lemmas/Progress.lean` / `EffectSound.lean` / `StepSound.lean` | 進行、エフェクトの健全性、`step` の健全性 | |
 
 0.0.9の独立した小証明は次のモジュールに置く。主定理の保証とは区別する。
@@ -168,6 +446,8 @@ python3 -B formal/tests/test_batch3_exchange.py
 | ファイル | 内容 | 01-12 の節 |
 |---|---|---|
 | `Benitoite/Checked/Access.lean` / `Scope.lean` / `Range.lean` | 所有元による公開境界、解析済みScopeの所属と保存、整数閉区間の成功・失敗と証拠の消去 | 検査済みの通常値の小証明 |
+| `Benitoite/Checked/ListLength.lean` / `ListIndex.lean` / `NonEmptyList.lean` | List/Intの成功・失敗の同値と優先順、入力の保存と射影、添字の要素、head/tailと純粋なmapの一致 | 本体の主定理から独立。通常コードとIntegerの表現可能性は別途照合 |
+| `Benitoite/Surface/LogExamples.lean` | Logのdata/record宣言・組み込み表、両操作・完全なハンドラ・送り直し・Console.Writeの残存を公開checkerで検査する例 | 位置は展開済み。新規則・公理・Assumptionsなし |
 | `Benitoite/Library/ResultLaws.lean` | 純粋なResultの三法則とmap/applyとの一致 | 二引数の型クラスとResult |
 
 段階 C（`Benitoite/Surface/`）は、型の情報を付けた表層の構文と、`Benitoite.Release` への脱糖を定め、脱糖の型の保存（性質 1）を証明する。段階 B の定義と証明は変えない。ただし段階 C7 は、パターンの拡張をコア計算に加えるために、`Release` の `match` を置き換えて性質 2・3 の証明を直した。
@@ -175,9 +455,9 @@ python3 -B formal/tests/test_batch3_exchange.py
 | ファイル | 内容 | 01-12 の節 |
 |---|---|---|
 | `Benitoite/Surface/Monad2Examples.lean` | 二引数クラス・Result・利用者型と上位辞書を本体の判断へ接続する例 | 二引数の型クラスとResult |
-| `Benitoite/Surface/BuilderSyntax.lean` / `Builders.lean` / `BuilderFree.lean` | 構築器の種類・構築器の種類の表・参照先、環境の整列とセルへの対応、旧構文の意味 | 構築器の分類と環境の対応 |
-| `Benitoite/Surface/BuilderCheck.lean` / `BuilderLower.lean` / `BuilderExamples.lean` | 参照先の検査、三種の展開、copy・分岐・継続の例 | 構築器の専用操作と脱糖 |
-| `Benitoite/Surface/Lemmas/Builders.lean` / `BuilderLower.lean` | 束縛追加・型の範囲条件の保存、セル操作と純粋関数の型付け | 構築器の分類と環境の対応、構築器の専用操作と脱糖 |
+| `Benitoite/Surface/BuilderSyntax.lean` / `Builders.lean` / `BuilderFree.lean` | 構築器の種類の表、環境の整列と共有番号でのコアの分類表への対応、旧構文の意味 | 構築器の分類と環境の対応 |
+| `Benitoite/Surface/BuilderCheck.lean` / `BuilderLower.lean` / `BuilderExamples.lean` | 種類と支持の補題、専用コアへの脱糖、copy・分岐・継続の例 | 構築器の専用操作と脱糖 |
+| `Benitoite/Surface/Lemmas/Builders.lean` / `BuilderLower.lean` | 束縛追加・型の範囲条件の保存、専用操作と通常引数の効果だけを保つ型保存 | 構築器の分類と環境の対応、構築器の専用操作と脱糖 |
 | `Benitoite/Surface/Syntax.lean` | 型の情報を付けた表層の構文（局所の束縛は内側から数えた番号。分岐の選択肢 `Alternative`・ガード、パターンの条件 `Pattern.Valid`）、必ず抜ける文、宣言、フィールドを取り出す関数の表と名前の検索 `lookupFun` | 型の情報を付けた表層の構文と型付け |
 | `Benitoite/Surface/Typing.lean` | 表層の型付け、プログラムの入口の条件 | 型の情報を付けた表層の構文と型付け |
 | `Benitoite/Surface/WellFormed.lean` | 型・エフェクト・局所の束縛の番号の範囲、レコードの条件 `RecordsOk` | （番号で表したために要る条件） |
@@ -245,3 +525,64 @@ python3 -B formal/tests/test_batch3_exchange.py
 
 
 レビューでは、定義が変更の理由と 01-12 の規則の意図と一致すること、01-12 の写しが定義と一致すること、定理の言明が 01-12 の性質と一致すること、仮定が 07-04 に挙げたものに限られることを確かめる。証明の本体は、`lake build` を通ればレビューしない（07-04「レビューと、見つかった誤りの扱い」）。
+
+穴の直接参照とブロック式の接続では、上の公開定理の一覧に加え、次の補助を確認する。`E_Block` は既存のBlockの導出を使い、戻り先・位置・局所分類表を変えない。これらはRustの穴の脱糖やblockの解析との接続の証拠ではない。
+
+```sh
+cat > /tmp/batch4-argplan-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Surface.ArgTypesQ.length
+#print axioms Benitoite.Surface.ArgTypesQ.evals
+#print axioms Benitoite.Surface.ArgTypesQ.weaken
+#print axioms Benitoite.Surface.ArgTypesQ.values
+#print axioms Benitoite.Surface.ArgTypesQ.renameId
+#print axioms Benitoite.Surface.sequenceArgs_typed
+#print axioms Benitoite.Surface.argEvals_scoped
+#print axioms Benitoite.Surface.argValues_scoped
+#print axioms Benitoite.Surface.sequenceArgs_scoped_local
+#print axioms Benitoite.Surface.callArgs_typed
+#print axioms Benitoite.Surface.callArgs_scoped_local
+#print axioms Benitoite.Surface.HasHoleArgsQ.desugar_of_expr
+#print axioms Benitoite.Surface.HasHoleArgsQ.desugar
+#print axioms Benitoite.Surface.HasHoleArgsQ.desugar_scoped
+#print axioms Benitoite.Surface.HasHoleArgsQ.captures
+#print axioms Benitoite.Surface.HasBlockQ.desugar
+#print axioms Benitoite.Surface.Check.block_case
+#print axioms Benitoite.Surface.Check.computes_block
+LEAN
+lake env lean /tmp/batch4-argplan-axioms.lean
+```
+
+Listの独立小モデルとLogの適用例も、同じ既定importから確認する。Listの小証明は
+数学上のListとIntを対象とし、通常の標準ソースや効果を持つmapの実行証明ではない。
+Logの例は既存のcheckerだけを使い、位置は展開済みレコードとする。
+
+```sh
+cat > /tmp/batch4-list-log-axioms.lean <<'LEAN'
+import Benitoite
+#print axioms Benitoite.Checked.ListLength.checkLength_success_iff
+#print axioms Benitoite.Checked.ListLength.checkLength_invalid_iff
+#print axioms Benitoite.Checked.ListLength.checkLength_invalid_first
+#print axioms Benitoite.Checked.ListLength.checkLength_outOfRange_iff
+#print axioms Benitoite.Checked.ListLength.checkLength_projection
+#print axioms Benitoite.Checked.ListIndex.checkIndex_success_iff
+#print axioms Benitoite.Checked.ListIndex.checkIndex_failure_iff
+#print axioms Benitoite.Checked.ListIndex.checkIndex_projection
+#print axioms Benitoite.Checked.ListIndex.checkedIndex_get_eq
+#print axioms Benitoite.Checked.NonEmptyList.nonEmpty_success_iff
+#print axioms Benitoite.Checked.NonEmptyList.nonEmpty_failure_iff
+#print axioms Benitoite.Checked.NonEmptyList.nonEmpty_from_to
+#print axioms Benitoite.Checked.NonEmptyList.nonEmpty_to_from
+#print axioms Benitoite.Checked.NonEmptyList.nonEmpty_head_tail
+#print axioms Benitoite.Checked.NonEmptyList.nonEmpty_map
+#print axioms Benitoite.Surface.LogExamples.emit_checked
+#print axioms Benitoite.Surface.LogExamples.enabled_checked
+#print axioms Benitoite.Surface.LogExamples.handled_checked
+#print axioms Benitoite.Surface.LogExamples.forwarded_checked
+#print axioms Benitoite.Surface.LogExamples.console_remains_checked
+#print axioms Benitoite.Surface.LogExamples.incomplete_handler_retains_log
+#print axioms Benitoite.Surface.LogExamples.program_checked
+#print axioms Benitoite.Surface.LogExamples.console_pure_rejected
+LEAN
+lake env lean /tmp/batch4-list-log-axioms.lean
+```

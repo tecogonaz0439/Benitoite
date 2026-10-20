@@ -33,6 +33,12 @@ function main() -> Unit uses State
  return ()
 end function
 "#;
+    // 小さい入力でも更新中に別タスクへ譲り、同じ競合と呼び直しを起こす。
+    let source = if cfg!(feature = "gc-stress") {
+        source.replace("busy(100000)", "busy(16)")
+    } else {
+        source.to_owned()
+    };
     let checked = pipeline::check_text(
         "retry.bnt",
         source.as_bytes(),
@@ -58,7 +64,7 @@ end function
             parts: None,
             mode,
             vm: VmConfig {
-                call_budget: 100,
+                call_budget: if cfg!(feature = "gc-stress") { 3 } else { 100 },
                 ..VmConfig::default()
             },
             heap: HeapConfig::default(),
@@ -278,6 +284,15 @@ end function
         ),
     ];
     for (name, extra, body) in cases {
+        // 反復回数と期待する長さを一緒に縮め、結果・枠・循環の検査は全て残す。
+        let body = if cfg!(feature = "gc-stress") {
+            body.replace("100000", "16")
+                .replace("10000", "16")
+                .replace("2048", "64")
+                .replace("2049", "65")
+        } else {
+            body.to_owned()
+        };
         let source = format!(
             "{extra}\nfunction main() -> Result[Unit, String] uses State\n {body}\nend function\n"
         );

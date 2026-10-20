@@ -1,12 +1,14 @@
 //! 原型ごとのレジスタと束縛の管理（設計書 02-07「レジスタの割り当て」）。
 
 use super::*;
+use std::cell::Cell;
+use std::rc::Rc;
 
-pub(super) fn internal(message: impl Into<String>) -> Box<InternalError> {
-    Box::new(InternalError {
+pub(super) fn internal(message: impl Into<String>) -> Box<CodegenError> {
+    Box::new(CodegenError::Internal(InternalError {
         stage: "codegen",
         message: message.into(),
-    })
+    }))
 }
 
 pub(super) fn count(n: usize) -> CgResult<u32> {
@@ -57,6 +59,8 @@ pub(super) struct Reuse {
 
 pub(super) struct FnGen<'p> {
     pub def: &'p LowerDef,
+    pub analysis: Rc<BodyAnalysis>,
+    pub instructions: Rc<Cell<usize>>,
     pub boundary: bool,
     pub method_body: bool,
     pub code: Vec<Instr>,
@@ -72,6 +76,10 @@ pub(super) struct FnGen<'p> {
     pub env: HashMap<Key, Loc>,
     pub joins: HashMap<JoinId, JoinState>,
     pub captures: Vec<CaptureSource>,
+    pub builder_slots: u16,
+    pub builders: HashMap<BuilderId, (u16, BuilderKind)>,
+    pub builder_sites: Vec<BuilderSite>,
+    pub builder_inputs: Vec<BuilderInput>,
     pub aliases: HashMap<Key, HashSet<Key>>,
     pub reuse: Vec<Reuse>,
 }
@@ -89,6 +97,10 @@ pub(super) fn empty_proto() -> Proto {
         num_regs: 0,
         num_params: 0,
         captures: Vec::new(),
+        builder_slots: 0,
+        builder_sites: Vec::new(),
+        builder_inputs: Vec::new(),
+        builder_parent: None,
         positions: Vec::new(),
         method_traits: Vec::new(),
         exit_reports: Vec::new(),
@@ -100,6 +112,8 @@ impl<'p> FnGen<'p> {
     pub fn new(def: &'p LowerDef, boundary: bool) -> Self {
         Self {
             def,
+            analysis: Rc::new(BodyAnalysis::default()),
+            instructions: Rc::new(Cell::new(0)),
             boundary,
             method_body: matches!(def.kind, DefKind::Method { .. }),
             code: Vec::new(),
@@ -115,6 +129,10 @@ impl<'p> FnGen<'p> {
             env: HashMap::new(),
             joins: HashMap::new(),
             captures: Vec::new(),
+            builder_slots: 0,
+            builders: HashMap::new(),
+            builder_sites: Vec::new(),
+            builder_inputs: Vec::new(),
             aliases: HashMap::new(),
             reuse: Vec::new(),
         }
@@ -153,15 +171,31 @@ impl<'p> FnGen<'p> {
             None
         }
     }
-    pub fn emit(&mut self, instr: Instr, origin: Option<Span>) -> usize {
+    pub fn emit(&mut self, instr: Instr, origin: Option<Span>) -> CgResult<usize> {
+        // 定義の補助本体も同じ計数器を使い、符号化前・確保前に数える（02-07「処理系の制限」）。
+        let next = self
+            .instructions
+            .get()
+            .checked_add(1)
+            .filter(|n| *n <= 4_194_304)
+            .ok_or_else(|| {
+                Box::new(CodegenError::Limit(vec![
+                    DiagBuilder::new(DiagCode::L0112)
+                        .arg("name", &self.def.name)
+                        .primary(origin.unwrap_or(self.def.span))
+                        .note("instructions")
+                        .build(),
+                ]))
+            })?;
+        self.instructions.set(next);
         let pc = self.code.len();
         self.code.push(instr);
         self.positions.push(origin);
         self.method_traits.push(None);
         self.exit_reports.push(None);
-        pc
+        Ok(pc)
     }
-    pub fn jump(&mut self, op: Opcode, a: u32, origin: Span) -> usize {
+    pub fn jump(&mut self, op: Opcode, a: u32, origin: Span) -> CgResult<usize> {
         self.emit(Instr::asbx(op, r16(a), 0), Some(origin))
     }
     pub fn patch(&mut self, pc: usize, target: usize) -> CgResult<()> {
@@ -179,10 +213,10 @@ impl<'p> FnGen<'p> {
     pub fn patch_here(&mut self, pc: usize) -> CgResult<()> {
         self.patch(pc, self.code.len())
     }
-    pub fn jump_to_end(&mut self, target: Target, origin: Span) -> Option<usize> {
+    pub fn jump_to_end(&mut self, target: Target, origin: Span) -> CgResult<Option<usize>> {
         match target {
-            Target::Reg(_) => Some(self.jump(Opcode::Jmp, 0, origin)),
-            Target::Tail => None,
+            Target::Reg(_) => Ok(Some(self.jump(Opcode::Jmp, 0, origin)?)),
+            Target::Tail => Ok(None),
         }
     }
     pub fn end(&mut self, jump: Option<usize>) -> CgResult<()> {
@@ -200,7 +234,7 @@ impl<'p> FnGen<'p> {
             self.const_index.insert(index, local);
             local
         };
-        self.emit(Instr::abx(Opcode::LoadK, r16(dst), local), origin);
+        self.emit(Instr::abx(Opcode::LoadK, r16(dst), local), origin)?;
         Ok(())
     }
     pub fn result(&mut self, target: Target) -> u32 {
@@ -209,10 +243,11 @@ impl<'p> FnGen<'p> {
             Target::Tail => self.alloc(),
         }
     }
-    pub fn returned(&mut self, target: Target, dst: u32, origin: Option<Span>) {
+    pub fn returned(&mut self, target: Target, dst: u32, origin: Option<Span>) -> CgResult<()> {
         if let Target::Tail = target {
-            self.emit(Instr::abc(Opcode::Return, r16(dst), 0, 0), origin);
+            self.emit(Instr::abc(Opcode::Return, r16(dst), 0, 0), origin)?;
         }
+        Ok(())
     }
     pub fn alias(&mut self, key: Key, of: Key) {
         let mut group = self

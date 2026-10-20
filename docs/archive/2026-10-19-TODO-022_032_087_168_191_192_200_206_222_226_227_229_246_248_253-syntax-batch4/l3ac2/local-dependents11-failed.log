@@ -1,0 +1,138 @@
+✔ [86/105] Built Benitoite.Release.Lemmas.PresFailure (469ms)
+✔ [87/105] Built Benitoite.Surface.Lemmas.ScopedSupport (439ms)
+✔ [88/105] Built Benitoite.Surface.Lemmas.Calls (566ms)
+✔ [89/105] Built Benitoite.Surface.Lemmas.ExtensionsScoped (502ms)
+✔ [90/105] Built Benitoite.Surface.Lemmas.Records (549ms)
+✖ [91/105] Building Benitoite.Release.Lemmas.PresMain (1.3s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Lemmas/PresMain.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresMain.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresMain.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/PresMain.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/PresMain.setup.json --json
+error: Benitoite/Release/Lemmas/PresMain.lean:38:18: could not synthesize default value for parameter 'hd' using tactics
+error: Benitoite/Release/Lemmas/PresMain.lean:38:18: omega could not prove the goal:
+No usable constraints found. You may need to unfold definitions so `omega` can see linear arithmetic facts about `Nat` and `Int`, which may also involve multiplication, division, and modular remainder by constants.
+error: Benitoite/Release/Lemmas/PresMain.lean:84:13: could not synthesize default value for parameter 'hd' using tactics
+error: Benitoite/Release/Lemmas/PresMain.lean:84:13: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≥ 0
+  g ≥ 0
+  e ≥ 0
+  c ≥ 0
+  c - h ≤ -1
+where
+ c := ↑d.params.length
+ e := ↑d.neffs
+ g := ↑d.tparams.length
+ h := ↑?m.1840
+error: Benitoite/Release/Lemmas/PresMain.lean:129:15: could not synthesize default value for parameter 'hd' using tactics
+error: Benitoite/Release/Lemmas/PresMain.lean:129:15: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  j ≥ 0
+  h ≥ 0
+  h - j ≥ 1
+  g ≥ 0
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+where
+ c := ↑ms.params.length
+ d := ↑id.dictTys.length
+ e := ↑id.tparams.length
+ f := ↑ms.tparams.length
+ g := ↑ms.neffs
+ h := ↑?m.2858
+ j := ↑(vs ++ ws).length
+error: Benitoite/Release/Lemmas/PresMain.lean:174:38: could not synthesize default value for parameter 'hd' using tactics
+error: Benitoite/Release/Lemmas/PresMain.lean:174:38: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ 1
+where
+ d := ↑(Arm.mk alts✝ none body✝).binders
+ e := ↑ws✝.length
+error: Benitoite/Release/Lemmas/PresMain.lean:314:18: Application type mismatch: The argument
+  Val.VarsIn.rename ?m.9615 f hfc
+has type
+  Val.VarsIn 0 (fun x => True) (Val.rename ?m.9615 f)
+but is expected to have type
+  Val.VarsIn 0 (fun x => True) (Val.rename (fun x => x + 1) f) (0 + 1)
+in the application
+  And.intro (Val.VarsIn.rename ?m.9615 f hfc)
+✔ [96/105] Built Benitoite.Surface.Lemmas.CallHead (695ms)
+✔ [97/105] Built Benitoite.Surface.Lemmas.Dict (533ms)
+✔ [98/105] Built Benitoite.Surface.Lemmas.Builders (533ms)
+✔ [99/105] Built Benitoite.Surface.Lemmas.Extensions (678ms)
+✔ [100/105] Built Benitoite.Surface.Lemmas.BuilderLower (455ms)
+✔ [101/105] Built Benitoite.Surface.Lemmas.ReturnTry (1.3s)
+✖ [102/105] Building Benitoite.Surface.Lemmas.Scoped (7.2s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/Lemmas/Scoped.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Scoped.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Scoped.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Lemmas/Scoped.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Lemmas/Scoped.setup.json --json
+error: Benitoite/Surface/Lemmas/Scoped.lean:221:23: don't know how to synthesize implicit argument `scopeDepth`
+  @HasTypeQ.desugar_scoped ?m.9167 Δb C Γ R Position.other e✝ (Ty.data cdo✝.data [a, et✝]) ε✝ nt pe nv he
+    (Option.casesOn (motive := fun t => message = t → Expr.Scoped nt pe nv e✝) message
+      (fun h =>
+        Eq.ndrec (motive := fun message =>
+          (∀ (m : Expr),
+              message = some m →
+                HasTypeQ D B op Q Δb C (hideConts Γ) none Position.other m (Ty.base BaseTy.string) Eff.empty) →
+            Expr.Scoped nt pe nv (Expr.tryResultDie a ok✝ err✝ d showMethod✝ exit✝ e✝ message) →
+              Expr.Scoped nt pe nv e✝)
+          (fun hm sc => sc.right.right.left) (Eq.symm h) hm sc)
+      (fun val h =>
+        Eq.ndrec (motive := fun message =>
+          (∀ (m : Expr),
+              message = some m →
+                HasTypeQ D B op Q Δb C (hideConts Γ) none Position.other m (Ty.base BaseTy.string) Eff.empty) →
+            Expr.Scoped nt pe nv (Expr.tryResultDie a ok✝ err✝ d showMethod✝ exit✝ e✝ message) →
+              Expr.Scoped nt pe nv e✝)
+          (fun hm sc => sc.right.right.left) (Eq.symm h) hm sc)
+      (Eq.refl message))
+context:
+Q : NoFailCtx
+D : Declarations
+B : Builtins
+op : OpPrim
+scopeDepth : Nat
+Δb : BuilderCtx
+C : List TParam
+Γ : List (Option Ty)
+R✝ : Option Ty
+pos✝ : Position
+e : Expr
+a✝¹⁰ : Ty
+ε : Eff
+nt : Nat
+pe : Nat → Prop
+nv : Nat
+h : HasTypeQ D B op Q Δb C Γ R✝ pos✝ e a✝¹⁰ ε
+pos : Position
+R : Option Ty
+a : Ty
+ok✝ err✝ : ConName
+cdo✝ cde✝ : ConDecl
+e✝ : Expr
+et✝ : Ty
+ε✝ : Eff
+d : DictEv
+showMethod✝ : MethName
+exit✝ : PrimName
+message : Option Expr
+a✝⁹ : D.cons ok✝ = some cdo✝
+a✝⁸ : D.cons err✝ = some cde✝
+a✝⁷ : cdo✝.ntys = 2
+a✝⁶ : cde✝.ntys = 2
+a✝⁵ : cdo✝.args = [Ty.tvar 0]
+a✝⁴ : cde✝.args = [Ty.tvar 1]
+a✝³ : cdo✝.data = cde✝.data
+he : HasTypeQ D B op Q Δb C Γ R Position.other e✝ (Ty.data cdo✝.data [a, et✝]) ε✝
+a✝² : Exhaustive D.patternProgram (Ty.data cdo✝.data [a, et✝]) [Pat.con ok✝ [Pat.var], Pat.con err✝ [Pat.var]]
+a✝¹ : DieShowOk D B C Γ d showMethod✝ et✝
+a✝ : DieExitOk B C exit✝ a
+hm :
+  ∀ (m : Expr),
+    message = some m → HasTypeQ D B op Q Δb C (hideConts Γ) none Position.other m (Ty.base BaseTy.string) Eff.empty
+sc : Expr.Scoped nt pe nv (Expr.tryResultDie a ok✝ err✝ d showMethod✝ exit✝ e✝ message)
+⊢ Nat
+error: Benitoite/Surface/Lemmas/Scoped.lean:221:13: failed to infer `have` declaration type
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.PresMain
+- Benitoite.Surface.Lemmas.Scoped
+error: build failed

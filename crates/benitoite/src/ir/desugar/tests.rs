@@ -169,6 +169,12 @@ fn terminal(c: &Comp) -> &Comp {
 fn walk<'a>(c: &'a Comp, computations: &mut Vec<&'a Comp>, values: &mut Vec<&'a CoreVal>) {
     computations.push(c);
     match &c.kind {
+        CompKind::BuilderLet { body, .. } => walk(body, computations, values),
+        CompKind::BuilderOp { args, .. } => {
+            for v in args {
+                walk_value(v, computations, values);
+            }
+        }
         CompKind::Return(v) | CompKind::Escape(v) | CompKind::Resume { value: v, .. } => {
             walk_value(v, computations, values)
         }
@@ -1203,7 +1209,9 @@ fn declaration_ids(body: &Comp) -> (Vec<VarId>, Vec<BodyId>) {
                     vars.push(c.cont.id);
                 }
             }
-            CompKind::Return(_)
+            CompKind::BuilderLet { .. }
+            | CompKind::BuilderOp { .. }
+            | CompKind::Return(_)
             | CompKind::App { .. }
             | CompKind::Method(_)
             | CompKind::If { .. }

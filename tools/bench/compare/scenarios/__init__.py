@@ -1,8 +1,8 @@
 """Add a family here; the runner does not know release-specific grids."""
 from model import Case, common, EMPTY
-from scenarios import functions, constraints, shrinking, builders, runtime
+from scenarios import functions, constraints, shrinking, builders, runtime, patterns, codegen, bridge, external_tests
 VALIDATORS = {'shrinking': shrinking.validate_output}
-FAMILIES = (functions, constraints, shrinking, builders, runtime)
+FAMILIES = (functions, constraints, shrinking, builders, runtime, patterns, codegen, bridge, external_tests)
 
 def corpus(quick=False, repeats=1, fixtures=None):
     cases = []

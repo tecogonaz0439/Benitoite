@@ -1,0 +1,186 @@
+--- a/formal/Benitoite/Release/LocalTyping.lean
++++ b/formal/Benitoite/Release/LocalTyping.lean
+@@ -1,4 +1,4 @@
+-import Benitoite.Release.Lemmas.Rename
++import Benitoite.Release.Typing
+ import Benitoite.Release.LocalRef
+ 
+ /-!
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -206,6 +206,9 @@
+ 
+ /-- ストアの型付け Ψ。 -/
+ abbrev StoreTy := Nat → Option LocTy
++
++/-- 既に型のある場所を同じ型で保つ拡張。 -/
++def StoreTy.Sub (Ψ Ψ' : StoreTy) : Prop := ∀ l x, Ψ l = some x → Ψ' l = some x
+ 
+ /-- 専用セルの位置だけを隠し、場所の番号を保つ。 -/
+ abbrev StoreTy.hideBuilders (Ψ : StoreTy) : StoreTy := fun l =>
+@@ -443,6 +446,14 @@
+   /-- `Γ; R ⊢c M : A ! ε`。R は最も内側の関数の戻り値の型で、`none` は `escape` を許さない。 -/
+   inductive HasTypeCQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → Comp → Ty → Eff → (Δ : LocalCtx := []) → Prop
++    | C_BuilderLet {Δ Γ R kind body a ε} :
++        Ty.WF C.length kind.contents →
++        HasTypeCQ P B Ψ Q C (none :: Γ) R body a ε (some kind :: Δ) →
++        HasTypeCQ P B Ψ Q C Γ R (.builderLet kind body) a ε Δ
++    | C_BuilderOp {Δ Γ R kind op ref args} :
++        Ty.WF C.length kind.contents → LocalRef.HasKind Ψ Δ ref kind →
++        HasTypeVsQ P B Ψ Q C Γ args (op.params kind) →
++        HasTypeCQ P B Ψ Q C Γ R (.builderOp kind op ref args) (op.result kind) Eff.empty Δ
+     | C_Return {Δ Γ R v a} : HasTypeVQ P B Ψ Q C Γ v a → HasTypeCQ P B Ψ Q C Γ R (.ret v) a Eff.empty Δ
+     | C_Sub {Δ Γ R m a a' ε ε'} :
+         HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
+--- a/formal/Benitoite/Release/LocalScope.lean
++++ b/formal/Benitoite/Release/LocalScope.lean
+@@ -103,6 +103,10 @@
+       (hΔ : Δl.Scoped depth) (hΨ : Ψ.BuilderPlaces places) :
+       Comp.LocalRefs depth places m := by
+     match h with
++    | .C_BuilderLet hw hb =>
++        simp only [Comp.LocalRefs]
++        exact HasTypeCQ.localRefs (depth := depth + 1) (places := places) hb (hΔ.builder _) hΨ
++    | .C_BuilderOp hw hr ha => exact ⟨hr.allowed hΔ hΨ, HasTypeVsQ.localRefs ha⟩
+     | .C_Return hv => exact HasTypeVQ.localRefs (depth := _) (places := places) hv
+     | .C_Sub hm _ _ hw => exact HasTypeCQ.localRefs (depth := _) (places := places) hm hΔ hΨ
+     | .C_Eff hm _ => exact HasTypeCQ.localRefs (depth := _) (places := places) hm hΔ hΨ
+--- a/formal/Benitoite/Release/Lemmas/Rename.lean
++++ b/formal/Benitoite/Release/Lemmas/Rename.lean
+@@ -1,5 +1,5 @@
+ import Benitoite.Release.Lemmas.Basic
+-import Benitoite.Release.LocalRef
++import Benitoite.Release.LocalTyping
+ 
+ /-!
+ # 環境とストアの型付けの弱化（段階 B）
+@@ -221,35 +221,41 @@
+     | .cons hv hvs =>
+         simp only [Val.renameList]; exact .cons (HasTypeVQ.rename hv hξ) (HasTypeEachQ.rename hvs hξ)
+ 
+-  theorem HasTypeCQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hξ : RenOk Γ Δ ξ) :
+-      HasTypeCQ P B Ψ Q C Δ R (m.rename ξ) a ε Δl := by
+-    match h with
++  theorem HasTypeCQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hξ : RenOk Γ Δ ξ)
++      (Δl' : LocalCtx := Δl)
++      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) :
++      HasTypeCQ P B Ψ Q C Δ R (m.rename ξ) a ε Δl' := by
++    match h with
++    | .C_BuilderLet (kind := kind) hw hb =>
++        exact .C_BuilderLet hw (HasTypeCQ.rename hb (hξ.up [none]) _ (hL.builder kind))
++    | .C_BuilderOp hw hr ha =>
++        exact .C_BuilderOp hw (hr.rename hL) (HasTypeVsQ.rename ha hξ)
+     | .C_Return hv => simp only [Comp.rename]; exact .C_Return (HasTypeVQ.rename hv hξ)
+-    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.rename h hξ) hle hs hw
+-    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.rename h hξ) hs
++    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.rename h hξ Δl' hL) hle hs hw
++    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.rename h hξ Δl' hL) hs
+     | .C_Let (a := a) hm hn =>
+         simp only [Comp.rename]
+-        exact .C_Let (HasTypeCQ.rename hm hξ) (HasTypeCQ.rename hn (hξ.up [some a]))
++        exact .C_Let (HasTypeCQ.rename hm hξ Δl' hL) (HasTypeCQ.rename hn (hξ.up [some a]) _ (hL.extend 1))
+     | .C_App hf hargs =>
+         simp only [Comp.rename]; exact .C_App (HasTypeVQ.rename hf hξ) (HasTypeVsQ.rename hargs hξ)
+     | .C_If hv hm hn =>
+         simp only [Comp.rename]
+-        exact .C_If (HasTypeVQ.rename hv hξ) (HasTypeCQ.rename hm hξ) (HasTypeCQ.rename hn hξ)
++        exact .C_If (HasTypeVQ.rename hv hξ) (HasTypeCQ.rename hm hξ Δl' hL) (HasTypeCQ.rename hn hξ Δl' hL)
+     | .C_Match hv harms hex =>
+         simp only [Comp.rename]
+-        refine .C_Match (HasTypeVQ.rename hv hξ) (HasTypeArmsQ.rename harms hξ) ?_
++        refine .C_Match (HasTypeVQ.rename hv hξ) (HasTypeArmsQ.rename harms hξ Δl' hL) ?_
+         rwa [unguardedPats_rename]
+     | .C_Lazy hm => simp only [Comp.rename]; exact .C_Lazy (HasTypeCQ.rename hm hξ.hide)
+     | .C_Escape hv hw => simp only [Comp.rename]; exact .C_Escape (HasTypeVQ.rename hv hξ) hw
+     | .C_Use hv hr hm hs =>
+-        simp only [Comp.rename]; exact .C_Use (HasTypeVQ.rename hv hξ) hr (HasTypeCQ.rename hm hξ) hs
++        simp only [Comp.rename]; exact .C_Use (HasTypeVQ.rename hv hξ) hr (HasTypeCQ.rename hm hξ Δl' hL) hs
+     | .C_Handle hm hs hc =>
+         simp only [Comp.rename]
+-        refine .C_Handle (HasTypeCQ.rename hm hξ) ?_ (HasTypeClausesQ.rename hc hξ)
++        refine .C_Handle (HasTypeCQ.rename hm hξ Δl' hL) ?_ (HasTypeClausesQ.rename hc hξ Δl' hL)
+         rwa [handled_renameList]
+     | .C_Handle_Fail hm hs hn hc =>
+         simp only [Comp.rename]
+-        exact .C_Handle_Fail (HasTypeCQ.rename hm hξ) hs hn (HasFailureClause.rename hc hξ)
++        exact .C_Handle_Fail (HasTypeCQ.rename hm hξ Δl' hL) hs hn (HasFailureClause.rename hc hξ Δl' hL)
+     | .C_Resume hi hv =>
+         simp only [Comp.rename, Val.rename]; exact .C_Resume (hξ _ _ hi) (HasTypeVQ.rename hv hξ)
+     | .C_ResumeL hl hv =>
+@@ -259,33 +265,39 @@
+         exact .C_Meth (HasTypeVQ.rename hv hξ) hc hm hnames hts hscope hes (HasTypeVsQ.rename hws hξ)
+ 
+   theorem HasTypeArmsQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+-      (hξ : RenOk Γ Δ ξ) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.renameList ξ arms) a b ε Δl := by
++      (hξ : RenOk Γ Δ ξ)
++      (Δl' : LocalCtx := Δl)
++      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.renameList ξ arms) a b ε Δl' := by
+     match h with
+     | .nil hw => simp only [Arm.renameList]; exact .nil hw
+     | .plain (δ := δ) hp hm ht =>
+         simp only [Arm.renameList]
+         have hξ' := hξ.up (binds δ)
+         rw [binds_length, hp.2.1] at hξ'
+-        exact .plain hp (HasTypeCQ.rename hm hξ') (HasTypeArmsQ.rename ht hξ)
++        exact .plain hp (HasTypeCQ.rename hm hξ' _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeArmsQ.rename ht hξ Δl' hL)
+     | .guarded (δ := δ) hp hg hm ht =>
+         simp only [Arm.renameList]
+         have hξ' := hξ.up (binds δ)
+         rw [binds_length, hp.2.1] at hξ'
+-        exact .guarded hp (HasTypeCQ.rename hg hξ'.hide) (HasTypeCQ.rename hm hξ') (HasTypeArmsQ.rename ht hξ)
++        exact .guarded hp (HasTypeCQ.rename hg hξ'.hide _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeCQ.rename hm hξ' _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeArmsQ.rename ht hξ Δl' hL)
+ 
+   theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+-      (hξ : RenOk Γ Δ ξ) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε Δl := by
++      (hξ : RenOk Γ Δ ξ)
++      (Δl' : LocalCtx := Δl)
++      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε Δl' := by
+     match hc with
+     | .nil => simp only [Clause.renameList]; exact .nil
+     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
+         simp only [Clause.renameList]
+-        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.rename hrest hξ)
++        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.rename hrest hξ Δl' hL)
+         have := RenOk.clause (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε))) sg.params k hξ
+         rw [← hn] at this
+         exact HasTypeCQ.rename hbody this
+   theorem HasFailureClause.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ E R h t ε}
+-      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hξ : RenOk Γ Δ ξ) :
+-      HasFailureClause P B Ψ Q C Δ E R (Clause.renameList ξ h) t ε Δl := by
++      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hξ : RenOk Γ Δ ξ)
++      (Δl' : LocalCtx := Δl)
++      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) :
++      HasFailureClause P B Ψ Q C Δ E R (Clause.renameList ξ h) t ε Δl' := by
+     match hc with
+     | .one he ht hew hb =>
+         simp only [Clause.renameList]
+@@ -297,7 +309,7 @@
+ /-! ## ストアの型付けの拡大 -/
+ 
+ /-- Ψ' は Ψ を広げたもの。 -/
+-def StoreTy.Sub (Ψ Ψ' : StoreTy) : Prop := ∀ l x, Ψ l = some x → Ψ' l = some x
++
+ 
+ theorem StoreTy.Sub.refl (Ψ : StoreTy) : StoreTy.Sub Ψ Ψ := fun _ _ h => h
+ 
+@@ -362,6 +374,8 @@
+   theorem HasTypeCQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeCQ P B Ψ' Q C Γ R m a ε Δl := by
+     match h with
++    | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.store hb hΨ)
++    | .C_BuilderOp hw hr ha => exact .C_BuilderOp hw (hr.store hΨ) (HasTypeVsQ.store ha hΨ)
+     | .C_Return hv => exact .C_Return (HasTypeVQ.store hv hΨ)
+     | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.store h hΨ) hle hs hw
+     | .C_Eff h hs => exact .C_Eff (HasTypeCQ.store h hΨ) hs
+--- a/formal/Benitoite/Release/Lemmas/NoFailContext.lean
++++ b/formal/Benitoite/Release/Lemmas/NoFailContext.lean
+@@ -43,6 +43,8 @@
+   theorem HasTypeCQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+       (hq : QLe Q Q') : HasTypeCQ P B Ψ Q' C Γ R m a ε Δl := by
+     match h with
++    | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.q_mono hb hq)
++    | .C_BuilderOp hw hr ha => exact .C_BuilderOp hw hr (HasTypeVsQ.q_mono ha hq)
+     | .C_Return hv => exact .C_Return (HasTypeVQ.q_mono hv hq)
+     | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.q_mono h hq) hle hs hw
+     | .C_Eff h hs => exact .C_Eff (HasTypeCQ.q_mono h hq) hs

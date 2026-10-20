@@ -50,7 +50,6 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `tools/syntax-measure/` | 構文の案ごとに、LLM が書いたスクリプトの構文の誤りの率を測る道具（Python。構文の測定の第一段階。続きは docs/todo の TODO-017）。生の記録はリポジトリの外に置く | 使い方は `tools/syntax-measure/README.md`。LLM を呼ぶ測定は設計者の了承を得てから行う |
 | `tools/skill-eval/` | 同梱の Agent Skill を、約 10 の課題とハーネス（Claude Code・Codex CLI・OpenCode）で評価する道具（Python。06-06「Skill の評価」。構文の測定の第二段階にも使う）。記録は `results/`、生の記録はリポジトリの外に置く | 使い方は `tools/skill-eval/README.md`、手順はスキル `skill-eval`。LLM を呼ぶ評価は設計者の了承を得てから行う |
 | `tools/spec-coverage/` | ゴールデンテストが言語仕様のどの節を確かめているかを集計する道具（Python） | |
-| `tools/named-arguments-migrate/` | 名前付き引数・関数型・ラムダ名の移行候補を抽出し、manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。使い方は同ディレクトリの `README.md` |
 | `tools/derive/` | レコードの JSON 変換と Property の生成器・縮小器を通常の関数として生成し、管理領域と生成記録を照合する開発用の道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。先に `derive_inventory` の example をビルドする。使い方は同ディレクトリの `README.md` |
 | `tools/source-migrate/` | ソースの移行に共通するホスト抽出・元の UTF-8 バイト位置・ハッシュ・編集範囲・diff・再適用の検証（Python） | 候補の意味と承認は各移行器が判断する。使い方と自己検査は同ディレクトリの `README.md` |
 | `tools/try-actions-migrate/` | try の AST から処置の移行候補を抽出し、役割の分類・manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。die の契約変更、生成断片、検査入力は自動承認しない。使い方と自己検査は同ディレクトリの `README.md` |
@@ -250,7 +249,7 @@ C01・C02 は、`docs/archive/2026-10-09-implement-first-release/tools/extract_i
 - 実行時の値を辿る処理（構造の `==`、マーク、参照カウントの解放の連鎖、到達可能性の計算、リストの走査）は、明示の積み重ね（`Vec`）で書く。
 - 言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（[02-01「関数の呼び出しと処理系のスタック」](docs/design/02-impl/02-01-pipeline.md)）。VM と参照インタプリタの両方に適用する。
 - 処理系のテストは、深い入れ子と長いリストの場合を含める。スレッドのスタックの大きさを変えてテストを通すことはしない。
-  - 例外: 入れ子の上限の深さで段を通すテスト（`pipeline` の `stages_fit_the_measured_stack_` で始まるテスト）は、16 MiB のスタックのスレッドで行う。上限の深さで最も多くを要する形が、最適化しないビルドで約 12.8 MiB を要するためである（02-01「関数の呼び出しと処理系のスタック」）。大きさは測って決め（`examples/stack_probe.rs`）、枠が大きくなる退行を捕まえられるよう、本番の段のスレッド（64 MiB）より小さく保つ。
+  - 例外: 入れ子の上限の深さで段を通すテスト（`pipeline` の `stages_fit_the_measured_stack_` で始まるテスト）は、16 MiB のスタックのスレッドで行う。上限の深さで最も多くを要する形が、最適化しないビルドで約 13.3 MiB を要するためである（02-01「関数の呼び出しと処理系のスタック」）。大きさは測って決め（`examples/stack_probe.rs`）、枠が大きくなる退行を捕まえられるよう、本番の段のスレッド（64 MiB）より小さく保つ。
 
 ### 数値の変換
 

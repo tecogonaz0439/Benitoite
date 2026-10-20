@@ -1,0 +1,32 @@
+// spec: 01-05 網羅性の検査
+import Benitoite.Unofficial.IO.Console
+function sign(x: Integer64) -> Integer
+  return match x with
+  case -9223372036854775808..-1 -> -1
+  case 0..9223372036854775807 -> 1
+  end match
+end function
+function full(x: Integer) -> Integer
+  bind -9223372036854775808..9223372036854775807 <- x
+  return match x with
+  case -9223372036854775808..9223372036854775807 -> 7
+  end match
+end function
+function correlated(x: Integer, y: Boolean) -> Integer
+  return match Pair(x, y) with
+  case Pair(-9223372036854775808..-1, _) -> 1
+  case Pair(_, true) -> 2
+  case Pair(0..9223372036854775807, false) -> 3
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(sign(-9223372036854775808)))
+  Console.writeLine(Integer.toString(sign(-1)))
+  Console.writeLine(Integer.toString(sign(0)))
+  Console.writeLine(Integer.toString(sign(9223372036854775807)))
+  Console.writeLine(Integer.toString(full(-9223372036854775808)))
+  Console.writeLine(Integer.toString(full(9223372036854775807)))
+  Console.writeLine(Integer.toString(correlated(x: -1, y: false)))
+  Console.writeLine(Integer.toString(correlated(x: 0, y: true)))
+  Console.writeLine(Integer.toString(correlated(x: 9223372036854775807, y: false)))
+end function

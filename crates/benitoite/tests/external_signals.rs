@@ -84,6 +84,16 @@ function warmup() -> Unit
 @external("wasm", "spin.wasm", "spin")
 function spin() -> Unit
 "#;
+    let completed = if test {
+        "@test\nfunction prepared() -> Unit\n  warmup()\nend function\n"
+    } else {
+        ""
+    };
+    let remaining = if test {
+        "@test\nfunction remaining() -> Unit uses File.Write\n  bind _ <- File.writeText(path: \"remaining\", text: \"must not run\")\nend function\n"
+    } else {
+        ""
+    };
     let function = if test {
         "@test\nfunction spinning()"
     } else {
@@ -92,12 +102,12 @@ function spin() -> Unit
     std::fs::write(
         &script,
         format!(
-            r#"{body}{function} -> Unit uses File.Write
+            r#"{body}{completed}{function} -> Unit uses File.Write
   warmup()
   bind _ready <- File.writeText(path: "ready", text: "ready")
   spin()
 end function
-"#
+{remaining}"#
         ),
     )
     .unwrap();
@@ -190,6 +200,10 @@ fn probe(mode: &str, signal: Option<&str>) -> (std::process::ExitStatus, String)
         .unwrap()
         .read_to_string(&mut stderr)
         .unwrap();
+    assert!(
+        !directory.join("remaining").exists(),
+        "interrupted test ran the remaining function"
+    );
     let _removed = std::fs::remove_dir_all(&directory);
     (status, stderr)
 }
@@ -202,6 +216,7 @@ fn interrupts_during_wasm_have_exit_status_130() {
         ("interrupt", "-INT"),
         ("interrupt", "-TERM"),
         ("test-interrupt", "-INT"),
+        ("test-interrupt", "-TERM"),
     ] {
         let (status, stderr) = probe(mode, Some(signal));
         assert_eq!(status.code(), Some(130), "{mode} {signal}: {stderr}");

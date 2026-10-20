@@ -1,0 +1,25 @@
+== plan: level work against ac3a434f9e6996839318cc586085a4b809f3bcbb (changed files not classified) (partial selection: --only python_syntax,migrate_selftests)
+   [python_syntax] because of --only (estimate: seconds)
+      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,source-migrate,try-actions-migrate,derive}/*.py)
+   [migrate_selftests] because of --only (estimate: several min (cache dependent))
+      command: python3 -B tools/source-migrate/test_source_migrate.py
+      command: cargo build -p benitoite --example try_actions_inventory
+      command: python3 -B tools/try-actions-migrate/test_migrate.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== python_syntax
+== migrate_selftests
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.014s
+
+OK
+== migrate_selftests
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 9.13s
+== migrate_selftests
+......
+----------------------------------------------------------------------
+Ran 6 tests in 6.145s
+
+OK
+selected checks passed

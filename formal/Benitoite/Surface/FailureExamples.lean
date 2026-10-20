@@ -14,7 +14,7 @@ private def strTy : Ty := .base .string
 private def failString : Eff := .mk (fun _ => false) [strTy]
 private def failInt : Eff := .mk (fun _ => false) [intTy]
 private def rows : Eff := .mk (fun a => a == .rho 0 || a == .rho 1) []
-private def value : Expr := .literal (.integer 7)
+private def value : Expr := .literal (.integer ⟨7, by decide⟩)
 private def errorValue : Expr := .literal (.string "bad")
 private def raiseAt (T E : Ty) (e : Expr) : Expr :=
   .call (.raise T E) [none] [0] (.cons e .nil)

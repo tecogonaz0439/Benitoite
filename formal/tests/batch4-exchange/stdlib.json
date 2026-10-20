@@ -1,0 +1,100 @@
+{
+ "version": 5,
+ "inputs": [
+  {
+   "group": "golden",
+   "name": "independent-batch4",
+   "functions": [
+    {
+     "name": "stdlib:identity",
+     "header": {
+      "tparams": [],
+      "neffs": 0,
+      "names": [
+       "value"
+      ],
+      "params": [
+       {
+        "base": {
+         "name": "Integer"
+        }
+       }
+      ],
+      "ret": {
+       "base": {
+        "name": "Integer"
+       }
+      },
+      "eff": [],
+      "effParams": []
+     },
+     "dictParams": []
+    },
+    {
+     "name": "task",
+     "header": {
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+       "f"
+      ],
+      "params": [
+       {
+        "fn": {
+         "names": [],
+         "params": [],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": [
+          {
+           "name": {
+            "value": "State"
+           }
+          }
+         ]
+        }
+       }
+      ],
+      "ret": {
+       "base": {
+        "name": "Unit"
+       }
+      },
+      "eff": []
+     },
+     "dictParams": []
+    },
+    {
+     "name": "stdlib:strLen",
+     "header": {
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+       "s"
+      ],
+      "params": [
+       {
+        "base": {
+         "name": "String"
+        }
+       }
+      ],
+      "ret": {
+       "base": {
+        "name": "Integer"
+       }
+      },
+      "eff": []
+     },
+     "dictParams": []
+    }
+   ],
+   "impls": []
+  }
+ ]
+}

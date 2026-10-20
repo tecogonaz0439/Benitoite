@@ -206,12 +206,13 @@ mutual
   def checkExprR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (p : Position) (path : List Nat) (e : Expr) : Checking Inferred :=
     guardInferred q path (match e with
-    | .builderOp o i args refs => do
-        require path "State is missing from the checked atom support" (q.atoms.contains (.name stateEff))
-        require path "invalid local builder or operation references"
-          (refs.check q.atoms q.D q.B q.satDec q.admitsDec q.noFailRows C Δ i)
-        let ε ← checkTypesR q mode Δ C Γ R (child path 0) 0 args (o.params refs.kind)
-        pure (o.result refs.kind, union q ε (singleEff q.atoms (.name stateEff)))
+    | .builderOp o i args k => do
+        require path "invalid local builder kind"
+          (match Δ.kindAt i with
+           | none => false
+           | some actual => tyEq q.atoms actual.contents k.contents)
+        let ε ← checkTypesR q mode Δ C Γ R (child path 0) 0 args (o.params k)
+        pure (o.result k, ε)
     | .local i => do
         let a ← lookup path "local is missing or hidden" ((Γ[i]?).join)
         require path "continuations cannot be used as ordinary locals" (notCont a)
@@ -332,6 +333,7 @@ mutual
     | .negFloat32 _ => pure (.base .float32, emptyEff)
     | .unit => pure (.base .unit, emptyEff)
     | .paren e => checkExprR q mode Δ C Γ R p (child path 0) e
+    | .block body => checkBlockR q mode Δ C Γ R p (child path 0) body
     | .conCall c ts args => do
         let cd ← lookup path "unknown constructor" (q.D.cons c)
           (fun _ => true)
@@ -641,13 +643,9 @@ mutual
   def checkBlockR (q : Input) (mode : ResumeMode) (Δ : BuilderCtx) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (p : Position) (path : List Nat) (body : Block) : Checking Inferred :=
     guardInferred q path (match body with
-    | .builderBind k refs rest => do
+    | .builderBind k rest => do
         require path "invalid builder content type" (cleanTy q.atoms C.length k.contents && singleTyCheck q.atoms q.noFailRows k.contents)
-        require path "missing State atom" (q.atoms.elem (.name stateEff))
-        require path "invalid builder declaration references"
-          (tyEq q.atoms k.contents refs.kind.contents && refs.check q.atoms q.D q.B q.satDec q.admitsDec q.noFailRows C (some k :: Δ) 0)
-        let (a, ε) ← checkBlockR q mode (some k :: Δ) C (none :: Γ) R p (child path 0) rest
-        pure (a, union q (singleEff q.atoms (.name stateEff)) ε)
+        checkBlockR q mode (some k :: Δ) C (none :: Γ) R p (child path 0) rest
     | .empty => pure (.base .unit, emptyEff)
     | .last e => checkExprR q mode Δ C Γ R p (child path 0) e
     | .lastBind _ t e => do

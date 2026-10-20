@@ -206,7 +206,7 @@ theorem superStep_dict_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.
   · have := hθ'.instantiate (R := none)
       (InstOk.of_values hb hvs (hvs.wf_all hwf hb hΨ hc.2) hc.2)
     simpa [Val.substTy, Ty.subst] using this
-  · refine Val.VarsIn.instantiate hc.2 (Val.VarsIn.substTyAt (c := 0) [] (fun x hx => varsInList_mem hc.1 hx) (by simp) u ?_)
+  · refine Val.VarsIn.instantiate (depth := 0) hc.2 (Val.VarsIn.substTyAt (c := 0) [] (fun x hx => varsInList_mem hc.1 hx) (by simp) u ?_)
     rw [Nat.zero_add, hsat.1]
     exact Val.VarsIn.toTrue _ (hsc.2.2.1 _ u hu)
 

@@ -1,0 +1,10 @@
+function gl(xs: List[Integer]) -> Integer
+  return 0
+end function
+function bad(n: Integer) -> String
+  bind s <- n
+  bind _ <- gl([s])
+  return s
+end function
+function main() -> Unit
+end function

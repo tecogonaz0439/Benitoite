@@ -1,0 +1,25 @@
+{
+  "base_commit": "c31e64b03d2810343e1779926bea4ebc958b6164",
+  "work_base": "76ed2d5ede197d112284b753fcf67d2ea21e40bb",
+  "head": "76ed2d5ede197d112284b753fcf67d2ea21e40bb",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "profile": "dev, unoptimized Benitoite",
+  "configs": {
+    "default": "default features",
+    "heap": "--no-default-features --features gc-mark-sweep,heap-verify"
+  },
+  "binaries": {
+    "base-default": "572001a2089acfbe827d84f6676366e5cab3950dca87731a94c7b1a75adc2205",
+    "base-heap": "a50a6591f016474edf4bd8819a34a0b56a5dd10bce75df9ab2a96ee4e5bbab80",
+    "before-default": "c71a8e4aaedc9c5a5aa607cb18d18364a0205a613836cf29fee2b0b3f21936fd",
+    "before-heap": "c922b92e4a5cd1e123817e3bad02554766f4dac267e6f522168aa163dbfd7d0a",
+    "after-default": "b407bde810aa39eebd6c4233a6e84eb704a6b5a40906fc486526fbc2aa426b9c",
+    "after-heap": "3c68a5b243a6d648aba282928770c1871a22aebcca4f52a5f105a5c895827a62"
+  },
+  "source_sha256": {
+    "crates/benitoite/src/ir/decision.rs": "52535aa81101ca63c39290f10bbac02b16c56d576278216197e746a9b9f10aec",
+    "crates/benitoite/examples/stack_probe.rs": "4d2c9c72678375e86a93aebc6880eb9e73fd898a95c22e2da11e216e3db87078",
+    "crates/benitoite/examples/stack_probe/support.rs": "849c6cb15687b29ede24a1ccaf698522582e5c35e13e24b6b894982c090cea55"
+  }
+}

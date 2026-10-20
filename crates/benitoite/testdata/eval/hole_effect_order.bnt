@@ -1,0 +1,38 @@
+// spec: 01-02 部分適用のプレースホルダ
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Reference
+effect Log
+ function stamp(label: String) -> Unit
+end effect
+type Callback = function(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer
+function target(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer
+ return a * 1000 + b * 100 + c * 10 + d
+end function
+function factory() -> Callback uses Log
+ stamp("callee")
+ return target
+end function
+function fixed(counter: Reference[Integer], label: String) -> Integer uses State, Log
+ stamp(label)
+ bind n <- Reference.get(counter) + 1
+ Reference.set(reference: counter, value: n)
+ return n
+end function
+function run() -> Unit uses State, Log, Console.Write
+ bind counter <- Reference.new(0)
+ bind action <- factory()(d: _, c: fixed(counter: counter, label: "c"), b: _, a: fixed(counter: counter, label: "a"))
+ Console.writeLine("created")
+ Console.writeLine(Integer.toString(Reference.get(counter)))
+ Console.writeLine(Integer.toString(action(b: 3, d: 4)))
+ Console.writeLine(Integer.toString(Reference.get(counter)))
+ Console.writeLine(Integer.toString(action(b: 5, d: 6)))
+ Console.writeLine(Integer.toString(Reference.get(counter)))
+end function
+function main() -> Unit uses State, Console.Write
+ handle run() with
+ case stamp(label) ->
+  Console.writeLine(label)
+  resume(())
+ end handle
+end function

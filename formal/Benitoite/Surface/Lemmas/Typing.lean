@@ -23,13 +23,13 @@ theorem HasTypesQ.desugar_of_expr {Δb : BuilderCtx} {C Γ}
       HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
-      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) R (desugarExpr op pos e) a ε)
+      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op pos e) a ε Δb.toLocal)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {R es as ε pe}
     (h : HasTypesQ (p.declarationsFor view) B op Q Δb C Γ R es as ε)
     (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
-    CompTypesQ (desugarProgram op p) B Q C (fillBuilders Γ Δb) R ε (desugarExprs op es) as ∧
+    CompTypesQ (desugarProgram op p) B Q C Γ R ε (desugarExprs op es) as Δb.toLocal ∧
       Ty.VarsInList C.length (fun _ => True) as := by
   match h with
   | .nil => exact ⟨.nil, trivial⟩
@@ -45,13 +45,13 @@ theorem HasEachQ.desugar_of_expr {Δb : BuilderCtx} {C Γ}
       HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
-      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) R (desugarExpr op pos e) a ε)
+      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op pos e) a ε Δb.toLocal)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {R es a ε pe}
     (h : HasEachQ (p.declarationsFor view) B op Q Δb C Γ R es a ε)
     (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
-    CompTypesQ (desugarProgram op p) B Q C (fillBuilders Γ Δb) R ε (desugarExprs op es) (List.replicate es.length a) := by
+    CompTypesQ (desugarProgram op p) B Q C Γ R ε (desugarExprs op es) (List.replicate es.length a) Δb.toLocal := by
   match h with
   | .nil => exact .nil
   | .cons h hs =>
@@ -68,27 +68,27 @@ theorem HasHoleArgsQ.desugar_of_expr {Δb : BuilderCtx} {C Γ}
       HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
-      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) R (desugarExpr op pos e) a ε)
+      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op pos e) a ε Δb.toLocal)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {R args as ε pe}
     (h : HasHoleArgsQ (p.declarationsFor view) B op Q Δb C Γ R args as ε)
     (sc : args.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) (prior : List Ty) :
-    CompTypesQ (desugarProgram op p) B Q C (binds (prior ++ args.holeTypes) ++ fillBuilders Γ Δb) R ε
-      (desugarHoleArgs op (prior ++ args.holeTypes).length args) as ∧
+    ArgTypesQ (desugarProgram op p) B Q C (binds (prior ++ args.holeTypes) ++ Γ) R ε
+      (LocalCtx.extend (prior ++ args.holeTypes).length Δb.toLocal) (desugarHoleArgs op (prior ++ args.holeTypes).length args) as ∧
       Ty.VarsInList C.length (fun _ => True) as := by
   match h with
   | .nil => exact ⟨.nil, trivial⟩
   | .expr (args := rest) he hs =>
       obtain ⟨hms, hc⟩ := HasHoleArgsQ.desugar_of_expr hAlign hΔ preserve hwf hsig hs sc.2 hΓ hR prior
       have he' := preserve hAlign hΔ he sc.1 hΓ hR
-      have shifted := he'.rename (RenOk.shift (binds (prior ++ rest.holeTypes)) (fillBuilders Γ Δb))
-      exact ⟨.cons (HasTypeCQ.weakenEff (by simpa only [binds_length, HoleArgs.holeTypes] using shifted)
+      have shifted := he'.rename (RenOk.shift (binds (prior ++ rest.holeTypes)) Γ) _ (LocalRenOk.shift Δb.toLocal (binds (prior ++ rest.holeTypes)).length)
+      exact ⟨.evaluate (HasTypeCQ.weakenEff (by simpa only [binds_length, HoleArgs.holeTypes] using shifted)
         (eff_left _ _)) (hms.weaken (eff_right _ _)), HasTypeQ.clean hΔ hwf hsig he sc.1 hΓ hR, hc⟩
   | .hole (t := t) (args := rest) hl ha hs =>
       obtain ⟨hms, hc⟩ := HasHoleArgsQ.desugar_of_expr hAlign hΔ preserve hwf hsig hs sc.2 hΓ hR (prior ++ [t])
-      refine ⟨.cons (HasTypeCQ.weakenEff (.C_Return (.V_Sub (.V_Var ?_
-        (clean_notCont (scoped_clean sc.1))) hl (Ty.VarsIn.wf _ ha))) (Eff.empty_sub _))
+      refine ⟨.direct (.V_Sub (.V_Var ?_
+        (clean_notCont (scoped_clean sc.1))) hl (Ty.VarsIn.wf _ ha))
         (by simpa only [HoleArgs.holeTypes, List.append_assoc, List.singleton_append] using hms),
         ha, hc⟩
       simp only [HoleArgs.holeTypes, binds_append, binds_cons, List.append_assoc, List.singleton_append]
@@ -97,38 +97,39 @@ theorem HasHoleArgsQ.desugar_of_expr {Δb : BuilderCtx} {C Γ}
 
 
 /-- 通常の呼び出しでは、callee の計算を先行させてソース順に引数を束縛する。 -/
-theorem HasTypeQ.desugar_call {Δb : BuilderCtx} {C Γ Γc R pos f labels positions args names ps a εf εargs εcall}
+theorem HasTypeQ.desugar_call {Δl : LocalCtx} {Δb : BuilderCtx} {C Γ Γc R pos f labels positions args names ps a εf εargs εcall}
     (hΓc : RenOk Γ Γc id)
     (hf : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R .other f (.fn names ps a εcall) εf)
     (hp : CallOk names ps false labels positions)
     (hf' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op .other f) (.fn names ps a εcall) εf)
-    (hm : CompTypesQ (desugarProgram op p) B Q C Γc R εargs (desugarExprs op args) (sourceTypes ps positions))
+      (desugarExpr op .other f) (.fn names ps a εcall) εf Δl)
+    (hm : CompTypesQ (desugarProgram op p) B Q C Γc R εargs (desugarExprs op args) (sourceTypes ps positions) Δl)
     (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps positions)) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op pos (.call f labels positions args)) a (Eff.union εf (Eff.union εargs εcall)) := by
-  apply callComp_typed (names := names) (εcall := εcall) [] rfl (by simpa using hp.2.2.1)
-    (HasTypeCQ.weakenEff (by simpa only [List.nil_append, List.length_nil] using (hf'.rename (RenOk.shift ([] : List (Option Ty)) Γc))) (eff_left _ _))
+      (desugarExpr op pos (.call f labels positions args)) a (Eff.union εf (Eff.union εargs εcall)) Δl := by
+  simpa only [List.nil_append, List.length_nil, LocalCtx.extend_zero, desugarExpr] using
+    (callComp_typed (names := names) (εcall := εcall) [] rfl (by simpa using hp.2.2.1)
+    (HasTypeCQ.weakenEff (by simpa only [List.nil_append, List.length_nil, LocalCtx.extend_zero] using (hf'.rename (RenOk.shift ([] : List (Option Ty)) Γc) _ (LocalRenOk.shift Δl 0))) (eff_left _ _))
     (fun h hd ys => by
       simpa only [List.nil_append, Nat.zero_add, List.append_assoc] using
         ((directCallee_typed hd hf hf' hΓc).rename (RenOk.shift ys Γc)))
     .nil (hm.weaken ((eff_left _ _).trans (eff_right _ _))) hc
-    ((eff_right _ _).trans (eff_right _ _))
+    ((eff_right _ _).trans (eff_right _ _)))
 
 /-- パイプでは左辺を一度束縛して位置 0 を占め、その後に callee と明示引数を置く。 -/
-theorem HasTypeQ.desugar_pipeCall {Δb : BuilderCtx} {C Γ Γc R pos lhs f labels positions args names t ps a εl εf εargs εcall}
+theorem HasTypeQ.desugar_pipeCall {Δl : LocalCtx} {Δb : BuilderCtx} {C Γ Γc R pos lhs f labels positions args names t ps a εl εf εargs εcall}
     (hΓc : RenOk Γ Γc id)
     (hf : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R .other f (.fn names (t :: ps) a εcall) εf)
     (hp : CallOk names (t :: ps) true labels positions)
-    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R (desugarExpr op .other lhs) t εl)
+    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R (desugarExpr op .other lhs) t εl Δl)
     (hf' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op .other f) (.fn names (t :: ps) a εcall) εf)
-    (hm : CompTypesQ (desugarProgram op p) B Q C Γc R εargs (desugarExprs op args) (sourceTypes (t :: ps) positions))
+      (desugarExpr op .other f) (.fn names (t :: ps) a εcall) εf Δl)
+    (hm : CompTypesQ (desugarProgram op p) B Q C Γc R εargs (desugarExprs op args) (sourceTypes (t :: ps) positions) Δl)
     (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes (t :: ps) positions))
     (ht : TyOK C.length t) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
       (desugarExpr op pos (.pipe lhs (.call f labels positions args))) a
-      (Eff.union εl (Eff.union εf (Eff.union εargs εcall))) := by
+      (Eff.union εl (Eff.union εf (Eff.union εargs εcall))) Δl := by
   apply typedLet hl'
   apply callComp_typed [some t] rfl (by simpa using hp.2.2.1)
     (HasTypeCQ.weakenEff (HasTypeCQ.shiftOne hf') (eff_left _ _))
@@ -141,16 +142,16 @@ theorem HasTypeQ.desugar_pipeCall {Δb : BuilderCtx} {C Γ Γc R pos lhs f label
     ((eff_right _ _).trans (eff_right _ _))
 
 /-- 括弧・穴付きの右辺の関数値への適用は、一引数のままである。 -/
-theorem HasTypeQ.desugar_pipeApply {Δb : BuilderCtx} {C Γ Γc R pos lhs rhs name t a εl εf εcall}
+theorem HasTypeQ.desugar_pipeApply {Δl : LocalCtx} {Δb : BuilderCtx} {C Γ Γc R pos lhs rhs name t a εl εf εcall}
     (hp : rhs.PipeValue)
     (hΓc : RenOk Γ Γc id)
     (hf : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R .other rhs (.fn [name] [t] a εcall) εf)
-    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R (desugarExpr op .other lhs) t εl)
+    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R (desugarExpr op .other lhs) t εl Δl)
     (hf' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op .other rhs) (.fn [name] [t] a εcall) εf)
+      (desugarExpr op .other rhs) (.fn [name] [t] a εcall) εf Δl)
     (ht : TyOK C.length t) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op pos (.pipe lhs rhs)) a (Eff.union εl (Eff.union εf εcall)) := by
+      (desugarExpr op pos (.pipe lhs rhs)) a (Eff.union εl (Eff.union εf εcall)) Δl := by
   rw [desugarPipeValue hp]
   apply typedLet hl'
   apply callComp_typed (names := [name]) (ps := [t]) (positions := []) [some t] rfl (by simp)
@@ -163,74 +164,77 @@ theorem HasTypeQ.desugar_pipeApply {Δb : BuilderCtx} {C Γ Γc R pos lhs rhs na
     (CompTypesQ.nil.weaken (Eff.empty_sub _)) trivial (eff_right _ _)
 
 /-- 穴の契約はソース順に保持し、callee と固定引数の計算はラムダの内側に置く。 -/
-theorem HasTypeQ.desugar_partialCall {Δb : BuilderCtx} {C Γ Γc R pos f names args ps r0 r ε εf εargs εcall}
+theorem HasTypeQ.desugar_partialCall {Δl : LocalCtx} {Δb : BuilderCtx} {C Γ Γc R pos f names args ps r0 r ε εf εargs εcall}
     (hΓc : RenOk Γ Γc id)
     (hf : HasTypeQ (p.declarationsFor view) B op Q Δb C (hideConts Γ) (some r) .other f (.fn names ps r0 εcall) εf)
     (hp : CallOk names ps false args.labels args.positions)
     (hn : NamesWF (args.holeNames names) args.holeTypes)
     (hf' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γc) (some r)
       (desugarExpr op .other f) (.fn names ps r0 εcall) εf)
-    (hm : CompTypesQ (desugarProgram op p) B Q C (binds args.holeTypes ++ hideConts Γc) (some r) εargs
+    (hm : ArgTypesQ (desugarProgram op p) B Q C (binds args.holeTypes ++ hideConts Γc) (some r) εargs []
       (desugarHoleArgs op args.holeTypes.length args) (sourceTypes ps args.positions))
     (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps args.positions))
     (hl : Ty.Le r0 r) (he : Eff.Sub (Eff.union εf (Eff.union εargs εcall)) ε)
     (resultWF : Ty.WF C.length (.fn (args.holeNames names) args.holeTypes r ε)) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
       (desugarExpr op pos (.partialCall f names args r ε))
-      (.fn (args.holeNames names) args.holeTypes r ε) Eff.empty := by
+      (.fn (args.holeNames names) args.holeTypes r ε) Eff.empty Δl := by
   apply HasTypeCQ.C_Return
   apply HasTypeVQ.V_Lam hn resultWF
+  change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
   apply HasTypeCQ.C_Sub (a := r0) (ε := Eff.union εf (Eff.union εargs εcall)) _ hl he resultWF.2.2.1
-  apply callComp_typed (names := names) (εcall := εcall) [] rfl (by simpa using hp.2.2.1)
-    (HasTypeCQ.weakenEff (by simpa only [binds_length, List.nil_append] using
+  apply callArgs_typed (names := names) (εcall := εcall) (by simpa using hp.2.2.1)
+    (HasTypeCQ.weakenEff (by simpa only [binds_length, List.nil_append, LocalCtx.extend_nil, List.length_nil] using
       (hf'.rename (RenOk.shift (binds args.holeTypes) (hideConts Γc)))) (eff_left _ _))
     (fun h hd ys => by
       simpa only [List.length_append, binds_length, Nat.add_comm,
         List.nil_append, List.append_nil, List.append_assoc] using
         ((directCallee_typed hd hf hf' hΓc.hide).rename
           (RenOk.shift (ys ++ binds args.holeTypes) (hideConts Γc))))
-    .nil (hm.weaken ((eff_left _ _).trans (eff_right _ _))) hc
+    (hm.weaken ((eff_left _ _).trans (eff_right _ _))) hc
     ((eff_right _ _).trans (eff_right _ _))
 
 /-- 構成子の直接構築は位置順の規則を維持する。 -/
-theorem HasTypeQ.desugar_conCall {C Γ R pos c cd ts args ε}
+theorem HasTypeQ.desugar_conCall {Δl : LocalCtx} {C Γ R pos c cd ts args ε}
     (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
-    (hm : CompTypesQ (desugarProgram op p) B Q C Γ R ε (desugarExprs op args) (cd.args.map (Ty.subst ts [])))
+    (hm : CompTypesQ (desugarProgram op p) B Q C Γ R ε (desugarExprs op args) (cd.args.map (Ty.subst ts [])) Δl)
     (hc : Ty.VarsInList C.length (fun _ => True) (cd.args.map (Ty.subst ts []))) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-      (desugarExpr op pos (.conCall c ts args)) (.data cd.data ts) ε := by
+      (desugarExpr op pos (.conCall c ts args)) (.data cd.data ts) ε Δl := by
   apply sequence_typed hm hc
   intro vs hv
   exact HasTypeCQ.weakenEff (.C_Return (.V_Con hd ht hv)) (Eff.empty_sub _)
 
 /-- 構成子の穴も、固定式をラムダの外へ移さず argN の契約を保持する。 -/
-theorem HasTypeQ.desugar_partialCon {C Γ R pos c cd ts args r εargs}
+theorem HasTypeQ.desugar_partialCon {Δl : LocalCtx} {C Γ R pos c cd ts args r εargs}
     (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
     (hn : NamesWF (args.holeNames (positionalNames args.positions.length)) args.holeTypes)
-    (hm : CompTypesQ (desugarProgram op p) B Q C (binds args.holeTypes ++ hideConts Γ) (some r) εargs
+    (hm : ArgTypesQ (desugarProgram op p) B Q C (binds args.holeTypes ++ hideConts Γ) (some r) εargs []
       (desugarHoleArgs op args.holeTypes.length args) (cd.args.map (Ty.subst ts [])))
     (hc : Ty.VarsInList C.length (fun _ => True) (cd.args.map (Ty.subst ts [])))
     (hl : Ty.Le (.data cd.data ts) r)
     (resultWF : Ty.WF C.length (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs))) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
       (desugarExpr op pos (.partialCon c ts args))
-      (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs)) Eff.empty := by
+      (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs)) Eff.empty Δl := by
   apply HasTypeCQ.C_Return
   apply HasTypeVQ.V_Lam hn resultWF
+  change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
   apply HasTypeCQ.C_Sub (a := .data cd.data ts) (ε := εargs) _ hl (Eff.sub_norm_self _) resultWF.2.2.1
-  apply sequence_typed hm hc
-  intro vs hv
-  exact HasTypeCQ.weakenEff (.C_Return (.V_Con hd ht hv)) (Eff.empty_sub _)
+  simpa only [List.nil_append, List.append_nil, List.length_nil, LocalCtx.extend_zero, Nat.add_zero] using
+    sequenceArgs_typed hm hc [] (by
+      intro vs hv
+      exact HasTypeCQ.weakenEff (.C_Return (.V_Con hd ht hv)) (Eff.empty_sub _))
 
 /-- 直接の構成子のパイプは、左辺の値を先頭のフィールドに置く。 -/
-theorem HasTypeQ.desugar_pipeConCall {C Γ R pos lhs c cd ts args t ps εl εargs}
+theorem HasTypeQ.desugar_pipeConCall {Δl : LocalCtx} {C Γ R pos lhs c cd ts args t ps εl εargs}
     (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
     (hp : cd.args.map (Ty.subst ts []) = t :: ps)
-    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op .other lhs) t εl)
-    (hm : CompTypesQ (desugarProgram op p) B Q C Γ R εargs (desugarExprs op args) ps)
+    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op .other lhs) t εl Δl)
+    (hm : CompTypesQ (desugarProgram op p) B Q C Γ R εargs (desugarExprs op args) ps Δl)
     (hc : Ty.VarsInList C.length (fun _ => True) ps) (htc : TyOK C.length t) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-      (desugarExpr op pos (.pipe lhs (.conCall c ts args))) (.data cd.data ts) (Eff.union εl εargs) := by
+      (desugarExpr op pos (.pipe lhs (.conCall c ts args))) (.data cd.data ts) (Eff.union εl εargs) Δl := by
   apply typedLet hl'
   apply letChain_typed hm [some t]
   rw [hm.length]
@@ -246,13 +250,13 @@ theorem HasTypeQ.desugar_pipeConCall {C Γ R pos lhs c cd ts args t ps εl εarg
   · exact Eff.empty_sub _
 
 /-- 裸の一引数構成子へのパイプには、明示引数の計算を加えない。 -/
-theorem HasTypeQ.desugar_pipeConValue {C Γ R pos lhs c cd ts names ps t εl}
+theorem HasTypeQ.desugar_pipeConValue {Δl : LocalCtx} {C Γ R pos lhs c cd ts names ps t εl}
     (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
     (hp : ps = cd.args.map (Ty.subst ts [])) (hps : ps = [t])
-    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op .other lhs) t εl)
+    (hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op .other lhs) t εl Δl)
     (htc : TyOK C.length t) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-      (desugarExpr op pos (.pipe lhs (.conValue c ts names ps))) (.data cd.data ts) εl := by
+      (desugarExpr op pos (.pipe lhs (.conValue c ts names ps))) (.data cd.data ts) εl Δl := by
   apply HasTypeCQ.C_Let hl'
   apply HasTypeCQ.weakenEff (δ := εl)
   · apply HasTypeCQ.C_Return
@@ -264,7 +268,7 @@ theorem HasTypeQ.desugar_pipeConValue {C Γ R pos lhs c cd ts names ps t εl}
 namespace CallExamples
 
 private def reversedArgs : Exprs :=
-  .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+  .cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)
 
 /-- 異なる型の逆順指定を一般の呼び出しの保存から導く。 -/
 example (p : Program) (B : Builtins) (op : OpPrim) :
@@ -313,10 +317,10 @@ example (p : Program) (B : Builtins) (op : OpPrim)
     · intro label h
       simp [mixedHoles, HoleArgs.labels] at h
       rcases h with rfl | rfl | rfl <;> rfl
-  have hm : CompTypesQ (desugarProgram op p) B Q []
+  have hm : ArgTypesQ (desugarProgram op p) B Q []
       (binds mixedHoles.holeTypes ++ hideConts
         [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
-      (some (.base .integer)) (Eff.single "Fixed") (desugarHoleArgs op mixedHoles.holeTypes.length mixedHoles)
+      (some (.base .integer)) (Eff.single "Fixed") [] (desugarHoleArgs op mixedHoles.holeTypes.length mixedHoles)
       (sourceTypes [.base .integer, .base .boolean, .base .integer] mixedHoles.positions) := by
     have hfixed : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q []
         (binds mixedHoles.holeTypes ++ hideConts
@@ -338,9 +342,8 @@ example (p : Program) (B : Builtins) (op : OpPrim)
         Val.rename, Val.renameList, boundVars, CallHead.rename, CallHead.apply] using
         (HasTypeCQ.C_App (R := some (.base .integer)) hv HasTypeVsQ.nil)
 
-    exact .cons (HasTypeCQ.weakenEff (.C_Return (.V_Var rfl (by intro _ _ _ h; cases h))) (Eff.empty_sub _))
-      (.cons hfixed (.cons (HasTypeCQ.weakenEff (.C_Return (.V_Var rfl (by intro _ _ _ h; cases h)))
-        (Eff.empty_sub _)) .nil))
+    exact .direct (.V_Var rfl (by intro _ _ _ h; cases h))
+      (.evaluate hfixed (.direct (.V_Var rfl (by intro _ _ _ h; cases h)) .nil))
 
   exact HasTypeQ.desugar_partialCall (fun _ _ hi => hi) hf hp
     (by simp [mixedHoles, HoleArgs.holeNames, HoleArgs.holeTypes, NamesWF])
@@ -351,13 +354,13 @@ example (p : Program) (B : Builtins) (op : OpPrim)
     (by simp [mixedHoles, HoleArgs.holeNames, HoleArgs.holeTypes, Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.single, Eff.ofAtoms, Eff.norm, Ty.normTys])
 
 private def pipeArgs : Exprs :=
-  .cons (.literal (.integer 7)) (.cons (.literal (.boolean true)) .nil)
+  .cons (.literal (.integer ⟨7, by decide⟩)) (.cons (.literal (.boolean true)) .nil)
 
 /-- パイプの位置 0 と、逆順に明示した残りの二引数を同じ保存の定理から導く。 -/
 example (p : Program) (B : Builtins) (op : OpPrim) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q []
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none
-      (desugarExpr op .other (.pipe (.literal (.integer 5))
+      (desugarExpr op .other (.pipe (.literal (.integer ⟨5, by decide⟩))
         (.call (.local 0) [some "c", some "b"] [2, 1] pipeArgs))) (.base .integer) Eff.empty := by
   have hf : HasTypeQ (p.declarationsFor view) B op Q [] []
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none .other
@@ -372,13 +375,13 @@ example (p : Program) (B : Builtins) (op : OpPrim) :
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none Eff.empty
       (desugarExprs op pipeArgs) (sourceTypes [.base .integer, .base .boolean, .base .integer] [2, 1]) :=
     .cons (.C_Return .V_Const) (.cons (.C_Return .V_Const) .nil)
-  simpa only [union_empty_left Eff.empty rfl] using HasTypeQ.desugar_pipeCall (pos := .other) (lhs := .literal (.integer 5)) (fun _ _ hi => hi) hf hp
+  simpa only [union_empty_left Eff.empty rfl] using HasTypeQ.desugar_pipeCall (pos := .other) (lhs := .literal (.integer ⟨5, by decide⟩)) (fun _ _ hi => hi) hf hp
     (.C_Return .V_Const) (.C_Return (.V_Var rfl (by intro _ _ _ h; cases h))) hm (by trivial) (by trivial)
 
 end CallExamples
 
 /-!
-同じ Δ の子の帰納自体をセル環境で得る。空 Δ の境界だけは、子の導出を既存の
+同じ Δ の子の帰納自体を共有番号の環境で得る。空 Δ の境界だけは、子の導出を既存の
 恒等の番号対応で移す（設計書 01-12「構築器の局所文脈と旧構文の意味」）。
 -/
 -- 宣言を含む七判断の相互帰納の elaboration に余裕を持たせる。
@@ -390,18 +393,18 @@ mutual
       (h : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R pos e a ε)
       (sc : e.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
-      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) R (desugarExpr op pos e) a ε := by
+      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op pos e) a ε Δb.toLocal := by
     have resultWF := Ty.VarsIn.wf _ (HasTypeQ.clean hΔ hwf hsig h sc hΓ hR)
     match h with
     | .E_BuilderOp hr ha =>
         obtain ⟨hm, hclean⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig ha sc.2.2 hΓ hR
-        exact builderOp_desugar_typed hAlign hr hm hclean
-    | .E_Local hi hc => exact .C_Return (.V_Var (fillBuilders.value_lookup hAlign hi) hc)
+        exact builderOp_desugar_typed hr (hΔ _ _ hr) hm hclean
+    | .E_Local hi hc => exact .C_Return (.V_Var hi hc)
     | .E_Const h =>
         have hb := HasTypeQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig h sc.2 (by intro i a hi; simp at hi) hR
         -- 空の環境からは、id の付け替えで任意の使用位置の環境へ移せる。
-        simp only [fillBuilders.empty] at hb
-        have shifted := hb.rename (Δ := fillBuilders Γ Δb) (ξ := id) (by intro i a hi; simp at hi)
+        simp only [BuilderCtx.toLocal_nil] at hb
+        have shifted := hb.rename (Δ := Γ) (ξ := id) (by intro i a hi; simp at hi) Δb.toLocal (LocalRenOk.empty _ _)
         simpa only [desugarExpr, Comp.rename_id] using shifted
     | .E_Fun hd hn hcore ht he hdict hrows _ =>
         obtain ⟨dd, hd', ht', he', hn', hp', hr', hε'⟩ := funDecl_desugared (op := op) hd
@@ -415,32 +418,34 @@ mutual
     | .E_FunDicts (d := d) (ps := ps) (ts := ts) (es := es) hd hn hcore ht he _ hnames hp hds hrows _ =>
         obtain ⟨dd, hd', ht', he', hn', hp', hr', hε'⟩ := funDecl_desugared (op := op) hd
         have hv := (DictEv.HasTypes.toVal (Q := Q) op (DictEv.HasTypes.hide hds)).rename
-          (fillBuilders.renOk hAlign).hide
+          (RenOk.identity Γ).hide
         simp only [Val.renameList_id] at hv
-        have hs := hv.rename (RenOk.shift (binds ps) (hideConts (fillBuilders Γ Δb)))
+        have hs := hv.rename (RenOk.shift (binds ps) (hideConts Γ))
         rw [d.dictTys_substEff ts es] at hs
         rw [desugarExpr, fnTy_eq, ← hp, hnames]
         apply HasTypeCQ.C_Return
         apply HasTypeVQ.V_Lam (by simpa only [NamesWF, hp, List.length_map] using hn) (by simpa only [fnTy_eq, ← hp, hnames] using resultWF)
+        change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
         apply HasTypeCQ.C_App
         · rw [← ht'] at ht; rw [← he'] at he
           simpa only [fnTy_eq, hn', FunDecl.coreNames, hp', List.map_append, hr', hε', hp] using
-            (HasTypeVQ.V_Fun (Γ := binds ps ++ hideConts (fillBuilders Γ Δb)) hd' (by simpa only [hn', hp'] using hcore)
+            (HasTypeVQ.V_Fun (Γ := binds ps ++ hideConts Γ) hd' (by simpa only [hn', hp'] using hcore)
               (by simpa only [ht', he', hp', hr', hε'] using hrows))
         · simpa only [binds_length, hp] using
             hs.append (boundVars_typed (scopedList_clean sc.2.2.2.2))
     | .E_MethName (ps := ps) hd hc hm hn hnames ht he hu hp _ hscope hrows _ =>
         have hdict := (DictEv.HasType.toVal (Q := Q) op (DictEv.HasType.hide hd)).rename
-          (fillBuilders.renOk hAlign).hide
+          (RenOk.identity Γ).hide
         have hdicts := (DictEv.HasTypes.toVal (Q := Q) op (DictEv.HasTypes.hide hu)).rename
-          (fillBuilders.renOk hAlign).hide
+          (RenOk.identity Γ).hide
         simp only [Val.rename_id] at hdict
         simp only [Val.renameList_id] at hdicts
         have hv := HasTypeVQ.shiftMany hdict ps
-        have hus := hdicts.rename (RenOk.shift (binds ps) (hideConts (fillBuilders Γ Δb)))
+        have hus := hdicts.rename (RenOk.shift (binds ps) (hideConts Γ))
         rw [desugarExpr]
         apply HasTypeCQ.C_Return
         apply HasTypeVQ.V_Lam sc.2.2.2.2.1 resultWF
+        change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
         apply HasTypeCQ.C_Meth hv (classDecl_desugared hc) hm hn ht hscope hrows
         have hargs := hus.append (boundVars_typed (scopedList_clean sc.2.2.2.2.2))
         simpa only [binds_length, hp, List.take_append_drop] using hargs
@@ -452,22 +457,23 @@ mutual
         rw [desugarExpr, fnTy_eq, ← hp, hns, he]
         apply HasTypeCQ.C_Return
         exact op_value_typed (op := op) (Q := Q) hd hcore (by simpa only [NamesWF, hp, List.length_map] using hn)
-          ht hpref hnames hp hds (fillBuilders.renOk hAlign) (scopedList_clean sc.2.2.2)
+          ht hpref hnames hp hds (RenOk.identity Γ) (scopedList_clean sc.2.2.2)
           (by simpa only [fnTy_eq, ← hp, hns, he] using resultWF)
     | .E_NullCon hc ht he =>
         apply HasTypeCQ.C_Return
         apply HasTypeVQ.V_Con hc ht
-        simpa [he] using (HasTypeVsQ.nil : HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) [] [])
+        simpa [he] using (HasTypeVsQ.nil : HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C Γ [] [])
     | .E_ConValue hc ht _ hn hp _ =>
         apply HasTypeCQ.C_Return
         apply HasTypeVQ.V_Lam hn resultWF
+        change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
         apply HasTypeCQ.C_Return
         apply HasTypeVQ.V_Con hc ht
         rw [← hp]
         exact boundVars_typed (scopedList_clean sc.2.2)
     | .E_PipeCall hl hf hp hs _ =>
         obtain ⟨hm, hc⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig hs sc.2.2 hΓ hR
-        exact HasTypeQ.desugar_pipeCall (fillBuilders.renOk hAlign) hf hp
+        exact HasTypeQ.desugar_pipeCall (RenOk.identity Γ) hf hp
           (HasTypeQ.desugar hAlign hΔ hwf hsig hl sc.1 hΓ hR)
           (HasTypeQ.desugar hAlign hΔ hwf hsig hf sc.2.1 hΓ hR) hm hc
           (HasTypeQ.clean hΔ hwf hsig hl sc.1 hΓ hR)
@@ -481,7 +487,7 @@ mutual
           (HasTypeQ.desugar hAlign hΔ hwf hsig hl sc.1 hΓ hR)
           (HasTypeQ.clean hΔ hwf hsig hl sc.1 hΓ hR)
     | .E_PipeApply hp hl hf _ =>
-        exact HasTypeQ.desugar_pipeApply hp (fillBuilders.renOk hAlign) hf
+        exact HasTypeQ.desugar_pipeApply hp (RenOk.identity Γ) hf
           (HasTypeQ.desugar hAlign hΔ hwf hsig hl sc.1 hΓ hR)
           (HasTypeQ.desugar hAlign hΔ hwf hsig hf sc.2 hΓ hR)
           (HasTypeQ.clean hΔ hwf hsig hl sc.1 hΓ hR)
@@ -492,18 +498,18 @@ mutual
         obtain ⟨hm, hc⟩ := HasHoleArgsQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig hs
           (by simpa only [hideConts_length] using sc.2.1) hΓ.hide
           (by intro r heq; cases heq; exact hr) []
-        simp only [fillBuilders.empty] at hf' hm
-        have hfFilled := HasTypeCQ.renameId (fillBuilders.renOk hAlign).hide hf'
-        have hmFilled := hm.renameId (RenOk.up_id (binds _) (fillBuilders.renOk hAlign).hide)
-        exact HasTypeQ.desugar_partialCall (fillBuilders.renOk hAlign) hf hp hn hfFilled hmFilled hc hl he resultWF
+        simp only [BuilderCtx.toLocal_nil] at hf' hm
+        have hfFilled := HasTypeCQ.renameId (RenOk.identity Γ).hide hf'
+        have hmFilled := hm.renameId (RenOk.up_id (binds _) (RenOk.identity Γ).hide)
+        exact HasTypeQ.desugar_partialCall (RenOk.identity Γ) hf hp hn hfFilled hmFilled hc hl he resultWF
     | .E_PartialCon _ hd ht _ _ hn hs hl _ =>
         have hr := clean_data_le hl (scopedList_clean sc.1)
         obtain ⟨hm, hc⟩ := HasHoleArgsQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig hs
           (by simpa only [hideConts_length] using sc.2) hΓ.hide
           (by intro r heq; cases heq; exact hr) []
-        simp only [fillBuilders.empty] at hm
+        simp only [BuilderCtx.toLocal_nil] at hm
         exact HasTypeQ.desugar_partialCon hd ht hn
-          (hm.renameId (RenOk.up_id (binds _) (fillBuilders.renOk hAlign).hide)) hc hl resultWF
+          (hm.renameId (RenOk.up_id (binds _) (RenOk.identity Γ).hide)) hc hl resultWF
     | .E_Match _ he hs hex =>
         have he' := HasTypeQ.desugar hAlign hΔ hwf hsig he sc.2.1 hΓ hR
         have ha := HasTypeQ.clean hΔ hwf hsig he sc.2.1 hΓ hR
@@ -525,8 +531,8 @@ mutual
         apply HasTypeCQ.C_Handle_Fail (HasBlockQ.desugar hAlign hΔ hwf hsig hb sc.2.2.1 hΓ hR) he hn
         apply HasFailureClause.one hw ht hc
         apply HasTypeCQ.renameId (RenOk.up_id [none, some (_ : Ty)]
-          ((fillBuilders.renOk hAlign).shiftE 1))
-        simpa only [fillBuilders.empty, List.cons_append, List.nil_append] using HasBlockQ.desugar
+          ((RenOk.identity Γ).shiftE 1))
+        simpa only [StoreTy.hideBuilders_empty, BuilderCtx.toLocal_nil, List.cons_append, List.nil_append] using HasBlockQ.desugar
           (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig hh (by simpa [shiftEnv_length, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using sc.2.2.2) (by
           have hg := (hΓ.shift 1).cons (shift_clean 1 _ (scoped_clean sc.1))
           intro i a hi
@@ -538,6 +544,7 @@ mutual
           exact shift_clean 1 a (hR a ha))
     | .E_Unit => exact .C_Return .V_Const
     | .E_Paren h => simpa only [desugarExpr] using HasTypeQ.desugar hAlign hΔ hwf hsig h sc hΓ hR
+    | .E_Block h => simpa only [desugarExpr] using HasBlockQ.desugar hAlign hΔ hwf hsig h sc hΓ hR
     | .E_Record hc ht hp hs =>
         obtain ⟨hm, hclean⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR
         apply sequence_typed hm hclean
@@ -569,7 +576,7 @@ mutual
         apply typedLet (HasTypeQ.desugar hAlign hΔ hwf hsig hb sc.2.1 hΓ hR)
         apply letChain_typed hm [some (.data cd.data ts)]
         have hvScr : HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C
-            (binds (positions.map t) ++ [some (.data cd.data ts)] ++ fillBuilders Γ Δb)
+            (binds (positions.map t) ++ [some (.data cd.data ts)] ++ Γ)
             (.var args.length) (.data cd.data ts) := by
           apply HasTypeVQ.V_Var _ (by intro _ _ _ he; cases he)
           rw [hl, List.append_assoc, List.getElem?_append_right (by simp [binds_length])]
@@ -580,9 +587,9 @@ mutual
             apply HasTypeCQ.C_Return
             apply HasTypeVQ.V_Con hc ht
             have hv := boundVars_typed (Q := Q) (P := desugarProgram op p) (B := B)
-              (Γ := [some (.data cd.data ts)] ++ fillBuilders Γ Δb) hclean
+              (Γ := [some (.data cd.data ts)] ++ Γ) hclean
             change HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C
-              (binds (positions.map t) ++ ([some (.data cd.data ts)] ++ fillBuilders Γ Δb))
+              (binds (positions.map t) ++ ([some (.data cd.data ts)] ++ Γ))
               (boundVars (positions.map t).length) (positions.map t) at hv
             rw [← hl, ← List.append_assoc] at hv
             exact recordUpdateValues_typed (by simp only [tys, List.length_map]; exact hn)
@@ -596,7 +603,7 @@ mutual
         exact HasTypeQ.desugar_conCall hc ht hm hclean
     | .E_Call hf hp hs _ =>
         obtain ⟨hm, hc⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR
-        exact HasTypeQ.desugar_call (fillBuilders.renOk hAlign) hf hp (HasTypeQ.desugar hAlign hΔ hwf hsig hf sc.1 hΓ hR) hm hc
+        exact HasTypeQ.desugar_call (RenOk.identity Γ) hf hp (HasTypeQ.desugar hAlign hΔ hwf hsig hf sc.1 hΓ hR) hm hc
     | .E_Binary (o := o) (t := t) (ts := ts) (s := sg) _ hop hts hs hn ht he ha hfn hl hr =>
         have hl' := HasTypeQ.desugar hAlign hΔ hwf hsig hl sc.2.1 hΓ hR
         have hr' := HasTypeQ.desugar hAlign hΔ hwf hsig hr sc.2.2 hΓ hR
@@ -638,12 +645,12 @@ mutual
     | .E_And hl hr =>
         have hh := typedIfLet (HasTypeQ.desugar hAlign hΔ hwf hsig hl sc.1 hΓ hR)
           (HasTypeQ.desugar hAlign hΔ hwf hsig hr sc.2 hΓ hR)
-          (HasTypeCQ.C_Return (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C) (Γ := fillBuilders Γ Δb) (R := R)
+          (HasTypeCQ.C_Return (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C) (Γ := Γ) (R := R)
             (HasTypeVQ.V_Const (c := .boolean false)))
         simpa only [desugarExpr, union_empty_right_nested, Comp.rename, Val.rename, Const.type] using hh
     | .E_Or hl hr =>
         have hh := typedIfLet (HasTypeQ.desugar hAlign hΔ hwf hsig hl sc.1 hΓ hR)
-          (HasTypeCQ.C_Return (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C) (Γ := fillBuilders Γ Δb) (R := R)
+          (HasTypeCQ.C_Return (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C) (Γ := Γ) (R := R)
             (HasTypeVQ.V_Const (c := .boolean true)))
           (HasTypeQ.desugar hAlign hΔ hwf hsig hr sc.2 hΓ hR)
         simpa only [desugarExpr, union_empty_left_nested, Comp.rename, Val.rename, Const.type] using hh
@@ -675,24 +682,25 @@ mutual
         apply HasTypeCQ.weakenEff _ (Eff.empty_sub _)
         apply spreadValues_typed _ hv hw
         simpa only [binds_length, hms.length] using
-          (directCallee_typed hd hf hf' (fillBuilders.renOk hAlign)).rename (RenOk.shift (binds _) (fillBuilders Γ Δb))
+          (directCallee_typed hd hf hf' (RenOk.identity Γ)).rename (RenOk.shift (binds _) Γ)
     | .E_Interpolation _ he hf hd hop =>
         obtain ⟨hms, hc⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig he sc.2.1 hΓ hR
         obtain ⟨hfs, _⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig hf sc.2.2 hΓ hR
-        have hh := directHeads_typed (fillBuilders.renOk hAlign) hf hfs hd (converterTypes_fn _)
+        have hh := directHeads_typed (RenOk.identity Γ) hf hfs hd (converterTypes_fn _)
         simp only [desugarExpr]
         apply sequence_typed hms hc
         intro vs hv
         apply HasTypeCQ.weakenEff (δ := ε) _ (Eff.empty_sub _)
         apply interpolate_typed hsig hv
-          (by simpa only [binds_length, hms.length] using hh.rename (RenOk.shift (binds _) (fillBuilders Γ Δb)))
+          (by simpa only [binds_length, hms.length] using hh.rename (RenOk.shift (binds _) Γ))
           .nil
         simpa using hop
     | .E_Lam (ps := ps) hn hex hb =>
         apply HasTypeCQ.C_Return
         apply HasTypeVQ.V_Lam hn resultWF
-        apply HasTypeCQ.renameId (RenOk.up_id (binds ps) (fillBuilders.renOk hAlign).hide)
-        simpa only [fillBuilders.empty, List.cons_append, List.nil_append] using HasBlockQ.desugar
+        change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
+        apply HasTypeCQ.renameId (RenOk.up_id (binds ps) (RenOk.identity Γ).hide)
+        simpa only [StoreTy.hideBuilders_empty, BuilderCtx.toLocal_nil, List.cons_append, List.nil_append] using HasBlockQ.desugar
           (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig hb
           (by simpa [binds_length, hideConts_length] using sc.2.2.2.2.2)
           (hΓ.hide.binds (scopedList_clean sc.2.1)) (by intro r he; cases he; exact scoped_clean sc.2.2.1)
@@ -709,7 +717,7 @@ mutual
     | .E_IfOnly hc hy =>
         have hh := typedIfLet (HasTypeQ.desugar hAlign hΔ hwf hsig hc sc.1 hΓ hR)
           (HasBlockQ.desugar hAlign hΔ hwf hsig hy sc.2 hΓ hR)
-          (HasTypeCQ.C_Return (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C) (Γ := fillBuilders Γ Δb) (R := R)
+          (HasTypeCQ.C_Return (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty) (C := C) (Γ := Γ) (R := R)
             (HasTypeVQ.V_Const (c := .unit)))
         simpa only [desugarExpr, union_empty_right_nested, Comp.rename, Val.rename, Const.type] using hh
     | .E_ReturnTail h => simpa only [desugarExpr] using HasTypeQ.desugar hAlign hΔ hwf hsig h sc.2 hΓ hR
@@ -730,23 +738,23 @@ mutual
         have hc := HasTypeQ.clean hΔ hwf hsig he se hΓ hR
         have he' := HasTypeQ.desugar hAlign hΔ hwf hsig he se hΓ hR
         have hm' : ∀ m, message = some m →
-            HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts (fillBuilders Γ Δb)) none
-              (desugarExpr op .other m) (.base .string) Eff.empty := by
+            HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none
+              (desugarExpr op .other m) (.base .string) Eff.empty Δb.toLocal := by
           intro m hh
-          simpa only [fillBuilders_hideConts] using HasTypeQ.desugar
+          simpa only [BuilderCtx.toLocal_values] using HasTypeQ.desugar
             (BuilderCtx.aligned_hideConts hAlign) hΔ hwf hsig (hm m hh)
             (by cases hh; simpa only [hideConts_length] using sc.2.2.2) hΓ.hide (by simp)
-        exact tryResultDie_typed hsig hwf hco hce hno hne hao hae hdata he' hc hex (fillBuilders.renOk hAlign) hd hx hm'
+        exact tryResultDie_typed hsig hwf hco hce hno hne hao hae hdata he' hc hex (RenOk.identity Γ) hd hx hm'
     | .E_TryOptionDie (message := message)
         hcs hcn hns hnn has han hdata he hex hx hm =>
         have se := by cases message <;> exact sc.2.1
         have hc := HasTypeQ.clean hΔ hwf hsig he se hΓ hR
         have he' := HasTypeQ.desugar hAlign hΔ hwf hsig he se hΓ hR
         have hm' : ∀ m, message = some m →
-            HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts (fillBuilders Γ Δb)) none
-              (desugarExpr op .other m) (.base .string) Eff.empty := by
+            HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none
+              (desugarExpr op .other m) (.base .string) Eff.empty Δb.toLocal := by
           intro m hh
-          simpa only [fillBuilders_hideConts] using HasTypeQ.desugar
+          simpa only [BuilderCtx.toLocal_values] using HasTypeQ.desugar
             (BuilderCtx.aligned_hideConts hAlign) hΔ hwf hsig (hm m hh)
             (by cases hh; simpa only [hideConts_length] using sc.2.2) hΓ.hide (by simp)
         exact tryOptionDie_typed hsig hwf hcs hcn hns hnn has han hdata he' hc hex hx hm'
@@ -755,14 +763,14 @@ mutual
           (HasTypeQ.desugar hAlign hΔ hwf hsig he sc.1 hΓ hR) (eff_left _ _))
         apply HasTypeCQ.C_Use (.V_Var rfl (clean_notCont (n := C.length) trivial)) hr
         · apply HasTypeCQ.weakenEff _ ((eff_left _ _).trans (eff_right _ _))
-          simpa only [fillBuilders.under_value] using
+          simpa only [BuilderCtx.toLocal_value] using
             (HasBlockQ.desugar (BuilderCtx.aligned_value hAlign _) (BuilderCtx.clean_value hΔ)
               hwf hsig hb sc.2 (hΓ.cons trivial) hR)
         · exact (Eff.mem_union _ _ _).mpr (Or.inr ((Eff.mem_union _ _ _).mpr (Or.inr ((Eff.mem_single _ _).mpr rfl))))
     | .E_Lazy hb =>
         apply HasTypeCQ.C_Lazy
-        apply HasTypeCQ.renameId (fillBuilders.renOk hAlign).hide
-        simpa only [fillBuilders.empty, List.cons_append, List.nil_append] using HasBlockQ.desugar
+        apply HasTypeCQ.renameId (RenOk.identity Γ).hide
+        simpa only [StoreTy.hideBuilders_empty, BuilderCtx.toLocal_nil, List.cons_append, List.nil_append] using HasBlockQ.desugar
           (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig hb
           (by simpa only [Expr.Scoped, hideConts_length] using sc) hΓ.hide (by simp)
     | .E_Handle hb he hc =>
@@ -772,7 +780,7 @@ mutual
             (HasBlockQ.clean hΔ hwf hsig hb sc.1 hΓ hR)
     | .E_Resume hk he =>
         apply HasTypeCQ.C_Let (HasTypeQ.desugar hAlign hΔ hwf hsig he sc.2 hΓ hR)
-        exact .C_Resume (by simpa only [List.getElem?_cons_succ] using fillBuilders.value_lookup hAlign hk)
+        exact .C_Resume (by simpa only [List.getElem?_cons_succ] using hk)
           (.V_Var rfl (clean_notCont (hΓ.cont hk).1))
     | .E_Sub h hl hs _ => exact .C_Sub (HasTypeQ.desugar hAlign hΔ hwf hsig h sc hΓ hR) hl hs resultWF
 
@@ -782,7 +790,7 @@ mutual
       (h : HasTypesQ (p.declarationsFor view) B op Q Δb C Γ R es as ε)
       (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
-      CompTypesQ (desugarProgram op p) B Q C (fillBuilders Γ Δb) R ε (desugarExprs op es) as ∧
+      CompTypesQ (desugarProgram op p) B Q C Γ R ε (desugarExprs op es) as Δb.toLocal ∧
         Ty.VarsInList C.length (fun _ => True) as := by
     match h with
     | .nil => exact ⟨.nil, trivial⟩
@@ -797,7 +805,7 @@ mutual
       (h : HasEachQ (p.declarationsFor view) B op Q Δb C Γ R es a ε)
       (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
-      CompTypesQ (desugarProgram op p) B Q C (fillBuilders Γ Δb) R ε (desugarExprs op es) (List.replicate es.length a) := by
+      CompTypesQ (desugarProgram op p) B Q C Γ R ε (desugarExprs op es) (List.replicate es.length a) Δb.toLocal := by
     match h with
     | .nil => exact .nil
     | .cons h hs =>
@@ -813,21 +821,21 @@ mutual
       (h : HasHoleArgsQ (p.declarationsFor view) B op Q Δb C Γ R args as ε)
       (sc : args.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) (prior : List Ty) :
-      CompTypesQ (desugarProgram op p) B Q C (binds (prior ++ args.holeTypes) ++ fillBuilders Γ Δb) R ε
-        (desugarHoleArgs op (prior ++ args.holeTypes).length args) as ∧
+      ArgTypesQ (desugarProgram op p) B Q C (binds (prior ++ args.holeTypes) ++ Γ) R ε
+        (LocalCtx.extend (prior ++ args.holeTypes).length Δb.toLocal) (desugarHoleArgs op (prior ++ args.holeTypes).length args) as ∧
         Ty.VarsInList C.length (fun _ => True) as := by
     match h with
     | .nil => exact ⟨.nil, trivial⟩
     | .expr (args := rest) he hs =>
         obtain ⟨hms, hc⟩ := HasHoleArgsQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR prior
         have he' := HasTypeQ.desugar hAlign hΔ hwf hsig he sc.1 hΓ hR
-        have shifted := he'.rename (RenOk.shift (binds (prior ++ rest.holeTypes)) (fillBuilders Γ Δb))
-        exact ⟨.cons (HasTypeCQ.weakenEff (by simpa only [binds_length, HoleArgs.holeTypes] using shifted)
+        have shifted := he'.rename (RenOk.shift (binds (prior ++ rest.holeTypes)) Γ) _ (LocalRenOk.shift Δb.toLocal (binds (prior ++ rest.holeTypes)).length)
+        exact ⟨.evaluate (HasTypeCQ.weakenEff (by simpa only [binds_length, HoleArgs.holeTypes] using shifted)
           (eff_left _ _)) (hms.weaken (eff_right _ _)), HasTypeQ.clean hΔ hwf hsig he sc.1 hΓ hR, hc⟩
     | .hole (t := t) (args := rest) hl ha hs =>
         obtain ⟨hms, hc⟩ := HasHoleArgsQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR (prior ++ [t])
-        refine ⟨.cons (HasTypeCQ.weakenEff (.C_Return (.V_Sub (.V_Var ?_
-          (clean_notCont (scoped_clean sc.1))) hl (Ty.VarsIn.wf _ ha))) (Eff.empty_sub _))
+        refine ⟨.direct (.V_Sub (.V_Var ?_
+          (clean_notCont (scoped_clean sc.1))) hl (Ty.VarsIn.wf _ ha))
           (by simpa only [HoleArgs.holeTypes, List.append_assoc, List.singleton_append] using hms),
           ha, hc⟩
         simp only [HoleArgs.holeTypes, binds_append, binds_cons, List.append_assoc, List.singleton_append]
@@ -841,15 +849,15 @@ mutual
       (h : HasArmsQ (p.declarationsFor view) B op Q Δb C Γ R pos arms a b ε)
       (sc : arms.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) (ha : TyOK C.length a) :
-      HasTypeArmsQ (desugarProgram op p) B StoreTy.empty Q C (some a :: fillBuilders Γ Δb) R
-        (desugarArms op pos arms) a b ε := by
+      HasTypeArmsQ (desugarProgram op p) B StoreTy.empty Q C (some a :: Γ) R
+        (desugarArms op pos arms) a b ε (LocalCtx.extend 1 Δb.toLocal) := by
     match h with
     | .nil hw => exact .nil hw
     | .plain _ hp hb hs =>
         have hδ := AltsTy.clean hwf.2.2.1 hp ha
         have hb' := HasBlockQ.desugar (BuilderCtx.aligned_binds hAlign _) (BuilderCtx.all_values hΔ _) hwf hsig hb
           (by simpa [binds_length, hp.2.1] using sc.1) (hΓ.binds hδ) hR
-        simp only [fillBuilders.under_binds] at hb'
+        simp only [BuilderCtx.toLocal_values] at hb'
         have hp' := AltsTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp
         exact .plain hp'
           (HasTypeCQ.weakenEff (HasTypeCQ.shiftAlts hp' hb') (eff_left _ _))
@@ -861,9 +869,9 @@ mutual
           (hΓ.binds hδ).hide (by simp)
         have hb' := HasBlockQ.desugar (BuilderCtx.aligned_binds hAlign _) (BuilderCtx.all_values hΔ _) hwf hsig hb
           (by simpa [binds_length, hp.2.1] using sc.2.1) (hΓ.binds hδ) hR
-        simp only [fillBuilders.under_binds] at hb'
+        simp only [BuilderCtx.toLocal_values] at hb'
         have hp' := AltsTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp
-        simp only [fillBuilders_hideConts, fillBuilders.under_binds] at hg'
+        simp only [BuilderCtx.toLocal_values] at hg'
         exact .guarded hp' (HasTypeCQ.shiftGuard hp' hg')
           (HasTypeCQ.weakenEff (HasTypeCQ.shiftAlts hp' hb') (eff_left _ _))
           (HasTypeArmsQ.weakenEff (HasArmsQ.desugar hAlign hΔ hwf hsig hs sc.2.2 hΓ hR ha) (eff_right _ _))
@@ -875,8 +883,8 @@ mutual
       (h : HasClausesQ (p.declarationsFor view) B op Q Δb C Γ R cs t ε)
       (sc : cs.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) (ht : TyOK C.length t) :
-      HasTypeClausesQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) R
-        (desugarClauses op cs) t ε := by
+      HasTypeClausesQ (desugarProgram op p) B StoreTy.empty Q C Γ R
+        (desugarClauses op cs) t ε Δb.toLocal := by
     match h with
     | .nil => exact .nil
     | .cons (ntys := ntys) (sg := sg) hop hnames hn hntys hw hb hs =>
@@ -893,8 +901,8 @@ mutual
         have hΓ' : EnvClean (sg.tparams ++ C).length (shiftEnv ntys Γ) := by
           rw [hlen]; exact hΓ.shift ntys
         apply HasTypeCQ.renameId (RenOk.up_id (some (.cont sg.ret (t.shift ntys 0) (Eff.shift ntys 0 ε)) :: binds sg.params)
-          ((fillBuilders.renOk hAlign).shiftE ntys))
-        simpa only [fillBuilders.empty, List.cons_append, List.nil_append] using HasBlockQ.desugar
+          ((RenOk.identity Γ).shiftE ntys))
+        simpa only [StoreTy.hideBuilders_empty, BuilderCtx.toLocal_nil, List.cons_append, List.nil_append] using HasBlockQ.desugar
           (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig hb
           (by simpa only [hlen, List.length_cons, List.length_append, binds_length, shiftEnv_length, ← hn.2,
             Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using sc.1)
@@ -909,7 +917,7 @@ mutual
       (h : HasBlockQ (p.declarationsFor view) B op Q Δb C Γ R pos body a ε)
       (sc : body.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
-      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (fillBuilders Γ Δb) R (desugarBlock op pos body) a ε := by
+      HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarBlock op pos body) a ε Δb.toLocal := by
     have resultWF := Ty.VarsIn.wf _ (HasBlockQ.clean hΔ hwf hsig h sc hΓ hR)
     match h with
     | .B_LastPat _ _ hp hex he =>
@@ -926,7 +934,7 @@ mutual
         have scb : Block.Scoped C.length pe (binds δ ++ Γ).length rest :=
           by simpa [binds_length, hp.length_eq, Pattern.binders] using sc.2.2
         have hb' := HasBlockQ.desugar (BuilderCtx.aligned_binds hAlign _) (BuilderCtx.all_values hΔ _) hwf hsig hb scb (hΓ.binds hδ) hR
-        simp only [fillBuilders.under_binds] at hb'
+        simp only [BuilderCtx.toLocal_values] at hb'
         have hc := HasBlockQ.clean (BuilderCtx.all_values hΔ _) hwf hsig hb scb (hΓ.binds hδ) hR
         apply typedLet (HasTypeQ.desugar hAlign hΔ hwf hsig he sc.2.1 hΓ hR)
         apply HasTypeCQ.C_Match (.V_Var rfl (clean_notCont ha))
@@ -934,14 +942,13 @@ mutual
             (HasTypeCQ.shiftPattern (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp) hb') (.nil (Ty.VarsIn.wf _ hc))
         · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
             Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
-    | .B_BuilderBind hk hc _ hr hb =>
+    | .B_BuilderBind hc _ hb =>
         have ih := HasBlockQ.desugar (BuilderCtx.aligned_builder hAlign _) (BuilderCtx.clean_builder hΔ hc)
-          hwf hsig hb sc.2.2
+          hwf hsig hb sc.2
           (by intro i t hi; cases i with
               | zero => simp at hi
               | succ i => exact hΓ i t hi) hR
-        cases hk
-        exact builderBlock_desugar_typed hr hc ih
+        exact builderBlock_desugar_typed hc ih
     | .B_Empty =>
         exact .C_Return .V_Const
     | .B_Last h =>
@@ -954,7 +961,7 @@ mutual
           (HasTypeCQ.weakenEff (.C_Return .V_Const) (Eff.empty_sub _))
     | .B_Bind h hb =>
         exact typedLet (HasTypeQ.desugar hAlign hΔ hwf hsig h sc.2.1 hΓ hR)
-          (by simpa only [fillBuilders.under_value] using
+          (by simpa only [BuilderCtx.toLocal_value] using
             HasBlockQ.desugar (BuilderCtx.aligned_value hAlign _) (BuilderCtx.clean_value hΔ) hwf hsig hb sc.2.2 (hΓ.cons (scoped_clean sc.1)) hR)
     | .B_Discard h hb =>
         exact typedLet (HasTypeQ.desugar hAlign hΔ hwf hsig h sc.1 hΓ hR)
@@ -974,7 +981,7 @@ theorem desugar (hwf : p.WellFormed)
     (sc : e.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op pos e) a ε := by
-  simpa only [fillBuilders.empty] using
+  simpa only [BuilderCtx.toLocal_nil] using
     HasTypeQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig h sc hΓ hR
 end HasType
 namespace HasBlock
@@ -985,7 +992,7 @@ theorem desugar (hwf : p.WellFormed)
     (sc : body.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarBlock op pos body) a ε := by
-  simpa only [fillBuilders.empty] using
+  simpa only [BuilderCtx.toLocal_nil] using
     HasBlockQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _) hwf hsig h sc hΓ hR
 end HasBlock
 

@@ -17,12 +17,14 @@ use std::rc::Rc;
 struct Env {
     vars: Vec<Option<Value>>,
     impl_dicts: Rc<Values>,
+    builders: HashMap<BuilderId, usize>,
 }
 impl Env {
     fn new(count: u32) -> Result<Self, Stop> {
         Ok(Self {
             vars: vec![None; usize::try_from(count).map_err(|_| fault("variable count overflow"))?],
             impl_dicts: Rc::new(Values { items: vec![] }),
+            builders: HashMap::new(),
         })
     }
     fn get(&self, id: VarId) -> Result<Value, Stop> {
@@ -155,6 +157,7 @@ pub(super) struct Machine<'p> {
     index: Index<'p>,
     stack: Vec<Frame<'p>>,
     store: Vec<Store<'p>>,
+    builders: Vec<super::builders::Contents>,
     constants: HashMap<BindingId, Value>,
     next_constant: usize,
     pub(super) bridge: BuiltinBridge,
@@ -170,6 +173,7 @@ impl<'p> Machine<'p> {
             index: Index::new(program)?,
             stack: vec![],
             store: vec![],
+            builders: vec![],
             constants: HashMap::new(),
             next_constant: 0,
             bridge: BuiltinBridge::new(),
@@ -358,6 +362,7 @@ impl<'p> Machine<'p> {
                         .ok_or_else(|| fault("super projection out of range"))?;
                     let env = Env {
                         vars: vec![],
+                        builders: HashMap::new(),
                         impl_dicts: Rc::clone(args),
                     };
                     current = self.dict(projection, &env)?;
@@ -456,7 +461,29 @@ impl<'p> Machine<'p> {
     }
     fn step(&mut self, state: State<'p>, io: &mut dyn IoServices) -> Result<State<'p>, Stop> {
         match state {
-            State::Eval(comp, env) => match &comp.kind {
+            State::Eval(comp, mut env) => match &comp.kind {
+                CompKind::BuilderLet { id, kind, body } => {
+                    let location = self.builders.len();
+                    self.builders.push(super::builders::Contents::new(kind));
+                    env.builders.insert(*id, location);
+                    Ok(State::Eval(body, env))
+                }
+                CompKind::BuilderOp { id, kind, op, args } => {
+                    let location = env
+                        .builders
+                        .get(id)
+                        .copied()
+                        .ok_or_else(|| fault("unbound reference builder"))?;
+                    let args = args
+                        .iter()
+                        .map(|v| self.value(v, &env))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    let contents = self
+                        .builders
+                        .get_mut(location)
+                        .ok_or_else(|| fault("reference builder store missing"))?;
+                    Ok(State::Return(contents.apply(kind, *op, args)?))
+                }
                 CompKind::Return(v) => Ok(State::Return(self.value(v, &env)?)),
                 CompKind::Escape(v) => Ok(State::Escape(self.value(v, &env)?)),
                 CompKind::Let { var, bound, body } => {

@@ -1,0 +1,23 @@
+import Benitoite.StringBuilder
+function guarded(x: Integer) -> String
+  bind b: StringBuilder <- StringBuilder.new()
+  bind _ <- match x with
+    case 0..2, 1..3 if block
+      StringBuilder.append(builder: b, text: "g")
+      false
+    end block -> ()
+    case 0..3 if block
+      StringBuilder.append(builder: b, text: "h")
+      x = 1
+    end block -> ()
+    case _ if block
+      StringBuilder.append(builder: b, text: "i")
+      true
+    end block -> ()
+    case _ -> StringBuilder.append(builder: b, text: "wrong")
+  end match
+  return StringBuilder.copy(b)
+end function
+function main() -> Result[Unit, String]
+  return Result.Error(guarded(1) + "/" + guarded(2) + "/" + guarded(4))
+end function

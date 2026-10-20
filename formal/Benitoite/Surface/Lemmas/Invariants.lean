@@ -290,7 +290,7 @@ mutual
       (hR : ∀ r, R = some r → TyOK C.length r) : TyOK C.length a := by
     match h with
     | .E_BuilderOp (op := o) hr _ =>
-        have hc := hΔ _ _ hr.1
+        have hc := hΔ _ _ hr
         cases o <;> first | exact hc | trivial
     | .E_Local hi hc => exact hΓ.value hi hc
     | .E_Const _ => exact scoped_clean sc.1
@@ -363,6 +363,7 @@ mutual
     | .E_HandleFail _ _ _ _ _ _ _ => exact scoped_clean sc.2.1
     | .E_Unit => trivial
     | .E_Paren h => exact HasTypeQ.clean hΔ hwf hsig h sc hΓ hR
+    | .E_Block h => exact HasBlockQ.clean hΔ hwf hsig h sc hΓ hR
     | .E_ConCall _ _ _ => exact scopedList_clean sc.1
     | .E_Record _ _ _ _ => exact scopedList_clean sc.1
     | .E_RecordUpdate _ _ _ _ _ _ _ _ _ => exact scopedList_clean sc.1
@@ -419,8 +420,8 @@ mutual
         exact HasBlockQ.clean (BuilderCtx.all_values hΔ _) hwf hsig hb
           (by simpa [binds_length, hp.length_eq, Pattern.binders] using sc.2.2)
           (hΓ.binds hδ) hR
-    | .B_BuilderBind _ hc _ _ hb =>
-        exact HasBlockQ.clean (BuilderCtx.clean_builder hΔ hc) hwf hsig hb sc.2.2
+    | .B_BuilderBind hc _ hb =>
+        exact HasBlockQ.clean (BuilderCtx.clean_builder hΔ hc) hwf hsig hb sc.2
           (by intro i t hi; cases i with
               | zero => simp at hi
               | succ i => exact hΓ i t hi) hR

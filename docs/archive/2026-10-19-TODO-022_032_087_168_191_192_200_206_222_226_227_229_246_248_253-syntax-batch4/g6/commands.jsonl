@@ -1,0 +1,5 @@
+{"name": "dry-run", "command": ["scripts/check.sh", "--level", "work", "--base", "b72e4bf4a2f23b26b2c96612bfa2b7f3e9f05fa7", "--only", "fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,python_syntax,migrate_selftests,policy_selftest", "--test", "skill_docs", "--dry-run"], "exit": 0, "seconds": 0.02}
+{"name": "work", "command": ["scripts/check.sh", "--level", "work", "--base", "b72e4bf4a2f23b26b2c96612bfa2b7f3e9f05fa7", "--only", "fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,python_syntax,migrate_selftests,policy_selftest", "--test", "skill_docs"], "exit": 0, "seconds": 129.123}
+{"name": "clippy", "command": ["cargo", "clippy", "-p", "benitoite", "--all-targets", "--no-default-features", "--features", "gc-mark-sweep"], "exit": 0, "seconds": 5.555}
+{"name": "examples", "command": ["cargo", "check", "-p", "benitoite", "--examples"], "exit": 0, "seconds": 9.737}
+{"name": "diff-check", "command": ["git", "diff", "--check"], "exit": 0, "seconds": 0.02}

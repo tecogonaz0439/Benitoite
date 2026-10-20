@@ -543,3 +543,136 @@ end function
         false,
     );
 }
+
+// 関門: Logの既定書式・水準・属性順は実IOの入口で守る。各層の私有関数は呼ばない。
+#[test]
+fn log_default_output_is_ordered_escaped_and_filtered_in_both_modes() {
+    let source = r#"
+function main() -> Unit uses Log, Console.Write
+ bind location <- SourceLocation.Location(file: "app/あ\"\n.bnt", line: 12, column: 3)
+ Console.writeError("before\n")
+ Log.debug(message: "hidden", attributes: [], location: location)
+ Console.writeLine("${Log.enabled(Log.Level.Debug)},${Log.enabled(Log.Level.Info)},${Log.enabled(Log.Level.Warn)},${Log.enabled(Log.Level.Error)}")
+ Log.info(message: "done\n\"\\\t\u{0}", attributes: [
+   Log.attribute(key: "dup", value: "a\nb"),
+   Log.attribute(key: "dup", value: true),
+   Log.attribute(key: "i", value: -9223372036854775808),
+   Log.attribute(key: "u", value: 18446744073709551615u64),
+   Log.attribute(key: "f", value: 1.25),
+   Log.attribute(key: "f", value: 0.0 / 0.0),
+   Log.attribute(key: "f", value: 1.0 / 0.0),
+   Log.attribute(key: "f", value: -1.0 / 0.0),
+   Log.attribute(key: "key\"\r", value: false)], location: location)
+ Log.warn(message: "warn", attributes: [], location: location)
+ Log.error(message: "error", attributes: [], location: location)
+ Console.writeError("after\n")
+end function
+"#;
+    let expected = concat!(
+        "before\n",
+        "level=INFO source=\"app/あ\\\"\\n.bnt:12:3\" message=\"done\\n\\\"\\\\\\t\\u0000\"",
+        " attr.\"dup\"=\"a\\nb\" attr.\"dup\"=true attr.\"i\"=-9223372036854775808",
+        " attr.\"u\"=18446744073709551615 attr.\"f\"=1.25 attr.\"f\"=nan attr.\"f\"=inf attr.\"f\"=-inf attr.\"key\\\"\\r\"=false\n",
+        "level=WARN source=\"app/あ\\\"\\n.bnt:12:3\" message=\"warn\"\n",
+        "level=ERROR source=\"app/あ\\\"\\n.bnt:12:3\" message=\"error\"\n",
+        "after\n"
+    );
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let actual = observe(source, mode, Order::Real, b"", false);
+        assert_eq!(actual.end, EndKind::Returned, "{actual:?}");
+        assert_eq!(actual.exit_code, 0);
+        assert_eq!(actual.stdout, b"false,true,true,true\n");
+        assert_eq!(actual.stderr, expected.as_bytes());
+        assert!(actual.reports.is_empty(), "{actual:?}");
+    }
+}
+
+// 関門: 捕捉の一回性、節からの外側への送り直し、sinkの列順とenabledの論理和。
+#[test]
+fn log_standard_handlers_preserve_order_attributes_and_outer_effects() {
+    let source = r#"
+function event(level: Log.Level) -> Unit uses Log
+ Log.emit(record: Log.Record(level: level, message: "event", attributes: [Log.attribute(key: "dup", value: 2)], location: SourceLocation.Location(file: "app", line: 7, column: 4)))
+end function
+function main() -> Unit uses Log, Console.Write
+ handle event(Log.Level.Error) with
+  case Log.emit(record) -> resume(())
+  case Log.enabled(level) -> resume(false)
+ end handle
+ Log.withAttributes(attributes: [Log.attribute(key: "dup", value: 1)], body: lambda()
+   event(Log.Level.Info)
+   Console.writeLine("forward:${Log.enabled(Log.Level.Debug)}")
+ end lambda)
+ Log.withTextLogger(minimum: Log.Level.Debug, body: lambda()
+   event(Log.Level.Debug)
+   Console.writeLine("text:${Log.enabled(Log.Level.Debug)}")
+ end lambda)
+ Log.withTextLogger(minimum: Log.Level.Error, body: lambda()
+   event(Log.Level.Warn)
+   event(Log.Level.Error)
+   Console.writeLine("text:${Log.enabled(Log.Level.Info)},${Log.enabled(Log.Level.Error)}")
+ end lambda)
+ Log.withSinks(sinks: [Pair(Log.Level.Debug, lambda(record: Log.Record)
+   Console.writeLine("A:${Log.Record.message(record)}")
+ end lambda), Pair(Log.Level.Error, lambda(record: Log.Record)
+   Console.writeLine("B:${Log.Record.message(record)}")
+ end lambda)], body: lambda()
+   Console.writeLine("sinks:${Log.enabled(Log.Level.Info)}")
+   event(Log.Level.Info)
+   event(Log.Level.Error)
+ end lambda)
+ Log.withSinks(sinks: [], body: lambda()
+   Console.writeLine("empty:${Log.enabled(Log.Level.Error)}")
+   event(Log.Level.Error)
+ end lambda)
+end function
+"#;
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let actual = observe(source, mode, Order::Real, b"", false);
+        assert_eq!(actual.end, EndKind::Returned, "{actual:?}");
+        assert_eq!(actual.exit_code, 0);
+        assert_eq!(actual.stdout, b"forward:false\ntext:true\ntext:false,true\nsinks:true\nA:event\nA:event\nB:event\nempty:false\n");
+        assert_eq!(
+            actual.stderr,
+            concat!(
+                "level=INFO source=\"app:7:4\" message=\"event\" attr.\"dup\"=1 attr.\"dup\"=2\n",
+                "level=DEBUG source=\"app:7:4\" message=\"event\" attr.\"dup\"=2\n",
+                "level=ERROR source=\"app:7:4\" message=\"event\" attr.\"dup\"=2\n"
+            )
+            .as_bytes()
+        );
+        assert!(actual.reports.is_empty(), "{actual:?}");
+    }
+}
+
+// 関門: sinkがFailを送出したら後続を呼ばず、Logを処理した外側にFailが残る。
+#[test]
+fn log_sink_failure_stops_before_the_next_sink() {
+    let source = r#"
+import Benitoite.Unofficial.Failure
+function main() -> Unit uses Console.Write
+ bind result: Result[Unit, String] <- Failure.toResult(body: lambda()
+   Log.withSinks(sinks: [Pair(Log.Level.Debug, lambda(record: Log.Record)
+     Console.writeLine("first")
+     Failure.raise(error: "sink failed")
+   end lambda), Pair(Log.Level.Debug, lambda(record: Log.Record)
+     Console.writeLine("wrong")
+   end lambda)], body: lambda()
+     Log.info(message: "event", attributes: [], location: SourceLocation.here())
+     Console.writeLine("wrong continuation")
+   end lambda)
+ end lambda)
+ Console.writeLine(match result with
+   case Result.Error(error) -> error
+   case Result.Ok(_) -> "wrong result"
+ end match)
+end function
+"#;
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let actual = observe(source, mode, Order::Real, b"", false);
+        assert_eq!(actual.end, EndKind::Returned, "{actual:?}");
+        assert_eq!(actual.stdout, b"first\nsink failed\n");
+        assert!(actual.stderr.is_empty(), "{actual:?}");
+        assert!(actual.reports.is_empty(), "{actual:?}");
+    }
+}

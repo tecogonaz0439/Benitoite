@@ -1,0 +1,120 @@
+{
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "76ed2d5ede197d112284b753fcf67d2ea21e40bb",
+      "--only",
+      "fmt,lint_default,lib_default,tests_related,source_rules",
+      "--test",
+      "golden",
+      "--test",
+      "random_programs"
+    ],
+    "exit": 1,
+    "seconds": 363.666
+  },
+  "stack-default": {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--lib",
+      "stages_fit_the_measured_stack_",
+      "--",
+      "--include-ignored"
+    ],
+    "exit": 0,
+    "seconds": 316.681
+  },
+  "stack-heap": {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify",
+      "--lib",
+      "stages_fit_the_measured_stack_",
+      "--",
+      "--include-ignored"
+    ],
+    "exit": 0,
+    "seconds": 187.216
+  },
+  "clippy-all-targets": {
+    "command": [
+      "cargo",
+      "clippy",
+      "--all-targets"
+    ],
+    "exit": 0,
+    "seconds": 26.719
+  },
+  "source-rules-dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "76ed2d5ede197d112284b753fcf67d2ea21e40bb",
+      "--only",
+      "source_rules",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "seconds": 0.019
+  },
+  "source-rules": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "76ed2d5ede197d112284b753fcf67d2ea21e40bb",
+      "--only",
+      "source_rules"
+    ],
+    "exit": 0,
+    "seconds": 0.167
+  },
+  "random-differential-retry": {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "random_programs",
+      "random_differential",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "seconds": 58.149
+  },
+  "work-dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "76ed2d5ede197d112284b753fcf67d2ea21e40bb",
+      "--only",
+      "fmt,lint_default,lib_default,tests_related,source_rules",
+      "--test",
+      "golden",
+      "--test",
+      "random_programs",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "seconds": 0.028
+  }
+}

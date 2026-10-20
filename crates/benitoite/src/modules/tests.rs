@@ -32,8 +32,9 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             ("0.0.6", Some(DiagCode::E0908)),
             ("0.0.7", Some(DiagCode::E0908)),
             ("0.0.8", Some(DiagCode::E0908)),
-            ("0.0.9", None),
-            ("0.0.10", Some(DiagCode::E0907)),
+            ("0.0.9", Some(DiagCode::E0908)),
+            ("0.0.10", None),
+            ("0.0.11", Some(DiagCode::E0907)),
         ] {
             let header = format!("language \"{version}\"\n");
             let entry_source = format!("{header}{MAIN}");
@@ -67,6 +68,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     format!(
                         "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
                         match version {
+                            "0.0.9" => "0.0.10",
                             "0.0.8" => "0.0.9",
                             "0.0.7" => "0.0.8",
                             "0.0.6" => "0.0.7",
@@ -76,6 +78,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     )
                 );
                 let first = match version {
+                    "0.0.9" => 5,
                     "0.0.8" => 4,
                     "0.0.7" => 3,
                     "0.0.6" => 2,
@@ -88,6 +91,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     "0.0.7: Command.environment rejects names starting with DYLD_ or LD_ (ASCII case-insensitive), including build-tool variables such as LD_RUN_PATH",
                     "0.0.8: Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable",
                     "0.0.9: direct Regex.compile calls reject invalid constant sources with E0457 or E0458; direct Scope checks reject invalid known arguments with E0459 through E0462",
+                    "0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable",
                 ];
                 let helps = [
                     "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types",
@@ -95,6 +99,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     "review explicit settings of DYLD_ and LD_ variables, including LD_RUN_PATH used by build tools; run and runAttached return IOErrorKind.InvalidInput before starting a child; inherited variables are unchanged; update the language declaration to the current version after reviewing the script, update dependency hashes, and see CHANGELOG.md for migration details",
                     "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md",
                     "to test Result.Error, pass the pattern to a normal function whose parameters are used by Regex.compile or Scope checks; review constant patterns, language declarations and dependency hashes; see the 0.0.9 section of CHANGELOG.md",
+                    "rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md",
                 ];
                 assert_eq!(diagnostic.notes, notes[first..]);
                 assert_eq!(diagnostic.helps.len(), helps.len() - first);
@@ -105,7 +110,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             } else {
                 assert_eq!(
                     diagnostic.message,
-                    "this file needs Benitoite 0.0.10 or later, but this is Benitoite 0.0.9"
+                    "this file needs Benitoite 0.0.11 or later, but this is Benitoite 0.0.10"
                 );
                 assert!(diagnostic.notes.is_empty());
                 assert!(diagnostic.helps.is_empty());
@@ -213,6 +218,8 @@ fn prelude_order_kinds_and_clock_dependency() {
         "UnsignedInteger",
         "Float32",
         "Float64",
+        "SourceLocation",
+        "Log",
     ];
     for (index, name) in expected.iter().enumerate() {
         let module = &output.modules.modules[index + 1];
@@ -245,7 +252,16 @@ fn prelude_order_kinds_and_clock_dependency() {
             .iter()
             .any(|edge| edge.target == Some(time.id))
     );
-    assert_eq!(output.modules.modules.len(), expected.len() + 3);
+    let console = &output.modules.modules[expected.len() + 2];
+    assert_eq!(console.name.dotted(), "Benitoite.IO.Console");
+    assert_eq!(console.kind, ModuleKind::Stdlib);
+    let log = output.modules.find(&module_path("Benitoite.Log")).unwrap();
+    assert!(
+        log.imports
+            .iter()
+            .any(|edge| edge.target == Some(console.id))
+    );
+    assert_eq!(output.modules.modules.len(), expected.len() + 4);
     assert!(ids.node_count() > output.asts.len() as u32);
     assert!(
         output
@@ -890,7 +906,7 @@ fn root_settings_do_not_come_from_parent_directories() {
 #[test]
 fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
     for config_name in ["package.bnt", "Package.bnt"] {
-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.9\"\n")]);
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.10\"\n")]);
         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
         assert_aligned(&output);
         if config_name == "package.bnt" {
@@ -910,7 +926,7 @@ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
 
 #[test]
 fn config_cannot_be_a_starting_file() {
-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.9\"\n")]);
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.10\"\n")]);
     let entry = EntrySpec {
         path: "/root/package.bnt".into(),
         display_name: "package.bnt".into(),
@@ -934,19 +950,19 @@ fn dependency_configs_precede_prelude_and_imported_modules() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.9\"\npackage Textkit\nend package\n",
+            "language \"0.0.10\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", "import Internal.Helper\n"),
         ("/library/Internal/Helper.bnt", ""),
         (
             "/second/package.bnt",
-            "language \"0.0.9\"\npackage Textkit\nend package\n",
+            "language \"0.0.10\"\npackage Textkit\nend package\n",
         ),
         ("/second/Slug.bnt", "import Internal.Helper\n"),
         ("/second/Internal/Helper.bnt", ""),
         (
             "/unused/package.bnt",
-            "language \"0.0.9\"\npackage Unused\nend package\n",
+            "language \"0.0.10\"\npackage Unused\nend package\n",
         ),
         ("/unused/Unread.bnt", "this is deliberately not a module"),
     ]);
@@ -1019,7 +1035,7 @@ fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
             ("main.bnt", main),
             (
                 "deps/library/package.bnt",
-                "language \"0.0.9\"\npackage Library\nend package\n",
+                "language \"0.0.10\"\npackage Library\nend package\n",
             ),
             ("/outside/Target.bnt", ""),
         ]);
@@ -1054,7 +1070,7 @@ fn root_link_to_the_dependency_imports_the_package() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.9\"\npackage Textkit\nend package\n",
+            "language \"0.0.10\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", ""),
     ]);
@@ -1090,11 +1106,11 @@ fn overlapping_dependency_roots_are_rejected_before_imports() {
             ("main.bnt", &main),
             (
                 "/libs/package.bnt",
-                "language \"0.0.9\"\npackage Libs\nend package\n",
+                "language \"0.0.10\"\npackage Libs\nend package\n",
             ),
             (
                 "/libs/Nested/package.bnt",
-                "language \"0.0.9\"\npackage Nested\nend package\n",
+                "language \"0.0.10\"\npackage Nested\nend package\n",
             ),
             ("/libs/Value.bnt", ""),
             ("/libs/Nested/Value.bnt", ""),
@@ -1129,7 +1145,7 @@ fn dependency_import_edits_only_use_valid_module_names() {
             ),
             (
                 "/library/package.bnt",
-                "language \"0.0.9\"\npackage Library\nend package\n",
+                "language \"0.0.10\"\npackage Library\nend package\n",
             ),
         ]);
         fs.add_file(format!("/library/{tail}"), vec![]);
@@ -1165,7 +1181,7 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
         ),
         (
             "deps/lib/package.bnt",
-            "language \"0.0.9\"\npackage Library\nend package\n",
+            "language \"0.0.10\"\npackage Library\nend package\n",
         ),
         ("deps/lib/Value.bnt", ""),
     ]);

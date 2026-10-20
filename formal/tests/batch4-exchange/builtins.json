@@ -1,0 +1,1196 @@
+{
+ "version": 5,
+ "inputs": [
+  {
+   "group": "golden",
+   "name": "independent-batch4",
+   "prims": [
+    {
+     "name": "List.map",
+     "tparams": [],
+     "neffs": 0,
+     "names": [
+      "xs",
+      "f"
+     ],
+     "params": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "Integer"
+         }
+        }
+       }
+      },
+      {
+       "fn": {
+        "names": [
+         "value"
+        ],
+        "params": [
+         {
+          "base": {
+           "name": "Integer"
+          }
+         }
+        ],
+        "ret": {
+         "base": {
+          "name": "Integer"
+         }
+        },
+        "eff": []
+       }
+      }
+     ],
+     "ret": {
+      "list": {
+       "elem": {
+        "base": {
+         "name": "Integer"
+        }
+       }
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": [],
+     "effParams": []
+    },
+    {
+     "name": "%eq",
+     "tparams": [
+      {
+       "equality": true,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "names": [
+      "left",
+      "right"
+     ],
+     "params": [
+      {
+       "tvar": {
+        "index": 0
+       }
+      },
+      {
+       "tvar": {
+        "index": 0
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Boolean"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": [],
+     "effParams": []
+    },
+    {
+     "name": "Console.writeLine",
+     "tparams": [],
+     "neffs": 0,
+     "names": [
+      "text"
+     ],
+     "params": [
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Unit"
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "Console"
+       }
+      }
+     ],
+     "kind": "io",
+     "opEff": "Console",
+     "classConstraints": [],
+     "unconvertibleTypes": [],
+     "effParams": []
+    },
+    {
+     "name": "new",
+     "tparams": [
+      {
+       "equality": false,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "value"
+     ],
+     "params": [
+      {
+       "tvar": {
+        "index": 0
+       }
+      }
+     ],
+     "ret": {
+      "reference": {
+       "elem": {
+        "tvar": {
+         "index": 0
+        }
+       }
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "State"
+       }
+      }
+     ],
+     "kind": "refNew",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "get",
+     "tparams": [
+      {
+       "equality": false,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "reference"
+     ],
+     "params": [
+      {
+       "reference": {
+        "elem": {
+         "tvar": {
+          "index": 0
+         }
+        }
+       }
+      }
+     ],
+     "ret": {
+      "tvar": {
+       "index": 0
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "State"
+       }
+      }
+     ],
+     "kind": "refGet",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "set",
+     "tparams": [
+      {
+       "equality": false,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "reference",
+      "value"
+     ],
+     "params": [
+      {
+       "reference": {
+        "elem": {
+         "tvar": {
+          "index": 0
+         }
+        }
+       }
+      },
+      {
+       "tvar": {
+        "index": 0
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Unit"
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "State"
+       }
+      }
+     ],
+     "kind": "refSet",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "add",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "left",
+      "right"
+     ],
+     "params": [
+      {
+       "base": {
+        "name": "String"
+       }
+      },
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "String"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "join",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "xs",
+      "separator"
+     ],
+     "params": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      },
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "String"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "strLen",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "s"
+     ],
+     "params": [
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Integer"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "empty",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [],
+     "params": [],
+     "ret": "bytes",
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "fromList",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "bs"
+     ],
+     "params": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "Byte"
+         }
+        }
+       }
+      }
+     ],
+     "ret": "bytes",
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "bytesCat",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "a",
+      "b"
+     ],
+     "params": [
+      "bytes",
+      "bytes"
+     ],
+     "ret": "bytes",
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "bytesLen",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "b"
+     ],
+     "params": [
+      "bytes"
+     ],
+     "ret": {
+      "base": {
+       "name": "Integer"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "append",
+     "tparams": [
+      {
+       "equality": false,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "xs",
+      "x"
+     ],
+     "params": [
+      {
+       "list": {
+        "elem": {
+         "tvar": {
+          "index": 0
+         }
+        }
+       }
+      },
+      {
+       "tvar": {
+        "index": 0
+       }
+      }
+     ],
+     "ret": {
+      "list": {
+       "elem": {
+        "tvar": {
+         "index": 0
+        }
+       }
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "listCat",
+     "tparams": [
+      {
+       "equality": false,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "xs",
+      "ys"
+     ],
+     "params": [
+      {
+       "list": {
+        "elem": {
+         "tvar": {
+          "index": 0
+         }
+        }
+       }
+      },
+      {
+       "list": {
+        "elem": {
+         "tvar": {
+          "index": 0
+         }
+        }
+       }
+      }
+     ],
+     "ret": {
+      "list": {
+       "elem": {
+        "tvar": {
+         "index": 0
+        }
+       }
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "listLen",
+     "tparams": [
+      {
+       "equality": false,
+       "key": false,
+       "ordered": false
+      }
+     ],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "xs"
+     ],
+     "params": [
+      {
+       "list": {
+        "elem": {
+         "tvar": {
+          "index": 0
+         }
+        }
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Integer"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "Log.emit",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "record"
+     ],
+     "params": [
+      {
+       "data": {
+        "name": "Log.Record",
+        "args": []
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Unit"
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "Log"
+       }
+      }
+     ],
+     "kind": "io",
+     "opEff": "Log",
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "Log.enabled",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "level"
+     ],
+     "params": [
+      {
+       "data": {
+        "name": "Log.Level",
+        "args": []
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Boolean"
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "Log"
+       }
+      }
+     ],
+     "kind": "io",
+     "opEff": "Log",
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "Console.writeError",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "text"
+     ],
+     "params": [
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Unit"
+      }
+     },
+     "eff": [
+      {
+       "name": {
+        "value": "Console.Write"
+       }
+      }
+     ],
+     "kind": "io",
+     "opEff": "Console.Write",
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    },
+    {
+     "name": "triBool",
+     "tparams": [],
+     "neffs": 0,
+     "effParams": [],
+     "names": [
+      "a",
+      "b",
+      "c"
+     ],
+     "params": [
+      {
+       "base": {
+        "name": "Boolean"
+       }
+      },
+      {
+       "base": {
+        "name": "Boolean"
+       }
+      },
+      {
+       "base": {
+        "name": "Boolean"
+       }
+      }
+     ],
+     "ret": {
+      "base": {
+       "name": "Boolean"
+      }
+     },
+     "eff": [],
+     "kind": "pure",
+     "opEff": null,
+     "classConstraints": [],
+     "unconvertibleTypes": []
+    }
+   ],
+   "effects": [
+    {
+     "name": "State",
+     "ops": []
+    },
+    {
+     "name": "Console",
+     "ops": [
+      "Console.writeLine"
+     ]
+    },
+    {
+     "name": "Log",
+     "ops": [
+      "Log.emit",
+      "Log.enabled"
+     ]
+    },
+    {
+     "name": "Console.Write",
+     "ops": [
+      "Console.writeError"
+     ]
+    }
+   ],
+   "resources": [],
+   "dataDecls": [
+    {
+     "name": "PosPair",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "PosPair",
+       "fields": null,
+       "args": [
+        {
+         "base": {
+          "name": "Integer"
+         }
+        },
+        {
+         "base": {
+          "name": "Integer"
+         }
+        }
+       ]
+      }
+     ],
+     "typeName": "PosPair",
+     "isRecord": false,
+     "extensible": false,
+     "package": "author",
+     "builtin": "ordinary"
+    },
+    {
+     "name": "Pair",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "Pair",
+       "fields": [
+        "left",
+        "right"
+       ],
+       "args": [
+        {
+         "base": {
+          "name": "Integer"
+         }
+        },
+        {
+         "base": {
+          "name": "Integer"
+         }
+        }
+       ]
+      }
+     ],
+     "typeName": "Pair",
+     "isRecord": true,
+     "extensible": false,
+     "package": "author",
+     "builtin": "ordinary"
+    },
+    {
+     "name": "Result",
+     "typeName": "Result",
+     "isRecord": false,
+     "extensible": false,
+     "package": "stdlib",
+     "builtin": "result",
+     "ntys": 2,
+     "ctors": [
+      {
+       "name": "Ok",
+       "constructorName": "Ok",
+       "args": [
+        {
+         "tvar": {
+          "index": 0
+         }
+        }
+       ],
+       "fields": null
+      },
+      {
+       "name": "Error",
+       "constructorName": "Error",
+       "args": [
+        {
+         "tvar": {
+          "index": 1
+         }
+        }
+       ],
+       "fields": null
+      }
+     ]
+    },
+    {
+     "name": "UserResult",
+     "typeName": "UserResult",
+     "isRecord": false,
+     "extensible": false,
+     "package": "author",
+     "builtin": "ordinary",
+     "ntys": 2,
+     "ctors": [
+      {
+       "name": "User.Ok",
+       "constructorName": "User.Ok",
+       "args": [
+        {
+         "tvar": {
+          "index": 0
+         }
+        }
+       ],
+       "fields": null
+      },
+      {
+       "name": "User.Error",
+       "constructorName": "User.Error",
+       "args": [
+        {
+         "tvar": {
+          "index": 1
+         }
+        }
+       ],
+       "fields": null
+      }
+     ]
+    },
+    {
+     "builtin": "ordinary",
+     "package": "stdlib",
+     "typeName": "Log.Level",
+     "isRecord": false,
+     "extensible": false,
+     "name": "Log.Level",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "Log.Debug",
+       "args": [],
+       "fields": null
+      },
+      {
+       "name": "Log.Info",
+       "args": [],
+       "fields": null
+      },
+      {
+       "name": "Log.Warn",
+       "args": [],
+       "fields": null
+      },
+      {
+       "name": "Log.Error",
+       "args": [],
+       "fields": null
+      }
+     ]
+    },
+    {
+     "builtin": "ordinary",
+     "package": "stdlib",
+     "typeName": "Log.Value",
+     "isRecord": false,
+     "extensible": false,
+     "name": "Log.Value",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "Log.Text",
+       "args": [
+        {
+         "base": {
+          "name": "String"
+         }
+        }
+       ],
+       "fields": null
+      },
+      {
+       "name": "Log.Boolean",
+       "args": [
+        {
+         "base": {
+          "name": "Boolean"
+         }
+        }
+       ],
+       "fields": null
+      },
+      {
+       "name": "Log.Integer",
+       "args": [
+        {
+         "base": {
+          "name": "Integer"
+         }
+        }
+       ],
+       "fields": null
+      },
+      {
+       "name": "Log.UnsignedInteger",
+       "args": [
+        {
+         "base": {
+          "name": "UnsignedInteger64"
+         }
+        }
+       ],
+       "fields": null
+      },
+      {
+       "name": "Log.Float",
+       "args": [
+        {
+         "base": {
+          "name": "Float"
+         }
+        }
+       ],
+       "fields": null
+      }
+     ]
+    },
+    {
+     "builtin": "ordinary",
+     "package": "stdlib",
+     "typeName": "Log.Attribute",
+     "isRecord": true,
+     "extensible": false,
+     "name": "Log.Attribute",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "Log.Attribute",
+       "args": [
+        {
+         "base": {
+          "name": "String"
+         }
+        },
+        {
+         "data": {
+          "name": "Log.Value",
+          "args": []
+         }
+        }
+       ],
+       "fields": [
+        "key",
+        "value"
+       ]
+      }
+     ]
+    },
+    {
+     "builtin": "ordinary",
+     "package": "stdlib",
+     "typeName": "SourceLocation.Location",
+     "isRecord": true,
+     "extensible": false,
+     "name": "SourceLocation.Location",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "SourceLocation.Location",
+       "args": [
+        {
+         "base": {
+          "name": "String"
+         }
+        },
+        {
+         "base": {
+          "name": "Integer"
+         }
+        },
+        {
+         "base": {
+          "name": "Integer"
+         }
+        }
+       ],
+       "fields": [
+        "file",
+        "line",
+        "column"
+       ]
+      }
+     ]
+    },
+    {
+     "builtin": "ordinary",
+     "package": "stdlib",
+     "typeName": "Log.Record",
+     "isRecord": true,
+     "extensible": false,
+     "name": "Log.Record",
+     "ntys": 0,
+     "ctors": [
+      {
+       "name": "Log.Record",
+       "args": [
+        {
+         "data": {
+          "name": "Log.Level",
+          "args": []
+         }
+        },
+        {
+         "base": {
+          "name": "String"
+         }
+        },
+        {
+         "list": {
+          "elem": {
+           "data": {
+            "name": "Log.Attribute",
+            "args": []
+           }
+          }
+         }
+        },
+        {
+         "data": {
+          "name": "SourceLocation.Location",
+          "args": []
+         }
+        }
+       ],
+       "fields": [
+        "level",
+        "message",
+        "attributes",
+        "location"
+       ]
+      }
+     ]
+    }
+   ],
+   "summaries": [
+    {
+     "name": "PosPair",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": false,
+      "dependsOn": []
+     }
+    },
+    {
+     "name": "Pair",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": false,
+      "dependsOn": []
+     }
+    },
+    {
+     "name": "Result",
+     "eq": {
+      "always": false,
+      "dependsOn": [
+       0,
+       1
+      ]
+     },
+     "key": {
+      "always": false,
+      "dependsOn": [
+       0,
+       1
+      ]
+     }
+    },
+    {
+     "name": "UserResult",
+     "eq": {
+      "always": false,
+      "dependsOn": [
+       0,
+       1
+      ]
+     },
+     "key": {
+      "always": false,
+      "dependsOn": [
+       0,
+       1
+      ]
+     }
+    },
+    {
+     "name": "Log.Level",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": false,
+      "dependsOn": []
+     }
+    },
+    {
+     "name": "Log.Value",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": true,
+      "dependsOn": []
+     }
+    },
+    {
+     "name": "Log.Attribute",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": true,
+      "dependsOn": []
+     }
+    },
+    {
+     "name": "SourceLocation.Location",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": false,
+      "dependsOn": []
+     }
+    },
+    {
+     "name": "Log.Record",
+     "eq": {
+      "always": false,
+      "dependsOn": []
+     },
+     "key": {
+      "always": true,
+      "dependsOn": []
+     }
+    }
+   ],
+   "statePure": [],
+   "supplementalData": [],
+   "supplementalPrims": []
+  }
+ ]
+}

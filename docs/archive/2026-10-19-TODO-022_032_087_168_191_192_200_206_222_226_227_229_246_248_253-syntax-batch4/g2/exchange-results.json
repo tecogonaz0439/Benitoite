@@ -1,0 +1,1571 @@
+{
+  "elapsed_seconds": 1.009273709,
+  "inputs": [
+    "log-standard"
+  ],
+  "definitions": 10,
+  "surface_checks": 10,
+  "files": {
+    "corpus": "6b0078577565d0ee421d07dbdd2b100b93566e6fb5dbd869a14e27e0f284e651",
+    "builtins": "50d731b20f5410bffd42165980abb2f652f06f4eec0f2adfd0512d74eb46bcc4",
+    "stdlib": "b893a62287dd7fbabf9fdd602be780ff4622fd275d81efd579ffb52a7ac31398",
+    "coverage": "c8965b7f5b31443c3faabb700d75b5ea45c16c055942cb806a6813e89c197618",
+    "coverage-program": "0de4d335111a87258e78ea0843c4518dc5dea6c8c9264407aaf6b8a2a0881ed2"
+  },
+  "results": {
+    "coverageDiff": [
+      {
+        "randomCases": 0,
+        "mismatches": [],
+        "mismatched": 0,
+        "matched": 1,
+        "kinds": {},
+        "fuelExhausted": 0,
+        "fuelExamples": [],
+        "fuel": {
+          "overlaps": 0,
+          "matchChecks": 0,
+          "irrefutable": 0,
+          "coveringSingletons": 0,
+          "coveringPrefixes": 0
+        },
+        "cases": 1,
+        "boundaryResults": [
+          {
+            "name": "batch2-result-coverage",
+            "leanIrrefutableWitness": null,
+            "leanIrrefutable": true,
+            "lean": {
+              "unreachable": [],
+              "uncovered": null,
+              "exhaustive": true
+            },
+            "fuel": {
+              "overlaps": 0,
+              "matchChecks": 0,
+              "irrefutable": 0,
+              "coveringSingletons": 0,
+              "coveringPrefixes": 0
+            },
+            "extraUnreachable": [],
+            "expectedIrrefutableWitness": null,
+            "expectedIrrefutable": true,
+            "expected": {
+              "unreachable": [],
+              "uncovered": null,
+              "exhaustive": true
+            },
+            "classification": "matched",
+            "changedCoveredBy": []
+          }
+        ],
+        "boundaryCases": 1
+      }
+    ],
+    "coverageProgramDiff": [
+      {
+        "outOfScopeExamples": [],
+        "outOfScope": 0,
+        "mismatches": [],
+        "mismatched": 0,
+        "matches": {
+          "outOfScope": 0,
+          "mismatched": 0,
+          "matched": 1,
+          "fuelExhausted": 0,
+          "cases": 1
+        },
+        "matched": 1,
+        "inputs": 1,
+        "fuelExhausted": 0,
+        "fuelExamples": [],
+        "cases": 1,
+        "bindings": {
+          "outOfScope": 0,
+          "mismatched": 0,
+          "matched": 0,
+          "fuelExhausted": 0,
+          "cases": 0
+        }
+      }
+    ],
+    "desugarDiff": [
+      {
+        "random": {
+          "programs": {
+            "outside": 0,
+            "mismatched": 0,
+            "matched": 0,
+            "excluded": 0
+          },
+          "programElements": [],
+          "elements": [],
+          "definitions": {
+            "outside": 0,
+            "mismatched": 0,
+            "matched": 0,
+            "excluded": 0
+          },
+          "constructions": [
+            [
+              "guard",
+              0
+            ],
+            [
+              "alternatives",
+              0
+            ],
+            [
+              "alternative",
+              0
+            ],
+            [
+              "alternative: reordered binders",
+              0
+            ],
+            [
+              "guarded alternatives",
+              0
+            ],
+            [
+              "range pattern",
+              0
+            ],
+            [
+              "range pattern: negative Integer",
+              0
+            ],
+            [
+              "range pattern: Character",
+              0
+            ],
+            [
+              "list pattern: no rest",
+              0
+            ],
+            [
+              "list pattern: skip",
+              0
+            ],
+            [
+              "list pattern: bind",
+              0
+            ],
+            [
+              "list pattern: suffix",
+              0
+            ],
+            [
+              "list pattern binding",
+              0
+            ],
+            [
+              "constant reference",
+              0
+            ],
+            [
+              "constant: basic",
+              0
+            ],
+            [
+              "constant: list",
+              0
+            ],
+            [
+              "constant: record",
+              0
+            ],
+            [
+              "constant: data",
+              0
+            ],
+            [
+              "constant: nested",
+              0
+            ],
+            [
+              "constant: call argument",
+              0
+            ],
+            [
+              "constant: constructor field",
+              0
+            ],
+            [
+              "constant: list element",
+              0
+            ],
+            [
+              "constant: lambda",
+              0
+            ],
+            [
+              "constant: record update base",
+              0
+            ],
+            [
+              "constant: under local binding",
+              0
+            ],
+            [
+              "Decimal literal",
+              0
+            ],
+            [
+              "Decimal direct negation",
+              0
+            ],
+            [
+              "Decimal direct negative zero",
+              0
+            ],
+            [
+              "spread: first",
+              0
+            ],
+            [
+              "spread: middle",
+              0
+            ],
+            [
+              "spread: last",
+              0
+            ],
+            [
+              "spread: before empty",
+              0
+            ],
+            [
+              "spread: after empty",
+              0
+            ],
+            [
+              "spread: both empty",
+              0
+            ],
+            [
+              "interpolation",
+              0
+            ],
+            [
+              "interpolation: text",
+              0
+            ],
+            [
+              "interpolation: empty text",
+              0
+            ],
+            [
+              "interpolation: String",
+              0
+            ],
+            [
+              "interpolation: Integer",
+              0
+            ],
+            [
+              "interpolation: Float",
+              0
+            ],
+            [
+              "interpolation: Character",
+              0
+            ],
+            [
+              "interpolation: Boolean",
+              0
+            ],
+            [
+              "interpolation: Byte",
+              0
+            ],
+            [
+              "interpolation: Decimal",
+              0
+            ],
+            [
+              "interpolation: consecutive expressions",
+              0
+            ],
+            [
+              "interpolation: parts 0",
+              0
+            ],
+            [
+              "interpolation: parts 1",
+              0
+            ],
+            [
+              "interpolation: parts 2+",
+              0
+            ],
+            [
+              "record construction",
+              0
+            ],
+            [
+              "record construction: reordered",
+              0
+            ],
+            [
+              "record update: partial",
+              0
+            ],
+            [
+              "record update: all",
+              0
+            ],
+            [
+              "record update: reordered",
+              0
+            ],
+            [
+              "record pattern",
+              0
+            ],
+            [
+              "record pattern: partial",
+              0
+            ],
+            [
+              "record pattern: nested",
+              0
+            ],
+            [
+              "record pattern: reordered",
+              0
+            ],
+            [
+              "accessor definition",
+              0
+            ],
+            [
+              "accessor definition: polymorphic",
+              0
+            ],
+            [
+              "accessor direct: call",
+              0
+            ],
+            [
+              "accessor parenthesized: call",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 1",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 1",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 2",
+              0
+            ],
+            [
+              "accessor direct: placeholder",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder",
+              0
+            ],
+            [
+              "accessor direct: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized value",
+              0
+            ]
+          ],
+          "constructionUnits": [
+            [
+              "guard",
+              0
+            ],
+            [
+              "alternatives",
+              0
+            ],
+            [
+              "alternative",
+              0
+            ],
+            [
+              "alternative: reordered binders",
+              0
+            ],
+            [
+              "guarded alternatives",
+              0
+            ],
+            [
+              "range pattern",
+              0
+            ],
+            [
+              "range pattern: negative Integer",
+              0
+            ],
+            [
+              "range pattern: Character",
+              0
+            ],
+            [
+              "list pattern: no rest",
+              0
+            ],
+            [
+              "list pattern: skip",
+              0
+            ],
+            [
+              "list pattern: bind",
+              0
+            ],
+            [
+              "list pattern: suffix",
+              0
+            ],
+            [
+              "list pattern binding",
+              0
+            ],
+            [
+              "constant reference",
+              0
+            ],
+            [
+              "constant: basic",
+              0
+            ],
+            [
+              "constant: list",
+              0
+            ],
+            [
+              "constant: record",
+              0
+            ],
+            [
+              "constant: data",
+              0
+            ],
+            [
+              "constant: nested",
+              0
+            ],
+            [
+              "constant: call argument",
+              0
+            ],
+            [
+              "constant: constructor field",
+              0
+            ],
+            [
+              "constant: list element",
+              0
+            ],
+            [
+              "constant: lambda",
+              0
+            ],
+            [
+              "constant: record update base",
+              0
+            ],
+            [
+              "constant: under local binding",
+              0
+            ],
+            [
+              "Decimal literal",
+              0
+            ],
+            [
+              "Decimal direct negation",
+              0
+            ],
+            [
+              "Decimal direct negative zero",
+              0
+            ],
+            [
+              "spread: first",
+              0
+            ],
+            [
+              "spread: middle",
+              0
+            ],
+            [
+              "spread: last",
+              0
+            ],
+            [
+              "spread: before empty",
+              0
+            ],
+            [
+              "spread: after empty",
+              0
+            ],
+            [
+              "spread: both empty",
+              0
+            ],
+            [
+              "interpolation",
+              0
+            ],
+            [
+              "interpolation: text",
+              0
+            ],
+            [
+              "interpolation: empty text",
+              0
+            ],
+            [
+              "interpolation: String",
+              0
+            ],
+            [
+              "interpolation: Integer",
+              0
+            ],
+            [
+              "interpolation: Float",
+              0
+            ],
+            [
+              "interpolation: Character",
+              0
+            ],
+            [
+              "interpolation: Boolean",
+              0
+            ],
+            [
+              "interpolation: Byte",
+              0
+            ],
+            [
+              "interpolation: Decimal",
+              0
+            ],
+            [
+              "interpolation: consecutive expressions",
+              0
+            ],
+            [
+              "interpolation: parts 0",
+              0
+            ],
+            [
+              "interpolation: parts 1",
+              0
+            ],
+            [
+              "interpolation: parts 2+",
+              0
+            ],
+            [
+              "record construction",
+              0
+            ],
+            [
+              "record construction: reordered",
+              0
+            ],
+            [
+              "record update: partial",
+              0
+            ],
+            [
+              "record update: all",
+              0
+            ],
+            [
+              "record update: reordered",
+              0
+            ],
+            [
+              "record pattern",
+              0
+            ],
+            [
+              "record pattern: partial",
+              0
+            ],
+            [
+              "record pattern: nested",
+              0
+            ],
+            [
+              "record pattern: reordered",
+              0
+            ],
+            [
+              "accessor definition",
+              0
+            ],
+            [
+              "accessor definition: polymorphic",
+              0
+            ],
+            [
+              "accessor direct: call",
+              0
+            ],
+            [
+              "accessor parenthesized: call",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 1",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 1",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 2",
+              0
+            ],
+            [
+              "accessor direct: placeholder",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder",
+              0
+            ],
+            [
+              "accessor direct: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized value",
+              0
+            ]
+          ]
+        },
+        "mismatches": [],
+        "golden": {
+          "programs": {
+            "outside": 0,
+            "mismatched": 0,
+            "matched": 1,
+            "excluded": 0
+          },
+          "programElements": [],
+          "elements": [],
+          "definitions": {
+            "outside": 0,
+            "mismatched": 0,
+            "matched": 10,
+            "excluded": 0
+          },
+          "constructions": [
+            [
+              "guard",
+              0
+            ],
+            [
+              "alternatives",
+              0
+            ],
+            [
+              "alternative",
+              0
+            ],
+            [
+              "alternative: reordered binders",
+              0
+            ],
+            [
+              "guarded alternatives",
+              0
+            ],
+            [
+              "range pattern",
+              0
+            ],
+            [
+              "range pattern: negative Integer",
+              0
+            ],
+            [
+              "range pattern: Character",
+              0
+            ],
+            [
+              "list pattern: no rest",
+              0
+            ],
+            [
+              "list pattern: skip",
+              0
+            ],
+            [
+              "list pattern: bind",
+              0
+            ],
+            [
+              "list pattern: suffix",
+              0
+            ],
+            [
+              "list pattern binding",
+              0
+            ],
+            [
+              "constant reference",
+              0
+            ],
+            [
+              "constant: basic",
+              0
+            ],
+            [
+              "constant: list",
+              0
+            ],
+            [
+              "constant: record",
+              0
+            ],
+            [
+              "constant: data",
+              0
+            ],
+            [
+              "constant: nested",
+              0
+            ],
+            [
+              "constant: call argument",
+              0
+            ],
+            [
+              "constant: constructor field",
+              0
+            ],
+            [
+              "constant: list element",
+              0
+            ],
+            [
+              "constant: lambda",
+              0
+            ],
+            [
+              "constant: record update base",
+              0
+            ],
+            [
+              "constant: under local binding",
+              0
+            ],
+            [
+              "Decimal literal",
+              0
+            ],
+            [
+              "Decimal direct negation",
+              0
+            ],
+            [
+              "Decimal direct negative zero",
+              0
+            ],
+            [
+              "spread: first",
+              0
+            ],
+            [
+              "spread: middle",
+              0
+            ],
+            [
+              "spread: last",
+              0
+            ],
+            [
+              "spread: before empty",
+              0
+            ],
+            [
+              "spread: after empty",
+              0
+            ],
+            [
+              "spread: both empty",
+              0
+            ],
+            [
+              "interpolation",
+              0
+            ],
+            [
+              "interpolation: text",
+              0
+            ],
+            [
+              "interpolation: empty text",
+              0
+            ],
+            [
+              "interpolation: String",
+              0
+            ],
+            [
+              "interpolation: Integer",
+              0
+            ],
+            [
+              "interpolation: Float",
+              0
+            ],
+            [
+              "interpolation: Character",
+              0
+            ],
+            [
+              "interpolation: Boolean",
+              0
+            ],
+            [
+              "interpolation: Byte",
+              0
+            ],
+            [
+              "interpolation: Decimal",
+              0
+            ],
+            [
+              "interpolation: consecutive expressions",
+              0
+            ],
+            [
+              "interpolation: parts 0",
+              0
+            ],
+            [
+              "interpolation: parts 1",
+              0
+            ],
+            [
+              "interpolation: parts 2+",
+              0
+            ],
+            [
+              "record construction",
+              3
+            ],
+            [
+              "record construction: reordered",
+              0
+            ],
+            [
+              "record update: partial",
+              0
+            ],
+            [
+              "record update: all",
+              0
+            ],
+            [
+              "record update: reordered",
+              0
+            ],
+            [
+              "record pattern",
+              0
+            ],
+            [
+              "record pattern: partial",
+              0
+            ],
+            [
+              "record pattern: nested",
+              0
+            ],
+            [
+              "record pattern: reordered",
+              0
+            ],
+            [
+              "accessor definition",
+              0
+            ],
+            [
+              "accessor definition: polymorphic",
+              0
+            ],
+            [
+              "accessor direct: call",
+              0
+            ],
+            [
+              "accessor parenthesized: call",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 1",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 1",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 2",
+              0
+            ],
+            [
+              "accessor direct: placeholder",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder",
+              0
+            ],
+            [
+              "accessor direct: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized value",
+              0
+            ],
+            [
+              "funDicts",
+              2
+            ],
+            [
+              "DictEv.impl",
+              2
+            ],
+            [
+              "funDicts direct: call",
+              2
+            ]
+          ],
+          "constructionUnits": [
+            [
+              "guard",
+              0
+            ],
+            [
+              "alternatives",
+              0
+            ],
+            [
+              "alternative",
+              0
+            ],
+            [
+              "alternative: reordered binders",
+              0
+            ],
+            [
+              "guarded alternatives",
+              0
+            ],
+            [
+              "range pattern",
+              0
+            ],
+            [
+              "range pattern: negative Integer",
+              0
+            ],
+            [
+              "range pattern: Character",
+              0
+            ],
+            [
+              "list pattern: no rest",
+              0
+            ],
+            [
+              "list pattern: skip",
+              0
+            ],
+            [
+              "list pattern: bind",
+              0
+            ],
+            [
+              "list pattern: suffix",
+              0
+            ],
+            [
+              "list pattern binding",
+              0
+            ],
+            [
+              "constant reference",
+              0
+            ],
+            [
+              "constant: basic",
+              0
+            ],
+            [
+              "constant: list",
+              0
+            ],
+            [
+              "constant: record",
+              0
+            ],
+            [
+              "constant: data",
+              0
+            ],
+            [
+              "constant: nested",
+              0
+            ],
+            [
+              "constant: call argument",
+              0
+            ],
+            [
+              "constant: constructor field",
+              0
+            ],
+            [
+              "constant: list element",
+              0
+            ],
+            [
+              "constant: lambda",
+              0
+            ],
+            [
+              "constant: record update base",
+              0
+            ],
+            [
+              "constant: under local binding",
+              0
+            ],
+            [
+              "Decimal literal",
+              0
+            ],
+            [
+              "Decimal direct negation",
+              0
+            ],
+            [
+              "Decimal direct negative zero",
+              0
+            ],
+            [
+              "spread: first",
+              0
+            ],
+            [
+              "spread: middle",
+              0
+            ],
+            [
+              "spread: last",
+              0
+            ],
+            [
+              "spread: before empty",
+              0
+            ],
+            [
+              "spread: after empty",
+              0
+            ],
+            [
+              "spread: both empty",
+              0
+            ],
+            [
+              "interpolation",
+              0
+            ],
+            [
+              "interpolation: text",
+              0
+            ],
+            [
+              "interpolation: empty text",
+              0
+            ],
+            [
+              "interpolation: String",
+              0
+            ],
+            [
+              "interpolation: Integer",
+              0
+            ],
+            [
+              "interpolation: Float",
+              0
+            ],
+            [
+              "interpolation: Character",
+              0
+            ],
+            [
+              "interpolation: Boolean",
+              0
+            ],
+            [
+              "interpolation: Byte",
+              0
+            ],
+            [
+              "interpolation: Decimal",
+              0
+            ],
+            [
+              "interpolation: consecutive expressions",
+              0
+            ],
+            [
+              "interpolation: parts 0",
+              0
+            ],
+            [
+              "interpolation: parts 1",
+              0
+            ],
+            [
+              "interpolation: parts 2+",
+              0
+            ],
+            [
+              "record construction",
+              2
+            ],
+            [
+              "record construction: reordered",
+              0
+            ],
+            [
+              "record update: partial",
+              0
+            ],
+            [
+              "record update: all",
+              0
+            ],
+            [
+              "record update: reordered",
+              0
+            ],
+            [
+              "record pattern",
+              0
+            ],
+            [
+              "record pattern: partial",
+              0
+            ],
+            [
+              "record pattern: nested",
+              0
+            ],
+            [
+              "record pattern: reordered",
+              0
+            ],
+            [
+              "accessor definition",
+              0
+            ],
+            [
+              "accessor definition: polymorphic",
+              0
+            ],
+            [
+              "accessor direct: call",
+              0
+            ],
+            [
+              "accessor parenthesized: call",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 1",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 1",
+              0
+            ],
+            [
+              "accessor direct: pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: pipe rule 2",
+              0
+            ],
+            [
+              "accessor direct: placeholder",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder",
+              0
+            ],
+            [
+              "accessor direct: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized: placeholder pipe rule 2",
+              0
+            ],
+            [
+              "accessor parenthesized value",
+              0
+            ],
+            [
+              "funDicts",
+              2
+            ],
+            [
+              "DictEv.impl",
+              2
+            ],
+            [
+              "funDicts direct: call",
+              2
+            ]
+          ]
+        }
+      }
+    ],
+    "builtinCheck": [
+      {
+        "unconvertible": [],
+        "typeclassExcluded": [],
+        "summaryMismatchExamples": [],
+        "summaryMismatchCount": 0,
+        "summaryComparisons": 82,
+        "statePure": [],
+        "nonconvergedInputs": [],
+        "nonconvergedCount": 0,
+        "missingPrims": [],
+        "missingConstructors": [],
+        "inputs": [
+          {
+            "unconvertible": [],
+            "typeclassExcluded": [],
+            "summaryMismatches": [],
+            "summaryComparisons": 82,
+            "summariesConverged": true,
+            "statePure": [],
+            "prims": 60,
+            "name": "log-standard",
+            "missingPrims": [],
+            "missingConstructors": [],
+            "group": "golden",
+            "errors": [],
+            "dataDecls": 41,
+            "converted": 60,
+            "constructors": 94
+          }
+        ],
+        "errors": [],
+        "checkedInputs": 1
+      }
+    ],
+    "surfaceCheck": [
+      {
+        "trustedImplementations": 12,
+        "trustedFunctions": 6,
+        "result": {
+          "ok": true
+        },
+        "recordsOk": true,
+        "preparationNanos": 8500375,
+        "input": "log-standard",
+        "implementations": 0,
+        "implNamesOk": true,
+        "group": "golden",
+        "definitions": 10,
+        "definition": null,
+        "constructorsOk": true,
+        "checkNanos": [
+          1286209
+        ],
+        "atoms": [
+          {
+            "name": {
+              "value": "Log.Log"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.Console.Write"
+            }
+          },
+          {
+            "rho": {
+              "index": 0
+            }
+          },
+          {
+            "name": {
+              "value": "IO.Console.Read"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.File.Read"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.File.Write"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.Process.Environment"
+            }
+          },
+          {
+            "name": {
+              "value": "Process.Exit"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.Clock.Time"
+            }
+          },
+          {
+            "name": {
+              "value": "Assert.Check"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.Process.Run"
+            }
+          },
+          {
+            "name": {
+              "value": "IO.Random.Generate"
+            }
+          },
+          {
+            "name": {
+              "value": "Network.Http.Listen"
+            }
+          },
+          {
+            "name": {
+              "value": "Network.Http.Connect"
+            }
+          },
+          {
+            "name": {
+              "value": "State"
+            }
+          }
+        ]
+      }
+    ],
+    "surfaceCheckAll": [
+      {
+        "version": 1,
+        "tailMatches": 1,
+        "replacements": 0,
+        "q11Agrees": true,
+        "preparationErrors": [],
+        "outcomes": [
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:43",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:44",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:45",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:46",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:47",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:48",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:49",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:50",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:51",
+            "category": "matched"
+          },
+          {
+            "unconvertiblePrims": [],
+            "q11Paths": [],
+            "nonUnitReplacements": 0,
+            "kind": "definition",
+            "input": "log-standard",
+            "group": "golden",
+            "error": null,
+            "diagnosis": "classified",
+            "definition": "fn:52",
+            "category": "matched"
+          }
+        ],
+        "nonUnitReplacements": 0,
+        "mismatchExamples": [],
+        "mismatchClasses": {
+          "requiresReview": 0,
+          "leanFalseRejection": 0,
+          "exporter": 0
+        },
+        "inputs": 1,
+        "implementations": 0,
+        "fullyCheckedInputs": 1,
+        "expectedTailMatch": [
+          1,
+          0
+        ],
+        "excludedInputs": 0,
+        "elapsedNanos": 9718125,
+        "definitions": 10,
+        "counts": {
+          "q11": 0,
+          "preparationFailure": 0,
+          "outOfScope": 0,
+          "mismatched": 0,
+          "matched": 10,
+          "lazyRestriction": 0
+        }
+      }
+    ]
+  }
+}

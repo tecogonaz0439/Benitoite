@@ -80,15 +80,17 @@ end function
 
 ### キーワード
 
-【決定】次の 35 の語はキーワードであり、識別子として使えない。キーワードでない予約語はない（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「字句」）。
+【決定】次の 36 の語はキーワードである。`record` 以外は識別子として使えない。キーワードでない予約語はない（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「字句」）。
 
 ```text
-and  bind  case  data  die  div  effect  else  end  false  function  if  lambda  match
+and  bind  block  case  data  die  div  effect  else  end  false  function  if  lambda  match
 mod  not  or  return  shadow  then  true  type  uses  with
 const  do  handle  implement  import  lazy  public  record  resume  trait  try
 ```
 
-`effect` は、エフェクト変数の宣言と、エフェクトの宣言に使う。`end` はブロックを閉じるのに、`lambda` はラムダに、`then` は `if` に、`match`・`with`・`case` はパターンで分岐する式に、`bind`・`shadow` は局所の束縛の文に、`data` は代数的データ型の宣言に、`type` は型の別名の宣言に、`and`・`or`・`not` は論理演算子に、`div`・`mod` は整数の除算と剰余の演算子に、`return` は関数とラムダの本体から値を返すのに使う。`with` は、リソーススコープにも使う。`handle` と `resume` は、利用者が定義するエフェクトとハンドラの構文に使う。`lazy` は明示遅延に、`do` はリソーススコープの `with` の束縛の並びと本体を区切るのに使う。`trait` と `implement` は型クラスとその実装に、`try` は `Result.Error` と `Option.None` を呼び出し元へ返す構文に、`record` はレコードの宣言に、`const` は定数の宣言に、`import` と `public` はモジュールの取り込みと公開に使う。
+【決定】`record` は、名前を要求する位置では小文字の名前としても使える。パラメータ名、引数のラベル、値への参照、束縛の名前を同じように扱う。レコードの欄名には使えず、宣言・構築・更新・パターンのいずれでも拒否する。宣言を始める位置ではレコード宣言を表す。理由: `Log.emit(record: ...)` の明示的な契約名を通常の関数型と呼び出しで使うためである。
+
+`effect` は、エフェクト変数の宣言と、エフェクトの宣言に使う。`end` はブロックを閉じるのに、`lambda` はラムダに、`then` は `if` に、`match`・`with`・`case` はパターンで分岐する式に、`bind`・`shadow` は局所の束縛の文に、`data` は代数的データ型の宣言に、`type` は型の別名の宣言に、`and`・`or`・`not` は論理演算子に、`div`・`mod` は整数の除算と剰余の演算子に、`return` は関数とラムダの本体から値を返すのに使う。`with` は、リソーススコープにも使う。`handle` と `resume` は、利用者が定義するエフェクトとハンドラの構文に使う。`block` はブロック式に、`lazy` は明示遅延に、`do` はリソーススコープの `with` の束縛の並びと本体を区切るのに使う。`trait` と `implement` は型クラスとその実装に、`try` は `Result.Error` と `Option.None` を呼び出し元へ返す構文に、`record` はレコードの宣言に、`const` は定数の宣言に、`import` と `public` はモジュールの取り込みと公開に使う。
 
 【方針】キーワード `function`・`public`・`implement` の省略形（`fn`・`pub`・`impl`）と `mut` は予約しない。キーワードは省略しない語にする。
 
@@ -284,7 +286,7 @@ bind digits <- r"\d+"
 開いている括弧とブロックは、次のように数える。
 
 - 丸括弧 `(` と角括弧 `[` は、対応する閉じ括弧で閉じる。
-- キーワード `lambda`・`if`・`match`・`with`・`lazy`・`handle` は、ブロックを開く。ブロックは、`end` とその語（`end lambda`・`end if` など）で閉じる。短いラムダの開きは、前述の境界で閉じる。ただし、`else` の直後の `if` は、同じ `if` の続きなので、新しいブロックを開かない。
+- キーワード `lambda`・`if`・`match`・`with`・`block`・`lazy`・`handle` は、ブロックを開く。ブロックは、`end` とその語（`end lambda`・`end if` など）で閉じる。短いラムダの開きは、前述の境界で閉じる。ただし、`else` の直後の `if` は、同じ `if` の続きなので、新しいブロックを開かない。
 - 改行とコメントを除いて次に現れる字句が `case` である `with` は、`match` と `handle` の分岐の並びの始まりであり、新しいブロックを開かない。それ以外の `with` は、リソーススコープであり、ブロックを開く（[構文](01-02-syntax.md)の「リソーススコープ（初回リリース版）」）。
 - `match` と `handle` の分岐の `case` の後、分岐の `->` までに現れる `if` はガード（[構文](01-02-syntax.md)の「パターンの拡張（初回リリース版）」）であり、ブロックを開かない。
 - 関数の宣言、型・レコード・型クラス・実装・エフェクトの宣言は、丸括弧の中に現れないので、開きとして数えない。
@@ -292,7 +294,8 @@ bind digits <- r"\d+"
 【決定】`return` の直後の物理改行は、以下の規則に優先して NEWLINE にする。括弧内でも、次の字句が演算子でも同じであり、行末のコメント・空行・コメントだけの行を挟んでも値を次行から読み始めない。連続する NEWLINE は一つにまとめる。値を取らない処置 `or return` もこの規則で終わる。`or` の前後は下記の演算子の規則で継続する。理由: 値を必須とする `return` の書き始めを一通りに読み、値の欠落を実行前に報告するためである。
 
 1. 開いている括弧とブロックのうち最も内側のものが `(` または `[` であれば、改行は空白として扱う。最も内側のものがキーワードで開いたブロックであれば、括弧の外と同じく、以下の規則で判定する。
-2. 改行の直前の字句が、式や文の終わりになりえない字句であれば、改行は空白として扱う。該当する字句は、二項演算子（`+ - * / div mod = <> < <= > >= and or |>`）、`not`、`->`、`<-`、`:`、`,`、`.`、開き括弧（`(`、`[`）、`&`、キーワード `bind`・`case`・`const`・`data`・`do`・`effect`・`else`・`function`・`handle`・`if`・`implement`・`import`・`lambda`・`lazy`・`match`・`public`・`record`・`shadow`・`then`・`trait`・`try`・`type`・`uses`・`with` である。ただし、`end` の直後のキーワード（`end if`・`end function` などの構文の名前）は、ブロックの終わりなので、この規則の字句に含めない。
+2. 改行の直前の字句が、式や文の終わりになりえない字句であれば、改行は空白として扱う。該当する字句は、二項演算子（`+ - * / div mod = <> < <= > >= and or |>`）、`not`、`->`、`<-`、`:`、`,`、`.`、開き括弧（`(`、`[`）、`&`、キーワード `bind`・`block`・`case`・`const`・`data`・`do`・`effect`・`else`・`function`・`handle`・`if`・`implement`・`import`・`lambda`・`lazy`・`match`・`public`・`shadow`・`then`・`trait`・`try`・`type`・`uses`・`with` である。ただし、`end` の直後のキーワード（`end if`・`end function` などの構文の名前）は、ブロックの終わりなので、この規則の字句に含めない。
+   `record` は値の名前にもなるため、この規則の字句に含めない。レコード宣言では、`record` と型名の間に NEWLINE を置いてよい（[構文](01-02-syntax.md)の `RecordDecl`）。値の名前として使うときは、次の行が大文字識別子で始まる場合も文の区切りを保つ（規則 1・3 による継続は除く）。
 3. 改行の直後の字句が、式の始まりになりえない継続の字句であれば、改行は空白として扱う。該当する字句は、`-` を除く二項演算子（`+ * / div mod = <> < <= > >= and or |>`）、`.`、`->`、`<-`、キーワード `then`・`else`・`do` である。`with` は、リソーススコープの始まりとして式の始まりになりうるので、この規則の字句に含めない。
 4. 上のどれにも当たらなければ、改行の位置に NEWLINE を置く。連続する NEWLINE は一つにまとめる。
 

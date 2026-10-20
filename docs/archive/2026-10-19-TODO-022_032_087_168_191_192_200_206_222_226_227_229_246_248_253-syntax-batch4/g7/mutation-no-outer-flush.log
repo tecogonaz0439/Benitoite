@@ -1,0 +1,19 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.81s
+     Running tests/interrupt_process.rs (target/debug/deps/interrupt_process-a36460d53621eb85)
+
+running 1 test
+
+thread 'second_sigint_terminates_during_file_writer_release' (18443825) panicked at crates/benitoite/tests/interrupt_process.rs:233:13:
+child exited before FIFO synchronization; stderr=Some([])
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test second_sigint_terminates_during_file_writer_release ... FAILED
+
+failures:
+
+failures:
+    second_sigint_terminates_during_file_writer_release
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1.13s
+
+error: test failed, to rerun pass `-p benitoite --test interrupt_process`

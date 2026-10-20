@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/private/tmp/benitoite-v1-single.py", line 23, in <module>
+    names=[c['name'] for c in future['cases'] if not c['name'].startswith('random/')];assert len(names)==28
+AssertionError

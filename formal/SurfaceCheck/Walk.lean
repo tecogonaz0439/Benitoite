@@ -15,17 +15,6 @@ structure WalkState where
   tailMatches : Nat := 0
   prims : List String := []
 abbrev Walk := StateM WalkState
-/-- 宣言だけで終わる場合も、new と初期化に使う参照を比較対象へ含める。 -/
-def collectBuilderRefs (refs : BuilderRefs) : Walk Unit := do
-    let cellNames := [refs.cells.newRef.name, refs.cells.getRef.name, refs.cells.setRef.name]
-    let pureRefs := match refs with
-      | .string _ a j l | .list _ _ a j l => [a, j, l]
-      | .bytes _ e f c l => [e, f, c, l]
-    let pureNames := pureRefs.filterMap fun r => match r with
-      | .prim r => some r.name
-      | .funRef _ _ => none
-    modify fun s => { s with prims := cellNames ++ pureNames ++ s.prims }
-
 mutual
   def walkExpr (q : Input) (R : Option Ty) (p : Position) (path : List Nat)
       (expected : Option Ty) (e : Expr) : Walk Expr := do
@@ -35,6 +24,7 @@ mutual
     | .primName n _ _ =>
       modify fun s => { s with prims := n :: s.prims }; return e
     | .paren a => return .paren (← walkExpr q R p (child path 0) expected a)
+    | .block b => return .block (← walkBlock q R p (child path 0) expected b)
     | .conCall c ts args => return .conCall c ts (← walkExprs q R (child path 0) 0 args)
     | .record c ts pos args => return .record c ts pos (← walkExprs q R (child path 0) 0 args)
     | .recordUpdate c ts n pos base args =>
@@ -43,9 +33,8 @@ mutual
     | .pipe a b => return .pipe (← walkExpr q R .other (child path 0) none a) (← walkExpr q R .other (child path 1) none b)
     | .partialCall f names args r eff =>
       return .partialCall (← walkExpr q (some r) .other (child path 0) none f) names (← walkHoles q (some r) (child path 1) 0 args) r eff
-    | .builderOp op i args refs =>
-      collectBuilderRefs refs
-      return .builderOp op i (← walkExprs q R (child path 0) 0 args) refs
+    | .builderOp op i args kind =>
+      return .builderOp op i (← walkExprs q R (child path 0) 0 args) kind
     | .partialCon c ts args =>
       let r := (q.D.cons c).map fun d => Ty.data d.data ts
       return .partialCon c ts (← walkHoles q r (child path 0) 0 args)
@@ -107,9 +96,8 @@ mutual
     | .last e => return .last (← walkExpr q R p (child path 0) expected e)
     | .lastBind k t e => return .lastBind k t (← walkExpr q R .other (child path 0) (some t) e)
     | .lastDiscard e => return .lastDiscard (← walkExpr q R .other (child path 0) none e)
-    | .builderBind k refs rest => do
-      collectBuilderRefs refs
-      return .builderBind k refs (← walkBlock q R p (child path 0) expected rest)
+    | .builderBind k rest => do
+      return .builderBind k (← walkBlock q R p (child path 0) expected rest)
     | .bind k t e rest => return .bind k t (← walkExpr q R .other (child path 0) (some t) e) (← walkBlock q R p (child path 1) expected rest)
     | .discard e rest => return .discard (← walkExpr q R .other (child path 0) none e) (← walkBlock q R p (child path 1) expected rest)
     | .seq e rest => return .seq (← walkExpr q R .other (child path 0) (some (.base .unit)) e) (← walkBlock q R p (child path 1) expected rest)

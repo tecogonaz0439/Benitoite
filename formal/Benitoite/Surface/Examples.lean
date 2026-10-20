@@ -30,7 +30,7 @@ private def readOp : OpDecl :=
   { tparams := [], names := ["value"], params := [intTy], ret := intTy, eff := "Read" }
 
 private def readCall : Expr :=
-  .call (.opName "read" []) [some "value"] [0] (.cons (.literal (.integer 7)) .nil)
+  .call (.opName "read" []) [some "value"] [0] (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)
 
 private def methodValue : Expr :=
   .methName (.impl "ChooseInt" [] []) "choose" [] [] [] ["left", "right"] [intTy, intTy]
@@ -38,7 +38,7 @@ private def methodValue : Expr :=
 private def mainExpr : Expr :=
   .handleE
     (.last (.call methodValue [some "right", some "left"] [1, 0]
-      (.cons (.literal (.integer 2)) (.cons readCall .nil))))
+      (.cons (.literal (.integer ⟨2, by decide⟩)) (.cons readCall .nil))))
     (.cons (.user "read") 1 0 (.last (.resume 0 (.local 1))) .nil)
 
 private def mainDef : Def :=
@@ -93,13 +93,13 @@ private theorem mainExpr_typed (Γ : List (Option Ty)) (R : Option Ty) (pos : Po
     have hp : CallOk ["value"] [intTy] false [some "value"] [0] := by
       exact ⟨by simp [NamesWF], rfl, List.Perm.refl _, Or.inr (Or.inr ⟨rfl, by intro label h; simp at h; subst label; rfl⟩)⟩
     simpa [readCall, union_empty_left] using
-      HasType.E_Call (p := Position.other) hf hp (HasTypes.cons (.E_Literal (l := .integer 7)) .nil)
+      HasType.E_Call (p := Position.other) hf hp (HasTypes.cons (.E_Literal (l := .integer ⟨7, by decide⟩)) .nil)
         (by simp [SingleEff, SingleTys, SingleFail, Eff.union, Eff.empty, Eff.single, Eff.ofAtoms, Eff.norm, Eff.fails])
   have hp : CallOk ["left", "right"] [intTy, intTy] false [some "right", some "left"] [1, 0] := by
     refine ⟨by simp [NamesWF], rfl, List.Perm.swap _ _ [], Or.inr (Or.inr ⟨rfl, ?_⟩)⟩
     intro label h; simp at h; rcases h with rfl | rfl <;> rfl
   have hb := HasType.E_Call (p := Position.other) hm hp
-    (HasTypes.cons (.E_Literal (l := .integer 2)) (HasTypes.cons hr .nil))
+    (HasTypes.cons (.E_Literal (l := .integer ⟨2, by decide⟩)) (HasTypes.cons hr .nil))
     (by simp [SingleEff, SingleTys, SingleFail, Eff.union, Eff.empty, Eff.single, Eff.ofAtoms, Eff.norm, Eff.fails])
   apply HasType.E_Handle (HasBlock.B_Last (by simpa [union_empty_left, union_empty_right] using hb))
   · constructor
@@ -246,14 +246,14 @@ theorem program_effect_soundness :
 /-- if とリストの全構文の型保存を、子の計算の型付けを仮定せずに使う。 -/
 example : HasTypeC (desugarProgram opPrim program) builtins StoreTy.empty [] [] none
     (desugarExpr opPrim .other (.ite (.literal (.boolean true))
-      (.last (.list intTy (.cons (.literal (.integer 3)) .nil))) (.last (.list intTy .nil))))
+      (.last (.list intTy (.cons (.literal (.integer ⟨3, by decide⟩)) .nil))) (.last (.list intTy .nil))))
     (.list intTy) Eff.empty := by
   have ht : HasType program.declarations builtins opPrim [] [] none .other
       (.ite (.literal (.boolean true))
-        (.last (.list intTy (.cons (.literal (.integer 3)) .nil))) (.last (.list intTy .nil)))
+        (.last (.list intTy (.cons (.literal (.integer ⟨3, by decide⟩)) .nil))) (.last (.list intTy .nil)))
       (.list intTy) Eff.empty := by
     simpa [union_empty_left] using HasType.E_If (.E_Literal (l := .boolean true))
-      (HasBlock.B_Last (HasType.E_List (a := intTy) (C := []) trivial (.cons (.E_Literal (l := .integer 3)) .nil)))
+      (HasBlock.B_Last (HasType.E_List (a := intTy) (C := []) trivial (.cons (.E_Literal (l := .integer ⟨3, by decide⟩)) .nil)))
       (HasBlock.B_Last (HasType.E_List (a := intTy) (C := []) trivial .nil))
       (by simp [SingleTy, SingleTys, SingleEff, SingleFail, intTy, Eff.union, Eff.empty, Eff.norm, Eff.fails])
   exact HasType.desugar (pe := fun _ => False) program_wellFormed
@@ -287,7 +287,7 @@ example (op : OpPrim) :
           [.mk [⟨.con "Ok" [.var], [0]⟩] none (.ret (.var 0)),
            .mk [⟨.con "Error" [.var], [0]⟩] none
              (.letIn (.meth (.var 3) "show" [] [] [.var 0])
-               (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)]))]) := by rfl
+               (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)]))]) := by rfl
 
 -- 説明は元の local 2 を参照する。説明の let の下では Error が 1、辞書が 4 になる。
 -- 上位辞書の経路も落とさず、外側の式の末尾位置によって展開を変えない。
@@ -301,7 +301,7 @@ example (op : OpPrim) :
            .mk [⟨.con "Error" [.var], [0]⟩] none
              (.letIn (.ret (.var 4))
                (.letIn (.meth (.super (.var 4) "Show") "show" [] [] [.var 1])
-                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)])))]) := by rfl
+                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)])))]) := by rfl
 
 -- None はパターン変数を増やさない。説明なしでも固定原因の計算を残す。
 example (op : OpPrim) :
@@ -312,7 +312,7 @@ example (op : OpPrim) :
           [.mk [⟨.con "Some" [.var], [0]⟩] none (.ret (.var 0)),
            .mk [⟨.con "None" [], []⟩] none
              (.letIn (.ret (.const (.string "expected a value, got Option.None")))
-               (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)]))]) := by rfl
+               (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)]))]) := by rfl
 
 -- 説明内のラムダと bind の local 0 は保護し、外側の String の参照だけ一つ移す。
 example (op : OpPrim) :
@@ -321,7 +321,7 @@ example (op : OpPrim) :
         (some (.call
           (.lam ["value"] [intTy] (.base .string) Eff.empty
             (.bind .bind intTy (.local 0) (.last (.local 3))))
-          [none] [0] (.cons (.literal (.integer 7)) .nil)))) =
+          [none] [0] (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)))) =
       .letIn (.ret (.var 0))
         (.match (.var 0)
           [.mk [⟨.con "Some" [.var], [0]⟩] none (.ret (.var 0)),
@@ -329,9 +329,9 @@ example (op : OpPrim) :
              (.letIn
                (.letIn (.ret (.lam ["value"] [intTy]
                  (.letIn (.ret (.var 0)) (.ret (.var 4)))))
-                 (.letIn (.ret (.const (.integer 7))) (.app (.var 1) [.var 0])))
+                 (.letIn (.ret (.const (.integer ⟨7, by decide⟩))) (.app (.var 1) [.var 0])))
                (.letIn (.ret (.const (.string "expected a value, got Option.None")))
-                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)])))]) := by rfl
+                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)])))]) := by rfl
 
 -- 型と値の範囲は、説明・入力・辞書・成功型のどれか一つが範囲外でも拒否する。
 -- 正の対照は、同じ元の環境で説明と辞書を参照できることも確かめる。
@@ -543,6 +543,7 @@ private theorem noReturnWithoutTarget {D B op Δ C Γ R pos e t ε}
   | .E_NegFloat32 .. => intro _ _ he; cases he
   | .E_Unit .. => intro _ _ he; cases he
   | .E_Paren .. => intro _ _ he; cases he
+  | .E_Block .. => intro _ _ he; cases he
   | .E_Record .. => intro _ _ he; cases he
   | .E_RecordUpdate .. => intro _ _ he; cases he
   | .E_ConCall .. => intro _ _ he; cases he
@@ -610,6 +611,7 @@ private theorem resume_requires_binding {D B op Δ C Γ R pos e t ε}
   | .E_NegFloat32 .. => intro _ _ he; cases he
   | .E_Unit .. => intro _ _ he; cases he
   | .E_Paren .. => intro _ _ he; cases he
+  | .E_Block .. => intro _ _ he; cases he
   | .E_Record .. => intro _ _ he; cases he
   | .E_RecordUpdate .. => intro _ _ he; cases he
   | .E_ConCall .. => intro _ _ he; cases he
@@ -645,7 +647,7 @@ private theorem resume_requires_binding {D B op Δ C Γ R pos e t ε}
 
 example : ¬ HasType dieProgram.declarations dieBuiltins opPrim []
     (hideConts [some (.cont intTy (.base .string) Eff.empty)]) none .other
-    (.resume 0 (.literal (.integer 1))) (.base .string) Eff.empty := by
+    (.resume 0 (.literal (.integer ⟨1, by decide⟩))) (.base .string) Eff.empty := by
   intro h
   exact resume_requires_binding h _ _ rfl rfl
 

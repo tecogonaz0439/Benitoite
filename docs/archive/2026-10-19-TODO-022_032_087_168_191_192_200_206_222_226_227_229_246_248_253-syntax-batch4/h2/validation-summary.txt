@@ -1,0 +1,54 @@
+[dry-run] exit=0 seconds=0.013
+== plan: level work against 92c5b3fe185a149ccc1bde2b2304ee181cf6e6c3 (changed files not classified) (partial selection: --only fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,doc_default,heap_local,stress_local)
+
+[clippy] exit=101 seconds=5.776
+warning: useless use of `format!`
+error: `benitoite` (test "test_command") generated 1 warning (run `cargo clippy --fix --test "test_command" -p benitoite -- ` to apply 1 suggestion)
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+
+[clippy] exit=0 seconds=0.302
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.22s
+
+[work] exit=0 seconds=155.487
+== plan: level work against 92c5b3fe185a149ccc1bde2b2304ee181cf6e6c3 (changed files not classified) (partial selection: --only fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,doc_default,heap_local,stress_local)
+== fmt
+== lib_default
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.69s
+test result: ok. 1246 passed; 0 failed; 21 ignored; 0 measured; 0 filtered out; finished in 59.83s
+== tests_related
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.34s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.18s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.14s
+test result: ok. 47 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.39s
+== doc_default
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+test result: ok. 17 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+== source_rules
+== source_rules
+== skill_generated
+== spec_tally
+== spec_tally
+== heap_local
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.16s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.15s
+test result: ok. 47 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.39s
+== stress_local
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.32s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.14s
+test result: ok. 47 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.51s
+
+[external-heap] exit=0 seconds=23.585
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.90s
+test result: ok. 133 passed; 0 failed; 0 ignored; 0 measured; 1141 filtered out; finished in 5.67s
+
+[external-stress] exit=0 seconds=23.462
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.88s
+test result: ok. 133 passed; 0 failed; 0 ignored; 0 measured; 1141 filtered out; finished in 5.55s
+

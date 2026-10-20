@@ -97,7 +97,8 @@ Primary     = Literal
             | "[" CommaList(Expr) "]"
             | IfExpr
             | MatchExpr
-            | Lambda .
+            | Lambda
+            | "block" Body "end" "block" .
 Literal     = IntLit | FloatLit | StringLit | CharLit | "true" | "false" .
 Name        = LowerIdent
             | UpperIdent
@@ -188,7 +189,7 @@ end data
 
 ### ブロックと文
 
-【決定】ブロックは、改行で区切った文の並びである。関数の宣言とラムダの本体、`if` と `match` の分岐、`with` と `lazy` と `handle` の本体、`handle` の節がブロックである。ブロックを波括弧で囲まない。ブロックを持つ構文は、キーワードで始まり、`end` とその構文の名前（`end function`・`end lambda`・`end if`・`end match` など）で閉じる。文は `bind` か `shadow` による束縛（束縛の文）か、式である。`return` 直後の改行は、括弧や次行の字句によらず文の区切りになる（[字句構造](01-01-lexical.md)の「改行による区切り」）。
+【決定】ブロックは、改行で区切った文の並びである。関数の宣言とラムダの本体、`if` と `match` の分岐、`with` と `lazy` と `handle` と `block` の本体、`handle` の節がブロックである。ブロックを波括弧で囲まない。ブロックを持つ構文は、キーワードで始まり、`end` とその構文の名前（`end function`・`end lambda`・`end if`・`end match` など）で閉じる。文は `bind` か `shadow` による束縛（束縛の文）か、式である。`return` 直後の改行は、括弧や次行の字句によらず文の区切りになる（[字句構造](01-01-lexical.md)の「改行による区切り」）。
 
 閉じる語が、閉じる構文と一致しないとき（`if` を `end match` で閉じたなど）は、構文エラーとし、診断は、どの構文を閉じるべきかを示す。LLM が波括弧でブロックを書いたとき（`{`・`}` は字句として受け付けない記号。[字句構造](01-01-lexical.md)の「演算子と区切り記号」）は、`end` と構文の名前で閉じる書き方を修正案として示す。
 
@@ -200,9 +201,29 @@ end data
 
 【決定】束縛の文は、名前か `_` に、`<-` の右の式の値を束縛する。その位置で局所の名前として見えていない名前を束縛するときは `bind x <- e` と書き、見えている局所の名前を隠すときは `shadow x <- e` と書く。どちらを書けるかの規則は[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」で定める。型注釈は `bind x: Integer <- e` の形で書け、省略すると推論する。束縛の文の左辺には、名前と `_` のほかに、必ず照合するパターンを書ける（後述の「組と `bind`・`shadow` のパターン（初回リリース版）」）。値によって分岐するときは `match` を使う。
 
-【決定】`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`を明示importしたとき、`bind b: StringBuilder <- StringBuilder.new()`、`bind xs: ListBuilder[T] <- ListBuilder.new()`、`bind bs: BytesBuilder <- BytesBuilder.new()`は専用の局所宣言である。注釈と直接の `new()` の組を必須とし、通常の型推論による束縛にしない。最後の文に書いた場合もブロックの値はUnitであり、Stateを持つ。専用操作の値化・穴・パイプは認めない。詳しい契約は[型システム](01-06-type-system.md#関数内の構築器)で定める。
+【決定】`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`を明示importしたとき、`bind b: StringBuilder <- StringBuilder.new()`、`bind xs: ListBuilder[T] <- ListBuilder.new()`、`bind bs: BytesBuilder <- BytesBuilder.new()`は専用の局所宣言である。注釈と直接の `new()` の組を必須とし、通常の型推論による束縛にしない。最後の文に書いた場合もブロックの値はUnitであり、専用宣言自体はStateを持たない。専用操作の値化・穴・パイプは認めない。詳しい契約は[型システム](01-06-type-system.md#関数内の構築器)で定める。
 
 文の頭に他の言語の束縛の書き方 `let x = e` を書いたときは、構文エラーとし、診断は `bind x <- e`（名前が局所の名前として見えていれば `shadow x <- e`）を修正案として示す。`let` はキーワードではない。
+
+### ブロック式
+
+【決定】`block 文の並び end block` は式であり、束縛の右辺・引数・リストの要素・分岐・return の右辺など、式を置ける位置に書ける。呼び出しと演算子の優先順位は他の primary と同じである。文の区切り、最後の式の値、空と末尾の束縛の Unit、途中の式文に Unit を要求する規則は「ブロックと文」に従う。局所の関数宣言は書けない。
+
+```text
+function greeting(loud: Boolean) -> String
+  bind text <- block
+    bind word <- "hello"
+    if loud then word + "!" else word end if
+  end block
+  return text
+end function
+```
+
+【決定】block の内部は新しい名前の範囲であり、外側の名前を読める。内側の名前は外から参照できず、見えている名前を隠すときは `shadow` を使う。構築器の捕捉境界にはならず、外側の構築器へ専用操作で追記できる。構築器を最後の値として持ち出すことと、lambda・lazy・ハンドラの節等へ捕捉することは、既存の E0464・E0465 で拒否する。
+
+【決定】block 内の `return` と try の return 処置は、囲む最も内側の関数かラムダを作用先とする。block は return の作用先を作らず、lazy とガードの return・try の禁止も引き継ぐ。必ず抜ける block の後に同じ文列の文があれば E0439 で拒否する。理由: 文列を式位置でも評価できるようにし、制御の境界は既存の関数とラムダに揃えるためである。
+
+【決定】block の型は最後の値の型、効果は中で評価する式の効果の和である。専用構築器の操作は同じ局所規則に従い、通常 Reference の State や他の効果は外に残る。閉じる語の不一致は E0213、未閉鎖は E0214、名前の位置の `block` は E0216 とし、開始位置も診断に示す。
 
 ### `return`
 
@@ -283,7 +304,7 @@ end match
 
 【決定】二つ以上のパラメータを持つ通常の関数では、すべての明示引数を名前付きにしなければならない。複数の位置指定は E0449、位置指定と名前指定の混在は E0450 とする。一引数の位置指定でも、渡す関数値の契約名の一致を検査する。既定値、引数の展開、引数不足からの自動の部分適用は加えない。
 
-【決定】呼び出しの引数には `f(b: readB(), a: readA())` のようにパラメータ名を付けられる。指定順は宣言順と異なってよい。呼ぶ値の関数型の名前で対応付け、未知の名前、同じ位置の重複、指定漏れ、位置指定と名前指定の混在は誤りとする。引数がなければ `f()`、一つなら `f(e)` と `f(value: e)` のどちらも使える。名前付き引数のラベルは通常のパラメータと同じ小文字識別子であり、`_`・予約語・修飾名は書けない。ラベルは局所の値への参照ではない。
+【決定】呼び出しの引数には `f(b: readB(), a: readA())` のようにパラメータ名を付けられる。指定順は宣言順と異なってよい。呼ぶ値の関数型の名前で対応付け、未知の名前、同じ位置の重複、指定漏れ、位置指定と名前指定の混在は誤りとする。引数がなければ `f()`、一つなら `f(e)` と `f(value: e)` のどちらも使える。名前付き引数のラベルは通常のパラメータと同じ小文字識別子であり、`record` は名前として使える。`_`・それ以外の予約語・修飾名は書けない。ラベルは局所の値への参照ではない。
 
 【決定】関数型は `function(a: Integer, b: Integer) -> Integer` のように、すべてのパラメータに名前を書く。名前のない旧表記は E0257 とし、名前を持つ型注釈への移行を案内する。名前は型の契約の一部であり、型内で重複させない。型内の名前は局所の値を束縛しない。名前の検査と推論は[型システム](01-06-type-system.md)に従う。
 
@@ -453,7 +474,7 @@ end function
 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
 
 ```text
-language "0.0.9"
+language "0.0.10"
 
 dependency Textkit
   path "../packages/textkit"
@@ -488,7 +509,7 @@ end function
 
 ```text
 TopItem     = ... | [ Visibility ] RecordDecl .
-RecordDecl  = "record" UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
+RecordDecl  = "record" [ NL ] UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
 Field       = LowerIdent ":" Type .
 
 Primary     = ... | RecordExpr .
@@ -806,7 +827,7 @@ const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(40
 ```
 
 - 型の注釈は省略できない。定数は型パラメータを持たない。
-- `=` の右辺の式は、定数式でなければならない。定数式に書けるのは、基本型（`Decimal` を含む）のリテラル、ほかの定数の名前、構成子の適用、レコードの構築、リストのリテラル、`Pair`・`Triple` の構築、基本型の演算子（算術、比較、論理、`div`・`mod`）、定数式だけを埋め込んだ文字列補間、`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` の呼び出し（引数は定数式に限る）である。それら以外の関数の呼び出し、ラムダ、`if`、`match`、`lazy`、`with`、`handle`、`try` は書けない。定数式でない式を書くと誤りとし、診断は、引数のない関数として書く方法を修正案として示す。
+- `=` の右辺の式は、定数式でなければならない。定数式に書けるのは、基本型（`Decimal` を含む）のリテラル、ほかの定数の名前、構成子の適用、レコードの構築、リストのリテラル、`Pair`・`Triple` の構築、基本型の演算子（算術、比較、論理、`div`・`mod`）、定数式だけを埋め込んだ文字列補間、`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` の呼び出し（引数は定数式に限る）である。それら以外の関数の呼び出し、ラムダ、`if`、`match`、`block`、`lazy`、`with`、`handle`、`try` は書けない。定数式でない式を書くと誤りとし、診断は、引数のない関数として書く方法を修正案として示す。
 - 定数式の `Map.fromList` の引数に同じ鍵の組が二つ以上あるとき、`Set.fromList` の引数に同じ要素が二つ以上あるときは誤りとする。`Map` と `Set` のリテラルの構文はない。
 - 定数は、名前で参照する。関数として呼ぶ書き方（`maxRetries()`）は型の誤りになり、診断は括弧を外す書き方を示す。
 - 定数の値の計算、宣言の順序と循環、名前の衝突は[名前・スコープ・モジュール](01-03-names-modules.md)と[評価意味論](01-08-evaluation.md)で定める。パターンの変数と定数の名前の規則は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
@@ -924,7 +945,7 @@ DataDecl    = "data" UpperIdent [ TypeParams ] LineList(Variant) "end" "data" .
 AliasDecl   = "type" UpperIdent [ TypeParams ] "=" Type .
 TypeParams  = "[" UpperIdent { "," UpperIdent } [ "," ] "]" .
 Variant     = UpperIdent [ "(" CommaList(Type) ")" ] .
-RecordDecl  = "record" UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
+RecordDecl  = "record" [ NL ] UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
 Field       = LowerIdent ":" Type .
 TraitDecl   = "trait" UpperIdent "[" TypeParamDecl [ ":" QualUpper { "&" QualUpper } ] "]"
               LineList(MethodSig) "end" "trait" .
@@ -971,6 +992,7 @@ Primary     = Literal
             | MatchExpr
             | Lambda
             | RecordExpr
+            | "block" Body "end" "block"
             | "lazy" Body "end" "lazy"
             | WithExpr
             | HandleExpr

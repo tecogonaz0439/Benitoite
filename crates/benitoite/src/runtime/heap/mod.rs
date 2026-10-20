@@ -41,6 +41,7 @@
 compile_error!("enable the feature `gc-mark-sweep`");
 
 pub mod build;
+pub(crate) mod builders;
 pub mod ctx;
 pub mod slot;
 pub mod stats;

@@ -4,7 +4,8 @@ use crate::base::{BindingId, Span};
 use crate::types::{EffectSet, Ty};
 
 use super::core_ir::{
-    BodyId, Const, Def, DictVal, ExitReportArgs, Handle, MethodCall, Program, Val, Var, VarId,
+    BodyId, BuilderId, BuilderKind, Const, Def, DictVal, ExitReportArgs, Handle, MethodCall,
+    Program, Val, Var, VarId,
 };
 
 /// `join` の印の番号。定義ごとに 0 から振る。
@@ -21,6 +22,19 @@ pub struct LComp {
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum LCompKind {
+    /// 専用保持先の束縛。join の通常引数には含めない。
+    BuilderLet {
+        id: BuilderId,
+        kind: BuilderKind,
+        body: Box<LComp>,
+    },
+    /// 専用保持先への操作。通常値は args だけである。
+    BuilderOp {
+        id: BuilderId,
+        kind: BuilderKind,
+        op: crate::resolve::builders::BuilderOp,
+        args: Vec<LowVal>,
+    },
     Return(Val<LComp>),
     Let {
         var: Var,

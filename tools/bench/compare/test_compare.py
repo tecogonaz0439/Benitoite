@@ -235,5 +235,148 @@ class TierTests(unittest.TestCase):
             select_tier(cases, 'targets', dict(cases=['absent']))
 
 
+class SyntaxBatch4Contracts(unittest.TestCase):
+    # 関門: 共通 runner の入口で単位・欠測・状態拒否を確かめる。
+    # 旧比較のテストは新しい計時差、実行用キーと全目標の接続を含まない。
+    def test_units_iqr_and_nonpositive_ratio_inputs(self):
+        def diff(metric):
+            return dict(op='difference', left=median('point', metric=metric), right=median('zero', metric=metric))
+        data = {'point': {'new': {'vm_run': [.003]*10, 'allocated_bytes': [2]*10}},
+                'zero': {'new': {'vm_run': [.002]*10, 'allocated_bytes': [1]*10}}}
+        self.assertIsNone(expression(dict(op='ratio', left=diff('vm_run'), right=1), data, 10))
+        self.assertEqual(expression(dict(op='ratio', left=diff('allocated_bytes'), right=1), data, 10)['median'], 1)
+        data['point']['new']['vm_run'] = [.004]*10
+        data['zero']['new']['vm_run'] = [.001]*10
+        self.assertAlmostEqual(expression(diff('vm_run'), data, 10)['median'], .003)
+        data['point']['new']['vm_run'] = [1,1,1,1,1,1,1,1,1,100]
+        data['zero']['new']['vm_run'] = [.1]*10
+        self.assertAlmostEqual(expression(diff('vm_run'), data, 10)['median'], .9)
+        data['point']['new']['vm_run'] = [0]*10
+        self.assertIsNone(expression(dict(op='ratio', left=diff('vm_run'), right=1), data, 10))
+        data['point']['new']['vm_run'] = [float('nan')]*10
+        self.assertIsNone(expression(diff('vm_run'), data, 10))
+        with self.assertRaisesRegex(ValueError, 'incompatible units'):
+            expression(dict(op='ratio', left=median('point', metric='allocated_bytes'), right=median('zero', metric='vm_run')), data, 10)
+
+    def test_target_references_and_missing_data(self):
+        from run import validate_targets
+        configs = [*Path('docs').glob('*syntax-batch4/bench-targets.json'),
+                   *Path('docs/archive').glob('*syntax-batch4/bench-targets.json')]
+        self.assertEqual(len(configs), 1)
+        config = json.loads(configs[0].read_text())
+        cases = corpus(False)
+        validate_targets(config, cases)
+        result = evaluate(config, {}, {}, cases)
+        self.assertEqual(len(result), len(config['targets']))
+        self.assertTrue(all(row['status'] == '判定不能' for row in result))
+        changed = copy.deepcopy(config)
+        changed['targets'][0]['expression'] = median('build-string-builder-0-0', metric='invented')
+        with self.assertRaisesRegex(ValueError, 'metric'):
+            validate_targets(changed, cases)
+
+    def test_state_specific_limit_is_not_a_success_sample(self):
+        from scenarios.patterns import cases
+        from validation import validate, verify_group
+        case = next(c for c in cases() if c.id == 'patterns-tree-13')
+        rejected = dict(status=2, stdout='', stderr=json.dumps(dict(code='L0112', severity='error'))+'\n')
+        self.assertEqual(validate(case, 'before', rejected), 'expected-rejection')
+        accepted = dict(status=0, stdout='0\n12\n-1\n', stderr='')
+        self.assertEqual(validate(case, 'after', accepted), 'verified')
+        verify_group(case, dict(before=rejected, after=accepted))
+        for state, value in [('before', accepted), ('after', rejected), ('after', dict(accepted, stdout='0\n0\n-1\n'))]:
+            with self.assertRaises(RuntimeError): validate(case, state, value)
+
+    def test_external_observer_checks_both_directions_and_missing_is_absent(self):
+        from observations import external_values
+        from scenarios.external_tests import cases
+        case = next(c for c in cases(True) if c.family == 'normal' and c.n == 1)
+        output = '\n'.join(json.dumps(v) for v in [dict(kind='test',outcome='passed'),
+                 dict(kind='testSummary',passed=1,failed=0,filesNotRun=0,interrupted=False)])
+        value = dict(status=0, stdout=output, stderr=json.dumps(dict(runtime_compilations=dict(normal=1,adapter=0), stateful_instances=[])))
+        self.assertEqual(external_values(case, value, 'after', stats=True)['runtime_compilations'], 1)
+        for n in (0,2):
+            bad = dict(value, stderr=json.dumps(dict(runtime_compilations=dict(normal=n,adapter=0),stateful_instances=[])))
+            with self.assertRaisesRegex(RuntimeError, 'compilation/key mismatch'): external_values(case, bad, 'after', stats=True)
+        self.assertEqual(external_values(case, dict(value,stderr='{}'), 'before', stats=True), {})
+        with self.assertRaises(RuntimeError): external_values(case, dict(value,stdout=output.replace('"passed": 1','"passed": 0')), 'after', stats=True)
+
+    def test_probe_and_resource_decoders_refuse_missing_and_wrong_values(self):
+        from observations import probe_values, alloc_values
+        from run import stage_values
+        from scenarios.codegen import cases
+        case = next(c for c in cases(True) if c.id == 'codegen-holes-1-direct')
+        result = dict(status=0,stdout=json.dumps(dict(vm_run=.1,hole_lets=3,errors=0,output='wrong')),stderr='')
+        with self.assertRaisesRegex(RuntimeError, 'output mismatch'): stage_values(case,'after',result)
+        with self.assertRaisesRegex(RuntimeError, 'missing probe metric'): probe_values(dict(result,stdout='{}'),('vm_run',))
+        with self.assertRaises(RuntimeError): probe_values(dict(result,stdout='{"vm_run": -1}'))
+        self.assertEqual(alloc_values('')[0], {})
+        with self.assertRaises(RuntimeError): alloc_values('alloc-stats: allocated_bytes=0\n')
+        observed, stderr = alloc_values('alloc-stats: allocations=1 allocated_bytes=8 peak_heap_bytes=8\nalloc-stats: allocations=2 allocated_bytes=16 peak_heap_bytes=12\n')
+        self.assertEqual(observed, dict(allocations=3,allocated_bytes=24,peak_heap_bytes=12))
+        self.assertEqual(stderr, '')
+
+    def test_partial_invariant_evidence_is_inconclusive(self):
+        case = Case('x','s','f',1,common(''),states=('a','b'),params=dict(keys=1))
+        goal = dict(label='g',kind='invariant',field='runtime_compilations',parameter='keys')
+        outputs = {'x': {'a': dict(stdout='', observations=dict(runtime_compilations=1))}}
+        self.assertEqual(evaluate(dict(targets=[goal]),{},outputs,[case])[0]['status'], '判定不能')
+
+    def test_probe_failures_identify_case_state_and_metrics(self):
+        from run import stage_values
+        from validation import validate
+        from scenarios.codegen import cases
+        case = next(c for c in cases(True) if c.id == 'codegen-irenv-empty')
+        failures = [dict(status=1, stdout='', stderr='missing declaration scheme'),
+                    dict(status=0, stdout='{}', stderr=''),
+                    dict(status=0, stdout='not JSON', stderr='')]
+        for check in (validate, stage_values):
+            for state in ('before', 'after'):
+                for result in failures:
+                    with self.subTest(check=check.__name__, state=state, result=result):
+                        with self.assertRaisesRegex(RuntimeError, f'{case.id}/{state}.*ir_check'):
+                            check(case, state, result)
+
+
+class CommonProbeCompilationTests(unittest.TestCase):
+    def test_both_revisions_compile_through_the_common_builder(self):
+        # コンパイルだけでは宣言型などの実行時の前提の欠落を捕まえられない。
+        # quick の独立 IR とグラフを両版自身の検査・変換の入口へ一度ずつ通す。
+        from build import build_all, git
+        from run import execute, probe_command, stage_values
+        from scenarios import select_tier
+        baseline = 'c31e64b03d2810343e1779926bea4ebc958b6164'
+        head = git('rev-parse','HEAD').decode().strip()
+        records = build_all(dict(before=baseline,after=head))
+        for state, record in records.items():
+            self.assertIn('probe', record, (state, record.get('probe_unavailable')))
+            self.assertTrue(Path(record['probe']).is_file())
+            self.assertIn('conversion_unit', record['bridge_sources'])
+        cases = [c for c in select_tier(corpus(True), 'short', quick=True) if c.command == 'probe']
+        configure(cases, {s: {} for s in records})
+        with tempfile.TemporaryDirectory() as tmp:
+            _, entries = materialize(Path(tmp), cases)
+            for case in cases:
+                for state in case.states:
+                    with self.subTest(case=case.id, state=state, metrics=case.metrics):
+                        result = execute(probe_command(case, records[state], entries[case.id, state]), 30)
+                        values = stage_values(case, state, result)
+                        self.assertTrue(set(case.metrics) - {'allocated_bytes'} <= values.keys())
+            # 専用validatorの入力はexpected_stdoutを使わない。各版で利用可能なAPIを使う。
+            shrink = next(c for c in corpus(True) if c.id == 'property-seven-24-0-0-all-ok')
+            features = {s: {name: r['supported'] for name, r in
+                           probe_features(b['binary'], Path(tmp)/s, 30, execute).items()}
+                        for s, b in records.items()}
+            configure([shrink], features)
+            _, entries = materialize(Path(tmp), [shrink], features)
+            for state in shrink.states:
+                variant = shrink.variant(features[state])
+                with self.subTest(case=shrink.id, state=state, variant=variant):
+                    result = execute(probe_command(shrink, records[state], entries[shrink.id, state]), 30)
+                    stage_values(shrink, state, result, variant=variant)
+                    bad = dict(result, stdout=result['stdout'].replace('message=bad', 'message=wrong'))
+                    with self.assertRaisesRegex(RuntimeError, 'probe output mismatch'):
+                        stage_values(shrink, state, bad, variant=variant)
+
+
 if __name__ == '__main__':
     unittest.main()

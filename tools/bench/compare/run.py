@@ -18,6 +18,7 @@ from scenarios import corpus, select_tier, resource_point
 from model import EMPTY
 from features import probe_features, configure
 from validation import validate, verify_group
+from observations import METRIC_UNITS, probe_values, alloc_values, external_values
 
 HERE = Path(__file__).resolve().parent
 
@@ -40,6 +41,66 @@ def arguments(case, entry):
     return [a.replace('{input}', str(entry.parent)) for a in case.arguments]
 
 
+def probe_command(case, build, entry):
+    if not build.get('probe'):
+        raise RuntimeError(f'{case.id}: probe unavailable: {build.get("probe_unavailable")}')
+    mode = case.probe or ('check' if case.command == 'check' else 'stages')
+    return [build['probe'], str(entry), mode, *case.probe_arguments,
+            *(arguments(case, entry) if case.command != 'probe' else ())]
+
+
+def case_command(case, build, entry):
+    if case.command == 'probe':
+        return probe_command(case, build, entry)
+    return [build['binary'], case.command, '--diagnostics=json', str(entry), *arguments(case, entry)]
+
+
+def validate_targets(config, cases):
+    index = {c.id: c for c in cases}
+    def visit(node):
+        if isinstance(node, dict):
+            if node.get('op') == 'median':
+                case = index[node['case']]
+                metric = node.get('metric', 'cli')
+                available = {'cli', 'rss_bytes', 'allocated_bytes', 'peak_heap_bytes', *case.metrics}
+                if case.command == 'check':
+                    available.update(('load_parse', 'reparse', 'resolve', 'typeck'))
+                if case.probe == 'stages':
+                    available.update(('desugar', 'ir_check', 'lower', 'codegen', 'vm_run', 'hole_lets'))
+                if metric not in METRIC_UNITS or metric not in available:
+                    raise ValueError(f'{case.id}: unknown or unsupported metric {metric}')
+                if case.state_requires and node['state'] not in case.state_requires:
+                    raise ValueError(f'{case.id}: target references an excluded state')
+                if case.expectation(node['state']):
+                    raise ValueError(f'{case.id}: rejected state cannot supply target metrics')
+            for v in node.values(): visit(v)
+        elif isinstance(node, list):
+            for v in node: visit(v)
+    select_tier(cases, 'targets', config)
+    visit(config.get('targets', []))
+
+
+def stage_values(case, state, result, alloc=False, variant=None):
+    required = [m for m in case.metrics if m not in ('allocated_bytes', 'peak_heap_bytes', 'allocations')]
+    if case.command == 'run':
+        required.append('output')
+    values = probe_values(result, required, case_id=case.id, state=state)
+    if case.command == 'probe':
+        validate(case, state, result)
+    else:
+        if values.get('errors') != len(case.codes):
+            raise RuntimeError(f'probe error count differs: {case.id}/{state}')
+        if case.command == 'run':
+            # CLIと同じ独立validatorへ渡す。縮小器などの専用出力は固定文字列ではない。
+            try:
+                validate(case, state, dict(status=0, stdout=values['output'], stderr=''), variant)
+            except (RuntimeError, ValueError) as error:
+                raise RuntimeError(f'{case.id}/{state} metrics={",".join(required)}: probe output mismatch: {error}') from error
+    if not alloc:
+        return {k: v for k, v in values.items() if k != 'output' and k not in ('allocated_bytes', 'peak_heap_bytes', 'allocations')}
+    return {k: v for k, v in values.items() if k in ('allocated_bytes', 'peak_heap_bytes', 'allocations')}
+
+
 def materialize(root, cases, features=None):
     features = features or {s: {} for c in cases for s in c.states}
     manifest = []
@@ -52,13 +113,14 @@ def materialize(root, cases, features=None):
             variant = case.variant(features[state])
             sources = case.sources(variant)
             version = 'shared' if case.files['legacy'] == case.files['modern'] else variant
-            fingerprint = sha(json.dumps(sources, sort_keys=True, ensure_ascii=False).encode())[:16]
+            fingerprint = sha(json.dumps([sources, case.binary_files], sort_keys=True, ensure_ascii=False).encode())[:16]
             directory = root / 'inputs' / case.id / (version + '-' + fingerprint)
             hashes = {}
-            for name, source in sources.items():
+            data_files = {name: source.encode() for name, source in sources.items()}
+            data_files.update({name: bytes.fromhex(value) for name, value in case.binary_files.items()})
+            for name, data in data_files.items():
                 path = directory / name
                 path.parent.mkdir(parents=True, exist_ok=True)
-                data = source.encode()
                 if path.exists() and path.read_bytes() != data:
                     raise RuntimeError(f'generated input changed: {path}')
                 path.write_bytes(data)
@@ -85,7 +147,7 @@ def estimate(quick_root, full_cases, resources='all', sections=None, samples=10,
     records = [json.loads(p.read_text()) for p in sorted(quick_root.glob('section-*.json'))]
     qcases = {c['id']: c for c in q['cases']}
     measured = {cid: states for r in records for cid, states in r['measurements'].items()}
-    phases = ('verify', 'warmup', 'cli', 'control_cli', 'probe_warmup', 'stages', 'rss', 'alloc')
+    phases = ('verify', 'warmup', 'cli', 'control_cli', 'probe_warmup', 'stages', 'rss', 'alloc', 'external_observer')
     result = {}
     missing = []
     for case in full_cases:
@@ -106,7 +168,7 @@ def estimate(quick_root, full_cases, resources='all', sections=None, samples=10,
                     (phase in ('stages', 'probe_warmup') and not probes) or
                     (phase in ('rss', 'alloc') and resources == 'main' and not resource_point(case))):
                     continue
-                if phase == 'stages' and case.command != 'check':
+                if phase == 'stages' and case.validator == 'external':
                     continue
                 costs = []
                 for cid in options:
@@ -115,11 +177,10 @@ def estimate(quick_root, full_cases, resources='all', sections=None, samples=10,
                     if not values and phase == 'alloc':
                         values = metrics.get('verify', [])
                     if values:
-                        unit = max(1, qcases[cid]['n'])*qcases[cid]['params'].get('repeats', 1)
                         factor = 1 if phase == 'control_cli' else work_ratio(case,qcases[cid])
                         costs.append(sum(values)/len(values)*factor)
                 if costs:
-                    total[phase] += max(costs)*(samples if phase in ('cli','control_cli','stages') else 1)
+                    total[phase] += max(costs)*(samples if phase in ('cli','control_cli','stages','alloc','external_observer') else 1)
     section_totals = {}
     for section, families in result.items():
         totals = {p:sum(f[p] for f in families.values()) for p in phases}
@@ -143,6 +204,7 @@ def report(root, manifest, records):
     measurements = {}
     rows = []
     phases = {}
+    observations = []
     for record in records:
         measurements.update(record['measurements'])
         phases[record['section']] = record['phase_seconds']
@@ -151,6 +213,9 @@ def report(root, manifest, records):
                 if metrics.get('cli'):
                     s = summary(metrics['cli'])
                     rows.append((cid, state, s['median'], s['noise']))
+                for metric, unit in METRIC_UNITS.items():
+                    if metric != 'cli' and metrics.get(metric):
+                        observations.append((metric, unit, cid, state, summary(metrics[metric])))
     selected_ids = {c['id'] for c in manifest['cases']}
     cases = [c for c in corpus(manifest['quick'], manifest['repeats'], Path(manifest['fixture_archive'])) if c.id in selected_ids]
     outputs = {cid: output['verified'] for r in records for cid, output in r['outputs'].items()}
@@ -170,10 +235,12 @@ def report(root, manifest, records):
              '入力のAPIの差と比較からの除外はmanifestのcapabilitiesとskippedに記録する。縮小の旧APIと新APIは同じCPU作業量ではない。', '',
              '| 入力 | 状態 | 中央値 (秒) | ぶれ (全幅/2、秒) |', '|---|---|---:|---:|']
     lines += [f'| {cid} | {state} | {mid:.6f} | {noise:.6f} |' for cid, state, mid, noise in rows]
+    lines += ['', '## 段・変換・計数の観測', '', '| 指標 | 単位 | 入力 | 状態 | 標本数 | 中央値 | IQR |', '|---|---|---|---|---:|---:|---:|']
+    lines += [f"| {m} | {u} | {cid} | {state} | {s['samples']} | {s['median']:.9g} | {s['iqr']:.9g} |" for m,u,cid,state,s in observations]
     lines += ['', '## 比較状態と機能', '', '```json', json.dumps(dict(commits=manifest['evidence']['commits'], features=manifest['features'], skipped=manifest['skipped'], unavailable_probes={s:b['probe_unavailable'] for s,b in manifest['builds'].items() if b.get('probe_unavailable')}), ensure_ascii=False, indent=2), '```']
     lines += ['', '## 目標', '', '| 目標 | 判定 | 値 | 上限 |', '|---|---|---:|---:|']
     lines += [f"| {v['label']} | {v['status']} | {v.get('value', '—')} | {v.get('threshold', '—')} |" for v in verdicts]
-    lines += ['', '差し引きが両標本集合の半幅の和以下なら判定不能。標本数不足も合格にしない。', '',
+    lines += ['', '時間差が2 ms未満、非正、または両標本集合のIQRの和以下なら比率は判定不能。確保量と整数計数には2 msを適用しない。標本数不足も合格にしない。', '',
               '## 別実行と未取得', '', '段別時間は補助バイナリのload_parse・resolve・typeck。読み込みとlex/parseは公開loaderの一つの区間に含む。reparseは同じ読み込み済みバイト列の別パスであり、load_parseへ加算しない。',
               'RSSは既存rss.pyの独立実行。alloc-statsは別targetのバイナリ。全標本・照合出力・コマンドはsection JSONに保存する。',
               'Fail正規化の内部訪問節数・縮小器内部の生成/比較回数は未取得。shrinksとshrinkWorkは実出力から検査する。',
@@ -184,7 +251,16 @@ def report(root, manifest, records):
     maximum = max((r[2] for r in rows), default=1) or 1
     for cid, state, mid, noise in rows:
         bars.append(f'<tr><td>{html.escape(cid)}</td><td>{html.escape(state)}</td><td><svg width="500" height="16"><rect width="{500*mid/maximum:.2f}" height="16" fill="#245d9e"/></svg></td><td>{mid:.6f}</td></tr>')
-    (root / 'results.html').write_text('<!doctype html><meta charset="utf-8"><title>Revision comparison</title><style>body{font:14px sans-serif;margin:24px}td{padding:3px 8px}svg{background:#eee}</style><h1>Revision comparison: CLI elapsed seconds</h1><p>Linear scale, common zero and maximum '+str(maximum)+' s. Median; all samples in section JSON. Quick is not acceptance evidence.</p><table>'+''.join(bars)+'</table><p><a href="results.md">測定条件・目標・未取得</a></p>')
+    charts = []
+    for metric in sorted({r[0] for r in observations}):
+        selected = [r for r in observations if r[0] == metric]
+        maximum_metric = max(r[4]['median'] for r in selected) or 1
+        chart_rows = []
+        for _, unit, cid, state, stats in selected:
+            width = 500*stats['median']/maximum_metric
+            chart_rows.append(f'<tr><td>{html.escape(cid)}</td><td>{html.escape(state)}</td><td><svg width="500" height="16"><rect width="{width:.2f}" height="16" fill="#245d9e"/></svg></td><td>{stats["median"]:.9g}</td></tr>')
+        charts.append(f'<h2>{html.escape(metric)} ({html.escape(selected[0][1])})</h2><p>Linear scale, zero to {maximum_metric:.9g}; each metric has its own scale.</p><table>'+''.join(chart_rows)+'</table>')
+    (root / 'results.html').write_text('<!doctype html><meta charset="utf-8"><title>Revision comparison</title><style>body{font:14px sans-serif;margin:24px}td{padding:3px 8px}svg{background:#eee}</style><h1>Revision comparison: CLI elapsed seconds</h1><p>Linear scale, common zero and maximum '+str(maximum)+' s. Median; all samples in section JSON. Quick is not acceptance evidence.</p><table>'+''.join(bars)+'</table>'+''.join(charts)+'<p><a href="results.md">測定条件・目標・未取得</a></p>')
 
 
 
@@ -200,7 +276,7 @@ def short_targets(cases, states, samples):
 def short_estimate(verified, samples, resources='none', alloc=False):
     # Calibration uses actual selected inputs; it precedes warmup and sampling.
     verification = sum(r['seconds'] for states in verified.values() for r in states.values())
-    factor = 2*samples + 1 + (1 if resources != 'none' else 0) + (1 if alloc else 0)
+    factor = 2*samples + 1 + (1 if resources != 'none' else 0) + (samples if alloc else 0)
     return dict(model='actual verification × (warmup + paired CLI/control samples + resources), 2x safety margin + 60s',
                 verification_seconds=verification, samples=samples,
                 cached_total_seconds=verification + 2*verification*factor + 60,
@@ -296,13 +372,14 @@ def main():
         alloc_builds = build_all(ev['commits'], alloc=True, imports=args.import_build) if args.alloc else {}
         manifest = {**identity, 'builds': builds, 'alloc_builds': alloc_builds, 'environment': environment(),
                     'fixture_archive': next(iter(builds.values()))['archive'], 'working_head': subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip(),
-                    'working_diff': subprocess.check_output(['git','status','--porcelain'], cwd=ROOT, text=True)}
+                    'metric_units': METRIC_UNITS, 'working_diff': subprocess.check_output(['git','status','--porcelain'], cwd=ROOT, text=True)}
     if 'features' not in manifest:
         capabilities = {s: probe_features(b['binary'], root/'features'/s, args.timeout, execute) for s,b in builds.items()}
         manifest['capabilities'] = capabilities
         manifest['features'] = {s: {f:r['supported'] for f,r in caps.items()} for s,caps in capabilities.items()}
     features = manifest['features']
     cases = select_tier(corpus(args.quick, args.repeats, Path(manifest['fixture_archive'])), args.tier, targets, quick=args.quick)
+    validate_targets(targets, corpus(False, args.repeats, Path(manifest['fixture_archive'])))
     chosen_sections = args.section or targets.get('sections')
     if chosen_sections:
         known = {c.section for c in cases}
@@ -328,14 +405,23 @@ def main():
         for case in [c for c in cases if c.section == section]:
             outputs = {}
             for state in case.states:
-                command = [builds[state]['binary'], case.command, '--diagnostics=json', str(entries[case.id, state]), *arguments(case, entries[case.id, state])]
+                command = case_command(case, builds[state], entries[case.id, state])
                 result = execute(command, args.timeout)
                 try:
-                    result['validation'] = validate(case, variants[case.id][state], result)
+                    result['validation'] = validate(case, state, result, variants[case.id][state])
                 except (RuntimeError, ValueError) as error:
                     save(out/'verification-failure.json', dict(case=case.id, state=state, result=result, error=str(error)))
                     raise
+                if case.command != 'probe' and case.validator != 'external' and builds[state].get('probe') and result['validation'] == 'verified' and (case.probe or case.command == 'check'):
+                    observed = execute(probe_command(case, builds[state], entries[case.id, state]), args.timeout)
+                    stage_values(case, state, observed, variant=variants[case.id][state])
+                    result['probe_verified'] = observed
                 outputs[state] = result
+                if result['validation'] == 'verified' and 'verify_run_stdout' in case.params:
+                    run_result = execute([builds[state]['binary'], 'run', '--diagnostics=json', str(entries[case.id, state])], args.timeout)
+                    if run_result['status'] or run_result['stderr'] or run_result['stdout'] != case.params['verify_run_stdout']:
+                        raise RuntimeError(f'pattern ordering mismatch: {case.id}/{state}: {run_result}')
+                    result['run_verified'] = run_result
             try:
                 verify_group(case, outputs, variants[case.id])
             except RuntimeError as error:
@@ -359,13 +445,13 @@ def main():
         selected = [c for c in cases if c.section == section]
         for case in selected:
             metrics = {s: dict(verify=[verified[case.id][s]['seconds']], warmup=[], cli=[], control_cli=[], stages=[], probe_warmup=[], typeck=[], load_parse=[], reparse=[], resolve=[], rss=[], rss_bytes=[], alloc=[]) for s in case.states}
-            commands = {s: [builds[s]['binary'], case.command, '--diagnostics=json', str(entries[case.id, s]), *arguments(case, entries[case.id, s])] for s in case.states}
+            commands = {s: case_command(case, builds[s], entries[case.id, s]) for s in case.states}
             empty = root / 'empty.bnt'
             empty.write_text('function main() -> Unit\nend function\n')
-            control = {s: [builds[s]['binary'], case.command, '--diagnostics=json', str(empty)] for s in case.states}
+            control = {s: [builds[s]['binary'], ('check' if case.command == 'check' else 'run'), '--diagnostics=json', str(empty)] for s in case.states}
             for s in case.states:
                 r = execute(commands[s], args.timeout)
-                validate(case, variants[case.id][s], r)
+                validate(case, s, r, variants[case.id][s])
                 metrics[s]['warmup'].append(r['seconds'])
             start = time.perf_counter()
             for sample in range(manifest['samples']):
@@ -379,11 +465,11 @@ def main():
                     if ctrl['status'] or ctrl['stdout'] or ctrl['stderr']:
                         raise RuntimeError('empty main control failed')
                     metrics[s]['control_cli'].append(ctrl['seconds'])
-                    validate(case, variants[case.id][s], r)
+                    validate(case, s, r, variants[case.id][s])
                     expected = verified[case.id][s]
-                    if any(r[k] != expected[k] for k in ('status', 'stdout', 'stderr')):
+                    if case.command != 'probe' and any(r[k] != expected[k] for k in ('status', 'stdout', 'stderr')):
                         raise RuntimeError(f'{case.id}/{s}: output changed while timing')
-                    if expected['validation'] != 'depth-rejected':
+                    if expected['validation'] == 'verified':
                         metrics[s]['cli'].append(r['seconds'])
             record['phase_seconds']['cli'] = record['phase_seconds'].get('cli',0)+time.perf_counter()-start
             # Resource measurements and probes always occur outside CLI timing.
@@ -398,42 +484,55 @@ def main():
                     metrics[s]['rss_bytes'] = [int(match[1])]
                     expected = verified[case.id][s]
                     stderr = re.sub(r'^bench-rss: \d+\n?', '', r['stderr'], flags=re.M)
-                    if r['status'] != expected['status'] or r['stdout'] != expected['stdout'] or stderr != expected['stderr']:
+                    if case.command == 'probe':
+                        validate(case, s, dict(r, stderr=stderr))
+                    elif r['status'] != expected['status'] or r['stdout'] != expected['stdout'] or stderr != expected['stderr']:
                         raise RuntimeError(f'RSS output mismatch: {case.id}/{s}')
                     metrics[s]['rss_result'] = r
+                if verified[case.id][s]['validation'] != 'verified':
+                    continue
                 if args.alloc and take_resources:
-                    a = execute([manifest['alloc_builds'][s]['binary'], *commands[s][1:]], args.timeout, alloc=True)
-                    match = re.search(r'^alloc-stats: .*$', a['stderr'], re.M)
-                    # check may not instantiate a runtime heap; absence is explicit.
-                    metrics[s]['alloc'] = [a['seconds']]
-                    metrics[s]['alloc_output'] = match[0] if match else 'not emitted (no runtime heap)'
-                    metrics[s]['alloc_result'] = a
-                    stderr = re.sub(r'^alloc-stats: .*\n?', '', a['stderr'], flags=re.M)
-                    if a['status'] != verified[case.id][s]['status'] or a['stdout'] != verified[case.id][s]['stdout'] or stderr != verified[case.id][s]['stderr']:
-                        raise RuntimeError('alloc output mismatch')
-            if case.command == 'check' and args.tier != 'short':
-                probe_states = [s for s in case.states if builds[s].get('probe') and verified[case.id][s]['validation'] != 'depth-rejected']
+                    alloc_build = manifest['alloc_builds'][s]
+                    command = case_command(case, alloc_build, entries[case.id, s])
+                    metrics[s]['alloc_results'] = []
+                    for _ in range(manifest['samples']):
+                        a = execute(command, args.timeout, alloc=case.command != 'probe')
+                        if case.command == 'probe':
+                            observed = stage_values(case, s, a, alloc=True, variant=variants[case.id][s])
+                        else:
+                            observed, stderr = alloc_values(a['stderr'])
+                            validate(case, s, dict(a, stderr=stderr), variants[case.id][s])
+                        metrics[s]['alloc'].append(a['seconds'])
+                        metrics[s]['alloc_results'].append(a)
+                        for key, value in observed.items(): metrics[s].setdefault(key, []).append(value)
+                if case.validator == 'external':
+                    observed_results = []
+                    for _ in range(manifest['samples']):
+                        r = execute([*commands[s], '--wasm-stats'], args.timeout)
+                        observed = external_values(case, r, s, stats=True)
+                        observed_results.append(r)
+                        for key, value in observed.items(): metrics[s].setdefault(key, []).append(value)
+                    metrics[s]['external_results'] = observed_results
+                    metrics[s]['external_observer'] = [r['seconds'] for r in observed_results]
+                    verified[case.id][s]['observations'] = observed
+            if args.tier != 'short' or case.command == 'probe':
+                probe_states = [s for s in case.states if builds[s].get('probe') and verified[case.id][s]['validation'] == 'verified' and case.validator != 'external']
                 for s in probe_states:
-                    warm = execute([builds[s]['probe'], str(entries[case.id, s]), *arguments(case, entries[case.id, s])], args.timeout)
-                    if warm['status']:
-                        raise RuntimeError(f'probe warmup failed: {warm}')
+                    warm = execute(probe_command(case, builds[s], entries[case.id, s]), args.timeout)
+                    stage_values(case, s, warm, variant=variants[case.id][s])
                     metrics[s]['probe_warmup'].append(warm['seconds'])
                 for sample in range(manifest['samples']):
                     for s in (probe_states if sample % 2 == 0 else list(reversed(probe_states))):
-                        p = execute([builds[s]['probe'], str(entries[case.id, s]), *arguments(case, entries[case.id, s])], args.timeout)
-                        if p['status']:
-                            raise RuntimeError(f'probe failed: {p}')
-                        timing = json.loads(p['stdout'])
-                        if timing['errors'] != len(case.codes):
-                            raise RuntimeError(f'probe error count differs: {case.id}/{s}')
+                        p = execute(probe_command(case, builds[s], entries[case.id, s]), args.timeout)
+                        values = stage_values(case, s, p, variant=variants[case.id][s])
                         metrics[s]['stages'].append(p['seconds'])
-                        for key in ('load_parse', 'reparse', 'resolve', 'typeck'):
-                            metrics[s][key].append(timing[key])
+                        metrics[s].setdefault('probe_results', []).append(p)
+                        for key, value in values.items(): metrics[s].setdefault(key, []).append(value)
             record['measurements'][case.id] = metrics
             record['outputs'][case.id] = dict(commands=commands, controls=control, verified=verified[case.id])
             save(out/f'partial-{section}.json', record)
-        for phase in ('warmup', 'probe_warmup', 'rss', 'stages', 'alloc'):
-            record['phase_seconds'][phase] = sum(sum(m[phase]) for st in record['measurements'].values() for m in st.values())
+        for phase in ('warmup', 'probe_warmup', 'rss', 'stages', 'alloc', 'external_observer'):
+            record['phase_seconds'][phase] = sum(sum(m.get(phase, [])) for st in record['measurements'].values() for m in st.values())
         save(path, record)
         print(f'{section}: {len(selected)} cases measured', flush=True)
     records = [json.loads(p.read_text()) for p in sorted(out.glob('section-*.json'))]

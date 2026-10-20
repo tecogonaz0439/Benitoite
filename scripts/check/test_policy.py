@@ -190,7 +190,7 @@ class PolicyTests(unittest.TestCase):
         # 外部プロセスだけを代え、本物のシェルが独立入力と実ソースを両方呼ぶこと、
         # 各入口の失敗を最後の成功で上書きしないことを確かめる。
         with tempfile.TemporaryDirectory(prefix='benitoite-formal-policy-') as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             (root / 'scripts').mkdir()
             shutil.copy2(ROOT / 'scripts/check-formal.sh', root / 'scripts/check-formal.sh')
             (root / 'formal/.lake/build/bin').mkdir(parents=True)
@@ -207,23 +207,42 @@ class PolicyTests(unittest.TestCase):
             env = dict(os.environ, PATH=str(root / 'external') + os.pathsep + os.environ['PATH'], POLICY_LOG=str(log))
             for name in ('POLICY_FAIL', 'POLICY_CARGO', 'BENITOITE_DESUGAR_DIFF_DIR', 'BENITOITE_COVERAGE_DIFF_DIR'):
                 env.pop(name, None)
+            # 失敗時の呼び出し列も全引数で比べるため、実行ごとのPIDを含まない出力先にする。
+            output_dir = root / 'target/desugar-diff/policy'
+            env['BENITOITE_DESUGAR_DIFF_DIR'] = str(output_dir)
+            env['BENITOITE_COVERAGE_DIFF_DIR'] = str(root / 'target/coverage-diff/policy')
             result = execute(['bash', 'scripts/check-formal.sh'], root, env)
             self.assertEqual(result.returncode, 0, result.stderr)
             calls = [json.loads(line) for line in log.read_text().splitlines()]
             independent = ['python3', '-B', 'formal/tests/test_batch3_exchange.py']
             self.assertEqual(calls.count(independent), 1)
+            batch4 = ['python3', '-B', 'formal/tests/test_batch4_exchange.py']
+            self.assertEqual(calls.count(batch4), 1)
             rust = [call for call in calls if call[:3] == independent and '--rust-dir' in call]
             self.assertEqual(len(rust), 1)
             self.assertTrue(rust[0][-1].endswith('/batch3/b3'))
             checker = [call for call in calls if len(call) > 2 and call[2].endswith('/check_batch3.py')]
-            self.assertEqual(len(checker), 1)
+            self.assertEqual(len(checker), 4)
             self.assertEqual(checker[0][4], rust[0][-1])
-            for call in (independent, rust[0], checker[0]):
-                log.unlink()
-                failed = execute(['bash', 'scripts/check-formal.sh'], root,
-                                 dict(env, POLICY_FAIL=str(calls.index(call) + 1)))
-                self.assertEqual(failed.returncode, 17, failed.stderr)
-                self.assertEqual(len(log.read_text().splitlines()), calls.index(call) + 1)
+            for profile in ('b3', 'blocks', 'g2', 'g3'):
+                with self.subTest(profile=profile):
+                    rust_dir = str(output_dir / 'batch3' / profile)
+                    profile_checker = [call for call in checker if call[3:5] == ['--rust-dir', rust_dir]]
+                    self.assertEqual(len(profile_checker), 1)
+                    self.assertEqual(profile_checker[0], [
+                        'python3', '-B', 'crates/benitoite/tests/desugar_export/check_batch3.py',
+                        '--rust-dir', rust_dir,
+                        '--report', str(output_dir / 'batch3' / (profile + '-exchange-results.json')),
+                    ])
+            for call in (independent, batch4, rust[0], *checker):
+                with self.subTest(failure=call):
+                    log.unlink()
+                    failed = execute(['bash', 'scripts/check-formal.sh'], root,
+                                     dict(env, POLICY_FAIL=str(calls.index(call) + 1)))
+                    self.assertEqual(failed.returncode, 17, failed.stderr)
+                    self.assertEqual(len(log.read_text().splitlines()), calls.index(call) + 1)
+                    self.assertEqual([json.loads(line) for line in log.read_text().splitlines()],
+                                     calls[:calls.index(call) + 1])
 
     def test_legacy_contract(self):
         fixture = json.loads(FIXTURE.read_text())
@@ -238,6 +257,22 @@ class PolicyTests(unittest.TestCase):
                 finally:
                     if change:
                         (self.box.root / change).unlink()
+
+    def test_python_syntax_excludes_historical_tools(self):
+        # 保管資料は実行対象に含めず、現役の構文エラーは引き続き拒否する。
+        historical = 'docs/2026-10-19-test/historical-tools/named-arguments-migrate/tools/named-arguments-migrate/broken.py'
+        live = 'tools/source-migrate/broken.py'
+        self.box.put(historical, 'def broken(\n')
+        try:
+            result = self.box.check('--level', 'work', '--only', 'python_syntax')
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.box.put(live, 'def broken(\n')
+            result = self.box.check('--level', 'work', '--only', 'python_syntax')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn(live, result.stderr)
+        finally:
+            (self.box.root / historical).unlink()
+            (self.box.root / live).unlink(missing_ok=True)
 
     def test_policy_selection_and_shell_syntax(self):
         for name in ('check.sh', 'check-heap.sh', 'check-formal.sh'):
@@ -540,6 +575,8 @@ class PolicyTests(unittest.TestCase):
             ('scripts/release/about.hbs', {'licenses'}),
             ('tools/skill-eval/sample.py', {'python_syntax', 'migrate_selftests', 'skill_eval_selftest'}),
             ('tools/source-migrate/sample.py', {'python_syntax', 'migrate_selftests'}),
+            ('docs/2026-10-19-test/historical-tools/named-arguments-migrate/tools/named-arguments-migrate/old.py', set()),
+            ('docs/2026-10-19-test/historical-tools/named-arguments-migrate/crates/benitoite/examples/named_arguments_inventory.rs', set()),
             ('tools/spec-coverage/sample.py', {'python_syntax', 'migrate_selftests', 'spec_tally'}),
             ('docs/design/01-spec/01-02-syntax.md', {'spec_examples', 'spec_tally', 'skill_generated', 'skill_docs'}),
             ('docs/reference/benitoite.md', {'reference_examples'}),
@@ -602,6 +639,8 @@ class PolicyTests(unittest.TestCase):
             ('scripts/release/about.toml', {'licenses'}),
             ('tools/skill-eval/change.py', {'python_syntax', 'migrate_selftests', 'skill_eval_selftest'}),
             ('tools/source-migrate/change.py', {'python_syntax', 'migrate_selftests'}),
+            ('docs/2026-10-19-test/historical-tools/named-arguments-migrate/tools/named-arguments-migrate/old.py', set()),
+            ('docs/2026-10-19-test/historical-tools/named-arguments-migrate/crates/benitoite/examples/named_arguments_inventory.rs', set()),
             ('tools/spec-coverage/change.py', {'python_syntax', 'migrate_selftests', 'spec_tally'}),
             ('docs/design/01-spec/01-02-syntax.md', {'spec_examples', 'spec_tally', 'skill_generated', 'skill_docs'}),
             ('docs/design/01-spec/change.md', {'spec_examples', 'spec_tally'}),

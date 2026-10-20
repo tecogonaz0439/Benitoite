@@ -83,12 +83,12 @@ def DieExitOk (B : Builtins) (C : List TParam) (exit : PrimName) (t : Ty) : Prop
 mutual
   inductive HasTypeQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
       BuilderCtx → List TParam → List (Option Ty) → Option Ty → Position → Expr → Ty → Eff → Prop
-    -- 専用位置は通常値の環境から読まない。State は全操作で残す。
-    | E_BuilderOp {Δ C Γ R p op i args refs ε} :
-        refs.Ok D B C Q Δ i →
-        HasTypesQ D B opPrim Q Δ C Γ R args (op.params refs.kind) ε →
-        HasTypeQ D B opPrim Q Δ C Γ R p (.builderOp op i args refs)
-          (op.result refs.kind) (Eff.union ε (Eff.single stateEff))
+    -- 専用位置は通常値の環境から読まず、通常引数の効果だけを残す。
+    | E_BuilderOp {Δ C Γ R p op i args kind ε} :
+        Δ.kindAt i = some kind →
+        HasTypesQ D B opPrim Q Δ C Γ R args (op.params kind) ε →
+        HasTypeQ D B opPrim Q Δ C Γ R p (.builderOp op i args kind)
+          (op.result kind) ε
     -- 01-12「名前とリテラル」: 局所の束縛の名前 x。01-06「多相」: 局所は単相。
     | E_Local {Δ C Γ R p i a} :
         Γ[i]? = some (some a) → (∀ b t ε, a ≠ .cont b t ε) →
@@ -198,6 +198,9 @@ mutual
     -- 01-12「名前とリテラル」: ()。01-06「式と文の型」: Unit。
     | E_Unit {Δ C Γ R p} : HasTypeQ D B opPrim Q Δ C Γ R p .unit (.base .unit) Eff.empty
     -- 01-12「名前とリテラル」: (e)。01-08「末尾呼び出し」: 位置を引き継ぐ。
+    | E_Block {Δ C Γ R p body a ε} :
+        HasBlockQ D B opPrim Q Δ C Γ R p body a ε →
+        HasTypeQ D B opPrim Q Δ C Γ R p (.block body) a ε
     | E_Paren {Δ C Γ R p e a ε} :
         HasTypeQ D B opPrim Q Δ C Γ R p e a ε → HasTypeQ D B opPrim Q Δ C Γ R p (.paren e) a ε
     -- 01-05「レコード」・01-06「式と文の型」。評価は書いた順、型は各宣言の位置。
@@ -499,12 +502,10 @@ mutual
   inductive HasBlockQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
       BuilderCtx → List TParam → List (Option Ty) → Option Ty → Position → Block → Ty → Eff → Prop
     -- 01-12「構築器の局所宣言と捕捉」: セルは通常値の位置を隠したまま束縛する。
-    | B_BuilderBind {Δ C Γ R p k refs rest a ε} :
-        refs.kind = k → TyOK C.length k.contents → SingleTy Q k.contents →
-        BuilderRefs.Ok D B C Q (some k :: Δ) 0 refs →
+    | B_BuilderBind {Δ C Γ R p k rest a ε} :
+        TyOK C.length k.contents → SingleTy Q k.contents →
         HasBlockQ D B opPrim Q (some k :: Δ) C (none :: Γ) R p rest a ε →
-        HasBlockQ D B opPrim Q Δ C Γ R p (.builderBind k refs rest) a
-          (Eff.union (Eff.single stateEff) ε)
+        HasBlockQ D B opPrim Q Δ C Γ R p (.builderBind k rest) a ε
     -- 01-12「ブロック」: { }。01-06「式と文の型」: Unit。
     | B_Empty {Δ C Γ R p} : HasBlockQ D B opPrim Q Δ C Γ R p .empty (.base .unit) Eff.empty
     -- 01-12「ブロック」: { e }。01-08「末尾呼び出し」: 最後の式へ位置を渡す。
@@ -576,7 +577,7 @@ mutual
       HasTypeQ D B op Q Δ' C Γ R p e a ε := by
     match h with
     | .E_BuilderOp hr ha =>
-        exact .E_BuilderOp ⟨by rw [← hΔ]; exact hr.1, hr.2⟩ (ha.congrΔ hΔ)
+        exact .E_BuilderOp (by rw [← hΔ]; exact hr) (ha.congrΔ hΔ)
     | .E_Local h0 h1 =>
         exact .E_Local h0 h1
     | .E_Const h0 =>
@@ -619,6 +620,8 @@ mutual
         exact .E_NegFloat32
     | .E_Unit =>
         exact .E_Unit
+    | .E_Block h0 =>
+        exact .E_Block (HasBlockQ.congrΔ h0 hΔ)
     | .E_Paren h0 =>
         exact .E_Paren (HasTypeQ.congrΔ h0 hΔ)
     | .E_Record h0 h1 h2 h3 =>
@@ -743,8 +746,8 @@ mutual
       (h : HasBlockQ D B op Q Δ C Γ R p body a ε) (hΔ : ∀ i, Δ.kindAt i = Δ'.kindAt i) :
       HasBlockQ D B op Q Δ' C Γ R p body a ε := by
     match h with
-    | .B_BuilderBind hk hc hs hr hb =>
-        exact .B_BuilderBind hk hc hs ⟨by simpa only [BuilderCtx.kindAt_zero] using hr.1, hr.2⟩
+    | .B_BuilderBind hc hs hb =>
+        exact .B_BuilderBind hc hs
           (HasBlockQ.congrΔ hb (by intro i; cases i <;> simp_all only [BuilderCtx.kindAt_zero, BuilderCtx.kindAt_succ]))
     | .B_Empty =>
         exact .B_Empty
@@ -817,6 +820,8 @@ mutual
         exact .E_NegFloat32
     | .E_Unit =>
         exact .E_Unit
+    | .E_Block h0 =>
+        exact .E_Block (HasBlockQ.of_builderFree h0 (by simp_all only [Expr.BuilderFree]))
     | .E_Paren h0 =>
         exact .E_Paren (HasTypeQ.of_builderFree h0 (by simp_all only [Expr.BuilderFree]))
     | .E_Record h0 h1 h2 h3 =>
@@ -1001,7 +1006,7 @@ theorem HasBlockQ.builderFree_iff {D B op Q Δ C Γ R p body a ε} (hf : body.Bu
 
 
 namespace HasType
-export HasTypeQ (E_BuilderOp E_Local E_Const E_Fun E_FunDicts E_MethName E_Prim E_Op E_OpDicts E_Raise E_HandleFail E_NullCon E_ConValue E_Literal E_NegInt E_NegFloat E_NegDecimal E_NegInteger8 E_NegInteger16 E_NegInteger32 E_NegFloat32 E_Unit E_Paren E_Record E_RecordUpdate E_ConCall E_Call E_PipeCall E_PipeConCall E_PipeConValue E_PipeApply E_PartialCall E_PartialCon E_Binary E_Neg E_Not E_And E_Or E_List E_ListSpread E_Interpolation E_Lam E_If E_ElseIf E_IfOnly E_Match E_ReturnTail E_ReturnOther E_TryResult E_TryOption E_TryResultDie E_TryOptionDie E_With E_Lazy E_Handle E_Resume E_Sub)
+export HasTypeQ (E_BuilderOp E_Local E_Const E_Fun E_FunDicts E_MethName E_Prim E_Op E_OpDicts E_Raise E_HandleFail E_NullCon E_ConValue E_Literal E_NegInt E_NegFloat E_NegDecimal E_NegInteger8 E_NegInteger16 E_NegInteger32 E_NegFloat32 E_Unit E_Paren E_Block E_Record E_RecordUpdate E_ConCall E_Call E_PipeCall E_PipeConCall E_PipeConValue E_PipeApply E_PartialCall E_PartialCon E_Binary E_Neg E_Not E_And E_Or E_List E_ListSpread E_Interpolation E_Lam E_If E_ElseIf E_IfOnly E_Match E_ReturnTail E_ReturnOther E_TryResult E_TryOption E_TryResultDie E_TryOptionDie E_With E_Lazy E_Handle E_Resume E_Sub)
 end HasType
 
 abbrev HasType (D : Declarations) (B : Builtins) (op : OpPrim) := HasTypeQ D B op Qempty []
@@ -1094,7 +1099,7 @@ private def decls : Declarations :=
     ops := fun o => if o = "ask" then some askDecl else none,
     classes := fun c => if c = "Combine" then some combineClass else none }
 
-private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)
 private def holes : HoleArgs := .hole (some "b") 1 boolTy (.hole (some "a") 0 intTy .nil)
 
 -- 通常・穴・パイプの判断は同じ型付き callee を使う。引数の型はソース順に Boolean, Integer。
@@ -1131,7 +1136,7 @@ example (B : Builtins) (op : OpPrim) :
 
 example (B : Builtins) (op : OpPrim) :
     HasType decls B op [] [some (.fn ["a", "b"] [intTy, boolTy] intTy Eff.empty)] none .other
-      (.pipe (.literal (.integer 7))
+      (.pipe (.literal (.integer ⟨7, by decide⟩))
         (.call (.local 0) [some "b"] [1] (.cons (.literal (.boolean true)) .nil))) intTy Eff.empty := by
   apply HasType.E_PipeCall (names := ["a", "b"]) (ps := [boolTy])
     (εl := Eff.empty) (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.empty)

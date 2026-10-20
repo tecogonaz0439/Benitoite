@@ -40,9 +40,11 @@ mutual
     | .nil => exact .nil
     | .cons hv hvs => exact .cons (HasTypeVQ.q_mono hv hq) (HasTypeEachQ.q_mono hvs hq)
 
-  theorem HasTypeCQ.q_mono {Ψ Q' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε)
-      (hq : QLe Q Q') : HasTypeCQ P B Ψ Q' C Γ R m a ε := by
+  theorem HasTypeCQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+      (hq : QLe Q Q') : HasTypeCQ P B Ψ Q' C Γ R m a ε Δl := by
     match h with
+    | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.q_mono hb hq)
+    | .C_BuilderOp hw hr ha => exact .C_BuilderOp hw hr (HasTypeVsQ.q_mono ha hq)
     | .C_Return hv => exact .C_Return (HasTypeVQ.q_mono hv hq)
     | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.q_mono h hq) hle hs hw
     | .C_Eff h hs => exact .C_Eff (HasTypeCQ.q_mono h hq) hs
@@ -62,23 +64,23 @@ mutual
     | .C_Meth hv hc hm hnames hts hscope hes hws =>
         exact .C_Meth (HasTypeVQ.q_mono hv hq) hc hm hnames hts hscope (hes.mono hq) (HasTypeVsQ.q_mono hws hq)
 
-  theorem HasTypeArmsQ.q_mono {Ψ Q' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
-      (hq : QLe Q Q') : HasTypeArmsQ P B Ψ Q' C Γ R arms a b ε := by
+  theorem HasTypeArmsQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+      (hq : QLe Q Q') : HasTypeArmsQ P B Ψ Q' C Γ R arms a b ε Δl := by
     match h with
     | .nil hw => exact .nil hw
     | .plain hp hm ht => exact .plain hp (HasTypeCQ.q_mono hm hq) (HasTypeArmsQ.q_mono ht hq)
     | .guarded hp hg hm ht =>
         exact .guarded hp (HasTypeCQ.q_mono hg hq) (HasTypeCQ.q_mono hm hq) (HasTypeArmsQ.q_mono ht hq)
 
-  theorem HasTypeClausesQ.q_mono {Ψ Q' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε)
-      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R h t ε := by
+  theorem HasTypeClausesQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R h t ε Δl := by
     match hc with
     | .nil => exact .nil
     | .cons hsg hnames hn hk hew hbody hrest =>
         exact .cons hsg hnames hn hk hew (HasTypeCQ.q_mono hbody hq) (HasTypeClausesQ.q_mono hrest hq)
-  theorem HasFailureClause.q_mono {Ψ Q' C Γ E R h t ε}
-      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) (hq : QLe Q Q') :
-      HasFailureClause P B Ψ Q' C Γ E R h t ε := by
+  theorem HasFailureClause.q_mono {Δl : LocalCtx} {Ψ Q' C Γ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hq : QLe Q Q') :
+      HasFailureClause P B Ψ Q' C Γ E R h t ε Δl := by
     match hc with
     | .one he ht hew hb => exact .one he ht hew (HasTypeCQ.q_mono hb hq)
 

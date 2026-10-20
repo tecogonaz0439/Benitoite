@@ -1,0 +1,183 @@
+record Flags13
+ f0: Boolean
+ f1: Boolean
+ f2: Boolean
+ f3: Boolean
+ f4: Boolean
+ f5: Boolean
+ f6: Boolean
+ f7: Boolean
+ f8: Boolean
+ f9: Boolean
+ f10: Boolean
+ f11: Boolean
+ f12: Boolean
+ f13: Boolean
+ f14: Boolean
+ f15: Boolean
+ f16: Boolean
+ f17: Boolean
+ f18: Boolean
+ f19: Boolean
+ f20: Boolean
+ f21: Boolean
+ f22: Boolean
+ f23: Boolean
+ f24: Boolean
+ f25: Boolean
+end record
+function choose13(x: Flags13) -> Integer
+ return match x with
+ case Flags13(f0: true, f1: true, ..) -> 0
+ case Flags13(f2: true, f3: true, ..) -> 1
+ case Flags13(f4: true, f5: true, ..) -> 2
+ case Flags13(f6: true, f7: true, ..) -> 3
+ case Flags13(f8: true, f9: true, ..) -> 4
+ case Flags13(f10: true, f11: true, ..) -> 5
+ case Flags13(f12: true, f13: true, ..) -> 6
+ case Flags13(f14: true, f15: true, ..) -> 7
+ case Flags13(f16: true, f17: true, ..) -> 8
+ case Flags13(f18: true, f19: true, ..) -> 9
+ case Flags13(f20: true, f21: true, ..) -> 10
+ case Flags13(f22: true, f23: true, ..) -> 11
+ case Flags13(f24: true, f25: true, ..) -> 12
+ case _ -> -1
+ end match
+end function
+record Flags16
+ f0: Boolean
+ f1: Boolean
+ f2: Boolean
+ f3: Boolean
+ f4: Boolean
+ f5: Boolean
+ f6: Boolean
+ f7: Boolean
+ f8: Boolean
+ f9: Boolean
+ f10: Boolean
+ f11: Boolean
+ f12: Boolean
+ f13: Boolean
+ f14: Boolean
+ f15: Boolean
+ f16: Boolean
+ f17: Boolean
+ f18: Boolean
+ f19: Boolean
+ f20: Boolean
+ f21: Boolean
+ f22: Boolean
+ f23: Boolean
+ f24: Boolean
+ f25: Boolean
+ f26: Boolean
+ f27: Boolean
+ f28: Boolean
+ f29: Boolean
+ f30: Boolean
+ f31: Boolean
+end record
+function choose16(x: Flags16) -> Integer
+ return match x with
+ case Flags16(f0: true, f1: true, ..) -> 0
+ case Flags16(f2: true, f3: true, ..) -> 1
+ case Flags16(f4: true, f5: true, ..) -> 2
+ case Flags16(f6: true, f7: true, ..) -> 3
+ case Flags16(f8: true, f9: true, ..) -> 4
+ case Flags16(f10: true, f11: true, ..) -> 5
+ case Flags16(f12: true, f13: true, ..) -> 6
+ case Flags16(f14: true, f15: true, ..) -> 7
+ case Flags16(f16: true, f17: true, ..) -> 8
+ case Flags16(f18: true, f19: true, ..) -> 9
+ case Flags16(f20: true, f21: true, ..) -> 10
+ case Flags16(f22: true, f23: true, ..) -> 11
+ case Flags16(f24: true, f25: true, ..) -> 12
+ case Flags16(f26: true, f27: true, ..) -> 13
+ case Flags16(f28: true, f29: true, ..) -> 14
+ case Flags16(f30: true, f31: true, ..) -> 15
+ case _ -> -1
+ end match
+end function
+record Flags24
+ f0: Boolean
+ f1: Boolean
+ f2: Boolean
+ f3: Boolean
+ f4: Boolean
+ f5: Boolean
+ f6: Boolean
+ f7: Boolean
+ f8: Boolean
+ f9: Boolean
+ f10: Boolean
+ f11: Boolean
+ f12: Boolean
+ f13: Boolean
+ f14: Boolean
+ f15: Boolean
+ f16: Boolean
+ f17: Boolean
+ f18: Boolean
+ f19: Boolean
+ f20: Boolean
+ f21: Boolean
+ f22: Boolean
+ f23: Boolean
+ f24: Boolean
+ f25: Boolean
+ f26: Boolean
+ f27: Boolean
+ f28: Boolean
+ f29: Boolean
+ f30: Boolean
+ f31: Boolean
+ f32: Boolean
+ f33: Boolean
+ f34: Boolean
+ f35: Boolean
+ f36: Boolean
+ f37: Boolean
+ f38: Boolean
+ f39: Boolean
+ f40: Boolean
+ f41: Boolean
+ f42: Boolean
+ f43: Boolean
+ f44: Boolean
+ f45: Boolean
+ f46: Boolean
+ f47: Boolean
+end record
+function choose24(x: Flags24) -> Integer
+ return match x with
+ case Flags24(f0: true, f1: true, ..) -> 0
+ case Flags24(f2: true, f3: true, ..) -> 1
+ case Flags24(f4: true, f5: true, ..) -> 2
+ case Flags24(f6: true, f7: true, ..) -> 3
+ case Flags24(f8: true, f9: true, ..) -> 4
+ case Flags24(f10: true, f11: true, ..) -> 5
+ case Flags24(f12: true, f13: true, ..) -> 6
+ case Flags24(f14: true, f15: true, ..) -> 7
+ case Flags24(f16: true, f17: true, ..) -> 8
+ case Flags24(f18: true, f19: true, ..) -> 9
+ case Flags24(f20: true, f21: true, ..) -> 10
+ case Flags24(f22: true, f23: true, ..) -> 11
+ case Flags24(f24: true, f25: true, ..) -> 12
+ case Flags24(f26: true, f27: true, ..) -> 13
+ case Flags24(f28: true, f29: true, ..) -> 14
+ case Flags24(f30: true, f31: true, ..) -> 15
+ case Flags24(f32: true, f33: true, ..) -> 16
+ case Flags24(f34: true, f35: true, ..) -> 17
+ case Flags24(f36: true, f37: true, ..) -> 18
+ case Flags24(f38: true, f39: true, ..) -> 19
+ case Flags24(f40: true, f41: true, ..) -> 20
+ case Flags24(f42: true, f43: true, ..) -> 21
+ case Flags24(f44: true, f45: true, ..) -> 22
+ case Flags24(f46: true, f47: true, ..) -> 23
+ case _ -> -1
+ end match
+end function
+function main() -> Unit
+ ()
+end function

@@ -2,6 +2,44 @@
 
 All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
 
+## 0.0.10 (San Benito)
+
+A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.10`. Build from source and reinstall the matching Agent Skill. Review source and dependencies before updating `language` declarations and package hashes.
+
+### Incompatible changes and migration
+
+| Previous behavior or form | `0.0.10` | How to migrate |
+|---|---|---|
+| `block` was an ordinary identifier. | `block` is now a keyword. `block ... end block` is an expression whose value is its last expression (`Unit` if it is empty or ends with `bind`). It does not change where `return` returns. Using `block` as a name, label, or name after a dot reports E0216. | Rename identifiers named `block`. |
+| `Integer` ranges always needed a catch-all. | Ranges that cover every 64-bit `Integer` value are exhaustive. A catch-all after them is unreachable (E0602). If a value is missing, E0601 shows it. | Remove the unreachable catch-all, or fix the ranges. Gaps and guarded ranges still need coverage. Cover correlations between independent fields as well. |
+| `language "0.0.9"` passed the release boundary. | `language "0.0.9"` and earlier report E0908 with applicable migration notes in version order. `0.0.10` is accepted. Later versions report E0907. | 1. Migrate the source. 2. Set `language "0.0.10"`. 3. Run `benitoite package update` after dependencies are final. Omitting `language` uses current rules and does not migrate code. |
+| The prelude did not include `Log` and `SourceLocation`. | `Log` and `SourceLocation` are in the prelude. `Log` cannot be renamed with `as` (E0339). `SourceLocation` can. | Rename conflicting user names. Pass messages, attributes, and `Location` explicitly. Call `SourceLocation.here()` directly where the location is needed. A wrapper should take a `Location` argument. Using `here` as a value, hole, or pipe reports E0467. |
+| Width-specific integer helper calls could lack constant warnings. | Known zero division reports W0401, even with an unknown dividend. Known overflow reports W0402, including signed-minimum `absolute` and `floorDivide(minimum, -1)`. `floorModulo(minimum, -1)` remains zero without a warning. | Review calls under `--deny-warnings`. Runtime `Result` and stop behavior is unchanged. |
+| Development generation records, manifests, and receipts used version 2. | Records, semantic hashes, manifests, and receipts use version 3 (`generatorVersion` `3.0.0-syntax-batch4`). Inventory 2, configuration 1, and `Property.libraryVersion` `2.0.0` are unchanged. | 1. Finish any pending old apply or recovery with the saved old tool. 2. Check old protected body hashes. 3. Run a new `preview` and review its diff and record. 4. `apply` with that manifest's exact reviewed SHA-256. 5. Run `check`, `test`, and `derive check`. Old manifests cannot approve a new apply. Review changed dependencies even if the body is unchanged. Save concrete failures and source. A seed alone does not reproduce old results across versions. See [derive migration](tools/derive/README.md#markers-records-and-review-artifacts). |
+| The named-argument migration tool lived under `tools/`. | The retired tool is kept with restoration instructions and hashes in [historical-tools](docs/archive/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/historical-tools/named-arguments-migrate/README.md). | Remove old live-path invocations. Restore the saved tool only when its historical migration or recovery is needed. Its manifests cannot authorize another tool. |
+
+### Builders, logging, and checked values
+
+- Local `StringBuilder`, `ListBuilder`, and `BytesBuilder` declarations and dedicated operations add no `State`. Ordinary argument effects remain. Builder capture, escape, and direct-call restrictions remain. Existing `uses State` declarations are accepted. Making a public function pure is an explicit contract change. Ordinary `Reference` operations, tasks, IO, and resource release retain their effects.
+- Builders now use dedicated buffers. `copy` makes an immutable physical snapshot. Later appends leave snapshots unchanged, while `Reference` elements still share their cells. Repeated intermediate copies can cost more time and memory. Size limits remain R0902. Buffer reservation failure is R0907 and leaves the contents unchanged. Use `block ... end block` for local work such as builder construction, returning an ordinary copy. Existing restrictions on `return` and `try` in guards and lazy bodies remain.
+- `Log` is a new effect. `IO.All`, `Console.Write`, and network effects do not include it. Declare `uses Log`, and add canonical `Log` to `--allow-effects` when you use that option and the declared upper bound contains `Log`.
+- Without a handler, `Info` and higher go to stderr. `Log.error` does not stop the program.
+- Arguments are evaluated even when the level is disabled. Check `Log.enabled` before expensive work.
+- A handler must handle both `emit` and `enabled` to remove `Log`. `withTextLogger` needs `Console.Write`. `withAttributes` passes `Log` on. `withSinks` keeps the sinks' effects. See [logging](docs/reference/benitoite.md#structured-logging-and-source-locations).
+- `Range` adds opaque `CheckedLength[T]` and `CheckedIndex[T]`. The checked index retains its original list and element. `get` takes only that wrapper. `NonEmptyList` adds `fromList`, `toList`, `head`, `tail`, and `map`. Invalid constants return ordinary `Result.Error`. Wrappers keep `Reference` elements shared. See [checked lists](docs/reference/benitoite.md#checked-lengths-indices-and-nonempty-lists).
+- `Property` generators and shrinkers and `Show`/`Order` derivation support type parameters and regular self or mutual recursion within one module. Used parameters receive explicit `Gen` and `Shrinker` inputs. Phantom parameters do not. Generators require a finite base and total record-node budget. Recursive shrinkers defer work. They remove container contents before field shrinking and keep required children within their parent. JSON retains its monomorphic, noncyclic scope.
+- `record` is accepted where a lowercase name is required, including parameters, argument labels, bindings, and value references; it still starts a record declaration at declaration position.
+- `--wasm-stats` adds `runtime_compilations.normal` and `runtime_compilations.adapter` for successful additions of runtime Components to their respective caches, and test output adds `test_declaration_compilations` for compilation attempts during static declaration checks of test entries and documentation examples.
+
+### Implementation and development boundaries
+
+- Coverage budgets and lowering budgets remain distinct (E0609/L0112). Shared decisions, row-wise fallback, body-level capture and liveness indices, restored IR environments, and direct hole arguments preserve evaluation order and effect contracts.
+- Declaration-derived errors suppress downstream duplicates. Independent errors remain. Distinct types with the same name are qualified in diagnostics.
+- Reference/heap conversion preserves sharing across arguments and returns. One `test` invocation shares `Engine` and `Component` preparation. Each execution keeps independent `Store`, `Instance`, handles, limits, and output. Writer interruption flushes and releases on the first request. A second signal interrupts cleanup.
+- Development tools: the internal exchange format is now corpus 13 / sidecar 5. Regenerate old corpus-12 files that contain builders. Builder-free older inputs retain supported versions and `Integer` range checks.
+
+Rebuild the executable and reinstall its embedded Skill with `benitoite skill install` together. The [installation guide](docs/reference/install.md#updating-from-009-to-0010) and [Japanese translation](docs/ja/reference/install.md#009-から-0010-への更新) describe the same migration. Static checks guarantee only conformance to type/effect rules; execution restrictions remain with the harness or OS.
+
 ## 0.0.9 (San Benito)
 
 A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.9`. Review the migration below before changing `language` declarations and dependency hashes.

@@ -61,8 +61,15 @@ fn invoke(
     limits: Limits,
     stats: Option<Collector>,
 ) -> Result<u32, ExternalFailure> {
-    let mut runtime =
-        ExternalRuntime::configured(None, ExecutionOptions { limits, stats }).unwrap();
+    let mut runtime = ExternalRuntime::configured(
+        None,
+        ExecutionOptions {
+            limits,
+            stats,
+            session: None,
+        },
+    )
+    .unwrap();
     let mut heap = Heap::new(HeapConfig::default());
     heap.epoch(|ctx| {
         crate::external::runtime::call_with_usage(

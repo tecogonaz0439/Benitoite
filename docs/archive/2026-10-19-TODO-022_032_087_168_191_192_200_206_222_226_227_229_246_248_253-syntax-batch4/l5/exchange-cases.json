@@ -1,0 +1,934 @@
+{
+  "version": 13,
+  "cases": [
+    {
+      "name": "holes-direct-permuted",
+      "position": "other",
+      "surface": {
+        "partialCall": {
+          "callee": {
+            "opName": {
+              "name": "pair",
+              "tys": []
+            }
+          },
+          "names": [
+            "a",
+            "b"
+          ],
+          "args": [
+            {
+              "hole": {
+                "label": "b",
+                "position": 1,
+                "ty": {
+                  "base": {
+                    "name": "Boolean"
+                  }
+                }
+              }
+            },
+            {
+              "hole": {
+                "label": "a",
+                "position": 0,
+                "ty": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "eff": []
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "lam": {
+              "names": [
+                "b",
+                "a"
+              ],
+              "params": [
+                {
+                  "base": {
+                    "name": "Boolean"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "body": {
+                "app": {
+                  "callee": {
+                    "op": {
+                      "name": "pair",
+                      "tys": []
+                    }
+                  },
+                  "args": [
+                    {
+                      "var": {
+                        "index": 0
+                      }
+                    },
+                    {
+                      "var": {
+                        "index": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "holes-indirect-mixed",
+      "position": "other",
+      "surface": {
+        "partialCall": {
+          "callee": {
+            "local": {
+              "index": 0
+            }
+          },
+          "names": [
+            "a",
+            "b",
+            "c"
+          ],
+          "args": [
+            {
+              "hole": {
+                "label": "b",
+                "position": 1,
+                "ty": {
+                  "base": {
+                    "name": "Boolean"
+                  }
+                }
+              }
+            },
+            {
+              "expr": {
+                "label": "c",
+                "position": 2,
+                "inner": {
+                  "call": {
+                    "callee": {
+                      "opName": {
+                        "name": "fixed",
+                        "tys": []
+                      }
+                    },
+                    "labels": [],
+                    "positions": [],
+                    "args": []
+                  }
+                }
+              }
+            },
+            {
+              "hole": {
+                "label": "a",
+                "position": 0,
+                "ty": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "eff": []
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "lam": {
+              "names": [
+                "b",
+                "a"
+              ],
+              "params": [
+                {
+                  "base": {
+                    "name": "Boolean"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "body": {
+                "letIn": {
+                  "bound": {
+                    "ret": {
+                      "value": {
+                        "var": {
+                          "index": 2
+                        }
+                      }
+                    }
+                  },
+                  "body": {
+                    "letIn": {
+                      "bound": {
+                        "app": {
+                          "callee": {
+                            "op": {
+                              "name": "fixed",
+                              "tys": []
+                            }
+                          },
+                          "args": []
+                        }
+                      },
+                      "body": {
+                        "app": {
+                          "callee": {
+                            "var": {
+                              "index": 1
+                            }
+                          },
+                          "args": [
+                            {
+                              "var": {
+                                "index": 2
+                              }
+                            },
+                            {
+                              "var": {
+                                "index": 3
+                              }
+                            },
+                            {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "holes-direct-two-fixed",
+      "position": "other",
+      "surface": {
+        "partialCall": {
+          "callee": {
+            "opName": {
+              "name": "combine",
+              "tys": []
+            }
+          },
+          "names": [
+            "a",
+            "b",
+            "c"
+          ],
+          "args": [
+            {
+              "expr": {
+                "label": "c",
+                "position": 2,
+                "inner": {
+                  "call": {
+                    "callee": {
+                      "opName": {
+                        "name": "readC",
+                        "tys": []
+                      }
+                    },
+                    "labels": [],
+                    "positions": [],
+                    "args": []
+                  }
+                }
+              }
+            },
+            {
+              "hole": {
+                "label": "a",
+                "position": 0,
+                "ty": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              }
+            },
+            {
+              "expr": {
+                "label": "b",
+                "position": 1,
+                "inner": {
+                  "call": {
+                    "callee": {
+                      "opName": {
+                        "name": "readB",
+                        "tys": []
+                      }
+                    },
+                    "labels": [],
+                    "positions": [],
+                    "args": []
+                  }
+                }
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "eff": []
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "lam": {
+              "names": [
+                "a"
+              ],
+              "params": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "body": {
+                "letIn": {
+                  "bound": {
+                    "app": {
+                      "callee": {
+                        "op": {
+                          "name": "readC",
+                          "tys": []
+                        }
+                      },
+                      "args": []
+                    }
+                  },
+                  "body": {
+                    "letIn": {
+                      "bound": {
+                        "app": {
+                          "callee": {
+                            "op": {
+                              "name": "readB",
+                              "tys": []
+                            }
+                          },
+                          "args": []
+                        }
+                      },
+                      "body": {
+                        "app": {
+                          "callee": {
+                            "op": {
+                              "name": "combine",
+                              "tys": []
+                            }
+                          },
+                          "args": [
+                            {
+                              "var": {
+                                "index": 2
+                              }
+                            },
+                            {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "holes-constructor",
+      "position": "other",
+      "surface": {
+        "partialCon": {
+          "name": "Pair",
+          "tys": [],
+          "args": [
+            {
+              "expr": {
+                "label": null,
+                "position": 0,
+                "inner": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 7
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "hole": {
+                "label": null,
+                "position": 1,
+                "ty": {
+                  "base": {
+                    "name": "Boolean"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "lam": {
+              "names": [
+                "arg2"
+              ],
+              "params": [
+                {
+                  "base": {
+                    "name": "Boolean"
+                  }
+                }
+              ],
+              "body": {
+                "letIn": {
+                  "bound": {
+                    "ret": {
+                      "value": {
+                        "const": {
+                          "value": {
+                            "integer": {
+                              "value": 7
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "body": {
+                    "ret": {
+                      "value": {
+                        "con": {
+                          "name": "Pair",
+                          "tys": [],
+                          "args": [
+                            {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-empty",
+      "position": "other",
+      "surface": {
+        "block": {
+          "body": "empty"
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "const": {
+              "value": "unit"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-local-binding",
+      "position": "other",
+      "surface": {
+        "block": {
+          "body": {
+            "bind": {
+              "shadow": false,
+              "ty": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "expr": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 7
+                    }
+                  }
+                }
+              },
+              "rest": {
+                "last": {
+                  "expr": {
+                    "local": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "letIn": {
+          "bound": {
+            "ret": {
+              "value": {
+                "const": {
+                  "value": {
+                    "integer": {
+                      "value": 7
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "body": {
+            "ret": {
+              "value": {
+                "var": {
+                  "index": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-return-tail",
+      "position": "tail",
+      "surface": {
+        "block": {
+          "body": {
+            "last": {
+              "expr": {
+                "returnE": {
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "inner": {
+                    "local": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "var": {
+              "index": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-return-other",
+      "position": "other",
+      "surface": {
+        "block": {
+          "body": {
+            "last": {
+              "expr": {
+                "returnE": {
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "inner": {
+                    "local": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "letIn": {
+          "bound": {
+            "ret": {
+              "value": {
+                "var": {
+                  "index": 0
+                }
+              }
+            }
+          },
+          "body": {
+            "escape": {
+              "value": {
+                "var": {
+                  "index": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-builder-copy",
+      "position": "other",
+      "surface": {
+        "block": {
+          "body": {
+            "builderBind": {
+              "kind": "string",
+              "rest": {
+                "last": {
+                  "expr": {
+                    "builderOp": {
+                      "op": "copy",
+                      "index": 0,
+                      "args": [],
+                      "kind": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "builderLet": {
+          "kind": "string",
+          "body": {
+            "builderOp": {
+              "kind": "string",
+              "op": "copy",
+              "ref": {
+                "bound": {
+                  "index": 0
+                }
+              },
+              "args": []
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-lambda-tail-return",
+      "position": "other",
+      "surface": {
+        "lam": {
+          "names": [],
+          "params": [],
+          "ret": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "eff": [],
+          "body": {
+            "last": {
+              "expr": {
+                "block": {
+                  "body": {
+                    "last": {
+                      "expr": {
+                        "returnE": {
+                          "ret": {
+                            "base": {
+                              "name": "Unit"
+                            }
+                          },
+                          "inner": {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 7
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "ret": {
+          "value": {
+            "lam": {
+              "names": [],
+              "params": [],
+              "body": {
+                "ret": {
+                  "value": {
+                    "const": {
+                      "value": {
+                        "integer": {
+                          "value": 7
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "block-usual-reference",
+      "position": "other",
+      "surface": {
+        "block": {
+          "body": {
+            "last": {
+              "expr": {
+                "call": {
+                  "callee": {
+                    "primName": {
+                      "name": "get",
+                      "tys": [
+                        {
+                          "base": {
+                            "name": "String"
+                          }
+                        }
+                      ],
+                      "effs": []
+                    }
+                  },
+                  "labels": [
+                    null
+                  ],
+                  "positions": [
+                    0
+                  ],
+                  "args": [
+                    {
+                      "local": {
+                        "index": 0
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "letIn": {
+          "bound": {
+            "ret": {
+              "value": {
+                "var": {
+                  "index": 0
+                }
+              }
+            }
+          },
+          "body": {
+            "app": {
+              "callee": {
+                "prim": {
+                  "name": "get",
+                  "tys": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "effs": []
+                }
+              },
+              "args": [
+                {
+                  "var": {
+                    "index": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "rejections": [
+    {
+      "name": "block-builder-value-escape",
+      "surface": {
+        "block": {
+          "body": {
+            "builderBind": {
+              "kind": "string",
+              "rest": {
+                "last": {
+                  "expr": {
+                    "local": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "path": [
+          0,
+          0,
+          0
+        ],
+        "reason": "local is missing or hidden"
+      }
+    },
+    {
+      "name": "block-builder-closure-capture",
+      "surface": {
+        "block": {
+          "body": {
+            "builderBind": {
+              "kind": "string",
+              "rest": {
+                "last": {
+                  "expr": {
+                    "lam": {
+                      "names": [],
+                      "params": [],
+                      "ret": {
+                        "base": {
+                          "name": "String"
+                        }
+                      },
+                      "eff": [],
+                      "body": {
+                        "last": {
+                          "expr": {
+                            "returnE": {
+                              "ret": {
+                                "base": {
+                                  "name": "String"
+                                }
+                              },
+                              "inner": {
+                                "builderOp": {
+                                  "op": "copy",
+                                  "index": 0,
+                                  "args": [],
+                                  "kind": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "reason": "invalid local builder kind"
+      }
+    }
+  ]
+}

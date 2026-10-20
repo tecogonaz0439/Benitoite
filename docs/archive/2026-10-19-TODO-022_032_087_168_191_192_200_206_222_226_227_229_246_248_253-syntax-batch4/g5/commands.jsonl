@@ -1,0 +1,7 @@
+{"name": "dry-run", "command": ["scripts/check.sh", "--level", "work", "--base", "e49b22755790fe85f9df4e98104eaf339b8d07b3", "--only", "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally,python_syntax,migrate_selftests", "--test", "declarations", "--test", "property_library", "--test", "test_command", "--test", "stdlib_doc_examples", "--dry-run"], "exit": 0, "seconds": 0.015}
+{"name": "work", "command": ["scripts/check.sh", "--level", "work", "--base", "e49b22755790fe85f9df4e98104eaf339b8d07b3", "--only", "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally,python_syntax,migrate_selftests", "--test", "declarations", "--test", "property_library", "--test", "test_command", "--test", "stdlib_doc_examples"], "exit": 0, "seconds": 126.473}
+{"name": "build", "command": ["cargo", "build", "-p", "benitoite", "--example", "derive_inventory", "--bin", "benitoite"], "exit": 0, "seconds": 0.584}
+{"name": "derive", "command": ["python3", "-B", "tools/derive/test_derive.py"], "exit": 0, "seconds": 68.217}
+{"name": "example-check", "command": ["target/debug/benitoite", "check", "tools/derive/examples/People.bnt"], "exit": 0, "seconds": 0.332}
+{"name": "example-test", "command": ["target/debug/benitoite", "test", "tools/derive/examples/People.bnt"], "exit": 0, "seconds": 0.499}
+{"name": "example-record", "command": ["python3", "-B", "tools/derive/derive.py", "check", "--root", "tools/derive/examples", "--config", "tools/derive/examples/derive.json"], "exit": 0, "seconds": 0.324}

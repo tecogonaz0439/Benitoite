@@ -550,3 +550,22 @@ fn builder_annotations_and_direct_operations_survive_formatting() {
     assert_eq!(code(&output), 0, "{}", stderr(&output));
     assert_eq!(dir.read("builder.bnt"), formatted);
 }
+
+// 関門: block の開始/終端と文列の字下げを、実 CLI と再整形で確かめる。
+#[test]
+fn block_expressions_format_nested_statements_and_keep_values() {
+    let dir = TestDirectory::new("block-expressions");
+    dir.write("block.bnt", "function main()->Unit\nbind x<-block\nbind n<-block 1 end block\nn+1\nend block\nbind _<-x\nend function\n");
+    let expected = "function main() -> Unit\n  bind x <- block\n    bind n <- block 1 end block\n    n + 1\n  end block\n  bind _ <- x\nend function\n";
+    let output = fmt(&dir, &["block.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(dir.read("block.bnt"), expected);
+    let output = fmt(&dir, &["--check", "block.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    let output = Command::new(env!("CARGO_BIN_EXE_benitoite"))
+        .current_dir(&dir.path)
+        .args(["check", "block.bnt"])
+        .output()
+        .unwrap();
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+}

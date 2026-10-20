@@ -12,10 +12,12 @@ variable {p : Program} {B : Builtins} {op : OpPrim}
 mutual
   /-- 空のストアで R=None の計算は、外側の戻り先を変えても型を保つ。
   内側の lambda・lazy・ガードは既存の境界のままにする。 -/
-  theorem HasTypeCQ.withReturn {P B Ψ C Γ R₀ m a ε}
-      (h : HasTypeCQ P B Ψ Q C Γ R₀ m a ε) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
-      HasTypeCQ P B Ψ Q C Γ R m a ε := by
+  theorem HasTypeCQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ m a ε}
+      (h : HasTypeCQ P B Ψ Q C Γ R₀ m a ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
+      HasTypeCQ P B Ψ Q C Γ R m a ε Δl := by
     match h with
+    | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.withReturn hb hΨ hR R)
+    | .C_BuilderOp hw hr ha => exact .C_BuilderOp hw hr ha
     | .C_Return hv => exact .C_Return hv
     | .C_Sub h hl hs hw => exact .C_Sub (HasTypeCQ.withReturn h hΨ hR R) hl hs hw
     | .C_Eff h hs => exact .C_Eff (HasTypeCQ.withReturn h hΨ hR R) hs
@@ -35,9 +37,9 @@ mutual
 
   termination_by structural h
 
-  theorem HasTypeArmsQ.withReturn {P B Ψ C Γ R₀ arms a b ε}
-      (h : HasTypeArmsQ P B Ψ Q C Γ R₀ arms a b ε) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
-      HasTypeArmsQ P B Ψ Q C Γ R arms a b ε := by
+  theorem HasTypeArmsQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ arms a b ε}
+      (h : HasTypeArmsQ P B Ψ Q C Γ R₀ arms a b ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
+      HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl := by
     match h with
     | .nil hw => exact .nil hw
     | .plain hp hb hs => exact .plain hp (HasTypeCQ.withReturn hb hΨ hR R) (HasTypeArmsQ.withReturn hs hΨ hR R)
@@ -45,32 +47,34 @@ mutual
 
   termination_by structural h
 
-  theorem HasTypeClausesQ.withReturn {P B Ψ C Γ R₀ cs t ε}
-      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ cs t ε) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
-      HasTypeClausesQ P B Ψ Q C Γ R cs t ε := by
+  theorem HasTypeClausesQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ cs t ε}
+      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ cs t ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
+      HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl := by
     match h with
     | .nil => exact .nil
     | .cons (k := k) ho hn hp hk hw hb hs =>
-        exact .cons ho hn hp hk hw (HasTypeCQ.withReturn hb hΨ (by rw [hR]; rfl) (R.map (Ty.shift k 0)))
+        exact .cons ho hn hp hk hw (HasTypeCQ.withReturn hb (by rw [hΨ]; rfl) (by rw [hR]; rfl) (R.map (Ty.shift k 0)))
           (HasTypeClausesQ.withReturn hs hΨ hR R)
   termination_by structural h
 
-  theorem HasFailureClause.withReturn {P B Ψ C Γ E R₀ cs t ε}
-      (h : HasFailureClause P B Ψ Q C Γ E R₀ cs t ε)
+  theorem HasFailureClause.withReturn {Δl : LocalCtx} {P B Ψ C Γ E R₀ cs t ε}
+      (h : HasFailureClause P B Ψ Q C Γ E R₀ cs t ε Δl)
       (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
-      HasFailureClause P B Ψ Q C Γ E R cs t ε := by
+      HasFailureClause P B Ψ Q C Γ E R cs t ε Δl := by
     match h with
     | .one he ht hw hb =>
-        exact .one he ht hw (HasTypeCQ.withReturn hb hΨ (by rw [hR]; rfl) (R.map (Ty.shift 1 0)))
+        exact .one he ht hw (HasTypeCQ.withReturn hb (by rw [hΨ]; rfl) (by rw [hR]; rfl) (R.map (Ty.shift 1 0)))
 
   termination_by structural h
 end
 
+variable {Δl : LocalCtx}
+
 /-- 説明は元の非継続の束縛だけを参照し、分岐内への移動でもその番号を保つ。 -/
 theorem dieMessage_typed {P B C Γ R m a ε} (xs : List (Option Ty))
-    (h : HasTypeCQ P B StoreTy.empty Q C (hideConts Γ) none m a ε) :
-    HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (m.rename (· + xs.length)) a ε := by
-  apply HasTypeCQ.rename (HasTypeCQ.withReturn h rfl rfl R)
+    (h : HasTypeCQ P B StoreTy.empty Q C (hideConts Γ) none m a ε Δl) :
+    HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (m.rename (· + xs.length)) a ε (LocalCtx.extend xs.length Δl) := by
+  apply HasTypeCQ.rename (HasTypeCQ.withReturn h rfl rfl R) (Δl' := LocalCtx.extend xs.length Δl) (hL := LocalRenOk.shift Δl xs.length)
   intro i a hi
   rw [List.getElem?_append_right (by dsimp; omega)]
   simpa using (hideConts_get.mp hi).1
@@ -78,16 +82,16 @@ theorem dieMessage_typed {P B C Γ R m a ε} (xs : List (Option Ty))
 /-- 末尾の return は最も内側の戻り値の型と計算をそのまま保つ。 -/
 theorem returnTail_typed {C Γ r a e ε}
   (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ (some r)
-    (desugarExpr op .tail e) r ε) :
+    (desugarExpr op .tail e) r ε Δl) :
   HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ (some r)
-    (desugarExpr op .tail (.returnE a e)) r ε := he
+    (desugarExpr op .tail (.returnE a e)) r ε Δl := he
 
 /-- 非末尾の return は同じ R に escape し、外側の R を参照しない。 -/
 theorem returnOther_typed {C Γ r a e ε} (hr : TyOK C.length r) (ha : Ty.WF C.length a)
   (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ (some r)
-    (desugarExpr op .other e) r ε) :
+    (desugarExpr op .other e) r ε Δl) :
   HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ (some r)
-    (desugarExpr op .other (.returnE a e)) a ε :=
+    (desugarExpr op .other (.returnE a e)) a ε Δl :=
   .C_Let he (.C_Escape (.V_Var rfl (clean_notCont hr)) ha)
 
 /-- Result の失敗側は同じエラー型を持つ最も内側の R に escape する。 -/
@@ -97,12 +101,12 @@ theorem tryResult_typed {C Γ R pos ok err cdo cde e t u et ε}
   (hao : cdo.args = [.tvar 0]) (hae : cde.args = [.tvar 1])
   (hdata : cdo.data = cde.data) (hret : R = some (.data cdo.data [u, et]))
   (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-    (desugarExpr op .other e) (.data cdo.data [t, et]) ε)
+    (desugarExpr op .other e) (.data cdo.data [t, et]) ε Δl)
   (hc : TyOK C.length (.data cdo.data [t, et]))
   (hex : Exhaustive p.declarations.patternProgram (.data cdo.data [t, et])
     [.con ok [.var], .con err [.var]]) :
   HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-    (desugarExpr op pos (.tryResult [u, et] ok err e)) t ε := by
+    (desugarExpr op pos (.tryResult [u, et] ok err e)) t ε Δl := by
   have ht : TyOK C.length t := hc.1
   have het : TyOK C.length et := hc.2.1
   have hetzero := Ty.shift_zero 0 et ((Ty.VarsIn.wf et het).canonical et)
@@ -139,12 +143,12 @@ theorem tryOption_typed {C Γ R pos cs cn cds cdn e t u ε}
   (has : cds.args = [.tvar 0]) (han : cdn.args = [])
   (hdata : cds.data = cdn.data) (hret : R = some (.data cds.data [u]))
   (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-    (desugarExpr op .other e) (.data cds.data [t]) ε)
+    (desugarExpr op .other e) (.data cds.data [t]) ε Δl)
   (hc : TyOK C.length (.data cds.data [t]))
   (hex : Exhaustive p.declarations.patternProgram (.data cds.data [t])
     [.con cs [.var], .con cn []]) :
   HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-    (desugarExpr op pos (.tryOption [u] cs cn e)) t ε := by
+    (desugarExpr op pos (.tryOption [u] cs cn e)) t ε Δl := by
   have ht : TyOK C.length t := hc.1
   have htzero := Ty.shift_zero 0 t ((Ty.VarsIn.wf t ht).canonical t)
   have hw := Ty.VarsIn.wf _ ht
@@ -173,7 +177,7 @@ theorem tryOption_typed {C Γ R pos cs cn cds cdn e t u ε}
 theorem DieExitOk.app_typed {P B C Γ R exit t} (h : DieExitOk B C exit t)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) (hty : TyOK C.length t) :
     HasTypeCQ P B StoreTy.empty Q C Γ R
-      (.app (.prim exit [t] []) [.const (.integer 1)]) t (Eff.single "Process.Exit") := by
+      (.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]) t (Eff.single "Process.Exit") Δl := by
   obtain ⟨s, hs, _, _, ht, he, hn, ha, hf⟩ := h
   have hv := HasTypeVQ.V_Prim (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs hn
     (PrimitiveAdmissible.of_noRows (hsig _ _ hs) he
@@ -189,11 +193,11 @@ theorem DieExitOk.app_typed {P B C Γ R exit t} (h : DieExitOk B C exit t)
 theorem dieFailure_typed {P B C Γ R t exit cause message}
     (xs : List (Option Ty)) (hx : DieExitOk B C exit t)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) (hty : TyOK C.length t)
-    (hc : HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R cause (.base .string) Eff.empty)
+    (hc : HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R cause (.base .string) Eff.empty (LocalCtx.extend xs.length Δl))
     (hm : ∀ m, message = some m →
-      HasTypeCQ P B StoreTy.empty Q C (hideConts Γ) none m (.base .string) Eff.empty) :
+      HasTypeCQ P B StoreTy.empty Q C (hideConts Γ) none m (.base .string) Eff.empty Δl) :
     HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R
-      (dieFailure t exit xs.length cause message) t (Eff.single "Process.Exit") := by
+      (dieFailure t exit xs.length cause message) t (Eff.single "Process.Exit") (LocalCtx.extend xs.length Δl) := by
   cases message with
   | none => exact .C_Let (HasTypeCQ.weakenEff hc (Eff.empty_sub _)) (DieExitOk.app_typed hx hsig hty)
   | some m =>
@@ -225,7 +229,7 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
     (hno : cdo.ntys = 2) (hne : cde.ntys = 2)
     (hao : cdo.args = [.tvar 0]) (hae : cde.args = [.tvar 1]) (hdata : cdo.data = cde.data)
     (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op .other e) (.data cdo.data [t, et]) ε)
+      (desugarExpr op .other e) (.data cdo.data [t, et]) ε Δl)
     (hc : TyOK C.length (.data cdo.data [t, et]))
     (hex : Exhaustive p.declarations.patternProgram (.data cdo.data [t, et])
       [.con ok [.var], .con err [.var]])
@@ -233,10 +237,10 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
     (hd : DieShowOk (p.declarationsFor view) B C Γ dict showMethod et)
     (hx : DieExitOk B C exit t)
     (hm : ∀ m, message = some m → HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γc) none
-      (desugarExpr op .other m) (.base .string) Eff.empty) :
+      (desugarExpr op .other m) (.base .string) Eff.empty Δl) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
       (desugarExpr op pos (.tryResultDie t ok err dict showMethod exit e message))
-      t (Eff.union ε (Eff.single "Process.Exit")) := by
+      t (Eff.union ε (Eff.single "Process.Exit")) Δl := by
   have ht := hc.1
   have het := hc.2.1
   have hetzero := Ty.shift_zero 0 et ((Ty.VarsIn.wf et het).canonical et)
@@ -258,7 +262,7 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
     (RenOk.shift [some et, some (.data cdo.data [t, et])] Γc)
   have hshow : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C
       (some et :: some (.data cdo.data [t, et]) :: Γc) R
-      (.meth (dict.toVal.rename (· + 2)) showMethod [] [] [.var 0]) (.base .string) Eff.empty := by
+      (.meth (dict.toVal.rename (· + 2)) showMethod [] [] [.var 0]) (.base .string) Eff.empty (LocalCtx.extend 2 Δl) := by
     have hargs : HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C
         (some et :: some (.data cdo.data [t, et]) :: Γc) [.var 0]
         (ms.params.map (Ty.subst ([] ++ [et]) [])) := by
@@ -281,13 +285,13 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
       (HasTypeCQ.weakenEff (HasTypeCQ.C_Return (.V_Var rfl (clean_notCont ht))) (Eff.empty_sub _))
       (HasTypeArmsQ.mkArm_cons hperr ?_ (.nil hw))
     have hmsg : ∀ m, (message.map (desugarExpr op .other)) = some m →
-        HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γc) none m (.base .string) Eff.empty := by
+        HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γc) none m (.base .string) Eff.empty Δl := by
       intro m h
       obtain ⟨msg, hmsg, rfl⟩ := Option.map_eq_some_iff.mp h
       exact hm msg hmsg
     have hf := dieFailure_typed [some et, some (.data cdo.data [t, et])] hx hsig ht hshow hmsg
     apply HasTypeCQ.weakenEff (δ := Eff.union ε (Eff.single "Process.Exit")) _ (eff_right _ _)
-    cases message <;> exact hf
+    cases message <;> simpa [binds, LocalCtx.extend_add] using hf
   · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
       Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
 
@@ -298,14 +302,14 @@ theorem tryOptionDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
     (hns : cds.ntys = 1) (hnn : cdn.ntys = 1)
     (has : cds.args = [.tvar 0]) (han : cdn.args = []) (hdata : cds.data = cdn.data)
     (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-      (desugarExpr op .other e) (.data cds.data [t]) ε)
+      (desugarExpr op .other e) (.data cds.data [t]) ε Δl)
     (hc : TyOK C.length (.data cds.data [t]))
     (hex : Exhaustive p.declarations.patternProgram (.data cds.data [t]) [.con cs [.var], .con cn []])
     (hx : DieExitOk B C exit t)
     (hm : ∀ m, message = some m → HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none
-      (desugarExpr op .other m) (.base .string) Eff.empty) :
+      (desugarExpr op .other m) (.base .string) Eff.empty Δl) :
     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
-      (desugarExpr op pos (.tryOptionDie t cs cn exit e message)) t (Eff.union ε (Eff.single "Process.Exit")) := by
+      (desugarExpr op pos (.tryOptionDie t cs cn exit e message)) t (Eff.union ε (Eff.single "Process.Exit")) Δl := by
   have ht := hc.1
   have htzero := Ty.shift_zero 0 t ((Ty.VarsIn.wf t ht).canonical t)
   have hw := Ty.VarsIn.wf _ ht
@@ -324,14 +328,14 @@ theorem tryOptionDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
       (HasTypeCQ.weakenEff (HasTypeCQ.C_Return (.V_Var rfl (clean_notCont ht))) (Eff.empty_sub _))
       (HasTypeArmsQ.mkArm_cons hpn ?_ (.nil hw))
     have hmsg : ∀ m, (message.map (desugarExpr op .other)) = some m →
-        HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none m (.base .string) Eff.empty := by
+        HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none m (.base .string) Eff.empty Δl := by
       intro m h
       obtain ⟨msg, hmsg, rfl⟩ := Option.map_eq_some_iff.mp h
       exact hm msg hmsg
     have hf := dieFailure_typed (R := R) [some (.data cds.data [t])] hx hsig ht
       (HasTypeCQ.C_Return (HasTypeVQ.V_Const (c := .string "expected a value, got Option.None"))) hmsg
     apply HasTypeCQ.weakenEff (δ := Eff.union ε (Eff.single "Process.Exit")) _ (eff_right _ _)
-    cases message <;> exact hf
+    cases message <;> simpa [binds, LocalCtx.extend_add] using hf
   · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
       Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
 

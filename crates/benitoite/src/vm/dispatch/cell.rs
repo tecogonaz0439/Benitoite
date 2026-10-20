@@ -24,7 +24,7 @@ fn target<'p, 'e>(
     })
 }
 
-fn fits(state: &RunState, frames: u64, regs: u16) -> Result<(), Stop> {
+fn fits(state: &RunState, frames: u64, regs: u32) -> Result<(), Stop> {
     if state.meter.fits(frames, u64::from(regs)) {
         Ok(())
     } else {
@@ -84,6 +84,9 @@ fn push_call<'e>(
     );
     segment.calls.push(CallFrame {
         func: ctx.new_slot(called.value),
+        builders: std::iter::repeat_with(Slot::default)
+            .take(usize::from(called.proto.builder_slots))
+            .collect(),
         proto: called.index,
         pc: 0,
         base,
@@ -93,7 +96,7 @@ fn push_call<'e>(
         boundary: called.proto.boundary,
         chain_resume: None,
     });
-    state.meter.grow(1, u64::from(size));
+    state.meter.grow(1, u64::from(called.proto.frame_slots()));
     Ok(())
 }
 
@@ -110,7 +113,7 @@ pub(super) fn update(
     reg_ref(window, instr.a())?;
     let func = read_one(ctx, window, instr.c())?;
     let called = target(program, ctx, func)?;
-    fits(state, 2, called.proto.num_regs)?;
+    fits(state, 2, called.proto.frame_slots())?;
     let at = InstrRef {
         proto: cursor.locals.proto,
         pc: cursor.locals.pc,
@@ -189,7 +192,7 @@ pub(super) fn retry(
     let site = frame.at;
     let called = target(program, ctx, ctx.load(&frame.func))?;
     // 更新の枠は残したままなので、呼び出しの枠一つだけを加える（設計書 02-08「可変のセル」）。
-    fits(state, 1, called.proto.num_regs)?;
+    fits(state, 1, called.proto.frame_slots())?;
     if !precall(state, ctx, at, interrupt)? {
         return Ok(if state.stopping.is_some() {
             Control::Reload

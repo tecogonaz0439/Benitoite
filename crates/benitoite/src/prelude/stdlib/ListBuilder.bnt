@@ -1,5 +1,5 @@
 //! Function-local list construction. Import Benitoite.ListBuilder explicitly.
-//! Declare with bind b: ListBuilder[T] <- ListBuilder.new(). Every operation uses State.
+//! Declare with bind b: ListBuilder[T] <- ListBuilder.new(). Local operations add no effects; effects from ordinary arguments are preserved.
 //! A builder is a second-class value: it cannot be stored in an ordinary variable,
 //! returned from a function, or captured by a lambda or lazy expression.
 //! Its kind name is not an ordinary type; builders cannot be ordinary function arguments.

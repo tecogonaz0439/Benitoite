@@ -2,7 +2,7 @@ error[E0401]: mismatched types
   --> testdata/types/prelude_shadowed_type.bnt:7:21
    |
  7 |   bind r: Result <- Benitoite.Result.Ok(1)
-   |                     ^^^^^^^^^^^^^^^^^^^^^^ expected `Result`, found `Result[Integer, _]`
+   |                     ^^^^^^^^^^^^^^^^^^^^^^ expected `main.Result`, found `Benitoite.Result[Integer, _]`
    |           ------ expected because of this
    |
    = note: the value must match the type annotation

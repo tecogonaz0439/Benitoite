@@ -1,0 +1,110 @@
+[
+  {
+    "config": "heap",
+    "test": "typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack",
+    "test_seconds": 0.47,
+    "log": "heap-1.log"
+  },
+  {
+    "config": "heap",
+    "test": "typeck::pattern_ext::tests::deep_list_patterns_stay_within_the_normal_stack",
+    "test_seconds": 2.77,
+    "log": "heap-2.log"
+  },
+  {
+    "config": "heap",
+    "test": "typeck::pattern_ext::tests::deep_constructor_patterns_stay_within_the_normal_stack",
+    "test_seconds": 0.27,
+    "log": "heap-3.log"
+  },
+  {
+    "config": "heap",
+    "test": "ir::decision::tests::nested_patterns_and_long_lists_preserve_bindings_without_changing_stack_size",
+    "test_seconds": 0.01,
+    "log": "heap-4.log"
+  },
+  {
+    "config": "heap",
+    "test": "ir::check::tests::deep_ir_is_checked_without_changing_the_thread_stack",
+    "test_seconds": 0.0,
+    "log": "heap-5.log"
+  },
+  {
+    "config": "heap",
+    "test": "ir::decision::block_tests::row_fallback_preserves_guard_alternatives_and_list_bindings",
+    "test_seconds": 0.08,
+    "log": "heap-6.log"
+  },
+  {
+    "config": "heap",
+    "test": "ir::decision::block_tests::block_guard_order_survives_shared_decisions_and_row_fallback",
+    "test_seconds": 0.08,
+    "log": "heap-7.log"
+  },
+  {
+    "config": "heap",
+    "test": "ir::decision::tests::final_output_reservation_falls_back_to_rows",
+    "test_seconds": 0.0,
+    "log": "heap-8.log"
+  },
+  {
+    "config": "stress",
+    "test": "typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack",
+    "test_seconds": 0.48,
+    "log": "stress-1.log"
+  },
+  {
+    "config": "stress",
+    "test": "typeck::pattern_ext::tests::deep_list_patterns_stay_within_the_normal_stack",
+    "test_seconds": 2.75,
+    "log": "stress-2.log"
+  },
+  {
+    "config": "stress",
+    "test": "typeck::pattern_ext::tests::deep_constructor_patterns_stay_within_the_normal_stack",
+    "test_seconds": 0.27,
+    "log": "stress-3.log"
+  },
+  {
+    "config": "stress",
+    "test": "ir::decision::tests::nested_patterns_and_long_lists_preserve_bindings_without_changing_stack_size",
+    "test_seconds": 0.01,
+    "log": "stress-4.log"
+  },
+  {
+    "config": "stress",
+    "test": "ir::check::tests::deep_ir_is_checked_without_changing_the_thread_stack",
+    "test_seconds": 0.0,
+    "log": "stress-5.log"
+  },
+  {
+    "config": "stress",
+    "test": "ir::decision::block_tests::row_fallback_preserves_guard_alternatives_and_list_bindings",
+    "test_seconds": 0.08,
+    "log": "stress-6.log"
+  },
+  {
+    "config": "stress",
+    "test": "ir::decision::block_tests::block_guard_order_survives_shared_decisions_and_row_fallback",
+    "test_seconds": 0.08,
+    "log": "stress-7.log"
+  },
+  {
+    "config": "stress",
+    "test": "ir::decision::tests::final_output_reservation_falls_back_to_rows",
+    "test_seconds": 0.0,
+    "log": "stress-8.log"
+  },
+  {
+    "config": "heap",
+    "test": "random_programs::row_fallback_preserves_guard_alternatives_and_list_bindings",
+    "test_seconds": 0.76,
+    "log": "heap-random.log"
+  },
+  {
+    "config": "stress",
+    "test": "random_programs::row_fallback_preserves_guard_alternatives_and_list_bindings",
+    "test_seconds": 0.24,
+    "log": "stress-random.log"
+  }
+]

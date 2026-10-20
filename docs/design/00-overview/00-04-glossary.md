@@ -209,6 +209,7 @@
 | 語 | 原語 | 定義 | 定める章 |
 |---|---|---|---|
 | 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。`handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| ブロック式 | block expression | `block … end block` と書く、局所の文列を評価して最後の式の値を返す式。空か末尾が束縛なら Unit。名前の範囲を作り、return の作用先と効果の除去境界は作らない | [構文](../01-spec/01-02-syntax.md#ブロック式) |
 | 第二級の値 | second-class value | 通常の変数への格納・関数からの返却・ラムダやlazyへの捕捉ができない値。第一級の値（first-class value）と対になる語である。Benitoiteの構築器は第二級の値であり、専用の局所bindと直接操作に限って使える | [型システム](../01-spec/01-06-type-system.md)の「関数内の構築器」 |
 | 構築器 | builder | 関数内で内容を追記し、不変値の写しを取り出す第二級の値。StringBuilder・ListBuilder・BytesBuilderを明示importして使う。通常の型やReferenceの公開別名ではない | [型システム](../01-spec/01-06-type-system.md)の「関数内の構築器」 |
 | `ShrinkStep` | shrink step | Propertyの縮小候補を一段ずつ表すdata。Doneは終端、Skipは候補を出さず次へ進む段、Yieldは候補と次の段を返すもの。候補の検査数と段の取得数は別々の予算で数える | [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)の「プロパティベーステスト」 |

@@ -146,43 +146,18 @@ inductive InterpPart where
   | converted (ty : Ty)
   deriving ToJson, FromJson, Repr
 
-/-- corpus 12 の専用分類。通常の Ty へ混ぜない。 -/
+/-- corpus 13 の専用分類。通常の Ty へ混ぜない。 -/
 inductive BuilderKind where
   | string | list (element : Ty) | bytes
-  deriving ToJson, FromJson, Repr
-
-/-- セルの組み込み参照は行引数を持たない。 -/
-structure BuilderPrimRef where
-  name : String
-  types : List Ty
-  deriving ToJson, FromJson, Repr
-
-/-- 純粋な参照は組み込みと通常関数を区別する。 -/
-inductive BuilderPureRef where
-  | prim (ref : BuilderPrimRef)
-  | funRef (name : String) (types : List Ty)
-  deriving ToJson, FromJson, Repr
-
-structure BuilderCellRefs where
-  newRef : BuilderPrimRef
-  getRef : BuilderPrimRef
-  setRef : BuilderPrimRef
-  deriving ToJson, FromJson, Repr
-
-/-- 各種類の展開に必要な参照先と型引数をすべて保持する。 -/
-inductive BuilderRefs where
-  | string (cell : BuilderCellRefs) (add join length : BuilderPureRef)
-  | list (element : Ty) (cell : BuilderCellRefs) (append concatenate length : BuilderPureRef)
-  | bytes (cell : BuilderCellRefs) (empty fromList concatenate length : BuilderPureRef)
-  deriving ToJson, FromJson, Repr
+  deriving ToJson, FromJson, Repr, BEq
 
 inductive BuilderOp where
   | append | appendAll | copy | length
-  deriving ToJson, FromJson, Repr
+  deriving ToJson, FromJson, Repr, BEq
 
 mutual
   inductive Expr where
-    | builderOp (op : BuilderOp) (index : Nat) (args : List Expr) (refs : BuilderRefs)
+    | builderOp (op : BuilderOp) (index : Nat) (args : List Expr) (kind : BuilderKind)
     | local (index : Nat)
     | constName (name : String)
     | funName (name : String) (tys : List Ty) (effs : List Eff)
@@ -208,6 +183,7 @@ mutual
     | negFloat32 (bits : Nat)
     | unit
     | paren (inner : Expr)
+    | block (body : Block)
     | record (name : String) (tys : List Ty) (positions : List Nat) (args : List Expr)
     | recordUpdate (name : String) (tys : List Ty) (n : Nat) (positions : List Nat) (base : Expr) (args : List Expr)
     | conCall (name : String) (tys : List Ty) (args : List Expr)
@@ -250,7 +226,7 @@ mutual
   inductive Arm where
     | mk (alts : List Alternative) (guard : Option Expr) (body : Block)
   inductive Block where
-    | builderBind (kind : BuilderKind) (refs : BuilderRefs) (rest : Block)
+    | builderBind (kind : BuilderKind) (rest : Block)
     | empty
     | last (expr : Expr)
     | lastBind (shadow : Bool) (ty : Ty) (expr : Expr)
@@ -264,7 +240,7 @@ end
 
 mutual
   partial def encodeExpr : Expr → Json
-    | .builderOp op index args refs => Json.mkObj [("builderOp", Json.mkObj [("op", toJson op), ("index", toJson index), ("args", Json.arr (args.map encodeExpr).toArray), ("refs", toJson refs)])]
+    | .builderOp op index args kind => Json.mkObj [("builderOp", Json.mkObj [("op", toJson op), ("index", toJson index), ("args", Json.arr (args.map encodeExpr).toArray), ("kind", toJson kind)])]
     | .constName name => Json.mkObj [("constName", Json.mkObj [("name", toJson name)])]
     | .funDicts name tys effs dicts names params eff => Json.mkObj [("funDicts", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
     | .methName dict name tys effs dicts names params eff => Json.mkObj [("methName", Json.mkObj [("names", toJson names), ("dict", toJson dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
@@ -283,6 +259,7 @@ mutual
     | .listSpread elem concat before spread after => Json.mkObj [("listSpread", Json.mkObj [("elem", toJson elem), ("concat", encodeExpr concat), ("before", Json.arr (before.map encodeExpr).toArray), ("spread", encodeExpr spread), ("after", Json.arr (after.map encodeExpr).toArray)])]
     | .interpolation parts es converters => Json.mkObj [("interpolation", Json.mkObj [("parts", toJson parts), ("es", Json.arr (es.map encodeExpr).toArray), ("converters", Json.arr (converters.map encodeExpr).toArray)])]
     | .unit  => toJson "unit"
+    | .block body => Json.mkObj [("block", Json.mkObj [("body", encodeBlock body)])]
     | .paren inner => Json.mkObj [("paren", Json.mkObj [("inner", encodeExpr inner)])]
     | .record name tys positions args => Json.mkObj [("record", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("positions", toJson positions), ("args", Json.arr (args.map encodeExpr).toArray)])]
     | .recordUpdate name tys n positions base args => Json.mkObj [("recordUpdate", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("n", toJson n), ("positions", toJson positions), ("base", encodeExpr base), ("args", Json.arr (args.map encodeExpr).toArray)])]
@@ -325,7 +302,7 @@ mutual
   partial def encodeArm : Arm → Json
     | .mk alts guard body => Json.mkObj [("mk", Json.mkObj [("alts", toJson alts), ("guard", guard.map encodeExpr |>.getD Json.null), ("body", encodeBlock body)])]
   partial def encodeBlock : Block → Json
-    | .builderBind kind refs rest => Json.mkObj [("builderBind", Json.mkObj [("kind", toJson kind), ("refs", toJson refs), ("rest", encodeBlock rest)])]
+    | .builderBind kind rest => Json.mkObj [("builderBind", Json.mkObj [("kind", toJson kind), ("rest", encodeBlock rest)])]
     | .empty  => toJson "empty"
     | .last expr => Json.mkObj [("last", Json.mkObj [("expr", encodeExpr expr)])]
     | .lastBind shadow ty expr => Json.mkObj [("lastBind", Json.mkObj [("shadow", toJson shadow), ("ty", toJson ty), ("expr", encodeExpr expr)])]
@@ -367,8 +344,8 @@ def checkBatch2ExprFields (j : Json) : Except String Unit := do
 
 /-- 新タグの曖昧な別名や未知の欄を、既存タグとして読み捨てない。 -/
 def checkBuilderFields (j : Json) : Except String Unit := do
-  for (tag, fields) in [("builderOp", ["op", "index", "args", "refs"]),
-      ("builderBind", ["kind", "refs", "rest"])] do
+  for (tag, fields) in [("builderOp", ["op", "index", "args", "kind"]),
+      ("builderBind", ["kind", "rest"])] do
     if let .ok payload := j.getObjVal? tag then
       if (← j.getObj?).toArray.size != 1 then throw "ambiguous builder syntax"
       let obj ← payload.getObj?
@@ -376,19 +353,15 @@ def checkBuilderFields (j : Json) : Except String Unit := do
         if !fields.contains key then throw s!"unexpected {tag} field: {key}"
       for key in fields do
         if !obj.contains key then throw s!"missing {tag} field: {key}"
-      let raw ← payload.getObjVal? "refs"
-      let refs : BuilderRefs ← fromJson? raw
-      if toJson refs != raw then throw "unexpected builder reference fields"
-      if tag == "builderBind" then
-        let raw ← payload.getObjVal? "kind"
-        let kind : BuilderKind ← fromJson? raw
-        if toJson kind != raw then throw "unexpected builder kind fields"
+      let raw ← payload.getObjVal? "kind"
+      let kind : BuilderKind ← fromJson? raw
+      if toJson kind != raw then throw "unexpected builder kind fields"
 
 mutual
   partial def decodeExpr (j : Json) : Except String Expr := do
     checkBuilderFields j
     if let .ok o := j.getObjVal? "builderOp" then
-      return .builderOp (← o.getObjValAs? BuilderOp "op") (← o.getObjValAs? Nat "index") (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeExpr) (← o.getObjValAs? BuilderRefs "refs")
+      return .builderOp (← o.getObjValAs? BuilderOp "op") (← o.getObjValAs? Nat "index") (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeExpr) (← o.getObjValAs? BuilderKind "kind")
     checkTryFields j
     checkBatch2ExprFields j
     if let .ok o := j.getObjVal? "raise" then return .raise (← o.getObjValAs? Ty "result") (← o.getObjValAs? Ty "error")
@@ -429,6 +402,10 @@ mutual
     if let .ok o := j.getObjVal? "interpolation" then
       return .interpolation (← fromJson? (← o.getObjVal? "parts")) (← (← (← o.getObjVal? "es").getArr?).toList.mapM decodeExpr) (← (← (← o.getObjVal? "converters").getArr?).toList.mapM decodeExpr)
     if j == toJson "unit" then return .unit
+    if let .ok o := j.getObjVal? "block" then
+      if (← j.getObj?).toArray.size != 1 || (← o.getObj?).toArray.size != 1 then
+        throw "unexpected block fields"
+      return .block (← decodeBlock (← o.getObjVal? "body"))
     if let .ok o := j.getObjVal? "paren" then
       return .paren (← decodeExpr (← o.getObjVal? "inner"))
     if let .ok o := j.getObjVal? "record" then
@@ -510,7 +487,7 @@ mutual
   partial def decodeBlock (j : Json) : Except String Block := do
     checkBuilderFields j
     if let .ok o := j.getObjVal? "builderBind" then
-      return .builderBind (← o.getObjValAs? BuilderKind "kind") (← o.getObjValAs? BuilderRefs "refs") (← decodeBlock (← o.getObjVal? "rest"))
+      return .builderBind (← o.getObjValAs? BuilderKind "kind") (← decodeBlock (← o.getObjVal? "rest"))
     if j == toJson "empty" then return .empty
     if let .ok o := j.getObjVal? "last" then
       return .last (← decodeExpr (← o.getObjVal? "expr"))
@@ -539,6 +516,31 @@ instance : FromJson Arm := ⟨decodeArm⟩
 instance : ToJson Block := ⟨encodeBlock⟩
 instance : FromJson Block := ⟨decodeBlock⟩
 
+/-- 専用場所は通常の値と区別する。 -/
+inductive LocalRef where
+  | bound (index : Nat)
+  | loc (index : Nat)
+  deriving ToJson, FromJson, Repr, BEq
+
+/-- 専用コアでも、旧参照先や未知の欄を読み捨てない。 -/
+def checkCoreBuilderFields (j : Json) : Except String Unit := do
+  for (tag, fields) in [("builderOp", ["kind", "op", "ref", "args"]),
+      ("builderLet", ["kind", "body"])] do
+    if let .ok payload := j.getObjVal? tag then
+      if (← j.getObj?).toArray.size != 1 then throw "ambiguous core builder syntax"
+      let obj ← payload.getObj?
+      for (key, _) in obj.toArray do
+        if !fields.contains key then throw s!"unexpected {tag} field: {key}"
+      for key in fields do
+        if !obj.contains key then throw s!"missing {tag} field: {key}"
+      let raw ← payload.getObjVal? "kind"
+      let kind : BuilderKind ← fromJson? raw
+      if toJson kind != raw then throw "unexpected builder kind fields"
+      if tag == "builderOp" then
+        let raw ← payload.getObjVal? "ref"
+        let ref : LocalRef ← fromJson? raw
+        if toJson ref != raw then throw "unexpected local reference fields"
+
 mutual
   inductive Val where
     | var (index : Nat)
@@ -554,6 +556,8 @@ mutual
     | super (dict : Val) (cls : String)
     | unsupported (name : String)
   inductive Comp where
+    | builderLet (kind : BuilderKind) (body : Comp)
+    | builderOp (kind : BuilderKind) (op : BuilderOp) (ref : LocalRef) (args : List Val)
     | ret (value : Val)
     | letIn (bound body : Comp)
     | app (callee : Val) (args : List Val)
@@ -587,6 +591,8 @@ mutual
     | .op name tys => Json.mkObj [("op", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
     | .raise result error => Json.mkObj [("raise", Json.mkObj [("result", toJson result), ("error", toJson error)])]
   partial def encodeComp : Comp → Json
+    | .builderLet kind body => Json.mkObj [("builderLet", Json.mkObj [("kind", toJson kind), ("body", encodeComp body)])]
+    | .builderOp kind op ref args => Json.mkObj [("builderOp", Json.mkObj [("kind", toJson kind), ("op", toJson op), ("ref", toJson ref), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .meth dict name tys effs args => Json.mkObj [("meth", Json.mkObj [("dict", encodeVal dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .ret value => Json.mkObj [("ret", Json.mkObj [("value", encodeVal value)])]
     | .letIn bound body => Json.mkObj [("letIn", Json.mkObj [("bound", encodeComp bound), ("body", encodeComp body)])]
@@ -632,6 +638,12 @@ mutual
       return .op (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys"))
     throw "unknown Val constructor"
   partial def decodeComp (j : Json) : Except String Comp := do
+    checkCoreBuilderFields j
+    if let .ok o := j.getObjVal? "builderLet" then
+      return .builderLet (← o.getObjValAs? BuilderKind "kind") (← decodeComp (← o.getObjVal? "body"))
+    if let .ok o := j.getObjVal? "builderOp" then
+      return .builderOp (← o.getObjValAs? BuilderKind "kind") (← o.getObjValAs? BuilderOp "op")
+        (← o.getObjValAs? LocalRef "ref") (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeVal)
     if let .ok o := j.getObjVal? "meth" then
       return .meth (← decodeVal (← o.getObjVal? "dict")) (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeVal)
     if let .ok o := j.getObjVal? "ret" then

@@ -1,0 +1,122 @@
+[
+  {
+    "command": [
+      "formal/.lake/build/bin/desugarDiff",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-desugarDiff.json"
+    ],
+    "exit": 0,
+    "seconds": 0.165272417,
+    "inputs": {
+      "corpus": "954dc9d5cf5c772a6a4e59bfdc0312103502ee9b278d95a465cc4dd701108b18"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/builtinCheck",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-builtins.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-builtinCheck.json"
+    ],
+    "exit": 0,
+    "seconds": 0.165720958,
+    "inputs": {
+      "corpus": "954dc9d5cf5c772a6a4e59bfdc0312103502ee9b278d95a465cc4dd701108b18",
+      "builtins": "2f1bcb1c93920b036536b685325d8ff500621ab136764589858f6d522a0c4add"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/surfaceCheck",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-builtins.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-stdlib.json",
+      "golden",
+      "t2-holes.bnt",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-surfaceCheck.json"
+    ],
+    "exit": 0,
+    "seconds": 0.16578474999999998,
+    "inputs": {
+      "corpus": "954dc9d5cf5c772a6a4e59bfdc0312103502ee9b278d95a465cc4dd701108b18",
+      "builtins": "2f1bcb1c93920b036536b685325d8ff500621ab136764589858f6d522a0c4add",
+      "stdlib": "7bf9260415abf858da9e505760bc66b1bfed16eec05ec4657f258b04758a39e0"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/surfaceCheckAll",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-builtins.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-stdlib.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/t2-holes-surfaceCheckAll.json"
+    ],
+    "exit": 0,
+    "seconds": 0.1715596250000001,
+    "inputs": {
+      "corpus": "954dc9d5cf5c772a6a4e59bfdc0312103502ee9b278d95a465cc4dd701108b18",
+      "builtins": "2f1bcb1c93920b036536b685325d8ff500621ab136764589858f6d522a0c4add",
+      "stdlib": "7bf9260415abf858da9e505760bc66b1bfed16eec05ec4657f258b04758a39e0"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/desugarDiff",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-desugarDiff.json"
+    ],
+    "exit": 0,
+    "seconds": 0.01957141699999998,
+    "inputs": {
+      "corpus": "700ae55b0a63f7ee9ed37599b8a021c663172907288555b8d2fee6ef998c07ff"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/builtinCheck",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-builtins.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-builtinCheck.json"
+    ],
+    "exit": 0,
+    "seconds": 0.020286707999999987,
+    "inputs": {
+      "corpus": "700ae55b0a63f7ee9ed37599b8a021c663172907288555b8d2fee6ef998c07ff",
+      "builtins": "ade02895ae1bd76363ca63ace6fd290135bdca8787ab3c349f3cda3c728fef0d"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/surfaceCheck",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-builtins.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-stdlib.json",
+      "golden",
+      "named-static-calls",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-surfaceCheck.json"
+    ],
+    "exit": 0,
+    "seconds": 0.022177417000000088,
+    "inputs": {
+      "corpus": "700ae55b0a63f7ee9ed37599b8a021c663172907288555b8d2fee6ef998c07ff",
+      "builtins": "ade02895ae1bd76363ca63ace6fd290135bdca8787ab3c349f3cda3c728fef0d",
+      "stdlib": "3cb53701db4a6e0d3e4204ea3c22428734f4e4abbd081c82875c98027809a753"
+    }
+  },
+  {
+    "command": [
+      "formal/.lake/build/bin/surfaceCheckAll",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-corpus.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-builtins.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-stdlib.json",
+      "docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t2/exchange/named-static-calls-surfaceCheckAll.json"
+    ],
+    "exit": 0,
+    "seconds": 0.02229250000000005,
+    "inputs": {
+      "corpus": "700ae55b0a63f7ee9ed37599b8a021c663172907288555b8d2fee6ef998c07ff",
+      "builtins": "ade02895ae1bd76363ca63ace6fd290135bdca8787ab3c349f3cda3c728fef0d",
+      "stdlib": "3cb53701db4a6e0d3e4204ea3c22428734f4e4abbd081c82875c98027809a753"
+    }
+  }
+]

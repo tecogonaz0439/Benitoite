@@ -583,7 +583,17 @@ impl Ty {
     /// 型を診断に示す形にする（`List[Integer]`、`function(value: Integer) -> Integer uses Console.Write`）。
     pub fn show(&self, names: &TyNames<'_>) -> String {
         let mut out = String::new();
-        show_ty(self, names, &mut out);
+        show_ty(self, names, &std::collections::BTreeMap::new(), &mut out);
+        out
+    }
+    /// 一つの診断で決めた型構成子の表示名を、入れ子と Fail の型にも適用する。
+    pub(crate) fn show_qualified(
+        &self,
+        names: &TyNames<'_>,
+        qualified: &std::collections::BTreeMap<TyCon, String>,
+    ) -> String {
+        let mut out = String::new();
+        show_ty(self, names, qualified, &mut out);
         out
     }
 }
@@ -644,38 +654,47 @@ impl AdtTable {
 }
 
 // 型の各段で文字列を作らず、深い型でも一つの出力に書き足す（設計書 02-05「出力」）。
-fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
+fn show_ty(
+    ty: &Ty,
+    names: &TyNames<'_>,
+    qualified: &std::collections::BTreeMap<TyCon, String>,
+    out: &mut String,
+) {
     match ty {
         Ty::Con(con, args) => {
-            match con {
-                TyCon::Builtin(id) => {
-                    if let Some(d) = id.def()
-                        && let Some(name) = id.display_name()
-                    {
-                        if let Some(module) = d.module.last()
-                            && *module != d.name
+            if let Some(name) = qualified.get(con) {
+                out.push_str(name);
+            } else {
+                match con {
+                    TyCon::Builtin(id) => {
+                        if let Some(d) = id.def()
+                            && let Some(name) = id.display_name()
                         {
-                            out.push_str(module);
-                            out.push('.');
+                            if let Some(module) = d.module.last()
+                                && *module != d.name
+                            {
+                                out.push_str(module);
+                                out.push('.');
+                            }
+                            out.push_str(name);
+                        } else {
+                            out.push('_');
                         }
-                        out.push_str(name);
-                    } else {
-                        out.push('_');
+                    }
+                    TyCon::External(id) => {
+                        out.push_str(names.bindings.get(*id).map_or("_", |b| b.name.as_str()))
+                    }
+                    TyCon::Adt(id) => {
+                        out.push_str(names.adts.get(*id).map_or("_", |d| d.name.as_str()))
                     }
                 }
-                TyCon::External(id) => {
-                    out.push_str(names.bindings.get(*id).map_or("_", |b| b.name.as_str()))
-                }
-                TyCon::Adt(id) => {
-                    out.push_str(names.adts.get(*id).map_or("_", |d| d.name.as_str()))
-                }
             }
-            show_args(args, names, out);
+            show_args(args, names, qualified, out);
         }
         Ty::Param(i) => out.push_str(param_name(*i, names.type_params)),
         Ty::App(i, args) => {
             out.push_str(param_name(*i, names.type_params));
-            show_args(args, names, out);
+            show_args(args, names, qualified, out);
         }
         Ty::Rigid { index, .. } => out.push_str(param_name(*index, names.type_params)),
         Ty::Fn(f) => {
@@ -686,10 +705,10 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
                 }
                 out.push_str(f.param_names.get(i).map_or("_", String::as_str));
                 out.push_str(": ");
-                show_ty(ty, names, out);
+                show_ty(ty, names, qualified, out);
             }
             out.push_str(") -> ");
-            show_ty(&f.ret, names, out);
+            show_ty(&f.ret, names, qualified, out);
             if !f.effects.is_empty() {
                 out.push_str(" uses ");
                 let mut effects = Vec::new();
@@ -725,7 +744,10 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
                     effects.push(text);
                 }
                 for ty in &f.effects.failures {
-                    effects.push(format!("Failure.Fail[{}]", ty.show(names)));
+                    effects.push(format!(
+                        "Failure.Fail[{}]",
+                        ty.show_qualified(names, qualified)
+                    ));
                 }
                 for v in &f.effects.vars {
                     let row = param_name(v.0, names.effect_params);
@@ -748,14 +770,19 @@ fn param_name(index: u32, names: &[String]) -> &str {
         .map_or("_", String::as_str)
 }
 
-fn show_args(args: &[Ty], names: &TyNames<'_>, out: &mut String) {
+fn show_args(
+    args: &[Ty],
+    names: &TyNames<'_>,
+    qualified: &std::collections::BTreeMap<TyCon, String>,
+    out: &mut String,
+) {
     if !args.is_empty() {
         out.push('[');
         for (i, arg) in args.iter().enumerate() {
             if i != 0 {
                 out.push_str(", ");
             }
-            show_ty(arg, names, out);
+            show_ty(arg, names, qualified, out);
         }
         out.push(']');
     }

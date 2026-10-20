@@ -10,6 +10,8 @@ use super::program::{BuiltinRefIdx, CaptureSource, CtorIdx, ImplIdx, OpIdx, Prot
 /// 命令一つに付く生存の項目。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum LiveItem {
+    /// この命令の入口で不要になった専用の根。通常のレジスタ番号とは区別する。
+    Builder(u16),
     /// この命令が被演算子として最後に読むレジスタ。写さずに移してよい。
     /// `sole` は同じ命令のほかの被演算子に同じレジスタがないこと（その場での再利用の条件）
     LastUse { reg: u16, sole: bool },
@@ -111,6 +113,31 @@ pub fn reg_use(
         | Opcode::Not => {
             result.reads.push(b);
             result.write = Some(a);
+        }
+        Opcode::BuilderNew
+        | Opcode::BuilderAppend
+        | Opcode::BuilderAppendAll
+        | Opcode::BuilderCopy
+        | Opcode::BuilderLength => {
+            let entry = site
+                .p
+                .builder_sites
+                .get(usize::try_from(instr.bx()).map_err(|_| site.error("builder site overflow"))?)
+                .ok_or_else(|| site.error("builder site is missing"))?;
+            if entry.local >= site.p.builder_slots {
+                return Err(site.error("builder slot outside window"));
+            }
+            let arity = usize::from(matches!(
+                opcode,
+                Opcode::BuilderAppend | Opcode::BuilderAppendAll
+            ));
+            if entry.args.len() != arity || (opcode == Opcode::BuilderNew && a != 0) {
+                return Err(site.error("invalid builder operands"));
+            }
+            result.reads.extend(&entry.args);
+            if opcode != Opcode::BuilderNew {
+                result.write = Some(a);
+            }
         }
         Opcode::LoadK | Opcode::GetCap | Opcode::GetDict => result.write = Some(a),
         Opcode::Closure | Opcode::Lazy => {
@@ -310,28 +337,43 @@ pub fn compute_liveness(
         }
     }
 
-    // 空集合から始め、入口の集合が増えたときだけ先行命令を再計算する。
+    // 出口の全集合は複製・保存せず、後続の入口から直接読む。待機中の命令は
+    // 重ねて積まず、入口の集合が増えたときだけ先行命令を再計算する。
     // 有限個のレジスタの集合は単調に増えるため、後ろ向きの辺があっても終了する。
     let mut work: VecDeque<_> = (0..nodes.len()).rev().collect();
+    for current in &mut nodes {
+        current.queued = true;
+    }
     while let Some(index) = work.pop_front() {
+        node_mut(&mut nodes, index, proto)?.queued = false;
         let current = node(&nodes, index, proto)?;
-        let mut live_out = BTreeSet::new();
+        let mut live_in = BTreeSet::new();
         for next in &current.successors {
-            live_out.extend(&node(&nodes, *next, proto)?.live_in);
-        }
-        let mut live_in = live_out.clone();
-        if let Some(reg) = current.usage.write {
-            live_in.remove(&reg);
+            live_in.extend(
+                node(&nodes, *next, proto)?
+                    .live_in
+                    .iter()
+                    .copied()
+                    .filter(|reg| Some(*reg) != current.usage.write),
+            );
         }
         live_in.extend(&current.usage.reads);
         let current = node_mut(&mut nodes, index, proto)?;
-        current.live_out = live_out;
         if current.live_in != live_in {
             current.live_in = live_in;
-            work.extend(&current.predecessors);
+            let predecessors = current.predecessors.clone();
+            for prev in predecessors {
+                let previous = node_mut(&mut nodes, prev, proto)?;
+                if !previous.queued {
+                    previous.queued = true;
+                    work.push_back(prev);
+                }
+            }
         }
     }
-    for (index, current) in nodes.iter_mut().enumerate() {
+    for index in 0..nodes.len() {
+        let current = node(&nodes, index, proto)?;
+        let mut last = Vec::new();
         let pc = u32::try_from(index).map_err(|_| error(proto, 0, "code is too long"))?;
         let site = Site::new(program, proto, pc)?;
         let instr = site.instr()?;
@@ -352,11 +394,16 @@ pub fn compute_liveness(
                 let Some(sole) = sole_reads.remove(reg) else {
                     continue;
                 };
-                if !current.live_out.contains(reg) || current.usage.write == Some(*reg) {
-                    current.last.push(LiveItem::LastUse { reg: *reg, sole });
+                let mut later = false;
+                for next in &current.successors {
+                    later |= node(&nodes, *next, proto)?.live_in.contains(reg);
+                }
+                if !later || current.usage.write == Some(*reg) {
+                    last.push(LiveItem::LastUse { reg: *reg, sole });
                 }
             }
         }
+        node_mut(&mut nodes, index, proto)?.last = last;
     }
 
     // H の変換は固定した生存集合との積・最後の使用の除去・書き込みの追加である。
@@ -365,7 +412,11 @@ pub fn compute_liveness(
         first.held.extend(0..p.num_params);
     }
     work.extend(0..nodes.len());
+    for current in &mut nodes {
+        current.queued = true;
+    }
     while let Some(index) = work.pop_front() {
+        node_mut(&mut nodes, index, proto)?.queued = false;
         let current = node(&nodes, index, proto)?;
         let mut held_out: BTreeSet<_> = current
             .held
@@ -383,15 +434,50 @@ pub fn compute_liveness(
             let target = node_mut(&mut nodes, next, proto)?;
             let old_len = target.held.len();
             target.held.extend(&held_out);
-            if target.held.len() != old_len {
+            if target.held.len() != old_len && !target.queued {
+                target.queued = true;
                 work.push_back(next);
             }
+        }
+    }
+    let builder_use = super::builders::analyze(program, proto)?;
+    let mut builder_live = vec![
+        BTreeSet::new();
+        if builder_use.is_empty() {
+            0
+        } else {
+            nodes.len()
+        }
+    ];
+    let mut pending: VecDeque<_> = (0..builder_live.len()).rev().collect();
+    while let Some(i) = pending.pop_front() {
+        let usage = builder_use
+            .get(i)
+            .ok_or_else(|| error(proto, 0, "builder usage missing"))?;
+        let n = node(&nodes, i, proto)?;
+        let mut incoming = usage.reads.clone();
+        for next in &n.successors {
+            incoming.extend(
+                builder_live
+                    .get(*next)
+                    .ok_or_else(|| error(proto, 0, "builder successor missing"))?
+                    .iter()
+                    .copied()
+                    .filter(|slot| Some(*slot) != usage.write),
+            );
+        }
+        let old = builder_live
+            .get_mut(i)
+            .ok_or_else(|| error(proto, 0, "builder liveness missing"))?;
+        if *old != incoming {
+            *old = incoming;
+            pending.extend(&n.predecessors);
         }
     }
     let mut live = LiveInfo::default();
     live.starts.push(0);
     live.live_in_starts.push(0);
-    for (current, instr) in nodes.iter().zip(&p.code) {
+    for (index, (current, instr)) in nodes.iter().zip(&p.code).enumerate() {
         // 差分の項目とは別に入口の集合を保存し、過去に死んだ値も安全点で除く（設計書 02-08「枠を降ろす原因と処理」）。
         live.live_in.extend(&current.live_in);
         live.live_in_starts.push(
@@ -417,6 +503,13 @@ pub fn compute_liveness(
             live.items.push(LiveItem::Dead { reg: *reg });
         }
         live.items.extend(&current.last);
+        if let Some(builders) = builder_live.get(index) {
+            live.items.extend(
+                (0..p.builder_slots)
+                    .filter(|slot| !builders.contains(slot))
+                    .map(LiveItem::Builder),
+            );
+        }
         live.starts.push(
             u32::try_from(live.items.len())
                 .map_err(|_| error(proto, 0, "too many liveness items"))?,
@@ -431,6 +524,16 @@ fn error(proto: ProtoIdx, pc: u32, message: &str) -> LivenessError {
         pc,
         message: message.to_owned(),
     }
+}
+
+/// 検証と専用保持先の解析が共有する制御フローの辺。
+pub(crate) fn successors(
+    program: &CompiledProgram,
+    proto: ProtoIdx,
+    pc: u32,
+) -> Result<Vec<usize>, LivenessError> {
+    let site = Site::new(program, proto, pc)?;
+    site.successors(site.instr()?, reg_use(program, proto, pc)?.terminal)
 }
 
 struct Site<'a> {
@@ -554,7 +657,7 @@ struct Node {
     successors: Vec<usize>,
     predecessors: Vec<usize>,
     live_in: BTreeSet<u16>,
-    live_out: BTreeSet<u16>,
+    queued: bool,
     held: BTreeSet<u16>,
     last: Vec<LiveItem>,
 }
@@ -704,13 +807,18 @@ mod tests {
         builder.finish(main).unwrap()
     }
 
-    // 関門: 69 命令の読み書きは VM とコード生成が共有する契約であり、取り違えた
+    // 関門: 74 命令の読み書きは VM とコード生成が共有する契約であり、取り違えた
     // レジスタの範囲や表の引数の数の不整合を検出する。
     #[test]
     fn all_opcodes_obey_register_operand_contracts() {
         use Opcode::*;
         let mut p = metadata_program();
         let mut cases = vec![
+            (BuilderNew, vec![], None, false),
+            (BuilderAppend, vec![4], Some(1), false),
+            (BuilderAppendAll, vec![4], Some(1), false),
+            (BuilderCopy, vec![], Some(1), false),
+            (BuilderLength, vec![], Some(1), false),
             (Move, vec![2], Some(1), false),
             (LoadK, vec![], Some(1), false),
             (GetCap, vec![], Some(1), false),
@@ -754,7 +862,37 @@ mod tests {
         let mut covered = BTreeSet::new();
         for (op, reads, write, terminal) in cases {
             // 捕捉の表の番号だけは Bx である。
-            p.protos[0].code = vec![if op == Closure || op == Lazy {
+            let builder = matches!(
+                op,
+                BuilderNew | BuilderAppend | BuilderAppendAll | BuilderCopy | BuilderLength
+            );
+            p.protos[0].builder_slots = u16::from(builder);
+            p.protos[0].builder_sites = if builder {
+                vec![super::super::program::BuilderSite {
+                    local: 0,
+                    kind: crate::resolve::builders::BuilderClass::String,
+                    args: if matches!(op, BuilderAppend | BuilderAppendAll) {
+                        vec![4]
+                    } else {
+                        vec![]
+                    },
+                }]
+            } else {
+                vec![]
+            };
+            p.protos[0].origin = super::super::program::ProtoOrigin::UserHandleBody;
+            p.protos[0].builder_inputs = if builder && op != BuilderNew {
+                vec![super::super::program::BuilderInput {
+                    source: 0,
+                    target: 0,
+                    kind: crate::resolve::builders::BuilderClass::String,
+                }]
+            } else {
+                vec![]
+            };
+            p.protos[0].code = vec![if builder {
+                Instr::abx(op, if op == BuilderNew { 0 } else { 1 }, 0)
+            } else if op == Closure || op == Lazy {
                 Instr::abx(op, 1, 2)
             } else {
                 Instr::abc(op, 1, 2, 4)
@@ -784,7 +922,7 @@ mod tests {
                 assert_eq!(live.call_write(1), None);
             }
         }
-        assert_eq!(covered.len(), 69);
+        assert_eq!(covered.len(), 74);
         assert_eq!(
             covered,
             (0..=u8::MAX)
@@ -915,6 +1053,7 @@ mod tests {
             for list in &mut lists {
                 list.sort_by_key(|item| match item {
                     LiveItem::Dead { reg } => (0, *reg, false),
+                    LiveItem::Builder(local) => (2, *local, false),
                     LiveItem::LastUse { reg, sole } => (1, *reg, *sole),
                 });
             }
@@ -1360,6 +1499,7 @@ mod tests {
                 let mut found_dead = BTreeSet::new();
                 for item in actual {
                     match item {
+                        LiveItem::Builder(_) => panic!("ordinary fixture has builder slots"),
                         LiveItem::LastUse { reg, sole } => {
                             assert!(found_last.insert((*reg, *sole)))
                         }

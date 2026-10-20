@@ -148,7 +148,7 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
 
 宣言を読む開発用の `derive_inventory` は、本体の検査と実行を行わない（[外部生成の宣言情報](../03-interop/03-06-stdlib.md#外部生成の宣言情報)）。その終了0は、ここで使う `check`・`test --check` の成功や、実行前のエフェクト上限の確認に代用しない。
 
-外部生成の領域を扱う場合は、道具の preview の差分と提案する記録を確認し、その manifest のハッシュを指定して apply する。通常の `check`・`test` の後に道具の `check` も行う（[外部生成の管理と照合](../03-interop/03-06-stdlib.md#外部生成の管理と照合)）。型検査だけでは型の変更後も通る古い出力を検出できないためである。JSON のレコード変換は生成道具と Json.Codec で提供する。Property のレコード生成器・縮小器も同じ領域へ生成できる。生成した JSON の往復は通常の `@test` 一件から Property.check で試す。反例の報告には生成記録の版と設定ハッシュを添える。型の構造だけで欄間の条件を保証せず、必要な場合は型全体の生成器・縮小器を手書きする。
+外部生成の領域を扱う場合は、道具の preview の差分と提案する記録を確認し、その manifest のハッシュを指定して apply する。通常の `check`・`test` の後に道具の `check` も行う（[外部生成の管理と照合](../03-interop/03-06-stdlib.md#外部生成の管理と照合)）。型検査だけでは型の変更後も通る古い出力を検出できないためである。JSON のレコード変換は生成道具と Json.Codec で提供する。Property のレコード生成器・縮小器も同じ領域へ生成できる。型パラメータを持つ型では使用するパラメータのGen/Shrinkerを宣言順に渡し、phantomには要求しない。同一モジュール内の正則な再帰の生成器は、[有限基底と総予算](../03-interop/03-08-text-and-data.md#レコードのproperty生成器)に従い、子の生成器の作成をGen.run内へ遅らせる。縮小器は候補の要求まで再帰する組み立てを遅らせ、容器の削除の後に欄順で一欄だけを縮小する。Show/Orderも通常の制約付きimplementとして生成する。生成記録・意味ハッシュ・manifest/receiptは版3、生成規則は3.0.0-syntax-batch4、宣言inventoryは版2、設定は版1を使う。旧本文をハッシュで照合してから新previewを確認し、旧manifestを新applyに流用しない。種だけで旧版の生成分布の再現を約束しない。JSONの対応範囲とは区別する。生成した JSON の往復は通常の `@test` 一件から Property.check で試す。反例の報告には生成記録の版と設定ハッシュを添える。型の構造だけで欄間の条件を保証せず、必要な場合は型全体の生成器・縮小器を手書きする。
 
 【決定】docの例を含めるときは、検査報告と実行の両方へ `--doc` を付ける。版2のtestCheckReportとtestResultsへの対応を問い合わせ、通常testとtest/run例だけのaggregateEffectsを確認する。check/error例を実行権限へ足さない。doc例はimportとusesを自ら明記し、公開APIの境界を通る。利用者testはimport先と標準docを再帰的に集めない。同梱標準docの代表例の検査は開発時に行う。
 

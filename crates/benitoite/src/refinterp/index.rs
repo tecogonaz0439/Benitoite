@@ -117,7 +117,9 @@ impl<'p> Index<'p> {
                         }
                     }
                 }
-                CompKind::Return(_)
+                CompKind::BuilderLet { .. }
+                | CompKind::BuilderOp { .. }
+                | CompKind::Return(_)
                 | CompKind::Let { .. }
                 | CompKind::App { .. }
                 | CompKind::Method(_)
@@ -189,7 +191,9 @@ impl<'p> Index<'p> {
                 CompKind::Resume { cont, .. } => {
                     used.insert(*cont);
                 }
-                CompKind::Return(_)
+                CompKind::BuilderLet { .. }
+                | CompKind::BuilderOp { .. }
+                | CompKind::Return(_)
                 | CompKind::If { .. }
                 | CompKind::Escape(_)
                 | CompKind::Use { .. }
@@ -227,6 +231,12 @@ fn dict_vars(dict: &DictVal, used: &mut BTreeSet<VarId>) {
 fn walk<'p>(comp: &'p Comp, comps: &mut Vec<&'p Comp>, vals: &mut Vec<&'p CoreVal>) {
     comps.push(comp);
     match &comp.kind {
+        CompKind::BuilderLet { body, .. } => walk(body, comps, vals),
+        CompKind::BuilderOp { args, .. } => {
+            for v in args {
+                walk_val(v, comps, vals);
+            }
+        }
         CompKind::Return(v) | CompKind::Escape(v) | CompKind::Resume { value: v, .. } => {
             walk_val(v, comps, vals)
         }

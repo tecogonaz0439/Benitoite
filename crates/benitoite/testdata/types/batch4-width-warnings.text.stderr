@@ -1,0 +1,19 @@
+warning[W0402]: this calculation overflows `Integer8`
+  --> testdata/types/batch4-width-warnings.bnt:3:13
+   |
+ 3 |   bind _ <- Num.absolute(-128s8)
+   |             ^^^^^^^^^^^^^^^^^^^^ always overflows
+
+warning[W0401]: this divides by zero
+  --> testdata/types/batch4-width-warnings.bnt:4:32
+   |
+ 4 |   bind _ <- Num.floorDivide(b: 0s8, a: 1s8)
+   |                                ^^^ the divisor is always 0
+
+warning[W0402]: this calculation overflows `Integer8`
+  --> testdata/types/batch4-width-warnings.bnt:5:13
+   |
+ 5 |   bind _ <- Num.floorDivide(a: -128s8, b: -1s8)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ always overflows
+
+warning: 3 warnings emitted

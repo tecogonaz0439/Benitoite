@@ -1,0 +1,6 @@
+public record Box
+  value: Integer
+end record
+public function make() -> Box
+  return Box(value: 1)
+end function

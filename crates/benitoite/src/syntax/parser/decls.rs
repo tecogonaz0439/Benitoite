@@ -125,6 +125,7 @@ fn parse_item(p: &mut Parser, attrs: &[Attribute], depth: u32) -> PResult<Item> 
         | TokenKind::KwIf
         | TokenKind::KwImport
         | TokenKind::KwLambda
+        | TokenKind::KwBlock
         | TokenKind::KwLazy
         | TokenKind::KwMatch
         | TokenKind::KwMod

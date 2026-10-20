@@ -2,28 +2,28 @@ import Benitoite.StringBuilder
 import Benitoite.ListBuilder
 import Benitoite.BytesBuilder
 
-function stringCopy() -> String uses State
+function stringCopy() -> String
   bind b: StringBuilder <- StringBuilder.new()
   return StringBuilder.copy(b)
 end function
-function listCopy() -> List[Integer] uses State
+function listCopy() -> List[Integer]
   bind b: ListBuilder[Integer] <- ListBuilder.new()
   return ListBuilder.copy(b)
 end function
-function bytesLength() -> Integer uses State
+function bytesLength() -> Integer
   bind b: BytesBuilder <- BytesBuilder.new()
   return BytesBuilder.length(b)
 end function
-function interleaved() -> String uses State
+function interleaved() -> String
   bind first: StringBuilder <- StringBuilder.new()
   bind snapshot <- StringBuilder.copy(first)
   bind second: StringBuilder <- StringBuilder.new()
   return StringBuilder.copy(first)
 end function
-function typeRow[T, effect E](callback: function(value: T) -> T uses E) -> List[function(value: T) -> T uses E] uses State
+function typeRow[T, effect E](callback: function(value: T) -> T uses E) -> List[function(value: T) -> T uses E]
   bind b: ListBuilder[function(value: T) -> T uses E] <- ListBuilder.new()
   return ListBuilder.copy(b)
 end function
-function lastDeclaration() -> Unit uses State
+function lastDeclaration() -> Unit
   bind b: BytesBuilder <- BytesBuilder.new()
 end function

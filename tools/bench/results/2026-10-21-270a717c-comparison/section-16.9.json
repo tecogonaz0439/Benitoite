@@ -1,0 +1,224 @@
+{
+  "section": "16.9",
+  "phase_seconds": {
+    "verify": 0.03882775000000027,
+    "cli": 0.3238520410000021,
+    "warmup": 0.033399375999998426,
+    "probe_warmup": 0,
+    "rss": 0,
+    "stages": 0,
+    "alloc": 0,
+    "external_observer": 0.17190458200001046
+  },
+  "measurements": {
+    "external-tests-normal-1": {
+      "before": {
+        "verify": [
+          0.017750874999999944
+        ],
+        "warmup": [
+          0.014446458999998413
+        ],
+        "cli": [
+          0.016319749999997413,
+          0.016093208000000914,
+          0.015214084000000128,
+          0.015468709000000302,
+          0.014795709000001267
+        ],
+        "control_cli": [
+          0.013422792000000072,
+          0.013145874999999307,
+          0.012485541000000211,
+          0.012304333999999528,
+          0.012611040999999545
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": [],
+        "external_results": [
+          {
+            "seconds": 0.016088375000002486,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"stateful_instances\":[],\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.015360540999999728,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"stateful_instances\":[],\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.01499579100000048,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"stateful_instances\":[],\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.01490800000000192,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"stateful_instances\":[],\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.015193625000001987,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"stateful_instances\":[],\"wasm_stats\":true}\n"
+          }
+        ],
+        "external_observer": [
+          0.016088375000002486,
+          0.015360540999999728,
+          0.01499579100000048,
+          0.01490800000000192,
+          0.015193625000001987
+        ]
+      },
+      "after": {
+        "verify": [
+          0.020860582999999266
+        ],
+        "warmup": [
+          0.018952917000000014
+        ],
+        "cli": [
+          0.019391250000001747,
+          0.02194066600000255,
+          0.01817050000000009,
+          0.018193541999998786,
+          0.019016208000000034
+        ],
+        "control_cli": [
+          0.017026417000000293,
+          0.01761529100000203,
+          0.016557625000000797,
+          0.016782417000001715,
+          0.0160992499999999
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": [],
+        "runtime_compilations": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "component_keys": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "external_results": [
+          {
+            "seconds": 0.01894475000000284,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.01959229199999868,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.019622042000001727,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.018627375000001223,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.018571790999999394,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          }
+        ],
+        "external_observer": [
+          0.01894475000000284,
+          0.01959229199999868,
+          0.019622042000001727,
+          0.018627375000001223,
+          0.018571790999999394
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "external-tests-normal-1": {
+      "commands": {
+        "before": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/benitoite",
+          "test",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt"
+        ],
+        "after": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/270a717c670d9640d4c08f10bc400afa6e3fcef2-default/release/benitoite",
+          "test",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/270a717c670d9640d4c08f10bc400afa6e3fcef2-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.017750874999999944,
+          "status": 0,
+          "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+          "stderr": "",
+          "validation": "verified",
+          "observations": {}
+        },
+        "after": {
+          "seconds": 0.020860582999999266,
+          "status": 0,
+          "stdout": "{\"kind\":\"test\",\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+          "stderr": "",
+          "validation": "verified",
+          "observations": {
+            "runtime_compilations": 1,
+            "component_keys": 1
+          }
+        }
+      }
+    }
+  }
+}

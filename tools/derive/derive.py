@@ -14,6 +14,8 @@ import subprocess
 import sys
 import tempfile
 
+from type_graph import TypeGraph, parameter_name
+
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / 'tools/source-migrate'))
 import source_migrate as migrate
@@ -21,9 +23,9 @@ import source_migrate as migrate
 INVENTORY = REPO / 'target/debug/examples/derive_inventory'
 BENITOITE = REPO / 'target/debug/benitoite'
 # Includes the management protocol and template revision. Bump when rules change.
-GENERATOR_VERSION = '2.0.0-syntax-batch3'
+GENERATOR_VERSION = '3.0.0-syntax-batch4'
 INVENTORY_VERSION = 2
-HASH_VERSION = 2
+HASH_VERSION = 3
 MARKER = re.compile(rb'// benitoite-derive:(begin|end) ([A-Za-z0-9_-]+)')
 
 
@@ -171,25 +173,12 @@ def location(target):
 
 def structure(target, inventory):
     """Hash ordered declarations, transitive dependencies, and custom signatures."""
-    dependencies = {}
-    active = {target['type']}
-
-    def visit(name):
-        if name in active:
-            invalid(location(target) + ': derive.cyclic_dependency: cyclic record dependency: ' + name)
-        if name in dependencies:
-            return
-        record = inventory['records'].get(name)
-        if record is None:
-            invalid(location(target) + ': missing resolved record: ' + name)
-        active.add(name)
-        for child in record_dependencies(record, inventory):
-            visit(child)
-        active.remove(name)
-        dependencies[name] = record_structure(record)
-
-    for name in record_dependencies(target, inventory):
-        visit(name)
+    graph = inventory.get('_typeGraph') or TypeGraph(inventory, invalid)
+    for feature in ('json', 'property', 'show', 'order'):
+        if target['config'].get(feature):
+            graph.validate(target, feature)
+    dependencies = {name: record_structure(inventory['records'][name])
+                    for name in graph.reachable(target['type']) if name != target['type']}
     return {
         'declarationSha256': digest(record_structure(target)),
         'dependenciesSha256': digest(dependencies),
@@ -197,9 +186,17 @@ def structure(target, inventory):
         'configSha256': digest(normalized_config(target['config'])),
         'inventoryVersion': INVENTORY_VERSION, 'hashVersion': HASH_VERSION,
         'fieldOrder': [f['name'] for f in target['fields']],
-        'templates': {k: ('2' if k == 'property' else '1') for k in ('json', 'property', 'show', 'order') if target['config'].get(k)},
+        'templates': {k: ('3' if k == 'property' else '2' if k in ('show', 'order') else '1') for k in ('json', 'property', 'show', 'order') if target['config'].get(k)},
         'propertyLibraryVersion': '2.0.0' if 'property' in target['config'] else None,
         'implementationDependencies': [],
+        'declarationGraph': [{
+            'name': name, 'structure': record_structure(inventory['records'][name]),
+            'edges': [semantic_type(t) for t in graph.edges[name]],
+            'component': graph.groups[graph.scc[name]], 'minimum': graph.minimum[name],
+            'parameters': sorted(graph.used[name]),
+            'shrinkEquality': sorted(graph.shrink_equality[name]),
+        } for name in graph.reachable(target['type'])],
+        'budgetRule': 'minimum+max(size,0);reserve-required;subtract-consumed;independent-scc;v1',
     }
 
 
@@ -225,6 +222,8 @@ def record_structure(record):
 def template_type(ty, inventory):
     """検証済みの型をテンプレートの対象に分類し、表示の文は解析しない。"""
     out = {'tag': 'unsupported', '_tree': ty, 'resolved': resolved_type(ty)}
+    if ty['tag'] == 'parameter':
+        return {**out, 'tag': 'parameter', 'index': ty['index']}
     if ty['tag'] != 'application' or ty['head']['tag'] != 'named':
         return out
     name, args = ty['head']['name'], ty['arguments']
@@ -239,8 +238,8 @@ def template_type(ty, inventory):
         return {**out, 'tag': tag, 'element': template_type(args[0], inventory)}
     if tag == 'map' and args[0] == {'tag': 'application', 'head': {'tag': 'named', 'name': 'Benitoite.String.String'}, 'arguments': []}:
         return {**out, 'tag': tag, 'value': template_type(args[1], inventory)}
-    if name in inventory['records'] and not args:
-        return {**out, 'tag': 'record', 'name': name}
+    if name in inventory['records']:
+        return {**out, 'tag': 'record', 'name': name, 'arguments': args}
     return out
 
 
@@ -558,6 +557,8 @@ class Template:
                 names.extend(failure + '.Fail[' + self.type_name(t) + ']' for t in ty['effects']['failures'])
             return ('function(' + ', '.join(p['name'] + ': ' + self.type_name(p['type']) for p in ty['params'])
                     + ') -> ' + self.type_name(ty['returnType']) + (' uses ' + ', '.join(names) if names else ''))
+        if ty['tag'] == 'parameter':
+            return self.target['typeParams'][ty['index']]['name']
         if ty['tag'] != 'application' or ty['head']['tag'] != 'named':
             invalid('unsupported generated type annotation')
         name = ty['head']['name']
@@ -597,23 +598,35 @@ def generate(target, inventory, imports):
 
 def generate_trait(target, inventory, imports, feature):
     """宣言順の通常のimplementを出力し、値の表示と比較は欄の辞書へ委ねる。"""
+    graph = inventory.get('_typeGraph') or TypeGraph(inventory, invalid)
+    graph.validate(target, feature)
     trait = imports.require('Benitoite.Trait', 'Trait')
-    name = target['name']
+    name = Template(target, inventory, imports).type_name({
+        'tag': 'application', 'head': {'tag': 'named', 'name': target['type']},
+        'arguments': [{'tag': 'parameter', 'index': i} for i in range(len(target['typeParams']))]})
+    requirements = inventory['_traitDependencies'].requirements[(target['type'], 'Benitoite.Trait.' + feature.title())]
+    params = []
+    for i, p in enumerate(target['typeParams']):
+        constraints = ([p['builtin']] if p['builtin'] else []) + [
+            Template(target, inventory, imports).reference(c) for j, c in sorted(requirements) if j == i]
+        params.append(p['name'] + (': ' + ' & '.join(constraints) if constraints else ''))
+    generic = '[' + ', '.join(params) + ']' if params else ''
+    constructor = target['name']
     if feature == 'show':
-        parts = [string_literal(name + '(')]
+        parts = [string_literal(constructor + '(')]
         for index, field in enumerate(target['fields']):
             parts += [string_literal((', ' if index else '') + field['name'] + ': '),
-                      f'{trait}.Show.show({name}.{field["name"]}(x))']
+                      f'{trait}.Show.show({constructor}.{field["name"]}(x))']
         parts.append(string_literal(')'))
-        body = (f'implement {trait}.Show[{name}]\n  function show(x: {name}) -> String\n'
+        body = (f'implement{generic} {trait}.Show[{name}]\n  function show(x: {name}) -> String\n'
                 + '    return ' + ' + '.join(parts) + '\n  end function\nend implement\n')
     else:
-        lines = [f'implement {trait}.Order[{name}]\n',
+        lines = [f'implement{generic} {trait}.Order[{name}]\n',
                  f'  function compare(x: {name}, y: {name}) -> {trait}.Ordering\n']
         # 前の欄がEqualのときだけ次を評価し、深いmatchの入れ子を作らない。
         for index, field in enumerate(target['fields']):
             lines += [f'    bind deriveOrder{index} <- {trait}.Order.compare('
-                      f'x: {name}.{field["name"]}(x), y: {name}.{field["name"]}(y))\n',
+                      f'x: {constructor}.{field["name"]}(x), y: {constructor}.{field["name"]}(y))\n',
                       f'    match deriveOrder{index} with\n',
                       f'      case {trait}.Ordering.Equal -> ()\n',
                       '      case other -> return other\n', '    end match\n']
@@ -637,34 +650,56 @@ class TraitDependencies:
             return ty['head']['name']
         return None
 
-    def selected(self, target):
-        dependencies = {}
-        active = set()
-        resolved = set()
+    def infer(self):
+        # 生成予定の頭を先に登録し、欄を再展開せず署名の要求を固定点まで
+        # 伝播する。再帰するimplementも通常の辞書解決へ渡す（設計書03-08）。
+        self.requirements = {(t['type'], 'Benitoite.Trait.' + f.title()): set()
+                             for t in self.targets.values() for f in ('show', 'order')
+                             if t['config'].get(f)}
+        changed = True
+        while changed:
+            changed = False
+            for target in self.targets.values():
+                for feature in ('show', 'order'):
+                    key = (target['type'], 'Benitoite.Trait.' + feature.title())
+                    if key not in self.requirements:
+                        continue
+                    required, _ = self.resolve_fields(target, key[1])
+                    if required != self.requirements[key]:
+                        self.requirements[key] = required
+                        changed = True
 
-        def resolve(class_name, ty, field):
-            key = (class_name, digest(semantic_type(ty)))
+    def resolve_fields(self, target, class_name):
+        dependencies, required, active, resolved = {}, set(), set(), set()
+
+        def resolve(cls, ty, field):
+            if ty['tag'] == 'parameter':
+                required.add((ty['index'], cls))
+                return
+            key = (cls, digest(semantic_type(ty)))
             if key in resolved:
                 return
             if key in active:
-                Template(target, self.inventory, None).fail(field, 'derive.missing_implementation: cyclic dictionary dependency')
+                Template(target, self.inventory, None).fail(field,
+                    'derive.missing_implementation: cyclic dictionary dependency does not close')
             active.add(key)
             name = self.head(ty)
-            feature = {'Benitoite.Trait.Show': 'show', 'Benitoite.Trait.Order': 'order'}.get(class_name)
             generated = self.targets.get(name)
-            if generated and feature and generated['config'].get(feature):
-                identity = {'class': class_name, 'target': semantic_type(ty),
+            if (name, cls) in self.requirements:
+                identity = {'class': cls, 'target': semantic_type(ty),
                             'module': generated['module'], 'sourceRegion': generated['region'],
-                            'template': feature, 'revision': '1'}
+                            'template': cls.rsplit('.', 1)[-1].lower(), 'revision': '2',
+                            'constraints': [dict(param=i, **{'class': c})
+                                            for i, c in sorted(self.requirements[(name, cls)])]}
                 dependencies[digest(identity)] = identity
-                for child in generated['fields']:
-                    resolve(class_name, child['type'], field)
+                for i, constraint in sorted(self.requirements[(name, cls)]):
+                    resolve(constraint, ty['arguments'][i], field)
             else:
                 impl = next((i for i in self.implementations
-                             if i['class'] == class_name and self.head(i['target']) == name and name), None)
+                             if i['class'] == cls and self.head(i['target']) == name and name), None)
                 if impl is None:
                     Template(target, self.inventory, None).fail(field,
-                        f'derive.missing_implementation: {class_name}[{resolved_type(ty)}]')
+                        f'derive.missing_implementation: {cls}[{resolved_type(ty)}]')
                 identity = {'class': impl['class'], 'target': semantic_type(impl['target']),
                             'module': impl['module'],
                             'typeParams': [dict(kind=p['kind'], builtin=p['builtin']) for p in impl['typeParams']],
@@ -672,7 +707,6 @@ class TraitDependencies:
                             'methods': [dict(name=m['name'], signature=semantic_signature(m['signature']))
                                         for m in impl['methods']]}
                 dependencies[digest(identity)] = identity
-                # 宣言収集が許すimplementの型引数は、重複のない直接のParamだけである。
                 arguments = {p['index']: value for p, value in zip(impl['target']['arguments'], ty['arguments'])
                              if p['tag'] == 'parameter'}
                 for constraint in impl['constraints']:
@@ -680,6 +714,12 @@ class TraitDependencies:
             active.remove(key)
             resolved.add(key)
 
+        for field in target['fields']:
+            resolve(class_name, field['type'], field)
+        return required, dependencies
+
+    def selected(self, target):
+        dependencies = {}
         for feature in ('show', 'order'):
             if not target['config'].get(feature):
                 continue
@@ -688,8 +728,8 @@ class TraitDependencies:
                 if impl['class'] == class_name and self.head(impl['target']) == target['type']:
                     invalid(location(target) + ': derive.overlapping_implementation: '
                             + class_name + ' at ' + json.dumps(impl['span'], sort_keys=True))
-            for field in target['fields']:
-                resolve(class_name, field['type'], field)
+            _, selected = self.resolve_fields(target, class_name)
+            dependencies.update(selected)
         return [dependencies[k] for k in sorted(dependencies)]
 
 
@@ -732,7 +772,7 @@ def generate_json(target, inventory, imports):
             child_fn = converter(child, operation, field)
             container = {'list': 'List', 'map': 'Map', 'option': 'Option'}[tag]
             return f'{codec}.{operation}{container}(value: _, {operation}: {child_fn})'
-        if tag == 'record':
+        if tag == 'record' and not ty.get('arguments'):
             dependency = template.dependency(ty, 'json', field)
             return reference(dependency['module'] + '.' + dependency['config']['json'][operation])
         fail(field, 'unsupported JSON field type: ' + ty['resolved'] + '; specify custom encode/decode')
@@ -793,9 +833,24 @@ def generate_property(target, inventory, imports):
     prop = imports.require('Benitoite.Test.Property', 'Property')
     random = imports.require('Benitoite.IO.Random', 'Random')
     template = Template(target, inventory, imports)
+    graph = inventory.get('_typeGraph') or TypeGraph(inventory, invalid)
+    used = sorted(graph.used[target['type']])
+    parameters = target['typeParams']
+    recursive = graph.scc[target['type']] in graph.recursive
+    extended = bool(parameters) or any(graph.scc[n] in graph.recursive or inventory['records'][n]['typeParams']
+                                      for n in graph.reachable(target['type']))
+    generic = ('[' + ', '.join(p['name'] + (': ' + p['builtin'] if p['builtin'] else '') for p in parameters) + ']') if parameters else ''
+    # 縮小は既存の標準容器を遅延合成し、そのequality要求を署名へ伝える。
+    # 生成器の署名には縮小器だけの制約を加えない（設計書03-08）。
+    shrink_generic = ('[' + ', '.join(p['name'] + (': ' + (p['builtin'] or 'equality') if p['builtin'] or i in graph.shrink_equality[target['type']] else '') for i, p in enumerate(parameters)) + ']') if parameters else ''
+    value_type = target['name'] + ('[' + ', '.join(p['name'] for p in parameters) + ']' if parameters else '')
+    shrink_params = ', '.join(f'{parameter_name(i)}: {prop}.Shrinker[{parameters[i]["name"]}]' for i in used)
+    shrink_args = ', '.join(f'{parameter_name(i)}: {parameter_name(i)}' for i in used)
 
     def component(ty, operation, field):
         tag = ty['tag']
+        if tag == 'parameter':
+            return parameter_name(ty['index'])
         if tag == 'builtin':
             name = ty['name']
             if operation == 'gen':
@@ -815,10 +870,17 @@ def generate_property(target, inventory, imports):
         if tag == 'record':
             dependency = template.dependency(ty, 'property', field)
             key = 'generator' if operation == 'gen' else 'shrinker'
-            return template.reference(dependency['module'] + '.' + dependency['config']['property'][key]) + '()'
+            arguments = ty.get('arguments', [])
+            values = ', '.join(f'{parameter_name(i)}: ' + component(template_type(arguments[i], inventory), operation, field) for i in sorted(graph.used[ty['name']]))
+            factory = template.reference(dependency['module'] + '.' + dependency['config']['property'][key]) + '(' + values + ')'
+            if arguments:
+                kind = 'Gen' if operation == 'gen' else 'Shrinker'
+                return f'block bind deriveFactory: {prop}.{kind}[{template.type_name(ty)}] <- {factory}\n deriveFactory end block'
+            return factory
         template.fail(field, 'unsupported Property field type: ' + ty['resolved'] + '; specify custom gen/shrink')
 
-    name = target['name']
+    name = value_type
+    constructor = target['name']
     prefix = 'public ' if target['public'] else ''
     gen_name = target['config']['property']['generator']
     shrink_name = target['config']['property']['shrinker']
@@ -838,18 +900,25 @@ def generate_property(target, inventory, imports):
         fields.append(f'{field["name"]}: Pair.first({pair})')
         adapter = f'derive_{shrink_name}_{index}'
         adapter_names.append(adapter)
-        adapters.append(f'function {adapter}(original: {name}, value: {template.type_name(field["type"])}) -> {name}\n'
-                        f'  return {name}(..original, {field["name"]}: value)\nend function\n\n')
+        adapters.append(f'function {adapter}{generic}(original: {name}, value: {template.type_name(field["type"])}) -> {name}\n'
+                        f'  return {constructor}(..original, {field["name"]}: value)\nend function\n\n')
         step = f'derive_{shrink_name}_steps_{index}'
         adapter_names.append(step)
-        following = (f'derive_{shrink_name}_steps_{index + 1}(value)'
+        following = (f'derive_{shrink_name}_steps_{index + 1}(' + (shrink_args + ', value: value' if shrink_args else 'value') + ')'
                      if index + 1 < len(target['fields']) else f'{prop}.ShrinkStep.Done')
-        adapters.append(f'function {step}(value: {name}) -> {prop}.ShrinkStep[{name}]\n'
+        adapters.append(f'function {step}{shrink_generic}(' + ', '.join(v for v in (shrink_params, f'value: {name}') if v) + f') -> {prop}.ShrinkStep[{name}]\n'
                         f'  return {prop}.ShrinkStep.Skip(lambda()\n'
                         f'    bind candidates <- {prop}.Shrinker.candidates({shrink})\n'
-                        f'    return {prop}.appendSteps(left: {prop}.mapSteps(steps: candidates({name}.{field["name"]}(value)), '
+                        f'    return {prop}.appendSteps(left: {prop}.mapSteps(steps: candidates({constructor}.{field["name"]}(value)), '
                         f'f: {adapter}(original: value, value: _)), right: lambda() return {following} end lambda)\n'
                         f'  end lambda)\nend function\n\n')
+    if recursive:
+        from property_shrink import recursive_steps
+        shrink_adapters, adapter_names = recursive_steps(
+            target, graph, prop, template, component, shrink_generic, shrink_params, shrink_args)
+        adapters = [shrink_adapters]
+    step_value = 'recordValue: value' if recursive else 'value: value'
+    first_step_args = shrink_args + ', ' + step_value if shrink_args else (step_value if recursive else 'value')
     body = (f'/// Generates {name} in field order with the same size and successive random states.\n'
             f'{prefix}function {gen_name}() -> {prop}.Gen[{name}]\n'
             + ''.join(generators)
@@ -858,10 +927,15 @@ def generate_property(target, inventory, imports):
             + f'    return Pair({name}({", ".join(fields)}), {state})\n'
             + '  end lambda)\nend function\n\n'
             + f'/// Shrinks one field at a time in declaration order; cross-field conditions require a custom shrinker.\n'
-            + f'{prefix}function {shrink_name}() -> {prop}.Shrinker[{name}]\n'
+            + f'{prefix}function {shrink_name}{shrink_generic}({shrink_params}) -> {prop}.Shrinker[{name}]\n'
             + f'  return {prop}.Shrinker(candidates: lambda(value: {name})\n'
-            + '    return ' + (f'derive_{shrink_name}_steps_0(value)' if target['fields'] else f'{prop}.ShrinkStep.Done') + '\n'
+            + '    return ' + (f'derive_{shrink_name}_steps_0(' + first_step_args + ')' if target['fields'] else f'{prop}.ShrinkStep.Done') + '\n'
             + '  end lambda)\nend function\n')
+    if extended:
+        from property_gen import Generator
+        generated = Generator(target, inventory, imports, template, graph, Generated).generate()
+        shrink_body = body[body.index('/// Shrinks'): ]
+        return Generated(''.join(adapters) + generated.body + shrink_body, (*generated.names, shrink_name, *adapter_names))
     return Generated(''.join(adapters) + body, (gen_name, shrink_name, *adapter_names))
 
 
@@ -893,7 +967,8 @@ def input_path(root, name):
 
 
 def tools():
-    return [Path(__file__).resolve(), Path(migrate.__file__).resolve(), INVENTORY, BENITOITE]
+    return [Path(__file__).resolve(), Path(__file__).with_name('type_graph.py'),
+            Path(__file__).with_name('property_gen.py'), Path(__file__).with_name('property_shrink.py'), Path(migrate.__file__).resolve(), INVENTORY, BENITOITE]
 
 
 class Manager:
@@ -909,13 +984,14 @@ class Manager:
 
     def prepare(self):
         inventory = collect(self.root, self.config)
+        inventory['_typeGraph'] = TypeGraph(inventory, invalid)
         for target in inventory['targets']:
             if (target['opaque'] and any(k in target['config'] for k in ('json', 'property'))
                     or not target['canConstruct'] or not target['canInspect']):
                 invalid(location(target) + ': derive.opaque_target: opaque type requires handwritten checked construction')
         old_hash = file_state(self.record)
         old = read_json(self.record.read_bytes()) if old_hash else None
-        if old is not None and (old.get('version') not in (1, 2) or not isinstance(old.get('targets'), list)):
+        if old is not None and (old.get('version') not in (1, 2, 3) or not isinstance(old.get('targets'), list)):
             invalid('unsupported generation record: ' + str(self.record))
         previous = {}
         for row in old['targets'] if old else []:
@@ -988,13 +1064,29 @@ class Manager:
             elif prior is not None:
                 invalid(location(target) + ': recorded region is missing: ' + target['region'])
         trait_dependencies = TraitDependencies(inventory, replaceable)
-        # 構造の走査で循環を先に拒否してから依存順を作る。
+        inventory['_traitDependencies'] = trait_dependencies
+        trait_dependencies.infer()
+        # 機能ごとの対応範囲を先に検査し、循環を展開せずに依存を記録する。
         hashes_by_type = {t['type']: structure(t, inventory) for t in inventory['targets']}
         for target in ordered_targets(inventory):
             name, region = target['source'], target['region']
             source = sources[name]
             hashes = hashes_by_type[target['type']]
             hashes['implementationDependencies'] = trait_dependencies.selected(target)
+            hashes['dependencyPlans'] = [{
+                'name': child['type'], 'config': normalized_config(child['config']),
+                'customSignatures': {n: semantic_signature(f['signature']) for n, f in child['customFunctions'].items()},
+                'implementations': trait_dependencies.selected(child),
+            } for child in sorted(inventory['targets'], key=lambda t: t['type'])
+                if child['type'] in inventory['_typeGraph'].reachable(target['type'])]
+            hashes['generatedSignatures'] = {
+                'typeParams': target['typeParams'],
+                'valueParameters': sorted(inventory['_typeGraph'].used[target['type']]),
+                'shrinkEquality': sorted(inventory['_typeGraph'].shrink_equality[target['type']]),
+                'traits': {feature: [dict(param=i, **{'class': c}) for i, c in sorted(
+                    trait_dependencies.requirements.get((target['type'], 'Benitoite.Trait.' + feature.title()), set()))]
+                           for feature in ('show', 'order') if target['config'].get(feature)},
+            }
             if any(target['config'].get(k) for k in ('show', 'order')):
                 hashes['traitTarget'] = {'type': target['type'], 'opaque': target['opaque'],
                                          'show': bool(target['config'].get('show')),
@@ -1028,6 +1120,7 @@ class Manager:
                 region = target['region']
                 found = source['regions'].get(region)
                 body = formatted((pending if region == header else '') + output.body)
+                hashes['semanticSha256'] = digest(hashes)
                 record_rows[target['type']] = {'source': name, 'region': region, 'type': target['type'],
                                                **hashes, 'outputSha256': migrate.sha(body)}
                 if found:
@@ -1046,13 +1139,13 @@ class Manager:
                                         'after': (prefix + b''.join(blocks)).decode()})
             rows.append({'path': name, 'source_sha256': migrate.sha(data), 'edits': source['edits']})
         records = [record_rows[t['type']] for t in inventory['targets']]
-        next_record = {'version': 2, 'inventoryVersion': INVENTORY_VERSION, 'hashVersion': HASH_VERSION, 'generatorVersion': GENERATOR_VERSION, 'targets': records}
-        manifest = {'version': 2, 'inventoryVersion': INVENTORY_VERSION, 'hashVersion': HASH_VERSION, 'generatorVersion': GENERATOR_VERSION,
+        next_record = {'version': 3, 'inventoryVersion': INVENTORY_VERSION, 'hashVersion': HASH_VERSION, 'generatorVersion': GENERATOR_VERSION, 'targets': records}
+        manifest = {'version': 3, 'inventoryVersion': INVENTORY_VERSION, 'hashVersion': HASH_VERSION, 'generatorVersion': GENERATOR_VERSION,
                     'root': str(self.root), 'config': str(self.config),
                     'inputs': inputs, 'embeddedInputs': embedded, 'rows': rows,
                     'recordBeforeSha256': old_hash, 'recordAfter': next_record,
                     'migration': ({'previousRecord': old, 'semanticHashesComparable': False}
-                                  if old and (old.get('version') != 2 or old.get('generatorVersion') != GENERATOR_VERSION) else None)}
+                                  if old and (old.get('version') != 3 or old.get('generatorVersion') != GENERATOR_VERSION) else None)}
         self.verify_inputs(inputs)
         return manifest
 
@@ -1084,9 +1177,9 @@ class Manager:
     def check(self):
         if file_state(self.record) is not None:
             old = read_json(self.record.read_bytes())
-            if (old.get('version') != 2 or old.get('inventoryVersion') != INVENTORY_VERSION
+            if (old.get('version') != 3 or old.get('inventoryVersion') != INVENTORY_VERSION
                     or old.get('hashVersion') != HASH_VERSION or old.get('generatorVersion') != GENERATOR_VERSION):
-                invalid('derive.migration_required: preview, review, and apply a version 2 record')
+                invalid('derive.migration_required: preview, review, and apply a version 3 record')
         plan = self.prepare()
         if not plan['recordAfter']['targets'] and plan['recordBeforeSha256'] is None:
             return
@@ -1097,7 +1190,7 @@ class Manager:
     def apply(self, manifest_path, reviewed_sha256):
         manifest_path = Path(manifest_path).absolute()
         plan = migrate.reviewed_manifest(manifest_path, reviewed_sha256)
-        if (plan.get('version') != 2 or plan.get('inventoryVersion') != INVENTORY_VERSION or plan.get('hashVersion') != HASH_VERSION or plan.get('generatorVersion') != GENERATOR_VERSION
+        if (plan.get('version') != 3 or plan.get('inventoryVersion') != INVENTORY_VERSION or plan.get('hashVersion') != HASH_VERSION or plan.get('generatorVersion') != GENERATOR_VERSION
                 or plan.get('root') != str(self.root) or plan.get('config') != str(self.config)):
             invalid('derive.incompatible_manifest: manifest version, generator, root or config mismatch')
         # Recollect for the set of filesystem/embedded inputs, not body checking.
@@ -1121,6 +1214,12 @@ class Manager:
         old_hash = plan['recordBeforeSha256']
         state = file_state(self.record)
         replay = receipt.exists()
+        if replay:
+            receipt_record = read_json(receipt.read_bytes())
+            if (receipt_record.get('version', 3) != 3
+                    or receipt_record.get('generatorVersion', GENERATOR_VERSION) != GENERATOR_VERSION
+                    or receipt_record.get('recordSha256', migrate.sha(next_bytes)) != migrate.sha(next_bytes)):
+                invalid('derive.incompatible_receipt: receipt version or generation record mismatch')
         accepted = {old_hash, migrate.sha(next_bytes)} if replay else {old_hash}
         if state not in accepted:
             invalid('generation record hash mismatch: ' + str(self.record))
@@ -1130,6 +1229,12 @@ class Manager:
                 invalid('manifest differs from current generation plan')
         count = migrate.apply(plan['inputs'], plan['rows'], manifest_sha256=reviewed_sha256,
                               receipt=receipt, path_for=lambda p: input_path(self.root, p))
+        receipt_record = read_json(receipt.read_bytes())
+        receipt_record.update(version=3, generatorVersion=GENERATOR_VERSION,
+                              recordSha256=migrate.sha(next_bytes))
+        receipt_bytes = migrate.dump(receipt_record).encode()
+        if receipt.read_bytes() != receipt_bytes:
+            receipt.write_bytes(receipt_bytes)
         # Record creation is outside source_migrate's existing-file edit protocol.
         # Its old hash/absence was checked before any source write. The receipt
         # allows completing this last write after an IO failure, with all sources

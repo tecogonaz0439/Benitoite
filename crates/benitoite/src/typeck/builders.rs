@@ -1,50 +1,13 @@
 //! 第二級の値である構築器と直接操作の検査（設計書 02-05「出力」「制約の生成」）。
-use super::context::{Body, fixed, lift};
+use super::context::{Body, lift};
 use super::generate::basic;
 use super::infer::*;
-use super::{BuilderDecl, BuilderKind, BuilderOperation, BuilderRefs};
+use super::{BuilderDecl, BuilderKind, BuilderOperation};
 use crate::base::BindingId;
 use crate::diag::{DiagBuilder, DiagCode};
 use crate::resolve::builders::{BuilderCall, BuilderClass, BuilderId, BuilderOp};
 use crate::syntax::ast::{BindStmt, CallExpr};
-use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId as B};
-use crate::types::{EffectName, EffectSet};
-
-pub(super) fn state() -> IEffect {
-    fixed(EffectSet {
-        names: vec![EffectName::Builtin(BuiltinEffectId::STATE)],
-        ..EffectSet::empty()
-    })
-}
-
-fn refs(ctx: &Body<'_, '_>, class: BuilderClass) -> Option<BuilderRefs> {
-    let r = ctx.decls.resolved;
-    Some(BuilderRefs {
-        new: r.stdlib("Benitoite.Reference.new")?,
-        get: r.stdlib("Benitoite.Reference.get")?,
-        set: r.stdlib("Benitoite.Reference.set")?,
-        join: r.stdlib(match class {
-            BuilderClass::String => "Benitoite.String.join",
-            BuilderClass::List => "Benitoite.List.concatenate",
-            BuilderClass::Bytes => "Benitoite.Bytes.concatenate",
-        })?,
-        length: r.stdlib(match class {
-            BuilderClass::String => "Benitoite.String.byteLength",
-            BuilderClass::List => "Benitoite.List.length",
-            BuilderClass::Bytes => "Benitoite.Bytes.length",
-        })?,
-        single: match class {
-            BuilderClass::String => None,
-            BuilderClass::List => Some(r.stdlib("Benitoite.List.append")?),
-            BuilderClass::Bytes => Some(r.stdlib("Benitoite.Bytes.fromList")?),
-        },
-        empty: if class == BuilderClass::Bytes {
-            Some(r.stdlib("Benitoite.Bytes.empty")?)
-        } else {
-            None
-        },
-    })
-}
+use crate::types::builtin::BuiltinTypeId as B;
 
 pub(super) fn declaration(ctx: &mut Body<'_, '_>, bind: &BindStmt, id: BindingId) {
     let Some(resolved) = ctx.decls.resolved.builder_decls.get(id) else {
@@ -63,15 +26,6 @@ pub(super) fn declaration(ctx: &mut Body<'_, '_>, bind: &BindStmt, id: BindingId
             BuilderKind::List(ctx.solver.finalize(&ty, ctx.decls.resolved))
         }
     };
-    let Some(refs) = refs(ctx, class) else {
-        ctx.diagnostic(
-            DiagBuilder::new(DiagCode::E0463)
-                .primary(bind.span)
-                .help("bind")
-                .build(),
-        );
-        return;
-    };
     if let crate::syntax::ast::Expr::Call(call) = &bind.value {
         super::calls::builder(ctx, call, class, None, None, basic(B::UNIT));
     }
@@ -81,7 +35,6 @@ pub(super) fn declaration(ctx: &mut Body<'_, '_>, bind: &BindStmt, id: BindingId
             id: BuilderId(id),
             kind,
             span: bind.span,
-            refs,
         },
     );
     // Γ のこの位置は通常の値の型を持たない。pattern/locals/expr_types へ加えない。
@@ -157,7 +110,6 @@ pub(super) fn operation(ctx: &mut Body<'_, '_>, call: &CallExpr, info: BuilderCa
             builder,
             kind: decl.kind,
             op: info.op,
-            refs: decl.refs,
             args: call
                 .args
                 .iter()

@@ -166,6 +166,10 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/ListBuilder.md"),
     },
     SkillFile {
+        path: "references/stdlib/Log.md",
+        text: include_str!("../../../../skill/references/stdlib/Log.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Map.md",
         text: include_str!("../../../../skill/references/stdlib/Map.md"),
     },
@@ -180,6 +184,10 @@ pub const FILES: &[SkillFile] = &[
     SkillFile {
         path: "references/stdlib/NetworkErrorKind.md",
         text: include_str!("../../../../skill/references/stdlib/NetworkErrorKind.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/NonEmptyList.md",
+        text: include_str!("../../../../skill/references/stdlib/NonEmptyList.md"),
     },
     SkillFile {
         path: "references/stdlib/Option.md",
@@ -220,6 +228,10 @@ pub const FILES: &[SkillFile] = &[
     SkillFile {
         path: "references/stdlib/Set.md",
         text: include_str!("../../../../skill/references/stdlib/Set.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/SourceLocation.md",
+        text: include_str!("../../../../skill/references/stdlib/SourceLocation.md"),
     },
     SkillFile {
         path: "references/stdlib/String.md",

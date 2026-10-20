@@ -74,11 +74,12 @@ mutual
     | .ite _ y n => blockExits y && blockExits n
     | .elseIf _ y n => blockExits y && exprExits n
     | .paren e => exprExits e
+    | .block body => blockExits body
     | .matchE _ _ arms => armsExits arms
     | .withE _ _ b => blockExits b
     | _ => false
   def blockExits : Block → Bool
-    | .builderBind _ _ rest => blockExits rest
+    | .builderBind _ rest => blockExits rest
     | .last e => exprExits e
     | .seq e rest => exprExits e || blockExits rest
     | .bind _ _ _ rest | .discard _ rest | .bindPat _ _ _ _ rest => blockExits rest
@@ -94,6 +95,7 @@ mutual
     | .ite _ y n => by simp [exprExits, Expr.Exits, blockExits_spec y, blockExits_spec n]
     | .elseIf _ y n => by simp [exprExits, Expr.Exits, blockExits_spec y, exprExits_spec n]
     | .paren e => by simp [exprExits, Expr.Exits, exprExits_spec e]
+    | .block body => by simp [exprExits, Expr.Exits, blockExits_spec body]
     | .matchE _ _ a => by simp [exprExits, Expr.Exits, armsExits_spec a]
     | .withE _ _ b => by simp [exprExits, Expr.Exits, blockExits_spec b]
     | .builderOp _ _ _ _ => by simp [exprExits, Expr.Exits]
@@ -145,7 +147,7 @@ mutual
   theorem blockExits_spec : (b : Block) → (blockExits b = true ↔ b.Exits)
     | .last e => by simp [blockExits, Block.Exits, exprExits_spec e]
     | .seq e b => by simp [blockExits, Block.Exits, exprExits_spec e, blockExits_spec b]
-    | .builderBind _ _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
+    | .builderBind _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
     | .bind _ _ _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
     | .discard _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
     | .bindPat _ _ _ _ b => by simp [blockExits, Block.Exits, blockExits_spec b]
@@ -160,7 +162,7 @@ end
 
 mutual
   def patternValid : Pattern → Bool
-    | .range (.integer lo) (.integer hi) => decide (lo ≤ hi)
+    | .range (.integer lo) (.integer hi) => decide (lo.toInt ≤ hi.toInt)
     | .range (.character lo) (.character hi) => decide (lo.toNat ≤ hi.toNat)
     | .con _ _ ps | .record _ _ _ ps => patternsValid ps
     | .list before rest after => patternsValid before && patternsValid after &&
@@ -233,6 +235,7 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .negFloat32 _ => by constructor <;> intro h <;> cases h
   | .unit => by constructor <;> intro h <;> cases h
   | .paren _ => by constructor <;> intro h <;> cases h
+  | .block _ => by constructor <;> intro h <;> cases h
   | .conCall _ _ _ => by constructor <;> intro h <;> cases h
   | .record _ _ _ _ => by constructor <;> intro h <;> cases h
   | .recordUpdate _ _ _ _ _ _ => by constructor <;> intro h <;> cases h

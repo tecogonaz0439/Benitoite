@@ -395,10 +395,10 @@ theorem flatMap_value_capture :
       .ret (.lam ["x", "f"] [resultTy "Result", .fn ["value"] [intTy] (resultTy "Result") Eff.empty]
         (.meth (.var 2) "flatMap" [intTy, intTy, strTy] [Eff.empty] [.var 1, .var 0])) := rfl
 
-private def integer (n : Nat) : Expr := .literal (.integer n)
+private def integer (n : Integer64Literal) : Expr := .literal (.integer n)
 private def text (s : String) : Expr := .literal (.string s)
 private def valueCallback : Expr :=
-  .lam ["value"] [intTy] intTy Eff.empty (.last (.returnE intTy (integer 42)))
+  .lam ["value"] [intTy] intTy Eff.empty (.last (.returnE intTy (integer ⟨42, by decide⟩)))
 private def resultCallback (name : String) (fail : Bool) : Expr :=
   .lam ["value"] [intTy] (resultTy name) Eff.empty
     (.last (.returnE (resultTy name)
@@ -416,14 +416,14 @@ private def genericCall (name : String) (x : Expr) : Expr :=
 
 -- 期待値は本体の実行や小モデルの関数から作らず、各入力に固定する。
 private def cases (name : String) : List (Expr × (String × String)) :=
-  let yes := ok name intTy strTy (integer 7)
+  let yes := ok name intTy strTy (integer ⟨7, by decide⟩)
   let no := err name intTy strTy (text "input")
   [(invoke name "map" yes valueCallback, (name ++ ".Ok", "42")),
    (invoke name "map" no valueCallback true, (name ++ ".Error", "input")),
    (invoke name "flatMap" yes (resultCallback name false) true, (name ++ ".Ok", "7")),
    (invoke name "flatMap" yes (resultCallback name true), (name ++ ".Error", "callback")),
    (invoke name "flatMap" no (resultCallback name false) true, (name ++ ".Error", "input")),
-   (.call (methodValue name "pure") [some "x"] [0] (one (integer 7)), (name ++ ".Ok", "7")),
+   (.call (methodValue name "pure") [some "x"] [0] (one (integer ⟨7, by decide⟩)), (name ++ ".Ok", "7")),
    (invoke name "apply" (ok name callbackTy strTy valueCallback) yes, (name ++ ".Ok", "42")),
    (invoke name "apply" (ok name callbackTy strTy valueCallback) no, (name ++ ".Error", "input")),
    (invoke name "apply" (err name callbackTy strTy (text "function")) yes, (name ++ ".Error", "function")),
@@ -446,7 +446,7 @@ private noncomputable def execute (name : String) (e : Expr) : Option (String ×
   match (Release.run (desugarProgram opPrim materials.program) builtins
       Release.Examples.oracle Release.Examples.rel Release.Examples.fresh 200
       (.run body [] Store.empty) []).1 with
-  | .run (.ret (.con c _ [.const (.integer n)])) [] _ => some (c, toString n)
+  | .run (.ret (.con c _ [.const (.integer n)])) [] _ => some (c, toString n.toInt)
   | .run (.ret (.con c _ [.const (.string s)])) [] _ => some (c,s)
   | _ => none
 
@@ -459,7 +459,7 @@ theorem executions_expected :
   constructor <;> decide
 
 private def mismatchedErrorCall : Expr :=
-  invoke "Result" "flatMap" (ok "Result" intTy strTy (integer 7))
+  invoke "Result" "flatMap" (ok "Result" intTy strTy (integer ⟨7, by decide⟩))
     (.lam ["value"] [intTy] (.data "Result" [intTy, intTy]) Eff.empty
       (.last (.returnE (.data "Result" [intTy, intTy])
         (ok "Result" intTy intTy (.local 0)))))

@@ -1,0 +1,63 @@
+import Benitoite.Unofficial.IO.Console
+
+function record(level: Log.Level) -> Log.Record
+  return Log.Record(level: level, message: "exchange", attributes: [Log.attribute(key: "n", value: 7)], location: SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3))
+end function
+
+function send(level: Log.Level) -> Unit uses Log
+  Log.emit(record: record(level))
+end function
+
+function enabled(level: Log.Level) -> Boolean uses Log
+  return Log.enabled(level)
+end function
+
+function handled() -> Boolean
+  return handle enabled(Log.Level.Error) with
+    case Log.emit(record) -> resume(())
+    case Log.enabled(level) -> resume(false)
+  end handle
+end function
+
+function forward() -> Unit uses Log
+  handle send(Log.Level.Info) with
+    case Log.emit(record) ->
+      Log.emit(record: record)
+      resume(())
+    case Log.enabled(level) -> resume(Log.enabled(level))
+  end handle
+end function
+
+function text() -> Unit uses Console.Write
+  Log.withTextLogger(minimum: Log.Level.Debug, body: lambda()
+    Log.debug(message: "text", attributes: [], location: SourceLocation.Location(file: "app", line: 1, column: 2))
+  end lambda)
+end function
+
+function attributes() -> Unit uses Log
+  Log.withAttributes(attributes: [Log.attribute(key: "n", value: true)], body: lambda() forward() end lambda)
+end function
+
+function sinks[effect E](output: function(record: Log.Record) -> Unit uses E) -> Unit uses E
+  Log.withSinks(sinks: [Pair(Log.Level.Debug, output)], body: lambda() send(Log.Level.Info) end lambda)
+end function
+
+function levelNumber(level: Log.Level) -> Integer
+  return match level with
+    case Log.Level.Debug -> 0
+    case Log.Level.Info -> 1
+    case Log.Level.Warn -> 2
+    case Log.Level.Error -> 3
+  end match
+end function
+
+function main() -> Result[Unit, String] uses Log, Console.Write
+  if handled() or enabled(Log.Level.Debug) or not enabled(Log.Level.Info) then
+    return Result.Error("wrong enabled result")
+  end if
+  if levelNumber(Log.Level.Error) <> 3 then return Result.Error("wrong level") end if
+  attributes()
+  text()
+  sinks(output: lambda(record: Log.Record) Console.writeLine(Log.Record.message(record)) end lambda)
+  return Result.Ok(())
+end function

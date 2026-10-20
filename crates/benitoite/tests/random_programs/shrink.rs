@@ -178,6 +178,7 @@ fn expression(expr: &Expr, spans: &mut Vec<Span>) {
                 expression(message, spans);
             }
         }
+        Expr::Block(expr) => block(&expr.body, spans),
         Expr::Lazy(expr) => block(&expr.body, spans),
         Expr::With(expr) => {
             for bind in &expr.binds {

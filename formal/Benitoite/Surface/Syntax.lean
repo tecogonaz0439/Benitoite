@@ -50,7 +50,7 @@ def Operator.allowed : Operator → Ty → Bool
 
 /-- 表層のリテラル。Unit は `Expr.unit` に分ける。Decimal は係数と scale を持つ。 -/
 inductive Literal where
-  | integer (n : Nat)
+  | integer (n : Integer64Literal)
   | float (x : Float)
   | decimal (n : Int) (scale : Nat)
   | string (s : String)
@@ -69,7 +69,7 @@ inductive Literal where
   | float32 (bits : UInt32)
 
 def Literal.toConst : Literal → Const
-  | .integer n => .integer (Int.ofNat n)
+  | .integer n => .integer n.toValue
   | .float x => .float x
   | .decimal n scale => .decimal n scale
   | .string s => .string s
@@ -114,8 +114,8 @@ def accessorPattern (c : ConName) (n k : Nat) : Release.Pat :=
 inductive Pattern where
   | wild
   | var
-  | integer (n : Nat)
-  | negInt (n : Nat)
+  | integer (n : Integer64Literal)
+  | negInt (n : Integer64Magnitude)
   | string (s : String)
   | character (c : Char)
   | boolean (b : Bool)
@@ -133,8 +133,8 @@ mutual
   def Pattern.toCore : Pattern → Release.Pat
     | .wild => .wild
     | .var => .var
-    | .integer n => .const (.integer (Int.ofNat n))
-    | .negInt n => .const (.integer (-Int.ofNat n))
+    | .integer n => .const (.integer n.toValue)
+    | .negInt n => .const (.integer n.negValue)
     | .string s => .const (.string s)
     | .character c => .const (.character c)
     | .boolean b => .const (.boolean b)
@@ -157,7 +157,7 @@ end
 リストの形の条件は `Release.P_List` と同じで、束縛の左辺と選択肢で同じ述語を使うために重ねて置く。 -/
 mutual
   def Pattern.Valid : Pattern → Prop
-    | .range (.integer lo) (.integer hi) => lo ≤ hi
+    | .range (.integer lo) (.integer hi) => lo.toInt ≤ hi.toInt
     | .range (.character lo) (.character hi) => lo.toNat ≤ hi.toNat
     | .con _ _ ps | .record _ _ _ ps => Pattern.ValidList ps
     | .list before rest after =>
@@ -295,7 +295,7 @@ mutual
   inductive Expr where
     | local (i : Nat)
     /-- セルは専用位置から読み、通常引数だけを Exprs に保持する。 -/
-    | builderOp (op : BuilderOp) (i : Nat) (args : Exprs) (refs : BuilderRefs)
+    | builderOp (op : BuilderOp) (i : Nat) (args : Exprs) (kind : BuilderKind)
     /-- 01-12「トップレベルの定数」。宣言の型と本体を参照の位置に埋め込む（P5）。
     本体の中の定数参照も埋め込んだ有限の木。型引数を受け取らず、局所変数を捕えない。 -/
     | constE (ty : Ty) (body : Expr)
@@ -318,7 +318,7 @@ mutual
     | nullCon (c : ConName) (tys : List Ty)
     | conValue (c : ConName) (tys : List Ty) (names : List String) (params : List Ty)
     | literal (l : Literal)
-    | negInt (n : Nat)
+    | negInt (n : Integer64Magnitude)
     /-- 括弧を挟まず Float リテラル x に適用した単項の -。x は符号反転前の値。 -/
     | negFloat (x : Float)
     /-- 括弧を挟まず Decimal リテラルへ適用した -。scale を変えない。 -/
@@ -332,6 +332,8 @@ mutual
     | negFloat32 (bits : UInt32)
     | unit
     | paren (e : Expr)
+    /-- 文列の値を返し、囲む関数の戻り先と末尾位置を保つ。 -/
+    | block (body : Block)
     | conCall (c : ConName) (tys : List Ty) (args : Exprs)
     /-- positions は書いた各フィールドの宣言中の位置。全フィールドを一度ずつ書く。 -/
     | record (c : ConName) (tys : List Ty) (positions : List Nat) (args : Exprs)
@@ -410,7 +412,7 @@ mutual
     | cons (op : OpRef) (arity ntys : Nat) (body : Block) (rest : Clauses) (dictCount : Nat := 0)
 
   inductive Block where
-    | builderBind (kind : BuilderKind) (refs : BuilderRefs) (rest : Block)
+    | builderBind (kind : BuilderKind) (rest : Block)
     | empty
     | last (e : Expr)
     | lastBind (kind : BindKind) (boundTy : Ty) (e : Expr)
@@ -481,12 +483,13 @@ mutual
     | .ite _ yes no => yes.Exits ∧ no.Exits
     | .elseIf _ yes no => yes.Exits ∧ no.Exits
     | .paren e => e.Exits
+    | .block body => body.Exits
     | .matchE _ _ arms => arms.Exits
     | .withE _ _ body => body.Exits
     | _ => False
 
   def Block.Exits : Block → Prop
-    | .builderBind _ _ rest => rest.Exits
+    | .builderBind _ rest => rest.Exits
     | .last e => e.Exits
     | .seq e rest => e.Exits ∨ rest.Exits
     | .bind _ _ _ rest | .discard _ rest | .bindPat _ _ _ _ rest => rest.Exits

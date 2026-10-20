@@ -24,10 +24,20 @@ theorem StoreTy.set_sub {Ψ : StoreTy} {l x} (h : Ψ l = none ∨ Ψ l = some x)
     · rw [h] at hy; simp [hy]
   · simp [e, hy]
 
+/-- 専用セル内の通常値も、場所の型を保つ拡張のもとで同じ型を持つ。 -/
+theorem BuilderCellOk.store {Ψ Ψ' k c} (h : BuilderCellOk P B Ψ k c)
+    (hΨ : StoreTy.Sub Ψ Ψ') : BuilderCellOk P B Ψ' k c := by
+  obtain ⟨hk, hb, hv, ht⟩ := h
+  refine ⟨hk, hb, hv, ?_⟩
+  cases c with
+  | string _ | bytes _ => trivial
+  | list a vs => exact ⟨ht.1, ht.2.store hΨ⟩
+
 theorem CellOk.store {Ψ Ψ' l c} (h : CellOk P B Ψ l c) (hΨ : StoreTy.Sub Ψ Ψ') : CellOk P B Ψ' l c := by
   cases c with
+  | builder _ => obtain ⟨k, hk, hc⟩ := h; exact ⟨k, hΨ _ _ hk, hc.store hΨ⟩
   | val v => obtain ⟨a, ha, hv⟩ := h; exact ⟨a, hΨ _ _ ha, hv.store hΨ⟩
-  | thunk m => obtain ⟨a, ha, hm⟩ := h; exact ⟨a, hΨ _ _ ha, hm.store hΨ⟩
+  | thunk m => obtain ⟨a, ha, hm⟩ := h; exact ⟨a, hΨ _ _ ha, hm.store (hideBuilders_mono hΨ)⟩
   | done v => obtain ⟨a, ha, hv⟩ := h; exact ⟨a, hΨ _ _ ha, hv.store hΨ⟩
   | cont k =>
       obtain ⟨b, t, ε, r, ha, hend, R', ε', hk⟩ := h
@@ -83,9 +93,22 @@ theorem StoreOk.cell {Ψ σ l x} (h : StoreOk P B Ψ σ) (hl : Ψ l = some x) :
   | none => exact absurd hσ (hdom _ _ hl)
   | some c => exact ⟨c, rfl, hcells _ _ hσ⟩
 
+/-- 専用の場所の型から、同じ種類の専用内容を取り出す。 -/
+theorem StoreOk.builder_cell {Ψ σ l k} (h : StoreOk P B Ψ σ) (hl : Ψ l = some (.builder k)) :
+    ∃ c, σ l = some (.builder c) ∧ BuilderCellOk P B Ψ k c := by
+  obtain ⟨c, hc, ht⟩ := h.cell hl
+  cases c <;> simp_all [CellOk]
+
+/-- new は専用セルを新鮮な位置へ加え、旧セルの型を保つ。 -/
+theorem builder_store_extend {Ψ σ l k} (h : StoreOk P B Ψ σ)
+    (hl : Ψ l = none) (hw : (LocTy.builder k).WF) :
+    StoreOk P B (Ψ.set l (.builder k)) (σ.set l (.builder k.empty)) := by
+  apply h.set hw (Or.inl hl)
+  exact ⟨k, by simp [StoreTy.set], BuilderCellOk.empty hw⟩
+
 /-! ## 値の型は継続の型にならない -/
 
-theorem HasTypeVQ.notCont {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) : a.NotCont := by
+theorem HasTypeVQ.notCont {Ψ Q C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) : a.NotCont := by
   match h with
   | .V_Var _ hc => exact hc
   | .V_Const (c := c) => intro b t ε e; cases c <;> simp [Const.type] at e

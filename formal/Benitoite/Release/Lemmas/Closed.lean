@@ -1,4 +1,5 @@
 import Benitoite.Release.Lemmas.TyLemmas
+import Benitoite.Release.LocalRef
 
 /-!
 # 項が閉じていることの保存（段階 B）
@@ -130,9 +131,9 @@ theorem Eff.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff)
 /-! ## 値と計算の型の置き換え -/
 
 mutual
-  theorem Val.VarsIn.substTyAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
-      (v : Val) → Val.VarsIn (c + ts.length) (fun _ => True) v →
-      Val.VarsIn c (fun _ => True) (v.substTyAt c ts es)
+  theorem Val.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+      (v : Val) → Val.VarsIn (c + ts.length) (fun _ => True) v depth →
+      Val.VarsIn c (fun _ => True) (v.substTyAt c ts es) depth
     | .var _, _ => trivial
     | .const _, _ => trivial
     | .fnRef _ tys _, h => by
@@ -143,7 +144,7 @@ mutual
         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Eff.VarsInList.substAt es hts hes _ h.2⟩
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
-        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts hes ps h.2.1, Comp.VarsIn.substTyAt es hts hes body h.2.2⟩
+        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts hes ps h.2.1, (by simpa only [List.length_map] using Comp.VarsIn.substTyAt es hts hes body h.2.2)⟩
     | .con _ tys args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Val.VarsInList.substTyAt es hts hes args h.2⟩
@@ -170,17 +171,27 @@ mutual
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact Val.VarsIn.substTyAt es hts hes v h
 
-  theorem Val.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
-      (vs : List Val) → Val.VarsInList (c + ts.length) (fun _ => True) vs →
-      Val.VarsInList c (fun _ => True) (Val.substTyAtList c ts es vs)
+  theorem Val.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+      (vs : List Val) → Val.VarsInList (c + ts.length) (fun _ => True) vs depth →
+      Val.VarsInList c (fun _ => True) (Val.substTyAtList c ts es vs) depth
     | [], _ => trivial
     | v :: vs, h => by
         simp only [Val.VarsInList] at h; simp only [Val.substTyAtList, Val.VarsInList]
         exact ⟨Val.VarsIn.substTyAt es hts hes v h.1, Val.VarsInList.substTyAt es hts hes vs h.2⟩
 
-  theorem Comp.VarsIn.substTyAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
-      (m : Comp) → Comp.VarsIn (c + ts.length) (fun _ => True) m →
-      Comp.VarsIn c (fun _ => True) (m.substTyAt c ts es)
+  theorem Comp.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+      (m : Comp) → Comp.VarsIn (c + ts.length) (fun _ => True) m depth →
+      Comp.VarsIn c (fun _ => True) (m.substTyAt c ts es) depth
+    | .builderLet k body, h => by
+        cases k <;> simp only [Comp.VarsIn, Comp.substTyAt, BuilderKind.substTyAt] at h ⊢
+        · exact ⟨trivial, Comp.VarsIn.substTyAt es hts hes body h.2⟩
+        · exact ⟨Ty.VarsIn.substAt es hts hes _ h.1, Comp.VarsIn.substTyAt es hts hes body h.2⟩
+        · exact ⟨trivial, Comp.VarsIn.substTyAt es hts hes body h.2⟩
+    | .builderOp k op r args, h => by
+        cases k <;> simp only [Comp.VarsIn, Comp.substTyAt, BuilderKind.substTyAt] at h ⊢
+        · exact ⟨trivial, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
+        · exact ⟨Ty.VarsIn.substAt es hts hes _ h.1, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
+        · exact ⟨trivial, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
     | .ret v, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.substTyAt, Comp.VarsIn]
         exact Val.VarsIn.substTyAt es hts hes v h
@@ -217,10 +228,10 @@ mutual
         exact ⟨Val.VarsIn.substTyAt es hts hes d h.1, Ty.VarsInList.substAt es hts hes tys h.2.1,
           Eff.VarsInList.substAt es hts hes _ h.2.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2.2⟩
 
-  theorem Arm.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
+  theorem Arm.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff)
       (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
-      (arms : List Arm) → Arm.VarsInList (c + ts.length) (fun _ => True) arms →
-      Arm.VarsInList c (fun _ => True) (Arm.substTyAtList c ts es arms)
+      (arms : List Arm) → Arm.VarsInList (c + ts.length) (fun _ => True) arms depth →
+      Arm.VarsInList c (fun _ => True) (Arm.substTyAtList c ts es arms) depth
     | [], _ => trivial
     | .mk alts none m :: arms, h => by
         simp only [Arm.VarsInList] at h; simp only [Arm.substTyAtList, Arm.VarsInList]
@@ -230,10 +241,10 @@ mutual
         exact ⟨Comp.VarsIn.substTyAt es hts hes g h.1,
           Comp.VarsIn.substTyAt es hts hes m h.2.1, Arm.VarsInList.substTyAt es hts hes arms h.2.2⟩
 
-  theorem Clause.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
+  theorem Clause.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff)
       (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
-      (hs : List Clause) → Clause.VarsInList (c + ts.length) (fun _ => True) hs →
-      Clause.VarsInList c (fun _ => True) (Clause.substTyAtList c ts es hs)
+      (hs : List Clause) → Clause.VarsInList (c + ts.length) (fun _ => True) hs depth →
+      Clause.VarsInList c (fun _ => True) (Clause.substTyAtList c ts es hs) depth
     | [], _ => trivial
     | .mk o n k m :: cs, h => by
         simp only [Clause.VarsInList] at h; simp only [Clause.substTyAtList, Clause.VarsInList]
@@ -252,8 +263,8 @@ end
 /-! ## 値の範囲の単調性と、番号の付け替えと値の置き換え -/
 
 mutual
-  theorem Val.VarsIn.mono {n n' : Nat} (hn : n ≤ n') : (v : Val) → Val.VarsIn n (fun _ => True) v →
-      Val.VarsIn n' (fun _ => True) v
+  theorem Val.VarsIn.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (v : Val) → Val.VarsIn n (fun _ => True) v depth →
+      Val.VarsIn n' (fun _ => True) v depth
     | .var _, _ => trivial
     | .const _, _ => trivial
     | .fnRef _ tys _, h => by
@@ -279,14 +290,24 @@ mutual
         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.mono hn args h.2⟩
     | .super v _, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsIn.mono hn v h
 
-  theorem Val.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (vs : List Val) →
-      Val.VarsInList n (fun _ => True) vs → Val.VarsInList n' (fun _ => True) vs
+  theorem Val.VarsInList.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (vs : List Val) →
+      Val.VarsInList n (fun _ => True) vs depth → Val.VarsInList n' (fun _ => True) vs depth
     | [], _ => trivial
     | v :: vs, h => by
         simp only [Val.VarsInList] at h ⊢; exact ⟨Val.VarsIn.mono hn v h.1, Val.VarsInList.mono hn vs h.2⟩
 
-  theorem Comp.VarsIn.mono {n n' : Nat} (hn : n ≤ n') : (m : Comp) → Comp.VarsIn n (fun _ => True) m →
-      Comp.VarsIn n' (fun _ => True) m
+  theorem Comp.VarsIn.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (m : Comp) → Comp.VarsIn n (fun _ => True) m depth →
+      Comp.VarsIn n' (fun _ => True) m depth
+    | .builderLet k body, h => by
+        cases k <;> simp only [Comp.VarsIn] at h ⊢
+        · exact ⟨trivial, Comp.VarsIn.mono hn body h.2⟩
+        · exact ⟨Ty.VarsIn.mono hn (fun _ h => h) _ h.1, Comp.VarsIn.mono hn body h.2⟩
+        · exact ⟨trivial, Comp.VarsIn.mono hn body h.2⟩
+    | .builderOp k op r args, h => by
+        cases k <;> simp only [Comp.VarsIn] at h ⊢
+        · exact ⟨trivial, h.2.1, Val.VarsInList.mono hn args h.2.2⟩
+        · exact ⟨Ty.VarsIn.mono hn (fun _ h => h) _ h.1, h.2.1, Val.VarsInList.mono hn args h.2.2⟩
+        · exact ⟨trivial, h.2.1, Val.VarsInList.mono hn args h.2.2⟩
     | .ret v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.mono hn v h
     | .letIn m k, h => by
         simp only [Comp.VarsIn] at h ⊢; exact ⟨Comp.VarsIn.mono hn m h.1, Comp.VarsIn.mono hn k h.2⟩
@@ -310,8 +331,8 @@ mutual
         exact ⟨Val.VarsIn.mono hn d h.1, Ty.VarsInList.mono hn (fun _ h => h) _ h.2.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2.2.1,
           Val.VarsInList.mono hn args h.2.2.2⟩
 
-  theorem Arm.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (arms : List Arm) →
-      Arm.VarsInList n (fun _ => True) arms → Arm.VarsInList n' (fun _ => True) arms
+  theorem Arm.VarsInList.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (arms : List Arm) →
+      Arm.VarsInList n (fun _ => True) arms depth → Arm.VarsInList n' (fun _ => True) arms depth
     | [], _ => trivial
     | .mk alts none m :: arms, h => by
         simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.mono hn m h.1, Arm.VarsInList.mono hn arms h.2⟩
@@ -319,8 +340,8 @@ mutual
         simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.mono hn g h.1,
           Comp.VarsIn.mono hn m h.2.1, Arm.VarsInList.mono hn arms h.2.2⟩
 
-  theorem Clause.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (hs : List Clause) →
-      Clause.VarsInList n (fun _ => True) hs → Clause.VarsInList n' (fun _ => True) hs
+  theorem Clause.VarsInList.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (hs : List Clause) →
+      Clause.VarsInList n (fun _ => True) hs depth → Clause.VarsInList n' (fun _ => True) hs depth
     | [], _ => trivial
     | .mk _ _ k m :: cs, h => by
         simp only [Clause.VarsInList] at h ⊢
@@ -332,97 +353,216 @@ mutual
 end
 
 mutual
-  theorem Val.VarsIn.rename {n : Nat} (ξ : Nat → Nat) : (v : Val) → Val.VarsIn n (fun _ => True) v →
-      Val.VarsIn n (fun _ => True) (v.rename ξ)
+  theorem Val.VarsIn.widen {pe : Nat → Prop} {depth depth2 : Nat} {n n' : Nat} (hn : n ≤ n') (hd : depth ≤ depth2) : (v : Val) → Val.VarsIn n pe v depth →
+      Val.VarsIn n' pe v depth2
+    | .var _, _ => trivial
+    | .const _, _ => trivial
+    | .fnRef _ tys _, h => by
+        simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2⟩
+    | .prim _ tys _, h => by
+        simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2⟩
+    | .lam names ps body, h => by
+        simp only [Val.VarsIn] at h ⊢
+        exact ⟨h.1, Ty.VarsInList.mono hn (fun _ h => h) _ h.2.1, Comp.VarsIn.widen hn (by omega) body h.2.2⟩
+    | .con _ tys args, h => by
+        simp only [Val.VarsIn] at h ⊢
+        exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.widen hn hd args h.2⟩
+    | .list elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.widen hn hd elems h
+    | .op _ tys, h => by simp only [Val.VarsIn] at h ⊢; exact Ty.VarsInList.mono hn (fun _ h => h) _ h
+    | .raise t e, h => ⟨Ty.VarsIn.mono hn (fun _ h => h) t h.1, Ty.VarsIn.mono hn (fun _ h => h) e h.2⟩
+    | .loc _, _ => trivial
+    | .mapV ks vs, h => by
+        simp only [Val.VarsIn] at h ⊢; exact ⟨Val.VarsInList.widen hn hd ks h.1, Val.VarsInList.widen hn hd vs h.2⟩
+    | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.widen hn hd elems h
+    | .bytesV _, _ => by simp [Val.VarsIn]
+    | .dict _ tys args, h => by
+        simp only [Val.VarsIn] at h ⊢
+        exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.widen hn hd args h.2⟩
+    | .super v _, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsIn.widen hn hd v h
+
+  theorem Val.VarsInList.widen {pe : Nat → Prop} {depth depth2 : Nat} {n n' : Nat} (hn : n ≤ n') (hd : depth ≤ depth2) : (vs : List Val) →
+      Val.VarsInList n pe vs depth → Val.VarsInList n' pe vs depth2
+    | [], _ => trivial
+    | v :: vs, h => by
+        simp only [Val.VarsInList] at h ⊢; exact ⟨Val.VarsIn.widen hn hd v h.1, Val.VarsInList.widen hn hd vs h.2⟩
+
+  theorem Comp.VarsIn.widen {pe : Nat → Prop} {depth depth2 : Nat} {n n' : Nat} (hn : n ≤ n') (hd : depth ≤ depth2) : (m : Comp) → Comp.VarsIn n pe m depth →
+      Comp.VarsIn n' pe m depth2
+    | .builderLet k body, h => by
+        cases k <;> simp only [Comp.VarsIn] at h ⊢
+        · exact ⟨trivial, Comp.VarsIn.widen hn (by omega) body h.2⟩
+        · exact ⟨Ty.VarsIn.mono hn (fun _ h => h) _ h.1, Comp.VarsIn.widen hn (by omega) body h.2⟩
+        · exact ⟨trivial, Comp.VarsIn.widen hn (by omega) body h.2⟩
+    | .builderOp k op r args, h => by
+        cases k <;> simp only [Comp.VarsIn] at h ⊢
+        · exact ⟨trivial, h.2.1.mono hd, Val.VarsInList.widen hn hd args h.2.2⟩
+        · exact ⟨Ty.VarsIn.mono hn (fun _ h => h) _ h.1, h.2.1.mono hd, Val.VarsInList.widen hn hd args h.2.2⟩
+        · exact ⟨trivial, h.2.1.mono hd, Val.VarsInList.widen hn hd args h.2.2⟩
+    | .ret v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.widen hn hd v h
+    | .letIn m k, h => by
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Comp.VarsIn.widen hn (by omega) m h.1, Comp.VarsIn.widen hn (by omega) k h.2⟩
+    | .app f args, h => by
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.widen hn hd f h.1, Val.VarsInList.widen hn hd args h.2⟩
+    | .ite v m k, h => by
+        simp only [Comp.VarsIn] at h ⊢
+        exact ⟨Val.VarsIn.widen hn hd v h.1, Comp.VarsIn.widen hn (by omega) m h.2.1, Comp.VarsIn.widen hn (by omega) k h.2.2⟩
+    | .match v arms, h => by
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.widen hn hd v h.1, Arm.VarsInList.widen hn hd arms h.2⟩
+    | .lazyC m, h => by simp only [Comp.VarsIn] at h ⊢; exact Comp.VarsIn.widen hn hd m h
+    | .escape v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.widen hn hd v h
+    | .use v m, h => by
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.widen hn hd v h.1, Comp.VarsIn.widen hn (by omega) m h.2⟩
+    | .handle m hs, h => by
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Comp.VarsIn.widen hn (by omega) m h.1, Clause.VarsInList.widen hn hd hs h.2⟩
+    | .resume k v, h => by
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.widen hn hd k h.1, Val.VarsIn.widen hn hd v h.2⟩
+    | .meth d _ tys _ args, h => by
+        simp only [Comp.VarsIn] at h ⊢
+        exact ⟨Val.VarsIn.widen hn hd d h.1, Ty.VarsInList.mono hn (fun _ h => h) _ h.2.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2.2.1,
+          Val.VarsInList.widen hn hd args h.2.2.2⟩
+
+  theorem Arm.VarsInList.widen {pe : Nat → Prop} {depth depth2 : Nat} {n n' : Nat} (hn : n ≤ n') (hd : depth ≤ depth2) : (arms : List Arm) →
+      Arm.VarsInList n pe arms depth → Arm.VarsInList n' pe arms depth2
+    | [], _ => trivial
+    | .mk alts none m :: arms, h => by
+        simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.widen hn (by omega) m h.1, Arm.VarsInList.widen hn hd arms h.2⟩
+    | .mk alts (some g) m :: arms, h => by
+        simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.widen hn (by omega) g h.1,
+          Comp.VarsIn.widen hn (by omega) m h.2.1, Arm.VarsInList.widen hn hd arms h.2.2⟩
+
+  theorem Clause.VarsInList.widen {pe : Nat → Prop} {depth depth2 : Nat} {n n' : Nat} (hn : n ≤ n') (hd : depth ≤ depth2) : (hs : List Clause) →
+      Clause.VarsInList n pe hs depth → Clause.VarsInList n' pe hs depth2
+    | [], _ => trivial
+    | .mk _ _ k m :: cs, h => by
+        simp only [Clause.VarsInList] at h ⊢
+        exact ⟨Comp.VarsIn.widen (by omega) (by omega) m h.1, Clause.VarsInList.widen hn hd cs h.2⟩
+    | .fail e m :: cs, h =>
+        ⟨Ty.VarsIn.mono hn (fun _ h => h) e h.1,
+          Comp.VarsIn.widen (by omega) (by omega) m h.2.1, Clause.VarsInList.widen hn hd cs h.2.2⟩
+
+end
+
+mutual
+  theorem Val.VarsIn.renameLocal {pe : Nat → Prop} {n d e : Nat} (ξ : Nat → Nat) (hξ : ∀ i, i < d → ξ i < e) : (v : Val) → Val.VarsIn n pe v d →
+      Val.VarsIn n pe (v.rename ξ) e
     | .var _, _ => trivial
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
     | .prim _ _ _, h => h
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
-        exact ⟨h.1, h.2.1, Comp.VarsIn.rename _ body h.2.2⟩
+        exact ⟨h.1, h.2.1, Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) body h.2.2⟩
     | .con _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
-        exact ⟨h.1, Val.VarsInList.rename ξ args h.2⟩
+        exact ⟨h.1, Val.VarsInList.renameLocal ξ hξ args h.2⟩
     | .list elems, h => by
-        simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.rename ξ elems h
+        simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.renameLocal ξ hξ elems h
     | .op _ _, h => h
     | .raise _ _, h => h
     | .loc _, _ => trivial
     | .mapV ks vs, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
-        exact ⟨Val.VarsInList.rename ξ ks h.1, Val.VarsInList.rename ξ vs h.2⟩
+        exact ⟨Val.VarsInList.renameLocal ξ hξ ks h.1, Val.VarsInList.renameLocal ξ hξ vs h.2⟩
     | .setV elems, h => by
-        simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.rename ξ elems h
+        simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.renameLocal ξ hξ elems h
     | .bytesV _, _ => by simp [Val.rename, Val.VarsIn]
     | .dict _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
-        exact ⟨h.1, Val.VarsInList.rename ξ args h.2⟩
+        exact ⟨h.1, Val.VarsInList.renameLocal ξ hξ args h.2⟩
     | .super v _, h => by
-        simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsIn.rename ξ v h
+        simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsIn.renameLocal ξ hξ v h
 
-  theorem Val.VarsInList.rename {n : Nat} (ξ : Nat → Nat) : (vs : List Val) →
-      Val.VarsInList n (fun _ => True) vs → Val.VarsInList n (fun _ => True) (Val.renameList ξ vs)
+  theorem Val.VarsInList.renameLocal {pe : Nat → Prop} {n d e : Nat} (ξ : Nat → Nat) (hξ : ∀ i, i < d → ξ i < e) : (vs : List Val) →
+      Val.VarsInList n pe vs d → Val.VarsInList n pe (Val.renameList ξ vs) e
     | [], _ => trivial
     | v :: vs, h => by
         simp only [Val.VarsInList] at h; simp only [Val.renameList, Val.VarsInList]
-        exact ⟨Val.VarsIn.rename ξ v h.1, Val.VarsInList.rename ξ vs h.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ v h.1, Val.VarsInList.renameLocal ξ hξ vs h.2⟩
 
-  theorem Comp.VarsIn.rename {n : Nat} (ξ : Nat → Nat) : (m : Comp) → Comp.VarsIn n (fun _ => True) m →
-      Comp.VarsIn n (fun _ => True) (m.rename ξ)
-    | .ret v, h => by simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Val.VarsIn.rename ξ v h
+  theorem Comp.VarsIn.renameLocal {pe : Nat → Prop} {n d e : Nat} (ξ : Nat → Nat) (hξ : ∀ i, i < d → ξ i < e) : (m : Comp) → Comp.VarsIn n pe m d →
+      Comp.VarsIn n pe (m.rename ξ) e
+    | .builderLet k body, h => by
+        exact ⟨h.1, Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm] using upRen_scoped hξ 1) body h.2⟩
+    | .builderOp k op r args, h => by
+        exact ⟨h.1, h.2.1.rename hξ, Val.VarsInList.renameLocal ξ hξ args h.2.2⟩
+    | .ret v, h => by simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Val.VarsIn.renameLocal ξ hξ v h
     | .letIn m k, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Comp.VarsIn.rename ξ m h.1, Comp.VarsIn.rename _ k h.2⟩
+        exact ⟨Comp.VarsIn.renameLocal ξ hξ m h.1, Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) k h.2⟩
     | .app f args, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ f h.1, Val.VarsInList.rename ξ args h.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ f h.1, Val.VarsInList.renameLocal ξ hξ args h.2⟩
     | .ite v m k, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ v h.1, Comp.VarsIn.rename ξ m h.2.1, Comp.VarsIn.rename ξ k h.2.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ v h.1, Comp.VarsIn.renameLocal ξ hξ m h.2.1, Comp.VarsIn.renameLocal ξ hξ k h.2.2⟩
     | .match v arms, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ v h.1, Arm.VarsInList.rename ξ arms h.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ v h.1, Arm.VarsInList.renameLocal ξ hξ arms h.2⟩
     | .lazyC m, h => by
-        simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Comp.VarsIn.rename ξ m h
+        simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Comp.VarsIn.renameLocal ξ hξ m h
     | .escape v, h => by
-        simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Val.VarsIn.rename ξ v h
+        simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Val.VarsIn.renameLocal ξ hξ v h
     | .use v m, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ v h.1, Comp.VarsIn.rename ξ m h.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ v h.1, Comp.VarsIn.renameLocal ξ hξ m h.2⟩
     | .handle m hs, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Comp.VarsIn.rename ξ m h.1, Clause.VarsInList.rename ξ hs h.2⟩
+        exact ⟨Comp.VarsIn.renameLocal ξ hξ m h.1, Clause.VarsInList.renameLocal ξ hξ hs h.2⟩
     | .resume k v, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ k h.1, Val.VarsIn.rename ξ v h.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ k h.1, Val.VarsIn.renameLocal ξ hξ v h.2⟩
     | .meth d _ _ _ args, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ d h.1, h.2.1, h.2.2.1, Val.VarsInList.rename ξ args h.2.2.2⟩
+        exact ⟨Val.VarsIn.renameLocal ξ hξ d h.1, h.2.1, h.2.2.1, Val.VarsInList.renameLocal ξ hξ args h.2.2.2⟩
 
-  theorem Arm.VarsInList.rename {n : Nat} (ξ : Nat → Nat) : (arms : List Arm) →
-      Arm.VarsInList n (fun _ => True) arms →
-      Arm.VarsInList n (fun _ => True) (Arm.renameList ξ arms)
+  theorem Arm.VarsInList.renameLocal {pe : Nat → Prop} {n d e : Nat} (ξ : Nat → Nat) (hξ : ∀ i, i < d → ξ i < e) : (arms : List Arm) →
+      Arm.VarsInList n pe arms d →
+      Arm.VarsInList n pe (Arm.renameList ξ arms) e
     | [], _ => trivial
     | .mk alts none m :: arms, h => by
         simp only [Arm.VarsInList] at h; simp only [Arm.renameList, Arm.VarsInList]
-        exact ⟨Comp.VarsIn.rename _ m h.1, Arm.VarsInList.rename ξ arms h.2⟩
+        exact ⟨Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) m h.1, Arm.VarsInList.renameLocal ξ hξ arms h.2⟩
     | .mk alts (some g) m :: arms, h => by
         simp only [Arm.VarsInList] at h; simp only [Arm.renameList, Arm.VarsInList]
-        exact ⟨Comp.VarsIn.rename _ g h.1,
-          Comp.VarsIn.rename _ m h.2.1, Arm.VarsInList.rename ξ arms h.2.2⟩
+        exact ⟨Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) g h.1,
+          Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) m h.2.1, Arm.VarsInList.renameLocal ξ hξ arms h.2.2⟩
 
-  theorem Clause.VarsInList.rename {n : Nat} (ξ : Nat → Nat) : (hs : List Clause) →
-      Clause.VarsInList n (fun _ => True) hs →
-      Clause.VarsInList n (fun _ => True) (Clause.renameList ξ hs)
+  theorem Clause.VarsInList.renameLocal {pe : Nat → Prop} {n d e : Nat} (ξ : Nat → Nat) (hξ : ∀ i, i < d → ξ i < e) : (hs : List Clause) →
+      Clause.VarsInList n pe hs d →
+      Clause.VarsInList n pe (Clause.renameList ξ hs) e
     | [], _ => trivial
     | .mk o a k m :: cs, h => by
         simp only [Clause.VarsInList] at h; simp only [Clause.renameList, Clause.VarsInList]
-        exact ⟨Comp.VarsIn.rename _ m h.1, Clause.VarsInList.rename ξ cs h.2⟩
+        exact ⟨Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) m h.1, Clause.VarsInList.renameLocal ξ hξ cs h.2⟩
     | .fail e m :: cs, h =>
-        ⟨h.1, Comp.VarsIn.rename _ m h.2.1, Clause.VarsInList.rename ξ cs h.2.2⟩
+        ⟨h.1, Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) m h.2.1, Clause.VarsInList.renameLocal ξ hξ cs h.2.2⟩
 
 end
+
+theorem Val.VarsIn.rename {depth n : Nat} (ξ : Nat → Nat) (v : Val)
+    (h : Val.VarsIn n pe v) :
+    Val.VarsIn n pe (v.rename ξ) depth :=
+  Val.VarsIn.renameLocal ξ (by omega) v h
+
+theorem Val.VarsInList.rename {depth n : Nat} (ξ : Nat → Nat) (vs : List Val)
+    (h : Val.VarsInList n pe vs) :
+    Val.VarsInList n pe (Val.renameList ξ vs) depth :=
+  Val.VarsInList.renameLocal ξ (by omega) vs h
+
+theorem Comp.VarsIn.rename {depth n : Nat} (ξ : Nat → Nat) (m : Comp)
+    (h : Comp.VarsIn n pe m) :
+    Comp.VarsIn n pe (m.rename ξ) depth :=
+  Comp.VarsIn.renameLocal ξ (by omega) m h
+
+theorem Arm.VarsInList.rename {depth n : Nat} (ξ : Nat → Nat) (arms : List Arm)
+    (h : Arm.VarsInList n pe arms) :
+    Arm.VarsInList n pe (Arm.renameList ξ arms) depth :=
+  Arm.VarsInList.renameLocal ξ (by omega) arms h
+
+theorem Clause.VarsInList.rename {depth n : Nat} (ξ : Nat → Nat) (hs : List Clause)
+    (h : Clause.VarsInList n pe hs) :
+    Clause.VarsInList n pe (Clause.renameList ξ hs) depth :=
+  Clause.VarsInList.renameLocal ξ (by omega) hs h
 
 /-- 置き換える値がどれも閉じている。 -/
 def ClosedSubst (σ : Nat → Val) : Prop := ∀ i, Val.VarsIn 0 (fun _ => True) (σ i)
@@ -433,97 +573,127 @@ theorem ClosedSubst.up {σ} (k : Nat) (h : ClosedSubst σ) : ClosedSubst (upSubs
   · exact Val.VarsIn.rename _ _ (h _)
 
 mutual
-  theorem Val.VarsIn.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (v : Val) →
-      Val.VarsIn n (fun _ => True) v → Val.VarsIn n (fun _ => True) (v.subst σ)
-    | .var i, _ => by simp only [Val.subst]; exact Val.VarsIn.mono (Nat.zero_le _) _ (hσ i)
+  theorem Val.VarsIn.substScoped {n d e : Nat} {σ ρ} (hσ : ClosedSubst σ) (hρ : ∀ i, i < d → (ρ i).Scoped e) : (v : Val) →
+      Val.VarsIn n (fun _ => True) v d → Val.VarsIn n (fun _ => True) (v.subst σ ρ) e
+    | .var i, _ => by simp only [Val.subst]; exact Val.VarsIn.widen (Nat.zero_le _) (Nat.zero_le _) _ (hσ i)
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
     | .prim _ _ _, h => h
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
-        exact ⟨h.1, h.2.1, Comp.VarsIn.subst (hσ.up _) body h.2.2⟩
+        exact ⟨h.1, h.2.1, Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) body h.2.2⟩
     | .con _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
-        exact ⟨h.1, Val.VarsInList.subst hσ args h.2⟩
+        exact ⟨h.1, Val.VarsInList.substScoped hσ hρ args h.2⟩
     | .list elems, h => by
-        simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsInList.subst hσ elems h
+        simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsInList.substScoped hσ hρ elems h
     | .op _ _, h => h
     | .raise _ _, h => h
     | .loc _, _ => trivial
     | .mapV ks vs, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
-        exact ⟨Val.VarsInList.subst hσ ks h.1, Val.VarsInList.subst hσ vs h.2⟩
+        exact ⟨Val.VarsInList.substScoped hσ hρ ks h.1, Val.VarsInList.substScoped hσ hρ vs h.2⟩
     | .setV elems, h => by
-        simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsInList.subst hσ elems h
+        simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsInList.substScoped hσ hρ elems h
     | .bytesV _, _ => by simp [Val.subst, Val.VarsIn]
     | .dict _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
-        exact ⟨h.1, Val.VarsInList.subst hσ args h.2⟩
+        exact ⟨h.1, Val.VarsInList.substScoped hσ hρ args h.2⟩
     | .super v _, h => by
-        simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsIn.subst hσ v h
+        simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsIn.substScoped hσ hρ v h
 
-  theorem Val.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (vs : List Val) →
-      Val.VarsInList n (fun _ => True) vs → Val.VarsInList n (fun _ => True) (Val.substList σ vs)
+  theorem Val.VarsInList.substScoped {n d e : Nat} {σ ρ} (hσ : ClosedSubst σ) (hρ : ∀ i, i < d → (ρ i).Scoped e) : (vs : List Val) →
+      Val.VarsInList n (fun _ => True) vs d → Val.VarsInList n (fun _ => True) (Val.substList σ vs ρ) e
     | [], _ => trivial
     | v :: vs, h => by
         simp only [Val.VarsInList] at h; simp only [Val.substList, Val.VarsInList]
-        exact ⟨Val.VarsIn.subst hσ v h.1, Val.VarsInList.subst hσ vs h.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ v h.1, Val.VarsInList.substScoped hσ hρ vs h.2⟩
 
-  theorem Comp.VarsIn.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (m : Comp) →
-      Comp.VarsIn n (fun _ => True) m → Comp.VarsIn n (fun _ => True) (m.subst σ)
-    | .ret v, h => by simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Val.VarsIn.subst hσ v h
+  theorem Comp.VarsIn.substScoped {n d e : Nat} {σ ρ} (hσ : ClosedSubst σ) (hρ : ∀ i, i < d → (ρ i).Scoped e) : (m : Comp) →
+      Comp.VarsIn n (fun _ => True) m d → Comp.VarsIn n (fun _ => True) (m.subst σ ρ) e
+    | .builderLet k body, h => by
+        exact ⟨h.1, Comp.VarsIn.substScoped (hσ.up 1)
+          (by simpa [Nat.add_comm] using upLocalSubst_scoped hρ 1) body h.2⟩
+    | .builderOp k op r args, h => by
+        exact ⟨h.1, h.2.1.subst hρ, Val.VarsInList.substScoped hσ hρ args h.2.2⟩
+    | .ret v, h => by simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Val.VarsIn.substScoped hσ hρ v h
     | .letIn m k, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Comp.VarsIn.subst hσ m h.1, Comp.VarsIn.subst (hσ.up _) k h.2⟩
+        exact ⟨Comp.VarsIn.substScoped hσ hρ m h.1, Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) k h.2⟩
     | .app f args, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ f h.1, Val.VarsInList.subst hσ args h.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ f h.1, Val.VarsInList.substScoped hσ hρ args h.2⟩
     | .ite v m k, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ v h.1, Comp.VarsIn.subst hσ m h.2.1, Comp.VarsIn.subst hσ k h.2.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ v h.1, Comp.VarsIn.substScoped hσ hρ m h.2.1, Comp.VarsIn.substScoped hσ hρ k h.2.2⟩
     | .match v arms, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ v h.1, Arm.VarsInList.subst hσ arms h.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ v h.1, Arm.VarsInList.substScoped hσ hρ arms h.2⟩
     | .lazyC m, h => by
-        simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Comp.VarsIn.subst hσ m h
+        simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Comp.VarsIn.substScoped hσ hρ m h
     | .escape v, h => by
-        simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Val.VarsIn.subst hσ v h
+        simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Val.VarsIn.substScoped hσ hρ v h
     | .use v m, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ v h.1, Comp.VarsIn.subst hσ m h.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ v h.1, Comp.VarsIn.substScoped hσ hρ m h.2⟩
     | .handle m hs, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Comp.VarsIn.subst hσ m h.1, Clause.VarsInList.subst hσ hs h.2⟩
+        exact ⟨Comp.VarsIn.substScoped hσ hρ m h.1, Clause.VarsInList.substScoped hσ hρ hs h.2⟩
     | .resume k v, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ k h.1, Val.VarsIn.subst hσ v h.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ k h.1, Val.VarsIn.substScoped hσ hρ v h.2⟩
     | .meth d _ _ _ args, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ d h.1, h.2.1, h.2.2.1, Val.VarsInList.subst hσ args h.2.2.2⟩
+        exact ⟨Val.VarsIn.substScoped hσ hρ d h.1, h.2.1, h.2.2.1, Val.VarsInList.substScoped hσ hρ args h.2.2.2⟩
 
-  theorem Arm.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (arms : List Arm) →
-      Arm.VarsInList n (fun _ => True) arms →
-      Arm.VarsInList n (fun _ => True) (Arm.substList σ arms)
+  theorem Arm.VarsInList.substScoped {n d e : Nat} {σ ρ} (hσ : ClosedSubst σ) (hρ : ∀ i, i < d → (ρ i).Scoped e) : (arms : List Arm) →
+      Arm.VarsInList n (fun _ => True) arms d →
+      Arm.VarsInList n (fun _ => True) (Arm.substList σ arms ρ) e
     | [], _ => trivial
     | .mk alts none m :: arms, h => by
         simp only [Arm.VarsInList] at h; simp only [Arm.substList, Arm.VarsInList]
-        exact ⟨Comp.VarsIn.subst (hσ.up _) m h.1, Arm.VarsInList.subst hσ arms h.2⟩
+        exact ⟨Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) m h.1, Arm.VarsInList.substScoped hσ hρ arms h.2⟩
     | .mk alts (some g) m :: arms, h => by
         simp only [Arm.VarsInList] at h; simp only [Arm.substList, Arm.VarsInList]
-        exact ⟨Comp.VarsIn.subst (hσ.up _) g h.1,
-          Comp.VarsIn.subst (hσ.up _) m h.2.1, Arm.VarsInList.subst hσ arms h.2.2⟩
+        exact ⟨Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) g h.1,
+          Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) m h.2.1, Arm.VarsInList.substScoped hσ hρ arms h.2.2⟩
 
-  theorem Clause.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (hs : List Clause) →
-      Clause.VarsInList n (fun _ => True) hs →
-      Clause.VarsInList n (fun _ => True) (Clause.substList σ hs)
+  theorem Clause.VarsInList.substScoped {n d e : Nat} {σ ρ} (hσ : ClosedSubst σ) (hρ : ∀ i, i < d → (ρ i).Scoped e) : (hs : List Clause) →
+      Clause.VarsInList n (fun _ => True) hs d →
+      Clause.VarsInList n (fun _ => True) (Clause.substList σ hs ρ) e
     | [], _ => trivial
     | .mk o a k m :: cs, h => by
         simp only [Clause.VarsInList] at h; simp only [Clause.substList, Clause.VarsInList]
-        exact ⟨Comp.VarsIn.subst (hσ.up _) m h.1, Clause.VarsInList.subst hσ cs h.2⟩
+        exact ⟨Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) m h.1, Clause.VarsInList.substScoped hσ hρ cs h.2⟩
     | .fail e m :: cs, h =>
-        ⟨h.1, Comp.VarsIn.subst (hσ.up _) m h.2.1, Clause.VarsInList.subst hσ cs h.2.2⟩
+        ⟨h.1, Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) m h.2.1, Clause.VarsInList.substScoped hσ hρ cs h.2.2⟩
 
 end
+
+theorem Val.VarsIn.subst {n : Nat} {σ} (hσ : ClosedSubst σ) (v : Val)
+    (h : Val.VarsIn n (fun _ => True) v) :
+    Val.VarsIn n (fun _ => True) (v.subst σ) :=
+  Val.VarsIn.substScoped hσ (by omega) v h
+
+theorem Val.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) (vs : List Val)
+    (h : Val.VarsInList n (fun _ => True) vs) :
+    Val.VarsInList n (fun _ => True) (Val.substList σ vs) :=
+  Val.VarsInList.substScoped hσ (by omega) vs h
+
+theorem Comp.VarsIn.subst {n : Nat} {σ} (hσ : ClosedSubst σ) (m : Comp)
+    (h : Comp.VarsIn n (fun _ => True) m) :
+    Comp.VarsIn n (fun _ => True) (m.subst σ) :=
+  Comp.VarsIn.substScoped hσ (by omega) m h
+
+theorem Arm.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) (arms : List Arm)
+    (h : Arm.VarsInList n (fun _ => True) arms) :
+    Arm.VarsInList n (fun _ => True) (Arm.substList σ arms) :=
+  Arm.VarsInList.substScoped hσ (by omega) arms h
+
+theorem Clause.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) (hs : List Clause)
+    (h : Clause.VarsInList n (fun _ => True) hs) :
+    Clause.VarsInList n (fun _ => True) (Clause.substList σ hs) :=
+  Clause.VarsInList.substScoped hσ (by omega) hs h
 
 theorem ClosedSubst.inst {ws : List Val} (h : Val.VarsInList 0 (fun _ => True) ws) :
     ClosedSubst (instSubst ws) := by
@@ -545,14 +715,18 @@ theorem ClosedSubst.inst {ws : List Val} (h : Val.VarsInList 0 (fun _ => True) w
         · exact ih h.2 e
   · trivial
 
-theorem Val.VarsIn.instantiate {n : Nat} {ws : List Val} {v : Val}
-    (hws : Val.VarsInList 0 (fun _ => True) ws) (hv : Val.VarsIn n (fun _ => True) v) :
-    Val.VarsIn n (fun _ => True) (v.instantiate ws) :=
-  Val.VarsIn.subst (ClosedSubst.inst hws) v hv
+theorem Val.VarsIn.instantiate {n depth : Nat} {ws : List Val} {v : Val}
+    (hws : Val.VarsInList 0 (fun _ => True) ws) (hv : Val.VarsIn n (fun _ => True) v depth)
+    (hd : depth ≤ ws.length := by omega) :
+    Val.VarsIn n (fun _ => True) (v.instantiate ws) := by
+  exact Val.VarsIn.substScoped (ClosedSubst.inst hws)
+    (fun i hi => by simp [instLocalSubst, show i < ws.length by omega, LocalRef.Scoped]) v hv
 
-theorem Comp.VarsIn.instantiate {n : Nat} {ws : List Val} {m : Comp}
-    (hws : Val.VarsInList 0 (fun _ => True) ws) (hm : Comp.VarsIn n (fun _ => True) m) :
-    Comp.VarsIn n (fun _ => True) (m.instantiate ws) :=
-  Comp.VarsIn.subst (ClosedSubst.inst hws) m hm
+theorem Comp.VarsIn.instantiate {n depth : Nat} {ws : List Val} {m : Comp}
+    (hws : Val.VarsInList 0 (fun _ => True) ws) (hm : Comp.VarsIn n (fun _ => True) m depth)
+    (hd : depth ≤ ws.length := by omega) :
+    Comp.VarsIn n (fun _ => True) (m.instantiate ws) := by
+  exact Comp.VarsIn.substScoped (ClosedSubst.inst hws)
+    (fun i hi => by simp [instLocalSubst, show i < ws.length by omega, LocalRef.Scoped]) m hm
 
 end Benitoite.Release

@@ -1,0 +1,197 @@
+//! Explicit structured logging. Unhandled events at Info or above go to stderr.
+//! Log is independent of IO.All; locations and attributes are always explicit.
+
+import Benitoite.Unofficial.IO.Console
+
+/// Ordered logging levels. Error does not terminate execution.
+public data Level
+  Debug
+  Info
+  Warn
+  Error
+end data
+
+/// Structured scalar values; conversion from arbitrary Show instances is not implicit.
+public data Value
+  Text(String)
+  Boolean(Benitoite.Boolean)
+  Integer(Benitoite.Integer)
+  UnsignedInteger(UnsignedInteger64)
+  Float(Benitoite.Float)
+end data
+
+/// One attribute. Lists preserve order and duplicate keys.
+public record Attribute
+  key: String
+  value: Value
+end record
+
+/// One explicit log event, including its caller-supplied location.
+public record Record
+  level: Level
+  message: String
+  attributes: List[Attribute]
+  location: SourceLocation.Location
+end record
+
+/// Structured logging, independent of Console.Write and IO.All.
+public effect Log
+  /// Sends one event to the selected handler.
+  function emit(record: Record) -> Unit
+  /// Asks whether the selected handler accepts this level.
+  function enabled(level: Level) -> Benitoite.Boolean
+end effect
+
+/// Values that have an explicit structured scalar representation.
+public trait ToLogValue[T]
+  /// Converts once without implicit Show conversion.
+  function toLogValue(value: T) -> Value
+end trait
+
+implement ToLogValue[String]
+  function toLogValue(value: String) -> Value
+    return Value.Text(value)
+  end function
+end implement
+
+implement ToLogValue[Boolean]
+  function toLogValue(value: Boolean) -> Value
+    return Value.Boolean(value)
+  end function
+end implement
+
+implement ToLogValue[Integer]
+  function toLogValue(value: Integer) -> Value
+    return Value.Integer(value)
+  end function
+end implement
+
+implement ToLogValue[UnsignedInteger64]
+  function toLogValue(value: UnsignedInteger64) -> Value
+    return Value.UnsignedInteger(value)
+  end function
+end implement
+
+implement ToLogValue[Float]
+  function toLogValue(value: Float) -> Value
+    return Value.Float(value)
+  end function
+end implement
+
+implement ToLogValue[Integer8]
+  function toLogValue(value: Integer8) -> Value
+    return Value.Integer(Integer8.toInteger(value))
+  end function
+end implement
+
+implement ToLogValue[Integer16]
+  function toLogValue(value: Integer16) -> Value
+    return Value.Integer(Integer16.toInteger(value))
+  end function
+end implement
+
+implement ToLogValue[Integer32]
+  function toLogValue(value: Integer32) -> Value
+    return Value.Integer(Integer32.toInteger(value))
+  end function
+end implement
+
+implement ToLogValue[Byte]
+  function toLogValue(value: Byte) -> Value
+    return Value.Integer(Byte.toInteger(value))
+  end function
+end implement
+
+implement ToLogValue[UnsignedInteger16]
+  function toLogValue(value: UnsignedInteger16) -> Value
+    return Value.Integer(UnsignedInteger16.toInteger(value))
+  end function
+end implement
+
+implement ToLogValue[UnsignedInteger32]
+  function toLogValue(value: UnsignedInteger32) -> Value
+    return Value.Integer(UnsignedInteger32.toInteger(value))
+  end function
+end implement
+
+implement ToLogValue[Float32]
+  function toLogValue(value: Float32) -> Value
+    return Value.Float(Float32.toFloat(value))
+  end function
+end implement
+
+/// Converts `value` once and associates it with `key`.
+public function attribute[T: ToLogValue](key: String, value: T) -> Attribute
+  return Attribute(key: key, value: ToLogValue.toLogValue(value))
+end function
+
+/// Emits one Debug event. Argument evaluation is eager.
+public function debug(message: String, attributes: List[Attribute], location: SourceLocation.Location) -> Unit uses Log
+  emit(record: Record(level: Level.Debug, message: message, attributes: attributes, location: location))
+end function
+
+/// Emits one Info event. Argument evaluation is eager.
+public function info(message: String, attributes: List[Attribute], location: SourceLocation.Location) -> Unit uses Log
+  emit(record: Record(level: Level.Info, message: message, attributes: attributes, location: location))
+end function
+
+/// Emits one Warn event. Argument evaluation is eager.
+public function warn(message: String, attributes: List[Attribute], location: SourceLocation.Location) -> Unit uses Log
+  emit(record: Record(level: Level.Warn, message: message, attributes: attributes, location: location))
+end function
+
+/// Emits one Error event. Argument evaluation is eager.
+public function error(message: String, attributes: List[Attribute], location: SourceLocation.Location) -> Unit uses Log
+  emit(record: Record(level: Level.Error, message: message, attributes: attributes, location: location))
+end function
+
+function rank(level: Level) -> Integer
+  return match level with
+    case Level.Debug -> 0
+    case Level.Info -> 1
+    case Level.Warn -> 2
+    case Level.Error -> 3
+  end match
+end function
+
+// The default handler and the explicit text handler share this exact formatter.
+@builtin("Log.formatRecord")
+function formatRecord(record: Record) -> String
+
+/// Prepends common attributes, preserving duplicates, event location, and outer effects.
+public function withAttributes[T, effect E](attributes: List[Attribute], body: function() -> T uses Log, E) -> T uses Log, E
+  return handle body() with
+    case emit(record) ->
+      emit(record: Record(level: Record.level(record), message: Record.message(record), attributes: List.concatenate(xs: attributes, ys: Record.attributes(record)), location: Record.location(record)))
+      resume(())
+    case enabled(level) -> resume(enabled(level))
+  end handle
+end function
+
+/// Handles both Log operations and writes accepted events to stderr in the default format.
+public function withTextLogger[T, effect E](minimum: Level, body: function() -> T uses Log, E) -> T uses Console.Write, E
+  return handle body() with
+    case emit(record) ->
+      if rank(Record.level(record)) >= rank(minimum) then
+        Console.writeErrorLine(formatRecord(record))
+      end if
+      resume(())
+    case enabled(level) -> resume(rank(level) >= rank(minimum))
+  end handle
+end function
+
+/// Calls accepted sinks once each in list order. An empty list discards every event.
+/// A sink's failure or stop propagates before any following sink is called.
+public function withSinks[T, effect E](sinks: List[Pair[Level, (function(record: Record) -> Unit uses E)]], body: function() -> T uses Log, E) -> T uses E
+  return handle body() with
+    case emit(record) ->
+      List.forEach(xs: sinks, f: lambda(value)
+        if rank(Record.level(record)) >= rank(Pair.first(value)) then
+          bind output <- Pair.second(value)
+          output(record: record)
+        end if
+      end lambda)
+      resume(())
+    case enabled(level) -> resume(List.any(xs: sinks, p: lambda(value) return rank(level) >= rank(Pair.first(value)) end lambda))
+  end handle
+end function

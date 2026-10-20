@@ -1,0 +1,121 @@
+✖ [29/29] Building Benitoite.Release.Lemmas.Closed (2.3s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Lemmas/Closed.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.setup.json --json
+error: Benitoite/Release/Lemmas/Closed.lean:363:27: Application type mismatch: The argument
+  Comp.VarsIn.rename ?m.196 body ?m.201
+has type
+  Comp.VarsIn ?m.195 (fun x => True) (Comp.rename ?m.196 body)
+but is expected to have type
+  Comp.VarsIn n (fun x => True) (Comp.rename (upRen ps.length ξ) body) (0 + ps.length)
+in the application
+  ⟨h.right.left, Comp.VarsIn.rename ?m.196 body ?m.201⟩
+error: Benitoite/Release/Lemmas/Closed.lean:393:4: Missing cases:
+(Comp.builderLet BuilderKind.string _), (And.intro True.intro _)
+(Comp.builderLet (BuilderKind.list _) _), (And.intro _ _)
+(Comp.builderLet BuilderKind.bytes _), (And.intro True.intro _)
+(Comp.builderOp BuilderKind.string BuilderOp.append (LocalRef.loc _) _), (And.intro True.intro (And.intro True.intro _))
+(Comp.builderOp BuilderKind.string BuilderOp.appendAll (LocalRef.loc _) _), (And.intro True.intro (And.intro True.intro _))
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+error: Benitoite/Release/Lemmas/Closed.lean:396:43: Application type mismatch: The argument
+  Comp.VarsIn.rename ?m.685 k ?m.688
+has type
+  Comp.VarsIn ?m.684 (fun x => True) (Comp.rename ?m.685 k)
+but is expected to have type
+  Comp.VarsIn n (fun x => True) (Comp.rename (upRen 1 ξ) k) (0 + 1)
+in the application
+  ⟨Comp.VarsIn.rename ξ m h.left, Comp.VarsIn.rename ?m.685 k ?m.688⟩
+error: Benitoite/Release/Lemmas/Closed.lean:429:15: Application type mismatch: The argument
+  Comp.VarsIn.rename ?m.856 m ?m.859
+has type
+  Comp.VarsIn ?m.855 (fun x => True) (Comp.rename ?m.856 m)
+but is expected to have type
+  Comp.VarsIn n (fun x => True) (Comp.rename (upRen (Arm.bindersOf alts) ξ) m) (0 + Arm.bindersOf alts)
+in the application
+  And.intro (Comp.VarsIn.rename ?m.856 m ?m.859)
+error: Benitoite/Release/Lemmas/Closed.lean:433:10: Application type mismatch: The argument
+  Comp.VarsIn.rename ?m.877 m ?m.882
+has type
+  Comp.VarsIn ?m.876 (fun x => True) (Comp.rename ?m.877 m)
+but is expected to have type
+  Comp.VarsIn n (fun x => True) (Comp.rename (upRen (Arm.bindersOf alts) ξ) m) (0 + Arm.bindersOf alts)
+in the application
+  And.intro (Comp.VarsIn.rename ?m.877 m ?m.882)
+error: Benitoite/Release/Lemmas/Closed.lean:441:15: Application type mismatch: The argument
+  Comp.VarsIn.rename ?m.962 m ?m.965
+has type
+  Comp.VarsIn ?m.961 (fun x => True) (Comp.rename ?m.962 m)
+but is expected to have type
+  Comp.VarsIn (n + k) (fun x => True) (Comp.rename (upRen (a + 1) ξ) m) (0 + a + 1)
+in the application
+  And.intro (Comp.VarsIn.rename ?m.962 m ?m.965)
+error: Benitoite/Release/Lemmas/Closed.lean:443:14: Application type mismatch: The argument
+  Comp.VarsIn.rename ?m.914 m ?m.919
+has type
+  Comp.VarsIn ?m.913 (fun x => True) (Comp.rename ?m.914 m)
+but is expected to have type
+  Comp.VarsIn (n + 1) (fun x => True) (Comp.rename (upRen 2 ξ) m) (0 + 2)
+in the application
+  And.intro (Comp.VarsIn.rename ?m.914 m ?m.919)
+error: Benitoite/Release/Lemmas/Closed.lean:464:27: Application type mismatch: The argument
+  Comp.VarsIn.subst (ClosedSubst.up ?m.211 hσ) body ?m.216
+has type
+  Comp.VarsIn ?m.208 (fun x => True) (Comp.subst (upSubst ?m.211 σ) body)
+but is expected to have type
+  Comp.VarsIn n (fun x => True) (Comp.subst (upSubst ps.length σ) body (upLocalSubst ps.length LocalRef.bound))
+    (0 + ps.length)
+in the application
+  ⟨h.right.left, Comp.VarsIn.subst (ClosedSubst.up ?m.211 hσ) body ?m.216⟩
+error: Benitoite/Release/Lemmas/Closed.lean:494:4: Missing cases:
+(Comp.builderLet BuilderKind.string _), (And.intro True.intro _)
+(Comp.builderLet (BuilderKind.list _) _), (And.intro _ _)
+(Comp.builderLet BuilderKind.bytes _), (And.intro True.intro _)
+(Comp.builderOp BuilderKind.string BuilderOp.append (LocalRef.loc _) _), (And.intro True.intro (And.intro True.intro _))
+(Comp.builderOp BuilderKind.string BuilderOp.appendAll (LocalRef.loc _) _), (And.intro True.intro (And.intro True.intro _))
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+error: Benitoite/Release/Lemmas/Closed.lean:497:43: Application type mismatch: The argument
+  Comp.VarsIn.subst (ClosedSubst.up ?m.713 hσ) k ?m.716
+has type
+  Comp.VarsIn ?m.710 (fun x => True) (Comp.subst (upSubst ?m.713 σ) k)
+but is expected to have type
+  Comp.VarsIn n (fun x => True) (Comp.subst (upSubst 1 σ) k (upLocalSubst 1 LocalRef.bound)) (0 + 1)
+in the application
+  ⟨Comp.VarsIn.subst hσ m h.left, Comp.VarsIn.subst (ClosedSubst.up ?m.713 hσ) k ?m.716⟩
+error: Benitoite/Release/Lemmas/Closed.lean:530:15: Application type mismatch: The argument
+  Comp.VarsIn.subst (ClosedSubst.up ?m.903 hσ) m ?m.906
+has type
+  Comp.VarsIn ?m.900 (fun x => True) (Comp.subst (upSubst ?m.903 σ) m)
+but is expected to have type
+  Comp.VarsIn n (fun x => True)
+    (Comp.subst (upSubst (Arm.bindersOf alts) σ) m (upLocalSubst (Arm.bindersOf alts) LocalRef.bound))
+    (0 + Arm.bindersOf alts)
+in the application
+  And.intro (Comp.VarsIn.subst (ClosedSubst.up ?m.903 hσ) m ?m.906)
+error: Benitoite/Release/Lemmas/Closed.lean:534:10: Application type mismatch: The argument
+  Comp.VarsIn.subst (ClosedSubst.up ?m.929 hσ) m ?m.934
+has type
+  Comp.VarsIn ?m.926 (fun x => True) (Comp.subst (upSubst ?m.929 σ) m)
+but is expected to have type
+  Comp.VarsIn n (fun x => True)
+    (Comp.subst (upSubst (Arm.bindersOf alts) σ) m (upLocalSubst (Arm.bindersOf alts) LocalRef.bound))
+    (0 + Arm.bindersOf alts)
+in the application
+  And.intro (Comp.VarsIn.subst (ClosedSubst.up ?m.929 hσ) m ?m.934)
+error: Benitoite/Release/Lemmas/Closed.lean:542:15: Application type mismatch: The argument
+  Comp.VarsIn.subst (ClosedSubst.up ?m.1020 hσ) m ?m.1023
+has type
+  Comp.VarsIn ?m.1017 (fun x => True) (Comp.subst (upSubst ?m.1020 σ) m)
+but is expected to have type
+  Comp.VarsIn (n + k) (fun x => True) (Comp.subst (upSubst (a + 1) σ) m (upLocalSubst (a + 1) LocalRef.bound))
+    (0 + a + 1)
+in the application
+  And.intro (Comp.VarsIn.subst (ClosedSubst.up ?m.1020 hσ) m ?m.1023)
+error: Benitoite/Release/Lemmas/Closed.lean:544:14: Application type mismatch: The argument
+  Comp.VarsIn.subst (ClosedSubst.up ?m.969 hσ) m ?m.974
+has type
+  Comp.VarsIn ?m.966 (fun x => True) (Comp.subst (upSubst ?m.969 σ) m)
+but is expected to have type
+  Comp.VarsIn (n + 1) (fun x => True) (Comp.subst (upSubst 2 σ) m (upLocalSubst 2 LocalRef.bound)) (0 + 2)
+in the application
+  And.intro (Comp.VarsIn.subst (ClosedSubst.up ?m.969 hσ) m ?m.974)
+error: build failed
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Closed

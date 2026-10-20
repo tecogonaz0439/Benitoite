@@ -84,6 +84,7 @@ pub mod integer;
 pub mod io_error;
 pub mod lazy;
 pub mod list;
+pub(crate) mod log;
 pub mod map;
 pub(crate) mod narrow_integer;
 pub mod operators;
@@ -155,6 +156,7 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
     float32::DECLS,
     width_bits::DECLS,
     scope::DECLS,
+    log::DECLS,
 ];
 
 #[cfg(test)]

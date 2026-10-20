@@ -8,7 +8,7 @@ open Benitoite.Release Benitoite.Surface.CheckTools
 
 private def intTy : Ty := .base .integer
 private def unitTy : Ty := .base .unit
-private def eInt (n : Nat) : Expr := .literal (.integer n)
+private def eInt (n : Integer64Literal) : Expr := .literal (.integer n)
 private def eTrue : Expr := .literal (.boolean true)
 private def eFalse : Expr := .literal (.boolean false)
 private def atoms : List Atom :=
@@ -34,24 +34,24 @@ example : got (run (.ite eTrue (.last (fn (Eff.single "A"))) (.last (fn (Eff.sin
 example : got (run (.elseIf eFalse (.last (fn (Eff.single "A")))
     (.ite eTrue (.last (fn (Eff.single "B"))) (.last (fn emptyEff)))))
     (.fn ["value"] [intTy] intTy (Eff.union (Eff.single "A") (Eff.single "B"))) = true := by decide
-example : got (run (.ifOnly eFalse (.lastDiscard (eInt 1)))) unitTy = true := by decide
+example : got (run (.ifOnly eFalse (.lastDiscard (eInt ⟨1, by decide⟩)))) unitTy = true := by decide
 
 -- return の末尾と非末尾、および遅延境界での遮蔽。
-example : got (run (.returnE unitTy (eInt 1)) [] (some intTy) .tail) intTy = true := by decide
-example : got (run (.returnE unitTy (eInt 1)) [] (some intTy)) unitTy = true := by decide
-example : run (.returnE unitTy (eInt 1)) = .error ⟨[], "return is outside a function"⟩ := by rfl
-example : got (run (.lazyE (.last (eInt 1)))) (.lazy intTy) = true := by decide
-example : run (.lazyE (.last (.returnE intTy (eInt 1)))) [] (some intTy) =
+example : got (run (.returnE unitTy (eInt ⟨1, by decide⟩)) [] (some intTy) .tail) intTy = true := by decide
+example : got (run (.returnE unitTy (eInt ⟨1, by decide⟩)) [] (some intTy)) unitTy = true := by decide
+example : run (.returnE unitTy (eInt ⟨1, by decide⟩)) = .error ⟨[], "return is outside a function"⟩ := by rfl
+example : got (run (.lazyE (.last (eInt ⟨1, by decide⟩)))) (.lazy intTy) = true := by decide
+example : run (.lazyE (.last (.returnE intTy (eInt ⟨1, by decide⟩)))) [] (some intTy) =
     .error ⟨[0, 0], "return is outside a function"⟩ := by rfl
 
 -- 一覧・パターン・ガードを通した型と、失敗する要素のソース位置。
-example : got (run (.list intTy (.cons (eInt 1) (.cons (eInt 2) .nil)))) (.list intTy) = true := by decide
-example : run (.list intTy (.cons (eInt 1) (.cons eFalse .nil))) =
+example : got (run (.list intTy (.cons (eInt ⟨1, by decide⟩) (.cons (eInt ⟨2, by decide⟩) .nil)))) (.list intTy) = true := by decide
+example : run (.list intTy (.cons (eInt ⟨1, by decide⟩) (.cons eFalse .nil))) =
     .error ⟨[0, 1], "type is not included in the expected type"⟩ := by rfl
 example : got (run (.matchE intTy eTrue
-    (.cons [⟨.wild, []⟩] (some eTrue) (.last (eInt 1))
-      (.single .wild (.last (eInt 2)) .nil)))) intTy = true := by decide
-example : run (.matchE intTy eTrue (.single (.boolean true) (.last (eInt 1)) .nil)) =
+    (.cons [⟨.wild, []⟩] (some eTrue) (.last (eInt ⟨1, by decide⟩))
+      (.single .wild (.last (eInt ⟨2, by decide⟩)) .nil)))) intTy = true := by decide
+example : run (.matchE intTy eTrue (.single (.boolean true) (.last (eInt ⟨1, by decide⟩)) .nil)) =
     .error ⟨[], "match is not exhaustive"⟩ := by rfl
 
 -- 位置を入れ替えたレコードの構築・更新。独立した引数の誤りの位置も保つ。
@@ -62,11 +62,11 @@ private def pointDecls : Declarations :=
 private def pointInput : Input :=
   { input pointDecls with ctors := fun n => if n == "Point" then ["Point"] else [] }
 example : got (checkExpr pointInput .strict [] [] none .other []
-    (.record "Point" [] [1, 0] (.cons (eInt 3) (.cons (eInt 2) .nil)))) (.data "Point" []) = true := by decide
+    (.record "Point" [] [1, 0] (.cons (eInt ⟨3, by decide⟩) (.cons (eInt ⟨2, by decide⟩) .nil)))) (.data "Point" []) = true := by decide
 example : got (checkExpr pointInput .strict [] [some (.data "Point" [])] none .other []
-    (.recordUpdate "Point" [] 2 [0] (.local 0) (.cons (eInt 7) .nil))) (.data "Point" []) = true := by decide
+    (.recordUpdate "Point" [] 2 [0] (.local 0) (.cons (eInt ⟨7, by decide⟩) .nil))) (.data "Point" []) = true := by decide
 example : checkExpr pointInput .strict [] [] none .other []
-    (.record "Point" [] [1, 0] (.cons (eInt 3) (.cons eFalse .nil))) =
+    (.record "Point" [] [1, 0] (.cons (eInt ⟨3, by decide⟩) (.cons eFalse .nil))) =
     .error ⟨[0, 1], "type is not included in the expected type"⟩ := by rfl
 
 -- 同じ宣言でもソース照合には外部の view が作用し、内部の更新には作用しない。
@@ -74,8 +74,8 @@ private def pointViewInput (view : CoverageView) : Input :=
   { pointInput with D := pointDecls.withView view }
 private def pointPat : Pattern := .record "Point" 2 [0, 1] [.var, .var]
 private def pointMatch (catchAll : Bool) : Expr :=
-  .matchE intTy (.local 0) (.single pointPat (.last (eInt 1))
-    (if catchAll then .single .wild (.last (eInt 2)) .nil else .nil))
+  .matchE intTy (.local 0) (.single pointPat (.last (eInt ⟨1, by decide⟩))
+    (if catchAll then .single .wild (.last (eInt ⟨2, by decide⟩)) .nil else .nil))
 
 example : ([closedView, fun d => d == "Point"] : List CoverageView).map (fun view =>
     [ (checkExpr (pointViewInput view) .strict [] [some (.data "Point" [])]
@@ -83,7 +83,7 @@ example : ([closedView, fun d => d == "Point"] : List CoverageView).map (fun vie
       (checkExpr (pointViewInput view) .strict [] [some (.data "Point" [])]
         none .other [] (pointMatch true)).map (fun r => got (.ok r) intTy),
       (checkExpr (pointViewInput view) .strict [] [some (.data "Point" [])]
-        none .other [] (.recordUpdate "Point" [] 2 [0] (.local 0) (.cons (eInt 7) .nil))).map
+        none .other [] (.recordUpdate "Point" [] 2 [0] (.local 0) (.cons (eInt ⟨7, by decide⟩) .nil))).map
         (fun r => got (.ok r) (.data "Point" [])) ]) =
     [[.ok true, .ok true, .ok true],
       [.error ⟨[], "match is not exhaustive"⟩, .ok true, .ok true]] := by rfl
@@ -119,8 +119,8 @@ example : ([closedView, fun _ => true] : List CoverageView).map (fun view =>
         (some (.data "Option" [unitTy])) .other []
         (.tryOption [unitTy] "Some" "None" (.local 0))).map (fun r => got (.ok r) intTy),
       (checkExpr (tryInput view) .strict [] [some (.data "Option" [intTy])] none .other []
-        (.matchE intTy (.local 0) (.single (.con none "Some" [.var]) (.last (eInt 1))
-          (.single (.con none "None" []) (.last (eInt 2)) .nil)))).map
+        (.matchE intTy (.local 0) (.single (.con none "Some" [.var]) (.last (eInt ⟨1, by decide⟩))
+          (.single (.con none "None" []) (.last (eInt ⟨2, by decide⟩)) .nil)))).map
             (fun r => got (.ok r) intTy) ]) =
     [[.ok true, .ok true, .ok true], [.ok true, .ok true, .error ⟨[], "match is not exhaustive"⟩]] := by rfl
 
@@ -220,7 +220,7 @@ example : dieRun (dieInput)
     (optionEnv ++ [some (.fn [] [] strTy (Eff.single "A"))])
     (optionDie (some impureMessage)) =
     .error ⟨[1], "effect exceeds the allowed effect"⟩ := by rfl
-example : dieRun (dieInput) optionEnv (optionDie (some (eInt 0))) =
+example : dieRun (dieInput) optionEnv (optionDie (some (eInt ⟨0, by decide⟩))) =
     .error ⟨[1], "type is not included in the expected type"⟩ := by rfl
 example : dieRun (dieInput) optionEnv
     (optionDie (some (.returnE strTy (.literal (.string "escape"))))) (some strTy) =
@@ -255,15 +255,15 @@ private def opDecls : Declarations :=
     effects := fun e => if e == "A" then some ["A.id"] else none }
 private def opInput : Input := { input opDecls with ctors := fun _ => [] }
 private def handled : Expr :=
-  .handleE (.last (.call (.opName "A.id" []) [some "value"] [0] (.cons (eInt 7) .nil)))
+  .handleE (.last (.call (.opName "A.id" []) [some "value"] [0] (.cons (eInt ⟨7, by decide⟩) .nil)))
     (.cons (.user "A.id") 1 0 (.last (.resume 0 (.local 1))) .nil)
 example : got (checkExpr opInput .strict [] [] none .other [] handled) intTy = true := by decide
 
 -- 節で初めて現れる効果は反復で集計し、確定後も純粋な注釈を許さない。
 private def effectfulClauseHandle : Expr :=
-  .handleE (.last (eInt 1))
+  .handleE (.last (eInt ⟨1, by decide⟩))
     (.cons (.user "A.id") 1 0
-      (.seq (.call (.local 2) [some "value"] [0] (.cons (eInt 7) .nil))
+      (.seq (.call (.local 2) [some "value"] [0] (.cons (eInt ⟨7, by decide⟩) .nil))
         (.last (.resume 0 (.local 1)))) .nil)
 private def clauseEffectEnv : List (Option Ty) :=
   [some (.fn ["value"] [intTy] unitTy (Eff.single "B"))]
@@ -274,7 +274,7 @@ example : checkExpr opInput .strict [] clauseEffectEnv none .other []
     .error ⟨[0], "effect exceeds the allowed effect"⟩ := by rfl
 
 example : checkExpr opInput .strict [] [] none .other []
-    (.handleE (.last (eInt 1)) (.cons (.user "A.id") 0 0 (.last (eInt 2)) .nil)) =
+    (.handleE (.last (eInt ⟨1, by decide⟩)) (.cons (.user "A.id") 0 0 (.last (eInt ⟨2, by decide⟩)) .nil)) =
     .error ⟨[1], "handler operation arity mismatch"⟩ := by rfl
 
 -- 操作の辞書は公開引数に含めず、節では同じ制約番号を局所の型で読み直す。
@@ -344,7 +344,7 @@ private def renderBuiltins : Builtins :=
       tparams := [], neffs := 0, names := ["value"], params := [intTy], ret := .base .string,
       eff := emptyEff, kind := .pure, opEff := none, admits := fun _ _ => True } else none
     delta := fun b _ _ vs => match b, vs with
-      | "intToString", [.const (.integer n)] => some (.val (.const (.string (toString n))))
+      | "intToString", [.const (.integer n)] => some (.val (.const (.string (toString n.toInt))))
       | _, _ => none }
 private def renderImpl (t : Ty) (body : Comp) : Release.ImplDecl :=
   { tparams := [], dictParams := [], cls := "Show", target := t,
@@ -363,7 +363,7 @@ private noncomputable def renderResult (t : Ty) (impl : ImplName) (value : Val) 
     Release.Examples.fresh 60 (.run body [] Store.empty) []).1 with
   | .run (.ret (.const (.string s))) [] _ => some s
   | _ => none
-example : [renderResult intTy "ShowInt" (.const (.integer 7)),
+example : [renderResult intTy "ShowInt" (.const (.integer ⟨7, by decide⟩)),
     renderResult (.base .string) "ShowString" (.const (.string "text"))] =
     [some "7", some "text"] := by decide
 
@@ -414,7 +414,7 @@ private noncomputable def renderFormResult (impl : ImplName) (value : Val)
   | .run (.ret (.const (.string s))) [] _ => some s
   | _ => none
 
-example : [(renderForms intTy).map (renderFormResult "ShowInt" (.const (.integer 7))),
+example : [(renderForms intTy).map (renderFormResult "ShowInt" (.const (.integer ⟨7, by decide⟩))),
     (renderForms (.base .string)).map
       (renderFormResult "ShowString" (.const (.string "text")))] =
     [[some "7", some "7", some "7", some "7", some "7", some "7"],
@@ -451,11 +451,11 @@ private def builtins : Builtins :=
       | _ => renderBuiltins.sig b
     delta := fun b ts es vs => match b, vs with
       | "append", [.const (.string a), .const (.string b)] => some (.val (.const (.string (a ++ b))))
-      | "tagInt", [.const (.integer n)] => some (.val (.const (.string ("tag" ++ toString n))))
+      | "tagInt", [.const (.integer n)] => some (.val (.const (.string ("tag" ++ toString n.toInt))))
       | _, _ => renderBuiltins.delta b ts es vs
     ioResponse := fun b ts es vs out => match b, vs with
-      | "first", [] => out = .val (.const (.integer 7))
-      | "second", [] => out = .val (.const (.integer 9))
+      | "first", [] => out = .val (.const (.integer ⟨7, by decide⟩))
+      | "second", [] => out = .val (.const (.integer ⟨9, by decide⟩))
       | _, _ => renderBuiltins.ioResponse b ts es vs out
     effects := fun e => if e == "B" then some ["first", "second"] else renderBuiltins.effects e }
 private def q : Input := { renderInput with D := declarations, B := builtins }
@@ -533,8 +533,8 @@ private def program : Release.Program :=
           methods := fun m => if m == "tag" then some (.app (.prim "tagInt" [] []) [.var 0]) else none }
       | _ => renderProgram.impls i }
 private def oracle : Oracle
-  | "first", _, _, _ => .val (.const (.integer 7))
-  | "second", _, _, _ => .val (.const (.integer 9))
+  | "first", _, _, _ => .val (.const (.integer ⟨7, by decide⟩))
+  | "second", _, _, _ => .val (.const (.integer ⟨9, by decide⟩))
   | b, ts, es, vs => Release.Examples.oracle b ts es vs
 
 -- 表示結果は辞書・値の配置を、事象列はソース順と一度だけの評価を観測する。
@@ -573,7 +573,7 @@ private def fancyBody (d : DictEv) (forward : Bool) : Expr :=
       (.cons (.user "render") 1 1 (renderClause (.clause ⟨6, 1, 1⟩ 0)) .nil 1)
   else showValue (.super d "Show") (.local 2)
 private def fancyHandle (d : DictEv := .clause ⟨2, 1, 1⟩ 0 1) (forward : Bool := false) : Expr :=
-  .handleE (.last (.pipe (eInt 7) (.opDicts "fancy" [intTy] [.local 0] ["value"] [intTy])))
+  .handleE (.last (.pipe (eInt ⟨7, by decide⟩) (.opDicts "fancy" [intTy] [.local 0] ["value"] [intTy])))
     (.cons (.user "fancy") 1 1
       (.last (.resume 0 (.call
         (.lam ["unused"] [unitTy] strTy emptyEff
@@ -602,7 +602,7 @@ end OperationDictionaries
 
 -- リソースの State と、純粋な補間・直接の連結関数の契約。
 example : got (checkExpr (input) .strict [] [some (.opaque "File")] none .other []
-    (.withE "File" (.local 0) (.last (eInt 1)))) intTy (Eff.single "State") = true := by decide
+    (.withE "File" (.local 0) (.last (eInt ⟨1, by decide⟩)))) intTy (Eff.single "State") = true := by decide
 private def collectionBuiltins : Builtins :=
   { Release.Examples.builtins with sig := fun b => match b with
       | "concat" => some (Release.Examples.sig [] ["xs", "ys"] [.list intTy, .list intTy]
@@ -617,10 +617,10 @@ private def collectionInput : Input :=
     opPrim := CheckTables.makeOpPrim (fun op _ => match op with
       | .binary .add => some "addString" | _ => none) }
 example : got (checkExpr collectionInput .strict [] [] none .other []
-    (.listSpread intTy (.primName "concat" [] []) (.cons (eInt 1) .nil)
-      (.list intTy (.cons (eInt 2) .nil)) (.cons (eInt 3) .nil))) (.list intTy) = true := by decide
+    (.listSpread intTy (.primName "concat" [] []) (.cons (eInt ⟨1, by decide⟩) .nil)
+      (.list intTy (.cons (eInt ⟨2, by decide⟩) .nil)) (.cons (eInt ⟨3, by decide⟩) .nil))) (.list intTy) = true := by decide
 example : got (checkExpr collectionInput .strict [] [] none .other []
-    (.interpolation [.text "n=", .converted intTy] (.cons (eInt 7) .nil)
+    (.interpolation [.text "n=", .converted intTy] (.cons (eInt ⟨7, by decide⟩) .nil)
       (.cons (.primName "toString" [] []) .nil))) (.base .string) = true := by decide
 
 -- 実名を保持したクラス・上位辞書・実装と、全プログラムの検査。
@@ -649,7 +649,7 @@ example : (checkDict programInput [] [] [] (.super (.impl "ChooseInt" [] []) "Ba
     (fun t => tyEq [] t (.dict "Base" intTy)) = .ok true := by rfl
 example : (checkExpr programInput .strict [] [] none .other []
     (.call (.methName (.impl "ChooseInt" [] []) "choose" [] [] [] ["left", "right"] [intTy, intTy])
-      [some "right", some "left"] [1, 0] (.cons (eInt 2) (.cons (eInt 1) .nil)))).map
+      [some "right", some "left"] [1, 0] (.cons (eInt ⟨2, by decide⟩) (.cons (eInt ⟨1, by decide⟩) .nil)))).map
     (fun (t, ε) => tyEq [] t intTy && effEq [] ε emptyEff) = .ok true := by rfl
 
 -- 全実装の実名の保証は、検査と有限の一覧の成功から得る。
@@ -661,7 +661,7 @@ example : ∀ n id, CheckTables.lookup (materials.impls.map fun (n,i) => (n,i.in
 -- die を持つ全プログラムも実際の実装辞書を検査する。実装メソッドの実名は緩めない。
 private def dieMainBody : Block :=
   .lastDiscard (.tryResultDie intTy "Ok" "Err" (.impl "FailureShow" [] []) "meth:9" "prim:8"
-    (.conCall "Err" [intTy, intTy] (.cons (eInt 1) .nil))
+    (.conCall "Err" [intTy, intTy] (.cons (eInt ⟨1, by decide⟩) .nil))
     (some (.literal (.string "message"))))
 private def dieMaterials (badNames : Bool := false) : CheckTables.Materials :=
   { materials with
@@ -815,7 +815,7 @@ private def full : Pattern := range 0 0x10FFFF
 private def rows (ps : List Pattern) : Arms :=
   match ps with
   | [] => .nil
-  | p :: ps => .single p (.last (eInt 1)) (rows ps)
+  | p :: ps => .single p (.last (eInt ⟨1, by decide⟩)) (rows ps)
 
 /-- 公開checkerのmatchとbind/shadowが、文字全域の同じ判定を使う。 -/
 example : ([ [full], [range 0 0xD7FF, range 0xE000 0x10FFFF],
@@ -839,7 +839,7 @@ example : ([BindKind.bind, .shadow] : List BindKind).map (fun kind =>
 /-- ガードだけでは網羅せず、後のガードなし全域で網羅する。 -/
 example : ([Arms.nil, rows [full]] : List Arms).map (fun rest =>
     (run (.matchE intTy (.local 0) (.cons [⟨full, []⟩] (some eTrue)
-      (.last (eInt 1)) rest)) [some charTy]).map (fun r => got (.ok r) intTy)) =
+      (.last (eInt ⟨1, by decide⟩)) rest)) [some charTy]).map (fun r => got (.ok r) intTy)) =
     [.error ⟨[], "match is not exhaustive"⟩, .ok true] := by rfl
 
 private def recordDecls : Declarations :=
@@ -860,5 +860,22 @@ example : ([closedView, fun d => d == "Sample"] : List CoverageView).map (fun vi
      [.error ⟨[], "match is not exhaustive"⟩, .error ⟨[], "match is not exhaustive"⟩]] := by rfl
 
 end CharacterCoverage
+
+
+-- block は末尾位置と戻り先を保つ。ラムダ末尾の block 内の return も必ず抜ける。
+private def blockReturn : Expr := .block (.last (.returnE unitTy (eInt ⟨7, by decide⟩)))
+example : [Position.tail, .other].map (fun pos => run blockReturn [] (some intTy) pos) =
+    [.ok (intTy, Eff.empty), .ok (unitTy, Eff.empty)] := by rfl
+example : run (.lam [] [] intTy Eff.empty (.last blockReturn)) =
+    .ok (.fn [] [] intTy Eff.empty, Eff.empty) := by rfl
+example : [Expr.block .empty, .block (.lastBind .bind intTy (eInt ⟨1, by decide⟩)),
+    .block (.last .unit)].map run = List.replicate 3 (.ok (unitTy, Eff.empty)) := by rfl
+-- lazy とガードの R = none を block 内にも伝える。
+example : run (.lazyE (.last blockReturn)) =
+    .error ⟨[0, 0, 0, 0], "return is outside a function"⟩ := by rfl
+example : run (.matchE intTy (eInt ⟨1, by decide⟩)
+    (.cons [⟨.wild, []⟩] (some (.block (.last (.returnE unitTy eTrue))))
+      (.last (eInt ⟨1, by decide⟩)) .nil)) =
+    .error ⟨[1, 0, 0, 0], "return is outside a function"⟩ := by rfl
 
 end Benitoite.Surface.Check.Examples

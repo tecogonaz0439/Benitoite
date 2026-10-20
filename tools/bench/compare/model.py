@@ -21,6 +21,15 @@ class Case:
     requires: tuple = ()
     variant_feature: str = ''
     tags: tuple = ('quick', 'targets', 'full')
+    state_expectations: dict = field(default_factory=dict)
+    state_requires: tuple = ()
+    probe: str = ''
+    probe_arguments: tuple = ()
+    metrics: tuple = ()
+    binary_files: dict = field(default_factory=dict)
+
+    def expectation(self, state):
+        return self.state_expectations.get(state, {})
 
     def variant(self, capabilities):
         return 'modern' if self.variant_feature and capabilities.get(self.variant_feature, False) else 'legacy'

@@ -18,6 +18,7 @@ fn tail_if(e: &IfExpr) -> bool {
 fn tail_expr(e: &Expr) -> bool {
     match e {
         Expr::Resume(_) => true,
+        Expr::Block(e) => tail_block(&e.body),
         Expr::Paren(e) => tail_expr(&e.inner),
         Expr::If(e) => tail_if(e),
         Expr::Match(e) => !e.arms.is_empty() && e.arms.iter().all(|a| tail_block(&a.body)),
@@ -89,6 +90,7 @@ fn escape(e: &Expr) -> bool {
                     .iter()
                     .any(|a| a.guard.as_ref().is_some_and(|g| escape(g)) || escape_block(&a.body))
         }
+        Expr::Block(e) => escape_block(&e.body),
         Expr::Lazy(e) => escape_block(&e.body),
         Expr::With(e) => e.binds.iter().any(|b| escape(&b.value)) || escape_block(&e.body),
         Expr::Handle(e) => escape_block(&e.body) || e.clauses.iter().any(|c| escape_block(&c.body)),

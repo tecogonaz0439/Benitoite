@@ -1,8 +1,10 @@
 # Benitoite のインストール
 
-> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
-この文書では、`benitoite` `0.0.9` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
+この文書では、`benitoite` `0.0.10` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
+
+0.0.10 はソースコードだけを配る。[ソースからのビルド](#ソースからのビルド)の後、埋め込まれた Skill をインストールする。下の実行ファイルのアーカイブの手順は 0.1.0 以降の配布を説明するものであり、0.0.10 の実行ファイルのアーカイブと SHA256SUMS は提供しない。
 
 ## 対応するシステム
 
@@ -30,20 +32,20 @@ Benitoite のリポジトリの GitHub Releases のページにある各リリ�
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.9-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.1.0-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 ハッシュを確かめる。macOS では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.1.0-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 Linux では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.1.0-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 ハッシュが一致すると、コマンドはファイル名の後に `OK` を表示する。一致しないときは、アーカイブをダウンロードし直し、そのアーカイブは使わない。
@@ -55,16 +57,16 @@ grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 アーカイブを新しいディレクトリに展開し、展開した `benitoite` を、`~/.local/bin` など `PATH` にあるディレクトリへ移す。
 
 ```sh
-mkdir benitoite-0.0.9
-tar -xzf "benitoite-0.0.9-$TARGET.tar.gz" -C benitoite-0.0.9
+mkdir benitoite-0.1.0
+tar -xzf "benitoite-0.1.0-$TARGET.tar.gz" -C benitoite-0.1.0
 mkdir -p ~/.local/bin
-find benitoite-0.0.9 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.1.0 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 `benitoite` を再配布するときは、アーカイブの `LICENSE-MIT`、`LICENSE-APACHE`、`THIRD_PARTY_LICENSES` を残しておく。`benitoite --licenses` は、同じ `THIRD_PARTY_LICENSES` を表示する。
 
-`benitoite --version` は、最初の行に `benitoite 0.0.9` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
+`benitoite --version` は、最初の行に `benitoite 0.1.0` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
 
 エージェントやハーネスでは、`benitoite --version=json` で版・ビルド・対応する形式の情報を問い合わせる。このオプションは最初かつ唯一の引数として指定する。リリースの版から機能を推測せず、必要な `formats` のキーと解釈できる整数の版を確かめる。出力は UTF-8 の単一 JSON オブジェクトと末尾の LF である。成功は終了状態 0、使い方の誤りは 2、処理系の不具合は 3、出力の失敗は 1 になる。欄は[版と対応する形式](benitoite.md#版と対応する形式)、不明な値の意味は[ビルド情報](#ビルド情報)を参照する。
 
@@ -147,6 +149,12 @@ Skill が説明するのは、一緒に配られた版の `benitoite` だけで�
 
 呼び出しの規則と関数の契約は、[関数とラムダ](benitoite.md#6-関数とラムダ)を参照する。同じ実行ファイルからインストールした Skill で、パラメータ名とコールバックの契約を調べる。
 
+### 0.0.9 から 0.0.10 への更新
+
+ソースからビルドし、その実行ファイルから Skill を再インストールする。[移行案内](../../../CHANGELOG.md#0010-san-benito)に従い、block の識別子、Integer 全域後の分岐、新しい prelude 名、構築器のエフェクト契約と物理コピーの費用、--deny-warnings での追加警告を見直す。既定のログも uses Log と、宣言上限に残る場合の許可集合の Log を要し、IO.All には含まれない。例として `benitoite check --report=json app.bnt` で確認し、許可する宣言上限が Log なら `benitoite run --allow-effects=Log app.bnt` とする。SourceLocation.here は直接呼び、ラッパーには Location を渡す。
+
+旧 derive の未完の適用は旧道具で先に復旧する。inventory は 2、設定は 1 のまま、生成規則・manifest・receipt・記録は 3（3.0.0-syntax-batch4）、Property.libraryVersion は 2.0.0 となる。旧本文のハッシュを照合し、新しい preview の記録と diff、その manifest の正確な SHA-256 を確認して適用し、通常の check/test と derive check を行う。language や Skill の更新だけでは、ソースは移行されず、新しい依存ハッシュも承認されない。確認後に language を 0.0.10 へ、パッケージのハッシュを現在の内容へ更新する。旧名前付き引数の移行道具はソースリポジトリの historical-tools へ保管しており、復元先は移行案内から参照する。
+
 ### 0.0.8 から 0.0.9 への更新
 
 この版はソースコードだけを配る。下の手順でビルドし、新しい実行ファイルから Skill を再インストールする。language 宣言と依存のハッシュを更新する前に、[0.0.9 の移行案内](../../../CHANGELOG.md#009-san-benito)を読む。Regex の定数拒否、Scope の表記の検査、Range の実行時 Error、追加する @opaque の境界を確認する。構築器は State を要し、捕捉できない。文書例を使うハーネスは --doc を指定し、報告の版 2 に対応する必要がある。通常の呼び出しは版 1 を保つ。
@@ -204,4 +212,4 @@ rm ~/.local/bin/benitoite
 
 インストールのときに `--project` や `--agent` を使ったときは、`uninstall` にも同じオプションを渡す。
 
-> 注記: `0.0.1` から `0.0.9` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。
+> 注記: `0.0.1` から `0.0.10` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。

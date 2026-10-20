@@ -122,7 +122,10 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                         short_line: None,
                     });
                 }
-            } else if matches!(kind, K::KwLambda | K::KwMatch | K::KwLazy | K::KwHandle) {
+            } else if matches!(
+                kind,
+                K::KwLambda | K::KwMatch | K::KwBlock | K::KwLazy | K::KwHandle
+            ) {
                 stack.push(Opening {
                     kind,
                     depth,
@@ -164,6 +167,7 @@ fn is_keyword(kind: TokenKind) -> bool {
             | K::KwImplement
             | K::KwImport
             | K::KwLambda
+            | K::KwBlock
             | K::KwLazy
             | K::KwMatch
             | K::KwMod
@@ -232,10 +236,10 @@ fn continues_after(kind: TokenKind) -> bool {
             | K::KwImplement
             | K::KwImport
             | K::KwLambda
+            | K::KwBlock
             | K::KwLazy
             | K::KwMatch
             | K::KwPublic
-            | K::KwRecord
             | K::KwShadow
             | K::KwThen
             | K::KwTrait

@@ -127,7 +127,10 @@ fn pop_traversed_call(
     } else {
         false
     };
-    state.meter.shrink(1, u64::from(call.size));
+    state.meter.shrink(
+        1,
+        u64::from(call.size).saturating_add(u64::try_from(call.builders.len()).unwrap_or(u64::MAX)),
+    );
     ctx.discard(call);
     if valid {
         Ok(())

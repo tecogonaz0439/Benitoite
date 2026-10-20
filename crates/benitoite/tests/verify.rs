@@ -206,25 +206,22 @@ fn golden_programs_and_seeded_single_site_mutations() {
 // 関門: 上限検査を持つ純粋な合成が失敗した場合に set へ進まない、コアの
 // 評価順とデータ依存を確かめる。巨大な値や本番に不要な上限の差し替え口は作らない。
 #[test]
-fn builder_sets_depend_on_successful_size_checked_combination() {
+fn reference_sets_depend_on_successful_size_checked_combination() {
     use benitoite::ir::core_ir::{CompKind, ValKind};
-    for (class, annotation, parameter, operation, combine) in [
+    for (class, parameter, operation, combine) in [
         (
             "ListBuilder",
-            "ListBuilder[Integer]",
             "Integer",
             "append(builder: b, value: value)",
             "List.append",
         ),
         (
             "ListBuilder",
-            "ListBuilder[Integer]",
             "List[Integer]",
             "appendAll(builder: b, values: value)",
             "List.concatenate",
         ),
         (
-            "BytesBuilder",
             "BytesBuilder",
             "Byte",
             "append(builder: b, value: value)",
@@ -232,14 +229,25 @@ fn builder_sets_depend_on_successful_size_checked_combination() {
         ),
         (
             "BytesBuilder",
-            "BytesBuilder",
             "Bytes",
             "appendAll(builder: b, bytes: value)",
             "Bytes.concatenate",
         ),
     ] {
+        // 構築器は専用命令になったため、この既存の依存関係は通常 Reference の
+        // 明示した計算で引き続き検査する。構築器自体は Host/専用命令の境界で検査する。
+        let (initial, combined) = match (class, parameter) {
+            ("ListBuilder", "Integer") => ("[]", "List.append(xs: previous, x: value)"),
+            ("ListBuilder", _) => ("[]", "List.concatenate(xs: previous, ys: value)"),
+            ("BytesBuilder", "Byte") => (
+                "Bytes.empty()",
+                "Bytes.concatenate(a: previous, b: Bytes.fromList([value]))",
+            ),
+            ("BytesBuilder", _) => ("Bytes.empty()", "Bytes.concatenate(a: previous, b: value)"),
+            _ => panic!("unexpected reference fixture"),
+        };
         let source = format!(
-            "import Benitoite.{class}\nfunction append(value: {parameter}) -> Unit uses State\n bind b: {annotation} <- {class}.new()\n {class}.{operation}\nend function\n"
+            "import Benitoite.Bytes\nfunction append(value: {parameter}) -> Unit uses State\n bind b <- Reference.new({initial})\n bind previous <- Reference.get(b)\n bind next <- {combined}\n Reference.set(reference: b, value: next)\nend function\n"
         );
         let checked = pipeline::check_text(
             "builder-order.bnt",
@@ -254,6 +262,8 @@ fn builder_sets_depend_on_successful_size_checked_combination() {
         assert!(benitoite::ir::check::check_program(&core).is_empty());
         let def = core.defs.iter().find(|d| d.name == "append").unwrap();
         let mut calls = Vec::new();
+        let mut values: std::collections::BTreeMap<_, benitoite::ir::core_ir::CoreVal> =
+            std::collections::BTreeMap::new();
         let mut pending = vec![(&def.body, None)];
         while let Some((comp, result)) = pending.pop() {
             match &comp.kind {
@@ -266,11 +276,30 @@ fn builder_sets_depend_on_successful_size_checked_combination() {
                         calls.push((
                             benitoite::builtins::table::builtin_decl(*id).unwrap().name,
                             result,
-                            args,
+                            args.iter()
+                                .map(|arg| {
+                                    let mut value = arg.clone();
+                                    while let ValKind::Var(id) = value.kind {
+                                        let Some(known) = values.get(&id) else {
+                                            break;
+                                        };
+                                        value = known.clone();
+                                    }
+                                    value
+                                })
+                                .collect::<Vec<_>>(),
                         ));
                     }
                 }
-                CompKind::Return(_) | CompKind::Escape(_) => {}
+                CompKind::Return(value) => {
+                    if let Some(result) = result {
+                        values.insert(result, value.clone());
+                    }
+                }
+                CompKind::Escape(_) => {}
+                CompKind::BuilderLet { .. } | CompKind::BuilderOp { .. } => {
+                    panic!("builder in Reference fixture")
+                }
                 other @ (CompKind::Method(_)
                 | CompKind::If { .. }
                 | CompKind::Match { .. }
@@ -311,5 +340,112 @@ fn builder_sets_depend_on_successful_size_checked_combination() {
         }
         let compiled = pipeline::compile(&core, checked.sources).unwrap();
         assert!(verify(&compiled).is_ok());
+    }
+}
+
+// 関門: 実ソースから作った専用欄を一箇所ずつ壊し、古い生存表だけを理由に
+// 拒否したことにせず、種類・支配・本体の用途の違反を名指しして拒否する。
+#[test]
+fn dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses() {
+    use benitoite::bytecode::program::ProtoOrigin;
+    use benitoite::resolve::builders::BuilderClass;
+    let source = "import Benitoite.StringBuilder\neffect Pause\n function pause() -> Unit\nend effect\nfunction main() -> Unit\n bind b: StringBuilder <- StringBuilder.new()\n bind _ <- handle\n StringBuilder.append(builder: b, text: \"a\")\n pause()\n with case pause() -> resume(()) end handle\n bind _ <- StringBuilder.copy(b)\nend function\n";
+    for source in [
+        source.to_owned(),
+        source
+            .replace(" bind b:", " block\n bind b:")
+            .replace("end function", "end block\nend function"),
+    ] {
+        let checked = pipeline::check_text(
+            "builder-verify.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        let core = pipeline::desugar_checked(checked.program.as_ref().unwrap()).unwrap();
+        let program = pipeline::compile(&core, checked.sources).unwrap();
+        verify(&program).unwrap();
+        let parent = program.main.unwrap().0 as usize;
+        let body = program
+            .protos
+            .iter()
+            .position(|p| !p.builder_inputs.is_empty())
+            .unwrap();
+        let append = program.protos[body]
+            .code
+            .iter()
+            .position(|i| i.opcode() == Some(Opcode::BuilderAppend))
+            .unwrap();
+        let site = program.protos[body].code[append].bx() as usize;
+        let new = program.protos[parent]
+            .code
+            .iter()
+            .position(|i| i.opcode() == Some(Opcode::BuilderNew))
+            .unwrap();
+        let closure = program.protos[parent]
+            .code
+            .iter()
+            .position(|i| i.opcode() == Some(Opcode::Closure) && i.bx() as usize == body)
+            .unwrap();
+        let handle = program.protos[parent]
+            .code
+            .iter()
+            .position(|i| i.opcode() == Some(Opcode::Handle))
+            .unwrap();
+        for (mutation, expected) in [
+            ("wrong kind", "kind mismatch"),
+            ("wrong source kind", "source is undefined or has wrong kind"),
+            ("wrong parent", "wrong generating parent"),
+            ("foreign closure", "wrong generating parent"),
+            ("outside slot", "outside window"),
+            ("wrong arity", "invalid builder operands"),
+            ("no definition", "undefined"),
+            ("ordinary origin", "require handle body"),
+            ("duplicate input", "duplicate builder input"),
+            ("outside source", "undefined"),
+            ("lazy body", "lazy body"),
+            ("returned body", "escaped"),
+        ] {
+            let mut p = copy(&program);
+            match mutation {
+                "foreign closure" => {
+                    let foreign = p.protos[parent].clone();
+                    p.protos.push(foreign);
+                }
+                "wrong parent" => p.protos[body].builder_parent = Some(ProtoIdx(body as u32)),
+                "wrong source kind" => {
+                    let site = p.protos[parent].code[new].bx() as usize;
+                    p.protos[parent].builder_sites[site].kind = BuilderClass::Bytes;
+                }
+                "wrong kind" => p.protos[body].builder_sites[site].kind = BuilderClass::Bytes,
+                "outside slot" => {
+                    p.protos[body].builder_sites[site].local = p.protos[body].builder_slots
+                }
+                "wrong arity" => p.protos[body].builder_sites[site].args.clear(),
+                "no definition" => p.protos[parent].code[new] = Instr::abc(Opcode::Move, 0, 0, 0),
+                "ordinary origin" => p.protos[body].origin = ProtoOrigin::UserLambda,
+                "duplicate input" => {
+                    let input = p.protos[body].builder_inputs[0];
+                    p.protos[body].builder_inputs.push(input);
+                }
+                "outside source" => {
+                    p.protos[body].builder_inputs[0].source = p.protos[parent].builder_slots
+                }
+                "lazy body" => {
+                    let i = p.protos[parent].code[closure];
+                    p.protos[parent].code[closure] = Instr::abx(Opcode::Lazy, i.a(), i.bx());
+                }
+                "returned body" => {
+                    let i = p.protos[parent].code[handle];
+                    p.protos[parent].code[handle] = Instr::abc(Opcode::Return, i.b(), 0, 0);
+                }
+                _ => panic!("unknown mutation"),
+            }
+            let error = verify(&p).unwrap_err();
+            assert!(error.message.contains(expected), "{mutation}: {error:?}");
+        }
     }
 }

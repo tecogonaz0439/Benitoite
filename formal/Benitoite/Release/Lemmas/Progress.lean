@@ -111,13 +111,14 @@ theorem progress_meth (hwt : P.WellTyped B) {Ψ σ R a ε v m ss es ws k}
   · exact ⟨_, _, .E_Super hv'⟩
 
 /-- `resume` の第一引数は、変数か場所である。 -/
-theorem HasTypeCQ.resume_form {Ψ C Γ R m T ε w v} (h : HasTypeC P B Ψ C Γ R m T ε)
+theorem HasTypeCQ.resume_form {Δl : LocalCtx} {Ψ Q C Γ R m T ε w v} (h : HasTypeCQ P B Ψ Q C Γ R m T ε Δl)
     (hm : m = .resume w v) : (∃ i, w = .var i) ∨ (∃ l, w = .loc l) := by
   match h with
   | .C_Resume _ _ => cases hm; exact Or.inl ⟨_, rfl⟩
   | .C_ResumeL _ _ => cases hm; exact Or.inr ⟨_, rfl⟩
   | .C_Sub h _ _ hw => exact resume_form h hm
   | .C_Eff h _ => exact resume_form h hm
+  | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
   | .C_Return _ => cases hm
   | .C_Let _ _ => cases hm
   | .C_App _ _ => cases hm
@@ -133,6 +134,7 @@ theorem StoreOk.cont_cell {Ψ σ κ b t e r} (hσ : StoreOk P B Ψ σ) (hΨ : Ψ
     σ κ = some .used ∨ ∃ k', σ κ = some (.cont k') := by
   obtain ⟨c, hc, hok⟩ := hσ.cell hΨ
   cases c with
+  | builder _ => obtain ⟨_, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | val v => obtain ⟨a, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | thunk m => obtain ⟨a, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | done v => obtain ⟨a, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
@@ -143,6 +145,7 @@ theorem StoreOk.ref_cell {Ψ σ l a} (hσ : StoreOk P B Ψ σ) (hΨ : Ψ l = som
     ∃ v, σ l = some (.val v) := by
   obtain ⟨c, hc, hok⟩ := hσ.cell hΨ
   cases c with
+  | builder _ => obtain ⟨_, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | val v => exact ⟨v, hc⟩
   | thunk m => obtain ⟨a, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | done v => obtain ⟨a, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
@@ -153,6 +156,7 @@ theorem StoreOk.lazy_cell {Ψ σ l a} (hσ : StoreOk P B Ψ σ) (hΨ : Ψ l = so
     (∃ m, σ l = some (.thunk m)) ∨ ∃ v, σ l = some (.done v) := by
   obtain ⟨c, hc, hok⟩ := hσ.cell hΨ
   cases c with
+  | builder _ => obtain ⟨_, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | val v => obtain ⟨a, ha, _⟩ := hok; rw [hΨ] at ha; cases ha
   | thunk m => exact Or.inl ⟨m, hc⟩
   | done v => exact Or.inr ⟨v, hc⟩
@@ -457,6 +461,17 @@ theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assum
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
     State.Final (.run m k σ) ∨ ∃ l s', Step P B (.run m k σ) l s' := by
   cases m with
+  | builderLet kind body =>
+      obtain ⟨l, hl, _⟩ := hσ.fresh
+      exact Or.inr ⟨_, _, .E_BuilderNew hl⟩
+  | builderOp kind op r args =>
+      obtain ⟨_, hr, ha, _⟩ := hm.inv_builderOp rfl
+      obtain ⟨l, rfl, hl⟩ := hr.closed
+      obtain ⟨c, hc, hok⟩ := hσ.builder_cell hl
+      obtain ⟨reply, hreply, _⟩ := builderApply_total_typed hok ha
+      cases reply with
+      | value c' v => exact Or.inr ⟨_, _, .E_BuilderOp hc hreply⟩
+      | error r => exact Or.inr ⟨_, _, .E_BuilderErr hc hreply⟩
   | ret v =>
       obtain ⟨a', hv, hle⟩ := hm.inv_ret rfl
       exact progress_ret hb hσ hk (hm.ret_value rfl)

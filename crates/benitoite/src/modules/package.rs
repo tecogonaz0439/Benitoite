@@ -186,6 +186,11 @@ const BREAKING_CHANGES: &[BreakingChange] = &[
         summary: text::CONSTANT_REGEX_CHANGE,
         help: text::CONSTANT_REGEX_MIGRATION,
     },
+    BreakingChange {
+        version: Version(0, 0, 10),
+        summary: text::SYNTAX_BATCH4_CHANGE,
+        help: text::SYNTAX_BATCH4_MIGRATION,
+    },
 ];
 
 pub(crate) use crate::syntax::header::keyword;
@@ -499,6 +504,7 @@ mod tests {
             "0.0.7: Command.environment rejects names starting with DYLD_ or LD_ (ASCII case-insensitive), including build-tool variables such as LD_RUN_PATH",
             "0.0.8: Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable",
             "0.0.9: direct Regex.compile calls reject invalid constant sources with E0457 or E0458; direct Scope checks reject invalid known arguments with E0459 through E0462",
+            "0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable",
         ];
         let helps = [
             helps[0],
@@ -506,13 +512,15 @@ mod tests {
             "review explicit settings of DYLD_ and LD_ variables, including LD_RUN_PATH used by build tools; run and runAttached return IOErrorKind.InvalidInput before starting a child; inherited variables are unchanged; update the language declaration to the current version after reviewing the script, update dependency hashes, and see CHANGELOG.md for migration details",
             "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md",
             "to test Result.Error, pass the pattern to a normal function whose parameters are used by Regex.compile or Scope checks; review constant patterns, language declarations and dependency hashes; see the 0.0.9 section of CHANGELOG.md",
+            "rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md",
         ];
-        let change_versions = ["0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9"];
+        let change_versions = ["0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.0.10"];
         for (current_text, current, end) in [
             ("0.0.6", Version(0, 0, 6), 2),
             ("0.0.7", Version(0, 0, 7), 3),
             ("0.0.8", Version(0, 0, 8), 4),
             ("0.0.9", Version(0, 0, 9), 5),
+            ("0.0.10", Version(0, 0, 10), 6),
         ] {
             for (version, first) in [
                 ("0.0.0", 0),
@@ -523,6 +531,7 @@ mod tests {
                 ("0.0.7", 3),
                 ("0.0.8", 4),
                 ("0.0.9", 5),
+                ("0.0.10", 6),
             ] {
                 let (out, _) = parse_source(&format!("language \"{version}\""), SourceKind::User);
                 let HeaderItem::Language(decl) = &out.module.header[0] else {
@@ -536,7 +545,7 @@ mod tests {
                 let diagnostic = diagnostic.unwrap();
                 assert_eq!(diagnostic.primary.unwrap().span, decl.version.span);
                 assert!(diagnostic.secondary.is_empty());
-                if version > current_text {
+                if parse_version(version).unwrap() > current {
                     assert_eq!(diagnostic.code, Some(DiagCode::E0907));
                     assert_eq!(
                         diagnostic.message,

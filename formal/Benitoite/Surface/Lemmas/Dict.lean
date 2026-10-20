@@ -42,6 +42,7 @@ theorem op_value_typed {p : Program} {B op Q view C Γ Γc o od ts ds ps}
   have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
     Eff.substAt_ofAtoms 0 [] _
   apply HasTypeVQ.V_Lam hn hw
+  change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
   apply HasTypeCQ.C_App
   · simpa only [fnTy_eq, hpref, hnames, List.map_append, hp, he] using
       (HasTypeVQ.V_Op (P := desugarProgram op p) (B := B)

@@ -26,7 +26,17 @@ pub fn disassemble(program: &CompiledProgram) -> String {
                 .map_or(text::UNKNOWN, super::instr::Opcode::name);
             write!(out, "  {pc:04} {name}").unwrap_or(());
             match instr.opcode() {
-                Some(Opcode::LoadK | Opcode::Closure | Opcode::Switch | Opcode::Lazy) => {
+                Some(
+                    Opcode::LoadK
+                    | Opcode::Closure
+                    | Opcode::Switch
+                    | Opcode::Lazy
+                    | Opcode::BuilderNew
+                    | Opcode::BuilderAppend
+                    | Opcode::BuilderAppendAll
+                    | Opcode::BuilderCopy
+                    | Opcode::BuilderLength,
+                ) => {
                     writeln!(out, " {} {}", instr.a(), instr.bx()).unwrap_or(());
                 }
                 Some(
@@ -60,6 +70,17 @@ pub fn disassemble(program: &CompiledProgram) -> String {
                     writeln!(out, " {} {} {}", instr.a(), instr.b(), instr.c()).unwrap_or(());
                 }
             }
+        }
+        if proto.builder_slots != 0 || !proto.builder_inputs.is_empty() {
+            writeln!(
+                out,
+                "  {} {} {:?} {:?}",
+                text::BUILDERS,
+                proto.builder_slots,
+                proto.builder_sites,
+                proto.builder_inputs
+            )
+            .unwrap_or(());
         }
         for (k, table) in proto.switch_tables.iter().enumerate() {
             writeln!(out, "  {} {k} {:?}", text::SWITCH, table).unwrap_or(());
@@ -165,6 +186,7 @@ pub fn disassemble(program: &CompiledProgram) -> String {
 }
 
 mod text {
+    pub const BUILDERS: &str = "builders";
     pub const PROTOTYPE: &str = "prototype";
     pub const UNKNOWN: &str = "<unknown>";
     pub const CONSTANTS: &str = "constants";

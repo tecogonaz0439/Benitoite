@@ -35,7 +35,7 @@ theorem desugar_wellFormed (hwf : p.WellFormed) (hwt : p.WellTyped B op) :
           rcases List.mem_append.mp ht with ht | ht
           · exact varsInList_mem (d.toFunDecl.dictTys_scoped sc.2.2.2.1) ht
           · exact varsInList_mem sc.1 ht),
-        sc.2.1, sc.2.2.1, HasBlockQ.desugar_scoped (hwt.1 f d hds).2.2 sc.2.2.2.2⟩
+        sc.2.1, sc.2.2.1, HasBlockQ.desugar_scoped (hwt.1 f d hds).2.2 (by simpa only [desugarDef, FunDecl.dictTys, Def.toFunDecl, List.length_append, List.length_map, Release.Def.ntys] using sc.2.2.2.2)⟩
   · exact hwf.2.2.2.2.2.2.1
   · intro i dd hd
     obtain ⟨id, hs, heq⟩ := Option.map_eq_some_iff.mp hd
@@ -55,7 +55,7 @@ theorem desugar_wellFormed (hwf : p.WellFormed) (hwt : p.WellTyped B op) :
       obtain ⟨b', hb', _, htyped⟩ := hmethods m ms hm
       have he : b' = b := Option.some.inj (hb'.symm.trans hbody)
       subst b'
-      exact HasBlockQ.desugar_scoped htyped (sc.2.2.2 cd m ms b hc hm hbody)
+      simpa only [desugarImpl, Release.ImplDecl.dictTys, List.length_map] using HasBlockQ.desugar_scoped htyped (sc.2.2.2 cd m ms b hc hm hbody)
 
 /-- 本体の指定で受理したソース照合から、指定を消した同じコアの型付けを導く。 -/
 theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)

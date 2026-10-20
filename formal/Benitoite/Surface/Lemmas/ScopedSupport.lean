@@ -69,9 +69,11 @@ theorem recordFields_scoped {nt pe n positions vs fallback}
   | none => exact hf
   | some v => exact fieldAt_property (Val.VarsIn nt pe) (fun w hw => valVarsInList_mem h hw) he
 
-theorem recordUpdateValues_scoped {nt pe c n positions vs}
+theorem recordUpdateValues_scoped {scopeDepth : Nat} {nt pe c n positions vs}
     (h : Val.VarsInList nt pe vs) :
-    Val.VarsInList nt pe (recordUpdateValues c n positions vs) := by
+    Val.VarsInList nt pe (recordUpdateValues c n positions vs) scopeDepth := by
+  apply Benitoite.Release.Val.VarsInList.widen (depth := 0) (Nat.le_refl _) (Nat.zero_le _)
+  change Val.VarsInList nt pe _ 0
   apply valVarsInList_of_forall
   intro v hv
   obtain ⟨i, _, rfl⟩ := List.mem_map.mp hv
@@ -80,12 +82,14 @@ theorem recordUpdateValues_scoped {nt pe c n positions vs}
   | some v =>
       exact Val.VarsIn.renameScoped _ _ (fieldAt_property (Val.VarsIn nt pe) (fun w hw => valVarsInList_mem h hw) he)
 
-theorem callComp_scoped {nt pe shift inserted f callee positions ms}
+theorem callComp_scoped {scopeDepth : Nat} {nt pe shift inserted f callee positions ms}
     (hf : Comp.VarsIn nt pe callee)
     (hd : ∀ h, directCallee f = some h → h.Scoped nt pe)
     (hi : Val.VarsInList nt pe inserted)
     (hm : ∀ m ∈ ms, Comp.VarsIn nt pe m) :
-    Comp.VarsIn nt pe (callComp shift inserted f callee positions ms) := by
+    Comp.VarsIn nt pe (callComp shift inserted f callee positions ms) scopeDepth := by
+  apply Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (Nat.zero_le _)
+  change Comp.VarsIn nt pe _ 0
   unfold callComp
   split
   · rename_i h hh
@@ -96,5 +100,52 @@ theorem callComp_scoped {nt pe shift inserted f callee positions ms}
     apply letChain_scoped hm
     exact ⟨trivial,
       recordFields_scoped (Val.VarsInList.append (Val.VarsInList.renameScoped _ inserted hi) (boundVars_scoped _ _ _)) trivial⟩
+
+/-- callee と引数は、穴や挿入済みの通常束縛の移動をそれぞれ保つ。 -/
+theorem callComp_scoped_local {nt pe nv shift inserted f callee positions ms}
+    (hlen : inserted.length ≤ shift)
+    (hf : Comp.VarsIn nt pe callee nv)
+    (hd : ∀ h, directCallee f = some h → h.Scoped nt pe)
+    (hi : Val.VarsInList nt pe inserted)
+    (hm : ∀ m ∈ ms, Comp.VarsIn nt pe m (nv + (shift - inserted.length))) :
+    Comp.VarsIn nt pe (callComp shift inserted f callee positions ms) (nv + shift) := by
+  unfold callComp
+  split
+  · rename_i h hh
+    have hb : Comp.VarsIn nt pe
+        ((h.rename (· + (shift + ms.length))).apply
+          (recordFields (inserted.length + ms.length) (List.range inserted.length ++ positions)
+            (Val.renameList (· + ms.length) inserted ++ boundVars ms.length) (.const .unit))) :=
+      (CallHead.Scoped.rename (hd h hh) (· + (shift + ms.length))).apply
+      (recordFields_scoped (Val.VarsInList.append (Val.VarsInList.renameScoped _ inserted hi) (boundVars_scoped _ _ _)) trivial)
+    simpa only [Nat.add_assoc, Nat.sub_add_cancel hlen] using
+      letChain_scoped_local hm inserted.length
+        (Benitoite.Release.Comp.VarsIn.widen (Nat.le_refl _) (Nat.zero_le _) _ hb)
+  · refine ⟨Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) callee hf, ?_⟩
+    have hb : Comp.VarsIn nt pe
+        (.app (.var ms.length)
+          (recordFields (inserted.length + ms.length) (List.range inserted.length ++ positions)
+            (Val.renameList (· + (ms.length + 1)) inserted ++ boundVars ms.length) (.const .unit))) :=
+      ⟨trivial, recordFields_scoped (Val.VarsInList.append
+        (Val.VarsInList.renameScoped _ inserted hi) (boundVars_scoped _ _ _)) trivial⟩
+    have he : nv + (shift - inserted.length) + (inserted.length + 1) = nv + shift + 1 := by omega
+    simpa only [he] using
+      letChain_scoped_local hm (inserted.length + 1)
+        (Benitoite.Release.Comp.VarsIn.widen (Nat.le_refl _) (Nat.zero_le _) _ hb)
+
+theorem callArgs_scoped_local {nt pe nv shift f callee positions plans}
+    (hf : Comp.VarsIn nt pe callee nv)
+    (hd : ∀ h, directCallee f = some h → h.Scoped nt pe)
+    (hm : ∀ plan ∈ plans, ArgPlan.Scoped nt pe (nv + shift) plan) :
+    Comp.VarsIn nt pe (callArgs shift f callee positions plans) (nv + shift) := by
+  unfold callArgs
+  split
+  · rename_i h hh
+    simpa only [Nat.add_zero] using sequenceArgs_scoped_local hm 0 (fun vs hv =>
+      Comp.VarsIn.widen (Nat.le_refl _) (Nat.zero_le _) _
+        ((CallHead.Scoped.rename (hd h hh) _).apply (recordFields_scoped (n := positions.length) (positions := positions) (fallback := .const .unit) hv trivial)))
+  · refine ⟨Comp.VarsIn.renameLocal _ (by omega) callee hf, ?_⟩
+    exact sequenceArgs_scoped_local hm 1 (fun vs hv =>
+      ⟨trivial, Val.VarsInList.widen (Nat.le_refl _) (Nat.zero_le _) _ (recordFields_scoped (n := positions.length) (positions := positions) (fallback := .const .unit) hv trivial)⟩)
 
 end Benitoite.Surface

@@ -9,6 +9,13 @@ mod operation_dictionaries;
 #[path = "typed_failure/mod.rs"]
 mod typed_failure;
 
+#[path = "vm_handlers/blocks.rs"]
+mod blocks;
+#[path = "golden/differential.rs"]
+mod differential;
+#[path = "vm_handlers/local_builders.rs"]
+mod local_builders;
+
 use benitoite::runtime::heap::HeapConfig;
 use benitoite::runtime::io::services::RunInput;
 use benitoite::vm::{ExecMode, VmConfig};
@@ -102,7 +109,11 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
         (
             "completed iterations",
             "function iterate(n: Integer) -> Integer\n if n = 0 then return 0 end if\n bind x <- handle\n ask(n)\n with\n case ask(i) -> resume(i)\n end handle\n return iterate(n - x div x)\nend function\n",
-            "iterate(100)",
+            if cfg!(feature = "gc-stress") {
+                "iterate(16)"
+            } else {
+                "iterate(100)"
+            },
             0,
             None,
         ),
@@ -186,7 +197,11 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
         (
             "discarded iterations",
             "function iterate(n: Integer) -> Integer\n if n = 0 then return 0 end if\n bind x <- handle\n ask(n)\n with\n case ask(i) -> i\n end handle\n return iterate(n - x div x)\nend function\n",
-            "iterate(100000)",
+            if cfg!(feature = "gc-stress") {
+                "iterate(16)"
+            } else {
+                "iterate(100000)"
+            },
             0,
             None,
         ),

@@ -38,6 +38,7 @@ pub(super) struct Batch {
     pub examples: Vec<Example>,
     pub ignored: usize,
     pub complete: bool,
+    declaration_compilations: u64,
 }
 
 fn internal(message: impl Into<String>) -> InternalError {
@@ -205,6 +206,10 @@ pub(super) fn run(
             );
         }
     };
+    let mut externals = externals;
+    externals.session = Some(Rc::new(crate::external::ExternalSession::new(
+        interrupt.shared_flag(),
+    )));
     let mut runner = Runner {
         env,
         format: args.diagnostics,
@@ -256,6 +261,9 @@ pub(super) fn run(
                 return reject(runner, total, EXIT_INTERNAL);
             }
         };
+        if let Some(stats) = &runner.externals.stats {
+            stats.declarations_compiled(batch.declaration_compilations);
+        }
         match runner.validate_prepared(&selected.entry, &ordinary) {
             Ok(valid) => rejected |= !valid,
             Err(code) => return reject(runner, total, code),

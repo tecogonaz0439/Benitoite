@@ -119,27 +119,12 @@ pub enum BuilderKind {
     Bytes,
 }
 
-/// 型付きの構築器宣言。参照先は解決済みの標準束縛で保持する。
+/// 型付きの構築器宣言。通常の型や値の表とは別に保持する。
 #[derive(Clone, Debug)]
 pub struct BuilderDecl {
     pub id: crate::resolve::builders::BuilderId,
     pub kind: BuilderKind,
     pub span: crate::base::Span,
-    pub refs: BuilderRefs,
-}
-
-/// 専用展開に使う標準の宣言。型付き表層を交換するまで失わない。
-#[derive(Clone, Debug)]
-pub struct BuilderRefs {
-    pub new: BindingId,
-    pub get: BindingId,
-    pub set: BindingId,
-    pub join: BindingId,
-    /// 単一要素の追記、または小さな断片の構築。
-    pub single: Option<BindingId>,
-    /// Bytes の空値。他の分類では定数を使う。
-    pub empty: Option<BindingId>,
-    pub length: BindingId,
 }
 
 /// 直接操作と、対象・通常引数のソース順。
@@ -149,7 +134,6 @@ pub struct BuilderOperation {
     pub kind: BuilderKind,
     pub op: crate::resolve::builders::BuilderOp,
     pub args: Vec<crate::base::NodeId>,
-    pub refs: BuilderRefs,
 }
 
 /// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。各段へ渡す表は設計書 02-05「出力」で定める。

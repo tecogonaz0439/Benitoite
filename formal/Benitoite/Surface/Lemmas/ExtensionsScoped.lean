@@ -22,7 +22,8 @@ theorem spreadFinish_scoped {nt pe h before s after}
   · exact hh.apply ⟨hs, ha, trivial⟩
   · exact hh.apply ⟨hb, hs, trivial⟩
   · exact ⟨hh.apply ⟨hb, hs, trivial⟩,
-      (hh.rename _).apply ⟨trivial, Val.VarsInList.renameScoped _ _ ha, trivial⟩⟩
+      Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (by omega) _
+        ((hh.rename _).apply ⟨trivial, Val.VarsInList.renameScoped _ _ ha, trivial⟩)⟩
 
 theorem spreadValues_scoped {nt pe h n vs} (hh : h.Scoped nt pe)
     (hv : Val.VarsInList nt pe vs) : Comp.VarsIn nt pe (spreadValues h n vs) := by
@@ -55,7 +56,8 @@ theorem joinStringFrom_scoped {nt pe op depth left rest}
       | cons v rest =>
           simp only [joinStringFrom, hop, Comp.VarsIn]
           exact ⟨hc, by simpa only [joinStringFrom, hop] using
-            (ih (depth := depth + 1) (left := .var 0) trivial hr.2 (fun _ => ⟨b, hop⟩))⟩
+            (Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (show 0 ≤ 1 by omega) _
+              (ih (depth := depth + 1) (left := .var 0) trivial hr.2 (fun _ => ⟨b, hop⟩)))⟩
 
 theorem joinStringParts_scoped {nt pe op vs}
     (hv : Val.VarsInList nt pe vs)
@@ -100,10 +102,11 @@ theorem interpolate_scoped {nt pe op parts vs hs acc}
               | nil => trivial
               | cons h hs =>
                   exact ⟨(hh h (by simp)).apply ⟨hv.1, trivial⟩,
-                    ih (Val.VarsInList.renameScoped _ _ hv.2)
+                    Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (by omega) _
+                      (ih (Val.VarsInList.renameScoped _ _ hv.2)
                       (heads_scoped_rename (fun h hm => hh h (by simp [hm])) _)
                       (Val.VarsInList.append (Val.VarsInList.renameScoped _ _ hc) ⟨trivial, trivial⟩)
                       (by simpa [InterpPart.count, List.length_append, Val.renameList_length,
-                        Nat.add_assoc] using ha)⟩
+                        Nat.add_assoc] using ha))⟩
 
 end Benitoite.Surface

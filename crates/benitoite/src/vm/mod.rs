@@ -223,7 +223,7 @@ impl<'p> Vm<'p> {
                 return Err(state::internal("main requires arguments or captures"));
             }
             let size = u32::from(proto.num_regs);
-            if !self.state.meter.fits(1, u64::from(size)) {
+            if !self.state.meter.fits(1, u64::from(proto.frame_slots())) {
                 return Err(Stop::Resource(
                     crate::runtime::ResourceError::CallStackTooDeep {
                         frames: self.state.meter.frames(),
@@ -239,6 +239,9 @@ impl<'p> Vm<'p> {
                     .resize_with(usize::from(proto.num_regs), Default::default);
                 segment.calls.push(frame::CallFrame {
                     func: ctx.new_slot(value),
+                    builders: std::iter::repeat_with(crate::runtime::heap::Slot::default)
+                        .take(usize::from(proto.builder_slots))
+                        .collect(),
                     proto: main,
                     pc: 0,
                     base: 0,
@@ -249,7 +252,7 @@ impl<'p> Vm<'p> {
                     chain_resume: None,
                 });
                 self.state.stack.segments.push(segment);
-                self.state.meter.grow(1, u64::from(size));
+                self.state.meter.grow(1, u64::from(proto.frame_slots()));
                 dispatch::tasks::start_main(&mut self.state, ctx)?;
                 self.state.started = true;
                 if ctx.take_collect_signal() {

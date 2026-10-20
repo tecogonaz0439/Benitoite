@@ -1,4 +1,5 @@
 import Benitoite.Release.Lemmas.Basic
+import Benitoite.Release.LocalTyping
 
 /-!
 # 環境とストアの型付けの弱化（段階 B）
@@ -43,8 +44,8 @@ theorem Val.renameList_length (ξ : Nat → Nat) (vs : List Val) :
   | nil => simp [Val.renameList]
   | cons v vs ih => simp [Val.renameList, ih]
 
-theorem Val.substList_length (σ : Nat → Val) (vs : List Val) :
-    (Val.substList σ vs).length = vs.length := by
+theorem Val.substList_length {ρ : Nat → LocalRef} (σ : Nat → Val) (vs : List Val) :
+    (Val.substList σ vs ρ).length = vs.length := by
   induction vs with
   | nil => simp [Val.substList]
   | cons v vs ih => simp [Val.substList, ih]
@@ -220,35 +221,41 @@ mutual
     | .cons hv hvs =>
         simp only [Val.renameList]; exact .cons (HasTypeVQ.rename hv hξ) (HasTypeEachQ.rename hvs hξ)
 
-  theorem HasTypeCQ.rename {Ψ C Γ Δ ξ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε) (hξ : RenOk Γ Δ ξ) :
-      HasTypeCQ P B Ψ Q C Δ R (m.rename ξ) a ε := by
+  theorem HasTypeCQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hξ : RenOk Γ Δ ξ)
+      (Δl' : LocalCtx := Δl)
+      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) :
+      HasTypeCQ P B Ψ Q C Δ R (m.rename ξ) a ε Δl' := by
     match h with
+    | .C_BuilderLet (kind := kind) hw hb =>
+        exact .C_BuilderLet hw (HasTypeCQ.rename hb (hξ.up [none]) _ (hL.builder kind))
+    | .C_BuilderOp hw hr ha =>
+        exact .C_BuilderOp hw (hr.rename hL) (HasTypeVsQ.rename ha hξ)
     | .C_Return hv => simp only [Comp.rename]; exact .C_Return (HasTypeVQ.rename hv hξ)
-    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.rename h hξ) hle hs hw
-    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.rename h hξ) hs
+    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.rename h hξ Δl' hL) hle hs hw
+    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.rename h hξ Δl' hL) hs
     | .C_Let (a := a) hm hn =>
         simp only [Comp.rename]
-        exact .C_Let (HasTypeCQ.rename hm hξ) (HasTypeCQ.rename hn (hξ.up [some a]))
+        exact .C_Let (HasTypeCQ.rename hm hξ Δl' hL) (HasTypeCQ.rename hn (hξ.up [some a]) _ (hL.extend 1))
     | .C_App hf hargs =>
         simp only [Comp.rename]; exact .C_App (HasTypeVQ.rename hf hξ) (HasTypeVsQ.rename hargs hξ)
     | .C_If hv hm hn =>
         simp only [Comp.rename]
-        exact .C_If (HasTypeVQ.rename hv hξ) (HasTypeCQ.rename hm hξ) (HasTypeCQ.rename hn hξ)
+        exact .C_If (HasTypeVQ.rename hv hξ) (HasTypeCQ.rename hm hξ Δl' hL) (HasTypeCQ.rename hn hξ Δl' hL)
     | .C_Match hv harms hex =>
         simp only [Comp.rename]
-        refine .C_Match (HasTypeVQ.rename hv hξ) (HasTypeArmsQ.rename harms hξ) ?_
+        refine .C_Match (HasTypeVQ.rename hv hξ) (HasTypeArmsQ.rename harms hξ Δl' hL) ?_
         rwa [unguardedPats_rename]
     | .C_Lazy hm => simp only [Comp.rename]; exact .C_Lazy (HasTypeCQ.rename hm hξ.hide)
     | .C_Escape hv hw => simp only [Comp.rename]; exact .C_Escape (HasTypeVQ.rename hv hξ) hw
     | .C_Use hv hr hm hs =>
-        simp only [Comp.rename]; exact .C_Use (HasTypeVQ.rename hv hξ) hr (HasTypeCQ.rename hm hξ) hs
+        simp only [Comp.rename]; exact .C_Use (HasTypeVQ.rename hv hξ) hr (HasTypeCQ.rename hm hξ Δl' hL) hs
     | .C_Handle hm hs hc =>
         simp only [Comp.rename]
-        refine .C_Handle (HasTypeCQ.rename hm hξ) ?_ (HasTypeClausesQ.rename hc hξ)
+        refine .C_Handle (HasTypeCQ.rename hm hξ Δl' hL) ?_ (HasTypeClausesQ.rename hc hξ Δl' hL)
         rwa [handled_renameList]
     | .C_Handle_Fail hm hs hn hc =>
         simp only [Comp.rename]
-        exact .C_Handle_Fail (HasTypeCQ.rename hm hξ) hs hn (HasFailureClause.rename hc hξ)
+        exact .C_Handle_Fail (HasTypeCQ.rename hm hξ Δl' hL) hs hn (HasFailureClause.rename hc hξ Δl' hL)
     | .C_Resume hi hv =>
         simp only [Comp.rename, Val.rename]; exact .C_Resume (hξ _ _ hi) (HasTypeVQ.rename hv hξ)
     | .C_ResumeL hl hv =>
@@ -257,34 +264,40 @@ mutual
         simp only [Comp.rename]
         exact .C_Meth (HasTypeVQ.rename hv hξ) hc hm hnames hts hscope hes (HasTypeVsQ.rename hws hξ)
 
-  theorem HasTypeArmsQ.rename {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
-      (hξ : RenOk Γ Δ ξ) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.renameList ξ arms) a b ε := by
+  theorem HasTypeArmsQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+      (hξ : RenOk Γ Δ ξ)
+      (Δl' : LocalCtx := Δl)
+      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.renameList ξ arms) a b ε Δl' := by
     match h with
     | .nil hw => simp only [Arm.renameList]; exact .nil hw
     | .plain (δ := δ) hp hm ht =>
         simp only [Arm.renameList]
         have hξ' := hξ.up (binds δ)
         rw [binds_length, hp.2.1] at hξ'
-        exact .plain hp (HasTypeCQ.rename hm hξ') (HasTypeArmsQ.rename ht hξ)
+        exact .plain hp (HasTypeCQ.rename hm hξ' _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeArmsQ.rename ht hξ Δl' hL)
     | .guarded (δ := δ) hp hg hm ht =>
         simp only [Arm.renameList]
         have hξ' := hξ.up (binds δ)
         rw [binds_length, hp.2.1] at hξ'
-        exact .guarded hp (HasTypeCQ.rename hg hξ'.hide) (HasTypeCQ.rename hm hξ') (HasTypeArmsQ.rename ht hξ)
+        exact .guarded hp (HasTypeCQ.rename hg hξ'.hide _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeCQ.rename hm hξ' _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeArmsQ.rename ht hξ Δl' hL)
 
-  theorem HasTypeClausesQ.rename {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε)
-      (hξ : RenOk Γ Δ ξ) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε := by
+  theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+      (hξ : RenOk Γ Δ ξ)
+      (Δl' : LocalCtx := Δl)
+      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε Δl' := by
     match hc with
     | .nil => simp only [Clause.renameList]; exact .nil
     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
         simp only [Clause.renameList]
-        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.rename hrest hξ)
+        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.rename hrest hξ Δl' hL)
         have := RenOk.clause (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε))) sg.params k hξ
         rw [← hn] at this
         exact HasTypeCQ.rename hbody this
-  theorem HasFailureClause.rename {Ψ C Γ Δ ξ E R h t ε}
-      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) (hξ : RenOk Γ Δ ξ) :
-      HasFailureClause P B Ψ Q C Δ E R (Clause.renameList ξ h) t ε := by
+  theorem HasFailureClause.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hξ : RenOk Γ Δ ξ)
+      (Δl' : LocalCtx := Δl)
+      (_hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) :
+      HasFailureClause P B Ψ Q C Δ E R (Clause.renameList ξ h) t ε Δl' := by
     match hc with
     | .one he ht hew hb =>
         simp only [Clause.renameList]
@@ -295,13 +308,30 @@ end
 
 /-! ## ストアの型付けの拡大 -/
 
-/-- Ψ' は Ψ を広げたもの。 -/
-def StoreTy.Sub (Ψ Ψ' : StoreTy) : Prop := ∀ l x, Ψ l = some x → Ψ' l = some x
-
 theorem StoreTy.Sub.refl (Ψ : StoreTy) : StoreTy.Sub Ψ Ψ := fun _ _ h => h
 
 theorem StoreTy.Sub.trans {Ψ₁ Ψ₂ Ψ₃ : StoreTy} (h₁ : StoreTy.Sub Ψ₁ Ψ₂) (h₂ : StoreTy.Sub Ψ₂ Ψ₃) :
     StoreTy.Sub Ψ₁ Ψ₃ := fun l x h => h₂ l x (h₁ l x h)
+
+@[simp] theorem StoreTy.hideBuilders_empty : StoreTy.empty.hideBuilders = StoreTy.empty := rfl
+
+/-- 隠して残った通常セルの型は元のストアにもある。 -/
+theorem hideBuilders_sub (Ψ : StoreTy) : StoreTy.Sub Ψ.hideBuilders Ψ := by
+  intro l x hx
+  cases h : Ψ l with
+  | none => simp [StoreTy.hideBuilders, h] at hx
+  | some y => cases y <;> simp_all [StoreTy.hideBuilders]
+
+/-- ストアの拡張は、専用セルを隠した後にも保たれる。 -/
+theorem hideBuilders_mono {Ψ Ψ' : StoreTy} (h : StoreTy.Sub Ψ Ψ') :
+    StoreTy.Sub Ψ.hideBuilders Ψ'.hideBuilders := by
+  intro l x hx
+  have hy := h l x (hideBuilders_sub Ψ l x hx)
+  cases x with
+  | builder k => cases hp : Ψ l with
+    | none => simp [StoreTy.hideBuilders, hp] at hx
+    | some y => cases y <;> simp [StoreTy.hideBuilders, hp] at hx
+  | _ => simp [StoreTy.hideBuilders, hy]
 
 mutual
   theorem HasTypeVQ.store {Ψ Ψ' C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
@@ -313,7 +343,7 @@ mutual
     | .V_Prim hs hn had => exact .V_Prim hs hn had
     | .V_Op hod hn hts => exact .V_Op hod hn hts
     | .V_Raise ht he => exact .V_Raise ht he
-    | .V_Lam hn hw hb => exact .V_Lam hn hw (HasTypeCQ.store hb hΨ)
+    | .V_Lam hn hw hb => exact .V_Lam hn hw (HasTypeCQ.store hb (hideBuilders_mono hΨ))
     | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVsQ.store hargs hΨ)
     | .V_List he hw => exact .V_List (HasTypeEachQ.store he hΨ) hw
     | .V_LocRef hl => exact .V_LocRef (hΨ _ _ hl)
@@ -338,9 +368,11 @@ mutual
     | .nil => exact .nil
     | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeEachQ.store hvs hΨ)
 
-  theorem HasTypeCQ.store {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeCQ P B Ψ' Q C Γ R m a ε := by
+  theorem HasTypeCQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeCQ P B Ψ' Q C Γ R m a ε Δl := by
     match h with
+    | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.store hb hΨ)
+    | .C_BuilderOp hw hr ha => exact .C_BuilderOp hw (hr.store hΨ) (HasTypeVsQ.store ha hΨ)
     | .C_Return hv => exact .C_Return (HasTypeVQ.store hv hΨ)
     | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.store h hΨ) hle hs hw
     | .C_Eff h hs => exact .C_Eff (HasTypeCQ.store h hΨ) hs
@@ -349,7 +381,7 @@ mutual
     | .C_If hv hm hn =>
         exact .C_If (HasTypeVQ.store hv hΨ) (HasTypeCQ.store hm hΨ) (HasTypeCQ.store hn hΨ)
     | .C_Match hv harms hex => exact .C_Match (HasTypeVQ.store hv hΨ) (HasTypeArmsQ.store harms hΨ) hex
-    | .C_Lazy hm => exact .C_Lazy (HasTypeCQ.store hm hΨ)
+    | .C_Lazy hm => exact .C_Lazy (HasTypeCQ.store hm (hideBuilders_mono hΨ))
     | .C_Escape hv hw => exact .C_Escape (HasTypeVQ.store hv hΨ) hw
     | .C_Use hv hr hm hs => exact .C_Use (HasTypeVQ.store hv hΨ) hr (HasTypeCQ.store hm hΨ) hs
     | .C_Handle hm hs hc => exact .C_Handle (HasTypeCQ.store hm hΨ) hs (HasTypeClausesQ.store hc hΨ)
@@ -361,27 +393,48 @@ mutual
     | .C_Meth hv hc hm hnames hts hscope hes hws =>
         exact .C_Meth (HasTypeVQ.store hv hΨ) hc hm hnames hts hscope hes (HasTypeVsQ.store hws hΨ)
 
-  theorem HasTypeArmsQ.store {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArmsQ P B Ψ' Q C Γ R arms a b ε := by
+  theorem HasTypeArmsQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArmsQ P B Ψ' Q C Γ R arms a b ε Δl := by
     match h with
     | .nil hw => exact .nil hw
     | .plain hp hm ht => exact .plain hp (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
     | .guarded hp hg hm ht =>
         exact .guarded hp (HasTypeCQ.store hg hΨ) (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
 
-  theorem HasTypeClausesQ.store {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R h t ε := by
+  theorem HasTypeClausesQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R h t ε Δl := by
     match hc with
     | .nil => exact .nil
     | .cons hsg hnames hn hk hew hbody hrest =>
-        exact .cons hsg hnames hn hk hew (HasTypeCQ.store hbody hΨ) (HasTypeClausesQ.store hrest hΨ)
-  theorem HasFailureClause.store {Ψ Ψ' C Γ E R h t ε}
-      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) (hΨ : StoreTy.Sub Ψ Ψ') :
-      HasFailureClause P B Ψ' Q C Γ E R h t ε := by
+        exact .cons hsg hnames hn hk hew (HasTypeCQ.store hbody (hideBuilders_mono hΨ)) (HasTypeClausesQ.store hrest hΨ)
+  theorem HasFailureClause.store {Δl : LocalCtx} {Ψ Ψ' C Γ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hΨ : StoreTy.Sub Ψ Ψ') :
+      HasFailureClause P B Ψ' Q C Γ E R h t ε Δl := by
     match hc with
-    | .one he ht hew hb => exact .one he ht hew (HasTypeCQ.store hb hΨ)
+    | .one he ht hew hb => exact .one he ht hew (HasTypeCQ.store hb (hideBuilders_mono hΨ))
 
 end
+
+/-- 隠したストアで型の付いた計算は、元のストアでも実行できる。 -/
+theorem hideBuilders_weaken {P B Ψ Q C Γ R m a e}
+    (h : HasTypeCQ P B Ψ.hideBuilders Q C Γ R m a e) : HasTypeCQ P B Ψ Q C Γ R m a e :=
+  h.store (hideBuilders_sub Ψ)
+
+/-- 節の捕捉境界を二度隠しても同じ判断になる。 -/
+theorem HasTypeClausesQ.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ R cs t e}
+    (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) :
+    HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R cs t e Δl := by
+  match h with
+  | .nil => exact .nil
+  | .cons hs hn ha hk he hb ht =>
+      exact .cons hs hn ha hk he (by simpa only [hideBuilders_idem] using hb) ht.hideBuilders
+
+/-- Fail節も同じ捕捉境界を使う。 -/
+theorem HasFailureClause.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ E R cs t e}
+    (h : HasFailureClause P B Ψ Q C Γ E R cs t e Δl) :
+    HasFailureClause P B Ψ.hideBuilders Q C Γ E R cs t e Δl := by
+  cases h with
+  | one he ht hw hb => exact .one he ht hw (by simpa only [hideBuilders_idem] using hb)
 
 /-! ## 値の型付けは、継続の型の変数を使わない -/
 

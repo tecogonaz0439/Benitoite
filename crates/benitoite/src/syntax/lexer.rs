@@ -770,6 +770,7 @@ pub(crate) fn keyword(word: &str) -> Option<TokenKind> {
         "implement" => TokenKind::KwImplement,
         "import" => TokenKind::KwImport,
         "lambda" => TokenKind::KwLambda,
+        "block" => TokenKind::KwBlock,
         "lazy" => TokenKind::KwLazy,
         "match" => TokenKind::KwMatch,
         "mod" => TokenKind::KwMod,

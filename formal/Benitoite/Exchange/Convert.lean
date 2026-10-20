@@ -144,8 +144,24 @@ private def unsignedValue (n : Int) : Except String Nat := do
   if n < 0 then throw "negative unsigned integer constant"
   return n.toNat
 
+/-- 旧版の入力にも同じ Integer の範囲を要求する。 -/
+def integer64Value (n : Int) : Except String Benitoite.Release.Integer64Value :=
+  if h : Benitoite.Release.min64 ≤ n ∧ n ≤ Benitoite.Release.max64 then
+    .ok ⟨n, h⟩
+  else .error "integer outside i64"
+
+/-- 正のリテラルの大きさ。 -/
+def integer64Literal (n : Nat) : Except String Benitoite.Release.Integer64Literal :=
+  if h : n ≤ 9223372036854775807 then .ok ⟨n, h⟩
+  else .error "positive integer literal outside i64"
+
+/-- 直接負号だけが最小値の大きさを許す。 -/
+def integer64Magnitude (n : Nat) : Except String Benitoite.Release.Integer64Magnitude :=
+  if h : n ≤ 9223372036854775808 then .ok ⟨n, h⟩
+  else .error "negative integer magnitude outside i64"
+
 def Const.toRelease : Const → Except String Benitoite.Release.Const
-  | .integer n => return .integer n
+  | .integer n => return .integer (← integer64Value n)
   | .decimal n scale => return .decimal n scale
   | .float bits => return .float (← floatFromBits bits)
   | .string s => return .string s
@@ -163,7 +179,7 @@ def Const.toRelease : Const → Except String Benitoite.Release.Const
   | .float32 bits => return .float32 (← float32Bits bits)
 
 def fromConst : Benitoite.Release.Const → Except String Const
-  | .integer n => return .integer n
+  | .integer n => return .integer n.toInt
   | .decimal n scale => return .decimal n scale
   | .float x => return .float x.toBits
   | .string s => return .string s
@@ -203,7 +219,8 @@ partial def Pattern.toSurface : Pattern → Except String Benitoite.Surface.Patt
       return .list (← before.mapM Pattern.toSurface) (rest.map ListRest.toRelease) (← after.mapM Pattern.toSurface)
   | .unsupported n => throw s!"unsupported surface pattern: {n}"
   | .const c => match c with
-      | .integer n => if n < 0 then return .negInt n.natAbs else return .integer n.toNat
+      | .integer n => if n < 0 then return .negInt (← integer64Magnitude n.natAbs)
+          else return .integer (← integer64Literal n.toNat)
       | .string s => return .string s
       | .character _n => do
           let .character c ← c.toRelease | throw "expected character"
@@ -258,27 +275,12 @@ partial def DictEv.toSurface : DictEv → Except String Benitoite.Surface.DictEv
   | .clause outer arity count i depth => return .clause ⟨outer, arity, count⟩ i depth
   | .super d cl => return .super (← d.toSurface) cl
 
-def BuilderKind.toSurface : BuilderKind → Except String Benitoite.Surface.BuilderKind
+def BuilderKind.toSurface : BuilderKind → Except String Benitoite.Release.BuilderKind
   | .string => return .string
   | .list t => return .list (← t.toRelease)
   | .bytes => return .bytes
 
-def BuilderPrimRef.toSurface (r : BuilderPrimRef) : Except String Benitoite.Surface.BuilderPrimRef := do
-  return ⟨r.name, ← r.types.mapM Ty.toRelease⟩
-
-def BuilderPureRef.toSurface : BuilderPureRef → Except String Benitoite.Surface.BuilderPureRef
-  | .prim r => return .prim (← r.toSurface)
-  | .funRef n ts => return .funRef n (← ts.mapM Ty.toRelease)
-
-def BuilderCellRefs.toSurface (r : BuilderCellRefs) : Except String Benitoite.Surface.BuilderCellRefs := do
-  return ⟨← r.newRef.toSurface, ← r.getRef.toSurface, ← r.setRef.toSurface⟩
-
-def BuilderRefs.toSurface : BuilderRefs → Except String Benitoite.Surface.BuilderRefs
-  | .string c a j l => return .string (← c.toSurface) (← a.toSurface) (← j.toSurface) (← l.toSurface)
-  | .list t c a j l => return .list (← t.toRelease) (← c.toSurface) (← a.toSurface) (← j.toSurface) (← l.toSurface)
-  | .bytes c e f j l => return .bytes (← c.toSurface) (← e.toSurface) (← f.toSurface) (← j.toSurface) (← l.toSurface)
-
-def BuilderOp.toSurface : BuilderOp → Benitoite.Surface.BuilderOp
+def BuilderOp.toSurface : BuilderOp → Benitoite.Release.BuilderOp
   | .append => .append | .appendAll => .appendAll | .copy => .copy | .length => .length
 
 def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.InterpPart
@@ -291,13 +293,25 @@ def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.Interp
         throw "invalid converted interpolation type"
       return .converted (← t.toRelease)
 
+/-- 専用種類内の通常の型だけを交換する。 -/
+def fromBuilderKind (atoms : Eff) : Benitoite.Release.BuilderKind → Except String BuilderKind
+  | .string => pure .string
+  | .list t => return .list (← fromTy atoms t)
+  | .bytes => pure .bytes
+
+def fromBuilderOp : Benitoite.Release.BuilderOp → BuilderOp
+  | .append => .append
+  | .appendAll => .appendAll
+  | .copy => .copy
+  | .length => .length
+
 mutual
   partial def Expr.toSurface (constants : List (String × Benitoite.Surface.Expr) := []) : Expr → Except String Benitoite.Surface.Expr
     | .constName name => do
         let some e := (constants.find? (fun p => p.1 == name)).map Prod.snd
           | throw s!"missing expanded constant: {name}"
         return e
-    | .builderOp op i args refs => return .builderOp op.toSurface i (← toExprs constants args) (← refs.toSurface)
+    | .builderOp op i args kind => return .builderOp op.toSurface i (← toExprs constants args) (← kind.toSurface)
     | .local i => return .local i
     | .funDicts n ts es ds names ps _ => return .funDicts n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
     | .methName d n ts es ds names ps _ => return .methName (← d.toSurface) n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
@@ -310,7 +324,8 @@ mutual
     | .nullCon n ts => return .nullCon n (← ts.mapM Ty.toRelease)
     | .conValue n ts names ps => return .conValue n (← ts.mapM Ty.toRelease) names (← ps.mapM Ty.toRelease)
     | .literal c => match c with
-        | .integer n => if n < 0 then return .negInt n.natAbs else return .literal (.integer n.toNat)
+        | .integer n => if n < 0 then return .negInt (← integer64Magnitude n.natAbs)
+            else return .literal (.integer (← integer64Literal n.toNat))
         | .decimal n scale => do
             if n < 0 then throw "negative Decimal literal coefficient"
             return .literal (.decimal n scale)
@@ -331,6 +346,7 @@ mutual
         | .float32 bits => return .literal (.float32 (← float32Bits bits))
     | .unit => return .unit
     | .paren e => return .paren (← e.toSurface constants)
+    | .block body => return .block (← body.toSurface constants)
     -- 交換形式は符号込みの結果を持つ。表層の negFloat は反転前の値を持つ。
     | .negFloat bits => return .negFloat (-(← floatFromBits bits))
     | .negInteger8 n => return .negInteger8 n
@@ -417,7 +433,7 @@ mutual
         if alts.any (fun a => a.slots.length != first.slots.length) then throw "alternative binder counts differ"
         return .cons alts (← g.mapM (Expr.toSurface constants)) (← b.toSurface constants) (← toArms constants as)
   partial def Block.toSurface (constants : List (String × Benitoite.Surface.Expr) := []) : Block → Except String Benitoite.Surface.Block
-    | .builderBind k r b => return .builderBind (← k.toSurface) (← r.toSurface) (← b.toSurface constants)
+    | .builderBind k b => return .builderBind (← k.toSurface) (← b.toSurface constants)
     | .empty => return .empty
     | .last e => return .last (← e.toSurface constants)
     | .lastBind k t e => return .lastBind (if k then .shadow else .bind) (← t.toRelease) (← e.toSurface constants)
@@ -476,6 +492,10 @@ mutual
     | .list vs => return .list (← vs.mapM (fromVal atoms dictCounts))
     | _ => return .unsupported "Release.Val"
   partial def fromComp (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Comp → Except String Comp
+    | .builderLet k b => return .builderLet (← fromBuilderKind atoms k) (← fromComp atoms dictCounts b)
+    | .builderOp k op ref vs =>
+        return .builderOp (← fromBuilderKind atoms k) (fromBuilderOp op)
+          (match ref with | .bound i => .bound i | .loc i => .loc i) (← vs.mapM (fromVal atoms dictCounts))
     | .ret v => return .ret (← fromVal atoms dictCounts v)
     | .meth d n ts es vs => return .meth (← fromVal atoms dictCounts d) n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms)) (← vs.mapM (fromVal atoms dictCounts))
     | .letIn m n => return .letIn (← fromComp atoms dictCounts m) (← fromComp atoms dictCounts n)
@@ -526,7 +546,7 @@ mutual
     | .tryResultDie _ _ _ _ _ _ e message | .tryOptionDie _ _ _ _ e message =>
       e.lambdaEffects constants ++ (message.map (Expr.lambdaEffects constants)).getD []
     | .withE _ e b => e.lambdaEffects constants ++ b.lambdaEffects constants
-    | .lazyE b => b.lambdaEffects constants
+    | .lazyE b | .block b => b.lambdaEffects constants
     | .resume _ e => e.lambdaEffects constants
     | .opDicts _ _ _ _ _ e => [e]
     | .raise .. => []
@@ -545,7 +565,7 @@ mutual
   partial def holesEffects (constants : List ConstantEntry := []) (es : List HoleArg) : List Eff := es.flatMap fun
     | .expr _ _ e => e.lambdaEffects constants | .hole _ _ _ => []
   partial def Block.lambdaEffects (constants : List ConstantEntry := []) : Block → List Eff
-    | .builderBind _ _ b => b.lambdaEffects constants
+    | .builderBind _ b => b.lambdaEffects constants
     | .empty => []
     | .last e | .lastBind _ _ e | .lastDiscard e | .lastPat _ _ _ e => e.lambdaEffects constants
     | .bind _ _ e b | .discard e b | .seq e b | .bindPat _ _ _ e b => e.lambdaEffects constants ++ b.lambdaEffects constants

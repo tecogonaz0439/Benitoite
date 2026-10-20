@@ -73,6 +73,11 @@ pub enum Opcode {
     Handle = 88,
     Perform = 89,
     Resume = 90,
+    BuilderNew = 91,
+    BuilderAppend = 92,
+    BuilderAppendAll = 93,
+    BuilderCopy = 94,
+    BuilderLength = 95,
 }
 
 impl Opcode {
@@ -150,6 +155,11 @@ impl Opcode {
             88 => Opcode::Handle,
             89 => Opcode::Perform,
             90 => Opcode::Resume,
+            91 => Opcode::BuilderNew,
+            92 => Opcode::BuilderAppend,
+            93 => Opcode::BuilderAppendAll,
+            94 => Opcode::BuilderCopy,
+            95 => Opcode::BuilderLength,
             _ => return None,
         };
         Some(op)
@@ -227,6 +237,11 @@ impl Opcode {
             Opcode::Handle => "HANDLE",
             Opcode::Perform => "PERFORM",
             Opcode::Resume => "RESUME",
+            Opcode::BuilderNew => "BUILDERNEW",
+            Opcode::BuilderAppend => "BUILDERAPPEND",
+            Opcode::BuilderAppendAll => "BUILDERAPPENDALL",
+            Opcode::BuilderCopy => "BUILDERCOPY",
+            Opcode::BuilderLength => "BUILDERLENGTH",
         }
     }
 }

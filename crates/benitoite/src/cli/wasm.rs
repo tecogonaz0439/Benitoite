@@ -78,6 +78,7 @@ impl WasmOptions {
     }
     pub(super) fn execution(&self) -> ExecutionOptions {
         ExecutionOptions {
+            session: None,
             limits: self.limits,
             stats: self.stats.then(Collector::new),
         }

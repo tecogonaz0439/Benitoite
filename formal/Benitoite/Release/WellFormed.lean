@@ -19,52 +19,61 @@ def Eff.RhosInList (pe : Nat → Prop) : List Eff → Prop
   | e :: es => Eff.RhosIn pe e ∧ Eff.RhosInList pe es
 
 mutual
-  def Val.VarsIn (n : Nat) (pe : Nat → Prop) : Val → Prop
+  def Val.VarsIn (n : Nat) (pe : Nat → Prop) (v : Val) (depth : Nat := 0) : Prop :=
+    match v with
     | .var _ => True
     | .const _ => True
     | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
     | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
-    | .lam names params body => NamesWF names params ∧ Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body
-    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args
-    | .list elems => Val.VarsInList n pe elems
+    | .lam names params body => NamesWF names params ∧ Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body (depth + params.length)
+    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args depth
+    | .list elems => Val.VarsInList n pe elems depth
     | .op _ tys => Ty.VarsInList n pe tys
     | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
     | .loc _ => True
-    | .mapV ks vs => Val.VarsInList n pe ks ∧ Val.VarsInList n pe vs
-    | .setV elems => Val.VarsInList n pe elems
+    | .mapV ks vs => Val.VarsInList n pe ks depth ∧ Val.VarsInList n pe vs depth
+    | .setV elems => Val.VarsInList n pe elems depth
     | .bytesV _ => True
-    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args
-    | .super v _ => Val.VarsIn n pe v
+    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args depth
+    | .super v _ => Val.VarsIn n pe v depth
 
-  def Val.VarsInList (n : Nat) (pe : Nat → Prop) : List Val → Prop
+  def Val.VarsInList (n : Nat) (pe : Nat → Prop) (vs : List Val) (depth : Nat := 0) : Prop :=
+    match vs with
     | [] => True
-    | v :: vs => Val.VarsIn n pe v ∧ Val.VarsInList n pe vs
+    | v :: vs => Val.VarsIn n pe v depth ∧ Val.VarsInList n pe vs depth
 
-  def Comp.VarsIn (n : Nat) (pe : Nat → Prop) : Comp → Prop
-    | .ret v => Val.VarsIn n pe v
-    | .letIn m m' => Comp.VarsIn n pe m ∧ Comp.VarsIn n pe m'
-    | .app f args => Val.VarsIn n pe f ∧ Val.VarsInList n pe args
-    | .ite v m m' => Val.VarsIn n pe v ∧ Comp.VarsIn n pe m ∧ Comp.VarsIn n pe m'
-    | .match v arms => Val.VarsIn n pe v ∧ Arm.VarsInList n pe arms
-    | .lazyC m => Comp.VarsIn n pe m
-    | .escape v => Val.VarsIn n pe v
-    | .use v m => Val.VarsIn n pe v ∧ Comp.VarsIn n pe m
-    | .handle m h => Comp.VarsIn n pe m ∧ Clause.VarsInList n pe h
-    | .resume k v => Val.VarsIn n pe k ∧ Val.VarsIn n pe v
+  def Comp.VarsIn (n : Nat) (pe : Nat → Prop) (m : Comp) (depth : Nat := 0) : Prop :=
+    match m with
+    | .builderLet k body => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
+        Comp.VarsIn n pe body (depth + 1)
+    | .builderOp k _ r args => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
+        r.Scoped depth ∧ Val.VarsInList n pe args depth
+    | .ret v => Val.VarsIn n pe v depth
+    | .letIn m m' => Comp.VarsIn n pe m depth ∧ Comp.VarsIn n pe m' (depth + 1)
+    | .app f args => Val.VarsIn n pe f depth ∧ Val.VarsInList n pe args depth
+    | .ite v m m' => Val.VarsIn n pe v depth ∧ Comp.VarsIn n pe m depth ∧ Comp.VarsIn n pe m' depth
+    | .match v arms => Val.VarsIn n pe v depth ∧ Arm.VarsInList n pe arms depth
+    | .lazyC m => Comp.VarsIn n pe m depth
+    | .escape v => Val.VarsIn n pe v depth
+    | .use v m => Val.VarsIn n pe v depth ∧ Comp.VarsIn n pe m depth
+    | .handle m h => Comp.VarsIn n pe m depth ∧ Clause.VarsInList n pe h depth
+    | .resume k v => Val.VarsIn n pe k depth ∧ Val.VarsIn n pe v depth
     | .meth d _ tys effs args =>
-        Val.VarsIn n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInList n pe args
+        Val.VarsIn n pe d depth ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInList n pe args depth
 
-  def Arm.VarsInList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
+  def Arm.VarsInList (n : Nat) (pe : Nat → Prop) (arms : List Arm) (depth : Nat := 0) : Prop :=
+    match arms with
     | [] => True
-    | .mk _ none m :: arms => Comp.VarsIn n pe m ∧ Arm.VarsInList n pe arms
-    | .mk _ (some g) m :: arms =>
-        Comp.VarsIn n pe g ∧ Comp.VarsIn n pe m ∧ Arm.VarsInList n pe arms
+    | .mk alts none m :: arms => Comp.VarsIn n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInList n pe arms depth
+    | .mk alts (some g) m :: arms =>
+        Comp.VarsIn n pe g (depth + Arm.bindersOf alts) ∧ Comp.VarsIn n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInList n pe arms depth
 
   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
-  def Clause.VarsInList (n : Nat) (pe : Nat → Prop) : List Clause → Prop
+  def Clause.VarsInList (n : Nat) (pe : Nat → Prop) (cs : List Clause) (depth : Nat := 0) : Prop :=
+    match cs with
     | [] => True
-    | .mk _ _ k m :: cs => Comp.VarsIn (n + k) pe m ∧ Clause.VarsInList n pe cs
-    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsIn (n + 1) pe m ∧ Clause.VarsInList n pe cs
+    | .mk _ arity k m :: cs => Comp.VarsIn (n + k) pe m (depth + arity + 1) ∧ Clause.VarsInList n pe cs depth
+    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsIn (n + 1) pe m (depth + 2) ∧ Clause.VarsInList n pe cs depth
 end
 
 /-! ## 宣言の変数の範囲 -/
@@ -74,7 +83,7 @@ end
 def Def.Scoped (d : Def) : Prop :=
   NamesWF d.names d.params ∧
     Ty.VarsInList d.ntys (· < d.neffs) d.params ∧ Ty.VarsIn d.ntys (· < d.neffs) d.ret ∧
-    Eff.VarsIn d.ntys (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body
+    Eff.VarsIn d.ntys (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body d.params.length
 
 def ConDecl.Scoped (cd : ConDecl) : Prop :=
   Ty.VarsInList cd.ntys (fun _ => False) cd.args
@@ -106,7 +115,7 @@ def ImplDecl.Scoped (P : Program) (id : ImplDecl) : Prop :=
     Ty.VarsIn id.tparams.length (fun _ => False) id.target ∧
     (∀ s u, id.supers s = some u → Val.VarsIn id.tparams.length (fun _ => False) u) ∧
     (∀ cd m ms body, P.classes id.cls = some cd → cd.methods m = some ms → id.methods m = some body →
-      Comp.VarsIn (ms.tparams.length + id.tparams.length) (· < ms.neffs) body)
+      Comp.VarsIn (ms.tparams.length + id.tparams.length) (· < ms.neffs) body (id.dictTys.length + ms.params.length))
 
 def Program.WellFormed (P : Program) : Prop :=
   (∀ f d, P.defs f = some d → d.Scoped) ∧ (∀ c cd, P.cons c = some cd → cd.Scoped) ∧

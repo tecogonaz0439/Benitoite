@@ -1,0 +1,7 @@
+import Benitoite.Integer8 as Num
+function main() -> Unit
+  bind _ <- Num.absolute(-128s8)
+  bind _ <- Num.floorDivide(b: 0s8, a: 1s8)
+  bind _ <- Num.floorDivide(a: -128s8, b: -1s8)
+  bind _ <- Num.floorModulo(a: -128s8, b: -1s8)
+end function

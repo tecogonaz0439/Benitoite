@@ -30,6 +30,28 @@ fn scripts_execute_nested_captured_and_repeated_lazy_bodies() {
             "bind text <- \"hello\" + \"!\"\nbind make <- lambda() return lazy String.characterCount(text) end lazy end lambda\nreturn Lazy.force(make())",
             6,
         ),
+        // 関門: 兄弟の束縛を混同した索引や、内側の捕捉を外へ伝え忘れる変更は、
+        // 遅延値の生成・強制の間の確保を越えた具体的な結果で検出する。
+        (
+            "sibling scopes and transitive captures",
+            r#"bind outside <- String.repeat(s: "ab", n: 3)
+ bind make <- lambda(flag: Boolean)
+  return if flag then
+   bind local <- outside + "L"
+   lazy (lambda() return local + outside end lambda)() end lazy
+  else
+   bind local <- outside + "R"
+   lazy (lambda() return outside + local end lambda)() end lazy
+  end if
+ end lambda
+ bind left <- make(true)
+ bind right <- make(false)
+ bind pad <- String.repeat(s: "allocation", n: 16)
+ return if Lazy.force(left) = "abababLababab" and Lazy.force(right) = "ababababababR"
+  and Lazy.force(left) = "abababLababab" and String.characterCount(pad) = 160
+ then 42 else 0 end if"#,
+            42,
+        ),
         (
             "unevaluated failure",
             "bind _ <- lazy 1 div 0 end lazy\nreturn 42",

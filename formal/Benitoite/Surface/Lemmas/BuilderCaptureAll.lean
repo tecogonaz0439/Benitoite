@@ -37,6 +37,12 @@ mutual
   theorem Comp.Reads.rename {p q ξ} (m : Comp) (h : Comp.Reads p m)
       (hr : ∀ i, p i → q (ξ i)) : Comp.Reads q (m.rename ξ) := by
     cases m <;> simp only [Comp.Reads, Comp.rename] at h ⊢
+    case builderLet k body => exact Comp.Reads.rename body h (liftReads_rename hr 1)
+    case builderOp k op r vs =>
+        refine ⟨?_, Vals.Reads.rename vs h.2 hr⟩
+        cases r with
+        | bound i => exact hr i h.1
+        | loc _ => trivial
     case ret v => exact Val.Reads.rename v h hr
     case escape v => exact Val.Reads.rename v h hr
     case letIn m n => exact ⟨Comp.Reads.rename m h.1 hr, Comp.Reads.rename n h.2 (liftReads_rename hr 1)⟩
@@ -81,6 +87,8 @@ mutual
     | [] => True
     | v :: vs => Val.Captures p v ∧ Vals.Captures p vs
   def Comp.Captures (p : Nat → Prop) : Comp → Prop
+    | .builderLet _ body => Comp.Captures (liftReads 1 p) body
+    | .builderOp _ _ _ vs => Vals.Captures p vs
     | .ret v | .escape v => Val.Captures p v
     | .letIn m n => Comp.Captures p m ∧ Comp.Captures (liftReads 1 p) n
     | .app f vs | .meth f _ _ _ vs => Val.Captures p f ∧ Vals.Captures p vs
@@ -115,6 +123,8 @@ mutual
   theorem Comp.Captures.rename {p q ξ} (m : Comp) (h : Comp.Captures p m)
       (hr : ∀ i, p i → q (ξ i)) : Comp.Captures q (m.rename ξ) := by
     cases m <;> simp only [Comp.Captures, Comp.rename] at h ⊢
+    case builderLet k body => exact Comp.Captures.rename body h (liftReads_rename hr 1)
+    case builderOp k op r vs => exact Vals.Captures.rename vs h hr
     case ret v => exact Val.Captures.rename v h hr
     case escape v => exact Val.Captures.rename v h hr
     case letIn m n => exact ⟨Comp.Captures.rename m h.1 hr, Comp.Captures.rename n h.2 (liftReads_rename hr 1)⟩
@@ -154,6 +164,8 @@ mutual
     case cons v vs => exact ⟨Val.Reads.captures v h.1, Vals.Reads.captures vs h.2⟩
   theorem Comp.Reads.captures {p} (m : Comp) (h : Comp.Reads p m) : Comp.Captures p m := by
     cases m <;> simp only [Comp.Reads, Comp.Captures] at h ⊢
+    case builderLet k body => exact Comp.Reads.captures body h
+    case builderOp k op r vs => exact Vals.Reads.captures vs h.2
     case ret v => exact Val.Reads.captures v h
     case escape v => exact Val.Reads.captures v h
     case letIn m n => exact ⟨Comp.Reads.captures m h.1, Comp.Reads.captures n h.2⟩
@@ -184,12 +196,6 @@ theorem Comp.Captures.mono {p q m} (h : Comp.Captures p m) (hp : ∀ i, p i → 
 theorem Comp.Captures.shift {p m} (h : Comp.Captures p m) (d : Nat) :
     Comp.Captures (liftReads d p) (m.rename (· + d)) :=
   Comp.Captures.rename m h (fun i hi => Or.inr (by simpa using hi))
-
-/-- 新しいセル自身にはクロージャを含めない。 -/
-theorem builderNew_captures (r : BuilderRefs) (p : Nat → Prop) : Comp.Captures p (builderNew r) := by
-  cases r <;> simp [builderNew, builderInit, Comp.Captures, Val.Captures, Vals.Captures,
-    BuilderRefs.cells, BuilderPrimRef.toVal, BuilderPureRef.toVal]
-  case bytes c empty fromList cat len => cases empty <;> simp [Val.Captures]
 
 /-- パターンの局所変数の下へ一時変数を追加しても、外側の捕捉条件を保つ。 -/
 theorem Comp.Captures.shiftUnder {p m} (n : Nat) (h : Comp.Captures (liftReads n p) m) :

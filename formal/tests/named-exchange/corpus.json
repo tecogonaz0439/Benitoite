@@ -594,50 +594,37 @@
                             "bound": {
                               "ret": {
                                 "value": {
-                                  "var": {
-                                    "index": 0
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 1
+                                      }
+                                    }
                                   }
                                 }
                               }
                             },
                             "body": {
-                              "letIn": {
-                                "bound": {
-                                  "ret": {
-                                    "value": {
-                                      "const": {
-                                        "value": {
-                                          "integer": {
-                                            "value": 1
-                                          }
-                                        }
-                                      }
-                                    }
+                              "app": {
+                                "callee": {
+                                  "fnRef": {
+                                    "name": "fn:1",
+                                    "tys": [],
+                                    "effs": []
                                   }
                                 },
-                                "body": {
-                                  "app": {
-                                    "callee": {
-                                      "fnRef": {
-                                        "name": "fn:1",
-                                        "tys": [],
-                                        "effs": []
-                                      }
-                                    },
-                                    "args": [
-                                      {
-                                        "var": {
-                                          "index": 0
-                                        }
-                                      },
-                                      {
-                                        "var": {
-                                          "index": 1
-                                        }
-                                      }
-                                    ]
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
                                   }
-                                }
+                                ]
                               }
                             }
                           }

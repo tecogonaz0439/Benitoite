@@ -93,6 +93,11 @@ pub enum SizeUnit {
 /// 資源の不足の種類（01-08「資源の不足」のうち処理系が上限を設けるもの）。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum ResourceError {
+    /// 論理長の上限内でのバッファ予約失敗。要求した容量のバイト数であり、全使用量ではない。
+    AllocationFailed {
+        function: &'static str,
+        requested_bytes: u64,
+    },
     /// `frames` はそのときの枠の数（二つの `Vec` の両方を数える。02-08「呼び出しの入れ子の上限」）
     CallStackTooDeep { frames: u64 },
     /// 呼び出しごとの外部の関数の上限（設計書 02-09「外部の関数の実行」）。

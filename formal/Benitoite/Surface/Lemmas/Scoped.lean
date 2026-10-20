@@ -55,33 +55,35 @@ theorem directHeads_scoped {fs nt pe nv} (hd : fs.AllDirect) (sc : fs.Scoped nt 
       · exact directHeads_scoped hd.2 sc.2 h hm
 
 /-- 説明の有無によらず、失敗側の挿入は型・エフェクト変数の範囲を保つ。 -/
-theorem dieFailure_scoped {nt pe t exit depth cause message}
+theorem dieFailure_scoped {nv nt pe t exit depth cause message}
     (ht : Ty.VarsIn nt pe t) (hc : Comp.VarsIn nt pe cause)
-    (hm : ∀ m, message = some m → Comp.VarsIn nt pe m) :
-    Comp.VarsIn nt pe (dieFailure t exit depth cause message) := by
+    (hm : ∀ m, message = some m → Comp.VarsIn nt pe m nv) :
+    Comp.VarsIn nt pe (dieFailure t exit depth cause message) (nv + depth) := by
   cases message with
-  | none => exact ⟨hc, ⟨⟨ht, trivial⟩, trivial⟩, trivial, trivial⟩
-  | some m => exact ⟨Comp.VarsIn.renameScoped _ _ (hm m rfl),
+  | none => exact ⟨Benitoite.Release.Comp.VarsIn.widen (Nat.le_refl _) (Nat.zero_le _) _ hc,
+      ⟨⟨ht, trivial⟩, trivial⟩, trivial, trivial⟩
+  | some m => exact ⟨Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (hm m rfl),
       Comp.VarsIn.renameScoped _ _ hc, ⟨⟨ht, trivial⟩, trivial⟩, trivial, trivial⟩
 
 /-!
-この帰納は任意の Δ・nt・pe・nv について示す。結論の VarsIn は通常環境を参照せず、
-fillBuilders も脱糖の番号と局所数を変えないので、セル環境にも同じ言明を使う。
+この帰納は任意の Δ・nt・pe・nv について示す。結論の VarsIn に入力の局所深さ nv を渡し、
+通常束縛と専用束縛の両方で同じ番号の移動を保つ。
 Aligned/Clean は型保存の内部の前提であり、ここでは要求しない
 （設計書 01-12「構築器の局所文脈と旧構文の意味」）。
 -/
+set_option maxHeartbeats 800000 in
 mutual
   theorem HasTypeQ.desugar_scoped {Δb : BuilderCtx} {C Γ R pos e a ε nt pe nv}
       (h : HasTypeQ D B op Q Δb C Γ R pos e a ε) (sc : e.Scoped nt pe nv) :
-      Comp.VarsIn nt pe (desugarExpr op pos e) := by
+      Comp.VarsIn nt pe (desugarExpr op pos e) nv := by
     match h with
-    | .E_BuilderOp hr ha =>
-        apply sequence_scoped (HasTypesQ.desugar_scoped ha sc.2.2)
+    | .E_BuilderOp (kind := k) _ ha =>
+        apply sequence_scoped_local (HasTypesQ.desugar_scoped ha sc.2.2)
         intro vs hv
-        exact builderFinish_scoped sc.2.1 hv _
+        exact builderFinish_scoped (by cases k <;> exact sc.2.1) (by have := sc.1; change _ < nv at this; omega) hv _
     | .E_Local _ _ => trivial
     | .E_Const (body := body) h =>
-        simpa only [desugarExpr] using HasTypeQ.desugar_scoped (e := body) h sc.2
+        exact Benitoite.Release.Comp.VarsIn.widen (Nat.le_refl _) (Nat.zero_le _) _ (HasTypeQ.desugar_scoped (e := body) h sc.2)
     | .E_Fun _ _ _ _ _ _ hrows _ => exact sc
     | .E_FunDicts (ps := ps) (ds := ds) _ _ _ _ _ _ _ _ _ hrows _ =>
         exact ⟨sc.2.2.2.1, sc.2.2.2.2, ⟨sc.1, sc.2.1⟩,
@@ -105,29 +107,29 @@ mutual
     | .E_ConValue (ps := ps) _ _ _ _ _ _ => exact ⟨sc.2.1, sc.2.2, sc.1, boundVars_scoped ps.length nt pe⟩
     | .E_PipeCall _ hf _ hs _ =>
         exact ⟨HasTypeQ.desugar_scoped (by assumption) sc.1,
-          callComp_scoped (HasTypeQ.desugar_scoped hf sc.2.1)
+          callComp_scoped_local (by simp) (HasTypeQ.desugar_scoped hf sc.2.1)
             (fun _ hd => directCallee_scoped hd sc.2.1) ⟨trivial, trivial⟩
             (HasTypesQ.desugar_scoped hs sc.2.2)⟩
     | .E_PipeConCall _ _ _ hl hs =>
         refine ⟨HasTypeQ.desugar_scoped hl sc.1, ?_⟩
-        apply letChain_scoped (HasTypesQ.desugar_scoped hs sc.2.2)
+        apply letChain_scoped_local (HasTypesQ.desugar_scoped hs sc.2.2) 1
         exact ⟨sc.2.1, trivial, boundVars_scoped _ _ _⟩
     | .E_PipeConValue _ _ _ _ _ _ hl => exact ⟨HasTypeQ.desugar_scoped hl sc.1, sc.2.1, trivial, trivial⟩
     | .E_PipeApply hp hl hf _ =>
         rw [desugarPipeValue hp]
         exact ⟨HasTypeQ.desugar_scoped hl sc.1,
-          callComp_scoped (HasTypeQ.desugar_scoped hf sc.2)
+          callComp_scoped_local (by simp) (HasTypeQ.desugar_scoped hf sc.2)
             (fun _ hd => directCallee_scoped hd sc.2) ⟨trivial, trivial⟩
             (by intro m hm; cases hm)⟩
     | .E_PartialCall _ hf _ hn hs _ _ _ =>
         exact ⟨hn, HoleArgs.holeTypes_scoped _ sc.2.1,
-          callComp_scoped (HasTypeQ.desugar_scoped hf sc.1)
-            (fun _ hd => directCallee_scoped hd sc.1) trivial
+          callArgs_scoped_local (HasTypeQ.desugar_scoped hf sc.1)
+            (fun _ hd => directCallee_scoped hd sc.1)
             (HasHoleArgsQ.desugar_scoped hs sc.2.1 _)⟩
     | .E_PartialCon _ _ _ _ _ hn hs _ _ =>
         refine ⟨hn, HoleArgs.holeTypes_scoped _ sc.2, ?_⟩
-        apply sequence_scoped (HasHoleArgsQ.desugar_scoped hs sc.2 _)
-        intro vs hv; exact ⟨sc.1, hv⟩
+        simpa only [Nat.add_zero] using sequenceArgs_scoped_local (HasHoleArgsQ.desugar_scoped hs sc.2 _) 0 (by
+        intro vs hv; exact ⟨sc.1, Benitoite.Release.Val.VarsInList.widen (Nat.le_refl _) (Nat.zero_le _) _ hv⟩)
     | .E_Match _ he hs _ =>
         exact ⟨HasTypeQ.desugar_scoped he sc.2.1, trivial, HasArmsQ.desugar_scoped hs sc.2.2⟩
     | .E_Literal => trivial
@@ -144,24 +146,26 @@ mutual
           sc.1, HasBlockQ.desugar_scoped hc sc.2.2.2, trivial⟩
     | .E_Unit => trivial
     | .E_Paren h => simpa only [desugarExpr] using HasTypeQ.desugar_scoped h sc
+    | .E_Block h => simpa only [desugarExpr] using HasBlockQ.desugar_scoped h sc
     | .E_Record _ _ _ hs =>
-        apply sequence_scoped (HasTypesQ.desugar_scoped hs sc.2)
+        apply sequence_scoped_local (HasTypesQ.desugar_scoped hs sc.2)
         intro vs hv
-        exact ⟨sc.1, recordFields_scoped hv trivial⟩
+        apply Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (Nat.zero_le _)
+        exact ⟨sc.1, recordFields_scoped hv (by trivial)⟩
     | .E_RecordUpdate _ _ _ _ _ _ hb hs _ =>
         refine ⟨HasTypeQ.desugar_scoped hb sc.2.1, ?_⟩
-        apply letChain_scoped (HasTypesQ.desugar_scoped hs sc.2.2)
+        apply letChain_scoped_local (HasTypesQ.desugar_scoped hs sc.2.2) 1
         exact ⟨trivial, ⟨sc.1, recordUpdateValues_scoped (boundVars_scoped _ _ _)⟩, trivial⟩
     | .E_ConCall _ _ hs =>
-        apply sequence_scoped (HasTypesQ.desugar_scoped hs sc.2)
-        intro vs hv; exact ⟨sc.1, hv⟩
+        apply sequence_scoped_local (HasTypesQ.desugar_scoped hs sc.2)
+        intro vs hv; exact ⟨sc.1, Benitoite.Release.Val.VarsInList.widen (Nat.le_refl _) (Nat.zero_le _) _ hv⟩
     | .E_Call hf _ hs _ =>
-        exact callComp_scoped (HasTypeQ.desugar_scoped hf sc.1)
+        exact callComp_scoped_local (by simp) (HasTypeQ.desugar_scoped hf sc.1)
           (fun _ hd => directCallee_scoped hd sc.1) trivial (HasTypesQ.desugar_scoped hs sc.2)
     | .E_Binary _ hop hts _ _ _ _ _ _ hl hr =>
         simp only [desugarExpr, hop]
-        apply sequence_scoped ?_
-        · intro vs hv; exact ⟨by rw [hts]; exact ⟨operator_typeArgs_scoped sc.1 _, trivial⟩, hv⟩
+        apply sequence_scoped_local ?_
+        · intro vs hv; exact ⟨by rw [hts]; exact ⟨operator_typeArgs_scoped sc.1 _, trivial⟩, Benitoite.Release.Val.VarsInList.widen (Nat.le_refl _) (Nat.zero_le _) _ hv⟩
         · intro m hm; simp only [List.mem_cons, List.not_mem_nil, or_false] at hm
           rcases hm with rfl | rfl
           · exact HasTypeQ.desugar_scoped hl sc.2.1
@@ -171,17 +175,18 @@ mutual
         exact ⟨HasTypeQ.desugar_scoped h sc.2, ⟨by rw [hts]; trivial, trivial⟩, trivial, trivial⟩
     | .E_Not h => exact ⟨HasTypeQ.desugar_scoped h sc, trivial, trivial, trivial⟩
     | .E_And hl hr => exact ⟨HasTypeQ.desugar_scoped hl sc.1, trivial,
-        Comp.VarsIn.renameScoped _ _ (HasTypeQ.desugar_scoped hr sc.2), trivial⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasTypeQ.desugar_scoped hr sc.2), trivial⟩
     | .E_Or hl hr => exact ⟨HasTypeQ.desugar_scoped hl sc.1, trivial, trivial,
-        Comp.VarsIn.renameScoped _ _ (HasTypeQ.desugar_scoped hr sc.2)⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasTypeQ.desugar_scoped hr sc.2)⟩
     | .E_List _ hs =>
-        apply sequence_scoped (HasEachQ.desugar_scoped hs sc.2)
-        intro vs hv; exact hv
+        apply sequence_scoped_local (HasEachQ.desugar_scoped hs sc.2)
+        intro vs hv; exact Benitoite.Release.Val.VarsInList.widen (Nat.le_refl _) (Nat.zero_le _) _ hv
     | .E_ListSpread _ hd _ hb hs ha =>
         simp only [desugarExpr]
-        apply sequence_scoped ?_
+        apply sequence_scoped_local ?_
         · intro vs hv
           simp only [hd]
+          apply Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (Nat.zero_le _)
           exact spreadValues_scoped ((directCallee_scoped hd sc.2.1).rename _) hv
         · intro m hm
           simp only [List.mem_append, List.mem_cons] at hm
@@ -191,22 +196,23 @@ mutual
           · exact HasEachQ.desugar_scoped ha sc.2.2.2.2 m hm
     | .E_Interpolation _ he _ hd hop =>
         simp only [desugarExpr]
-        apply sequence_scoped (HasTypesQ.desugar_scoped he sc.2.1)
+        apply sequence_scoped_local (HasTypesQ.desugar_scoped he sc.2.1)
         intro vs hv
+        apply Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (Nat.zero_le _)
         apply interpolate_scoped (acc := []) hv
           (heads_scoped_rename (directHeads_scoped hd sc.2.2) _) trivial
         intro hn
         obtain ⟨b, ts, s, hb, ht, _⟩ := hop (by simpa using hn)
         exact ⟨b, by simpa [ht] using hb⟩
-    | .E_Lam hn _ hb => exact ⟨hn, sc.2.1, HasBlockQ.desugar_scoped hb sc.2.2.2.2.2⟩
+    | .E_Lam hn _ hb => exact ⟨hn, sc.2.1, HasBlockQ.desugar_scoped hb (by simpa [Nat.add_comm] using sc.2.2.2.2.2)⟩
     | .E_If hc hy hn _ => exact ⟨HasTypeQ.desugar_scoped hc sc.1, trivial,
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hy sc.2.1),
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hn sc.2.2)⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasBlockQ.desugar_scoped hy sc.2.1),
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasBlockQ.desugar_scoped hn sc.2.2)⟩
     | .E_ElseIf hc hy hn _ _ => exact ⟨HasTypeQ.desugar_scoped hc sc.1, trivial,
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hy sc.2.1),
-        Comp.VarsIn.renameScoped _ _ (HasTypeQ.desugar_scoped hn sc.2.2)⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasBlockQ.desugar_scoped hy sc.2.1),
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasTypeQ.desugar_scoped hn sc.2.2)⟩
     | .E_IfOnly hc hy => exact ⟨HasTypeQ.desugar_scoped hc sc.1, trivial,
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hy sc.2), trivial⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasBlockQ.desugar_scoped hy sc.2), trivial⟩
     | .E_ReturnTail h => simpa only [desugarExpr] using HasTypeQ.desugar_scoped h sc.2
     | .E_ReturnOther _ h => exact ⟨HasTypeQ.desugar_scoped h sc.2, trivial⟩
     | .E_TryResult _ _ _ _ _ _ _ _ he _ =>
@@ -215,7 +221,7 @@ mutual
         exact ⟨HasTypeQ.desugar_scoped he sc.2, trivial, trivial, ⟨sc.1, trivial⟩, trivial⟩
     | .E_TryResultDie (dict := d) (message := message) _ _ _ _ _ _ _ he _ _ _ hm =>
         have hinput := HasTypeQ.desugar_scoped he (by cases message <;> exact sc.2.2.1)
-        have hmsg : ∀ m, message = some m → Comp.VarsIn nt pe (desugarExpr op .other m) := by
+        have hmsg : ∀ m, message = some m → Comp.VarsIn nt pe (desugarExpr op .other m) nv := by
           intro m hm'
           exact HasTypeQ.desugar_scoped (hm m hm') (by cases hm'; exact sc.2.2.2)
         cases message <;>
@@ -224,7 +230,7 @@ mutual
             (by intro m h; cases h <;> exact hmsg _ rfl), trivial⟩
     | .E_TryOptionDie (message := message) _ _ _ _ _ _ _ he _ _ hm =>
         have hinput := HasTypeQ.desugar_scoped he (by cases message <;> exact sc.2.1)
-        have hmsg : ∀ m, message = some m → Comp.VarsIn nt pe (desugarExpr op .other m) := by
+        have hmsg : ∀ m, message = some m → Comp.VarsIn nt pe (desugarExpr op .other m) nv := by
           intro m hm'
           exact HasTypeQ.desugar_scoped (hm m hm') (by cases hm'; exact sc.2.2)
         cases message <;>
@@ -240,7 +246,7 @@ mutual
 
   theorem HasTypesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R es as ε nt pe nv}
       (h : HasTypesQ D B op Q Δb C Γ R es as ε) (sc : es.Scoped nt pe nv) :
-      ∀ m ∈ desugarExprs op es, Comp.VarsIn nt pe m := by
+      ∀ m ∈ desugarExprs op es, Comp.VarsIn nt pe m nv := by
     match h with
     | .nil => intro m hm; cases hm
     | .cons h hs =>
@@ -251,7 +257,7 @@ mutual
 
   theorem HasEachQ.desugar_scoped {Δb : BuilderCtx} {C Γ R es a ε nt pe nv}
       (h : HasEachQ D B op Q Δb C Γ R es a ε) (sc : es.Scoped nt pe nv) :
-      ∀ m ∈ desugarExprs op es, Comp.VarsIn nt pe m := by
+      ∀ m ∈ desugarExprs op es, Comp.VarsIn nt pe m nv := by
     match h with
     | .nil => intro m hm; cases hm
     | .cons h hs =>
@@ -262,13 +268,13 @@ mutual
 
   theorem HasHoleArgsQ.desugar_scoped {Δb : BuilderCtx} {C Γ R args as ε nt pe nv}
       (h : HasHoleArgsQ D B op Q Δb C Γ R args as ε) (sc : args.Scoped nt pe nv) (n : Nat) :
-      ∀ m ∈ desugarHoleArgs op n args, Comp.VarsIn nt pe m := by
+      ∀ plan ∈ desugarHoleArgs op n args, ArgPlan.Scoped nt pe (nv + n) plan := by
     match h with
     | .nil => intro m hm; cases hm
     | .expr h hs =>
         intro m hm; simp only [desugarHoleArgs, List.mem_cons] at hm
         rcases hm with rfl | hm
-        · exact Comp.VarsIn.renameScoped _ _ (HasTypeQ.desugar_scoped h sc.1)
+        · exact Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasTypeQ.desugar_scoped h sc.1)
         · exact HasHoleArgsQ.desugar_scoped hs sc.2 n m hm
     | .hole _ _ hs =>
         intro m hm; simp only [desugarHoleArgs, List.mem_cons] at hm
@@ -278,43 +284,44 @@ mutual
 
   theorem HasArmsQ.desugar_scoped {Δb : BuilderCtx} {C Γ R pos arms a b ε nt pe nv}
       (h : HasArmsQ D B op Q Δb C Γ R pos arms a b ε) (sc : arms.Scoped nt pe nv) :
-      Arm.VarsInList nt pe (desugarArms op pos arms) := by
+      Arm.VarsInList nt pe (desugarArms op pos arms) (nv + 1) := by
     match h with
     | .nil _ => trivial
     | .plain _ _ hb hs => exact
-        ⟨Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.1),
+        ⟨Benitoite.Release.Comp.VarsIn.renameLocal _ (by intro i hi; simp only [upRen]; split <;> omega) _ (HasBlockQ.desugar_scoped hb sc.1),
           HasArmsQ.desugar_scoped hs sc.2⟩
     | .guarded _ _ hg hb hs => exact
-        ⟨Comp.VarsIn.renameScoped _ _ (HasTypeQ.desugar_scoped hg sc.1),
-          Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.2.1),
+        ⟨Benitoite.Release.Comp.VarsIn.renameLocal _ (by intro i hi; simp only [upRen]; split <;> omega) _ (HasTypeQ.desugar_scoped hg sc.1),
+          Benitoite.Release.Comp.VarsIn.renameLocal _ (by intro i hi; simp only [upRen]; split <;> omega) _ (HasBlockQ.desugar_scoped hb sc.2.1),
           HasArmsQ.desugar_scoped hs sc.2.2⟩
 
   theorem HasClausesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R cs t ε nt pe nv}
       (h : HasClausesQ D B op Q Δb C Γ R cs t ε) (sc : cs.Scoped nt pe nv) :
-      Clause.VarsInList nt pe (desugarClauses op cs) := by
+      Clause.VarsInList nt pe (desugarClauses op cs) nv := by
     match h with
     | .nil => trivial
     | .cons _ _ _ _ _ hb hs =>
-        exact ⟨HasBlockQ.desugar_scoped hb sc.1, HasClausesQ.desugar_scoped hs sc.2⟩
+        exact ⟨HasBlockQ.desugar_scoped hb (by simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using sc.1), HasClausesQ.desugar_scoped hs sc.2⟩
 
   theorem HasBlockQ.desugar_scoped {Δb : BuilderCtx} {C Γ R pos body a ε nt pe nv}
       (h : HasBlockQ D B op Q Δb C Γ R pos body a ε) (sc : body.Scoped nt pe nv) :
-      Comp.VarsIn nt pe (desugarBlock op pos body) := by
+      Comp.VarsIn nt pe (desugarBlock op pos body) nv := by
     match h with
     | .B_LastPat _ _ _ _ he => exact ⟨HasTypeQ.desugar_scoped he sc.2, trivial, trivial, trivial⟩
     | .B_BindPat _ _ _ _ he hb => exact ⟨HasTypeQ.desugar_scoped he sc.2.1, trivial,
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.2.2), trivial⟩
-    | .B_BuilderBind _ _ _ _ hb =>
-        exact ⟨builderNew_scoped sc.2.1, HasBlockQ.desugar_scoped hb sc.2.2⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by intro i hi; simp only [upRen, Arm.bindersOf, Pattern.binders] at *; split <;> omega) _ (HasBlockQ.desugar_scoped hb sc.2.2), trivial⟩
+    | .B_BuilderBind (k := k) _ _ hb =>
+        refine ⟨?_, HasBlockQ.desugar_scoped hb sc.2⟩
+        cases k <;> exact sc.1
     | .B_Empty => trivial
     | .B_Last h => exact HasTypeQ.desugar_scoped h sc
     | .B_LastBind h => exact ⟨HasTypeQ.desugar_scoped h sc.2, trivial⟩
     | .B_LastDiscard h => exact ⟨HasTypeQ.desugar_scoped h sc, trivial⟩
     | .B_Bind h hb => exact ⟨HasTypeQ.desugar_scoped h sc.2.1, HasBlockQ.desugar_scoped hb sc.2.2⟩
     | .B_Discard h hb => exact ⟨HasTypeQ.desugar_scoped h sc.1,
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.2)⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasBlockQ.desugar_scoped hb sc.2)⟩
     | .B_Seq h _ hb => exact ⟨HasTypeQ.desugar_scoped h sc.1,
-        Comp.VarsIn.renameScoped _ _ (HasBlockQ.desugar_scoped hb sc.2)⟩
+        Benitoite.Release.Comp.VarsIn.renameLocal _ (by omega) _ (HasBlockQ.desugar_scoped hb sc.2)⟩
     | .B_Sub h _ _ _ => exact HasBlockQ.desugar_scoped h sc
 end
 

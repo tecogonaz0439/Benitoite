@@ -282,7 +282,10 @@ fn push_list_rest(
     p.enter(counter.next_depth())?;
     let start = p.pos;
     p.bump();
-    let name = if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::KwDie) {
+    let name = if matches!(
+        p.peek_kind(),
+        TokenKind::LowerIdent | TokenKind::KwDie | TokenKind::KwRecord
+    ) {
         Some(p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME)?)
     } else {
         None

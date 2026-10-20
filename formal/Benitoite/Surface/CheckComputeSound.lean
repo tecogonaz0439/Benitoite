@@ -61,6 +61,7 @@ theorem nodeComputes (q : Input) (node : ComputeNode) : NodeComputes q node := b
       | «conValue» => apply computes_conValue <;> compute_child ih
       | «literal» => apply computes_literal <;> compute_child ih
       | «paren» => apply computes_paren <;> compute_child ih
+      | «block» => apply computes_block <;> compute_child ih
       | «conCall» => apply computes_conCall <;> compute_child ih
       | «record» => apply computes_record <;> compute_child ih
       | «recordUpdate» => apply computes_recordUpdate <;> compute_child ih

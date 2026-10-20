@@ -1,0 +1,11 @@
+sysctl: sysctl fmt -1 1024 1: Operation not permitted
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/z2/measure_check.py", line 62, in <module>
+    main()
+  File "/Users/tecogonaz/src/Benitoite/docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/z2/measure_check.py", line 30, in main
+    "cpu": subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"], text=True).strip(),
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 424, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['sysctl', '-n', 'machdep.cpu.brand_string']' returned non-zero exit status 1.

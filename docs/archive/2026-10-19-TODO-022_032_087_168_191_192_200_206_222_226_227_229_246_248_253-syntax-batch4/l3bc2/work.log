@@ -1,0 +1,78 @@
+== plan: level work against a73eba2c14dcdbead08b8e19335faec64ca812c4 (changed files not classified) (partial selection: --only formal_build,spec_examples,spec_tally)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 文字列補間
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+== spec_examples
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s
+
+== formal_build
+selected checks passed

@@ -96,6 +96,7 @@ fn handle<'a>(l: &'a LoadOutput, name: &str) -> &'a HandleExpr {
                 | Expr::Lambda(_)
                 | Expr::Return(_)
                 | Expr::Try(_)
+                | Expr::Block(_)
                 | Expr::Lazy(_)
                 | Expr::With(_)
                 | Expr::Resume(_)
@@ -1342,4 +1343,66 @@ end function
         false,
     );
     assert!(diagnostics.is_empty(), "{diagnostics:#?}");
+}
+
+// 関門: W0501の表示と適用する差分を、正規名Logで揃える。
+#[test]
+fn io_all_warning_uses_the_canonical_log_name() {
+    let source = "function f() -> Unit uses IO.All\n Log.info(message: \"event\", attributes: [], location: SourceLocation.Location(file: \"app\", line: 1, column: 1))\nend function\n";
+    let d = expect(
+        source,
+        &[(C::E0501, "Log.info(", 0), (C::W0501, "IO.All", 0)],
+    );
+    let help = &d[1].helps[0];
+    assert_eq!(help.message, "write `uses Log`");
+    let edit = &help.edits[0];
+    assert_eq!(
+        &source[edit.span.start.0 as usize..edit.span.end.0 as usize],
+        "IO.All"
+    );
+    assert_eq!(edit.replacement, "Log");
+}
+
+// 関門: 利用者の取り込みがpreludeのLogを隠しても、二つの修正案を適用して再検査できる。
+// 既存の一ファイルのテストでは、取り込み先による名前解決の違いを通らない。
+#[test]
+fn log_effect_fixes_resolve_when_a_user_module_shadows_log() {
+    for import in ["import Log", "import Other as Log"] {
+        let source = format!(
+            "{import}\nfunction emit() -> Unit uses IO.All\n Benitoite.Log.info(message: \"event\", attributes: [], location: SourceLocation.Location(file: \"app\", line: 1, column: 1))\nend function\n"
+        );
+        let user = "public function line(text: String) -> String\n return text\nend function\n";
+        let check = |source: &str| {
+            check_files(
+                &[("Main.bnt", source), ("Log.bnt", user), ("Other.bnt", user)],
+                false,
+            )
+            .3
+        };
+        let diagnostics = check(&source);
+        assert_eq!(
+            diagnostics
+                .iter()
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            [C::E0501, C::W0501],
+            "{diagnostics:#?}"
+        );
+        assert_eq!(
+            diagnostics[0].helps[0].message,
+            "add `uses Benitoite.Log` to the signature, or move this call to a function that uses `Benitoite.Log`"
+        );
+        let help = &diagnostics[1].helps[0];
+        assert_eq!(help.message, "write `uses Benitoite.Log`");
+        let edit = &help.edits[0];
+        assert_eq!(edit.replacement, "Benitoite.Log");
+        let mut fixed = source.clone();
+        fixed.replace_range(
+            edit.span.start.0 as usize..edit.span.end.0 as usize,
+            &edit.replacement,
+        );
+        assert!(check(&fixed).is_empty(), "{:?}", check(&fixed));
+        let fixed = source.replace("uses IO.All", "uses Benitoite.Log");
+        assert!(check(&fixed).is_empty(), "{:?}", check(&fixed));
+    }
 }

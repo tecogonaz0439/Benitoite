@@ -1,0 +1,519 @@
+diff --git a/formal/Benitoite/Release/Lemmas/Closed.lean b/formal/Benitoite/Release/Lemmas/Closed.lean
+--- a/formal/Benitoite/Release/Lemmas/Closed.lean
++++ b/formal/Benitoite/Release/Lemmas/Closed.lean
+@@ -130,9 +130,9 @@
+ /-! ## 値と計算の型の置き換え -/
+ 
+ mutual
+-  theorem Val.VarsIn.substTyAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+-      (v : Val) → Val.VarsIn (c + ts.length) (fun _ => True) v →
+-      Val.VarsIn c (fun _ => True) (v.substTyAt c ts es)
++  theorem Val.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
++      (v : Val) → Val.VarsIn (c + ts.length) (fun _ => True) v depth →
++      Val.VarsIn c (fun _ => True) (v.substTyAt c ts es) depth
+     | .var _, _ => trivial
+     | .const _, _ => trivial
+     | .fnRef _ tys _, h => by
+@@ -143,7 +143,7 @@
+         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Eff.VarsInList.substAt es hts hes _ h.2⟩
+     | .lam names ps body, h => by
+         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
+-        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts hes ps h.2.1, Comp.VarsIn.substTyAt es hts hes body h.2.2⟩
++        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts hes ps h.2.1, (by simpa only [List.length_map] using Comp.VarsIn.substTyAt es hts hes body h.2.2)⟩
+     | .con _ tys args, h => by
+         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
+         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Val.VarsInList.substTyAt es hts hes args h.2⟩
+@@ -170,17 +170,27 @@
+         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
+         exact Val.VarsIn.substTyAt es hts hes v h
+ 
+-  theorem Val.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+-      (vs : List Val) → Val.VarsInList (c + ts.length) (fun _ => True) vs →
+-      Val.VarsInList c (fun _ => True) (Val.substTyAtList c ts es vs)
++  theorem Val.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
++      (vs : List Val) → Val.VarsInList (c + ts.length) (fun _ => True) vs depth →
++      Val.VarsInList c (fun _ => True) (Val.substTyAtList c ts es vs) depth
+     | [], _ => trivial
+     | v :: vs, h => by
+         simp only [Val.VarsInList] at h; simp only [Val.substTyAtList, Val.VarsInList]
+         exact ⟨Val.VarsIn.substTyAt es hts hes v h.1, Val.VarsInList.substTyAt es hts hes vs h.2⟩
+ 
+-  theorem Comp.VarsIn.substTyAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+-      (m : Comp) → Comp.VarsIn (c + ts.length) (fun _ => True) m →
+-      Comp.VarsIn c (fun _ => True) (m.substTyAt c ts es)
++  theorem Comp.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
++      (m : Comp) → Comp.VarsIn (c + ts.length) (fun _ => True) m depth →
++      Comp.VarsIn c (fun _ => True) (m.substTyAt c ts es) depth
++    | .builderLet k body, h => by
++        cases k <;> simp only [Comp.VarsIn, Comp.substTyAt, BuilderKind.substTyAt] at h ⊢
++        · exact ⟨trivial, Comp.VarsIn.substTyAt es hts hes body h.2⟩
++        · exact ⟨Ty.VarsIn.substAt es hts hes _ h.1, Comp.VarsIn.substTyAt es hts hes body h.2⟩
++        · exact ⟨trivial, Comp.VarsIn.substTyAt es hts hes body h.2⟩
++    | .builderOp k op r args, h => by
++        cases k <;> simp only [Comp.VarsIn, Comp.substTyAt, BuilderKind.substTyAt] at h ⊢
++        · exact ⟨trivial, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
++        · exact ⟨Ty.VarsIn.substAt es hts hes _ h.1, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
++        · exact ⟨trivial, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
+     | .ret v, h => by
+         simp only [Comp.VarsIn] at h; simp only [Comp.substTyAt, Comp.VarsIn]
+         exact Val.VarsIn.substTyAt es hts hes v h
+@@ -217,10 +227,10 @@
+         exact ⟨Val.VarsIn.substTyAt es hts hes d h.1, Ty.VarsInList.substAt es hts hes tys h.2.1,
+           Eff.VarsInList.substAt es hts hes _ h.2.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2.2⟩
+ 
+-  theorem Arm.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
++  theorem Arm.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff)
+       (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+-      (arms : List Arm) → Arm.VarsInList (c + ts.length) (fun _ => True) arms →
+-      Arm.VarsInList c (fun _ => True) (Arm.substTyAtList c ts es arms)
++      (arms : List Arm) → Arm.VarsInList (c + ts.length) (fun _ => True) arms depth →
++      Arm.VarsInList c (fun _ => True) (Arm.substTyAtList c ts es arms) depth
+     | [], _ => trivial
+     | .mk alts none m :: arms, h => by
+         simp only [Arm.VarsInList] at h; simp only [Arm.substTyAtList, Arm.VarsInList]
+@@ -230,10 +240,10 @@
+         exact ⟨Comp.VarsIn.substTyAt es hts hes g h.1,
+           Comp.VarsIn.substTyAt es hts hes m h.2.1, Arm.VarsInList.substTyAt es hts hes arms h.2.2⟩
+ 
+-  theorem Clause.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
++  theorem Clause.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff)
+       (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+-      (hs : List Clause) → Clause.VarsInList (c + ts.length) (fun _ => True) hs →
+-      Clause.VarsInList c (fun _ => True) (Clause.substTyAtList c ts es hs)
++      (hs : List Clause) → Clause.VarsInList (c + ts.length) (fun _ => True) hs depth →
++      Clause.VarsInList c (fun _ => True) (Clause.substTyAtList c ts es hs) depth
+     | [], _ => trivial
+     | .mk o n k m :: cs, h => by
+         simp only [Clause.VarsInList] at h; simp only [Clause.substTyAtList, Clause.VarsInList]
+@@ -252,8 +262,8 @@
+ /-! ## 値の範囲の単調性と、番号の付け替えと値の置き換え -/
+ 
+ mutual
+-  theorem Val.VarsIn.mono {n n' : Nat} (hn : n ≤ n') : (v : Val) → Val.VarsIn n (fun _ => True) v →
+-      Val.VarsIn n' (fun _ => True) v
++  theorem Val.VarsIn.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (v : Val) → Val.VarsIn n (fun _ => True) v depth →
++      Val.VarsIn n' (fun _ => True) v depth
+     | .var _, _ => trivial
+     | .const _, _ => trivial
+     | .fnRef _ tys _, h => by
+@@ -279,14 +289,24 @@
+         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.mono hn args h.2⟩
+     | .super v _, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsIn.mono hn v h
+ 
+-  theorem Val.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (vs : List Val) →
+-      Val.VarsInList n (fun _ => True) vs → Val.VarsInList n' (fun _ => True) vs
++  theorem Val.VarsInList.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (vs : List Val) →
++      Val.VarsInList n (fun _ => True) vs depth → Val.VarsInList n' (fun _ => True) vs depth
+     | [], _ => trivial
+     | v :: vs, h => by
+         simp only [Val.VarsInList] at h ⊢; exact ⟨Val.VarsIn.mono hn v h.1, Val.VarsInList.mono hn vs h.2⟩
+ 
+-  theorem Comp.VarsIn.mono {n n' : Nat} (hn : n ≤ n') : (m : Comp) → Comp.VarsIn n (fun _ => True) m →
+-      Comp.VarsIn n' (fun _ => True) m
++  theorem Comp.VarsIn.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (m : Comp) → Comp.VarsIn n (fun _ => True) m depth →
++      Comp.VarsIn n' (fun _ => True) m depth
++    | .builderLet k body, h => by
++        cases k <;> simp only [Comp.VarsIn] at h ⊢
++        · exact ⟨trivial, Comp.VarsIn.mono hn body h.2⟩
++        · exact ⟨Ty.VarsIn.mono hn (fun _ h => h) _ h.1, Comp.VarsIn.mono hn body h.2⟩
++        · exact ⟨trivial, Comp.VarsIn.mono hn body h.2⟩
++    | .builderOp k op r args, h => by
++        cases k <;> simp only [Comp.VarsIn] at h ⊢
++        · exact ⟨trivial, h.2.1, Val.VarsInList.mono hn args h.2.2⟩
++        · exact ⟨Ty.VarsIn.mono hn (fun _ h => h) _ h.1, h.2.1, Val.VarsInList.mono hn args h.2.2⟩
++        · exact ⟨trivial, h.2.1, Val.VarsInList.mono hn args h.2.2⟩
+     | .ret v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.mono hn v h
+     | .letIn m k, h => by
+         simp only [Comp.VarsIn] at h ⊢; exact ⟨Comp.VarsIn.mono hn m h.1, Comp.VarsIn.mono hn k h.2⟩
+@@ -310,8 +330,8 @@
+         exact ⟨Val.VarsIn.mono hn d h.1, Ty.VarsInList.mono hn (fun _ h => h) _ h.2.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2.2.1,
+           Val.VarsInList.mono hn args h.2.2.2⟩
+ 
+-  theorem Arm.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (arms : List Arm) →
+-      Arm.VarsInList n (fun _ => True) arms → Arm.VarsInList n' (fun _ => True) arms
++  theorem Arm.VarsInList.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (arms : List Arm) →
++      Arm.VarsInList n (fun _ => True) arms depth → Arm.VarsInList n' (fun _ => True) arms depth
+     | [], _ => trivial
+     | .mk alts none m :: arms, h => by
+         simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.mono hn m h.1, Arm.VarsInList.mono hn arms h.2⟩
+@@ -319,8 +339,8 @@
+         simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.mono hn g h.1,
+           Comp.VarsIn.mono hn m h.2.1, Arm.VarsInList.mono hn arms h.2.2⟩
+ 
+-  theorem Clause.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (hs : List Clause) →
+-      Clause.VarsInList n (fun _ => True) hs → Clause.VarsInList n' (fun _ => True) hs
++  theorem Clause.VarsInList.mono {depth : Nat} {n n' : Nat} (hn : n ≤ n') : (hs : List Clause) →
++      Clause.VarsInList n (fun _ => True) hs depth → Clause.VarsInList n' (fun _ => True) hs depth
+     | [], _ => trivial
+     | .mk _ _ k m :: cs, h => by
+         simp only [Clause.VarsInList] at h ⊢
+diff --git a/formal/Benitoite/Release/Lemmas/Names.lean b/formal/Benitoite/Release/Lemmas/Names.lean
+--- a/formal/Benitoite/Release/Lemmas/Names.lean
++++ b/formal/Benitoite/Release/Lemmas/Names.lean
+@@ -36,6 +36,8 @@
+     | v :: vs => Val.LambdaNamesWF v ∧ Val.LambdaNamesWFList vs
+ 
+   def Comp.LambdaNamesWF : Comp → Prop
++    | .builderLet _ body => Comp.LambdaNamesWF body
++    | .builderOp _ _ _ args => Val.LambdaNamesWFList args
+     | .ret v => Val.LambdaNamesWF v
+     | .letIn m m' => Comp.LambdaNamesWF m ∧ Comp.LambdaNamesWF m'
+     | .app f args => Val.LambdaNamesWF f ∧ Val.LambdaNamesWFList args
+@@ -64,53 +66,61 @@
+ 
+ 
+ mutual
+-  /-- ラムダ自身の名前の条件を除いた変数の範囲。型注釈の整形式は保持する。 -/
+-  def Val.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) : Val → Prop
++  def Val.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) (v : Val) (depth : Nat := 0) : Prop :=
++    match v with
+     | .var _ => True
+     | .const _ => True
+     | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
+     | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
+-    | .lam _ params body => Ty.VarsInList n pe params ∧ Comp.VarsInNoLamNames n pe body
+-    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args
+-    | .list elems => Val.VarsInNoLamNamesList n pe elems
++    | .lam _ params body => Ty.VarsInList n pe params ∧ Comp.VarsInNoLamNames n pe body (depth + params.length)
++    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
++    | .list elems => Val.VarsInNoLamNamesList n pe elems depth
+     | .op _ tys => Ty.VarsInList n pe tys
+     | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
+     | .loc _ => True
+-    | .mapV ks vs => Val.VarsInNoLamNamesList n pe ks ∧ Val.VarsInNoLamNamesList n pe vs
+-    | .setV elems => Val.VarsInNoLamNamesList n pe elems
++    | .mapV ks vs => Val.VarsInNoLamNamesList n pe ks depth ∧ Val.VarsInNoLamNamesList n pe vs depth
++    | .setV elems => Val.VarsInNoLamNamesList n pe elems depth
+     | .bytesV _ => True
+-    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args
+-    | .super v _ => Val.VarsInNoLamNames n pe v
+-
+-  def Val.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Val → Prop
+-    | [] => True
+-    | v :: vs => Val.VarsInNoLamNames n pe v ∧ Val.VarsInNoLamNamesList n pe vs
+-
+-  def Comp.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) : Comp → Prop
+-    | .ret v => Val.VarsInNoLamNames n pe v
+-    | .letIn m m' => Comp.VarsInNoLamNames n pe m ∧ Comp.VarsInNoLamNames n pe m'
+-    | .app f args => Val.VarsInNoLamNames n pe f ∧ Val.VarsInNoLamNamesList n pe args
+-    | .ite v m m' => Val.VarsInNoLamNames n pe v ∧ Comp.VarsInNoLamNames n pe m ∧ Comp.VarsInNoLamNames n pe m'
+-    | .match v arms => Val.VarsInNoLamNames n pe v ∧ Arm.VarsInNoLamNamesList n pe arms
+-    | .lazyC m => Comp.VarsInNoLamNames n pe m
+-    | .escape v => Val.VarsInNoLamNames n pe v
+-    | .use v m => Val.VarsInNoLamNames n pe v ∧ Comp.VarsInNoLamNames n pe m
+-    | .handle m h => Comp.VarsInNoLamNames n pe m ∧ Clause.VarsInNoLamNamesList n pe h
+-    | .resume k v => Val.VarsInNoLamNames n pe k ∧ Val.VarsInNoLamNames n pe v
++    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
++    | .super v _ => Val.VarsInNoLamNames n pe v depth
++
++  def Val.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (vs : List Val) (depth : Nat := 0) : Prop :=
++    match vs with
++    | [] => True
++    | v :: vs => Val.VarsInNoLamNames n pe v depth ∧ Val.VarsInNoLamNamesList n pe vs depth
++
++  def Comp.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) (m : Comp) (depth : Nat := 0) : Prop :=
++    match m with
++    | .builderLet k body => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
++        Comp.VarsInNoLamNames n pe body (depth + 1)
++    | .builderOp k _ r args => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
++        r.Scoped depth ∧ Val.VarsInNoLamNamesList n pe args depth
++    | .ret v => Val.VarsInNoLamNames n pe v depth
++    | .letIn m m' => Comp.VarsInNoLamNames n pe m depth ∧ Comp.VarsInNoLamNames n pe m' (depth + 1)
++    | .app f args => Val.VarsInNoLamNames n pe f depth ∧ Val.VarsInNoLamNamesList n pe args depth
++    | .ite v m m' => Val.VarsInNoLamNames n pe v depth ∧ Comp.VarsInNoLamNames n pe m depth ∧ Comp.VarsInNoLamNames n pe m' depth
++    | .match v arms => Val.VarsInNoLamNames n pe v depth ∧ Arm.VarsInNoLamNamesList n pe arms depth
++    | .lazyC m => Comp.VarsInNoLamNames n pe m depth
++    | .escape v => Val.VarsInNoLamNames n pe v depth
++    | .use v m => Val.VarsInNoLamNames n pe v depth ∧ Comp.VarsInNoLamNames n pe m depth
++    | .handle m h => Comp.VarsInNoLamNames n pe m depth ∧ Clause.VarsInNoLamNamesList n pe h depth
++    | .resume k v => Val.VarsInNoLamNames n pe k depth ∧ Val.VarsInNoLamNames n pe v depth
+     | .meth d _ tys effs args =>
+-        Val.VarsInNoLamNames n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInNoLamNamesList n pe args
+-
+-  def Arm.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
+-    | [] => True
+-    | .mk _ none m :: arms => Comp.VarsInNoLamNames n pe m ∧ Arm.VarsInNoLamNamesList n pe arms
+-    | .mk _ (some g) m :: arms =>
+-        Comp.VarsInNoLamNames n pe g ∧ Comp.VarsInNoLamNames n pe m ∧ Arm.VarsInNoLamNamesList n pe arms
++        Val.VarsInNoLamNames n pe d depth ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInNoLamNamesList n pe args depth
++
++  def Arm.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (arms : List Arm) (depth : Nat := 0) : Prop :=
++    match arms with
++    | [] => True
++    | .mk alts none m :: arms => Comp.VarsInNoLamNames n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInNoLamNamesList n pe arms depth
++    | .mk alts (some g) m :: arms =>
++        Comp.VarsInNoLamNames n pe g (depth + Arm.bindersOf alts) ∧ Comp.VarsInNoLamNames n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInNoLamNamesList n pe arms depth
+ 
+   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
+-  def Clause.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Clause → Prop
+-    | [] => True
+-    | .mk _ _ k m :: cs => Comp.VarsInNoLamNames (n + k) pe m ∧ Clause.VarsInNoLamNamesList n pe cs
+-    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m ∧ Clause.VarsInNoLamNamesList n pe cs
++  def Clause.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (cs : List Clause) (depth : Nat := 0) : Prop :=
++    match cs with
++    | [] => True
++    | .mk _ arity k m :: cs => Comp.VarsInNoLamNames (n + k) pe m (depth + arity + 1) ∧ Clause.VarsInNoLamNamesList n pe cs depth
++    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m (depth + 2) ∧ Clause.VarsInNoLamNamesList n pe cs depth
+ end
+ 
+ 
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -345,6 +345,7 @@
+ 位置による実行の遷移関係を `Step` に定義する（設計書 01-12「実行の規則」）。 -/
+ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option ErrKind)
+     (fresh : Store → Nat) : State → Option (Option Event × State)
++  | .run (.builderLet _ _) _ _ | .run (.builderOp _ _ _ _) _ _ => none
+   | .run (.letIn m n) k σ => some (none, .run m (.letF n :: k) σ)
+   | .run (.ret v) (.letF n :: k) σ => some (none, .run (n.instantiate [v]) k σ)
+   | .run (.ret v) (.mark :: k) σ => some (none, .run (.ret v) k σ)
+@@ -593,7 +594,7 @@
+ /-! ## 状態の中の項が閉じていること -/
+ 
+ def Frame.Closed : Frame → Prop
+-  | .letF n => Comp.VarsIn 0 (fun _ => True) n
++  | .letF n => Comp.VarsIn 0 (fun _ => True) n 1
+   | .mark => True
+   | .update _ => True
+   | .release v => Val.VarsIn 0 (fun _ => True) v
+diff --git a/formal/Benitoite/Release/Subst.lean b/formal/Benitoite/Release/Subst.lean
+--- a/formal/Benitoite/Release/Subst.lean
++++ b/formal/Benitoite/Release/Subst.lean
+@@ -70,6 +70,8 @@
+     | v :: vs => Val.substTyAt c ts es v :: Val.substTyAtList c ts es vs
+ 
+   def Comp.substTyAt (c : Nat) (ts : List Ty) (es : List Eff) : Comp → Comp
++    | .builderLet k body => .builderLet (k.substTyAt c ts es) (Comp.substTyAt c ts es body)
++    | .builderOp k op r args => .builderOp (k.substTyAt c ts es) op r (Val.substTyAtList c ts es args)
+     | .ret v => .ret (Val.substTyAt c ts es v)
+     | .letIn m n => .letIn (Comp.substTyAt c ts es m) (Comp.substTyAt c ts es n)
+     | .app f args => .app (Val.substTyAt c ts es f) (Val.substTyAtList c ts es args)
+@@ -145,6 +147,8 @@
+     | v :: vs => Val.rename ξ v :: Val.renameList ξ vs
+ 
+   def Comp.rename (ξ : Nat → Nat) : Comp → Comp
++    | .builderLet k body => .builderLet k (Comp.rename (upRen 1 ξ) body)
++    | .builderOp k op r args => .builderOp k op (r.rename ξ) (Val.renameList ξ args)
+     | .ret v => .ret (Val.rename ξ v)
+     | .letIn m n => .letIn (Comp.rename ξ m) (Comp.rename (upRen 1 ξ) n)
+     | .app f args => .app (Val.rename ξ f) (Val.renameList ξ args)
+@@ -175,52 +179,59 @@
+   if i < k then .var i else (σ (i - k)).rename (· + k)
+ 
+ mutual
+-  def Val.subst (σ : Nat → Val) : Val → Val
++  def Val.subst (σ : Nat → Val) (v : Val) (ρ : Nat → LocalRef := LocalRef.bound) : Val :=
++    match v with
+     | .var i => σ i
+     | .const c => .const c
+     | .fnRef f tys effs => .fnRef f tys effs
+     | .prim b tys effs => .prim b tys effs
+-    | .lam names params body => .lam names params (Comp.subst (upSubst params.length σ) body)
+-    | .con c tys args => .con c tys (Val.substList σ args)
+-    | .list elems => .list (Val.substList σ elems)
++    | .lam names params body => .lam names params (Comp.subst (upSubst params.length σ) body (upLocalSubst params.length ρ))
++    | .con c tys args => .con c tys (Val.substList σ args ρ)
++    | .list elems => .list (Val.substList σ elems ρ)
+     | .op o tys => .op o tys
+     | .raise t e => .raise t e
+     | .loc l => .loc l
+-    | .mapV ks vs => .mapV (Val.substList σ ks) (Val.substList σ vs)
+-    | .setV elems => .setV (Val.substList σ elems)
++    | .mapV ks vs => .mapV (Val.substList σ ks ρ) (Val.substList σ vs ρ)
++    | .setV elems => .setV (Val.substList σ elems ρ)
+     | .bytesV bs => .bytesV bs
+-    | .dict i tys args => .dict i tys (Val.substList σ args)
+-    | .super v cl => .super (Val.subst σ v) cl
+-
+-  def Val.substList (σ : Nat → Val) : List Val → List Val
+-    | [] => []
+-    | v :: vs => Val.subst σ v :: Val.substList σ vs
+-
+-  def Comp.subst (σ : Nat → Val) : Comp → Comp
+-    | .ret v => .ret (Val.subst σ v)
+-    | .letIn m n => .letIn (Comp.subst σ m) (Comp.subst (upSubst 1 σ) n)
+-    | .app f args => .app (Val.subst σ f) (Val.substList σ args)
+-    | .ite v m n => .ite (Val.subst σ v) (Comp.subst σ m) (Comp.subst σ n)
+-    | .match v arms => .match (Val.subst σ v) (Arm.substList σ arms)
+-    | .lazyC m => .lazyC (Comp.subst σ m)
+-    | .escape v => .escape (Val.subst σ v)
+-    | .use v m => .use (Val.subst σ v) (Comp.subst σ m)
+-    | .handle m h => .handle (Comp.subst σ m) (Clause.substList σ h)
+-    | .resume k v => .resume (Val.subst σ k) (Val.subst σ v)
+-    | .meth d m tys effs args => .meth (Val.subst σ d) m tys effs (Val.substList σ args)
+-
+-  def Arm.substList (σ : Nat → Val) : List Arm → List Arm
++    | .dict i tys args => .dict i tys (Val.substList σ args ρ)
++    | .super v cl => .super (Val.subst σ v ρ) cl
++
++  def Val.substList (σ : Nat → Val) (vs : List Val) (ρ : Nat → LocalRef := LocalRef.bound) : List Val :=
++    match vs with
++    | [] => []
++    | v :: vs => Val.subst σ v ρ :: Val.substList σ vs ρ
++
++  def Comp.subst (σ : Nat → Val) (m : Comp) (ρ : Nat → LocalRef := LocalRef.bound) : Comp :=
++    match m with
++    | .builderLet k body => .builderLet k (Comp.subst (upSubst 1 σ) body (upLocalSubst 1 ρ))
++    | .builderOp k op r args => .builderOp k op (r.subst ρ) (Val.substList σ args ρ)
++    | .ret v => .ret (Val.subst σ v ρ)
++    | .letIn m n => .letIn (Comp.subst σ m ρ) (Comp.subst (upSubst 1 σ) n (upLocalSubst 1 ρ))
++    | .app f args => .app (Val.subst σ f ρ) (Val.substList σ args ρ)
++    | .ite v m n => .ite (Val.subst σ v ρ) (Comp.subst σ m ρ) (Comp.subst σ n ρ)
++    | .match v arms => .match (Val.subst σ v ρ) (Arm.substList σ arms ρ)
++    | .lazyC m => .lazyC (Comp.subst σ m ρ)
++    | .escape v => .escape (Val.subst σ v ρ)
++    | .use v m => .use (Val.subst σ v ρ) (Comp.subst σ m ρ)
++    | .handle m h => .handle (Comp.subst σ m ρ) (Clause.substList σ h ρ)
++    | .resume k v => .resume (Val.subst σ k ρ) (Val.subst σ v ρ)
++    | .meth d m tys effs args => .meth (Val.subst σ d ρ) m tys effs (Val.substList σ args ρ)
++
++  def Arm.substList (σ : Nat → Val) (arms : List Arm) (ρ : Nat → LocalRef := LocalRef.bound) : List Arm :=
++    match arms with
+     | [] => []
+     | .mk alts none m :: arms =>
+-        .mk alts none (Comp.subst (upSubst (Arm.bindersOf alts) σ) m) :: Arm.substList σ arms
++        .mk alts none (Comp.subst (upSubst (Arm.bindersOf alts) σ) m (upLocalSubst (Arm.bindersOf alts) ρ)) :: Arm.substList σ arms ρ
+     | .mk alts (some g) m :: arms =>
+-        .mk alts (some (Comp.subst (upSubst (Arm.bindersOf alts) σ) g))
+-          (Comp.subst (upSubst (Arm.bindersOf alts) σ) m) :: Arm.substList σ arms
+-
+-  def Clause.substList (σ : Nat → Val) : List Clause → List Clause
+-    | [] => []
+-    | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m) :: Clause.substList σ cs
+-    | .fail e m :: cs => .fail e (Comp.subst (upSubst 2 σ) m) :: Clause.substList σ cs
++        .mk alts (some (Comp.subst (upSubst (Arm.bindersOf alts) σ) g (upLocalSubst (Arm.bindersOf alts) ρ)))
++          (Comp.subst (upSubst (Arm.bindersOf alts) σ) m (upLocalSubst (Arm.bindersOf alts) ρ)) :: Arm.substList σ arms ρ
++
++  def Clause.substList (σ : Nat → Val) (cs : List Clause) (ρ : Nat → LocalRef := LocalRef.bound) : List Clause :=
++    match cs with
++    | [] => []
++    | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m (upLocalSubst (n + 1) ρ)) :: Clause.substList σ cs ρ
++    | .fail e m :: cs => .fail e (Comp.subst (upSubst 2 σ) m (upLocalSubst 2 ρ)) :: Clause.substList σ cs ρ
+ end
+ 
+ /-- 01-12 の `M[W̄/x̄]`。束縛した順の最後の値が番号 0 に当たる。 -/
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -257,6 +257,8 @@
+     | super (v : Val) (s : ClassName)
+ 
+   inductive Comp where
++    | builderLet (kind : BuilderKind) (body : Comp)
++    | builderOp (kind : BuilderKind) (op : BuilderOp) (ref : LocalRef) (args : List Val)
+     | ret (v : Val)
+     | letIn (m : Comp) (n : Comp)
+     | app (f : Val) (args : List Val)
+diff --git a/formal/Benitoite/Release/WellFormed.lean b/formal/Benitoite/Release/WellFormed.lean
+--- a/formal/Benitoite/Release/WellFormed.lean
++++ b/formal/Benitoite/Release/WellFormed.lean
+@@ -19,52 +19,61 @@
+   | e :: es => Eff.RhosIn pe e ∧ Eff.RhosInList pe es
+ 
+ mutual
+-  def Val.VarsIn (n : Nat) (pe : Nat → Prop) : Val → Prop
++  def Val.VarsIn (n : Nat) (pe : Nat → Prop) (v : Val) (depth : Nat := 0) : Prop :=
++    match v with
+     | .var _ => True
+     | .const _ => True
+     | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
+     | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
+-    | .lam names params body => NamesWF names params ∧ Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body
+-    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args
+-    | .list elems => Val.VarsInList n pe elems
++    | .lam names params body => NamesWF names params ∧ Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body (depth + params.length)
++    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args depth
++    | .list elems => Val.VarsInList n pe elems depth
+     | .op _ tys => Ty.VarsInList n pe tys
+     | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
+     | .loc _ => True
+-    | .mapV ks vs => Val.VarsInList n pe ks ∧ Val.VarsInList n pe vs
+-    | .setV elems => Val.VarsInList n pe elems
++    | .mapV ks vs => Val.VarsInList n pe ks depth ∧ Val.VarsInList n pe vs depth
++    | .setV elems => Val.VarsInList n pe elems depth
+     | .bytesV _ => True
+-    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args
+-    | .super v _ => Val.VarsIn n pe v
++    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args depth
++    | .super v _ => Val.VarsIn n pe v depth
+ 
+-  def Val.VarsInList (n : Nat) (pe : Nat → Prop) : List Val → Prop
++  def Val.VarsInList (n : Nat) (pe : Nat → Prop) (vs : List Val) (depth : Nat := 0) : Prop :=
++    match vs with
+     | [] => True
+-    | v :: vs => Val.VarsIn n pe v ∧ Val.VarsInList n pe vs
++    | v :: vs => Val.VarsIn n pe v depth ∧ Val.VarsInList n pe vs depth
+ 
+-  def Comp.VarsIn (n : Nat) (pe : Nat → Prop) : Comp → Prop
+-    | .ret v => Val.VarsIn n pe v
+-    | .letIn m m' => Comp.VarsIn n pe m ∧ Comp.VarsIn n pe m'
+-    | .app f args => Val.VarsIn n pe f ∧ Val.VarsInList n pe args
+-    | .ite v m m' => Val.VarsIn n pe v ∧ Comp.VarsIn n pe m ∧ Comp.VarsIn n pe m'
+-    | .match v arms => Val.VarsIn n pe v ∧ Arm.VarsInList n pe arms
+-    | .lazyC m => Comp.VarsIn n pe m
+-    | .escape v => Val.VarsIn n pe v
+-    | .use v m => Val.VarsIn n pe v ∧ Comp.VarsIn n pe m
+-    | .handle m h => Comp.VarsIn n pe m ∧ Clause.VarsInList n pe h
+-    | .resume k v => Val.VarsIn n pe k ∧ Val.VarsIn n pe v
++  def Comp.VarsIn (n : Nat) (pe : Nat → Prop) (m : Comp) (depth : Nat := 0) : Prop :=
++    match m with
++    | .builderLet k body => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
++        Comp.VarsIn n pe body (depth + 1)
++    | .builderOp k _ r args => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
++        r.Scoped depth ∧ Val.VarsInList n pe args depth
++    | .ret v => Val.VarsIn n pe v depth
++    | .letIn m m' => Comp.VarsIn n pe m depth ∧ Comp.VarsIn n pe m' (depth + 1)
++    | .app f args => Val.VarsIn n pe f depth ∧ Val.VarsInList n pe args depth
++    | .ite v m m' => Val.VarsIn n pe v depth ∧ Comp.VarsIn n pe m depth ∧ Comp.VarsIn n pe m' depth
++    | .match v arms => Val.VarsIn n pe v depth ∧ Arm.VarsInList n pe arms depth
++    | .lazyC m => Comp.VarsIn n pe m depth
++    | .escape v => Val.VarsIn n pe v depth
++    | .use v m => Val.VarsIn n pe v depth ∧ Comp.VarsIn n pe m depth
++    | .handle m h => Comp.VarsIn n pe m depth ∧ Clause.VarsInList n pe h depth
++    | .resume k v => Val.VarsIn n pe k depth ∧ Val.VarsIn n pe v depth
+     | .meth d _ tys effs args =>
+-        Val.VarsIn n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInList n pe args
++        Val.VarsIn n pe d depth ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInList n pe args depth
+ 
+-  def Arm.VarsInList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
++  def Arm.VarsInList (n : Nat) (pe : Nat → Prop) (arms : List Arm) (depth : Nat := 0) : Prop :=
++    match arms with
+     | [] => True
+-    | .mk _ none m :: arms => Comp.VarsIn n pe m ∧ Arm.VarsInList n pe arms
+-    | .mk _ (some g) m :: arms =>
+-        Comp.VarsIn n pe g ∧ Comp.VarsIn n pe m ∧ Arm.VarsInList n pe arms
++    | .mk alts none m :: arms => Comp.VarsIn n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInList n pe arms depth
++    | .mk alts (some g) m :: arms =>
++        Comp.VarsIn n pe g (depth + Arm.bindersOf alts) ∧ Comp.VarsIn n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInList n pe arms depth
+ 
+   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
+-  def Clause.VarsInList (n : Nat) (pe : Nat → Prop) : List Clause → Prop
++  def Clause.VarsInList (n : Nat) (pe : Nat → Prop) (cs : List Clause) (depth : Nat := 0) : Prop :=
++    match cs with
+     | [] => True
+-    | .mk _ _ k m :: cs => Comp.VarsIn (n + k) pe m ∧ Clause.VarsInList n pe cs
+-    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsIn (n + 1) pe m ∧ Clause.VarsInList n pe cs
++    | .mk _ arity k m :: cs => Comp.VarsIn (n + k) pe m (depth + arity + 1) ∧ Clause.VarsInList n pe cs depth
++    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsIn (n + 1) pe m (depth + 2) ∧ Clause.VarsInList n pe cs depth
+ end
+ 
+ /-! ## 宣言の変数の範囲 -/
+@@ -74,7 +83,7 @@
+ def Def.Scoped (d : Def) : Prop :=
+   NamesWF d.names d.params ∧
+     Ty.VarsInList d.ntys (· < d.neffs) d.params ∧ Ty.VarsIn d.ntys (· < d.neffs) d.ret ∧
+-    Eff.VarsIn d.ntys (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body
++    Eff.VarsIn d.ntys (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body d.params.length
+ 
+ def ConDecl.Scoped (cd : ConDecl) : Prop :=
+   Ty.VarsInList cd.ntys (fun _ => False) cd.args
+@@ -106,7 +115,7 @@
+     Ty.VarsIn id.tparams.length (fun _ => False) id.target ∧
+     (∀ s u, id.supers s = some u → Val.VarsIn id.tparams.length (fun _ => False) u) ∧
+     (∀ cd m ms body, P.classes id.cls = some cd → cd.methods m = some ms → id.methods m = some body →
+-      Comp.VarsIn (ms.tparams.length + id.tparams.length) (· < ms.neffs) body)
++      Comp.VarsIn (ms.tparams.length + id.tparams.length) (· < ms.neffs) body (id.dictTys.length + ms.params.length))
+ 
+ def Program.WellFormed (P : Program) : Prop :=
+   (∀ f d, P.defs f = some d → d.Scoped) ∧ (∀ c cd, P.cons c = some cd → cd.Scoped) ∧

@@ -12,6 +12,33 @@ open Benitoite.Release
 /-- 内側で増えた番号は自由変数ではない。外側の番号だけを元の述語で調べる。 -/
 def liftReads (n : Nat) (p : Nat → Prop) (i : Nat) : Prop := i < n ∨ p (i - n)
 
+/-- 専用参照も通常番号と同じ自由番号を読む。実行場所は束縛番号ではない。 -/
+def LocalRef.Reads (p : Nat → Prop) : LocalRef → Prop
+  | .bound i => p i
+  | .loc _ => True
+
+/-- 分類されている専用番号に課す自由番号の条件。 -/
+def LocalCtxReads (p : Nat → Prop) (Δ : LocalCtx) : Prop :=
+  ∀ i k, Δ.kindAt i = some k → p i
+
+theorem LocalCtxReads.empty (p : Nat → Prop) : LocalCtxReads p [] := by
+  intro i k hi; simp [LocalCtx.kindAt] at hi
+
+theorem LocalCtxReads.extend {p Δ} (h : LocalCtxReads p Δ) (n : Nat) :
+    LocalCtxReads (liftReads n p) (LocalCtx.extend n Δ) := by
+  intro i k hi
+  rw [LocalCtx.kindAt_extend] at hi
+  split at hi
+  · cases hi
+  · exact Or.inr (h _ _ hi)
+
+theorem LocalCtxReads.builder {p Δ} (h : LocalCtxReads p Δ) (k : BuilderKind) :
+    LocalCtxReads (liftReads 1 p) (some k :: Δ) := by
+  intro i l hi
+  cases i with
+  | zero => exact Or.inl (by decide)
+  | succ i => exact Or.inr (h i l hi)
+
 mutual
   /-- クロージャの内部も含め、実際のコアが読む自由変数の条件。 -/
   def Val.Reads (p : Nat → Prop) : Val → Prop
@@ -25,6 +52,8 @@ mutual
     | [] => True
     | v :: vs => Val.Reads p v ∧ Vals.Reads p vs
   def Comp.Reads (p : Nat → Prop) : Comp → Prop
+    | .builderLet _ body => Comp.Reads (liftReads 1 p) body
+    | .builderOp _ _ ref vs => LocalRef.Reads p ref ∧ Vals.Reads p vs
     | .ret v | .escape v => Val.Reads p v
     | .letIn m n => Comp.Reads p m ∧ Comp.Reads (liftReads 1 p) n
     | .app f vs | .meth f _ _ _ vs => Val.Reads p f ∧ Vals.Reads p vs
@@ -75,7 +104,7 @@ end EnvReads
 
 variable {P : Release.Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
 mutual
- theorem HasTypeVQ.reads {C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a)
+ theorem HasTypeVQ.reads {Ψ : StoreTy} {C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a)
      {pv} (hp : EnvReads pv Γ) : Val.Reads pv v := by
   match h with
   | .V_Var hi _ =>
@@ -90,61 +119,70 @@ mutual
       simp only [Val.Reads] <;> exact ⟨HasTypeEachQ.reads hk hp, HasTypeEachQ.reads hv hp⟩
   | .V_Super hv _ _ | .V_Sub hv _ _ =>
       first | exact HasTypeVQ.reads hv hp | simpa only [Val.Reads] using HasTypeVQ.reads hv hp
- theorem HasTypeVsQ.reads {C Γ vs ts} (h : HasTypeVsQ P B Ψ Q C Γ vs ts)
+ theorem HasTypeVsQ.reads {Ψ : StoreTy} {C Γ vs ts} (h : HasTypeVsQ P B Ψ Q C Γ vs ts)
      {pv} (hp : EnvReads pv Γ) : Vals.Reads pv vs := by
   match h with
   | .nil => simp only [Vals.Reads]
   | .cons hv hs =>
       simp only [Vals.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeVsQ.reads hs hp⟩
- theorem HasTypeEachQ.reads {C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
+ theorem HasTypeEachQ.reads {Ψ : StoreTy} {C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
      {pv} (hp : EnvReads pv Γ) : Vals.Reads pv vs := by
   match h with
   | .nil => simp only [Vals.Reads]
   | .cons hv hs =>
       simp only [Vals.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeEachQ.reads hs hp⟩
- theorem HasTypeCQ.reads {C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε)
-     {pv} (hp : EnvReads pv Γ) : Comp.Reads pv m := by
+ theorem HasTypeCQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+     {pv} (hp : EnvReads pv Γ)
+     (hΔ : LocalCtxReads pv Δl := by intro i k hi; simp [LocalCtx.kindAt] at hi) : Comp.Reads pv m := by
   match h with
+  | .C_BuilderLet _ hb => simpa only [Comp.Reads] using HasTypeCQ.reads hb (hp.cons none) (hΔ.builder _)
+  | .C_BuilderOp _ hr ha =>
+      simp only [Comp.Reads]
+      refine ⟨?_, HasTypeVsQ.reads ha hp⟩
+      cases hr with
+      | bound hi => exact hΔ _ _ hi
+      | loc _ => trivial
   | .C_Return hv | .C_Escape hv _ => simpa only [Comp.Reads] using HasTypeVQ.reads hv hp
   | .C_Sub hm _ _ _ | .C_Eff hm _ =>
-      exact HasTypeCQ.reads hm hp
+      exact HasTypeCQ.reads hm hp hΔ
   | .C_Let hm hn =>
-      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp, HasTypeCQ.reads hn (hp.cons _)⟩
+      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp hΔ, HasTypeCQ.reads hn (hp.cons _) (hΔ.extend 1)⟩
   | .C_App hf hs =>
       simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hf hp, HasTypeVsQ.reads hs hp⟩
   | .C_If hv hm hn =>
-      simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeCQ.reads hm hp, HasTypeCQ.reads hn hp⟩
+      simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeCQ.reads hm hp hΔ, HasTypeCQ.reads hn hp hΔ⟩
   | .C_Match hv ha _ =>
-      simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeArmsQ.reads ha hp⟩
+      simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeArmsQ.reads ha hp hΔ⟩
   | .C_Lazy hm =>
       simp only [Comp.Reads] <;> exact HasTypeCQ.reads hm hp.hide
   | .C_Use hv _ hm _ =>
-      simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeCQ.reads hm hp⟩
+      simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeCQ.reads hm hp hΔ⟩
   | .C_Handle hm _ hc =>
-      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp, HasTypeClausesQ.reads hc hp⟩
+      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp hΔ, HasTypeClausesQ.reads hc hp⟩
   | .C_Handle_Fail hm _ _ hc =>
-      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp, HasFailureClause.reads hc hp⟩
+      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp hΔ, HasFailureClause.reads hc hp⟩
   | .C_Resume hi hv =>
       simp only [Comp.Reads, Val.Reads] <;> exact ⟨hp _ _ hi, HasTypeVQ.reads hv hp⟩
   | .C_ResumeL _ hv =>
       simp only [Comp.Reads, Val.Reads] <;> exact ⟨trivial, HasTypeVQ.reads hv hp⟩
   | .C_Meth hv _ _ _ _ _ _ hs =>
       simp only [Comp.Reads] <;> exact ⟨HasTypeVQ.reads hv hp, HasTypeVsQ.reads hs hp⟩
- theorem HasTypeArmsQ.reads {C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
-     {pv} (hp : EnvReads pv Γ) : Arms.Reads pv arms := by
+ theorem HasTypeArmsQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+     {pv} (hp : EnvReads pv Γ)
+     (hΔ : LocalCtxReads pv Δl := by intro i k hi; simp [LocalCtx.kindAt] at hi) : Arms.Reads pv arms := by
   match h with
   | .nil _ => simp only [Arms.Reads]
   | .plain ha hb hr =>
       simp only [Arms.Reads]
-      refine ⟨by simp, ?_, HasTypeArmsQ.reads hr hp⟩
-      simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hb (hp.append _)
+      refine ⟨by simp, ?_, HasTypeArmsQ.reads hr hp hΔ⟩
+      simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hb (hp.append _) (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
   | .guarded ha hg hb hr =>
       simp only [Arms.Reads]
-      refine ⟨?_, ?_, HasTypeArmsQ.reads hr hp⟩
+      refine ⟨?_, ?_, HasTypeArmsQ.reads hr hp hΔ⟩
       · intro m hm; cases hm
-        simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hg (hp.append _).hide
-      · simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hb (hp.append _)
- theorem HasTypeClausesQ.reads {C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε)
+        simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hg (hp.append _).hide (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
+      · simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hb (hp.append _) (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
+ theorem HasTypeClausesQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
      {pv} (hp : EnvReads pv Γ) : Clauses.Reads pv cs := by
   match h with
   | .nil => simp only [Clauses.Reads]
@@ -153,7 +191,7 @@ mutual
       refine ⟨?_, HasTypeClausesQ.reads hr hp⟩
       have ht := HasTypeCQ.reads hb ((hp.shift _).append (_ :: _))
       simpa only [List.length_cons, binds_length, hn] using ht
- theorem HasFailureClause.reads {C Γ E R cs t ε} (h : HasFailureClause P B Ψ Q C Γ E R cs t ε)
+ theorem HasFailureClause.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ E R cs t ε} (h : HasFailureClause P B Ψ Q C Γ E R cs t ε Δl)
      {pv} (hp : EnvReads pv Γ) : Clauses.Reads pv cs := by
   match h with
   | .one _ _ _ hb =>
@@ -223,6 +261,7 @@ theorem HasTypeQ.closure_empty {D B op Q Δ C Γ R pos e a ε}
   | .E_NegFloat32  => simp only [Expr.EmitsClosure] at site
   | .E_Unit  => simp only [Expr.EmitsClosure] at site
   | .E_Paren h0 => simp only [Expr.EmitsClosure] at site
+  | .E_Block h0 => simp only [Expr.EmitsClosure] at site
   | .E_Record h0 h1 h2 h3 => simp only [Expr.EmitsClosure] at site
   | .E_RecordUpdate h0 h1 h2 h3 h4 h5 h6 h7 h8 => simp only [Expr.EmitsClosure] at site
   | .E_ConCall h0 h1 h2 => simp only [Expr.EmitsClosure] at site
@@ -289,7 +328,7 @@ theorem builderClauses_no_capture {p : Program} {view B op Q C Γ Δ R cs a ε p
     Clauses.Reads (fun i => Δ.kindAt i = none) (desugarClauses op cs) := by
   have hc := HasClausesQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _)
     hwf hsig h.closure_empty sc hΓ hR ht
-  rw [fillBuilders.empty] at hc
+  simp only [BuilderCtx.toLocal_nil] at hc
   exact HasTypeClausesQ.reads hc (BuilderCtx.aligned_envReads ha)
 
 /-- Fail 節は予約した継続とエラーの二位置を数える。外側の型を shift しても

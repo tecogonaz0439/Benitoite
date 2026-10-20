@@ -36,6 +36,8 @@ mutual
     | v :: vs => Val.LambdaNamesWF v ∧ Val.LambdaNamesWFList vs
 
   def Comp.LambdaNamesWF : Comp → Prop
+    | .builderLet _ body => Comp.LambdaNamesWF body
+    | .builderOp _ _ _ args => Val.LambdaNamesWFList args
     | .ret v => Val.LambdaNamesWF v
     | .letIn m m' => Comp.LambdaNamesWF m ∧ Comp.LambdaNamesWF m'
     | .app f args => Val.LambdaNamesWF f ∧ Val.LambdaNamesWFList args
@@ -64,53 +66,61 @@ end
 
 
 mutual
-  /-- ラムダ自身の名前の条件を除いた変数の範囲。型注釈の整形式は保持する。 -/
-  def Val.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) : Val → Prop
+  def Val.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) (v : Val) (depth : Nat := 0) : Prop :=
+    match v with
     | .var _ => True
     | .const _ => True
     | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
     | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
-    | .lam _ params body => Ty.VarsInList n pe params ∧ Comp.VarsInNoLamNames n pe body
-    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args
-    | .list elems => Val.VarsInNoLamNamesList n pe elems
+    | .lam _ params body => Ty.VarsInList n pe params ∧ Comp.VarsInNoLamNames n pe body (depth + params.length)
+    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
+    | .list elems => Val.VarsInNoLamNamesList n pe elems depth
     | .op _ tys => Ty.VarsInList n pe tys
     | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
     | .loc _ => True
-    | .mapV ks vs => Val.VarsInNoLamNamesList n pe ks ∧ Val.VarsInNoLamNamesList n pe vs
-    | .setV elems => Val.VarsInNoLamNamesList n pe elems
+    | .mapV ks vs => Val.VarsInNoLamNamesList n pe ks depth ∧ Val.VarsInNoLamNamesList n pe vs depth
+    | .setV elems => Val.VarsInNoLamNamesList n pe elems depth
     | .bytesV _ => True
-    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args
-    | .super v _ => Val.VarsInNoLamNames n pe v
+    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
+    | .super v _ => Val.VarsInNoLamNames n pe v depth
 
-  def Val.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Val → Prop
+  def Val.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (vs : List Val) (depth : Nat := 0) : Prop :=
+    match vs with
     | [] => True
-    | v :: vs => Val.VarsInNoLamNames n pe v ∧ Val.VarsInNoLamNamesList n pe vs
+    | v :: vs => Val.VarsInNoLamNames n pe v depth ∧ Val.VarsInNoLamNamesList n pe vs depth
 
-  def Comp.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) : Comp → Prop
-    | .ret v => Val.VarsInNoLamNames n pe v
-    | .letIn m m' => Comp.VarsInNoLamNames n pe m ∧ Comp.VarsInNoLamNames n pe m'
-    | .app f args => Val.VarsInNoLamNames n pe f ∧ Val.VarsInNoLamNamesList n pe args
-    | .ite v m m' => Val.VarsInNoLamNames n pe v ∧ Comp.VarsInNoLamNames n pe m ∧ Comp.VarsInNoLamNames n pe m'
-    | .match v arms => Val.VarsInNoLamNames n pe v ∧ Arm.VarsInNoLamNamesList n pe arms
-    | .lazyC m => Comp.VarsInNoLamNames n pe m
-    | .escape v => Val.VarsInNoLamNames n pe v
-    | .use v m => Val.VarsInNoLamNames n pe v ∧ Comp.VarsInNoLamNames n pe m
-    | .handle m h => Comp.VarsInNoLamNames n pe m ∧ Clause.VarsInNoLamNamesList n pe h
-    | .resume k v => Val.VarsInNoLamNames n pe k ∧ Val.VarsInNoLamNames n pe v
+  def Comp.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) (m : Comp) (depth : Nat := 0) : Prop :=
+    match m with
+    | .builderLet k body => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
+        Comp.VarsInNoLamNames n pe body (depth + 1)
+    | .builderOp k _ r args => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
+        r.Scoped depth ∧ Val.VarsInNoLamNamesList n pe args depth
+    | .ret v => Val.VarsInNoLamNames n pe v depth
+    | .letIn m m' => Comp.VarsInNoLamNames n pe m depth ∧ Comp.VarsInNoLamNames n pe m' (depth + 1)
+    | .app f args => Val.VarsInNoLamNames n pe f depth ∧ Val.VarsInNoLamNamesList n pe args depth
+    | .ite v m m' => Val.VarsInNoLamNames n pe v depth ∧ Comp.VarsInNoLamNames n pe m depth ∧ Comp.VarsInNoLamNames n pe m' depth
+    | .match v arms => Val.VarsInNoLamNames n pe v depth ∧ Arm.VarsInNoLamNamesList n pe arms depth
+    | .lazyC m => Comp.VarsInNoLamNames n pe m depth
+    | .escape v => Val.VarsInNoLamNames n pe v depth
+    | .use v m => Val.VarsInNoLamNames n pe v depth ∧ Comp.VarsInNoLamNames n pe m depth
+    | .handle m h => Comp.VarsInNoLamNames n pe m depth ∧ Clause.VarsInNoLamNamesList n pe h depth
+    | .resume k v => Val.VarsInNoLamNames n pe k depth ∧ Val.VarsInNoLamNames n pe v depth
     | .meth d _ tys effs args =>
-        Val.VarsInNoLamNames n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInNoLamNamesList n pe args
+        Val.VarsInNoLamNames n pe d depth ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInNoLamNamesList n pe args depth
 
-  def Arm.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
+  def Arm.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (arms : List Arm) (depth : Nat := 0) : Prop :=
+    match arms with
     | [] => True
-    | .mk _ none m :: arms => Comp.VarsInNoLamNames n pe m ∧ Arm.VarsInNoLamNamesList n pe arms
-    | .mk _ (some g) m :: arms =>
-        Comp.VarsInNoLamNames n pe g ∧ Comp.VarsInNoLamNames n pe m ∧ Arm.VarsInNoLamNamesList n pe arms
+    | .mk alts none m :: arms => Comp.VarsInNoLamNames n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInNoLamNamesList n pe arms depth
+    | .mk alts (some g) m :: arms =>
+        Comp.VarsInNoLamNames n pe g (depth + Arm.bindersOf alts) ∧ Comp.VarsInNoLamNames n pe m (depth + Arm.bindersOf alts) ∧ Arm.VarsInNoLamNamesList n pe arms depth
 
   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
-  def Clause.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) : List Clause → Prop
+  def Clause.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (cs : List Clause) (depth : Nat := 0) : Prop :=
+    match cs with
     | [] => True
-    | .mk _ _ k m :: cs => Comp.VarsInNoLamNames (n + k) pe m ∧ Clause.VarsInNoLamNamesList n pe cs
-    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m ∧ Clause.VarsInNoLamNamesList n pe cs
+    | .mk _ arity k m :: cs => Comp.VarsInNoLamNames (n + k) pe m (depth + arity + 1) ∧ Clause.VarsInNoLamNamesList n pe cs depth
+    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m (depth + 2) ∧ Clause.VarsInNoLamNamesList n pe cs depth
 end
 
 
@@ -152,9 +162,11 @@ mutual
     | .nil => trivial
     | .cons hv hs => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeEachQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeCQ.lambdaNamesWF {Ψ C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε) :
+  theorem HasTypeCQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) :
       m.LambdaNamesWF := by
     match h with
+    | .C_BuilderLet _ hb => simp only [Comp.LambdaNamesWF]; exact HasTypeCQ.lambdaNamesWF hb
+    | .C_BuilderOp _ _ ha => simp only [Comp.LambdaNamesWF]; exact HasTypeVsQ.lambdaNamesWF ha
     | .C_Return hv => exact HasTypeVQ.lambdaNamesWF hv
     | .C_Sub hm _ _ hw => exact HasTypeCQ.lambdaNamesWF hm
     | .C_Eff hm _ => exact HasTypeCQ.lambdaNamesWF hm
@@ -172,28 +184,28 @@ mutual
     | .C_ResumeL _ hv => exact ⟨trivial, HasTypeVQ.lambdaNamesWF hv⟩
     | .C_Meth hv _ _ _ _ _ _ hs => exact ⟨HasTypeVQ.lambdaNamesWF hv, HasTypeVsQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeArmsQ.lambdaNamesWF {Ψ C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε) :
+  theorem HasTypeArmsQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) :
       Arm.LambdaNamesWFList arms := by
     match h with
     | .nil _ => trivial
     | .plain _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
     | .guarded _ hg hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hg, HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeClausesQ.lambdaNamesWF {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε) :
+  theorem HasTypeClausesQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl) :
       Clause.LambdaNamesWFList cs := by
     match h with
     | .nil => trivial
     | .cons _ _ _ _ _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeClausesQ.lambdaNamesWF hs⟩
-  theorem HasFailureClause.lambdaNamesWF {Ψ C Γ E R h t ε}
-      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) : Clause.LambdaNamesWFList h := by
+  theorem HasFailureClause.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ E R h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) : Clause.LambdaNamesWFList h := by
     match hc with
     | .one _ _ _ hb => exact ⟨HasTypeCQ.lambdaNamesWF hb, trivial⟩
 
 end
 
 mutual
-  theorem Val.varsIn_iff_noLamNames (n : Nat) (pe : Nat → Prop) : (v : Val) →
-      Val.VarsIn n pe v ↔ Val.VarsInNoLamNames n pe v ∧ Val.LambdaNamesWF v
+  theorem Val.varsIn_iff_noLamNames (n : Nat) (pe : Nat → Prop) {depth : Nat} : (v : Val) →
+      Val.VarsIn n pe v depth ↔ Val.VarsInNoLamNames n pe v depth ∧ Val.LambdaNamesWF v
     | .var _ => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
           grind only
@@ -238,8 +250,8 @@ mutual
     | .super v _ => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF, Val.varsIn_iff_noLamNames n pe v] <;>
           grind only
-  theorem Val.varsInList_iff_noLamNames (n : Nat) (pe : Nat → Prop) : (vs : List Val) →
-      Val.VarsInList n pe vs ↔ Val.VarsInNoLamNamesList n pe vs ∧ Val.LambdaNamesWFList vs
+  theorem Val.varsInList_iff_noLamNames (n : Nat) (pe : Nat → Prop) {depth : Nat} : (vs : List Val) →
+      Val.VarsInList n pe vs depth ↔ Val.VarsInNoLamNamesList n pe vs depth ∧ Val.LambdaNamesWFList vs
     | [] => by
         simp only [Val.VarsInList, Val.VarsInNoLamNamesList, Val.LambdaNamesWFList] <;>
           grind only
@@ -247,8 +259,16 @@ mutual
         simp only [Val.VarsInList, Val.VarsInNoLamNamesList, Val.LambdaNamesWFList,
           Val.varsIn_iff_noLamNames n pe v, Val.varsInList_iff_noLamNames n pe vs] <;>
           grind only
-  theorem Comp.varsIn_iff_noLamNames (n : Nat) (pe : Nat → Prop) : (m : Comp) →
-      Comp.VarsIn n pe m ↔ Comp.VarsInNoLamNames n pe m ∧ Comp.LambdaNamesWF m
+  theorem Comp.varsIn_iff_noLamNames (n : Nat) (pe : Nat → Prop) {depth : Nat} : (m : Comp) →
+      Comp.VarsIn n pe m depth ↔ Comp.VarsInNoLamNames n pe m depth ∧ Comp.LambdaNamesWF m
+    | .builderLet k body => by
+        simp only [Comp.VarsIn, Comp.VarsInNoLamNames, Comp.LambdaNamesWF,
+          Comp.varsIn_iff_noLamNames n pe body]
+        grind only
+    | .builderOp k op r args => by
+        simp only [Comp.VarsIn, Comp.VarsInNoLamNames, Comp.LambdaNamesWF,
+          Val.varsInList_iff_noLamNames n pe args]
+        grind only
     | .ret v => by
         simp only [Comp.VarsIn, Comp.VarsInNoLamNames, Comp.LambdaNamesWF, Val.varsIn_iff_noLamNames n pe v] <;>
           grind only
@@ -290,8 +310,8 @@ mutual
         simp only [Comp.VarsIn, Comp.VarsInNoLamNames, Comp.LambdaNamesWF,
           Val.varsIn_iff_noLamNames n pe d, Val.varsInList_iff_noLamNames n pe args] <;>
           grind only
-  theorem Arm.varsInList_iff_noLamNames (n : Nat) (pe : Nat → Prop) : (arms : List Arm) →
-      Arm.VarsInList n pe arms ↔ Arm.VarsInNoLamNamesList n pe arms ∧ Arm.LambdaNamesWFList arms
+  theorem Arm.varsInList_iff_noLamNames (n : Nat) (pe : Nat → Prop) {depth : Nat} : (arms : List Arm) →
+      Arm.VarsInList n pe arms depth ↔ Arm.VarsInNoLamNamesList n pe arms depth ∧ Arm.LambdaNamesWFList arms
     | [] => by
         simp only [Arm.VarsInList, Arm.VarsInNoLamNamesList, Arm.LambdaNamesWFList] <;>
           grind only
@@ -304,8 +324,8 @@ mutual
           Comp.varsIn_iff_noLamNames n pe g, Comp.varsIn_iff_noLamNames n pe m,
           Arm.varsInList_iff_noLamNames n pe arms] <;>
           grind only
-  theorem Clause.varsInList_iff_noLamNames (n : Nat) (pe : Nat → Prop) : (cs : List Clause) →
-      Clause.VarsInList n pe cs ↔ Clause.VarsInNoLamNamesList n pe cs ∧ Clause.LambdaNamesWFList cs
+  theorem Clause.varsInList_iff_noLamNames (n : Nat) (pe : Nat → Prop) {depth : Nat} : (cs : List Clause) →
+      Clause.VarsInList n pe cs depth ↔ Clause.VarsInNoLamNamesList n pe cs depth ∧ Clause.LambdaNamesWFList cs
     | [] => by
         simp only [Clause.VarsInList, Clause.VarsInNoLamNamesList, Clause.LambdaNamesWFList] <;>
           grind only
@@ -326,7 +346,7 @@ theorem HasTypeVQ.varsIn_iff_noLamNames {Ψ C Γ v a} (h : HasTypeVQ P B Ψ Q C 
   rw [Val.varsIn_iff_noLamNames, and_iff_left h.lambdaNamesWF]
 
 /-- 初期の計算も、型付けから全ラムダの名前の条件を導ける。 -/
-theorem HasTypeCQ.varsIn_iff_noLamNames {Ψ C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε) (n : Nat) (pe : Nat → Prop) :
+theorem HasTypeCQ.varsIn_iff_noLamNames {Δl : LocalCtx} {Ψ C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (n : Nat) (pe : Nat → Prop) :
     Comp.VarsIn n pe m ↔ Comp.VarsInNoLamNames n pe m := by
   rw [Comp.varsIn_iff_noLamNames, and_iff_left h.lambdaNamesWF]
 

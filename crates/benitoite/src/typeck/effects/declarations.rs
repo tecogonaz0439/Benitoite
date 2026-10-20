@@ -5,7 +5,7 @@ use super::super::{
 };
 use crate::base::{ModuleId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Edit};
-use crate::syntax::ast::{EffectRef, FnDecl, Item, UsesList};
+use crate::syntax::ast::{EffectRef, Expr, FnDecl, Item, UsesList};
 use crate::types::builtin::{BUILTIN_EFFECTS, BuiltinEffectId};
 use crate::types::{EffectName, EffectSet};
 use std::collections::BTreeSet;
@@ -125,10 +125,11 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
                                     .note("assert")
                                     .build(),
                             );
-                        } else if !b
-                            .def()
-                            .is_some_and(|b| b.in_io_all || b.module.first() == Some(&"Network"))
-                        {
+                        } else if !b.def().is_some_and(|b| {
+                            b.in_io_all
+                                || b.module.first() == Some(&"Network")
+                                || b.module == ["Log"] && b.name == "Log"
+                        }) {
                             d.diagnostics.push(
                                 DiagBuilder::new(DiagCode::E0415)
                                     .primary(effect.span)
@@ -174,11 +175,22 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             | Item::Error(_) => None,
         });
     let Some(FnDecl {
-        uses: Some(uses), ..
+        uses: Some(uses),
+        body: Some(body),
+        ..
     }) = function
     else {
         return;
     };
+    // 誤りの式への置換で引数のエフェクトも失われ得るため、縮小の修正案を出さない
+    // （設計書 02-05「警告」）。
+    let mut contains_error = false;
+    super::super::consts::visit_block(&body, &mut |e| {
+        contains_error |= matches!(e, Expr::Error(_));
+    });
+    if contains_error {
+        return;
+    }
     let actual = ctx.actual_effects();
     let all = BUILTIN_EFFECTS
         .iter()
@@ -272,7 +284,12 @@ fn shown_effects(ctx: &Body<'_, '_>, effects: &EffectSet, module: Option<ModuleI
         .collect::<Vec<_>>()
         .join(", ")
 }
-fn effect_name(ctx: &Body<'_, '_>, name: EffectName, module: Option<ModuleId>) -> String {
+/// 診断の位置のモジュールで解決できるエフェクトの名前（設計書 02-10「修正案」）。
+pub(in crate::typeck) fn effect_name(
+    ctx: &Body<'_, '_>,
+    name: EffectName,
+    module: Option<ModuleId>,
+) -> String {
     // 修正案も取り込み時の別名を使う。関数名の表記からエフェクトを推測しない
     // （設計書 01-03「修飾された名前の解決」、02-10「修正案」）。
     let (target, name, fallback) = match name {
@@ -282,6 +299,31 @@ fn effect_name(ctx: &Body<'_, '_>, name: EffectName, module: Option<ModuleId>) -
             };
             if def.module.is_empty() {
                 return def.name.into();
+            }
+            if def.module.last().copied() == Some(def.name) {
+                let shadowed = module.is_some_and(|module| {
+                    ctx.decls.resolved.bindings.iter().any(|(id, binding)| {
+                        binding.module == module
+                            && binding.name == def.name
+                            && if let crate::resolve::BindingKind::Module(target) = binding.kind {
+                                ctx.decls.modules.get(target).is_none_or(|m| {
+                                    m.name
+                                        .0
+                                        .iter()
+                                        .map(String::as_str)
+                                        .ne(std::iter::once("Benitoite")
+                                            .chain(def.module.iter().copied()))
+                                })
+                            } else {
+                                ctx.decls.effect_name(id) != Some(name)
+                            }
+                    })
+                });
+                return if shadowed {
+                    format!("Benitoite.{}", def.module.join("."))
+                } else {
+                    def.name.into()
+                };
             }
             let target = ctx
                 .decls

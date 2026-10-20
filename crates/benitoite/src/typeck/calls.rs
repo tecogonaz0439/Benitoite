@@ -647,7 +647,7 @@ pub(super) fn builder(
             hole: false,
         });
     }
-    let effect = super::builders::state();
+    let effect = super::context::fixed(crate::types::EffectSet::empty());
     let callee = ITy::Fn(Box::new(IFnTy {
         contract: IContract::Known(names),
         params,

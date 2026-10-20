@@ -4,7 +4,7 @@
 
 ## ホストの抽出
 
-利用側でこのディレクトリを `sys.path` に追加し、`source_extract.snippets(path, data, accept=...)` を呼ぶ。`data` は元のホストのバイト列とする。`accept` は復号した Rust 文字列と Markdown ブロックを選ぶ任意の述語であり、省略するとすべてを返す。直接の `.bnt` と `fuzz/corpus/` の入力はこの述語で絞らない。旧移行器の言語らしさの判定は `named-arguments-migrate/extract.py` に残す。
+利用側でこのディレクトリを `sys.path` に追加し、`source_extract.snippets(path, data, accept=...)` を呼ぶ。`data` は元のホストのバイト列とする。`accept` は復号した Rust 文字列と Markdown ブロックを選ぶ任意の述語であり、省略するとすべてを返す。直接の `.bnt` と `fuzz/corpus/` の入力はこの述語で絞らない。名前付き引数の旧移行器に固有の選択方針は、保管した道具に残す。
 
 | ホスト | 抽出する範囲 |
 |---|---|
@@ -47,9 +47,4 @@ python3 -B tools/source-migrate/test_source_migrate.py
 
 実ファイルと一時ディレクトリを使い、ホストの復号と位置対応、生成入力の保留、diff、全入力・範囲の検証、適用と再適用を検査する。通常の `scripts/check.sh` の `python_syntax` が構文を、`migrate_selftests` がこの自己検査を確認する（水準なしの互換指定は `python`）。
 
-旧入口の検査は引き続き次のコマンドで呼べる。ただし旧構文の入力と過去の N1 データを前提とするため、現行処理系での成功は保証しない。旧入口のテストと assert は共通化で変更しない。
-
-```sh
-cargo build -p benitoite --example named_arguments_inventory
-python3 -B tools/named-arguments-migrate/test_migrate.py
-```
+名前付き引数の旧移行器と専用 Rust helper は、0.0.10 の改造のディレクトリ（終了後は docs/archive/ の下）の `historical-tools/named-arguments-migrate` へ移した。内容の識別と復元先、旧 parser と過去の N1 データを要する再実行の条件は同資料に記す。現役の自己検査は source-migrate と try-actions-migrate を対象とする。

@@ -45,18 +45,94 @@ pub fn check_program(program: &CoreProgram) -> Vec<CoreTypeError> {
     checker.errors
 }
 
-#[derive(Clone, Default)]
-struct Env {
-    no_fail: Vec<crate::types::EffVar>,
+#[derive(Default)]
+struct Env<'a> {
+    no_fail: &'a [crate::types::EffVar],
     failure_clauses: std::collections::BTreeSet<NodeId>,
     vars: BTreeMap<VarId, Ty>,
+    builders: BTreeMap<BuilderId, BuilderKind>,
     dicts: BTreeMap<VarId, ClassConstraint>,
     clause_dicts: BTreeMap<VarId, (NodeId, ClassConstraint)>,
-    impl_dicts: Option<Vec<ClassConstraint>>,
-    params: Vec<TypeParamInfo>,
+    impl_dicts: Option<&'a [ClassConstraint]>,
+    params: &'a [TypeParamInfo],
     conts: Vec<(VarId, Ty, Ty, EffectSet)>,
     clauses: BTreeMap<NodeId, BindingId>,
     ret: Option<Ty>,
+    cont_start: usize,
+    updates: Vec<Update>,
+}
+
+// 未登録も上書き前の値として残し、兄弟の範囲へ束縛を漏らさない
+// （設計書 02-06「コア IR の検査器」）。
+enum Update {
+    Builder(BuilderId, Option<BuilderKind>),
+    BuilderBoundary(BTreeMap<BuilderId, BuilderKind>),
+    Var(VarId, Option<Ty>),
+    ClauseDict(VarId, Option<(NodeId, ClassConstraint)>),
+    Clause(NodeId, Option<BindingId>),
+    FailureClause(NodeId, bool),
+    Cont,
+    Boundary(usize, Option<Ty>),
+}
+
+impl Env<'_> {
+    fn hide_builders(&mut self) {
+        self.updates
+            .push(Update::BuilderBoundary(std::mem::take(&mut self.builders)));
+    }
+
+    fn bind(&mut self, var: &Var) {
+        let old = self.vars.insert(var.id, var.ty.clone());
+        self.updates.push(Update::Var(var.id, old));
+    }
+
+    fn boundary(&mut self, ret: Option<Ty>) {
+        self.updates.push(Update::Boundary(
+            self.cont_start,
+            std::mem::replace(&mut self.ret, ret),
+        ));
+        self.cont_start = self.conts.len();
+    }
+
+    fn restore(&mut self, mark: usize) {
+        while self.updates.len() > mark {
+            match self.updates.pop() {
+                Some(Update::Builder(id, old)) => restore_entry(&mut self.builders, id, old),
+                Some(Update::BuilderBoundary(old)) => self.builders = old,
+                Some(Update::Var(id, old)) => restore_entry(&mut self.vars, id, old),
+                Some(Update::ClauseDict(id, old)) => restore_entry(&mut self.clause_dicts, id, old),
+                Some(Update::Clause(id, old)) => restore_entry(&mut self.clauses, id, old),
+                Some(Update::FailureClause(id, existed)) => {
+                    if !existed {
+                        self.failure_clauses.remove(&id);
+                    }
+                }
+                Some(Update::Cont) => {
+                    self.conts.pop();
+                }
+                Some(Update::Boundary(start, ret)) => {
+                    self.cont_start = start;
+                    self.ret = ret;
+                }
+                None => break,
+            }
+        }
+    }
+}
+
+fn restore_entry<K: Ord, V>(table: &mut BTreeMap<K, V>, id: K, old: Option<V>) {
+    if let Some(value) = old {
+        table.insert(id, value);
+    } else {
+        table.remove(&id);
+    }
+}
+
+enum Work<'a> {
+    Check(&'a Comp),
+    BuilderFinish(&'a Comp, &'a Comp, usize),
+    LetBody(&'a Var, &'a Comp, &'a Comp, &'a Comp),
+    LetFinish(&'a Comp, &'a Comp, &'a Comp, usize),
 }
 
 struct Checker<'a> {
@@ -145,7 +221,7 @@ fn parameter_arg(index: u32, kind: ParamKind) -> TypeArg {
     }
 }
 
-impl Checker<'_> {
+impl<'a> Checker<'a> {
     fn error(&mut self, origin: Span, message: impl Into<String>) {
         self.errors.push(CoreTypeError {
             def: self.name.clone(),
@@ -189,7 +265,7 @@ impl Checker<'_> {
     }
 
     /// 定義・D-Impl の本体。実装の制約はメソッド自身の辞書と区別する。
-    fn definition(&mut self, def: &CoreDef, implementation: Option<&ImplDef<Comp>>) {
+    fn definition(&mut self, def: &'a CoreDef, implementation: Option<&'a ImplDef<Comp>>) {
         self.name.clone_from(&def.name);
         let mut env = Env {
             ret: Some(def.ret.clone()),
@@ -197,8 +273,8 @@ impl Checker<'_> {
         };
         match self.program.schemes.get(def.binding) {
             Some(scheme) => {
-                env.params.clone_from(&scheme.type_params);
-                env.no_fail.clone_from(&scheme.no_fail);
+                env.params = &scheme.type_params;
+                env.no_fail = &scheme.no_fail;
                 if scheme.no_fail != scheme.signature_no_fail() {
                     self.error(def.span, "scheme NoFail disagrees with signature");
                 }
@@ -242,7 +318,7 @@ impl Checker<'_> {
             None => self.error(def.span, "missing declaration scheme"),
         }
         if let Some(i) = implementation {
-            env.impl_dicts = Some(i.dict_params.clone());
+            env.impl_dicts = Some(&i.dict_params);
         }
         for p in &def.params {
             env.vars.insert(p.id, p.ty.clone());
@@ -250,7 +326,7 @@ impl Checker<'_> {
         for p in &def.dict_params {
             env.dicts.insert(p.var, p.constraint);
         }
-        self.computation(&def.body, &env);
+        self.computation(&def.body, &mut env);
         self.flow(def.body.origin, &def.body.ty, &def.ret);
         self.effects(def.body.origin, &def.body.eff, &def.eff);
     }
@@ -258,13 +334,19 @@ impl Checker<'_> {
     /// 定数の定義：空の環境、R なし、空のエフェクト。
     fn constant_definition(&mut self, def: &ConstDef<Comp>) {
         self.name.clone_from(&def.name);
-        self.computation(&def.body, &Env::default());
+        self.computation(&def.body, &mut Env::default());
         self.flow(def.body.origin, &def.body.ty, &def.ty);
         self.effects(def.body.origin, &def.body.eff, &EffectSet::empty());
     }
 
     /// V-Fun・V-Prim（操作を含む）。引数の数、カインド、組み込みの制約を検査する。
-    fn instantiate(&mut self, scheme: &Scheme, targs: &TypeArgs, env: &Env, origin: Span) -> Ty {
+    fn instantiate(
+        &mut self,
+        scheme: &Scheme,
+        targs: &TypeArgs,
+        env: &Env<'_>,
+        origin: Span,
+    ) -> Ty {
         self.count(
             origin,
             "type arguments",
@@ -289,7 +371,7 @@ impl Checker<'_> {
             }
         }
         let ty = scheme.fn_ty().subst(&targs.tys, &targs.effects);
-        if !ty.failure_rows_valid(&env.no_fail) {
+        if !ty.failure_rows_valid(env.no_fail) {
             self.error(origin, "instantiated source type lacks NoFail");
         }
         if !ty.single_failure() {
@@ -306,7 +388,7 @@ impl Checker<'_> {
         &mut self,
         params: &[TypeParamInfo],
         args: &[TypeArg],
-        env: &Env,
+        env: &Env<'_>,
         origin: Span,
     ) {
         for (param, arg) in params.iter().zip(args) {
@@ -326,11 +408,11 @@ impl Checker<'_> {
         }
     }
 
-    fn kind(&mut self, arg: &TypeArg, expected: ParamKind, env: &Env, origin: Span) {
+    fn kind(&mut self, arg: &TypeArg, expected: ParamKind, env: &Env<'_>, origin: Span) {
         let actual = match arg {
             TypeArg::Ty(_) => Some(ParamKind::Value),
             TypeArg::Head(TyHead::Con(TyCon::External(_))) => Some(ParamKind::Ctor { arity: 0 }),
-            TypeArg::Head(TyHead::Param(i)) => at(&env.params, *i).map(|p| p.kind),
+            TypeArg::Head(TyHead::Param(i)) => at(env.params, *i).map(|p| p.kind),
             TypeArg::Head(TyHead::Con(TyCon::Builtin(b))) => b.def().map(|d| ParamKind::Ctor {
                 arity: u32::from(d.arity),
             }),
@@ -350,13 +432,13 @@ impl Checker<'_> {
     }
 
     /// V-Prim・V-Fun の equality・key・ordered。ADT は宣言の要約で判定する。
-    fn satisfies(&self, ty: &Ty, constraint: BuiltinConstraint, env: &Env) -> bool {
+    fn satisfies(&self, ty: &Ty, constraint: BuiltinConstraint, env: &Env<'_>) -> bool {
         if constraint == BuiltinConstraint::Ordered {
             return matches!(ty, Ty::Con(TyCon::Builtin(b), args) if args.is_empty() && TySet::ORD.contains(*b));
         }
         match ty {
             Ty::Fn(_) | Ty::App(_, _) | Ty::Con(TyCon::External(_), _) => false,
-            Ty::Param(i) => at(&env.params, *i)
+            Ty::Param(i) => at(env.params, *i)
                 .and_then(|p| p.builtin)
                 .is_some_and(|c| c == BuiltinConstraint::Key || c == constraint),
             Ty::Rigid { clause, index } => env
@@ -396,7 +478,7 @@ impl Checker<'_> {
     }
 
     /// V-Var・V-Const・V-Fun・V-Prim・V-Lam・V-Con・V-List・定数の参照。
-    fn value(&mut self, val: &CoreVal, env: &Env) {
+    fn value(&mut self, val: &CoreVal, env: &mut Env<'_>) {
         self.rigid_scope(&val.ty, env, val.origin);
         let derived = match &val.kind {
             ValKind::Var(v) => match env.vars.get(v) {
@@ -480,7 +562,7 @@ impl Checker<'_> {
     }
 
     /// C-Handle の剛体型は、見えている節の操作の型パラメータだけを指す。
-    fn rigid_scope(&mut self, ty: &Ty, env: &Env, origin: Span) {
+    fn rigid_scope(&mut self, ty: &Ty, env: &Env<'_>, origin: Span) {
         match ty {
             Ty::Rigid { clause, index } => {
                 if (env.failure_clauses.contains(clause) && *index != 0)
@@ -516,14 +598,15 @@ impl Checker<'_> {
     }
 
     /// V-Lam。継続を除き、本体の結果を新しい R にする。
-    fn lambda(&mut self, lambda: &Lambda<Comp>, ty: &Ty, env: &Env) -> Ty {
-        let mut inner = env.clone();
-        inner.conts.clear();
-        inner.ret = Some(lambda.body.ty.clone());
+    fn lambda(&mut self, lambda: &Lambda<Comp>, ty: &Ty, env: &mut Env<'_>) -> Ty {
+        let mark = env.updates.len();
+        env.boundary(Some(lambda.body.ty.clone()));
+        env.hide_builders();
         for p in &lambda.params {
-            inner.vars.insert(p.id, p.ty.clone());
+            env.bind(p);
         }
-        self.computation(&lambda.body, &inner);
+        self.computation(&lambda.body, env);
+        env.restore(mark);
         // uses の注釈は、本体が使わないエフェクトも含んでよい
         // （設計書 02-06「コア IR の検査器」）。
         let effects = match ty {
@@ -544,7 +627,7 @@ impl Checker<'_> {
     }
 
     /// V-List。要素の型の最も外側が関数である場合にだけ V-Sub を使う。
-    fn list(&mut self, items: &[CoreVal], ty: &Ty, env: &Env, origin: Span) {
+    fn list(&mut self, items: &[CoreVal], ty: &Ty, env: &mut Env<'_>, origin: Span) {
         let element = match ty {
             Ty::Con(TyCon::Builtin(b), args) if *b == BuiltinTypeId::LIST && args.len() == 1 => {
                 args.first()
@@ -563,7 +646,13 @@ impl Checker<'_> {
     }
 
     /// C-App・C-Meth・V-Con の値の引数。誤りの後もすべての引数を検査する。
-    fn arguments(&mut self, args: &[CoreVal], expected: Option<&[Ty]>, env: &Env, origin: Span) {
+    fn arguments(
+        &mut self,
+        args: &[CoreVal],
+        expected: Option<&[Ty]>,
+        env: &mut Env<'_>,
+        origin: Span,
+    ) {
         if let Some(types) = expected {
             self.count(origin, "value arguments", args.len(), types.len());
         }
@@ -577,10 +666,56 @@ impl Checker<'_> {
 
     /// 計算の規則の振り分け。再帰の段ごとに各規則の作業領域を保持しないよう、
     /// 型とエフェクトの検査は規則ごとの関数で行う。
-    fn computation(&mut self, comp: &Comp, env: &Env) {
+    fn computation(&mut self, comp: &Comp, env: &mut Env<'_>) {
+        let mut work = Vec::new();
+        self.computation_step(comp, env, &mut work);
+        while let Some(task) = work.pop() {
+            match task {
+                Work::LetBody(var, bound, body, comp) => {
+                    self.flow(bound.origin, &bound.ty, &var.ty);
+                    let mark = env.updates.len();
+                    env.bind(var);
+                    work.push(Work::LetFinish(bound, body, comp, mark));
+                    work.push(Work::Check(body));
+                }
+                Work::LetFinish(bound, body, comp, mark) => {
+                    self.equal(comp.origin, &comp.ty, &body.ty);
+                    self.effects(comp.origin, &bound.eff.union(&body.eff), &comp.eff);
+                    env.restore(mark);
+                }
+                Work::BuilderFinish(body, comp, mark) => {
+                    self.equal(comp.origin, &comp.ty, &body.ty);
+                    self.effects(comp.origin, &body.eff, &comp.eff);
+                    env.restore(mark);
+                }
+                Work::Check(comp) => self.computation_step(comp, env, &mut work),
+            }
+        }
+    }
+
+    #[inline(never)]
+    fn computation_step<'c>(
+        &mut self,
+        comp: &'c Comp,
+        env: &mut Env<'_>,
+        work: &mut Vec<Work<'c>>,
+    ) {
         match &comp.kind {
+            CompKind::BuilderLet { id, kind, body } => {
+                let mark = env.updates.len();
+                let old = env.builders.insert(*id, kind.clone());
+                env.updates.push(Update::Builder(*id, old));
+                work.push(Work::BuilderFinish(body, comp, mark));
+                work.push(Work::Check(body));
+            }
+            CompKind::BuilderOp { id, kind, op, args } => {
+                self.builder_operation(*id, kind, *op, args, comp, env)
+            }
             CompKind::Return(v) => self.return_comp(v, comp, env),
-            CompKind::Let { var, bound, body } => self.let_comp(var, bound, body, comp, env),
+            CompKind::Let { var, bound, body } => {
+                work.push(Work::LetBody(var, bound, body, comp));
+                work.push(Work::Check(bound));
+            }
             CompKind::App {
                 func,
                 dicts,
@@ -611,8 +746,48 @@ impl Checker<'_> {
         }
     }
 
+    #[inline(never)]
+    fn builder_operation(
+        &mut self,
+        id: BuilderId,
+        kind: &BuilderKind,
+        op: crate::resolve::builders::BuilderOp,
+        args: &[CoreVal],
+        comp: &Comp,
+        env: &mut Env<'_>,
+    ) {
+        use crate::resolve::builders::BuilderOp;
+        if env.builders.get(&id) != Some(kind) {
+            self.error(comp.origin, "builder is unbound or has wrong kind");
+        }
+        let unit = builtin(BuiltinTypeId::UNIT, vec![]);
+        let contents = kind.contents();
+        let (params, result) = match op {
+            BuilderOp::Copy => (vec![], contents),
+            BuilderOp::Length => (vec![], builtin(BuiltinTypeId::INTEGER, vec![])),
+            BuilderOp::Append => (
+                vec![match kind {
+                    BuilderKind::String => contents,
+                    BuilderKind::List(t) => t.clone(),
+                    BuilderKind::Bytes => builtin(BuiltinTypeId::BYTE, vec![]),
+                }],
+                unit,
+            ),
+            BuilderOp::AppendAll => (
+                vec![match kind {
+                    BuilderKind::String => builtin(BuiltinTypeId::LIST, vec![contents]),
+                    BuilderKind::List(_) | BuilderKind::Bytes => contents,
+                }],
+                unit,
+            ),
+        };
+        self.arguments(args, Some(&params), env, comp.origin);
+        self.equal(comp.origin, &comp.ty, &result);
+        self.effects(comp.origin, &EffectSet::empty(), &comp.eff);
+    }
+
     /// C-Return。値の型は一致し、導くエフェクトは空集合である。
-    fn return_comp(&mut self, value: &CoreVal, comp: &Comp, env: &Env) {
+    fn return_comp(&mut self, value: &CoreVal, comp: &Comp, env: &mut Env<'_>) {
         self.value(value, env);
         self.equal(comp.origin, &comp.ty, &value.ty);
         self.effects(comp.origin, &EffectSet::empty(), &comp.eff);
@@ -625,7 +800,7 @@ impl Checker<'_> {
         then_branch: &Comp,
         else_branch: &Comp,
         comp: &Comp,
-        env: &Env,
+        env: &mut Env<'_>,
     ) {
         self.value(cond, env);
         self.equal(
@@ -651,7 +826,7 @@ impl Checker<'_> {
         dicts: &[DictVal],
         args: &[CoreVal],
         comp: &Comp,
-        env: &Env,
+        env: &mut Env<'_>,
     ) {
         if let Some((ty, eff)) = self.application(func, dicts, args, env, comp.origin) {
             self.equal(comp.origin, &comp.ty, &ty);
@@ -659,7 +834,7 @@ impl Checker<'_> {
         }
     }
 
-    fn exit_report(&mut self, comp: &Comp, report: &ExitReportArgs<Comp>, env: &Env) {
+    fn exit_report(&mut self, comp: &Comp, report: &ExitReportArgs<Comp>, env: &mut Env<'_>) {
         let CompKind::App {
             func, dicts, args, ..
         } = &comp.kind
@@ -693,7 +868,7 @@ impl Checker<'_> {
     }
 
     /// C-Meth の結果の型とエフェクト。
-    fn method_comp(&mut self, call: &MethodCall<Comp>, comp: &Comp, env: &Env) {
+    fn method_comp(&mut self, call: &MethodCall<Comp>, comp: &Comp, env: &mut Env<'_>) {
         if let Some((ty, eff)) = self.method(call, env, comp.origin) {
             self.equal(comp.origin, &comp.ty, &ty);
             self.effects(comp.origin, &eff, &comp.eff);
@@ -701,20 +876,9 @@ impl Checker<'_> {
     }
 
     /// escape の結果の型は任意であり、導くエフェクトは空集合である。
-    fn escape_comp(&mut self, value: &CoreVal, comp: &Comp, env: &Env) {
+    fn escape_comp(&mut self, value: &CoreVal, comp: &Comp, env: &mut Env<'_>) {
         self.escape(value, env);
         self.effects(comp.origin, &EffectSet::empty(), &comp.eff);
-    }
-
-    /// C-Let。右辺だけは束縛前の環境で検査する。
-    fn let_comp(&mut self, var: &Var, bound: &Comp, body: &Comp, comp: &Comp, env: &Env) {
-        self.computation(bound, env);
-        self.flow(bound.origin, &bound.ty, &var.ty);
-        let mut inner = env.clone();
-        inner.vars.insert(var.id, var.ty.clone());
-        self.computation(body, &inner);
-        self.equal(comp.origin, &comp.ty, &body.ty);
-        self.effects(comp.origin, &bound.eff.union(&body.eff), &comp.eff);
     }
 
     /// C-App。辞書は関数または操作の宣言の制約に対応する。
@@ -723,7 +887,7 @@ impl Checker<'_> {
         func: &CoreVal,
         dicts: &[DictVal],
         args: &[CoreVal],
-        env: &Env,
+        env: &mut Env<'_>,
         origin: Span,
     ) -> Option<(Ty, EffectSet)> {
         self.value(func, env);
@@ -751,7 +915,7 @@ impl Checker<'_> {
     }
 
     /// escape の判断 Γ; R。R なしの区間からは脱出できない。
-    fn escape(&mut self, value: &CoreVal, env: &Env) {
+    fn escape(&mut self, value: &CoreVal, env: &mut Env<'_>) {
         self.value(value, env);
         match &env.ret {
             Some(ret) => self.flow(value.origin, &value.ty, ret),
@@ -760,7 +924,7 @@ impl Checker<'_> {
     }
 
     /// C-Use。リソースの表を引き、解放の State を導く。
-    fn use_comp(&mut self, resource: &CoreVal, body: &Comp, comp: &Comp, env: &Env) {
+    fn use_comp(&mut self, resource: &CoreVal, body: &Comp, comp: &Comp, env: &mut Env<'_>) {
         self.value(resource, env);
         if !matches!(&resource.ty, Ty::Con(TyCon::Builtin(b), args)
             if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource && usize::from(d.arity) == args.len()))
@@ -775,11 +939,12 @@ impl Checker<'_> {
     }
 
     /// lazy M の規則。継続と R を除き、本体の純粋性を検査する。
-    fn lazy(&mut self, body: &Comp, comp: &Comp, env: &Env) {
-        let mut inner = env.clone();
-        inner.conts.clear();
-        inner.ret = None;
-        self.computation(body, &inner);
+    fn lazy(&mut self, body: &Comp, comp: &Comp, env: &mut Env<'_>) {
+        let mark = env.updates.len();
+        env.boundary(None);
+        env.hide_builders();
+        self.computation(body, env);
+        env.restore(mark);
         self.effects(body.origin, &body.eff, &EffectSet::empty());
         self.equal(
             comp.origin,
@@ -790,7 +955,7 @@ impl Checker<'_> {
     }
 
     /// V-Dict・V-Super・辞書の引数の V-Var。辞書の型には包含を使わない。
-    fn dictionary(&mut self, dict: &DictVal, env: &Env) {
+    fn dictionary(&mut self, dict: &DictVal, env: &Env<'_>) {
         let derived = match &dict.kind {
             DictKind::Impl {
                 impl_decl,
@@ -907,10 +1072,10 @@ impl Checker<'_> {
     fn constraint_type(
         &mut self,
         c: ClassConstraint,
-        env: &Env,
+        env: &Env<'_>,
         origin: Span,
     ) -> Option<(BindingId, TypeArg)> {
-        match at(&env.params, c.param) {
+        match at(env.params, c.param) {
             Some(p) => Some((c.class, parameter_arg(c.param, p.kind))),
             None => {
                 self.error(origin, "constraint parameter out of range");
@@ -924,7 +1089,7 @@ impl Checker<'_> {
         &mut self,
         dicts: &[DictVal],
         expected: Option<(&[ClassConstraint], &[TypeArg])>,
-        env: &Env,
+        env: &Env<'_>,
         origin: Span,
     ) {
         self.count(
@@ -947,7 +1112,7 @@ impl Checker<'_> {
     fn method(
         &mut self,
         call: &MethodCall<Comp>,
-        env: &Env,
+        env: &mut Env<'_>,
         origin: Span,
     ) -> Option<(Ty, EffectSet)> {
         self.dictionary(&call.dict, env);
@@ -982,14 +1147,15 @@ impl Checker<'_> {
     }
 
     /// D-Impl。上位の辞書、メソッドの順、宣言から置換した契約を検査する。
-    fn implementation(&mut self, def: &ImplDef<Comp>) {
+    fn implementation(&mut self, def: &'a ImplDef<Comp>) {
         self.name.clone_from(&def.name);
         let mut env = Env {
-            impl_dicts: Some(def.dict_params.clone()),
+            impl_dicts: Some(&def.dict_params),
             ..Env::default()
         };
         // 頭部には Scheme がない。メソッドの Scheme の先頭 k 個が頭部の宣言の写しである
         // （`types` のモジュールの説明）。メソッドがない不正な IR でも上位の辞書は調べる。
+        let fallback_params;
         if let Some(s) = def
             .methods
             .iter()
@@ -997,12 +1163,10 @@ impl Checker<'_> {
         {
             env.params = s
                 .type_params
-                .iter()
-                .take(def.type_params.len())
-                .cloned()
-                .collect();
+                .get(..def.type_params.len())
+                .unwrap_or(&s.type_params);
         } else {
-            env.params = def
+            fallback_params = def
                 .type_params
                 .iter()
                 .map(|name| TypeParamInfo {
@@ -1010,7 +1174,8 @@ impl Checker<'_> {
                     kind: ParamKind::Value,
                     builtin: None,
                 })
-                .collect();
+                .collect::<Vec<_>>();
+            env.params = &fallback_params;
         }
         let trait_def = self.program.traits.get(def.class);
         if let Some(t) = trait_def {
@@ -1130,7 +1295,7 @@ impl Checker<'_> {
     }
 
     /// C-Handle。完全に処理するエフェクトだけを handled(H) に含める。
-    fn handle(&mut self, handle: &Handle<Comp>, comp: &Comp, env: &Env) {
+    fn handle(&mut self, handle: &Handle<Comp>, comp: &Comp, env: &mut Env<'_>) {
         self.computation(&handle.body, env);
         self.flow(handle.body.origin, &handle.body.ty, &comp.ty);
         let failure = handle.clauses.iter().find_map(|c| c.failure_type.as_ref());
@@ -1140,7 +1305,7 @@ impl Checker<'_> {
             }
             let mut rest = handle.body.eff.clone();
             rest.failures.clear();
-            let q = env.no_fail.clone();
+            let q = env.no_fail;
             if rest.vars.iter().any(|v| !q.contains(v)) {
                 self.error(comp.origin, "failure Rest is not NoFail");
             }
@@ -1184,14 +1349,17 @@ impl Checker<'_> {
     }
 
     /// C-Handle の節。操作の型引数は節のノード番号で区別する剛体型である。
-    fn clause(&mut self, clause: &Clause<Comp>, comp: &Comp, env: &Env) {
-        let mut inner = env.clone();
+    fn clause(&mut self, clause: &Clause<Comp>, comp: &Comp, env: &mut Env<'_>) {
+        let mark = env.updates.len();
         if let Some(t) = &clause.failure_type {
             self.rigid_scope(t, env, clause.span);
         }
-        inner.clauses.insert(clause.node, clause.op);
+        let old = env.clauses.insert(clause.node, clause.op);
+        env.updates.push(Update::Clause(clause.node, old));
         if clause.failure_type.is_some() {
-            inner.failure_clauses.insert(clause.node);
+            let existed = !env.failure_clauses.insert(clause.node);
+            env.updates
+                .push(Update::FailureClause(clause.node, existed));
         }
         if let Some(s) = self.program.schemes.get(clause.op) {
             let actual: Vec<_> = clause.dict_params.iter().map(|p| p.constraint).collect();
@@ -1202,15 +1370,14 @@ impl Checker<'_> {
                 );
             }
             for p in &clause.dict_params {
-                if inner.dicts.contains_key(&p.var)
-                    || inner.clause_dicts.contains_key(&p.var)
-                    || inner.vars.contains_key(&p.var)
+                if env.dicts.contains_key(&p.var)
+                    || env.clause_dicts.contains_key(&p.var)
+                    || env.vars.contains_key(&p.var)
                 {
                     self.error(clause.span, "clause dictionary variable is already bound");
                 }
-                inner
-                    .clause_dicts
-                    .insert(p.var, (clause.node, p.constraint));
+                let old = env.clause_dicts.insert(p.var, (clause.node, p.constraint));
+                env.updates.push(Update::ClauseDict(p.var, old));
             }
             let tys: Vec<_> = s
                 .type_params
@@ -1247,10 +1414,11 @@ impl Checker<'_> {
             self.error(clause.span, "missing clause operation scheme");
         }
         for p in &clause.params {
-            inner.vars.insert(p.id, p.ty.clone());
+            env.bind(p);
         }
         if clause.failure_type.is_none() {
-            inner.conts.push((
+            env.updates.push(Update::Cont);
+            env.conts.push((
                 clause.cont.id,
                 clause.cont.arg.clone(),
                 comp.ty.clone(),
@@ -1266,15 +1434,23 @@ impl Checker<'_> {
         if is_failure != clause.failure_type.is_some() {
             self.error(clause.span, "clause kind disagrees with operation");
         }
-        self.computation(&clause.body, &inner);
+        env.hide_builders();
+        self.computation(&clause.body, env);
+        env.restore(mark);
         self.flow(clause.body.origin, &clause.body.ty, &comp.ty);
         self.effects(clause.body.origin, &clause.body.eff, &comp.eff);
     }
 
     /// C-Resume。継続の結果の型とエフェクトは一致を求める。
-    fn resume(&mut self, cont: VarId, value: &CoreVal, comp: &Comp, env: &Env) {
+    fn resume(&mut self, cont: VarId, value: &CoreVal, comp: &Comp, env: &mut Env<'_>) {
         self.value(value, env);
-        match env.conts.iter().rev().find(|(v, _, _, _)| *v == cont) {
+        match env
+            .conts
+            .iter()
+            .skip(env.cont_start)
+            .rev()
+            .find(|(v, _, _, _)| *v == cont)
+        {
             Some((_, arg, ret, eff)) => {
                 self.flow(value.origin, &value.ty, arg);
                 self.equal(comp.origin, &comp.ty, ret);
@@ -1296,7 +1472,7 @@ impl Checker<'_> {
         rows: &[MatchRow],
         arms: &[MatchArm],
         comp: &Comp,
-        env: &Env,
+        env: &mut Env<'_>,
     ) {
         self.value(value, env);
         for row in rows {
@@ -1319,12 +1495,12 @@ impl Checker<'_> {
         }
         let mut effects = EffectSet::empty();
         for arm in arms {
-            let mut inner = env.clone();
+            let mark = env.updates.len();
             for p in &arm.vars {
-                inner.vars.insert(p.id, p.ty.clone());
+                env.bind(p);
             }
             if let Some(guard) = &arm.guard {
-                self.computation(guard, &inner);
+                self.computation(guard, env);
                 self.equal(
                     guard.origin,
                     &guard.ty,
@@ -1333,7 +1509,8 @@ impl Checker<'_> {
                 self.effects(guard.origin, &guard.eff, &EffectSet::empty());
                 effects = effects.union(&guard.eff);
             }
-            self.computation(&arm.body, &inner);
+            self.computation(&arm.body, env);
+            env.restore(mark);
             self.flow(arm.body.origin, &arm.body.ty, &comp.ty);
             effects = effects.union(&arm.body.eff);
         }
@@ -3069,6 +3246,9 @@ end function
         let mut body = &mut d.body;
         let origin = loop {
             match &mut body.kind {
+                CompKind::BuilderLet { .. } | CompKind::BuilderOp { .. } => {
+                    panic!("unexpected builder in method fixture")
+                }
                 CompKind::Let {
                     var,
                     bound,
@@ -3525,22 +3705,259 @@ end function
 
     #[test]
     fn deep_ir_is_checked_without_changing_the_thread_stack() {
-        // IR の再帰は許されるが、通常のテストのスレッドで入れ子を検査できる必要がある
-        // （設計書 07-03「実装の規約と静的な検査」）。
-        let mut body = ret(integer(10));
-        for i in 0..1000 {
-            body = comp(
+        // Let の body と bound の両方向を、通常のスレッドのスタックで検査する。
+        // GC を使わない IR の検査なので、構成によらず同じ深さを保つ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+        for nested_bound in [false, true] {
+            let mut body = ret(integer(10));
+            let depth = 1000;
+            for i in 0..depth {
+                let (bound, rest) = if nested_bound {
+                    (body, ret(variable(i, int(), 13)))
+                } else {
+                    (ret(integer(11)), body)
+                };
+                body = comp(
+                    CompKind::Let {
+                        var: var(i, int()),
+                        bound: Box::new(bound),
+                        body: Box::new(rest),
+                    },
+                    int(),
+                    EffectSet::empty(),
+                    12,
+                );
+            }
+            good(&main_program(body, vec![], EffectSet::empty()));
+        }
+    }
+
+    // 関門: 公開検査器で兄弟枝と右辺の局所束縛を独立に検査する。
+    // 正しい脱糖結果だけでは、復元漏れによる不正 IR の受理を捕まえられない。
+    #[test]
+    fn local_scopes_restore_overwritten_and_absent_variables_even_after_errors() {
+        for outer_bound in [false, true] {
+            for invalid_bound in [false, true] {
+                let bound = if invalid_bound {
+                    ret(variable(9, bool_ty(), 31))
+                } else {
+                    ret(boolean(11))
+                };
+                let branch = comp(
+                    CompKind::Let {
+                        var: var(0, bool_ty()),
+                        bound: Box::new(bound),
+                        body: Box::new(ret(integer(12))),
+                    },
+                    int(),
+                    EffectSet::empty(),
+                    13,
+                );
+                let body = comp(
+                    CompKind::If {
+                        cond: boolean(10),
+                        then_branch: Box::new(branch),
+                        else_branch: Box::new(ret(variable(0, int(), 30))),
+                    },
+                    int(),
+                    EffectSet::empty(),
+                    14,
+                );
+                let p = main_program(
+                    body,
+                    if outer_bound {
+                        vec![var(0, int())]
+                    } else {
+                        vec![]
+                    },
+                    EffectSet::empty(),
+                );
+                let errors = check_program(&p);
+                let expected = [invalid_bound.then_some(31), (!outer_bound).then_some(30)]
+                    .into_iter()
+                    .flatten()
+                    .map(span)
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    errors.iter().map(|e| e.origin).collect::<Vec<_>>(),
+                    expected,
+                    "{errors:#?}"
+                );
+                assert!(
+                    errors
+                        .iter()
+                        .all(|e| e.message.contains("unbound value variable"))
+                );
+            }
+        }
+        for outer_bound in [false, true] {
+            for invalid_guard in [false, true] {
+                let guard = if invalid_guard {
+                    ret(variable(9, bool_ty(), 31))
+                } else {
+                    ret(boolean(11))
+                };
+                let body = comp(
+                    CompKind::Match {
+                        scrutinee: boolean(10),
+                        rows: vec![
+                            MatchRow {
+                                pattern: CorePat::Var(VarId(0)),
+                                arm: 0,
+                            },
+                            MatchRow {
+                                pattern: CorePat::Wild,
+                                arm: 1,
+                            },
+                        ],
+                        arms: vec![
+                            MatchArm {
+                                vars: vec![var(0, bool_ty())],
+                                guard: Some(guard),
+                                body: ret(integer(12)),
+                            },
+                            MatchArm {
+                                vars: vec![],
+                                guard: None,
+                                body: ret(variable(0, int(), 30)),
+                            },
+                        ],
+                    },
+                    int(),
+                    EffectSet::empty(),
+                    14,
+                );
+                let p = main_program(
+                    body,
+                    if outer_bound {
+                        vec![var(0, int())]
+                    } else {
+                        vec![]
+                    },
+                    EffectSet::empty(),
+                );
+                let errors = check_program(&p);
+                let expected = [invalid_guard.then_some(31), (!outer_bound).then_some(30)]
+                    .into_iter()
+                    .flatten()
+                    .map(span)
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    errors.iter().map(|e| e.origin).collect::<Vec<_>>(),
+                    expected,
+                    "{errors:#?}"
+                );
+                assert!(
+                    errors
+                        .iter()
+                        .all(|e| e.message.contains("unbound value variable"))
+                );
+            }
+        }
+        let bound = comp(
+            CompKind::Let {
+                var: var(1, int()),
+                bound: Box::new(ret(integer(11))),
+                body: Box::new(ret(integer(12))),
+            },
+            int(),
+            EffectSet::empty(),
+            13,
+        );
+        let body = comp(
+            CompKind::Let {
+                var: var(2, int()),
+                bound: Box::new(bound),
+                body: Box::new(ret(variable(1, int(), 30))),
+            },
+            int(),
+            EffectSet::empty(),
+            14,
+        );
+        one(
+            &main_program(body, vec![], EffectSet::empty()),
+            30,
+            "unbound value variable",
+        );
+    }
+
+    // 関門: None の戻り先と、隠した継続を境界の復帰後に元へ戻す。
+    // 不正な内側だけを検査する既存例では、後続の正しい resume の拒否を捕まえない。
+    #[test]
+    fn capture_boundaries_restore_return_and_continuations_after_a_rejected_body() {
+        for lazy_body in [false, true] {
+            let mut p = handled_program(false);
+            let resume = handler(&mut p).clauses[0].body.clone();
+            let hidden = if lazy_body {
+                comp(
+                    CompKind::Lazy {
+                        id: BodyId(8),
+                        body: Box::new(resume.clone()),
+                    },
+                    builtin(BuiltinTypeId::LAZY, vec![int()]),
+                    EffectSet::empty(),
+                    20,
+                )
+            } else {
+                ret(lambda(resume.clone(), vec![], 20))
+            };
+            handler(&mut p).clauses[0].body = comp(
                 CompKind::Let {
-                    var: var(i, int()),
-                    bound: Box::new(ret(integer(11))),
-                    body: Box::new(body),
+                    var: var(5, hidden.ty.clone()),
+                    bound: Box::new(hidden),
+                    body: Box::new(resume),
                 },
                 int(),
                 EffectSet::empty(),
-                12,
+                22,
             );
+            one(&p, 14, "not visible");
         }
-        good(&main_program(body, vec![], EffectSet::empty()));
+        // lazy 内のラムダから戻っても R は none のままであり、lazy を出ると復元する。
+        let lam = ret(lambda(ret(integer(11)), vec![], 12));
+        let inside = comp(
+            CompKind::Let {
+                var: var(1, lam.ty.clone()),
+                bound: Box::new(lam),
+                body: Box::new(comp(
+                    CompKind::Escape(integer(30)),
+                    int(),
+                    EffectSet::empty(),
+                    31,
+                )),
+            },
+            int(),
+            EffectSet::empty(),
+            13,
+        );
+        let lazy = comp(
+            CompKind::Lazy {
+                id: BodyId(8),
+                body: Box::new(inside),
+            },
+            builtin(BuiltinTypeId::LAZY, vec![int()]),
+            EffectSet::empty(),
+            20,
+        );
+        let body = comp(
+            CompKind::Let {
+                var: var(2, lazy.ty.clone()),
+                bound: Box::new(lazy),
+                body: Box::new(comp(
+                    CompKind::Escape(integer(40)),
+                    int(),
+                    EffectSet::empty(),
+                    41,
+                )),
+            },
+            int(),
+            EffectSet::empty(),
+            21,
+        );
+        one(
+            &main_program(body, vec![], EffectSet::empty()),
+            30,
+            "outside a function boundary",
+        );
     }
 
     #[test]

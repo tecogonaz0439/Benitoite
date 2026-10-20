@@ -31,7 +31,7 @@ def check_builder_sources(data):
     inputs = {item["name"]: item for item in data["corpus"]["inputs"]}
     if "builders" not in inputs:
         return
-    independent = json.loads((ROOT / "formal/tests/batch3-exchange/corpus.json").read_text())
+    independent = json.loads((ROOT / "formal/tests/batch4-exchange/corpus.json").read_text())
     names = {"Reference.new": "new", "Reference.get": "get", "Reference.set": "set",
              "%String.add": "add", "String.join": "join", "String.byteLength": "strLen",
              "List.append": "append", "List.concatenate": "listCat", "List.length": "listLen",
@@ -94,7 +94,7 @@ def check(directory, report_path):
     data, expected = BATCH3["rust_inputs"](directory)
     check_builder_sources(data)
     for name, doc in data.items():
-        require(doc["version"] == (12 if name == "corpus" else 4), f"{name}: exchange version")
+        require(doc["version"] == (13 if name == "corpus" else 5), f"{name}: exchange version")
     inputs = data["corpus"]["inputs"]
     require(inputs, "empty Rust corpus")
     names = [item["name"] for item in inputs]

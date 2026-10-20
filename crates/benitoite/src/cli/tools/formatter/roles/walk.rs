@@ -731,6 +731,12 @@ impl<'a> Walker<'a> {
                     self.expr(message);
                 }
             }
+            Expr::Block(e) => {
+                if let Some(open) = self.first(e.span) {
+                    self.open_end(open, e.span);
+                    self.block(&e.body, open);
+                }
+            }
             Expr::Lazy(e) => {
                 if let Some(open) = self.first(e.span) {
                     self.open_end(open, e.span);

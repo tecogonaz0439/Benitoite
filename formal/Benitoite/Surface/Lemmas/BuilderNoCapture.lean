@@ -37,6 +37,7 @@ mutual
         simpa only [desugarExpr] using HasTypeQ.captures (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _)
           hwf hsig hb sc.2 (by intro i a hi; simp at hi) hR (by intro i a hi; simp at hi)
     | .E_Paren he => simpa only [desugarExpr] using HasTypeQ.captures hAlign hΔ hwf hsig he sc hΓ hR hp
+    | .E_Block hb => simpa only [desugarExpr] using HasBlockQ.captures hAlign hΔ hwf hsig hb sc hΓ hR hp
     | .E_Sub he _ _ _ => exact HasTypeQ.captures hAlign hΔ hwf hsig he sc hΓ hR hp
     | .E_Record _ _ _ hs =>
         apply sequence_captures (HasTypesQ.captures hAlign hΔ hwf hsig hs sc.2 hΓ hR hp)
@@ -202,7 +203,7 @@ mutual
         refine ⟨HasBlockQ.captures hAlign hΔ hwf hsig hb sc.1 hΓ hR hp, ?_⟩
         have cc := HasClausesQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _)
           hwf hsig hc.closure_empty sc.2 hΓ hR (HasBlockQ.clean hΔ hwf hsig hb sc.1 hΓ hR)
-        rw [fillBuilders.empty] at cc
+        simp only [BuilderCtx.toLocal_nil] at cc
         exact HasTypeClausesQ.reads cc hp
     | .E_HandleFail hb _ _ _ _ _ hh =>
         simp only [desugarExpr, Comp.Captures, Clauses.Reads]
@@ -301,13 +302,13 @@ mutual
     | .B_LastDiscard he =>
         simp only [desugarBlock, Comp.Captures]
         exact ⟨HasTypeQ.captures hAlign hΔ hwf hsig he sc hΓ hR hp, trivial⟩
-    | .B_BuilderBind _ hc _ _ hb =>
+    | .B_BuilderBind hc _ hb =>
         simp only [desugarBlock, Comp.Captures]
-        exact ⟨builderNew_captures _ _, HasBlockQ.captures
+        exact HasBlockQ.captures
           (BuilderCtx.aligned_builder hAlign _) (BuilderCtx.clean_builder hΔ hc) hwf hsig
-          hb sc.2.2 (by intro i t hi; cases i with
+          hb sc.2 (by intro i t hi; cases i with
             | zero => simp at hi
-            | succ i => exact hΓ i t hi) hR (hp.cons none)⟩
+            | succ i => exact hΓ i t hi) hR (hp.cons none)
     | .B_Bind he hb =>
         simp only [desugarBlock, Comp.Captures]
         exact ⟨HasTypeQ.captures hAlign hΔ hwf hsig he sc.2.1 hΓ hR hp, HasBlockQ.captures
@@ -346,7 +347,10 @@ theorem HasHoleArgsQ.captures {Δ C Γ R args as ε pe pv}
     (h : HasHoleArgsQ (p.declarationsFor view) B op Q Δ C Γ R args as ε)
     (sc : args.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) (hp : EnvReads pv Γ) (depth : Nat) :
-    ∀ m ∈ desugarHoleArgs op depth args, Comp.Captures (liftReads depth pv) m := by
+    ∀ plan ∈ desugarHoleArgs op depth args,
+      match plan with
+      | .direct v => Val.Captures (liftReads depth pv) v
+      | .evaluate m => Comp.Captures (liftReads depth pv) m := by
   match h with
   | .nil => simp [desugarHoleArgs]
   | .expr he hs =>
@@ -357,7 +361,7 @@ theorem HasHoleArgsQ.captures {Δ C Γ R args as ε pe pv}
   | .hole _ _ hs =>
       intro m hm
       rcases List.mem_cons.mp hm with rfl | hm
-      · simp [Comp.Captures, Val.Captures]
+      · simp [Val.Captures]
       · exact HasHoleArgsQ.captures hAlign hΔ hwf hsig hs sc.2 hΓ hR hp depth m hm
 
 /-- 任意の部分導出の実際のコア全体で、外側の専用位置を捕捉しない。

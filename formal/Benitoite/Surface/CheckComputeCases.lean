@@ -4,19 +4,16 @@ import Benitoite.Surface.CheckComputeAtoms
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
-theorem computes_builderOp {q o i args refs} (ih : TypesComputes q args) :
-    ExprComputes q (.builderOp o i args refs) := by
+theorem computes_builderOp {q o i args k} (ih : TypesComputes q args) :
+    ExprComputes q (.builderOp o i args k) := by
   intro mode Δ C Γ R p path hq he hΓ hR hB
   simp only [Expr.AtomsIn] at he
   apply computes_guard
   apply computes_lift_bind
-  intro u hstate
-  apply computes_lift_bind
-  intro u hrefs
-  apply computes_bind (ih mode Δ C Γ R _ _ _ hq he.2.2 hΓ hR hB (o.params_atoms he.1))
+  intro u hkind
+  apply computes_bind (ih mode Δ C Γ R _ _ _ hq he.2 hΓ hR hB (o.params_atoms he.1))
   intro ε hε
-  exact computes_pure ⟨o.result_atoms he.1,
-    union_atoms hε (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1))⟩
+  exact computes_pure ⟨o.result_atoms he.1, hε⟩
 
 theorem computes_local {q i} : ExprComputes q (.local i) := by
   intro mode Δ C Γ R p path hq he hΓ hR hB
@@ -86,6 +83,11 @@ theorem computes_literal {q l} : ExprComputes q (.literal l) := by
   simp only [Expr.AtomsIn] at he
   apply computes_guard
   cases l <;> exact computes_pure ⟨trivial, emptyEff_atoms _⟩
+
+theorem computes_block {q body} (ih : BlockComputes q body) : ExprComputes q (.block body) := by
+  intro mode Δ C Γ R p path hq he hΓ hR hB
+  simp only [Expr.AtomsIn] at he
+  exact computes_guard (ih _ Δ _ _ _ _ _ hq he hΓ hR hB)
 
 theorem computes_paren {q e} (ih : ExprComputes q e) : ExprComputes q (.paren e) := by
   intro mode Δ C Γ R p path hq he hΓ hR hB
@@ -303,8 +305,8 @@ theorem computes_clauseTypes_cons {q o n ntys body rest ndicts}
   exact ihr Δ _ _ _ _ _ _ hq he.2 hΓ hR hB (join_atoms ht ha' hj) hε
 
 
-theorem computes_block_builderBind {q k refs rest} (ihr : BlockComputes q rest) :
-    BlockComputes q (.builderBind k refs rest) := by
+theorem computes_block_builderBind {q k rest} (ihr : BlockComputes q rest) :
+    BlockComputes q (.builderBind k rest) := by
   intro mode Δ C Γ R p path hq he hΓ hR hB
   simp only [Block.AtomsIn] at he
   apply computes_guard
@@ -313,15 +315,8 @@ theorem computes_block_builderBind {q k refs rest} (ihr : BlockComputes q rest) 
   have hk := Bool.and_eq_true_iff.mp (require_ok hkind).1
   have hc := (cleanTy_spec _ _ he.1).mp hk.1
   have hs := (singleTyCheck_spec _ he.1).mp hk.2
-  apply computes_lift_bind
-  intro u hstate
-  apply computes_lift_bind
-  intro u hrefs
-  apply computes_bind (ihr mode (some k :: Δ) C (none :: Γ) R p _ hq he.2.2.2
-    (by intro t ht; exact hΓ t (by simpa using ht)) hR (hB.builder hc he.1 hs))
-  rintro ⟨a, ε⟩ ⟨ha, hε⟩
-  exact computes_pure ⟨ha, union_atoms
-    (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1)) hε⟩
+  exact ihr mode (some k :: Δ) C (none :: Γ) R p _ hq he.2
+    (by intro t ht; exact hΓ t (by simpa using ht)) hR (hB.builder hc he.1 hs)
 
 theorem computes_block_empty {q} : BlockComputes q .empty := by
   intro mode Δ C Γ R p path hq he hΓ hR hB

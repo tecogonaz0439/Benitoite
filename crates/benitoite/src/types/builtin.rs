@@ -397,6 +397,9 @@ impl BuiltinEffectId {
 /// （設計書 06-01「main の非実行の検査報告」、02-05「出力」）。
 pub(crate) fn effect_name(id: BuiltinEffectId) -> Option<String> {
     let definition = id.def()?;
+    if definition.module == ["Log"] && definition.name == "Log" {
+        return Some("Log".into());
+    }
     let module = match definition.module {
         ["IO" | "Network", rest @ ..] if !rest.is_empty() => rest,
         module => module,
@@ -494,6 +497,12 @@ pub const BUILTIN_EFFECTS: &[BuiltinEffectDef] = &[
     BuiltinEffectDef {
         module: &["Assert"],
         name: "Check",
+        in_io_all: false,
+        declared_in_source: true,
+    },
+    BuiltinEffectDef {
+        module: &["Log"],
+        name: "Log",
         in_io_all: false,
         declared_in_source: true,
     },

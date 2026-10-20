@@ -12,9 +12,9 @@ namespace Benitoite.Release
 variable {P : Program} {B : Builtins}
 
 /-- 閉じた Fail 節へ、結果型とエラー値を代入する。0番の値には型を要求しない。 -/
-theorem HasFailureClause.instantiate (hwf : P.WellFormed) (hb : B.Assumptions P)
+theorem HasFailureClause.instantiate {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
     {Ψ E R body t ec T v κ}
-    (hc : HasFailureClause P B Ψ Qempty [] [] E R [.fail E body] t ec)
+    (hc : HasFailureClause P B Ψ Qempty [] [] E R [.fail E body] t ec Δl)
     (hΨ : StoreTy.WF Ψ) (hts : ClosedArgs [T])
     (hR : ∀ x, R = some x → Ty.WF 0 x)
     (hv : HasTypeV P B Ψ [] [] v E) (hvc : Val.VarsIn 0 (fun _ => True) v) :
@@ -35,7 +35,7 @@ theorem HasFailureClause.instantiate (hwf : P.WellFormed) (hb : B.Assumptions P)
       rw [Ty.shift_of_wf (c := 0) 1 E he, Ty.shift_of_wf (c := 0) 1 t ht, hshR,
         Eff.shift, Eff.rawShift_of_wf (c := 0) _ _ hew] at hbody
       have hθ := HasTypeCQ.substTy (c := 0) hwf hb hbody (Nat.zero_le _) hts (by simp)
-        (by simpa using hsat) (StoreFix.of_wf hΨ [T]) (RowTransport.refl Qempty)
+        (by simpa using hsat) (StoreFix.of_wf hΨ.hideBuilders [T]) (RowTransport.refl Qempty)
       have hRθ : R.map (Ty.substAt 0 [T] []) = R := by
         cases hr : R with
         | none => rfl
@@ -44,7 +44,7 @@ theorem HasFailureClause.instantiate (hwf : P.WellFormed) (hb : B.Assumptions P)
         Option.map_none, Option.map_some] at hθ
       rw [Ty.substAt_nil_of_wf (c := 0) [T] E he, Ty.substAt_nil_of_wf (c := 0) [T] t ht, hRθ,
         Eff.substAt_nil_of_wf (c := 0) [T] (Eff.norm ec) (Eff.norm_WF ec hew) (Eff.norm_idem ec)] at hθ
-      apply hθ.subst
+      apply (hideBuilders_weaken hθ).subst
       intro i x hi
       cases i with
       | zero => simp at hi
@@ -75,7 +75,7 @@ theorem pres_failure (hwf : P.WellFormed) (hb : B.Assumptions P)
   have hRh : ∀ x, Rh = some x → Ty.WF 0 x := hk2.R_wf (by intro x hx; cases hx)
   have hck' := Cont.Closed.append.mp hck
   have hck2 := Cont.Closed.cons.mp hck'.2
-  have hbc : Comp.VarsIn 1 (fun _ => True) body := hck2.1.2.1
+  have hbc : Comp.VarsIn 1 (fun _ => True) body 2 := hck2.1.2.1
   have hts : ClosedArgs [T] := closedArgs_of ⟨hmc.1.1, trivial⟩
   have hvc : Val.VarsIn 0 (fun _ => True) v := hmc.2.1
   have hew : Eff.WF 0 ec := by cases hc with | one _ _ hew _ => exact hew
@@ -98,7 +98,7 @@ theorem pres_failure (hwf : P.WellFormed) (hb : B.Assumptions P)
     (Eff.norm_sub_self ec).trans hec, ?_, ?_, ?_, ?_⟩
   · exact (hc.store hsub).instantiate hwf hb hσnew.wf hts hRh (hv.store hsub) hvc
   · exact failure_drop hl hr hec (hk2.store hsub)
-  · exact Comp.VarsIn.instantiate ⟨hvc, trivial, trivial⟩
+  · exact Comp.VarsIn.instantiate (depth := 2) (hd := by simp) ⟨hvc, trivial, trivial⟩
       (Comp.VarsIn.substTyAt (c := 0) [] (fun u hu => varsInList_mem (as := [T]) ⟨hmc.1.1, trivial⟩ hu)
         (by simp) body (by simpa using hbc))
   · exact Cont.Closed.cons.mpr ⟨trivial, hck2.2⟩

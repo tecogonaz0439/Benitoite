@@ -1,0 +1,5 @@
+function f(x: Integer) -> Unit
+ match x with
+ case -9223372036854775808..9223372036854775807 -> ()
+ end match
+end function

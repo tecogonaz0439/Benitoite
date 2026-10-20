@@ -123,7 +123,13 @@ fn export_batch3(directory: &str, sources: &[(&str, &str)]) {
         // 同じ実ソースの実行を、独立期待値を持つ main と参照実行器へ接続する。
         if matches!(
             name,
-            "numbering" | "control" | "binary-minimal" | "result" | "user-result"
+            "numbering"
+                | "control"
+                | "binary-minimal"
+                | "result"
+                | "user-result"
+                | "log-standard"
+                | "checked-lists"
         ) {
             use benitoite::runtime::io::services::RunInput;
             for mode in [
@@ -163,4 +169,40 @@ fn export_batch3(directory: &str, sources: &[(&str, &str)]) {
         }
     }
     write_batch2(&output, export);
+}
+
+// 関門: 本番 parser の block・局所束縛・ガードを交換13/5へ書き出す。
+// 実行時の順序と回数は vm_handlers の独立した期待値が受け持つ。
+#[test]
+fn export_batch4_blocks() {
+    export_batch3(
+        "blocks",
+        &[
+            ("block-guards", include_str!("batch4/block-guards.bnt")),
+            (
+                "block-values",
+                include_str!("../../testdata/syntax/f02_block_expression.bnt"),
+            ),
+        ],
+    );
+}
+
+// 関門: Logの標準宣言と通常のハンドラ・外側効果を本番交換の六入口へ渡す。
+// 実書式の独立期待値はio_modesが持ち、ここでは通常の型と脱糖・参照評価の接続を守る。
+#[test]
+fn export_batch4_log_standard() {
+    export_batch3(
+        "g2",
+        &[("log-standard", include_str!("batch4/log-standard.bnt"))],
+    );
+}
+
+// 関門: 検査済みListの通常関数・不透明型・多相mapを六入口と参照評価へ接続する。
+// 値と失敗の網羅的な境界はruntime_builtinsが受け持つ。
+#[test]
+fn export_batch4_checked_lists() {
+    export_batch3(
+        "g3",
+        &[("checked-lists", include_str!("batch4/checked-lists.bnt"))],
+    );
 }

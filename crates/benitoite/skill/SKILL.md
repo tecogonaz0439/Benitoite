@@ -81,14 +81,15 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 | `Random.Generate` | generates random numbers |
 | `Http.Listen` | accepts network connections as an HTTP server |
 | `Http.Connect` | connects to HTTP servers over the network |
+| `Log` | structured log events; independent of Console.Write and IO.All |
 | `State` | uses mutable cells and concurrent tasks inside the program (no outside effect) |
 | `Assert.Check` | checks expectations in tests (no outside effect) |
 | `IO.All` | all of `Console`, `File`, `Process`, `Clock`, `Random`, and `State` above |
 
 ## Language rules that differ from other languages
 
-- There are 35 keywords; see [Keywords as names](references/common-mistakes.md#keywords-as-names). `die` is reserved and cannot be a name, including a label, field, import alias, or name after a dot. It is accepted only in `try value or die` and `try value or die(message)`, with a pure String message, a Show constraint for Result errors, and the Process.Exit effect. A standalone `die` is rejected. `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary names, not abbreviations for syntax. Write declarations with `function`, `public`, and `implement`, and anonymous functions with `lambda`. `as`, file-header words, and attribute names have special meanings only in their own contexts. `extensible` is an ordinary name. The argument-free `@extensible` attribute applies to data and record declarations. Outside their defining package, patterns must cover future shapes with an unguarded variable or `_`.
-- Except for a short lambda, blocks end with `end` and the keyword: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end handle`, `end with`. There are no braces and no indentation rules.
+- There are 36 keywords; see [Keywords as names](references/common-mistakes.md#keywords-as-names). `block` is reserved, including argument labels, fields, import aliases, and names after a dot (E0216). `record` is also accepted where a lowercase name is required, including parameters, argument labels, bindings, and value references; it still starts a record declaration at declaration position. `die` is reserved and cannot be a name, including a label, field, import alias, or name after a dot. It is accepted only in `try value or die` and `try value or die(message)`, with a pure String message, a Show constraint for Result errors, and the Process.Exit effect. A standalone `die` is rejected. `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary names, not abbreviations for syntax. Write declarations with `function`, `public`, and `implement`, and anonymous functions with `lambda`. `as`, file-header words, and attribute names have special meanings only in their own contexts. `extensible` is an ordinary name. The argument-free `@extensible` attribute applies to data and record declarations. Outside their defining package, patterns must cover future shapes with an unguarded variable or `_`.
+- Except for a short lambda, blocks end with `end` and the keyword: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end handle`, `end with`, `end block`. There are no braces and no indentation rules.
 - Bind a local name with `bind x <- e`, not `let`. `shadow x <- e` can hide a local name that is already visible, but is discouraged. Prefer a new name describing the new value, even when the hiding is intentional. Names cannot be reassigned.
 - A function is `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function`. The return type follows `->`, never `:`. Return values with `return`. Start the value on the same physical line as `return`; an immediate line break ends the statement even inside parentheses and is an error (E0201). After the value has started, ordinary multiline continuation is allowed (operators, parentheses, call arguments, and `then`). Short lambdas must still fit on one physical line.
 - Prefer `match` for selecting a value or action. Use `if` without `else` for a conditional action or an early return. `else` and `else if` are valid but are discouraged; this advice adds no warning. Preserve condition evaluation count and order, evaluate only the selected branch, and keep `return` in the same function or lambda. For effectful conditions, nest matches on booleans instead of moving the conditions into guards.
@@ -120,7 +121,7 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 - Experimental `@external("wasm", "path.wasm", "export")` functions use a binary import-free Component Model component and have no body or `end function`. Concrete records/data, flags as `Set` of argument-free constructors, and `Map` with WIT-compatible keys can cross the boundary. External resource types require `uses State`; other external calls are pure. The generated adapter counts packed bytes and separately limits logical value construction with the same `--wasm-transfer` value. See the WIT examples and limits in `references/idioms.md`.
 - Strings interpolate with `"${expression}"`. Comments start with `//`.
 - There is no `null`, no exception, and no loop statement. Use `Option`, `Result` with `try`, and `List.map`, `List.fold`, `List.forEach`, or recursion.
-- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Json.Codec`, `Failure`, `Test.Property`, `Csv`, `Regex`, `Scope`, `Range`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
+- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Json.Codec`, `Failure`, `Test.Property`, `Csv`, `Regex`, `Scope`, `Range`, `NonEmptyList`, `Log`, `SourceLocation`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, `Log`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
 - Every function that performs an effect, directly or through a call, lists it after `uses`. Network effects (`Http.Connect`, `Http.Listen`) are not part of `IO.All`.
 - A statement whose value is not `Unit` is an error: handle each `Result` with `try`, `match`, or `bind _ <-`.
 - `Process.shell` runs its string with `/bin/sh -c`. Write only POSIX sh: no bash arrays, no `[[ ]]`, no `{a,b}` expansion, no `$'...'`. Prefer `Process.run` with an argument list when no shell feature is needed.
@@ -159,7 +160,11 @@ first: one
 
 Use public construction and inspection functions for opaque types; constructors, updates, patterns and automatic accessors are private to the owner module (E0340). Direct Regex/Scope calls reject known invalid inputs even in tests; pass invalid inputs through an ordinary function parameter to test runtime Error. Range retains runtime Result.Error for constants too. Scope proves spelling membership, not permission, DNS/filesystem identity or IO success. See `references/common-mistakes.md` and `references/stdlib/Scope.md` / `references/stdlib/Range.md`.
 
-Import `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. All operations, including copy/length, require State. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies preserve immutable structure, though referenced element cells are shared. There is no State elimination, clear/reserve/finish, or native-buffer speed guarantee. See the corresponding generated builder module reference for signatures.
+Import `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. Declarations and dedicated operations add no State; ordinary argument effects remain. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies allocate immutable snapshots; referenced element cells remain shared. Repeated intermediate copies have proportional cost. There is no clear/reserve/finish operation; ordinary Reference/task/resource effects remain. See the corresponding generated builder module reference for signatures.
+
+Use `block ... end block` to keep builder declarations and work inside one expression; its last expression is its value, and a final bind/empty block is Unit. It introduces local scope but no return boundary. Do not return the builder itself. Integer ranges covering the complete signed 64-bit domain are exhaustive: omit a following catch-all (E0602), while guarded ranges and gaps still need coverage.
+
+Log and SourceLocation are prelude modules. Call `SourceLocation.here()` directly where the desired position is written; wrappers should take an explicit Location. Function values/holes/pipes are E0467. `Log.info(message: ..., attributes: [Log.attribute(key: ..., value: ...)], location: SourceLocation.here())` needs uses Log and, when declared, accepted effect Log. IO.All and Console.Write do not include Log. Arguments are eager even if disabled; guard expensive formatting with Log.enabled(Log.Level.Debug). Default stderr output accepts Info and above. Log.error does not terminate. Handle emit and enabled together; withTextLogger requires Console.Write, withSinks preserves sink effects, and withAttributes forwards Log. Log cannot be renamed with as. Checked list APIs are in Range and NonEmptyList; get takes only the checked index, which retains its original list. See references/idioms.md.
 
 ## Choosing collection and sequencing functions
 
@@ -240,14 +245,22 @@ See `references/stdlib/Test.Property.md` for Gen/Shrinker fields and each API.
 The source repository includes a development derive tool for record codecs,
 Gen/Shrinker functions, and explicitly requested Show/Order implementations
 (see `tools/derive/README.md`). Show/Order target flags are independent booleans;
-targets are noncyclic records without type parameters, and every field needs
-the corresponding dictionary. Show uses field order and each field's quoting;
+Property and Show/Order support value type parameters and regular recursive
+records within one module; JSON retains its monomorphic, noncyclic scope. Pass
+Gen/Shrinker arguments only for used type parameters, in declaration order.
+Generated Show/Order implementations carry the required parameter constraints;
+every field needs the corresponding dictionary. Recursive shrinkers defer their
+work, deleting recursive containers before shrinking one field at a time.
+Show uses field order and each field's quoting;
 Order stops at the first non-Equal field. Neither supplies builtin equality,
 key constraints, or a serialization format. Existing handwritten implementations
 are protected. An opaque record may explicitly request Show/Order in its owner
 module; review the proposed opaque display before applying it. Its declaration inventory
-and generation records use version 2; settings remain version 1. Review a fresh
-preview to migrate old records, and use handwritten checked construction for
+uses version 2; manifests, receipts, generation records and semantic hashes use
+version 3 with generator rules `3.0.0-syntax-batch4`; settings remain version 1.
+Authenticate old body hashes, then review a fresh preview to migrate records; old
+manifests cannot authorize the new apply. The same seed alone does not reproduce
+an old generation distribution. Use handwritten checked construction for
 opaque types (including custom codecs/generators for opaque fields). In an environment with
 only the distributed executable and Skill, write these functions directly using
 Codec and Property APIs.

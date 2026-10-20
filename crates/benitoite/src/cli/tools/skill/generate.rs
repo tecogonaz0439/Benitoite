@@ -32,7 +32,7 @@ mod text {
 `{ ... }` means zero or more repetitions, `[ ... ]` means optional, and `|` separates alternatives. \
 `NL` is a line break that separates items. `CommaList(X)` is a comma-separated list of `X` that may be \
 empty and may end with a comma; `LineList(X)` is a list of `X` separated by line breaks.\n\n\
-Identifiers exclude the 35 keywords listed in [Keywords as names](common-mistakes.md#keywords-as-names). \
+Identifiers exclude the 36 keywords listed in [Keywords as names](common-mistakes.md#keywords-as-names), except that `record` is also accepted where a lowercase name is required (including parameters, labels, bindings, and value references). \
 `die` cannot be a name, including in labels, fields, import aliases, and names after a dot. \
 It is accepted only as a failure action of `try`, not as a standalone expression. \
 `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary identifiers. \

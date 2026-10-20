@@ -119,7 +119,7 @@ theorem toResult_typed {B Ψ R T E body} (hc : ClosedArgs [T, E])
     have hr := (result_values_typed (Ty.WF.mono (by simp) T ht) (Ty.WF.mono (by simp) E he)).2 hv
     simpa [shiftEnv, htsh, hesh, Ty.shift_of_wf 1 _ hout, Eff.shift, Eff.rawShift,
       Eff.empty, Eff.norm] using
-      (HasTypeCQ.C_Return (R := R.map (Ty.shift 1 0)) hr)
+      (HasTypeCQ.C_Return (R := R.map (Ty.shift 1 0)) (hideBuilders_strengthen_val hr))
   have hh := HasTypeCQ.C_Handle_Fail (Rest := Eff.empty) hbody
     (show Eff.Sub (Eff.singleFail E) (Eff.union (Eff.singleFail E) Eff.empty) from
       ⟨fun a ha => (Eff.mem_union _ _ _).mpr (Or.inl ha),

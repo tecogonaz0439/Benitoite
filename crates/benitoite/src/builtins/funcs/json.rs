@@ -412,7 +412,7 @@ enum Write<'e> {
     Indent(usize),
 }
 
-fn quoted(buf: &mut StrBuf, s: &str) -> Result<(), Stop> {
+pub(super) fn quoted(buf: &mut StrBuf, s: &str) -> Result<(), Stop> {
     buf.push_char('"')?;
     for c in s.chars() {
         match c {

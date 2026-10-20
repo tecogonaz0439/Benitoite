@@ -1,0 +1,52 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.97s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-419be97b4a7eb7bf)
+
+running 44 tests
+test typeck::tests::data_without_constructors_is_reported_by_the_type_checker ... ok
+test typeck::tests::conflicting_declaration_flows_report_the_annotation_once ... ok
+test typeck::tests::contracts_come_from_declarations_and_written_lambda_parameters ... ok
+test typeck::tests::decimal_and_integer_literals_and_interpolation ... ok
+test typeck::tests::declaration_flow_preserves_inner_failure_positions_and_repairs ... ok
+test typeck::tests::binding_mismatch_suppresses_spurious_variable_use_failures ... ok
+test typeck::tests::final_expression_reports_once_at_the_expression ... ok
+test typeck::tests::constant_failures_dependencies_and_duplicate_keys ... ok
+test typeck::tests::effect_flow_direction_call_errors_and_float_fix ... ok
+test typeck::tests::declaration_flow_keeps_variable_use_failures_at_the_argument ... ok
+test typeck::tests::higher_kinded_instantiation_and_equatable_declaration_summaries ... ok
+test typeck::tests::named_collection_constants_are_evaluated ... ok
+test typeck::tests::named_constant_arguments_check_values_and_constructor_rules ... ok
+test typeck::tests::constant_collections_numeric_semantics_and_golden_examples ... ok
+test typeck::tests::placeholder_callee_return_uses_generated_function_boundary ... ok
+test typeck::tests::named_function_annotations_compare_names_in_nested_types ... ok
+test typeck::tests::diagnostics_batch4::same_named_types_use_one_qualification_table ... ok
+test typeck::tests::prepared_named_call_arguments_keep_higher_order_contracts_strict ... ok
+test typeck::tests::named_collection_duplicate_diagnostics_keep_key_positions ... ok
+test typeck::tests::effect_inference_names_and_stubs ... ok
+test typeck::tests::named_numeric_warnings_use_the_declared_argument ... ok
+test typeck::tests::records_aliases_constants_and_output_tables ... ok
+test typeck::tests::return_call_keeps_argument_position_diagnostics ... ok
+test typeck::tests::return_call_mismatch_reports_return_reason ... ok
+test typeck::tests::source_diagnostics_and_constant_type_parameters ... ok
+test typeck::tests::returned_binding_mismatch_uses_the_declared_return_reason ... ok
+test typeck::tests::record_errors_and_alias_spelling ... ok
+test typeck::tests::diagnostics_batch4::standard_integer_calls_warn_by_width_and_operation ... ok
+test typeck::tests::returns_monomorphism_unknown_types_and_error_recovery ... ok
+test typeck::tests::standard_result_and_option_reject_extensible_declarations ... ok
+test typeck::tests::prepared_named_calls_map_known_contracts_and_report_only_the_primary_cause ... ok
+test typeck::tests::unreachable_statements_are_reported_once_per_block ... ok
+test typeck::tests::unreachable_statements_are_reported_once_per_block_in_effect_children ... ok
+test typeck::tests::standard_library_and_entry_contracts ... ok
+test typeck::tests::zero_field_constructors_and_signed_literal_outputs ... ok
+test typeck::tests::operators_warnings_and_fixes ... ok
+test typeck::tests::width_float_literals_round_directly_to_binary32 ... ok
+test typeck::tests::diagnostics_batch4::declaration_provenance_preserves_causes_and_independent_errors ... ok
+test typeck::tests::prelude_type_shadowing_in_nested_types_and_type_arity ... ok
+test typeck::tests::width_literals_keep_their_exact_types_and_values ... ok
+test typeck::tests::width_integer_division_waits_for_operands_and_defaults_unconstrained_lambdas ... ok
+test typeck::tests::width_keys_reject_float32_and_accept_integers_and_interpolation ... ok
+test typeck::tests::width_integer_literals_check_both_boundaries_and_record_exact_values ... ok
+test typeck::tests::width_operators_accept_matching_types_and_reject_invalid_uses ... ok
+
+test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 1216 filtered out; finished in 6.90s
+

@@ -31,21 +31,20 @@ functions; the [runnable example](examples/People.bnt) and its
 There is no new public `benitoite` subcommand. A relative `--config` is relative
 to the current working directory, and `source` paths are relative to `--root`.
 
-## 0.0.9 version transition
+## Generation rules 3 transition
 
-The combined migration is described in the [0.0.9 release notes](../../CHANGELOG.md#009-san-benito).
-These versions identify different contracts:
+The recursive and polymorphic templates use generation rules 3. Interpreter
+versioning is updated separately at release. These versions identify different contracts:
 
 | Contract | Current version |
 |---|---|
-| Interpreter | `0.0.9` |
 | Derive configuration | `1` |
 | Declaration inventory | `2` |
-| Manifest / persistent generation record / semantic hash | `2` |
-| GENERATOR_VERSION | `2.0.0-syntax-batch3` |
+| Manifest / receipt / persistent generation record / semantic hash | `3` |
+| GENERATOR_VERSION | `3.0.0-syntax-batch4` |
 | Property.libraryVersion | `2.0.0` |
-| Property template revision | `2` |
-| Show / Order template revisions | `1` / `1` |
+| Property template revision | `3` |
+| Show / Order template revisions | `2` / `2` |
 
 Finish pending old apply/recovery with the saved old tool, then rebuild both
 binaries and make one fresh preview for the combined transition. Review its
@@ -122,29 +121,73 @@ benitoite check tools/derive/examples/People.bnt
 benitoite test tools/derive/examples/People.bnt
 ```
 
-The generated source and version 2 persistent record are checked in. They use
+The generated source and version 3 persistent record are checked in. They use
 Property library 2.0.0; the first command verifies both record and source. To regenerate, use
 the preview/review/apply commands above with the example's root and config.
 
 ## Property generation contracts
 
-`property.generator` and `property.shrinker` name zero-argument functions returning
-`Property.Gen[Record]` and `Property.Shrinker[Record]`. Their visibility matches
-the record. They support String, Boolean, Integer (the full signed 64-bit range),
-finite Float, noncyclic records, List, String-keyed Map, and Option. Property-only
-nested Option preserves None/Some(None); adding JSON still requires custom JSON
-conversions for that field. Generic and recursive records are unsupported.
-A referenced record needs a Property target, and must be public across modules.
+`property.generator` and `property.shrinker` name ordinary functions returning
+`Property.Gen[Record]` and `Property.Shrinker[Record]`. Visibility matches the
+record. Monomorphic targets retain their zero-argument API. Generic targets take
+the generators/shrinkers for used parameters in declaration order, with labels
+`element`, `element2`, etc. Phantom parameters require no argument. For example,
+`genBox[T](element: Property.Gen[T]) -> Property.Gen[Box[T]]` takes one generator.
+Write a type annotation on the binding when phantom arguments cannot be inferred;
+Benitoite function calls do not accept explicit type arguments.
 
-Each field receives the same size, in declaration order, and the random state
-returned by the preceding field. Container sizes bound each container, not the
-total nested value. Shrinking maps and appends ShrinkStep sequences in declaration
-order, changing exactly one field at a time. Each field shrinker factory and its
-candidates callback are deferred until that field is reached; a low work budget
-does not evaluate later fields. The built-in scalar and container rules
-are those of [Property](../../crates/benitoite/src/prelude/stdlib/Test/Property.bnt).
-Field relationships are not inferred: use a handwritten generator and shrinker
-for the entire record when relationships must be preserved.
+Property fields support String, Boolean, Integer (the full signed 64-bit range),
+finite Float, records, List, String-keyed Map, and Option. Property-only nested
+Option preserves None/Some(None); adding JSON still requires custom JSON
+conversions for that field. A referenced record needs a Property target and must
+be public across modules. Opaque targets still require checked handwritten
+construction. Arbitrary data, function/resource fields without whole-field
+custom functions, higher-kinded targets, cross-module cycles, and nonregular
+recursion are refused. Recursive edges must pass the same type parameters in the
+same declaration order. JSON retains its monomorphic, noncyclic scope.
+
+The inventory remains version 2. The tool collects declaration identities and
+edges with resolved type arguments, computes strongly connected components, and
+finds a minimum finite base before generating source. Required record fields add
+their minima; None and empty List/Map need no children. A required-field cycle
+without a finite base returns `derive.no_finite_base`; changing recursive type
+arguments returns `derive.non_regular_recursion`. Refusal happens before review
+artifacts or source edits are written.
+
+For each recursive component, size means additional record nodes beyond that
+minimum. Internal ordinary functions receive a total budget and return the value,
+actual node consumption and next random state. Each record costs one node;
+remaining required fields/elements reserve their minima before an earlier child
+runs. Containers bound their child counts by the remaining budget, and subtract
+actual consumption rather than duplicating the available budget. Thus size=0
+makes a finite base; `max(size, 0)` extra nodes are available. Independently
+recursive components use independent minima/budgets. Nonrecursive containers
+retain the existing size meaning. Factories for children are evaluated inside
+Gen.run, so constructing a recursive generator terminates. This bounds recursive
+record nodes, not String allocation or arbitrary user-supplied generators.
+Random state passes through fields in declaration order and container elements
+in their draw order. String Map draws keys before values and keeps the first
+value for duplicate keys without retry.
+
+Recursive shrinkers defer factory assembly until candidates are requested. They
+first delete recursive containers in field order (None, then the existing
+List/Map deletion orders), then shrink one field at a time in declaration order.
+Required record fields shrink their own contents; a child of the same type never
+replaces its parent. Standard rules exclude self candidates and never increase
+recursive record-node counts; at equal counts they retain the existing leaf
+order. Recursive container replacements also filter self candidates. Custom
+shrinker termination and cycles remain the caller's responsibility, bounded by
+`maxShrinks`, `maxShrinkWork`, and `limitReached` in Property.check.
+
+Only the standard containers' required equality constraints propagate to the
+outer shrinker signature; generators do not acquire them. A direct `T` field
+requires no equality. Its supplied Shrinker must exclude self candidates itself,
+since values of an unconstrained `T` cannot be compared. Phantom parameters need
+neither a Gen/Shrinker argument nor trait constraints. Each field factory and
+candidates callback is deferred until reached. The built-in rules are those of
+[Property](../../crates/benitoite/src/prelude/stdlib/Test/Property.bnt).
+Field relationships are not inferred: use handwritten functions for the whole
+record when relationships must be preserved.
 
 A `fields` entry may specify fully qualified `gen` and `shrink` functions
 **together**. Each must be pure, monomorphic, and take zero arguments, returning
@@ -183,15 +226,21 @@ format. Order compares fields in declaration order and returns the first
 non-Equal result, evaluating later fields only after Equal. All equal fields
 produce Equal. This does not imply builtin equality or a `key` constraint.
 
-Targets must be noncyclic records without type parameters. Empty record
-declarations are rejected by the language parser with E0201; the tool does not
-relax that rule. A field may use a handwritten dictionary for a data type or
-a polymorphic container. The tool follows the resolved implementation heads
-and their class constraints; missing dictionaries return
-`derive.missing_implementation`. The normal check after apply remains required
-for bodies and builtin constraints. Generated dependencies must explicitly
-request the corresponding class: Show does not imply Order or request Show
-for another record. Dependencies are generated before their dependents.
+Targets may have value type parameters and regular self/mutual recursion within
+one module, with the same arguments in declaration order on recursive edges.
+The tool registers generated implementation heads first, then computes required
+parameter class constraints to a fixed point; it emits ordinary constrained
+implementations, for example `implement[T: Trait.Show] Trait.Show[Node[T]]`.
+Phantom parameters get no class requirement. Order does not imply equality.
+The tool never introduces recursive dictionary values into the core. Each
+requested field dictionary must resolve from generated signatures or an existing
+handwritten implementation; otherwise `derive.missing_implementation` explains
+the field and requirement. The normal check after apply remains required for
+bodies and builtin constraints. Generated dependencies must explicitly request
+the corresponding class: Show does not imply Order or request Show for another
+record. Deep finite values still consume display space and runtime stack budget;
+these templates do not remove runtime limits or guarantee arbitrary dictionary
+termination. Empty record declarations retain the parser's E0201 diagnostic.
 
 Handwritten implementations, implementations in another region, and polymorphic
 implementations with the same resolved class/type head block generation with
@@ -230,8 +279,8 @@ markers are rejected. An existing region without its generation record is treate
 as handwritten code. A changed body is rejected rather than overwritten.
 
 The persistent record is `<config-stem>.generated.json` beside the config. It
-contains `version: 2`, `inventoryVersion: 2`, `hashVersion: 2`,
-`generatorVersion: "2.0.0-syntax-batch3"`, and ordered `targets`. Each target
+contains `version: 3`, `inventoryVersion: 2`, `hashVersion: 3`,
+`generatorVersion: "3.0.0-syntax-batch4"`, and ordered `targets`. Each target
 contains `source`, `region`, the resolved `type`, and these SHA-256 hashes:
 
 | Key | Input |
@@ -258,23 +307,37 @@ Show/Order dependencies record resolved classes, target trees, declaring modules
 parameter kinds/bounds, class constraints and method signatures, or the selected
 generated target/region and template revision. Source positions and display
 metadata are excluded. `traitTarget` records the explicit class selections and
-opaque status for review. Each Show/Order template starts at revision `1` within
-the combined version `2.0.0-syntax-batch3` transition. The Property template
-uses revision `2` for the ShrinkStep API.
+opaque status for review. Show/Order templates use revision `2`, Property uses
+revision `3`, and JSON retains revision `1`. `declarationGraph` lists reachable
+declarations in name order with resolved argument-bearing edges, component
+members, minimum finite bases and parameter/equality requirements; cycles are
+never expanded into recursive JSON. `budgetRule`, `generatedSignatures`, and
+`dependencyPlans` include the budget rule, inferred constraints, dependency
+configuration/custom signatures, and selected implementations. `semanticSha256`
+hashes all this semantic metadata. `outputSha256` separately authenticates the
+formatted body bytes. Changing a dependency therefore requires review of every
+reachable managed region even when some body bytes stay identical.
 
-Version 1 records require migration: `check` returns `derive.migration_required`
+Version 1 and 2 records require migration: `check` returns `derive.migration_required`
 without writing. Finish any pending old apply/recovery with the saved old tool
 and its manifest/receipt first. New `preview` includes the previous record in `manifest.migration` and marks its
 semantic hashes incomparable, so old input/record hashes remain visible for
 review rather than silently gaining a new approval. It authenticates the existing region
 against the old `outputSha256` before proposing replacements; mismatching bytes
 return `derive.modified_region`. Old semantic hashes are never recalculated as
-new approvals. Review the source diff **and** the version 2 record, then apply
+new approvals. Review the source diff **and** the version 3 record, then apply
 the new manifest by its exact reviewed SHA-256. A record-only migration may
 have an empty source diff. New apply refuses old manifests with
 `derive.incompatible_manifest`; receipts remain bound to the exact manifest
 hash, so an old receipt cannot authorize a new plan. Reapply and recovery after
-a final record-write failure retain the same protocol.
+a final record-write failure retain the same protocol. Version 3 receipts carry
+`version`, `generatorVersion`, and `recordSha256` as well as the exact manifest
+hash and post-apply file hashes. The shared edit protocol first saves its file
+receipt; if interrupted before derive adds these fields, reapply verifies that
+receipt against the exact version 3 manifest and current files before completing
+metadata and the generation record. Old manifests remain rejected. The seed and
+Property.libraryVersion alone do not reproduce an old generated distribution;
+keep the generator rule version and a concrete saved counterexample too.
 
 The checked-in People/Address example has completed this combined migration.
 Person requests Show, while Address requests Show and Order; Person.scores
@@ -296,7 +359,7 @@ the receipt:
 
 | Artifact | Content |
 | --- | --- |
-| `manifest.json` | Version 2 plan (inventory/hash version 2): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
+| `manifest.json` | Version 3 plan (inventory 2 / hash 3): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
 | `changes.diff` | Unified source diff from source-migrate; empty for a record-only change. |
 | `generated.json` | Proposed new generation record for review. |
 | `manifest.json.receipt.json` | After apply: reviewed manifest hash and post-apply hashes for all filesystem inputs. |

@@ -124,3 +124,44 @@ PYTHONPYCACHEPREFIX=target/bench/pycache python3 -m unittest discover -s tools/b
 ```
 
 構文検査は `scripts/check.sh` の python_syntax が compare と scenarios の Python を含む。
+
+M1 で追加した族は `patterns`（16.6）、`codegen`（16.7）、`bridge`（16.8）、
+`external-tests`（16.9）である。short は各族の宣言した代表点を含む。
+`Case.state_expectations` は状態ごとの期待拒否を保持し、期待拒否の CLI 時間を
+成功した点の時間へ混ぜない。`state_requires` による対象外も manifest に記録する。
+
+新しい builders の `-r64-` / `-r128-` は同じソースへ異なる実行引数を渡す。
+構築器の生成から最後の copy までは通常の補助関数の中で行う。入力内容は位置ごとに
+変え、途中の snapshot を追記完了まで保持し、最後に Python が独立に作った全文と照合する。
+`single-all` と `prepared` の入力は反復の前に一度作る。VM 時間の Q は R/2R の差なので、
+その共通準備の費用を含まない。copy-only は一括追加後の snapshot を並べる点であり、補助関数内の new と一括追加も含む費用として報告する。`prepared` の List は完成済み入力を返す観察点である。
+
+probe の `stages` は脱糖・コア IR 検査・下位化・コード生成をそれぞれの公開関数で測り、
+`vm_run` はコンパイル済みプログラムを `run_program` に渡してから戻るまでを測る。
+読み込み、検査、VM の出力捕捉、段の関係は section JSON のコマンドと出力に残す。
+`hole_lets` は利用者の全定義のコア IR を構造で走査し、固定式と callee の Let も数える。
+`irenv` は空／500／1000 個の Let を持つ独立のコア IR を作り、公開 `check_program`
+だけを計時する。兄弟の枝から局所変数を読む不正 IR の拒否は計時後に確認する。
+
+`bridge` は各コミットの archive にある変換関数と値の定義をその版の公開ヒープへ接続する。
+公開範囲は変えず、旧版の自由関数と新版の session メソッドへの呼び出しだけを合わせる。
+元のソース、変換単位、観測用 wrapper の hash は build 記録へ残す。
+入力グラフの準備、ヒープ対象の数え上げ、小さい結果の確認は二つの計時区間から除く。
+実在する節と辺（対象間の参照）の独立な期待値は `graph.json` と Case.params に保存する。
+ヒープ上の対象数は物理的な表現から数え、after の独立期待値と照合する。
+
+外部 test の時間は `--wasm-stats` なしで測る。同じ入力を別に起動した統計から
+通常／補助の実行用コンパイル数を読む。静的な宣言のコンパイル数は加えない。
+after は経路別の実行用キー数とコンパイル数の一致を両方向に確認する。旧版に欄がなければ
+欠測のまま保存する。test の全件成功と stateful Store の隔離も独立に検査する。
+
+時間・確保量・RSS は別プロセスで取得する。確保量も目標に必要な標本数だけ別実行する。
+時間差の比率は、差が非正、2 ms 未満、両標本集合の IQR（inclusive 法）の和以下なら
+判定不能とする。確保量と整数計数には 2 ms を適用しない。符号付き difference 単体は
+既存の契約を保ち、負の差を改善量として表現できる。欠測・非有限値・標本数不足は合格にしない。
+
+`test_compare.py` は共通 build を通して開始版と現在の HEAD の probe をコンパイルし、
+short の quick に含まれる独立 IR・グラフの全点を、対象状態ごとに一度実行して検査する。
+縮小器の段別出力も各版で利用可能な API の専用 validator で検査し、誤出力を拒否する。
+標本採取と性能の合否判定は行わない。ビルド済みの archive/cache がなければ数分を要する。
+正式な after の完全 ID は版と同梱物をそろえた後に固定し直す。

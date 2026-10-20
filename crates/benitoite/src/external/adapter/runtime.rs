@@ -141,7 +141,6 @@ pub(in crate::external) fn call<'e>(
     usage: &mut Option<crate::external::stats::CallUsage>,
 ) -> Result<Value<'e>, ExternalFailure> {
     use crate::external::runtime::{internal, new_store, record_store};
-    use wasmtime::component::Component;
 
     let Binding::Adapter {
         component: prepared,
@@ -165,23 +164,12 @@ pub(in crate::external) fn call<'e>(
     if let Some(usage) = usage {
         usage.arguments_transfer = Some(u64::try_from(input.bytes.len()).map_err(internal)?);
     }
-    let component = if let Some((_, component)) = runtime
-        .adapters
-        .iter()
-        .find(|(key, _)| key == &prepared.key)
-    {
-        component.clone()
-    } else {
-        // 合成の外側だけに内部の取り込みを許し、元のゲストの純粋性は再確認する。
-        super::super::check_component(&runtime.engine, &spec.component.bytes)
-            .map_err(|e| internal(format!("unchecked adapter source: {e:?}")))?;
-        let component =
-            Component::from_binary(&runtime.engine, &prepared.bytes).map_err(internal)?;
-        runtime
-            .adapters
-            .push((prepared.key.clone(), component.clone()));
-        component
-    };
+    let component = runtime.session.adapter(
+        &prepared.key,
+        &prepared.bytes,
+        &spec.component.bytes,
+        runtime.stats.as_ref(),
+    )?;
     // bump 確保と純粋なゲストの状態を次の呼び出しへ残さない。
     let mut store = new_store(&runtime.engine, limits)?;
     let result = (|| {

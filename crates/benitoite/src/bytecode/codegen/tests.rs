@@ -607,8 +607,31 @@ end function
     {
         let op = p.op(b.op.unwrap()).unwrap();
         assert_eq!(op.builtin, Some(BuiltinRefIdx(u32::try_from(i).unwrap())));
-        assert_eq!(op.effect, "Console.Write");
+        let name = crate::builtins::builtin_decl(b.id).unwrap().name;
+        let expected = match name {
+            "Benitoite.Log.emit" | "Benitoite.Log.enabled" => "Log.Log",
+            "Benitoite.IO.Console.writeLine" | "Benitoite.IO.Console.writeErrorLine" => {
+                "Console.Write"
+            }
+            _ => panic!("unexpected IO builtin: {name}"),
+        };
+        assert_eq!(op.effect, expected);
     }
+    let names: std::collections::BTreeSet<_> = p
+        .builtins
+        .iter()
+        .filter(|b| b.capability == Capability::Io)
+        .map(|b| crate::builtins::builtin_decl(b.id).unwrap().name)
+        .collect();
+    assert_eq!(
+        names,
+        std::collections::BTreeSet::from([
+            "Benitoite.IO.Console.writeLine",
+            "Benitoite.IO.Console.writeErrorLine",
+            "Benitoite.Log.emit",
+            "Benitoite.Log.enabled",
+        ])
+    );
 }
 
 // 関門: リストの位置とガードの写しは下位 IR で初めて現れる。生成結果と実行で両方を確かめる。
@@ -812,6 +835,16 @@ function size(xs: MyList[Integer]) -> Holder
  case MyList.Cons(_, rest) -> Holder.Hold(rest)
  end match
 end function
+function suffix(xs: MyList[Integer]) -> Pair[MyList[Integer], MyList[Integer]]
+ return match xs with
+ case MyList.Nil -> Pair(xs, xs)
+ case MyList.Cons(x, rest) ->
+  bind built <- MyList.Cons(x, rest)
+  bind fixed <- if x = 0 then 1 else 2 end if
+  bind again <- MyList.Cons(fixed, rest)
+  Pair(if fixed = 1 then built else again end if, xs)
+ end match
+end function
 function argument(xs: MyList[Integer]) -> MyList[Integer]
  return match xs with
  case MyList.Nil -> MyList.Nil
@@ -821,7 +854,7 @@ end function
 "#
     );
     let p = compile(&source);
-    for name in ["live", "captures", "size", "argument"] {
+    for name in ["live", "captures", "size", "argument", "suffix"] {
         assert!(ops(proto(&p, name)).contains(&Opcode::Con), "{name}");
         assert!(!ops(proto(&p, name)).contains(&Opcode::ConR), "{name}");
     }
@@ -1016,6 +1049,8 @@ fn nested_prototype_limits_are_reported_once_per_definition() {
     }
     fn fill_body(body: &mut LComp) -> usize {
         match &mut body.kind {
+            LCompKind::BuilderLet { body, .. } => fill_body(body),
+            LCompKind::BuilderOp { args, .. } => args.iter_mut().map(fill).sum(),
             LCompKind::Return(value) => fill(value),
             LCompKind::Let { bound, body, .. } => fill_body(bound) + fill_body(body),
             LCompKind::App { .. }
@@ -1205,6 +1240,8 @@ fn exit_report_values_survive_lowering_captures_and_liveness() {
     let message = def.params[1].clone();
     fn attach(c: &mut Comp, cause: &Var, message: &Var) -> usize {
         match &mut c.kind {
+            CompKind::BuilderLet { body, .. } => attach(body, cause, message),
+            CompKind::BuilderOp { .. } => 0,
             CompKind::Let { bound, body, .. } => {
                 attach(bound, cause, message) + attach(body, cause, message)
             }

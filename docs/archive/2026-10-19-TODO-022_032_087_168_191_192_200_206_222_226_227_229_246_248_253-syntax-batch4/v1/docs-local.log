@@ -1,0 +1,116 @@
+   Compiling benitoite v0.0.10 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.33s
+     Running tests/golden.rs (target/debug/deps/golden-09b3494b4d458d42)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite has been running for over 60 seconds
+BENITOITE_GOLDEN_FILTER=""
+golden: 803 cases; differential (golden run and bench): 284 matched
+check mode core IR: 65 matched
+gc-stress excluded: 0
+differential excluded: clock/random: 1
+  testdata/io/l40-clock-sleep.bnt
+differential excluded: network (tasks and runtime view): 10
+  testdata/network/address-in-use.bnt
+  testdata/network/redirect.bnt
+  testdata/network/respond-twice.bnt
+  testdata/network/routes-and-post.bnt
+  testdata/network/status-above-range.bnt
+  testdata/network/status-below-range.bnt
+  testdata/network/status-informational.bnt
+  testdata/network/todo194-json-parse-server.bnt
+  testdata/network/todo198-cancelled-accept-reregisters.bnt
+  testdata/network/unanswered-exchange.bnt
+differential excluded: reference list conversion cost: 1
+  testdata/eval/list_hof_long.bnt
+differential excluded: resource exhaustion: 4
+  testdata/eval/call_stack_limit.bnt
+  testdata/eval/value_too_large.bnt
+  testdata/external/large-table
+  testdata/external/memory
+differential excluded: runtime view (Process.runAttached): 1
+  testdata/io/l40-process-attached.bnt
+differential excluded: stdin: 5
+  testdata/io/c12-stdin-invalid-utf8.bnt
+  testdata/io/c12-stdin-lines.bnt
+  testdata/io/c12-stdin-remaining.bnt
+  testdata/io/l40-console-bytes.bnt
+  testdata/io/l40-console-lines.bnt
+differential excluded: unsupported builtin: 17
+  testdata/concurrency/c12-all-results.bnt
+  testdata/concurrency/c12-allok-results.bnt
+  testdata/concurrency/c12-cancelled-await.bnt
+  testdata/concurrency/c12-cancelled-reader.bnt
+  testdata/concurrency/c12-deadlock.bnt
+  testdata/concurrency/c12-group-join-await.bnt
+  testdata/concurrency/c12-group-released.bnt
+  testdata/concurrency/c12-inherited-handler.bnt
+  testdata/concurrency/c12-race-and-timeout.bnt
+  testdata/concurrency/inherited_operation_task_location.bnt
+  testdata/concurrency/r41-inherited-non-tail.bnt
+  testdata/concurrency/r41-task-error.bnt
+  testdata/external/resource
+  testdata/external/wit-docs-declarations
+  testdata/packages/json-wasm-same
+  testdata/packages/wasm-regex-same
+  ../../tools/bench/programs/tasks.bnt
+formatter properties: 649 checked, 100 excluded
+formatter properties excluded: command line error: 1
+formatter properties excluded: directory without main.bnt: 1
+formatter properties excluded: syntax error: 98
+testdata/packages/config-declaration (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0912","message":"`package.bnt` can contain only `language`, `dependency`, and `package`","primary":{"file":"testdata/packages/config-declaration/package.bnt","start":{"line":2,"column":1,"offset":17},"end":{"line":2,"column":24,"offset":40},"label":"not allowed in `package.bnt`"},"secondary":[],"notes":[],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0912","message":"`package.bnt` can contain only `language`, `dependency`, and `package`","primary":{"file":"testdata/packages/config-declaration/package.bnt","start":{"line":2,"column":1,"offset":18},"end":{"line":2,"column":24,"offset":41},"label":"not allowed in `package.bnt`"},"secondary":[],"notes":[],"helps":[]}
+testdata/packages/dependency-config-declaration (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0912","message":"`package.bnt` can contain only `language`, `dependency`, and `package`","primary":{"file":"testdata/packages/dependency-config-declaration/deps/textkit/package.bnt","start":{"line":4,"column":1,"offset":45},"end":{"line":4,"column":14,"offset":58},"label":"not allowed in `package.bnt`"},"secondary":[],"notes":[],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0912","message":"`package.bnt` can contain only `language`, `dependency`, and `package`","primary":{"file":"testdata/packages/dependency-config-declaration/deps/textkit/package.bnt","start":{"line":4,"column":1,"offset":46},"end":{"line":4,"column":14,"offset":59},"label":"not allowed in `package.bnt`"},"secondary":[],"notes":[],"helps":[]}
+testdata/packages/dependency-settings (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0914","message":"the package `Old` needs a `language` line","primary":{"file":"testdata/packages/dependency-settings/deps/nolanguage/package.bnt","start":{"line":1,"column":9,"offset":8},"end":{"line":1,"column":12,"offset":11},"label":""},"secondary":[],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0915","message":"a package cannot have dependencies in this version","primary":{"file":"testdata/packages/dependency-settings/deps/transitive/package.bnt","start":{"line":4,"column":1,"offset":44},"end":{"line":4,"column":11,"offset":54},"label":""},"secondary":[{"file":"testdata/packages/dependency-settings/deps/transitive/package.bnt","start":{"line":2,"column":9,"offset":25},"end":{"line":2,"column":15,"offset":31},"label":"this `package.bnt` declares the package `Nested`"}],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.10","primary":{"file":"testdata/packages/dependency-settings/deps/future/package.bnt","start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":18,"offset":17},"label":""},"secondary":[],"notes":[],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0914","message":"the package `Old` needs a `language` line","primary":{"file":"testdata/packages/dependency-settings/deps/nolanguage/package.bnt","start":{"line":1,"column":9,"offset":8},"end":{"line":1,"column":12,"offset":11},"label":""},"secondary":[],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0915","message":"a package cannot have dependencies in this version","primary":{"file":"testdata/packages/dependency-settings/deps/transitive/package.bnt","start":{"line":4,"column":1,"offset":45},"end":{"line":4,"column":11,"offset":55},"label":""},"secondary":[{"file":"testdata/packages/dependency-settings/deps/transitive/package.bnt","start":{"line":2,"column":9,"offset":26},"end":{"line":2,"column":15,"offset":32},"label":"this `package.bnt` declares the package `Nested`"}],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.10","primary":{"file":"testdata/packages/dependency-settings/deps/future/package.bnt","start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":18,"offset":17},"label":""},"secondary":[],"notes":[],"helps":[]}
+testdata/packages/hash-match (Direct) .exit: expected 0, actual 2
+testdata/packages/hash-match (Direct) .stdout: first differing byte 0
+- expected: "42\n"
++ actual: ""
+testdata/packages/hash-match (Direct) .diag.json:
+- expected: 
++ actual: {"kind":"check","severity":"error","code":"E0919","message":"the contents of the dependency `Hashkit` do not match its `hash`","primary":{"file":"testdata/packages/hash-match/package.bnt","start":{"line":3,"column":8,"offset":48},"end":{"line":3,"column":81,"offset":121},"label":""},"secondary":[],"notes":["expected: sha256:a98fe7cf80184e01de909e5b8dc0b8daa6a79b69585f50b013b0ee46341dae94","computed: sha256:e12d0d59ca45613448debb10893ef248fb19f4d46a4a7b27c8cc31600c88e391","package: `Hashkit`","if the change is intended, write the computed hash"],"helps":[]}
+testdata/packages/hash-match (Request) .exit: expected 0, actual 2
+testdata/packages/hash-match (Request) .stdout: first differing byte 0
+- expected: "42\n"
++ actual: ""
+testdata/packages/hash-match (Request) .diag.json:
+- expected: 
++ actual: {"kind":"check","severity":"error","code":"E0919","message":"the contents of the dependency `Hashkit` do not match its `hash`","primary":{"file":"testdata/packages/hash-match/package.bnt","start":{"line":3,"column":8,"offset":48},"end":{"line":3,"column":81,"offset":121},"label":""},"secondary":[],"notes":["expected: sha256:a98fe7cf80184e01de909e5b8dc0b8daa6a79b69585f50b013b0ee46341dae94","computed: sha256:e12d0d59ca45613448debb10893ef248fb19f4d46a4a7b27c8cc31600c88e391","package: `Hashkit`","if the change is intended, write the computed hash"],"helps":[]}
+testdata/packages/hash-mismatch (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0919","message":"the contents of the dependency `Words` do not match its `hash`","primary":{"file":"testdata/packages/hash-mismatch/main.bnt","start":{"line":4,"column":8,"offset":108},"end":{"line":4,"column":81,"offset":181},"label":""},"secondary":[],"notes":["expected: sha256:0000000000000000000000000000000000000000000000000000000000000000","computed: sha256:a98fe7cf80184e01de909e5b8dc0b8daa6a79b69585f50b013b0ee46341dae94","package: `Hashkit`","if the change is intended, write the computed hash"],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0919","message":"the contents of the dependency `Words` do not match its `hash`","primary":{"file":"testdata/packages/hash-mismatch/main.bnt","start":{"line":4,"column":8,"offset":108},"end":{"line":4,"column":81,"offset":181},"label":""},"secondary":[],"notes":["expected: sha256:0000000000000000000000000000000000000000000000000000000000000000","computed: sha256:e12d0d59ca45613448debb10893ef248fb19f4d46a4a7b27c8cc31600c88e391","package: `Hashkit`","if the change is intended, write the computed hash"],"helps":[]}
+testdata/packages/header-overlap (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0911","message":"`language` is written both at the start of `testdata/packages/header-overlap/main.bnt` and in `package.bnt`","primary":{"file":"testdata/packages/header-overlap/main.bnt","start":{"line":3,"column":1,"offset":94},"end":{"line":3,"column":9,"offset":102},"label":""},"secondary":[{"file":"testdata/packages/header-overlap/package.bnt","start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":9,"offset":8},"label":"also written here"}],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0911","message":"`dependency` is written both at the start of `testdata/packages/header-overlap/main.bnt` and in `package.bnt`","primary":{"file":"testdata/packages/header-overlap/main.bnt","start":{"line":4,"column":1,"offset":111},"end":{"line":4,"column":11,"offset":121},"label":""},"secondary":[{"file":"testdata/packages/header-overlap/package.bnt","start":{"line":2,"column":1,"offset":17},"end":{"line":2,"column":11,"offset":27},"label":"also written here"}],"notes":[],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0911","message":"`language` is written both at the start of `testdata/packages/header-overlap/main.bnt` and in `package.bnt`","primary":{"file":"testdata/packages/header-overlap/main.bnt","start":{"line":3,"column":1,"offset":94},"end":{"line":3,"column":9,"offset":102},"label":""},"secondary":[{"file":"testdata/packages/header-overlap/package.bnt","start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":9,"offset":8},"label":"also written here"}],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0911","message":"`dependency` is written both at the start of `testdata/packages/header-overlap/main.bnt` and in `package.bnt`","primary":{"file":"testdata/packages/header-overlap/main.bnt","start":{"line":4,"column":1,"offset":112},"end":{"line":4,"column":11,"offset":122},"label":""},"secondary":[{"file":"testdata/packages/header-overlap/package.bnt","start":{"line":2,"column":1,"offset":18},"end":{"line":2,"column":11,"offset":28},"label":"also written here"}],"notes":[],"helps":[]}
+testdata/packages/imported-header (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0909","message":"`language` can be written only at the start of the starting file or in `package.bnt`","primary":{"file":"testdata/packages/imported-header/Helper.bnt","start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":9,"offset":8},"label":""},"secondary":[],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0909","message":"`dependency` can be written only at the start of the starting file or in `package.bnt`","primary":{"file":"testdata/packages/imported-header/Helper.bnt","start":{"line":2,"column":1,"offset":17},"end":{"line":2,"column":11,"offset":27},"label":""},"secondary":[],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0910","message":"a `package` block can be written only in `package.bnt`","primary":{"file":"testdata/packages/imported-header/Helper.bnt","start":{"line":5,"column":1,"offset":73},"end":{"line":5,"column":8,"offset":80},"label":""},"secondary":[],"notes":[],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0909","message":"`language` can be written only at the start of the starting file or in `package.bnt`","primary":{"file":"testdata/packages/imported-header/Helper.bnt","start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":9,"offset":8},"label":""},"secondary":[],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0909","message":"`dependency` can be written only at the start of the starting file or in `package.bnt`","primary":{"file":"testdata/packages/imported-header/Helper.bnt","start":{"line":2,"column":1,"offset":18},"end":{"line":2,"column":11,"offset":28},"label":""},"secondary":[],"notes":[],"helps":[]}
+{"kind":"check","severity":"error","code":"E0910","message":"a `package` block can be written only in `package.bnt`","primary":{"file":"testdata/packages/imported-header/Helper.bnt","start":{"line":5,"column":1,"offset":74},"end":{"line":5,"column":8,"offset":81},"label":""},"secondary":[],"notes":[],"helps":[]}
+testdata/packages/package-dependencies (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0915","message":"a package cannot have dependencies in this version","primary":{"file":"testdata/packages/package-dependencies/package.bnt","start":{"line":2,"column":1,"offset":17},"end":{"line":2,"column":11,"offset":27},"label":""},"secondary":[{"file":"testdata/packages/package-dependencies/package.bnt","start":{"line":5,"column":9,"offset":81},"end":{"line":5,"column":16,"offset":88},"label":"this `package.bnt` declares the package `Rootkit`"}],"notes":[],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0915","message":"a package cannot have dependencies in this version","primary":{"file":"testdata/packages/package-dependencies/package.bnt","start":{"line":2,"column":1,"offset":18},"end":{"line":2,"column":11,"offset":28},"label":""},"secondary":[{"file":"testdata/packages/package-dependencies/package.bnt","start":{"line":5,"column":9,"offset":82},"end":{"line":5,"column":16,"offset":89},"label":"this `package.bnt` declares the package `Rootkit`"}],"notes":[],"helps":[]}
+test golden_suite ... FAILED
+
+failures:
+
+failures:
+    golden_suite
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 79.29s
+
+error: test failed, to rerun pass `-p benitoite --test golden`

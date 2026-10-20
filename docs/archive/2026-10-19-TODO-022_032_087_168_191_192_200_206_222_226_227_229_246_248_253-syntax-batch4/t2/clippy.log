@@ -1,0 +1,20 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+warning: the method `dictionary` doesn't need a mutable reference
+    --> crates/benitoite/src/ir/check.rs:1131:32
+     |
+1131 |             self.dictionary(d, &mut env);
+     |                                ^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_mut_passed
+     = note: `#[warn(clippy::unnecessary_mut_passed)]` on by default
+help: remove this `mut`
+     |
+1131 -             self.dictionary(d, &mut env);
+1131 +             self.dictionary(d, &env);
+     |
+
+error: `benitoite` (lib) generated 1 warning (run `cargo clippy --fix --lib -p benitoite -- ` to apply 1 suggestion)
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+error: `benitoite` (lib test) generated 1 warning (1 duplicate)
+error: warnings are denied by `build.warnings` configuration

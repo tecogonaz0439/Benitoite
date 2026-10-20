@@ -326,8 +326,8 @@ mutual
                 exact (PatTy.match_typed hp hv h1).append (PatTys.match_typed hps' hvs' h2)
 end
 
-theorem Val.VarsInList.append {n pe} : {vs ws : List Val} → Val.VarsInList n pe vs →
-    Val.VarsInList n pe ws → Val.VarsInList n pe (vs ++ ws)
+theorem Val.VarsInList.append {depth n pe} : {vs ws : List Val} → Val.VarsInList n pe vs depth →
+    Val.VarsInList n pe ws depth → Val.VarsInList n pe (vs ++ ws) depth
   | [], _, _, h => by simpa using h
   | v :: vs, ws, h1, h2 => by
       simp only [Val.VarsInList, List.cons_append] at h1 ⊢
@@ -507,11 +507,11 @@ theorem firstAlt_closed {alts v ws} (hv : Val.VarsIn 0 (fun _ => True) v)
           exact .of_mem (fun x hx => (Pat.matchVal_closed hv hp).mem (selectSlots_mem hs x hx))
 
 /-- 分岐全体の型付けから、選択された分岐の本体とガードを取り出す。 -/
-theorem HasTypeArmsQ.mem {Ψ C Γ R arms a b ε arm}
-    (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε) (hm : arm ∈ arms) :
-    ∃ δ, AltsTy P arm.alts a δ ∧ HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R arm.body b ε ∧
+theorem HasTypeArmsQ.mem {Δl : LocalCtx} {Ψ C Γ R arms a b ε arm}
+    (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) (hm : arm ∈ arms) :
+    ∃ δ, AltsTy P arm.alts a δ ∧ HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R arm.body b ε (LocalCtx.extend δ.length Δl) ∧
       ∀ g, arm.guard = some g →
-        HasTypeCQ P B Ψ Q C (hideConts (binds δ ++ Γ)) none g (.base .boolean) Eff.empty := by
+        HasTypeCQ P B Ψ Q C (hideConts (binds δ ++ Γ)) none g (.base .boolean) Eff.empty (LocalCtx.extend δ.length Δl) := by
   match h with
   | .nil _ => simp at hm
   | .plain ha hb ht =>
@@ -523,8 +523,8 @@ theorem HasTypeArmsQ.mem {Ψ C Γ R arms a b ε arm}
       · exact ⟨_, ha, hb, by intro g he; cases he; exact hg⟩
       · exact ht.mem hm
 
-theorem Arm.VarsInList.mem {n pe arms arm} (h : Arm.VarsInList n pe arms) (hm : arm ∈ arms) :
-    Comp.VarsIn n pe arm.body ∧ ∀ g, arm.guard = some g → Comp.VarsIn n pe g := by
+theorem Arm.VarsInList.mem {depth n pe arms arm} (h : Arm.VarsInList n pe arms depth) (hm : arm ∈ arms) :
+    Comp.VarsIn n pe arm.body (depth + arm.binders) ∧ ∀ g, arm.guard = some g → Comp.VarsIn n pe g (depth + arm.binders) := by
   induction arms with
   | nil => simp at hm
   | cons ar arms ih =>

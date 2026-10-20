@@ -26,6 +26,11 @@ def EnvWF (n : Nat) (Γ : List (Option Ty)) : Prop :=
 /-- ストアの型付けの型は、型の変数を含まない。 -/
 def StoreTy.WF (Ψ : StoreTy) : Prop := ∀ l x, Ψ l = some x → x.WF
 
+/-- 専用セルを隠すと、残る場所の整形式はそのまま保たれる。 -/
+theorem StoreTy.WF.hideBuilders {Ψ : StoreTy} (h : Ψ.WF) : Ψ.hideBuilders.WF :=
+  fun l x hx => h l x (hideBuilders_sub Ψ l x hx)
+
+
 theorem fnTy_wf {n names ps r ε ts es} (hts : ∀ t ∈ ts, Ty.WF n t)
     (hes : ∀ e ∈ es, Eff.WF n e) (hps : Ty.WFList ts.length ps)
     (hr : Ty.WF ts.length r) (he : Eff.WF ts.length ε) (hnames : NamesWF names ps) :
@@ -130,9 +135,9 @@ theorem LocTy.WF.contT {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) {l b t ε r} (h : Ψ
 
 mutual
   /-- 型付けの結果の型の正しさ（値）。 -/
-  theorem HasTypeVQ.wf (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ v a}
+  theorem HasTypeVQ.wf {depth : Nat} (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ v a}
       (h : HasTypeVQ P B Ψ Q C Γ v a) (hΓ : EnvWF C.length Γ) (hΨ : StoreTy.WF Ψ)
-      (hv : Val.VarsIn C.length (fun _ => True) v) : Ty.WF C.length a := by
+      (hv : Val.VarsIn C.length (fun _ => True) v depth) : Ty.WF C.length a := by
     match h with
     | .V_Var hi _ => exact hΓ _ _ hi
     | .V_Const => exact Const.type_wf _ _
@@ -191,39 +196,47 @@ mutual
           (by rw [hl]; exact Ty.VarsIn.wf _ hsc)
     | .V_Super hv' _ _ =>
         simp only [Val.VarsIn] at hv
-        have := HasTypeVQ.wf hwf hb hv' hΓ hΨ hv
+        have := HasTypeVQ.wf (depth := _) hwf hb hv' hΓ hΨ hv
         simpa [Ty.WF] using this
     | .V_Sub _ _ hw => exact hw
 
   /-- 型付けの結果の型の正しさ（計算）。 -/
-  theorem HasTypeCQ.wf (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R m a ε}
-      (h : HasTypeCQ P B Ψ Q C Γ R m a ε) (hΓ : EnvWF C.length Γ) (hΨ : StoreTy.WF Ψ)
-      (hm : Comp.VarsIn C.length (fun _ => True) m) : Ty.WF C.length a := by
+  theorem HasTypeCQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R m a ε}
+      (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hΓ : EnvWF C.length Γ) (hΨ : StoreTy.WF Ψ)
+      (hm : Comp.VarsIn C.length (fun _ => True) m depth) : Ty.WF C.length a := by
     match h with
-    | .C_Return hv => simp only [Comp.VarsIn] at hm; exact HasTypeVQ.wf hwf hb hv hΓ hΨ hm
+    | .C_BuilderLet _ hbBody =>
+        refine HasTypeCQ.wf (depth := depth + 1) hwf hb hbBody ?_ hΨ hm.2
+        intro i x hi
+        cases i with
+        | zero => simp at hi
+        | succ i => exact hΓ i x (by simpa using hi)
+    | .C_BuilderOp (kind := kind) (op := op) hw _ _ =>
+        cases op <;> simp_all [BuilderOp.result, Ty.WF]
+    | .C_Return hv => simp only [Comp.VarsIn] at hm; exact HasTypeVQ.wf (depth := _) hwf hb hv hΓ hΨ hm
     | .C_Sub _ _ _ hw => exact hw
-    | .C_Eff h _ => exact HasTypeCQ.wf hwf hb h hΓ hΨ hm
+    | .C_Eff h _ => exact HasTypeCQ.wf (depth := _) hwf hb h hΓ hΨ hm
     | .C_Let hm' hn =>
         simp only [Comp.VarsIn] at hm
-        have ha := HasTypeCQ.wf hwf hb hm' hΓ hΨ hm.1
-        refine HasTypeCQ.wf hwf hb hn ?_ hΨ hm.2
+        have ha := HasTypeCQ.wf (depth := _) hwf hb hm' hΓ hΨ hm.1
+        refine HasTypeCQ.wf (depth := _) hwf hb hn ?_ hΨ hm.2
         have := EnvWF.binds' (as := [_]) (by simpa using ha) hΓ
         simpa [Release.binds] using this
     | .C_App hf _ =>
         simp only [Comp.VarsIn] at hm
-        have := HasTypeVQ.wf hwf hb hf hΓ hΨ hm.1
+        have := HasTypeVQ.wf (depth := _) hwf hb hf hΓ hΨ hm.1
         simp only [Ty.WF] at this; exact this.2.2.1
-    | .C_If _ hm' _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf hwf hb hm' hΓ hΨ hm.2.1
+    | .C_If _ hm' _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf (depth := _) hwf hb hm' hΓ hΨ hm.2.1
     | .C_Match hv harms _ =>
         simp only [Comp.VarsIn] at hm
-        exact HasTypeArmsQ.wf hwf hb harms (HasTypeVQ.wf hwf hb hv hΓ hΨ hm.1) hΓ hΨ hm.2
+        exact HasTypeArmsQ.wf (depth := _) hwf hb harms (HasTypeVQ.wf (depth := _) hwf hb hv hΓ hΨ hm.1) hΓ hΨ hm.2
     | .C_Lazy hm' =>
         simp only [Comp.VarsIn] at hm
-        simpa [Ty.WF] using HasTypeCQ.wf hwf hb hm' hΓ.hide hΨ hm
+        simpa [Ty.WF] using HasTypeCQ.wf (depth := _) hwf hb hm' hΓ.hide hΨ.hideBuilders hm
     | .C_Escape _ hw => exact hw
-    | .C_Use _ _ hm' _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf hwf hb hm' hΓ hΨ hm.2
-    | .C_Handle hm' _ _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf hwf hb hm' hΓ hΨ hm.1
-    | .C_Handle_Fail hm' _ _ _ => exact HasTypeCQ.wf hwf hb hm' hΓ hΨ hm.1
+    | .C_Use _ _ hm' _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf (depth := _) hwf hb hm' hΓ hΨ hm.2
+    | .C_Handle hm' _ _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf (depth := _) hwf hb hm' hΓ hΨ hm.1
+    | .C_Handle_Fail hm' _ _ _ => exact HasTypeCQ.wf (depth := _) hwf hb hm' hΓ hΨ hm.1
     | .C_Resume hi _ =>
         have := hΓ _ _ hi
         simp only [Ty.WF] at this; exact this.2.1
@@ -231,7 +244,7 @@ mutual
     | .C_Meth (τ := τ) (ms := ms) hv hc hmeth hnames hts _ _ _ =>
         simp only [Comp.VarsIn] at hm
         have hτ : Ty.WF C.length τ := by
-          have := HasTypeVQ.wf hwf hb hv hΓ hΨ hm.1
+          have := HasTypeVQ.wf (depth := _) hwf hb hv hΓ hΨ hm.1
           simpa [Ty.WF] using this
         have hsc := hwf.2.2.2.1 _ _ hc _ _ hmeth
         have hl : _ = _ := hts.1
@@ -245,18 +258,18 @@ mutual
         · simp only [List.length_append, List.length_singleton, hl]
           exact Ty.VarsIn.wf _ hsc.2.2.1
 
-  theorem HasTypeArmsQ.wf (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R arms a b ε}
-      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε) (ha : Ty.WF C.length a) (hΓ : EnvWF C.length Γ)
-      (hΨ : StoreTy.WF Ψ) (harms : Arm.VarsInList C.length (fun _ => True) arms) :
+  theorem HasTypeArmsQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R arms a b ε}
+      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) (ha : Ty.WF C.length a) (hΓ : EnvWF C.length Γ)
+      (hΨ : StoreTy.WF Ψ) (harms : Arm.VarsInList C.length (fun _ => True) arms depth) :
       Ty.WF C.length b := by
     match h with
     | .nil hw => exact hw
     | .plain hp hbody _ =>
         simp only [Arm.VarsInList] at harms
-        exact HasTypeCQ.wf hwf hb hbody (EnvWF.binds' (AltsTy.wf hwf hp ha) hΓ) hΨ harms.1
+        exact HasTypeCQ.wf (depth := _) hwf hb hbody (EnvWF.binds' (AltsTy.wf hwf hp ha) hΓ) hΨ harms.1
     | .guarded hp _ hbody _ =>
         simp only [Arm.VarsInList] at harms
-        exact HasTypeCQ.wf hwf hb hbody (EnvWF.binds' (AltsTy.wf hwf hp ha) hΓ) hΨ harms.2.1
+        exact HasTypeCQ.wf (depth := _) hwf hb hbody (EnvWF.binds' (AltsTy.wf hwf hp ha) hΓ) hΨ harms.2.1
 
 end
 

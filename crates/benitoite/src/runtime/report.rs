@@ -247,6 +247,13 @@ pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic
         Stop::Runtime(RuntimeError::ResponseSentTwice) => DiagBuilder::new(DiagCode::R0801),
         Stop::Runtime(RuntimeError::TaskDeadlock) => return deadlock_diagnostic(program, info),
         Stop::Runtime(RuntimeError::AwaitedTaskCancelled) => DiagBuilder::new(DiagCode::R1002),
+        Stop::Resource(ResourceError::AllocationFailed {
+            function,
+            requested_bytes,
+        }) => DiagBuilder::new(DiagCode::R0907)
+            .arg("function", *function)
+            .arg("requested_bytes", requested_bytes.to_string())
+            .note("capacity"),
         Stop::Resource(ResourceError::CallStackTooDeep { frames }) => {
             DiagBuilder::new(DiagCode::R0901)
                 .arg("frames", frames.to_string())
@@ -1328,6 +1335,15 @@ mod tests {
                 vec!["the result would have 9 elements; the limit is 8"],
             ),
             (
+                Stop::Resource(ResourceError::AllocationFailed {
+                    function: "ListBuilder.appendAll",
+                    requested_bytes: 4096,
+                }),
+                DiagCode::R0907,
+                "`ListBuilder.appendAll` could not reserve buffer memory",
+                vec!["the requested buffer capacity was 4096 bytes"],
+            ),
+            (
                 Stop::Resource(ResourceError::CallStackTooDeep { frames: 42 }),
                 DiagCode::R0901,
                 "the call stack is too deep",
@@ -1389,6 +1405,7 @@ mod tests {
                         | DiagCode::R0903
                         | DiagCode::R0904
                         | DiagCode::R0905
+                        | DiagCode::R0907
                 ) {
                     ReportKind::Resource
                 } else {

@@ -1,0 +1,16 @@
+== plan: level work against ebd22a9361cc5b5bc1dba38382f944b4d522d45a (changed files not classified) (partial selection: --only fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lib_default] because of --only (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test runtime_builtins --test declarations --test stdlib_doc_examples --test property_library --test desugar_export
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate

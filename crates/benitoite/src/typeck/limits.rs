@@ -7,6 +7,9 @@ use crate::types::Ty;
 pub(super) const MAX_TYPE_DEPTH: usize = 1000;
 pub(super) const MAX_TYPE_NODES: usize = 16_384;
 pub(super) const MAX_COVERAGE_WORK: usize = 1 << 20;
+pub(super) const MAX_COVERAGE_ENUM_WORK: usize = 1 << 24;
+pub(super) const MAX_COVERAGE_MEMO_CELLS: usize = 1 << 20;
+pub(super) const MAX_COVERAGE_KEY_BYTES: usize = 16 << 20;
 
 #[derive(Clone, Copy)]
 pub(super) enum TypeLimit {

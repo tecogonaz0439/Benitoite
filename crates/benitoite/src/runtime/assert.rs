@@ -618,6 +618,7 @@ impl Collector<'_> {
                     self.expr(message);
                 }
             }
+            Expr::Block(e) => self.block(&e.body),
             Expr::Lazy(e) => self.block(&e.body),
             Expr::With(e) => {
                 for bind in &e.binds {

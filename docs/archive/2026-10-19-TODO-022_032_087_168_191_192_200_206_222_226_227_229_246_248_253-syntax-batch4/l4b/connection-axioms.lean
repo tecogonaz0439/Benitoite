@@ -1,0 +1,26 @@
+import Benitoite
+#print axioms Benitoite.Release.LocalSubstAgree.empty
+#print axioms Benitoite.Release.LocalSubstAgree.refl
+#print axioms Benitoite.Release.LocalSubstAgree.extend
+#print axioms Benitoite.Release.LocalSubstAgree.builder
+#print axioms Benitoite.Release.LocalRef.HasKind.subst_congr
+#print axioms Benitoite.Release.SubstOk.inst_prefix
+#print axioms Benitoite.Release.HasTypeCQ.instantiate_local
+#print axioms Benitoite.Release.LocalCtx.substTyAt_extend
+#print axioms Benitoite.Release.LocalRef.HasKind.substTy
+#print axioms Benitoite.Release.BuilderKind.contents_substTyAt
+#print axioms Benitoite.Release.BuilderOp.params_substTyAt
+#print axioms Benitoite.Release.BuilderOp.result_substTyAt
+#print axioms Benitoite.Release.StoreOk.builder_places
+#print axioms Benitoite.Release.ContTy.localRefs
+#print axioms Benitoite.Release.CellOk.localRefs
+#print axioms Benitoite.Release.StateTy.local_invariant
+#print axioms Benitoite.Release.local_steps_invariant
+#print axioms Benitoite.Release.capture_local_valid
+#print axioms Benitoite.Release.resume_local_valid
+#print axioms Benitoite.Release.BuilderExamples.dedicatedProgram_typed
+#print axioms Benitoite.Release.BuilderExamples.dedicatedProgram_run
+#print axioms Benitoite.Release.BuilderExamples.dedicatedProgram_prefixes
+#print axioms Benitoite.Release.BuilderExamples.resumedProgram_run
+#print axioms Benitoite.Release.BuilderExamples.dedicated_location_not_captured
+#print axioms Benitoite.Release.BuilderExamples.dedicated_inside_lambda

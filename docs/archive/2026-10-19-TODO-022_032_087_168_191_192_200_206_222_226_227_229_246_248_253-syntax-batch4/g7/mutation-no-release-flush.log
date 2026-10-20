@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.16s
+     Running tests/interrupt_process.rs (target/debug/deps/interrupt_process-a36460d53621eb85)
+
+running 1 test
+
+thread 'first_signal_releases_buffered_file_writer' (18447381) panicked at crates/benitoite/tests/interrupt_process.rs:503:13:
+assertion `left == right` failed: direct/-INT: release did not flush the entire buffer
+  left: []
+ right: [109, 97, 114, 107, 101, 114, 10, 97, 108, 108, 32, 98, 117, 102, 102, 101, 114, 101, 100, 32, 99, 111, 110, 116, 101, 110, 116, 10]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test first_signal_releases_buffered_file_writer ... FAILED
+
+failures:
+
+failures:
+    first_signal_releases_buffered_file_writer
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1.14s
+
+error: test failed, to rerun pass `-p benitoite --test interrupt_process`

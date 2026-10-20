@@ -1,0 +1,62 @@
+{
+  "inputs": [
+    {
+      "bindings": [],
+      "group": "golden",
+      "matches": [
+        {
+          "arms": [
+            {
+              "alts": [
+                {
+                  "range": {
+                    "hi": {
+                      "integer": {
+                        "value": -1
+                      }
+                    },
+                    "lo": {
+                      "integer": {
+                        "value": -9223372036854775808
+                      }
+                    }
+                  }
+                }
+              ],
+              "guarded": false
+            },
+            {
+              "alts": [
+                {
+                  "range": {
+                    "hi": {
+                      "integer": {
+                        "value": 9223372036854775807
+                      }
+                    },
+                    "lo": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              ],
+              "guarded": false
+            }
+          ],
+          "coverageView": [],
+          "node": 12,
+          "package": "root",
+          "scrutineeTy": {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        }
+      ],
+      "name": "hole"
+    }
+  ],
+  "version": 4
+}

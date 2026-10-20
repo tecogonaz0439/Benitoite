@@ -1,0 +1,44 @@
+== plan: level work against 376cc390b98b232ad4f27af5cbb3ea4941053965 (changed files not classified) (partial selection: --only fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep
+   [lib_default] because of --only (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test golden --test random_programs --test verify --test coverage_export --test desugar_export
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+warning: this expression creates a reference which is immediately dereferenced by the compiler
+   --> crates/benitoite/src/ir/decision.rs:609:35
+    |
+609 |         let counts = arena.counts(&tree, arm_count)?;
+    |                                   ^^^^^ help: change this to: `tree`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_borrow
+    = note: `#[warn(clippy::needless_borrow)]` on by default
+
+warning: this expression creates a reference which is immediately dereferenced by the compiler
+   --> crates/benitoite/src/ir/decision.rs:610:50
+    |
+610 |         let (joins, jumps) = arena.emission_cost(&tree)?;
+    |                                                  ^^^^^ help: change this to: `tree`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_borrow
+
+error: `benitoite` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p benitoite -- ` to apply 2 suggestions)
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+error: `benitoite` (lib test) generated 2 warnings (2 duplicates)
+error: warnings are denied by `build.warnings` configuration
+FAILED: lint_default

@@ -1,0 +1,125 @@
+{
+  "boundaryCases": 3,
+  "cases": [
+    {
+      "arms": [
+        {
+          "alts": [
+            {
+              "hi": 9223372036854775807,
+              "kind": "integerRange",
+              "lo": -9223372036854775808
+            }
+          ],
+          "guarded": false
+        }
+      ],
+      "coverageView": [],
+      "decls": [],
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "name": "full",
+      "package": "root",
+      "pattern": {
+        "kind": "wild"
+      },
+      "ty": {
+        "args": [],
+        "kind": "integer"
+      }
+    },
+    {
+      "arms": [
+        {
+          "alts": [
+            {
+              "hi": -1,
+              "kind": "integerRange",
+              "lo": -9223372036854775808
+            }
+          ],
+          "guarded": false
+        },
+        {
+          "alts": [
+            {
+              "hi": 9223372036854775807,
+              "kind": "integerRange",
+              "lo": 0
+            }
+          ],
+          "guarded": false
+        }
+      ],
+      "coverageView": [],
+      "decls": [],
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "name": "split",
+      "package": "root",
+      "pattern": {
+        "kind": "wild"
+      },
+      "ty": {
+        "args": [],
+        "kind": "integer"
+      }
+    },
+    {
+      "arms": [
+        {
+          "alts": [
+            {
+              "hi": -1,
+              "kind": "integerRange",
+              "lo": -9223372036854775808
+            }
+          ],
+          "guarded": false
+        },
+        {
+          "alts": [
+            {
+              "hi": 9223372036854775807,
+              "kind": "integerRange",
+              "lo": 1
+            }
+          ],
+          "guarded": false
+        }
+      ],
+      "coverageView": [],
+      "decls": [],
+      "expected": {
+        "exhaustive": false,
+        "uncovered": "_",
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "name": "hole",
+      "package": "root",
+      "pattern": {
+        "kind": "wild"
+      },
+      "ty": {
+        "args": [],
+        "kind": "integer"
+      }
+    }
+  ],
+  "kinds": {},
+  "randomCases": 0,
+  "seedXor": 0,
+  "version": 4
+}

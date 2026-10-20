@@ -69,9 +69,9 @@
 | 章 | 範囲 |
 |---|---|
 | [ライブラリの構成](03-interop/03-01-library-structure.md) | 標準ライブラリの作り方（言語で書く部分、組み込みの関数、クレートを包む関数）、IO 実行器を通す規則、使うクレートとライセンス、処理系が特別に扱う型と関数 |
-| [標準ライブラリ](03-interop/03-06-stdlib.md) | 標準ライブラリの名前空間と prelude の範囲、基本型とコレクションの関数、標準の型クラス、永続コレクションの API と実装設計 |
+| [標準ライブラリ](03-interop/03-06-stdlib.md) | 標準ライブラリの名前空間と prelude の範囲、基本型とコレクションの関数、検査済みの長さ・添字・非空リスト、Log・SourceLocation、標準の型クラス、永続コレクションの API と実装設計 |
 | [IO のモジュール](03-interop/03-07-io-modules.md) | `Benitoite.IO` の下のモジュール（Console・File・Process・Clock・Random）、外部コマンドとシェル、ファイルのリソースの型、IOErrorKind と関数の対応 |
-| [テキストとデータの処理](03-interop/03-08-text-and-data.md) | Path・Json・Regex・Csv・Time・Encoding・Hash |
+| [テキストとデータの処理](03-interop/03-08-text-and-data.md) | Path・Json・Regex・Csv・Time・Encoding・Hash、再帰・多相の外部生成と版3記録 |
 | [ネットワークのモジュール](03-interop/03-09-network.md) | `Benitoite.Network` の下のモジュール（Http）、HTTP のサーバとクライアント、失敗の種類、使うクレート |
 | [外部の関数](03-interop/03-10-external-functions.md) | 外部の関数と外部の型の宣言、パスの基準、取り込みと型の照合、実行と上限と失敗、外部の型の値の解放 |
 

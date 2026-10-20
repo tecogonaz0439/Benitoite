@@ -1,0 +1,76 @@
+{
+  "local_file_links": 605,
+  "errors": [],
+  "anchor_errors": [],
+  "new_examples_agree": true,
+  "outside_rows": [
+    {
+      "name": "Logの位置の事前展開・名前解決・CLI",
+      "line": 309,
+      "boundary": "解決済み標準束縛の同定・ここに書いた呼び出し位置の展開は、通常レコードを形式化した規則へ渡す前の処理である。標準Log.Logの登録と利用者同名の区別、hereの直接呼び出し・値化/パイプ拒否・import別名・Unicode列・doc元コメント位置、IO.All除外、main/testの宣言上限と正規名の許可・schemaVersion=1の報告をchecked_args/declarations/test_command/cli_processで照合する。展開後の型・定数・脱糖には既存の通常規則を使い、既定Logの実出力の検査はこの行に含めない"
+    },
+    {
+      "name": "Logの既定書式とIO",
+      "line": 310,
+      "boundary": "通常の操作とハンドラの型付けから実際の書式・出力回数・順序・失敗は導かない。io_modesで両IO方式の水準・一回性・エスケープ・属性順と重複・空sink・送り直し・sinkのFailと後続未実行を、runtime_builtinsで明示変換・実バッファの待ち・最終書き出し・Consoleと同じR0202/終了1を、declarationsで外側効果を、test_commandと実CLIで出力の捕捉と許可を照合する。標準宣言を本番交換の六入口へ渡し、VMと参照評価も比較する。doc_default・vm::と関係する統合の局所heap-verify/gc-stressで保持の境界を補う。型付け・脱糖・主定理・公理・Assumptionsは変更しない"
+    },
+    {
+      "name": "判定の共有と行ごとの照合",
+      "line": 288,
+      "boundary": "下位IRのDAG・Join/Jumpの共有と行ごとの照合、試行の巻き戻し、節・辺・命令・作業表の予算は実装の処理である。Core MatchとCoverageの意味は変えない。公開lower_programの出力を独立した行順の照合器と比較し、選択肢・束縛元・ガード失敗先を確認する。旧い指数的な入力のn=13/16/24を実ソースからVMと参照評価へ渡し、最終予算の拒否とCLIのcheck/run/testの結果も別に検査する"
+    },
+    {
+      "name": "自由変数・生存の解析とIR検査の表",
+      "line": 292,
+      "boundary": "Rustの下位IRの節ごとの範囲、通常値の使用位置・束縛位置、初出順の捕捉一覧と補助原型への共有、局所環境の復元は実装の契約である。型付き表層・コア計算の型付けと脱糖の規則を変えない。安全点を越える値の保持は、公開のコード生成の出力・検証器・実ソースのハンドラとlazyと参照セルの実行、独立した経路探索による生存解析の検査で確認する。根の保持はdocのcompile_failと局所のheap-verify/gc-stressでも確認する。専用保持先の下位IRと命令はこの行の実装済みの範囲に含めない"
+    },
+    {
+      "name": "構築器の物理バッファ・容量と予約失敗",
+      "line": 312,
+      "boundary": "抽象の不変内容と論理上限からは、実バッファの snapshot、capacity・heap_bytes の計上、予約の失敗を導けない。実 Host の入口で三種類の追記・copy・長さと GC 後の内容、容量の増減、R0902 の予約前停止、注入した予約失敗での R0907 と内容不変を検査する。doc_default・局所 heap-verify/gc-stress・check-heap の Miri 二構成と到達可能性比較で物理表現との境界を確かめる。継続・タスクへの接続はこの行の検査には含めない"
+    },
+    {
+      "name": "構築器のGC・継続の保持とタスク取消",
+      "line": 313,
+      "boundary": "専用コアの抽象ストアから物理GCと根の解除は導かない。三種類のcopy後の追記、handle本体への同じHostの専用入力、保存・再開・未再開の破棄、handleFailと入れ子をVMと独立参照評価で比較する。専用SlotのTrace/Discard、不要な根の解除と枠の資源計数は局所heap-verify/gc-stress・doc_default・check-heapで確かめる。待つ子タスクの取消はVMで検査し、参照評価の比較には含めない"
+    },
+    {
+      "name": "Writerの解放と中断",
+      "line": 314,
+      "boundary": "抽象のreleaseや事象から実Writerの同期・flush・OSのシグナル終了を導かない。interrupt_processの実CLIで、一度目のSIGINT/SIGTERM前の空ファイルと中断後の短文全量・終了130・余分な出力がないことを両IO方式で確認する。二つのFIFOへ書く入れ子のwithでは、中断前の空状態、内側の解放の目印、読み取りを止めた外側FIFOの未読数の増加でflushの部分書き込みを観測し、二度目のSIGINTによるシグナル終了と本文の未完了を確認する。固定sleepやkillの成功を同期の証拠にせず、期限とProcessのDropで子・読み手・FIFOを片付ける。外部実行中のシグナルと出力の既存の接続はexternal_signals・io_modesで補い、型付け・脱糖・主定理・公理・Builtins.Assumptionsは変えない"
+    },
+    {
+      "name": "deriveの宣言グラフと生成器",
+      "line": 296,
+      "boundary": "解決済みinventory版2からの宣言ID・型引数付きの辺・強連結成分・有限基底の固定点と、実消費節点数を返す総予算の生成補助は開発道具の契約である。生成した通常コードには既存の型・エフェクト・脱糖を適用し、本体の主定理・公理・Builtins.Assumptionsを変えない。tools/deriveの自己検査がpreview/apply/checkと本番CLIのcheck/testを通し、自己/相互再帰・List/Option/String鍵Map・必須欄の最小量・独立成分・size0/負のsize・総節点数・乱数順・phantom・有限基底なし/非正則/機能別の拒否を独立の期待へ照合する。独自生成器内部の停止・全記憶量は保証しない"
+    },
+    {
+      "name": "deriveの縮小と生成記録",
+      "line": 297,
+      "boundary": "縮小候補の削除・欄順と遅延、Show/Orderの署名と再帰制約の固定点、意味ハッシュ・生成記録・manifest/receipt版3と旧本文の照合は開発道具の契約である。生成した通常コードには既存の型・エフェクト・脱糖を適用し、新しい再帰辞書や本体の仮定は加えない。tools/deriveの自己検査で本番CLIのcheck/testを通し、浅い表示・比較・候補順、深さ128の有限値、制約の過不足、必須欄とMapの縮小、節点数非増加・自己候補の除外、縮小の予算、旧manifest/改変本文/依存変更の拒否、旧記録から新preview/apply/checkと再適用を独立の期待へ照合する。独自Shrinkerの停止・往復や表示量の上限は保証しない"
+    },
+    {
+      "name": "旧移行道具の保管",
+      "line": 295,
+      "boundary": "移行を終えた名前付き引数の道具と専用helper・indexは履歴資料へ移し、元のパス・開始版の完全ID・個々のSHA-256と復元手順を残す。移動前後の全hash一致と現役参照を照合し、Cargoのexamples・Python構文検査・自己検査が保管した道具を要求しないことを確認する。policy_selftestで分類・現役Pythonだけの収集と三つのシェルの構文を、migrate_selftestsで現役のsource-migrateとtry-actions-migrateを検査する。保管先での旧自己検査の成功は保証せず、再実行には対応する旧parserと過去の入力を要する。言語の規則・主定理・公理・Builtins.Assumptionsは変えない"
+    },
+    {
+      "name": "参照値とヒープ値の橋渡し",
+      "line": 308,
+      "boundary": "引数全体と戻り値ごとの双方向の対応表、保持したRcの同一性・種類・タグとObjId/ObjKind、epoch内の破棄と処理中の循環拒否はRustの変換の契約である。通常関数と外部関数へ同じ区間を適用し、Opaqueの根とRefValueの世代、独自ストアと構築器Slotの境界を保つ。六種類の引数間・戻り値内の共有と種類/タグの区別、深さ8/12（stressは6）の共有入力の小さい観察結果、古い世代の拒否を検査する。String・Bytes・Listのcopy後の追記とGC後のsnapshotは実Hostの独立期待値で確認する。doc_default・局所heap-verify/gc-stress・check-heapで物理表現との境界を補い、snapshot_structure_stableやcapture_local_valid/resume_local_validの第三の結論だけを証拠にしない"
+    },
+    {
+      "name": "Engine・Componentの共有",
+      "line": 311,
+      "boundary": "一回のtest起動の遅延Engine・通常/補助Component表・中断の見張りと、bytes/hash/Engine所有者/ABI・生成規則の照合はRustと外部実行基盤の契約である。通常/doc/複数入口の実行用コンパイル回数と静的な宣言照合の回数を分けて検査する。各テストのStore・Instance・外部ハンドル・解放待ち・ヒープ・出力・実行番号を隔離し、燃料/転送の呼び出しごとの再設定、Storeのメモリ上限、SIGINT/SIGTERMの中断と後続未起動を実コンポーネントで確認する。doc_default・external::の局所heap-verify/gc-stressと関連CLI統合テストで接続を検査し、型付け・脱糖・主定理・仮定は変えない"
+    },
+    {
+      "name": "宣言由来の診断と型名・整数の警告",
+      "line": 291,
+      "boundary": "宣言・束縛・型の部分の依存、偽診断の保留と根の無効化、同名の別宣言の修飾、標準束縛と幅による警告の選択は Rust の診断の実装であり、形式化した型付け・脱糖の規則を変えない。包んだ値・演算子・再束縛・部分パターン・try の成功型の原因と独立した誤りを、公開の型検査で照合する。同名型の根と依存、Fail の内側、整数各幅の境界と未知の被除数、別名と間接呼び出しの対照を検査し、代表の JSON・テキストと --deny-warnings を CLI で確認する"
+    }
+  ],
+  "embedded_files": 73,
+  "modules": 63,
+  "handwritten_japanese_documents": 5
+}

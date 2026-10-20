@@ -1,0 +1,42 @@
+// spec: 01-06 等値の型
+// 03-06「Range」「NonEmptyList」: 保存した欄全体の等値とAssertの内部表示をCLIで固定する。
+import Benitoite.Unofficial.NonEmptyList
+import Benitoite.Unofficial.Range
+
+@test
+function structuralEquality() -> Unit uses Assert.Check
+  Assert.equal(actual: Range.checkLength(minimum: 0, maximum: 5, values: [1]) = Range.checkLength(minimum: 0, maximum: 5, values: [1]), expected: true)
+  Assert.equal(actual: Range.checkLength(minimum: 0, maximum: 5, values: [1]) = Range.checkLength(minimum: 1, maximum: 5, values: [1]), expected: false)
+  Assert.equal(actual: Range.checkLength(minimum: 0, maximum: 5, values: [1]) = Range.checkLength(minimum: 0, maximum: 9, values: [1]), expected: false)
+  Assert.equal(actual: Range.checkLength(minimum: 0, maximum: 5, values: [1]) = Range.checkLength(minimum: 0, maximum: 5, values: [2]), expected: false)
+  Assert.equal(actual: Range.checkIndex(index: 0, values: [1, 1]) = Range.checkIndex(index: 0, values: [1, 1]), expected: true)
+  Assert.equal(actual: Range.checkIndex(index: 0, values: [1, 1]) = Range.checkIndex(index: 1, values: [1, 1]), expected: false)
+  Assert.equal(actual: Range.checkIndex(index: 0, values: [1, 2]) = Range.checkIndex(index: 0, values: [1, 3]), expected: false)
+  Assert.equal(actual: NonEmptyList.fromList([1, 2]) = NonEmptyList.fromList([1, 2]), expected: true)
+  Assert.equal(actual: NonEmptyList.fromList([1, 2]) = NonEmptyList.fromList([3, 2]), expected: false)
+  Assert.equal(actual: NonEmptyList.fromList([1, 2]) = NonEmptyList.fromList([1, 3]), expected: false)
+end function
+
+@test
+function nonEmptyListFailure() -> Unit uses Assert.Check
+  match Pair(NonEmptyList.fromList([1, 2]), NonEmptyList.fromList([1, 3])) with
+    case Pair(Result.Ok(a), Result.Ok(b)) -> Assert.equal(actual: a, expected: b)
+    case _ -> Assert.fail("valid nonempty lists were rejected")
+  end match
+end function
+
+@test
+function checkedLengthFailure() -> Unit uses Assert.Check
+  match Pair(Range.checkLength(minimum: 0, maximum: 5, values: [1]), Range.checkLength(minimum: 1, maximum: 9, values: [1])) with
+    case Pair(Result.Ok(a), Result.Ok(b)) -> Assert.equal(actual: a, expected: b)
+    case _ -> Assert.fail("valid checked lengths were rejected")
+  end match
+end function
+
+@test
+function checkedIndexFailure() -> Unit uses Assert.Check
+  match Pair(Range.checkIndex(index: 0, values: [1, 2]), Range.checkIndex(index: 0, values: [1, 3])) with
+    case Pair(Result.Ok(a), Result.Ok(b)) -> Assert.equal(actual: a, expected: b)
+    case _ -> Assert.fail("valid checked indices were rejected")
+  end match
+end function

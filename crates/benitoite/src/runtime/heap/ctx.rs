@@ -483,6 +483,15 @@ impl<'e> ValueCtx<'e> {
         self.core.str(v)
     }
 
+    // 予約前の追加長には不変対象の長さだけが必要である。共有した断片ごとの UTF-8 の
+    // 再走査を避け、内容を写すときは str を通す（設計書 02-09「構築器の物理バッファ」）。
+    pub(super) fn str_byte_len(&self, v: Value<'e>) -> Option<u32> {
+        if self.core.kind(v) != Some(ObjKind::Str) {
+            return None;
+        }
+        self.core.len(v)
+    }
+
     pub fn alloc_bytes(&self, bytes: &[u8], function: &'static str) -> Result<Value<'e>, Stop> {
         CheckedLen::bytes(u64::try_from(bytes.len()).unwrap_or(u64::MAX), function)?;
         self.core.alloc_bytes(self.epoch, bytes)
@@ -581,11 +590,23 @@ impl<'e> NoGcCtx<'e> {
         v: Value<'e>,
         f: impl FnOnce(&mut T, &SlotOps<'_, 'e>) -> R,
     ) -> Option<R> {
+        self.host_mut_with_values(v, |data, ops, _| f(data, ops))
+    }
+
+    // ValueCtx は Host の読取・変更を持たないため、可変借用中の Host への別名参照は
+    // 作れない。不変の入力だけを読む（設計書 02-09「構築器の物理バッファ」）。
+    pub(super) fn host_mut_with_values<T: HostData, R>(
+        &mut self,
+        v: Value<'e>,
+        f: impl FnOnce(&mut T, &SlotOps<'_, 'e>, &ValueCtx<'e>) -> R,
+    ) -> Option<R> {
         let ops = SlotOps {
             core: self.values.core,
             epoch: self.values.epoch,
         };
-        self.values.core.with_host_mut(v, |data| f(data, &ops))
+        self.values
+            .core
+            .with_host_mut(v, |data| f(data, &ops, &self.values))
     }
 }
 

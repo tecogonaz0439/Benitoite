@@ -16,10 +16,10 @@ use std::process::{Child, Command, Output, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-// 作成時の関門: run のゴールデンでは届かない check の非コンパイルと test の段の選択を守る。
+// 作成時の関門: run のゴールデンでは届かない check と test を含む、旧予算超過入力の受理を守る。
 // 公開の CLI と実ファイルを使い、時刻や本番の差し込み口には依存しない。
 #[test]
-fn decision_tree_limit_is_reported_only_when_compiling() {
+fn shared_decisions_are_accepted_by_all_cli_modes() {
     let directory = TestDirectory::new();
     let script = directory.write(
         "tree-budget.bnt",
@@ -39,23 +39,15 @@ fn decision_tree_limit_is_reported_only_when_compiling() {
         "{report}"
     );
     assert!(!String::from_utf8_lossy(&output.stdout).contains("L0112"));
-    for (mode, expected) in [("check", 0), ("run", 2), ("test", 2)] {
+    for (mode, expected) in [("check", 0), ("run", 0), ("test", 0)] {
         let output = command().arg(mode).arg(&script).output().unwrap();
         assert_eq!(exit_code(&output), expected, "{mode}: {output:?}");
         let stderr = String::from_utf8_lossy(&output.stderr);
-        if mode == "check" {
-            assert!(stderr.is_empty(), "{stderr}");
-            assert!(output.stdout.is_empty(), "{output:?}");
+        assert!(stderr.is_empty(), "{stderr}");
+        if mode == "test" {
+            assert_eq!(output.stdout, b"test result: ok. 0 passed; 0 failed\n");
         } else {
-            assert!(stderr.contains("L0112"), "{stderr}");
-            assert!(!stderr.contains("internal"), "{stderr}");
-            assert!(
-                stderr
-                    .lines()
-                    .any(|line| line.contains(&format!("could not {mode}"))
-                        && line.contains("due to 1 previous error")),
-                "{stderr}"
-            );
+            assert!(output.stdout.is_empty(), "{output:?}");
         }
     }
 }
@@ -243,7 +235,7 @@ fn run_effect_limits_check_declared_contracts_before_execution() {
     assert!(output.stderr.is_empty(), "{output:?}");
     assert_eq!(fs::read_to_string(marker).unwrap(), "changed");
 
-    // L0112 より前に照合する。検査の成功だけを確かめる表では順序の逆転を検出できない。
+    // 照合の費用が大きい入力でも、実行前に権限を照合する。
     let tree = directory.write(
         "tree.bnt",
         &include_str!("../testdata/patterns/todo195-decision-tree-budget.bnt").replace(
@@ -685,7 +677,7 @@ fn main_check_reports_sources_without_execution() {
         ("bom", Some(b"\xef\xbb\xbf// source\nfunction main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("dependency-package", Some(b"import Tk.Helper\nfunction main() -> Unit\nend function\n"), Some(&[]), "present", None, true, &[
             ("package.bnt", b"// root config\ndependency Tk\n    path \"deps/kit\"\nend dependency\n"),
-            ("deps/kit/package.bnt", b"language \"0.0.9\"\npackage Kit\nend package\n"),
+            ("deps/kit/package.bnt", b"language \"0.0.10\"\npackage Kit\nend package\n"),
             ("deps/kit/Helper.bnt", b"import Benitoite.Unofficial.IO.Process\npublic function unused() -> Unit\n    bind action <- Process.shell\nend function\n"),
         ]),
     ]);
@@ -2814,4 +2806,63 @@ fn test_doc_uses_version_two_and_keeps_check_nonexecuting() {
         .unwrap();
     assert_eq!(exit_code(&rejected), 2);
     assert!(String::from_utf8_lossy(&rejected.stderr).contains("not accepted by"));
+}
+
+// 関門: 実CLIのmain報告でschemaと正規名を保ち、Logの許可だけで宣言上限を通す。
+#[test]
+fn log_main_report_and_effect_limits_keep_schema_one() {
+    let directory = TestDirectory::new();
+    let script = directory.write(
+        "log.bnt",
+        "function main() -> Unit uses Log\n ()\nend function\n",
+    );
+    let output = command()
+        .args(["check", "--report=json"])
+        .arg(&script)
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&output), 0, "{output:?}");
+    assert!(output.stderr.is_empty(), "{output:?}");
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(report["schemaVersion"], 1);
+    assert_eq!(report["aggregateEffects"]["basis"], "declaredUpperBound");
+    assert_eq!(
+        report["aggregateEffects"]["expanded"],
+        serde_json::json!(["Log"])
+    );
+    for (limit, expected) in [("Log", 0), ("", 2)] {
+        let output = command()
+            .args(["run", &format!("--allow-effects={limit}")])
+            .arg(&script)
+            .output()
+            .unwrap();
+        assert_eq!(exit_code(&output), expected, "{output:?}");
+        assert!(output.stdout.is_empty(), "{output:?}");
+        if expected == 2 {
+            assert!(String::from_utf8_lossy(&output.stderr).contains("E0512"));
+        } else {
+            assert!(output.stderr.is_empty(), "{output:?}");
+        }
+    }
+}
+
+// 関門: 実CLIからLogだけの許可で既定stderrへ出し、本文のstdoutと終了状態を保つ。
+#[test]
+fn log_default_output_runs_through_the_real_cli_in_both_modes() {
+    let directory = TestDirectory::new();
+    let file = directory.write("log-output.bnt", "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit uses Log, Console.Write\n Log.info(message: \"done\", attributes: [Log.attribute(key: \"n\", value: 3)], location: SourceLocation.Location(file: \"app\", line: 1, column: 2))\n Console.writeLine(\"result\")\nend function\n");
+    for mode in ["direct", "request"] {
+        let output = command()
+            .env("BENITOITE_DEV_IO_MODE", mode)
+            .args(["run", "--allow-effects=Log,Console.Write"])
+            .arg(&file)
+            .output()
+            .unwrap();
+        assert_eq!(exit_code(&output), 0, "{output:?}");
+        assert_eq!(output.stdout, b"result\n");
+        assert_eq!(
+            output.stderr,
+            b"level=INFO source=\"app:1:2\" message=\"done\" attr.\"n\"=3\n"
+        );
+    }
 }

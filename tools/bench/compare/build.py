@@ -66,6 +66,7 @@ def build_key(commit, mode, compiler, cargo, lock_hash):
 
 
 def build_all(commits, alloc=False, cache=CACHE, imports=()):
+    from bridge_probe import prepare
     records = {}
     compiler = subprocess.check_output(['rustc', '-Vv'], text=True)
     cargo = subprocess.check_output(['cargo', '-V'], text=True)
@@ -123,26 +124,34 @@ def build_all(commits, alloc=False, cache=CACHE, imports=()):
                       build_invocation_seconds=time.perf_counter()-started)
         if adopted:
             record['imported_from'] = adopted
-        if not alloc:
-            source = Path(__file__).with_name('timing_probe.rs')
-            probe = target/'timing-probe'
-            probe_key = sha(source.read_bytes()) + sha(json.dumps(key, sort_keys=True).encode())
-            if reuse and cached.get('probe_key') == probe_key:
-                if cached.get('probe') and probe.exists() and sha(probe.read_bytes()) == cached.get('probe_sha256'):
-                    record.update({k: cached[k] for k in ('probe', 'probe_sha256', 'probe_key', 'probe_command')})
-                elif cached.get('probe_unavailable'):
-                    record.update(probe_key=probe_key, probe_unavailable=cached['probe_unavailable'])
-            if 'probe' not in record and 'probe_unavailable' not in record:
-                probe_command = ['rustc', '--edition=2024', '-O', str(source), '--extern',
-                                 f'benitoite={target}/release/libbenitoite.rlib',
-                                 '-L', f'dependency={target}/release/deps', '-o', str(probe)]
-                with log.open('a') as stream:
-                    p = subprocess.run(probe_command, env=clean_env(), stdout=stream, stderr=subprocess.STDOUT)
-                record.update(probe_key=probe_key, probe_command=probe_command)
-                if p.returncode:
-                    record['probe_unavailable'] = f'public API helper build failed ({p.returncode}); see {log}'
-                else:
-                    record.update(probe=str(probe), probe_sha256=sha(probe.read_bytes()))
+        # 時間と確保は異なる構成の probe を使う。
+        source = Path(__file__).with_name('timing_probe.rs')
+        probe = target/'timing-probe'
+        bridge_source, bridge_hashes = prepare(archive, target)
+        probe_key = sha(source.read_bytes()) + sha(json.dumps([key, bridge_hashes], sort_keys=True).encode())
+        if reuse and cached.get('probe_key') == probe_key:
+            if cached.get('probe') and probe.exists() and sha(probe.read_bytes()) == cached.get('probe_sha256'):
+                record.update({k: cached[k] for k in ('probe', 'probe_sha256', 'probe_key', 'probe_command', 'bridge_sources')})
+            elif cached.get('probe_unavailable'):
+                record.update(probe_key=probe_key, probe_unavailable=cached['probe_unavailable'])
+        if 'probe' not in record and 'probe_unavailable' not in record:
+            probe_command = ['rustc', '--edition=2024', '-O', str(source), '--extern',
+                             f'benitoite={target}/release/libbenitoite.rlib',
+                             '-L', f'dependency={target}/release/deps', '-o', str(probe)]
+            json_libs = sorted((target/'release/deps').glob('libserde_json-*.rlib'), key=lambda p: p.stat().st_mtime, reverse=True)
+            if json_libs:
+                probe_command += ['--extern', f'serde_json={json_libs[0]}']
+            if alloc:
+                probe_command += ['--cfg', 'feature="alloc-stats"']
+            env = clean_env()
+            env['BENITOITE_COMPARE_BRIDGE'] = str(bridge_source.resolve())
+            with log.open('a') as stream:
+                p = subprocess.run(probe_command, env=env, stdout=stream, stderr=subprocess.STDOUT)
+            record.update(probe_key=probe_key, probe_command=probe_command, bridge_sources=bridge_hashes)
+            if p.returncode:
+                record['probe_unavailable'] = f'public API helper build failed ({p.returncode}); see {log}'
+            else:
+                record.update(probe=str(probe), probe_sha256=sha(probe.read_bytes()))
         path.write_text(json.dumps(record, indent=2)+'\n')
         records[state] = record
         print(f'build {mode}/{state}: {commit[:12]} ({"cached" if reuse else "imported" if adopted else "built"})', flush=True)

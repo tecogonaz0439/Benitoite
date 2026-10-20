@@ -185,11 +185,11 @@ theorem HasTypeQ.inv_methName {Δb : BuilderCtx} {D B op C Γ R pos d m ss es us
 
 /-- 辞書付きの頭は表層の導出を逆転する。閉じた名前は return の逆転を使う。
 計算側の許容エフェクトは、sequence が広げた後でもよい。頭の呼び出しの型は変わらない。 -/
-theorem directCallee_typed {Δb : BuilderCtx} {C Γ Γc R pos e h names as a ε εcall εdesugar}
+theorem directCallee_typed {Δl : LocalCtx} {Δb : BuilderCtx} {C Γ Γc R pos e h names as a ε εcall εdesugar}
     (hd : directCallee e = some h)
     (hs : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R pos e (.fn names as a εcall) ε)
     (hc : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
-      (desugarExpr op pos e) (.fn names as a εcall) εdesugar) (hΓ : RenOk Γ Γc id) :
+      (desugarExpr op pos e) (.fn names as a εcall) εdesugar Δl) (hΓ : RenOk Γ Γc id) :
     CallHead.HasTypeQ (desugarProgram op p) B Q C Γc h names as a εcall := by
   cases e <;> simp [directCallee] at hd
   all_goals cases hd

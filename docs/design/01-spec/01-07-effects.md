@@ -39,7 +39,8 @@
 | `Benitoite.IO.Random` | `Random.Generate` | 乱数の生成 |
 | `Benitoite.Network.Http` | `Http.Listen` | HTTP の接続の待ち受け、要求の受け付けと応答 |
 | 〃 | `Http.Connect` | HTTP のサーバへの接続と、要求の送信 |
-| `Benitoite`（prelude） | `State` | 関数内の構築器と可変のセル（後述の「可変のセル（初回リリース版）」）とタスクの集まりの操作、タスクの結果を待つこと（`Task.await`。[並行処理](01-11-concurrency.md)） |
+| `Benitoite.Log`（非公式のprelude） | `Log` | 明示的な構造化ログのemitとenabled |
+| `Benitoite`（prelude） | `State` | 可変のセル（後述の「可変のセル（初回リリース版）」）とタスクの集まりの操作、タスクの結果を待つこと（`Task.await`。[並行処理](01-11-concurrency.md)） |
 
 表のエフェクトの名前は、各モジュールを取り込んだときの書き方である（`import Benitoite.Unofficial.IO.Console` の後の `uses Console.Write`）。取り込みは、そのモジュールのエフェクトを `uses` に書くためにも要る。
 
@@ -66,6 +67,8 @@
 - メモリなど、処理系の資源を使い果たすこと。
 
 可変のセルの操作も `State` エフェクトを持つので、純粋な関数（[型システム](01-06-type-system.md)）の結果は引数だけで決まる。資源の不足（[評価意味論](01-08-evaluation.md)）を除けば、同じ引数で二度呼んだとき、どちらも値を返したなら同じ値を返す。どちらかが実行時エラーで止まるとき、どの実行時エラーで止まるかは、関数の中で `Task.all`・`Task.allOk` が起動したタスクの切り替えの順序に依存しうる（[並行処理](01-11-concurrency.md)）。
+
+【決定】`Log` は組み込みのエフェクトだが、`IO.All` に含めない。`uses Log` は標準内部宣言 `Log.Log` を指す。標準登録に一致したこの宣言だけ、モジュールと同名のeffect宣言を許す。利用者の同名宣言の禁止と、組み込みeffectモジュールのas禁止は保つ。Logを使う本体には、通常の効果の包含検査を適用する。
 
 ### IO が起きる時期と順序
 
@@ -112,7 +115,7 @@
 【方針】`main` は、加えて次の条件を満たさなければならない。
 
 - 型パラメータとエフェクト変数を持たない。
-- エフェクトは、`IO.All` に含まれる組み込みのエフェクトと、ネットワークのエフェクトの任意の集まりである（`uses IO.All` のほか、`uses File.Read, Console.Write` や `uses IO.All, Http.Listen` なども書ける。`uses` を書かなくてもよい）。利用者が定義するエフェクトは、`main` の中で処理しなければならない。`Assert.Check` は含められない。
+- エフェクトは、`IO.All` に含まれる組み込みのエフェクト、ネットワークのエフェクト、`Log` の任意の集まりである（`uses IO.All` のほか、`uses File.Read, Console.Write` や `uses IO.All, Http.Listen` なども書ける。`uses` を書かなくてもよい）。利用者が定義するエフェクトは、`main` の中で処理しなければならない。`Assert.Check` は含められない。
 
 `main` がないとき、または `main` が上の条件を満たさないときは、型検査の誤りとする。
 
@@ -211,7 +214,7 @@ function countNonEmpty(lines: List[String]) -> Integer uses State
 end function
 ```
 
-【決定】StringBuilder・ListBuilder・BytesBuilderの専用局所宣言と全操作もStateを持つ。copyと長さの操作も現在の可変状態を読むためStateを要する。局所性を理由にStateを消去せず、ハンドラで処理する操作にも変えない（[型システム](01-06-type-system.md#関数内の構築器)）。
+【決定】StringBuilder・ListBuilder・BytesBuilderの専用局所宣言と操作自体はStateを加えない。通常引数のエフェクトは保ち、通常のReferenceとリソースの解放が使うStateも保つ。エフェクト集合からStateを引く処理は行わない（[型システム](01-06-type-system.md#関数内の構築器)）。
 
 ### 影響の大きい操作（初回リリース版）
 
@@ -277,7 +280,7 @@ end function
 - エフェクトの宣言は、エフェクトの名前と、操作（operation）の並びからなる。操作は、名前、引数、戻り値の型を持ち、型パラメータを持ってよい。操作は `uses` を持たない。エフェクトは型パラメータを持たない。
 - 操作は、エフェクトを宣言したモジュールの関数であり、関数と同じ名前の規則で呼ぶ。宣言したモジュールの中では `write(引数)`、ほかのモジュールからは `Logging.write(引数)` と書く。操作の呼び出しは、そのエフェクトを生じる。操作の名前は、同じモジュールのほかの関数と同じ名前空間にあり、同じ名前の関数と操作を宣言すると誤りとする。
 - 組み込みのエフェクトの操作は、そのエフェクトを宣言した標準ライブラリのモジュールの IO の関数（`Console.writeLine`、`File.readText` など）である。
-- エフェクトの名前は、型の名前と同じく大文字の名前であり、`uses` に書ける。宣言したモジュールの中では `Log`、ほかのモジュールからは `Logging.Log` と、モジュールの名前で修飾して書く。モジュールと同じ名前のエフェクトは宣言できない。`public` を付けたエフェクトとその操作は、ほかのモジュールから使える（[名前・スコープ・モジュール](01-03-names-modules.md)）。
+- エフェクトの名前は、型の名前と同じく大文字の名前であり、`uses` に書ける。宣言したモジュールの中では `Log`、ほかのモジュールからは `Logging.Log` と、モジュールの名前で修飾して書く。利用者はモジュールと同じ名前のエフェクトを宣言できない。標準登録に一致したLog.Logだけを例外とする。`public` を付けたエフェクトとその操作は、ほかのモジュールから使える（[名前・スコープ・モジュール](01-03-names-modules.md)）。
 
 【方針】ハンドラ `handle 本体 with case 操作(引数) -> 節 … end handle` の意味は次のとおりである。`case` の後の操作は、式で操作を呼ぶときと同じ名前で書く（`case write(message) ->`、`case Logging.write(message) ->`、`case Console.writeLine(s) ->`）。
 

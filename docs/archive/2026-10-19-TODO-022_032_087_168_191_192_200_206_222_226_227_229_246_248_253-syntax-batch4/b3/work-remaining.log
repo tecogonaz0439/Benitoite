@@ -1,0 +1,252 @@
+== plan: level work against cc91036eac270a210ba755dba460000d6d5cf1d1 (changed files not classified) (partial selection: --only fmt,tests_related,source_rules,skill_generated,spec_tally,release_stack,doc_default)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test stdlib_doc_examples --test test_command --test verify --test vm_handlers --test vm_lazy --test vm_reference_cells
+   [doc_default] because of --only (estimate: seconds to a few min)
+      command: cargo test --workspace --doc
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [release_stack] because of --only (estimate: long: ~5 min plus builds)
+      command: python3 -B scripts/check/run_ignored.py --kind release-stack --configuration release
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== tests_related
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/stdlib_doc_examples.rs (target/debug/deps/stdlib_doc_examples-ee951fa65d24f66c)
+
+running 1 test
+test standard_doc_examples_behave_as_written ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+
+     Running tests/test_command.rs (target/debug/deps/test_command-15c8c096a9c6113e)
+
+running 46 tests
+test an_unreadable_directory_runs_no_tests ... ok
+test check_rejects_explicit_execution_options_even_at_their_defaults ... ok
+test check_is_accepted_and_missing_paths_still_report_usage_errors ... ok
+test all_passing_tests_end_with_ok_and_no_failures_section ... ok
+test an_interrupt_request_ends_with_the_interrupted_summary ... ok
+test check_observes_interrupts_only_before_each_file ... ok
+test check_report_keeps_success_after_errors_and_diagnostic_indices ... ok
+test check_report_usage_errors_scan_options_in_both_orders ... ok
+test a_file_with_check_errors_is_not_run_but_others_are ... ok
+test check_report_preserves_contracts_descriptions_locations_and_source_identity ... ok
+test check_report_keeps_completed_and_unstarted_targets_on_interrupt ... ok
+test deny_warnings_skips_a_file_with_warnings ... ok
+test check_report_preserves_warning_promotion_and_program_shell_scope ... ok
+test deadlock_reports_name_the_first_task_after_the_test_function ... ok
+test a_file_without_tests_writes_only_the_summary ... ok
+test directory_walk_skips_settings_and_nested_package_roots ... ok
+test check_keeps_diagnostics_and_checks_files_after_errors ... ok
+test check_does_not_run_user_code_or_write_result_lines ... ok
+test doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs ... ok
+test doc_report_preserves_partial_unknowns_and_option_rejections ... ok
+test a_directory_is_expanded_in_path_order_with_itself_as_the_root ... ok
+test doc_examples_use_public_imports_without_inheriting_private_names ... ok
+test json_lines_have_the_fields_in_order ... ok
+test doc_text_reports_escape_control_characters_in_example_ids ... ok
+test limited_test_options_reject_invalid_or_check_only_invocations ... ok
+test doc_expectations_fail_per_example_and_keep_running ... ok
+test die_source_fails_one_test_and_keeps_running ... ok
+test doc_modes_share_discovery_and_version_two_reports ... ok
+test failure_entry_contracts_are_checked_before_test_execution ... ok
+test exit_status_prioritizes_internal_and_check_errors_over_test_failures ... ok
+test doc_run_checks_unhandled_effects_and_exact_stderr ... ok
+test max_call_stack_limits_each_test ... ok
+test mixed_results_are_reported_in_the_text_form ... ok
+test ordinary_test_does_not_parse_documentation_examples ... ok
+test prepared_sources_are_reused_and_the_next_file_is_prepared_after_execution ... ok
+test result_lines_escape_file_names_only_in_text_output ... ok
+test tests_of_imported_modules_run_only_when_their_file_is_given ... ok
+test limited_test_control_flow_matches_reported_effects ... ok
+test limited_tests_recheck_reported_contracts_after_changes ... ok
+test task_origins_end_at_the_test_function ... ok
+test limited_tests_consume_the_prepared_artifacts_in_order ... ok
+test property_results_use_ordinary_test_reports_and_check_never_runs_callbacks ... ok
+test doc_prepares_all_entries_and_limits_before_any_execution ... ok
+test check_report_and_execution_select_the_same_entries_and_functions ... ok
+test process_interrupt::sigint_stops_the_runner_with_the_interrupted_summary ... ok
+test limited_tests_reject_every_entry_before_any_execution ... ok
+
+test result: ok. 46 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.88s
+
+     Running tests/verify.rs (target/debug/deps/verify-9cf719a34ff729df)
+
+running 3 tests
+test dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses ... ok
+test reference_sets_depend_on_successful_size_checked_combination ... ok
+test golden_programs_and_seeded_single_site_mutations has been running for over 60 seconds
+test golden_programs_and_seeded_single_site_mutations ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 61.47s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-4d4dc0fffffe5742)
+
+running 4 tests
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.34s
+
+     Running tests/vm_lazy.rs (target/debug/deps/vm_lazy-8389d9f437478717)
+
+running 1 test
+test scripts_execute_nested_captured_and_repeated_lazy_bodies ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+     Running tests/vm_reference_cells.rs (target/debug/deps/vm_reference_cells-6fb2076ff7bf4c19)
+
+running 2 tests
+test retried_update_trace_keeps_the_update_call_site ... ok
+test scripts_update_values_return_unit_and_release_frames_and_cycles ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.65s
+
+== doc_default
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+   Doc-tests benitoite
+
+running 18 tests
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 773) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 797) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 822) - compile ... ok
+test crates/benitoite/src/diag/mod.rs - diag::DiagBuilder (line 162) ... ignored
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 877) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 847) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 913) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 110) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 137) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 165) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 195) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 219) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 239) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 255) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 278) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 307) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 68) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 85) - compile ... ok
+
+test result: ok. 17 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 17 tests
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 861) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 148) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 184) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 128) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 761) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 208) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 835) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 811) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 896) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 786) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 232) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 265) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 248) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 76) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 62) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 98) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 294) - compile fail ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s
+
+all doctests ran in 2.25s; merged doctests compilation took 0.64s
+== source_rules
+== source_rules
+== skill_generated
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Logの通常宣言とハンドラの具体例
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 文字列補間
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層のブロック式
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+== release_stack
++ cargo test --release -p benitoite --lib -- pipeline::tests::stages_fit_the_measured_stack_ --include-ignored
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `release` profile [optimized] target(s) in 48.49s
+     Running unittests src/lib.rs (target/release/deps/benitoite-eee8b4c58c2eb033)
+
+running 10 tests
+test pipeline::tests::stages_fit_the_measured_stack_for_statement_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_guard_fallbacks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_branches ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_recursive_types ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_operators ... ok
+test pipeline::tests::stages_fit_the_measured_stack_for_flat_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_blocks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_records ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_patterns ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_lists ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1248 filtered out; finished in 36.91s
+
+completed 10 release-stack tests
+selected checks passed

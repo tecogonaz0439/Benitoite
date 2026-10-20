@@ -90,7 +90,7 @@ fn force(
     }
     // 包む枠と本体の呼び出しの枠の両方を、状態を変える前に数える
     // （設計書 02-08「呼び出しの入れ子の上限」）。
-    if !state.meter.fits(2, u64::from(called.num_regs)) {
+    if !state.meter.fits(2, u64::from(called.frame_slots())) {
         return Err(Stop::Resource(ResourceError::CallStackTooDeep {
             frames: state.meter.frames(),
         }));
@@ -172,6 +172,9 @@ fn force(
     segment.regs.resize_with(end_index, Slot::default);
     segment.calls.push(CallFrame {
         func: ctx.new_slot(body),
+        builders: std::iter::repeat_with(Slot::default)
+            .take(usize::from(called.builder_slots))
+            .collect(),
         proto: target,
         pc: 0,
         base,
@@ -181,7 +184,7 @@ fn force(
         boundary: called.boundary,
         chain_resume: None,
     });
-    state.meter.grow(2, u64::from(size));
+    state.meter.grow(2, u64::from(called.frame_slots()));
     Ok(Control::Reload)
 }
 

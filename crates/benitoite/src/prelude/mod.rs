@@ -350,6 +350,12 @@ pub const STDLIB: &[StdlibModuleSource] = &[
         text: include_str!("stdlib/Range.bnt"),
     },
     StdlibModuleSource {
+        path: &["NonEmptyList"],
+        prelude: false,
+        unofficial: true,
+        text: include_str!("stdlib/NonEmptyList.bnt"),
+    },
+    StdlibModuleSource {
         path: &["StringBuilder"],
         prelude: false,
         unofficial: false,
@@ -366,5 +372,17 @@ pub const STDLIB: &[StdlibModuleSource] = &[
         prelude: false,
         unofficial: false,
         text: include_str!("stdlib/BytesBuilder.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["SourceLocation"],
+        prelude: true,
+        unofficial: true,
+        text: include_str!("stdlib/SourceLocation.bnt"),
+    },
+    StdlibModuleSource {
+        path: &["Log"],
+        prelude: true,
+        unofficial: true,
+        text: include_str!("stdlib/Log.bnt"),
     },
 ];

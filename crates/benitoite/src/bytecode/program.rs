@@ -152,6 +152,22 @@ pub struct ExitReportSite {
     pub span: Span,
 }
 
+/// 専用の構築器命令が読む局所欄と通常引数。
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct BuilderSite {
+    pub local: u16,
+    pub kind: crate::resolve::builders::BuilderClass,
+    pub args: Vec<u16>,
+}
+
+/// handle 本体へ同じ Host を渡す専用欄。通常の捕捉には含めない。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct BuilderInput {
+    pub source: u16,
+    pub target: u16,
+    pub kind: crate::resolve::builders::BuilderClass,
+}
+
 /// 関数の原型。
 #[derive(Clone, PartialEq, Debug)]
 pub struct Proto {
@@ -171,6 +187,14 @@ pub struct Proto {
     pub num_regs: u16,
     pub num_params: u16,
     pub captures: Vec<CaptureSource>,
+    /// 通常のレジスタと別に確保する根の数。
+    pub builder_slots: u16,
+    /// 構築器命令の Bx が指す操作の表。
+    pub builder_sites: Vec<BuilderSite>,
+    /// UserHandleBody だけが親から受け取る専用入力。
+    pub builder_inputs: Vec<BuilderInput>,
+    /// 専用入力を渡す本体を生成した親の原型。通常の本体では None。
+    pub builder_parent: Option<ProtoIdx>,
     /// 命令ごとの由来位置。`code` と同じ長さ。値として使う組み込みの関数と操作の原型では `None`
     pub positions: Vec<Option<Span>>,
     /// 命令ごとのメソッドの呼び出しの型クラス。`code` と同じ長さ。`METHOD`・`TAILMETHOD` の位置に
@@ -406,6 +430,11 @@ impl CompiledProgram {
 }
 
 impl Proto {
+    /// 呼び出し枠が所有する通常窓と専用根の合計。確保前の資源検査にも使う。
+    pub(crate) fn frame_slots(&self) -> u32 {
+        u32::from(self.num_regs).saturating_add(u32::from(self.builder_slots))
+    }
+
     /// `LOADK` の Bx が指す定数の記述の番号。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]

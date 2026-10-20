@@ -623,7 +623,14 @@ fn stdlib_source_and_table_contracts() {
     );
     assert_eq!(out.stdlib_names, again.stdlib_names);
     let (_, small, _) = resolve_files(&[("main.bnt", "function main() -> Unit\nend function")]);
-    assert_eq!(small.stdlib("Benitoite.IO.Console.Write"), None);
+    // preludeのLogがConsoleを明示importする。ほかの未使用IOまで読み込まない。
+    assert_eq!(
+        small
+            .stdlib("Benitoite.IO.Console.Write")
+            .map(|id| small.bindings.get(id).unwrap().kind),
+        Some(BindingKind::Effect)
+    );
+    assert_eq!(small.stdlib("Benitoite.IO.File.Write"), None);
 }
 
 #[test]

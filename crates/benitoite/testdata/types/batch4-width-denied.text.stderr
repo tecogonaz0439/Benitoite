@@ -1,0 +1,9 @@
+error[W0402]: this calculation overflows `Integer16`
+  --> testdata/types/batch4-width-denied.bnt:3:13
+   |
+ 3 |   bind _ <- Num.absolute(-32768s16)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^ always overflows
+   |
+   = note: treated as an error because of `--deny-warnings`
+
+error: could not check testdata/types/batch4-width-denied.bnt due to 1 previous error

@@ -91,7 +91,8 @@ fn standard_doc_examples_behave_as_written() {
         ("Failure", [1, 0, 0, 1]),
         ("Test.Property", [1, 0, 0, 0]),
         ("Scope", [1, 0, 0, 2]),
-        ("Range", [1, 0, 1, 1]),
+        ("Range", [2, 0, 1, 1]),
+        ("NonEmptyList", [1, 0, 0, 0]),
     ];
     let (found, locations) = {
         let mut found = Vec::new();
@@ -157,7 +158,7 @@ fn standard_doc_examples_behave_as_written() {
         found,
         expected.map(|(name, counts)| (name.to_string(), counts))
     );
-    assert_eq!(locations.len(), 15);
+    assert_eq!(locations.len(), 17);
 
     let stdout = Arc::new(Mutex::new(Vec::new()));
     let stderr = Arc::new(Mutex::new(Vec::new()));
@@ -223,10 +224,10 @@ fn standard_doc_examples_behave_as_written() {
     assert_eq!(
         rows[rows.len() - 2],
         json!({
-            "kind": "docSummary", "test": 9, "run": 1, "check": 1, "error": 4, "ignoredBlocks": 0,
+            "kind": "docSummary", "test": 11, "run": 1, "check": 1, "error": 4, "ignoredBlocks": 0,
         })
     );
     assert_eq!(rows.last().unwrap()["kind"], "testSummary");
-    assert_eq!(rows.last().unwrap()["passed"], 15);
+    assert_eq!(rows.last().unwrap()["passed"], 17);
     assert_eq!(rows.last().unwrap()["failed"], 0);
 }

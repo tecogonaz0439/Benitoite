@@ -1,5 +1,6 @@
 import Benitoite.Release.Lemmas.Dict
 import Benitoite.Release.Lemmas.PresFailure
+import Benitoite.Release.Lemmas.BuilderTyping
 
 /-!
 # 保存の定理の本体（契約名を持つコア）
@@ -18,6 +19,47 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
     (hb : B.Assumptions P) {Eb : Eff} {s : State} {ev : Option Event} {s' : State}
     (hs : StateTyE P B Eb s) (hst : Step P B s ev s') : StateTyE P B Eb s' := by
   cases hst with
+  | @E_BuilderNew kind body k σ l hl =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+      obtain ⟨a', ε', hw, hbody, hle, hsub⟩ := hm.inv_builderLet rfl
+      have hΨl : Ψ l = none := by
+        cases ht : Ψ l with
+        | none => rfl
+        | some t => exact False.elim ((hσ.2.2.1 l t ht) hl)
+      have hwk : (LocTy.builder kind).WF := by
+        cases kind <;> simp_all [LocTy.WF, BuilderKind.contents, Ty.WF]
+      have hΨext := StoreTy.set_sub (Ψ := Ψ) (l := l) (x := .builder kind) (Or.inl hΨl)
+      have hσ' := builder_store_extend hσ hΨl hwk
+      have hsubst : SubstOk P B (Ψ.set l (.builder kind)) (none :: []) [] R builderValueSubst := by
+        intro i x hi
+        cases i <;> simp at hi
+      have hb := (hbody.store hΨext).subst hsubst (LocalSubstOk.new (l := l) (Δ := []) (kind := kind) (by simp [StoreTy.set]))
+      have hc : Comp.VarsIn 0 (fun _ => True)
+          (Comp.subst builderValueSubst _ (builderLocalSubst l)) :=
+        Comp.VarsIn.substScoped (by intro i; cases i <;> trivial)
+          (builderLocalSubst_scoped l 0) _ hmc.2
+      have hec : (Cell.builder kind.empty).Closed := by
+        cases kind <;> simp_all [BuilderKind.empty, Cell.Closed, Comp.VarsIn,
+          Val.VarsInList]
+      exact ⟨_, R, a', b, ε, ε', hσ', hb, hsub.trans hε,
+        (ContTy.K_Sub hk hle).store hΨext, hc, hkc, hσc.set hec⟩
+  | @E_BuilderOp kind op l args k σ c cnew v hl happly =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+      obtain ⟨hw, hr, ha, hle⟩ := hm.inv_builderOp rfl
+      cases hr with
+      | loc hloc =>
+          obtain ⟨c, hc, hok⟩ := hσ.builder_cell hloc
+          rw [hl] at hc; cases hc
+          obtain ⟨reply, hreply, ht⟩ := builderApply_total_typed hok ha
+          rw [happly] at hreply; cases hreply
+          obtain ⟨hok', hv⟩ := ht
+          have hclosed := builderApply_closed (hσc _ _ hl) hmc.2.2 happly
+          have hσ' := hσ.set_same (c := .builder cnew) hloc ⟨_, hloc, hok'⟩
+          exact ⟨Ψ, R, _, b, ε, Eff.empty, hσ', .C_Return hv,
+            Eff.empty_sub _, .K_Sub hk hle, hclosed.2, hkc, hσc.set hclosed.1⟩
+  | E_BuilderErr =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+      exact ⟨Ψ, R, a, b, ε, hσ, hk, hkc, hσc⟩
   | E_Let =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
       obtain ⟨a', b', ε', hm1, hn, hle, hs'⟩ := hm.inv_let rfl
@@ -35,7 +77,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       exact ⟨Ψ, R, c, b, ε, ε2, hσ,
         hn'.instantiate (InstOk.of_values hb (.cons (.V_Sub hv (hle.trans hle') hwa) .nil) (by simpa using hwa)
           ⟨hmc, trivial⟩),
-        hs2, hk', Comp.VarsIn.instantiate ⟨hmc, trivial⟩ hkc'.1, hkc'.2, hσc⟩
+        hs2, hk', Comp.VarsIn.instantiate (hd := by simp) ⟨hmc, trivial⟩ hkc'.1, hkc'.2, hσc⟩
   | E_Lam hlen =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
       obtain ⟨names, as, b', ε', hf, hargs, hle, hs'⟩ := hm.inv_app rfl
@@ -47,7 +89,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       simp only [Val.VarsIn] at hlc
       have hw := HasTypeVQ.wf hwf hb hf (envWF_nil 0) hσ.wf hmc.1
       simp only [Ty.WF] at hw
-      have hbody' := hbody
+      have hbody' := hideBuilders_weaken hbody
       simp only [hideConts, List.map_nil, List.append_nil] at hbody'
       exact ⟨Ψ, some r, r, b, ε, ε'', hσ,
         hbody'.instantiate (InstOk.of_values hb hargs (hargs.wf_all hwf hb hσ.wf hmc.2) hmc.2),
@@ -81,7 +123,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       refine ⟨Ψ, some (Ty.subst ts es d.ret), Ty.subst ts es d.ret, b, ε, Eff.substAt 0 ts es d.eff, hσ,
         hθ'.instantiate (InstOk.of_values hb hargs (hargs.wf_all hwf hb hσ.wf hmc.2) hmc.2),
         hs2.trans (hs'.trans hε), hk.markPush hle hretw, ?_, hkc.markPush, hσc⟩
-      refine Comp.VarsIn.instantiate hmc.2 (Comp.VarsIn.substTyAt (c := 0) es
+      refine Comp.VarsIn.instantiate (depth := d.params.length) (hd := by have := hargs.length_eq; simpa using Nat.le_of_eq this.symm) hmc.2 (Comp.VarsIn.substTyAt (c := 0) es
         (fun u hu => varsInList_mem hfc.1 hu) (fun e he => Eff.VarsInList.iff.mp hfc.2 e he) d.body ?_)
       rw [Nat.zero_add, hlen]
       exact Comp.VarsIn.toTrue _ hsc.2.2.2.2
@@ -126,7 +168,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
         · exact varsInList_mem hmc.2.1 hu
         · exact varsInList_mem hmc.1.1 hu
       have hinstc : Comp.VarsIn 0 (fun _ => True) ((body.substTyAt 0 (ss ++ ts) es).instantiate (vs ++ ws)) := by
-        refine Comp.VarsIn.instantiate hargc (Comp.VarsIn.substTyAt (c := 0) es htsOK (fun e he => Eff.VarsInList.iff.mp hmc.2.2.1 e he) body ?_)
+        refine Comp.VarsIn.instantiate (depth := id.dictTys.length + ms.params.length) (hd := by simp only [List.length_append]; omega) hargc (Comp.VarsIn.substTyAt (c := 0) es htsOK (fun e he => Eff.VarsInList.iff.mp hmc.2.2.1 e he) body ?_)
         rw [Nat.zero_add, List.length_append, hsat.1, hsatI.1]
         exact Comp.VarsIn.toTrue _ (hsc.2.2.2 cd m ms body hcd hms hbody)
       -- 包含の逆向きのWF保存に頼らず、具体化した本体の型付けから戻り値の整形式を得る。
@@ -171,8 +213,8 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       simp only [Arm.body, List.append_nil] at hbody hbodyc
       exact ⟨Ψ, R, c, b, ε, ε', hσ,
         hbody.instantiate (InstOk.of_values hb hws (hws.wf_all hwf hb hσ.wf hwsc) hwsc),
-        hsub.trans hε, .K_Sub hk hle, Comp.VarsIn.instantiate hwsc hbodyc, hkc, hσc⟩
-  | E_MatchGuard hi hmatch =>
+        hsub.trans hε, .K_Sub hk hle, Comp.VarsIn.instantiate (hd := by have hlen := hws.length_eq; have hbind := ha.2.1; simp_all [Arm.binders]) hwsc hbodyc, hkc, hσc⟩
+  | @E_MatchGuard v arms next alts guard body ws k σ hi hmatch =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc, hp⟩ := hs
       obtain ⟨t, c, ε', hv, harms, _, hle, hsub⟩ := hm.inv_match rfl
       have hmem := List.mem_of_getElem? hi
@@ -186,12 +228,12 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       have hiok := InstOk.of_values (R0 := R) hb hws (hws.wf_all hwf hb hσ.wf hwsc) hwsc
       simp only [Arm.body, List.append_nil] at hbody hguard hbodyc
       have hbody' := hbody.instantiate hiok
-      have hguard' := hguard.subst ((SubstOk.inst hiok).hide none)
+      have hguard' := hguard.subst (Δl' := []) (ρ := instLocalSubst ws.length) ((SubstOk.inst hiok).hide none)
       simp only [hideConts, List.map_nil] at hguard'
-      have hbc := Comp.VarsIn.instantiate hwsc hbodyc
+      have hbc := Comp.VarsIn.instantiate (hd := by have hlen := hws.length_eq; have hbind := ha.2.1; simp_all [Arm.binders]) hwsc hbodyc
       exact ⟨Ψ, none, .base .boolean, b, Eff.empty, Eff.empty, hσ, hguard', Eff.Sub.refl _,
         .K_Guard hm hε (hp.advance hi (by intro he; cases he)) (.C_Sub hbody' hle hsub (HasTypeCQ.wf hwf hb hm (envWF_nil 0) hσ.wf hmc)) hk,
-        Comp.VarsIn.instantiate hwsc hguardc, Cont.Closed.cons.mpr ⟨⟨hmc.1, hmc.2, hbc⟩, hkc⟩, hσc⟩
+        Comp.VarsIn.instantiate (hd := by have hlen := hws.length_eq; have hbind := ha.2.1; simp_all [Arm.binders]) hwsc hguardc, Cont.Closed.cons.mpr ⟨⟨hmc.1, hmc.2, hbc⟩, hkc⟩, hσc⟩
   | E_GuardT =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, _, _, hk, _, hkc, hσc⟩ := hs
       obtain ⟨R', ε', ε2, c, _, _, _, _, hε, _, hbody, hk'⟩ := hk.inv_guard
@@ -323,7 +365,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       have hΨl := hσ.none_of hl
       have hsub := StoreTy.set_sub (x := .lazy a') (Or.inl hΨl)
       have hΨ'l : (Ψ.set l (.lazy a')) l = some (.lazy a') := by simp [StoreTy.set]
-      exact stE_ret resultWF (hσ.set (x := .lazy a') hw (Or.inl hΨl) ⟨a', hΨ'l, hm1.store hsub⟩) (.V_LocLazy hΨ'l) (Ty.Le.refl _)
+      exact stE_ret resultWF (hσ.set (x := .lazy a') hw (Or.inl hΨl) ⟨a', hΨ'l, hm1.store (hideBuilders_mono hsub)⟩) (.V_LocLazy hΨ'l) (Ty.Le.refl _)
         (hk.store hsub) trivial hkc (hσc.set hmc)
   | @E_ForceDone b0 ts es l k σ s0 v hsig hkind hσl =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
@@ -357,7 +399,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       cases hl'
       obtain ⟨a', hΨl2, hm'⟩ := hσ.2.2.2 _ _ hσl
       rw [hΨl] at hΨl2; cases hΨl2
-      exact ⟨Ψ, none, t, b, ε, Eff.empty, hσ, hm', Eff.empty_sub _, .K_Update hΨl (.K_Sub hk hle),
+      exact ⟨Ψ, none, t, b, ε, Eff.empty, hσ, hideBuilders_weaken hm', Eff.empty_sub _, .K_Update hΨl (.K_Sub hk hle),
         hσc _ _ hσl, Cont.Closed.cons.mpr ⟨trivial, hkc⟩, hσc⟩
   | E_Update =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
@@ -471,7 +513,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       by_cases ho : handles h .fail = false
       · obtain ⟨t, εm, ε', hm1, hsubm, hcl, hle, hs'⟩ := hm.inv_handle rfl ho
         have htw : Ty.WF 0 t := HasTypeCQ.wf hwf hb hm1 (envWF_nil 0) hσ.wf hmc.1
-        exact ⟨Ψ, R, t, b, _, εm, hσ, hm1, hsubm, .K_Handle (.K_Sub hk hle) (hs'.trans hε) hcl htw, hmc.1,
+        exact ⟨Ψ, R, t, b, _, εm, hσ, hm1, hsubm, .K_Handle (.K_Sub hk hle) (hs'.trans hε) hcl.hideBuilders htw, hmc.1,
           Cont.Closed.cons.mpr ⟨hmc.2, hkc⟩, hσc⟩
       · obtain ⟨t, eb, E, Rest, ec, hm1, hsubm, hn, hc, hle, hs'⟩ :=
           hm.inv_handle_failure rfl (by cases hh : handles h .fail <;> simp_all)
@@ -482,7 +524,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
         have he : Eff.Sub ec ε := ⟨fun a ha => hout.1 _ ((Eff.mem_union _ _ _).mpr (Or.inr ha)),
           fun t ht => hout.2 _ ((Eff.memFail_union _ _ _).mpr (Or.inr ht))⟩
         exact ⟨Ψ, R, t, b, _, eb, hσ, hm1, hsubm,
-          .K_Handle_Fail (.K_Sub hk hle) hr hn hc he htw,
+          .K_Handle_Fail (.K_Sub hk hle) hr hn hc.hideBuilders he htw,
           hmc.1, Cont.Closed.cons.mpr ⟨hmc.2, hkc⟩, hσc⟩
   | E_HRet =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs

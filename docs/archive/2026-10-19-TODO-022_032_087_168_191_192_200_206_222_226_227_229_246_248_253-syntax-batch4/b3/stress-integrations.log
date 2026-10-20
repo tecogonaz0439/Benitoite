@@ -1,0 +1,83 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.76s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-d2847be8092a2afb)
+
+running 28 tests
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch4_blocks ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_batch2_character ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch3_solve ... ok
+test export_batch2_failure ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_independent_program_exchange ... ok
+test export_width_smoke ... ok
+test export_named_types_smoke ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test named::export_extensible_package ... ok
+test export_named_declarations_smoke ... ok
+test named::export_extensible_source ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_named_static_calls_smoke ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_calls_smoke ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_generated_record_property ... ok
+test named::export_general_named_programs ... ok
+test export_batch2_op ... ok
+test batch3::export_batch3_builders ... ok
+
+test result: ok. 27 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.70s
+
+     Running tests/named_arguments.rs (target/debug/deps/named_arguments-4735b7d5fed98c74)
+
+running 22 tests
+test deferred_list_elements_determine_named_callback_contracts ... ok
+test known_local_values_and_explicit_higher_order_contracts_keep_their_names ... ok
+test final_higher_order_contracts_preserve_parameter_order ... ok
+test class_implementations_require_declaration_names_in_order ... ok
+test nested_dictionary_arguments_wait_for_numeric_defaulting ... ok
+test builders_require_import_in_the_using_module ... ok
+test constructor_function_values_and_direct_holes_keep_the_original_parameter_names ... ok
+test named_partial_application_keeps_return_try_and_resume_inside_its_lambda ... ok
+test positional_callbacks_preserve_core_contracts ... ok
+test record_syntax_checks_constructor_kind_and_keeps_real_record_errors ... ok
+test final_call_rules_reject_positional_arguments_in_all_three_paths ... ok
+test new_contract_boundaries_check_implementations_in_imported_modules ... ok
+test unresolved_contracts_suppress_dependent_class_ambiguity_and_keep_child_errors ... ok
+test unresolved_special_calls_explain_where_to_put_the_contract ... ok
+test ordinary_named_calls_report_exact_causes_at_the_public_boundary ... ok
+test block_expressions_preserve_scope_effects_and_escape_diagnostics ... ok
+test unresolved_contracts_wait_for_the_same_body_and_never_invent_names ... ok
+test named_holes_and_pipe_insertion_keep_exact_contracts_and_causes ... ok
+test operations_use_declared_names_and_handlers_bind_independent_local_names ... ok
+test binary_traits_preserve_error_types_kinds_and_callback_names ... ok
+test string_builders_keep_second_class_values_and_capture_boundaries ... ok
+test list_and_bytes_builders_keep_types_and_boundaries ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.04s
+
+     Running tests/verify.rs (target/debug/deps/verify-767f59ad871b14ee)
+
+running 3 tests
+test dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses ... ok
+test reference_sets_depend_on_successful_size_checked_combination ... ok
+test golden_programs_and_seeded_single_site_mutations ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 57.53s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-d3576dd4b998849a)
+
+running 4 tests
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.54s
+

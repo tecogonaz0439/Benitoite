@@ -50,6 +50,8 @@ mutual
     | v :: vs => by simp only [Val.renameList, Val.rename_id, Val.renameList_id]
 
   theorem Comp.rename_id : (m : Comp) → m.rename id = m
+    | .builderLet _ body => by simp only [Comp.rename, upRen_id, Comp.rename_id]
+    | .builderOp _ _ r args => by simp only [Comp.rename, LocalRef.rename_id, Val.renameList_id]
     | .ret v => by simp only [Comp.rename, Val.rename_id]
     | .letIn m n => by simp only [Comp.rename, upRen_id, Comp.rename_id]
     | .app f args => by simp only [Comp.rename, Val.rename_id, Val.renameList_id]
@@ -97,6 +99,15 @@ def SubstOk (P : Program) (B : Builtins) (Ψ : StoreTy) (Γ Δ : List (Option Ty
     ((∀ b t ε, x ≠ .cont b t ε) ∧ Ty.WF 0 x ∧ ClosedTy P B Ψ (σ i) x) ∨
     (∃ b t ε l, x = .cont b t ε ∧ Ty.WF 0 x ∧ σ i = .loc l ∧ Ψ l = some (.cont b t ε R0) ∧
       ∀ r, R0 = some r → Ty.WF 0 r)
+
+/-- 置換する通常値の強化により、捕捉境界でも同じ通常置換を使える。 -/
+theorem SubstOk.hideBuilders {Ψ Γ Δ R σ} (h : SubstOk P B Ψ Γ Δ R σ) :
+    SubstOk P B Ψ.hideBuilders Γ Δ R σ := by
+  intro i x hi
+  rcases h i x hi with hv | ⟨hc, hw, ht⟩ | ⟨b, t, e, l, hx, hw, hs, hl, hr⟩
+  · exact Or.inl hv
+  · exact Or.inr (Or.inl ⟨hc, hw, fun Q C Γ => hideBuilders_strengthen_val (ht Q C Γ)⟩)
+  · exact Or.inr (Or.inr ⟨b, t, e, l, hx, hw, hs, (hideBuilders_cont _ _ _ _ _ _).mpr hl, hr⟩)
 
 theorem SubstOk.up {Ψ Γ Δ R σ} (xs : List (Option Ty)) (h : SubstOk P B Ψ Γ Δ R σ) :
     SubstOk P B Ψ (xs ++ Γ) (xs ++ Δ) R (upSubst xs.length σ) := by
@@ -161,23 +172,23 @@ theorem SubstOk.clause {Ψ Γ Δ R σ} (c : Option Ty) (ps : List Ty) (k : Nat)
   have := (h.shiftE k).up (c :: binds ps)
   simpa [binds_length, Nat.add_comm] using this
 
-theorem unguardedPats_subst (σ : Nat → Val) (arms : List Arm) :
-    unguardedPats (Arm.substList σ arms) = unguardedPats arms := by
+theorem unguardedPats_subst {ρ : Nat → LocalRef} (σ : Nat → Val) (arms : List Arm) :
+    unguardedPats (Arm.substList σ arms ρ) = unguardedPats arms := by
   induction arms with
   | nil => rfl
   | cons arm arms ih =>
       cases arm with
       | mk alts guard body => cases guard <;> simp [Arm.substList, unguardedPats, ih]
 
-theorem Clause.substList_ops (σ : Nat → Val) (h : List Clause) :
-    (Clause.substList σ h).map Clause.op = h.map Clause.op := by
+theorem Clause.substList_ops {ρ : Nat → LocalRef} (σ : Nat → Val) (h : List Clause) :
+    (Clause.substList σ h ρ).map Clause.op = h.map Clause.op := by
   induction h with
   | nil => simp [Clause.substList]
   | cons c cs ih => cases c <;> simp [Clause.substList, Clause.op, ih]
 
 mutual
-  theorem HasTypeVQ.subst {Ψ C Γ Δ R0 σ v a} (h : HasTypeVQ P B Ψ Q C Γ v a)
-      (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeVQ P B Ψ Q C Δ (v.subst σ) a := by
+  theorem HasTypeVQ.subst {ρ : Nat → LocalRef} {Ψ C Γ Δ R0 σ v a} (h : HasTypeVQ P B Ψ Q C Γ v a)
+      (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeVQ P B Ψ Q C Δ (v.subst σ ρ) a := by
     match h with
     | .V_Var hi hc =>
         simp only [Val.subst]
@@ -193,110 +204,119 @@ mutual
     | .V_Lam (ps := ps) (r := r) hnames hw hbody =>
         simp only [Val.subst]
         refine .V_Lam hnames hw ?_
-        have := (hσ.hide (some r)).up (binds ps)
+        have := (hσ.hideBuilders.hide (some r)).up (binds ps)
         rw [binds_length] at this
-        exact HasTypeCQ.subst hbody this
-    | .V_Con hc hts hargs => simp only [Val.subst]; exact .V_Con hc hts (HasTypeVsQ.subst hargs hσ)
-    | .V_List he hw => simp only [Val.subst]; exact .V_List (HasTypeEachQ.subst he hσ) hw
+        exact HasTypeCQ.subst (ρ := _) hbody this
+    | .V_Con hc hts hargs => simp only [Val.subst]; exact .V_Con hc hts (HasTypeVsQ.subst (ρ := _) hargs hσ)
+    | .V_List he hw => simp only [Val.subst]; exact .V_List (HasTypeEachQ.subst (ρ := _) he hσ) hw
     | .V_LocRef hl => simp only [Val.subst]; exact .V_LocRef hl
     | .V_LocLazy hl => simp only [Val.subst]; exact .V_LocLazy hl
     | .V_Map hk hv hl hkey hwa hwb =>
         simp only [Val.subst]
-        exact .V_Map (HasTypeEachQ.subst hk hσ) (HasTypeEachQ.subst hv hσ)
+        exact .V_Map (HasTypeEachQ.subst (ρ := _) hk hσ) (HasTypeEachQ.subst (ρ := _) hv hσ)
           (by rw [Val.substList_length, Val.substList_length, hl]) hkey hwa hwb
-    | .V_Set he hkey hw => simp only [Val.subst]; exact .V_Set (HasTypeEachQ.subst he hσ) hkey hw
+    | .V_Set he hkey hw => simp only [Val.subst]; exact .V_Set (HasTypeEachQ.subst (ρ := _) he hσ) hkey hw
     | .V_Bytes => simp only [Val.subst]; exact .V_Bytes
-    | .V_Dict hi hts hvs => simp only [Val.subst]; exact .V_Dict hi hts (HasTypeVsQ.subst hvs hσ)
-    | .V_Super hv hc hs => simp only [Val.subst]; exact .V_Super (HasTypeVQ.subst hv hσ) hc hs
-    | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.subst h hσ) hle hw
+    | .V_Dict hi hts hvs => simp only [Val.subst]; exact .V_Dict hi hts (HasTypeVsQ.subst (ρ := _) hvs hσ)
+    | .V_Super hv hc hs => simp only [Val.subst]; exact .V_Super (HasTypeVQ.subst (ρ := _) hv hσ) hc hs
+    | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.subst (ρ := _) h hσ) hle hw
 
-  theorem HasTypeVsQ.subst {Ψ C Γ Δ R0 σ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
-      (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeVsQ P B Ψ Q C Δ (Val.substList σ vs) as := by
+  theorem HasTypeVsQ.subst {ρ : Nat → LocalRef} {Ψ C Γ Δ R0 σ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
+      (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeVsQ P B Ψ Q C Δ (Val.substList σ vs ρ) as := by
     match h with
     | .nil => simp only [Val.substList]; exact .nil
     | .cons hv hvs =>
-        simp only [Val.substList]; exact .cons (HasTypeVQ.subst hv hσ) (HasTypeVsQ.subst hvs hσ)
+        simp only [Val.substList]; exact .cons (HasTypeVQ.subst (ρ := _) hv hσ) (HasTypeVsQ.subst (ρ := _) hvs hσ)
 
-  theorem HasTypeEachQ.subst {Ψ C Γ Δ R0 σ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
-      (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeEachQ P B Ψ Q C Δ (Val.substList σ vs) a := by
+  theorem HasTypeEachQ.subst {ρ : Nat → LocalRef} {Ψ C Γ Δ R0 σ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
+      (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeEachQ P B Ψ Q C Δ (Val.substList σ vs ρ) a := by
     match h with
     | .nil => simp only [Val.substList]; exact .nil
     | .cons hv hvs =>
-        simp only [Val.substList]; exact .cons (HasTypeVQ.subst hv hσ) (HasTypeEachQ.subst hvs hσ)
+        simp only [Val.substList]; exact .cons (HasTypeVQ.subst (ρ := _) hv hσ) (HasTypeEachQ.subst (ρ := _) hvs hσ)
 
-  theorem HasTypeCQ.subst {Ψ C Γ Δ R σ m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε)
-      (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeCQ P B Ψ Q C Δ R (m.subst σ) a ε := by
+  theorem HasTypeCQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R σ m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+      (hσ : SubstOk P B Ψ Γ Δ R σ) {Δl' : LocalCtx}
+      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeCQ P B Ψ Q C Δ R (m.subst σ ρ) a ε Δl' := by
     match h with
-    | .C_Return hv => simp only [Comp.subst]; exact .C_Return (HasTypeVQ.subst hv hσ)
-    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.subst h hσ) hle hs hw
-    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.subst h hσ) hs
+    | .C_BuilderLet (kind := kind) hw hb =>
+        simp only [Comp.subst]
+        exact .C_BuilderLet hw (HasTypeCQ.subst hb (hσ.up [none]) (hL.builder kind))
+    | .C_BuilderOp hw hr ha =>
+        exact .C_BuilderOp hw (hr.subst hL) (HasTypeVsQ.subst ha hσ)
+    | .C_Return hv => simp only [Comp.subst]; exact .C_Return (HasTypeVQ.subst (ρ := _) hv hσ)
+    | .C_Sub h hle hs hw => exact .C_Sub (HasTypeCQ.subst (ρ := _) h hσ hL) hle hs hw
+    | .C_Eff h hs => exact .C_Eff (HasTypeCQ.subst (ρ := _) h hσ hL) hs
     | .C_Let (a := a) hm hn =>
         simp only [Comp.subst]
-        exact .C_Let (HasTypeCQ.subst hm hσ) (HasTypeCQ.subst hn (hσ.up [some a]))
+        exact .C_Let (HasTypeCQ.subst (ρ := _) hm hσ hL) (HasTypeCQ.subst (ρ := _) hn (hσ.up [some a]) (hL.extend 1))
     | .C_App hf hargs =>
-        simp only [Comp.subst]; exact .C_App (HasTypeVQ.subst hf hσ) (HasTypeVsQ.subst hargs hσ)
+        simp only [Comp.subst]; exact .C_App (HasTypeVQ.subst (ρ := _) hf hσ) (HasTypeVsQ.subst (ρ := _) hargs hσ)
     | .C_If hv hm hn =>
         simp only [Comp.subst]
-        exact .C_If (HasTypeVQ.subst hv hσ) (HasTypeCQ.subst hm hσ) (HasTypeCQ.subst hn hσ)
+        exact .C_If (HasTypeVQ.subst (ρ := _) hv hσ) (HasTypeCQ.subst (ρ := _) hm hσ hL) (HasTypeCQ.subst (ρ := _) hn hσ hL)
     | .C_Match hv harms hex =>
         simp only [Comp.subst]
-        refine .C_Match (HasTypeVQ.subst hv hσ) (HasTypeArmsQ.subst harms hσ) ?_
+        refine .C_Match (HasTypeVQ.subst (ρ := _) hv hσ) (HasTypeArmsQ.subst (ρ := _) harms hσ hL) ?_
         rwa [unguardedPats_subst]
-    | .C_Lazy hm => simp only [Comp.subst]; exact .C_Lazy (HasTypeCQ.subst hm (hσ.hide none))
-    | .C_Escape hv hw => simp only [Comp.subst]; exact .C_Escape (HasTypeVQ.subst hv hσ) hw
+    | .C_Lazy hm => simp only [Comp.subst]; exact .C_Lazy (HasTypeCQ.subst (ρ := _) hm (hσ.hideBuilders.hide none))
+    | .C_Escape hv hw => simp only [Comp.subst]; exact .C_Escape (HasTypeVQ.subst (ρ := _) hv hσ) hw
     | .C_Use hv hr hm hs =>
-        simp only [Comp.subst]; exact .C_Use (HasTypeVQ.subst hv hσ) hr (HasTypeCQ.subst hm hσ) hs
+        simp only [Comp.subst]; exact .C_Use (HasTypeVQ.subst (ρ := _) hv hσ) hr (HasTypeCQ.subst (ρ := _) hm hσ hL) hs
     | .C_Handle hm hs hc =>
         simp only [Comp.subst]
-        refine .C_Handle (HasTypeCQ.subst hm hσ) ?_ (HasTypeClausesQ.subst hc hσ)
+        refine .C_Handle (HasTypeCQ.subst (ρ := _) hm hσ hL) ?_ (HasTypeClausesQ.subst (ρ := _) hc hσ hL)
         rwa [handled_of_ops (Clause.substList_ops σ _)]
     | .C_Handle_Fail hm hs hn hc =>
-        exact .C_Handle_Fail (HasTypeCQ.subst hm hσ) hs hn (HasFailureClause.subst hc hσ)
+        exact .C_Handle_Fail (HasTypeCQ.subst (ρ := _) hm hσ hL) hs hn (HasFailureClause.subst (ρ := _) hc hσ hL)
     | .C_Resume hi hv =>
         simp only [Comp.subst, Val.subst]
         rcases hσ _ _ hi with ⟨j, hj, hΔ⟩ | ⟨hc, _, _⟩ | ⟨b, t, ε, l, hx, _, hl, hΨ, _⟩
-        · rw [hj]; exact .C_Resume hΔ (HasTypeVQ.subst hv hσ)
+        · rw [hj]; exact .C_Resume hΔ (HasTypeVQ.subst (ρ := _) hv hσ)
         · exact absurd rfl (hc _ _ _)
-        · cases hx; rw [hl]; exact .C_ResumeL hΨ (HasTypeVQ.subst hv hσ)
+        · cases hx; rw [hl]; exact .C_ResumeL hΨ (HasTypeVQ.subst (ρ := _) hv hσ)
     | .C_ResumeL hl hv =>
-        simp only [Comp.subst, Val.subst]; exact .C_ResumeL hl (HasTypeVQ.subst hv hσ)
+        simp only [Comp.subst, Val.subst]; exact .C_ResumeL hl (HasTypeVQ.subst (ρ := _) hv hσ)
     | .C_Meth hv hc hmeth hnames hts hscope hes hws =>
         simp only [Comp.subst]
-        exact .C_Meth (HasTypeVQ.subst hv hσ) hc hmeth hnames hts hscope hes (HasTypeVsQ.subst hws hσ)
+        exact .C_Meth (HasTypeVQ.subst (ρ := _) hv hσ) hc hmeth hnames hts hscope hes (HasTypeVsQ.subst (ρ := _) hws hσ)
 
-  theorem HasTypeArmsQ.subst {Ψ C Γ Δ R σ arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε)
-      (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.substList σ arms) a b ε := by
+  theorem HasTypeArmsQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R σ arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+      (hσ : SubstOk P B Ψ Γ Δ R σ) {Δl' : LocalCtx}
+      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeArmsQ P B Ψ Q C Δ R (Arm.substList σ arms ρ) a b ε Δl' := by
     match h with
     | .nil hw => simp only [Arm.substList]; exact .nil hw
     | .plain (δ := δ) hp hm ht =>
         simp only [Arm.substList]
         have hσ' := hσ.up (binds δ)
         rw [binds_length, hp.2.1] at hσ'
-        exact .plain hp (HasTypeCQ.subst hm hσ') (HasTypeArmsQ.subst ht hσ)
+        exact .plain hp (HasTypeCQ.subst (ρ := _) hm hσ' (by simpa [hp.2.1] using hL.extend δ.length)) (HasTypeArmsQ.subst (ρ := _) ht hσ hL)
     | .guarded (δ := δ) hp hg hm ht =>
         simp only [Arm.substList]
         have hσ' := hσ.up (binds δ)
         rw [binds_length, hp.2.1] at hσ'
-        exact .guarded hp (HasTypeCQ.subst hg (hσ'.hide none)) (HasTypeCQ.subst hm hσ')
-          (HasTypeArmsQ.subst ht hσ)
+        exact .guarded hp (HasTypeCQ.subst (ρ := _) hg (hσ'.hide none) (by simpa [hp.2.1] using hL.extend δ.length)) (HasTypeCQ.subst (ρ := _) hm hσ' (by simpa [hp.2.1] using hL.extend δ.length))
+          (HasTypeArmsQ.subst (ρ := _) ht hσ hL)
 
-  theorem HasTypeClausesQ.subst {Ψ C Γ Δ R σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε)
-      (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.substList σ h) t ε := by
+  theorem HasTypeClausesQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+      (hσ : SubstOk P B Ψ Γ Δ R σ) {Δl' : LocalCtx}
+      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.substList σ h ρ) t ε Δl' := by
     match hc with
     | .nil => simp only [Clause.substList]; exact .nil
     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
         simp only [Clause.substList]
-        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.subst hrest hσ)
-        have := hσ.clause (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε))) sg.params k
+        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.subst (ρ := _) hrest hσ hL)
+        have := hσ.hideBuilders.clause (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε))) sg.params k
         rw [← hn] at this
-        exact HasTypeCQ.subst hbody this
-  theorem HasFailureClause.subst {Ψ C Γ Δ E R σ h t ε}
-      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε) (hσ : SubstOk P B Ψ Γ Δ R σ) :
-      HasFailureClause P B Ψ Q C Δ E R (Clause.substList σ h) t ε := by
+        exact HasTypeCQ.subst (ρ := _) hbody this
+  theorem HasFailureClause.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ E R σ h t ε}
+      (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hσ : SubstOk P B Ψ Γ Δ R σ)
+      {Δl' : LocalCtx} (_hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) :
+      HasFailureClause P B Ψ Q C Δ E R (Clause.substList σ h ρ) t ε Δl' := by
     match hc with
     | .one he ht hew hb =>
         simp only [Clause.substList]
-        exact .one he ht hew (HasTypeCQ.subst hb ((hσ.shiftE 1).up [none, some (E.shift 1 0)]))
+        exact .one he ht hew (HasTypeCQ.subst (ρ := _) hb ((hσ.hideBuilders.shiftE 1).up [none, some (E.shift 1 0)]))
 
 end
 
@@ -334,6 +354,28 @@ theorem SubstOk.inst {Ψ R0 as ws} (h : InstOk P B Ψ R0 as ws) :
   have e : ws.reverse[i]? = some w := by rw [hw, hlen]; exact hw'
   simp only [hlt, ↓reduceIte, e, Option.getD_some]
   exact hpt _ _ _ hy hw'
+
+/-- 束縛した通常引数だけを除き、外側の通常環境を保つ。 -/
+theorem SubstOk.inst_prefix {Ψ Γ R as ws} (h : InstOk P B Ψ R as ws) :
+    SubstOk P B Ψ (binds as ++ Γ) Γ R (instSubst ws) := by
+  intro i x hi
+  by_cases hn : i < as.length
+  · rw [List.getElem?_append_left (by simpa [binds_length] using hn)] at hi
+    rcases SubstOk.inst h i x hi with hv | hc | hl
+    · obtain ⟨j, _, hj⟩ := hv; simp at hj
+    · exact Or.inr (Or.inl hc)
+    · exact Or.inr (Or.inr hl)
+  · refine Or.inl ⟨i - as.length, ?_, ?_⟩
+    · simp [instSubst, h.1, hn]
+    · rw [List.getElem?_append_right (by simpa [binds_length] using Nat.le_of_not_gt hn)] at hi
+      simpa only [binds_length] using hi
+
+/-- 通常引数を除くとき、残る局所番号も同じ数だけ詰める。 -/
+theorem HasTypeCQ.instantiate_local {Ψ C Γ R as ws Δl m a ε}
+    (hm : HasTypeCQ P B Ψ Q C (binds as ++ Γ) R m a ε (Δl.extend as.length))
+    (hws : InstOk P B Ψ R as ws) : HasTypeCQ P B Ψ Q C Γ R (m.instantiate ws) a ε Δl := by
+  exact hm.subst (SubstOk.inst_prefix hws)
+    (by simpa only [hws.1] using LocalSubstOk.instantiate Ψ Δl ws.length)
 
 /-- 01-12 の `M[W̄/x̄]`：型の付いた計算に、束縛した変数の型の閉じた値か継続の場所を入れても、型が保たれる。 -/
 theorem HasTypeCQ.instantiate {Ψ C R as ws m a ε} (hm : HasTypeCQ P B Ψ Q C (binds as) R m a ε)

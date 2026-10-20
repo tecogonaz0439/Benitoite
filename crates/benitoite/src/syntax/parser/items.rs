@@ -848,6 +848,7 @@ pub(super) fn parse_record_decl(p: &mut Parser, depth: u32) -> PResult<Item> {
     p.enter(depth)?;
     let start = p.pos;
     let keyword = p.expect(TokenKind::KwRecord)?.span;
+    p.skip_newlines();
     let name = p.expect_name(TokenKind::UpperIdent, text::UPPER_NAME)?;
     let type_params = types::parse_type_params(p, depth, false)?;
     p.open_block(TokenKind::KwRecord, keyword);
@@ -858,6 +859,15 @@ pub(super) fn parse_record_decl(p: &mut Parser, depth: u32) -> PResult<Item> {
         && !p.aborted
         && !p.symbol("}")
     {
+        if p.at(TokenKind::KwRecord) && p.peek_nth_kind(1) == TokenKind::Colon {
+            attempted = true;
+            p.unexpected(text::FIELD);
+            let from = p.pos;
+            p.advance();
+            p.recover(from, Recovery::Line);
+            p.skip_newlines();
+            continue;
+        }
         if super::is_decl_start(p.peek_kind()) {
             break;
         }

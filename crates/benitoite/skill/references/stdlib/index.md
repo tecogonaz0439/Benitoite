@@ -65,6 +65,9 @@ Parameter names in these declarations are part of the function contract. Label e
 | [Test.Property](Test.Property.md) | unofficial | `import Benitoite.Unofficial.Test.Property` | Pure property trials with explicit random state and bounded shrinking. |
 | [Scope](Scope.md) | unofficial | `import Benitoite.Unofficial.Scope` | Checks host and absolute-path spelling against an explicit scope. |
 | [Range](Range.md) | unofficial | `import Benitoite.Unofficial.Range` | Pure inclusive Integer range checks. |
+| [NonEmptyList](NonEmptyList.md) | unofficial | `import Benitoite.Unofficial.NonEmptyList` | An opaque nonempty list. |
 | [StringBuilder](StringBuilder.md) | standard | `import Benitoite.StringBuilder` | Function-local string construction. |
 | [ListBuilder](ListBuilder.md) | standard | `import Benitoite.ListBuilder` | Function-local list construction. |
 | [BytesBuilder](BytesBuilder.md) | standard | `import Benitoite.BytesBuilder` | Function-local bytes construction. |
+| [SourceLocation](SourceLocation.md) | unofficial | `import Benitoite.Unofficial.SourceLocation` | Explicit source locations. |
+| [Log](Log.md) | unofficial | `import Benitoite.Unofficial.Log` | Explicit structured logging. |

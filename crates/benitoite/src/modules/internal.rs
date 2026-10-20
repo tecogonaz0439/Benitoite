@@ -132,6 +132,7 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
                 visit_expr(message, f);
             }
         }
+        Expr::Block(e) => visit_block(&e.body, f),
         Expr::Lazy(l) => visit_block(&l.body, f),
         Expr::With(w) => {
             for b in &w.binds {

@@ -234,6 +234,7 @@ enum SurfaceSlot {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum CoreSlot {
     Local(c::VarId),
+    Builder(c::BuilderId),
     Continuation(c::VarId),
     ImplDictionary(usize),
 }
@@ -1408,6 +1409,10 @@ impl Surface<'_> {
                     _ => panic!("try action disagrees with checked information"),
                 }
             }
+            a::Expr::Block(v) => {
+                let body = self.block(&v.body, env, position);
+                tagged("block", json!({"body":body}))
+            }
             a::Expr::Lazy(v) => {
                 let saved_ret = self.return_ty.take();
                 let local: Vec<_> = env
@@ -1577,10 +1582,10 @@ impl Surface<'_> {
                 BuilderOp::Copy => "copy",
                 BuilderOp::Length => "length",
             };
-            let refs = self.builder_refs(&op.kind, &op.refs);
+            let kind = self.builder_kind(&op.kind);
             return tagged(
                 "builderOp",
-                json!({"op":name,"index":index,"args":args,"refs":refs}),
+                json!({"op":name,"index":index,"args":args,"kind":kind}),
             );
         }
         let mut ctor = None;
@@ -1647,11 +1652,10 @@ impl Surface<'_> {
                         }
                         benitoite::typeck::BuilderKind::Bytes => json!("bytes"),
                     };
-                    let refs = self.builder_refs(&decl.kind, &decl.refs);
                     let mut local = env.to_vec();
                     local.push(SurfaceSlot::Builder(decl.id.0));
                     let rest = self.statements(rest, &local, position);
-                    return tagged("builderBind", json!({"kind":kind,"refs":refs,"rest":rest}));
+                    return tagged("builderBind", json!({"kind":kind,"rest":rest}));
                 }
                 let expr = self.expr(&b.value, env);
                 let ty = self.node_ty(b.id);
@@ -1948,8 +1952,36 @@ impl Core<'_> {
             }
         }
     }
+    fn builder_kind(&mut self, kind: &c::BuilderKind) -> Value {
+        match kind {
+            c::BuilderKind::String => json!("string"),
+            c::BuilderKind::Bytes => json!("bytes"),
+            c::BuilderKind::List(t) => tagged("list", json!({"element":self.surface.ty(t)})),
+        }
+    }
     fn comp(&mut self, c: &c::Comp, env: &[CoreSlot]) -> Value {
         match &c.kind {
+            c::CompKind::BuilderLet { id, kind, body } => {
+                let kind = self.builder_kind(kind);
+                let mut local = env.to_vec();
+                local.push(CoreSlot::Builder(*id));
+                let body = self.comp(body, &local);
+                tagged("builderLet", json!({"kind":kind,"body":body}))
+            }
+            c::CompKind::BuilderOp { id, kind, op, args } => {
+                let index = env
+                    .iter()
+                    .rev()
+                    .position(|slot| *slot == CoreSlot::Builder(*id))
+                    .expect("unbound core builder");
+                let kind = self.builder_kind(kind);
+                let op = builder_op(*op);
+                let args: Vec<_> = args.iter().map(|v| self.value(v, env)).collect();
+                tagged(
+                    "builderOp",
+                    json!({"kind":kind,"op":op,"ref":{"bound":{"index":index}},"args":args}),
+                )
+            }
             c::CompKind::Return(v) => {
                 if let c::ValKind::ConstRef(id) = v.kind {
                     assert!(
@@ -2818,4 +2850,14 @@ pub fn named_program_parts(
         "named definitions outside scope: {definitions:?}"
     );
     (definitions, constants, coverage)
+}
+
+fn builder_op(op: benitoite::resolve::builders::BuilderOp) -> &'static str {
+    use benitoite::resolve::builders::BuilderOp;
+    match op {
+        BuilderOp::Append => "append",
+        BuilderOp::AppendAll => "appendAll",
+        BuilderOp::Copy => "copy",
+        BuilderOp::Length => "length",
+    }
 }

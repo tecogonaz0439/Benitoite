@@ -28,6 +28,83 @@ import Benitoite.Release.TypeSubst
 
 namespace Benitoite.Release
 
+/-- 通常の型とは別の、専用セルの分類（設計書 01-12「構築器の分類と環境の対応」）。 -/
+inductive BuilderKind where
+  | string | list (element : Ty) | bytes
+
+/-- 専用操作の四分類。 -/
+inductive BuilderOp where
+  | append | appendAll | copy | length
+  deriving DecidableEq
+
+/-- 構築器から取り出す通常の不変値の型。 -/
+def BuilderKind.contents : BuilderKind → Ty
+  | .string => .base .string
+  | .list t => .list t
+  | .bytes => .bytes
+
+
+/-- 脱糖後に専用名の位置を埋めるセルの型。 -/
+def BuilderKind.cell (k : BuilderKind) : Ty := .reference k.contents
+
+
+/-- 長さの参照先のラベルは既存の標準ソースに合わせる。 -/
+def BuilderKind.lengthNames : BuilderKind → List String
+  | .string => ["s"]
+  | .list _ => ["xs"]
+  | .bytes => ["b"]
+
+
+/-- 一回の追記で受け取る通常値。 -/
+def BuilderKind.item : BuilderKind → Ty
+  | .string => .base .string
+  | .list t => t
+  | .bytes => .base .byte
+
+
+/-- 専用操作の通常引数の契約。セルはこの列へ含めない。 -/
+def BuilderOp.params (op : BuilderOp) (k : BuilderKind) : List Ty :=
+  match op with
+  | .copy | .length => []
+  | .append => [k.item]
+  | .appendAll => [match k with | .string => .list (.base .string) | _ => k.contents]
+
+
+/-- 専用操作の結果も通常の Release.Ty である。 -/
+def BuilderOp.result (op : BuilderOp) (k : BuilderKind) : Ty :=
+  match op with
+  | .copy => k.contents
+  | .length => .base .integer
+  | .append | .appendAll => .base .unit
+
+
+/-- 通常値の場所と構文上区別する局所参照。bound は通常変数と番号を共有する。 -/
+inductive LocalRef where
+  | bound (index : Nat)
+  | loc (location : Nat)
+  deriving DecidableEq
+
+/-- 束縛された局所参照の範囲。場所の番号には束縛の範囲を課さない。 -/
+def LocalRef.Scoped (depth : Nat) : LocalRef → Prop
+  | .bound i => i < depth
+  | .loc _ => True
+
+/-- 付け替えは通常変数と同じ番号へ写す。 -/
+def LocalRef.rename (ξ : Nat → Nat) : LocalRef → LocalRef
+  | .bound i => .bound (ξ i)
+  | .loc l => .loc l
+
+/-- 局所参照だけを置き換え、通常値へは変換しない。 -/
+def LocalRef.subst (ρ : Nat → LocalRef) : LocalRef → LocalRef
+  | .bound i => ρ i
+  | .loc l => .loc l
+
+/-- List の要素型だけが型代入の対象になる。 -/
+noncomputable def BuilderKind.substTyAt (c : Nat) (ts : List Ty) (es : List Eff) : BuilderKind → BuilderKind
+  | .string => .string
+  | .list a => .list (a.substAt c ts es)
+  | .bytes => .bytes
+
 /-- 型パラメータに付けた組み込みの制約（01-06「組み込みの制約（初回リリース版）」、01-12「型パラメータの組み込みの制約」）。 -/
 structure TParam where
   equality : Bool := false
@@ -36,9 +113,37 @@ structure TParam where
 /-- 鍵の型であるという制約（V-Map・V-Set の「A は鍵の型である」）。 -/
 def TParam.keyC : TParam := { key := true }
 
+/-- Integer の下端（設計書 01-12「構文」）。 -/
+def min64 : Int := -9223372036854775808
+/-- Integer の上端。別幅の整数の表現は変えない。 -/
+def max64 : Int := 9223372036854775807
+
+/-- Integer の全値は構文の時点で範囲内である。 -/
+abbrev Integer64Value := { n : Int // min64 ≤ n ∧ n ≤ max64 }
+
+/-- 区間の計算に使う数学的な整数への射影。 -/
+def Integer64Value.toInt (n : Integer64Value) : Int := n.val
+
+/-- 射影した数学的な整数も Integer の両端の内側にある。 -/
+theorem Integer64Value.toInt_bounds (n : Integer64Value) :
+    min64 ≤ n.toInt ∧ n.toInt ≤ max64 := n.property
+
+/-- 正のリテラルの大きさ。 -/
+abbrev Integer64Literal := { n : Nat // n ≤ 9223372036854775807 }
+/-- 直接負号の大きさは、正のリテラルより一つ大きい値まで許す。 -/
+abbrev Integer64Magnitude := { n : Nat // n ≤ 9223372036854775808 }
+
+/-- 正のリテラルを全域に変換する。 -/
+def Integer64Literal.toValue (n : Integer64Literal) : Integer64Value :=
+  ⟨Int.ofNat n.val, by have h := n.property; simp only [min64, max64, Int.ofNat_eq_natCast]; omega⟩
+
+/-- 直接負号は最小値の大きさも受理する。 -/
+def Integer64Magnitude.negValue (n : Integer64Magnitude) : Integer64Value :=
+  ⟨-Int.ofNat n.val, by have h := n.property; simp only [min64, max64, Int.ofNat_eq_natCast]; omega⟩
+
 /-- 定数。`O` の型の値（`IOError` の値、リソースなど）は、型の名前と番号で表す。 -/
 inductive Const where
-  | integer (n : Int)
+  | integer (n : Integer64Value)
   | float (x : Float)
   | string (s : String)
   | character (c : Char)
@@ -82,7 +187,7 @@ def Const.patternAllowed : Const → Bool
 
 /-- パターンの定数の照合。P-Const が許さない種類は等しいと判定しない。 -/
 def Const.matches : Const → Const → Bool
-  | .integer a, .integer b => a == b
+  | .integer a, .integer b => a.toInt == b.toInt
   | .string a, .string b => a == b
   | .character a, .character b => a == b
   | .boolean a, .boolean b => a == b
@@ -152,6 +257,8 @@ mutual
     | super (v : Val) (s : ClassName)
 
   inductive Comp where
+    | builderLet (kind : BuilderKind) (body : Comp)
+    | builderOp (kind : BuilderKind) (op : BuilderOp) (ref : LocalRef) (args : List Val)
     | ret (v : Val)
     | letIn (m : Comp) (n : Comp)
     | app (f : Val) (args : List Val)
@@ -182,6 +289,12 @@ mutual
   inductive Arm where
     | mk (alts : List Alt) (guard : Option Comp) (body : Comp)
 end
+
+/-- 専用セルの抽象的な不変内容。List の要素も通常値である。 -/
+inductive BuilderContents where
+  | string (text : String)
+  | list (element : Ty) (values : List Val)
+  | bytes (values : List Nat)
 
 def Arm.alts : Arm → List Alt
   | .mk alts _ _ => alts

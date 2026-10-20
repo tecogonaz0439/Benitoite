@@ -89,8 +89,8 @@ theorem InstOk.snoc {Ψ R0 as ws x w} (h : InstOk P B Ψ R0 as ws)
     subst hy; rw [hlen] at hv; simp at hv; subst hv
     exact Or.inr hx
 
-theorem Clause.VarsInList.mem {n pe} {hs : List Clause} (h : Clause.VarsInList n pe hs) {c : Clause}
-    (hc : c ∈ hs) : Comp.VarsIn (n + c.ntys) pe c.body := by
+theorem Clause.VarsInList.mem {depth n pe} {hs : List Clause} (h : Clause.VarsInList n pe hs depth) {c : Clause}
+    (hc : c ∈ hs) : Comp.VarsIn (n + c.ntys) pe c.body (depth + c.arity + 1) := by
   induction hs with
   | nil => simp at hc
   | cons c' cs ih =>
@@ -189,11 +189,15 @@ theorem pres_op_common (hwf : P.WellFormed) (hb : B.Assumptions P)
     have hmem : c ∈ h := List.mem_of_find?_eq_some hc
     have hb' := Clause.VarsInList.mem hck2.1 hmem
     rw [Nat.zero_add, hntys, ← hlen] at hb'
-    refine Comp.VarsIn.instantiate ?_ ?_
+    refine Comp.VarsIn.instantiate (depth := c.arity + 1) ?_ ?_ ?_
     · exact Val.VarsInList.append hwsc ⟨trivial, trivial⟩
     · have := Comp.VarsIn.substTyAt (c := 0) [] (fun u hu => varsInList_mem htsc hu) (by simp) c.body
         (by simpa using hb')
       exact this
+    · have hwlen := hargs.length_eq
+      simp only [List.length_map] at hwlen
+      simp only [List.length_append, List.length_cons, List.length_nil]
+      omega
   · exact Cont.Closed.cons.mpr ⟨trivial, hck2.2⟩
   · exact hcσ.set (Cont.Closed.append.mpr ⟨hck'.1, Cont.Closed.cons.mpr ⟨hck2.1, fun f hf => by simp at hf⟩⟩)
 

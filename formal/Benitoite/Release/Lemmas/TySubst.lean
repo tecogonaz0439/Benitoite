@@ -155,14 +155,24 @@ def StoreFix (Ψ : StoreTy) (ts : List Ty) (es : List Eff) : Prop :=
     (∀ a, Ψ l = some (.lazy a) → a.substAt c ts es = a) ∧
     (∀ b t ε r, Ψ l = some (.cont b t ε r) →
       b.substAt c ts es = b ∧ t.substAt c ts es = t ∧ Eff.substAt c ts es ε = ε ∧
-      r.map (Ty.substAt c ts es) = r)
+      r.map (Ty.substAt c ts es) = r) ∧
+    (∀ k, Ψ l = some (.builder k) → k.substTyAt c ts es = k)
+
+theorem StoreFix.hideBuilders {Ψ ts es} (h : StoreFix Ψ ts es) :
+    StoreFix Ψ.hideBuilders ts es := by
+  intro c l
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · simpa only [hideBuilders_ref] using (h c l).1
+  · simpa only [hideBuilders_lazy] using (h c l).2.1
+  · simpa only [hideBuilders_cont] using (h c l).2.2.1
+  · intro k hk; exact (hideBuilders_no_builder Ψ l k hk).elim
 
 theorem StoreFix.empty (ts : List Ty) (es : List Eff) : StoreFix StoreTy.empty ts es := by
   intro c l; simp [StoreTy.empty]
 
 theorem StoreFix.of_wf {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) (ts : List Ty) : StoreFix Ψ ts [] := by
   intro c l
-  refine ⟨fun a h => ?_, fun a h => ?_, fun b t ε r h => ?_⟩
+  refine ⟨fun a h => ?_, fun a h => ?_, (fun b t ε r h => ?_), fun k h => ?_⟩
   · exact Ty.substAt_nil_of_wf ts a (Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h))
   · exact Ty.substAt_nil_of_wf ts a (Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h))
   · have w := hΨ _ _ h
@@ -174,5 +184,51 @@ theorem StoreFix.of_wf {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) (ts : List Ty) : Sto
     | some x =>
         simp only [Option.map_some]
         rw [Ty.substAt_nil_of_wf ts x (Ty.WF.mono (Nat.zero_le _) _ (w.2.2.1 x rfl))]
+  · have hw := hΨ l (.builder k) h
+    cases k with
+    | string => rfl
+    | bytes => rfl
+    | list a =>
+        simp only [BuilderKind.substTyAt, BuilderKind.list.injEq]
+        exact Ty.substAt_nil_of_wf ts a (Ty.WF.mono (Nat.zero_le _) _ hw)
+
+/-- 型代入は共有番号を保ち、分類内の List の要素型だけを変える。 -/
+noncomputable def LocalCtx.substTyAt (c : Nat) (ts : List Ty) (es : List Eff) (Δ : LocalCtx) : LocalCtx :=
+  Δ.map (Option.map (BuilderKind.substTyAt c ts es))
+
+theorem LocalCtx.substTyAt_extend (c : Nat) (ts : List Ty) (es : List Eff) (Δ : LocalCtx) (n : Nat) :
+    (Δ.extend n).substTyAt c ts es = (Δ.substTyAt c ts es).extend n := by
+  cases Δ with
+  | nil => rfl
+  | cons x xs => simp [LocalCtx.extend, LocalCtx.substTyAt, List.map_replicate]
+
+theorem LocalRef.HasKind.substTy {Ψ Δ r k c ts es} (h : HasKind Ψ Δ r k)
+    (hΨ : StoreFix Ψ ts es) : HasKind Ψ (Δ.substTyAt c ts es) r (k.substTyAt c ts es) := by
+  cases h with
+  | bound hi =>
+      rename_i i
+      apply HasKind.bound
+      cases hx : Δ[i]? with
+      | none => simp [LocalCtx.kindAt, hx] at hi
+      | some x =>
+          cases x with
+          | none => simp [LocalCtx.kindAt, hx] at hi
+          | some v =>
+              have hv : v = k := by simpa [LocalCtx.kindAt, hx] using hi
+              subst hv
+              simp [LocalCtx.kindAt, LocalCtx.substTyAt, List.getElem?_map, hx]
+  | loc hl => rw [(hΨ c _).2.2.2 _ hl]; exact .loc hl
+
+theorem BuilderKind.contents_substTyAt (k : BuilderKind) (c ts es) :
+    (k.substTyAt c ts es).contents = k.contents.substAt c ts es := by
+  cases k <;> rfl
+
+theorem BuilderOp.params_substTyAt (op : BuilderOp) (k : BuilderKind) (c ts es) :
+    op.params (k.substTyAt c ts es) = (op.params k).map (Ty.substAt c ts es) := by
+  cases op <;> cases k <;> rfl
+
+theorem BuilderOp.result_substTyAt (op : BuilderOp) (k : BuilderKind) (c ts es) :
+    op.result (k.substTyAt c ts es) = (op.result k).substAt c ts es := by
+  cases op <;> cases k <;> rfl
 
 end Benitoite.Release

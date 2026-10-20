@@ -1,0 +1,20 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+error: using `.clone()` on a ref-counted pointer
+    --> crates/benitoite/tests/coverage_export.rs:1177:43
+     |
+1177 |             stdout: OutputTarget::Capture(stdout.clone()),
+     |                                           ^^^^^^^^^^^^^^ help: try: `std::sync::Arc::<std::sync::Mutex<std::vec::Vec<u8>>>::clone(&stdout)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#clone_on_ref_ptr
+     = note: requested on the command line with `-D clippy::clone-on-ref-ptr`
+
+error: using `.clone()` on a ref-counted pointer
+    --> crates/benitoite/tests/coverage_export.rs:1178:43
+     |
+1178 |             stderr: OutputTarget::Capture(stderr.clone()),
+     |                                           ^^^^^^^^^^^^^^ help: try: `std::sync::Arc::<std::sync::Mutex<std::vec::Vec<u8>>>::clone(&stderr)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#clone_on_ref_ptr
+
+error: could not compile `benitoite` (test "coverage_export") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

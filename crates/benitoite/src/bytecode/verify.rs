@@ -59,7 +59,8 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
     let id = p.main.unwrap_or(ProtoIdx(0));
     let check = |valid, message| require(valid, id, None, message);
     check(
-        p.main.is_none_or(|main| p.proto(main).is_some()),
+        p.main
+            .is_none_or(|main| p.proto(main).is_some_and(|p| p.builder_inputs.is_empty())),
         "main prototype is missing",
     )?;
     for external in &p.externals.functions {
@@ -76,7 +77,10 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
         )?;
     }
     for (_, proto) in &p.top_fns {
-        check(p.proto(*proto).is_some(), "top-level prototype is missing")?;
+        check(
+            p.proto(*proto).is_some_and(|p| p.builder_inputs.is_empty()),
+            "top-level prototype is missing or requires builder inputs",
+        )?;
     }
     for (index, desc) in p.consts.iter().enumerate() {
         let child = |k: &super::program::ConstIdx| {
@@ -114,7 +118,7 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
                     .proto(*proto)
                     .ok_or_else(|| error(id, None, "constant prototype is missing"))?;
                 check(
-                    target.captures.is_empty(),
+                    target.captures.is_empty() && target.builder_inputs.is_empty(),
                     "constant function requires captures",
                 )?;
             }
@@ -162,7 +166,11 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
             "implementation supertrait count mismatch",
         )?;
         for method in &info.methods {
-            check(p.proto(*method).is_some(), "method prototype is missing")?;
+            check(
+                p.proto(*method)
+                    .is_some_and(|p| p.builder_inputs.is_empty()),
+                "method prototype is missing or requires builder inputs",
+            )?;
         }
         // 辞書の式は入れ子になりうるので、Rust の再帰を使わない。
         let mut pending: Vec<_> = info.supers.iter().collect();
@@ -336,7 +344,12 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
             | Opcode::Use
             | Opcode::Release
             | Opcode::Handle
-            | Opcode::Resume => None,
+            | Opcode::Resume
+            | Opcode::BuilderNew
+            | Opcode::BuilderAppend
+            | Opcode::BuilderAppendAll
+            | Opcode::BuilderCopy
+            | Opcode::BuilderLength => None,
         };
         if let Some((start, count)) = range {
             check(
@@ -452,7 +465,12 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
             | Opcode::Release
             | Opcode::Handle
             | Opcode::Perform
-            | Opcode::Resume => {}
+            | Opcode::Resume
+            | Opcode::BuilderNew
+            | Opcode::BuilderAppend
+            | Opcode::BuilderAppendAll
+            | Opcode::BuilderCopy
+            | Opcode::BuilderLength => {}
         }
         if index.saturating_add(1) == proto.code.len() {
             check(
@@ -469,6 +487,7 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
             )?;
         }
     }
+    super::builders::analyze(p, id).map_err(|e| error(e.proto, Some(e.pc), &e.message))?;
     verify_live(id, proto)?;
     let computed = compute_liveness(p, id).map_err(|e| error(e.proto, Some(e.pc), &e.message))?;
     require(
@@ -533,6 +552,7 @@ fn verify_live(id: ProtoIdx, proto: &Proto) -> Result<(), VerifyError> {
     check(
         live.items.iter().all(|item| match item {
             LiveItem::Dead { reg } | LiveItem::LastUse { reg, .. } => *reg < proto.num_regs,
+            LiveItem::Builder(local) => *local < proto.builder_slots,
         }),
         "liveness item outside window",
     )?;
@@ -590,6 +610,10 @@ mod tests {
             num_regs: regs,
             num_params: params,
             captures: vec![CaptureSource::Reg(0)],
+            builder_slots: 0,
+            builder_sites: Vec::new(),
+            builder_inputs: Vec::new(),
+            builder_parent: None,
             live: LiveInfo::default(),
         }
     }
@@ -606,6 +630,38 @@ mod tests {
         if matches!(instr.opcode(), Some(Opcode::Method | Opcode::TailMethod)) {
             main.method_traits[0] = Some(TraitIdx(0));
         }
+        if matches!(
+            instr.opcode(),
+            Some(
+                Opcode::BuilderNew
+                    | Opcode::BuilderAppend
+                    | Opcode::BuilderAppendAll
+                    | Opcode::BuilderCopy
+                    | Opcode::BuilderLength
+            )
+        ) {
+            main.origin = ProtoOrigin::UserHandleBody;
+            main.builder_slots = 1;
+            main.builder_sites = vec![super::super::program::BuilderSite {
+                local: 0,
+                kind: crate::resolve::builders::BuilderClass::String,
+                args: if matches!(
+                    instr.opcode(),
+                    Some(Opcode::BuilderAppend | Opcode::BuilderAppendAll)
+                ) {
+                    vec![0]
+                } else {
+                    vec![]
+                },
+            }];
+            if instr.opcode() != Some(Opcode::BuilderNew) {
+                main.builder_inputs = vec![super::super::program::BuilderInput {
+                    source: 0,
+                    target: 0,
+                    kind: crate::resolve::builders::BuilderClass::String,
+                }];
+            }
+        }
         let mut captured = proto(
             vec![
                 Instr::abc(Opcode::GetCap, 0, 0, 0),
@@ -617,6 +673,7 @@ mod tests {
         captured.captures = vec![CaptureSource::Reg(0), CaptureSource::Capture(0)];
         let mut method = proto(vec![Instr::abc(Opcode::Return, 0, 0, 0)], 1, 1);
         method.captures.clear();
+        let entry = main.builder_inputs.is_empty().then_some(ProtoIdx(0));
         let mut p = CompiledProgram {
             externals: Default::default(),
             protos: vec![main, captured, method],
@@ -669,7 +726,7 @@ mod tests {
                     tail_resumptive: false,
                 }],
             }],
-            main: Some(ProtoIdx(0)),
+            main: entry,
             main_kind: MainKind::Unit,
             sources: Arc::new(SourceTable::new()),
         };
@@ -702,7 +759,7 @@ mod tests {
         p
     }
 
-    // 関門: 69 命令の読み書きと表から求める引数の数の契約を verify の境界で守る。
+    // 関門: 74 命令の読み書きと表から求める引数の数の契約を verify の境界で守る。
     // 生存解析のテストは検証器の受理・拒否、VerifyError の位置を確かめていない。
     #[test]
     fn every_opcode_accepts_valid_operands_and_rejects_outside_registers() {
@@ -711,7 +768,16 @@ mod tests {
             let Some(op) = Instr(u64::from(byte)).opcode() else {
                 continue;
             };
-            let instr = if op == Opcode::Closure || op == Opcode::Lazy {
+            let instr = if matches!(
+                op,
+                Opcode::BuilderNew
+                    | Opcode::BuilderAppend
+                    | Opcode::BuilderAppendAll
+                    | Opcode::BuilderCopy
+                    | Opcode::BuilderLength
+            ) {
+                Instr::abx(op, if op == Opcode::BuilderNew { 0 } else { 1 }, 0)
+            } else if op == Opcode::Closure || op == Opcode::Lazy {
                 Instr::abx(op, 1, 1)
             } else if op == Opcode::Io {
                 Instr::abc(op, 1, 1, 0)
@@ -739,7 +805,7 @@ mod tests {
             }
             tested += 1;
         }
-        assert_eq!(tested, 69);
+        assert_eq!(tested, 74);
         // 空の引数の並びは窓の終端から始めてよい。
         let p = fixture(Instr::abc(Opcode::List, 1, 16, 0));
         assert_eq!(verify(&p), Ok(()));
@@ -1022,6 +1088,7 @@ mod tests {
             for reg in std::iter::once(1).chain(message) {
                 assert!(!p.protos[0].live.at(0).iter().any(|item| match item {
                     LiveItem::LastUse { reg: r, .. } | LiveItem::Dead { reg: r } => *r == reg,
+                    LiveItem::Builder(_) => false,
                 }));
             }
         }

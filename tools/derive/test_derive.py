@@ -530,11 +530,12 @@ end function
         with self.assertRaisesRegex(ValueError, 'derive.migration_required'):
             self.manager.check()
         self.assertEqual(self.files(), before)
+
         path, checksum = self.preview('migration')
         plan = json.loads(path.read_bytes())
-        self.assertEqual(plan['version'], 2)
+        self.assertEqual(plan['version'], 3)
         self.assertEqual(plan['recordAfter']['inventoryVersion'], 2)
-        self.assertEqual(plan['recordAfter']['hashVersion'], 2)
+        self.assertEqual(plan['recordAfter']['hashVersion'], 3)
         self.assertEqual(plan['migration']['previousRecord'], old)
         self.assertFalse(plan['migration']['semanticHashesComparable'])
         self.assertEqual((path.parent / 'changes.diff').read_bytes(), b'')
@@ -552,6 +553,38 @@ end function
         with self.assertRaisesRegex(ValueError, 'derive.modified_region'):
             self.preview('modified-migration')
         self.assertEqual(self.files(), before)
+
+    def test_v2_record_migration_receipt_and_stale_review_are_independent(self):
+        self.install()
+        old = json.loads(self.manager.record.read_bytes())
+        old.update(version=2, hashVersion=2, generatorVersion='2.0.0-syntax-batch3')
+        self.manager.record.write_text(json.dumps(old))
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'derive.migration_required'):
+            self.manager.check()
+        self.assertEqual(self.files(), before)
+        manifest, checksum = self.preview('v3')
+        plan = json.loads(manifest.read_bytes())
+        self.assertEqual(plan['version'], 3)
+        self.assertEqual(plan['migration']['previousRecord'], old)
+        self.assertEqual((manifest.parent / 'changes.diff').read_bytes(), b'')
+        stale = copy.deepcopy(plan)
+        stale.update(version=2, hashVersion=2, generatorVersion='2.0.0-syntax-batch3')
+        path = self.root / 'old-manifest.json'
+        path.write_text(json.dumps(stale))
+        self.reject_apply_unchanged(path, hashlib.sha256(path.read_bytes()).hexdigest(), 'incompatible_manifest')
+        self.assertEqual(self.manager.apply(manifest, checksum), 0)
+        receipt = manifest.with_name(manifest.name + '.receipt.json')
+        proof = json.loads(receipt.read_bytes())
+        self.assertEqual(proof['version'], 3)
+        self.assertEqual(proof['generatorVersion'], '3.0.0-syntax-batch4')
+        self.assertEqual(proof['recordSha256'], hashlib.sha256(self.manager.record.read_bytes()).hexdigest())
+        self.manager.check()
+        self.assertIsNone(self.manager.apply(manifest, checksum))
+        proof['version'] = 2
+        receipt.write_text(json.dumps(proof))
+        self.reject_apply_unchanged(manifest, checksum, 'incompatible_receipt')
+
 
     def test_public_cli_empty_workflow_and_argument_errors(self):
         self.config_value['targets'] = []
@@ -591,6 +624,40 @@ class JsonGeneration(Project, unittest.TestCase):
         result = subprocess.run([derive.BENITOITE, command, self.source], capture_output=True)
         self.assertEqual(result.returncode, expected, result.stderr.decode() + result.stdout.decode())
         return result
+
+    # 一律のグラフ拒否が既存の単相カスタム変換まで狭める退行を検出する。
+    # Json.Codec単体では生成対象の欄の置換を検査できない。
+    def test_custom_whole_generic_field_keeps_existing_json_scope(self):
+        self.source.write_text('''import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+public record Box[T]
+  value: T
+end record
+public record Person
+  boxed: Box[Integer]
+end record
+public function encodeBox(value: Box[Integer]) -> Result[Json.Value, Codec.ConversionError]
+  return Codec.encodeInteger(Box.value(value))
+end function
+public function decodeBox(value: Json.Value) -> Result[Box[Integer], Codec.ConversionError]
+  bind decoded <- try Codec.decodeInteger(value)
+  return Result.Ok(Box(value: decoded))
+end function
+function main() -> Unit
+  ()
+end function
+@test
+function roundtrip() -> Unit uses Assert.Check
+  bind original <- Person(boxed: Box(value: 17))
+  Assert.equal(actual: Result.andThen(r: encodePerson(original), f: decodePerson), expected: Result.Ok(original))
+end function
+''')
+        self.config_value['targets'][0]['fields'] = {'boxed': {'encode': 'People.encodeBox', 'decode': 'People.decodeBox'}}
+        self.save_config()
+        self.install()
+        self.normal('check')
+        self.normal()
+        self.manager.check()
 
     def test_imports_preserve_module_doc(self):
         prefix = b'//! Keep this module explanation first.\n'
@@ -929,9 +996,9 @@ end function
         self.normal()
         path, _ = self.preview()
         plan = json.loads(path.read_bytes())
-        self.assertEqual(plan['recordAfter']['version'], 2)
+        self.assertEqual(plan['recordAfter']['version'], 3)
         self.assertEqual((path.parent / 'changes.diff').read_bytes(), b'')
-        self.assertEqual(json.loads(self.manager.record.read_bytes())['version'], 2)
+        self.assertEqual(json.loads(self.manager.record.read_bytes())['version'], 3)
 
     def test_generated_shrinker_defers_later_factories_and_continuations(self):
         self.source.write_text('''import Benitoite.Unofficial.Test.Property
@@ -1051,6 +1118,296 @@ end function
                 self.assertEqual(self.files(), before)
 
 
+class RecursiveGeneration(Project, unittest.TestCase):
+    # 作成時の関門: 実生成コードをCLIで動かし、総節点数・有限基底・乱数の
+    # 再現と型引数の契約を検査する。予算の複製、作成時の無限再帰、phantom
+    # 引数への不要なGenで失敗する。既存例は再帰/多相を拒否していたため
+    # 覆わない。専用の本番APIやコンパイラの置換は加えない。
+    def configure(self, source, names):
+        self.source.write_text(source + '\nfunction main() -> Unit\n ()\nend function\n')
+        self.config_value['targets'] = [
+            {'source': 'People.bnt', 'type': 'People.' + name, 'region': name.lower(),
+             'property': {'generator': 'gen' + name, 'shrinker': 'shrink' + name}}
+            for name in names]
+        self.save_config()
+        self.manager = derive.Manager(self.root, self.config)
+
+    def execute(self):
+        manifest, checksum = self.install()
+        for command in ('check', 'test'):
+            result = subprocess.run([derive.BENITOITE, command, self.source], capture_output=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr.decode() + result.stdout.decode())
+        self.manager.check()
+        self.assertIsNone(self.manager.apply(manifest, checksum))
+        second, _ = self.preview('second')
+        self.assertEqual((second.parent / 'changes.diff').read_bytes(), b'')
+
+    def test_self_recursion_all_containers_total_budget_and_replay(self):
+        self.configure('''import Benitoite.Unofficial.Test.Property as P
+import Benitoite.Unofficial.IO.Random
+public record Node[T]
+  value: T
+  children: List[Node[T]]
+  next: Option[Node[T]]
+  keyed: Map[String, Node[T]]
+end record
+function count[T](node: Node[T]) -> Integer
+  bind children <- List.fold(xs: Node.children(node), initial: 0, f: lambda(acc, value) return acc + count(value) end lambda)
+  bind keyed <- List.fold(xs: Map.values(Node.keyed(node)), initial: 0, f: lambda(acc, value) return acc + count(value) end lambda)
+  bind next <- match Node.next(node) with
+    case Option.None -> 0
+    case Option.Some(value) -> count(value)
+  end match
+  return 1 + children + keyed + next
+end function
+function samples(seed: Integer, size: Integer) -> Integer uses Assert.Check
+  if seed = 16 then return 0 end if
+  bind gen <- genNode(element: P.constant(7))
+  bind run <- P.Gen.run(gen)
+  bind original <- run(generator: Random.fromSeed(seed), size: size)
+  bind replay <- run(generator: Random.fromSeed(seed), size: size)
+  Assert.equal(actual: Pair.first(original), expected: Pair.first(replay))
+  Assert.equal(actual: Pair.first(Random.nextInteger(generator: Pair.second(original), low: 0, high: 1000000)), expected: Pair.first(Random.nextInteger(generator: Pair.second(replay), low: 0, high: 1000000)))
+  Assert.equal(actual: Node.value(Pair.first(original)), expected: 7)
+  Assert.equal(actual: count(Pair.first(original)) <= 1 + Integer.maximum(a: size, b: 0), expected: true)
+  if size <= 0 then
+    Assert.equal(actual: Node.children(Pair.first(original)), expected: [])
+    Assert.equal(actual: Node.next(Pair.first(original)), expected: Option.None)
+    Assert.equal(actual: Map.size(Node.keyed(Pair.first(original))), expected: 0)
+  end if
+  return count(Pair.first(original)) + samples(seed: seed + 1, size: size)
+end function
+@test
+function generatedBudget() -> Unit uses Assert.Check
+  Assert.equal(actual: samples(seed: 0, size: -1), expected: 16)
+  Assert.equal(actual: samples(seed: 0, size: 0), expected: 16)
+  Assert.equal(actual: samples(seed: 0, size: 12) > 16, expected: true)
+end function
+''', ['Node'])
+        self.execute()
+
+    def test_mutual_recursion_and_required_siblings_reserve_minima(self):
+        self.configure('''import Benitoite.Unofficial.Test.Property as P
+import Benitoite.Unofficial.IO.Random
+import Benitoite.Trait
+public record A[T]
+  value: T
+  next: Option[B[T]]
+end record
+public record B[T]
+  children: List[A[T]]
+end record
+public record Fork
+  left: Leaf
+  right: Leaf
+end record
+public record Leaf
+  children: List[Fork]
+end record
+function countFork(value: Fork) -> Integer
+  return 1 + countLeaf(Fork.left(value)) + countLeaf(Fork.right(value))
+end function
+function countLeaf(parent: Leaf) -> Integer
+  return 1 + List.fold(xs: Leaf.children(parent), initial: 0, f: lambda(acc, value) return acc + countFork(value) end lambda)
+end function
+function countA[T](value: A[T]) -> Integer
+  return 1 + match A.next(value) with
+    case Option.None -> 0
+    case Option.Some(child) -> countB(child)
+  end match
+end function
+function countB[T](parent: B[T]) -> Integer
+  return 1 + List.fold(xs: B.children(parent), initial: 0, f: lambda(acc, value) return acc + countA(value) end lambda)
+end function
+function samples(seed: Integer) -> Unit uses Assert.Check
+  if seed = 16 then return () end if
+  bind runA <- P.Gen.run(genA(element: P.constant(9)))
+  bind runB <- P.Gen.run(genB(element: P.constant(9)))
+  Assert.equal(actual: countA(Pair.first(runA(generator: Random.fromSeed(seed), size: 0))), expected: 1)
+  Assert.equal(actual: countB(Pair.first(runB(generator: Random.fromSeed(seed), size: 0))), expected: 1)
+  Assert.equal(actual: countA(Pair.first(runA(generator: Random.fromSeed(seed), size: 12))) <= 13, expected: true)
+  Assert.equal(actual: countB(Pair.first(runB(generator: Random.fromSeed(seed), size: 12))) <= 13, expected: true)
+  bind runFork <- P.Gen.run(genFork())
+  Assert.equal(actual: countFork(Pair.first(runFork(generator: Random.fromSeed(seed), size: 0))), expected: 3)
+  Assert.equal(actual: countFork(Pair.first(runFork(generator: Random.fromSeed(seed), size: 12))) <= 15, expected: true)
+  samples(seed + 1)
+end function
+@test
+function requiredBase() -> Unit uses Assert.Check
+  samples(0)
+end function
+@test
+function mutualTraits() -> Unit uses Assert.Check
+  bind root <- A(value: 4, next: Option.Some(B(children: [A(value: 2, next: Option.None)])))
+  Assert.equal(actual: Trait.Show.show(root), expected: "A(value: 4, next: Option.Some(B(children: [A(value: 2, next: Option.None)])))")
+  Assert.equal(actual: Trait.Order.compare(x: root, y: root), expected: Trait.Ordering.Equal)
+  Assert.equal(actual: Trait.Order.compare(x: root, y: A(..root, value: 5)), expected: Trait.Ordering.Less)
+  Assert.equal(actual: Trait.Order.compare(x: root, y: A(..root, next: Option.Some(B(children: [A(value: 1, next: Option.None)])))), expected: Trait.Ordering.Greater)
+end function
+''', ['A', 'B', 'Fork', 'Leaf'])
+        for target in self.config_value['targets'][:2]:
+            target.update(show=True, order=True)
+        self.save_config()
+        self.execute()
+        # A changed peer invalidates every dependent managed region, even when
+        # the old ordinary generated functions could still type-check.
+        self.source.write_text(self.source.read_text().replace('children: List[A[T]]', 'children: List[A[T]]\n  flag: Boolean'))
+        with self.assertRaisesRegex(ValueError, 'stale|differ|regenerat'):
+            self.manager.check()
+
+    def test_polymorphic_parameter_order_phantoms_and_independent_components(self):
+        self.configure('''import Benitoite.Unofficial.Test.Property as P
+import Benitoite.Unofficial.IO.Random
+public record Box[A, B, Unused]
+  second: B
+  first: A
+end record
+public record Phantom[T]
+  value: Integer
+end record
+public record Inner
+  children: List[Inner]
+end record
+public record Outer
+  inner: Inner
+  children: List[Outer]
+end record
+function innerCount(parent: Inner) -> Integer
+  return 1 + List.fold(xs: Inner.children(parent), initial: 0, f: lambda(acc, value) return acc + innerCount(value) end lambda)
+end function
+function outerCount(parent: Outer) -> Integer uses Assert.Check
+  Assert.equal(actual: innerCount(Outer.inner(parent)) <= 5, expected: true)
+  return 1 + List.fold(xs: Outer.children(parent), initial: 0, f: lambda(acc, value) return acc + outerCount(value) end lambda)
+end function
+@test
+function polymorphicGenerators() -> Unit uses Assert.Check
+  bind boxed: P.Gen[Box[Integer, String, function() -> Unit]] <- genBox(element: P.constant(11), element2: P.constant("second"))
+  bind run <- P.Gen.run(boxed)
+  bind result <- run(generator: Random.fromSeed(5), size: 0)
+  Assert.equal(actual: Box.first(Pair.first(result)), expected: 11)
+  Assert.equal(actual: Box.second(Pair.first(result)), expected: "second")
+  bind functional: P.Gen[Box[function() -> Unit, String, Boolean]] <- genBox(element: P.constant(lambda() return () end lambda), element2: P.constant("b"))
+  bind functionRun <- P.Gen.run(functional)
+  bind withFunction <- functionRun(generator: Random.fromSeed(5), size: 0)
+  bind callback <- Box.first(Pair.first(withFunction))
+  Assert.equal(actual: callback(), expected: ())
+  bind firstGen <- Result.unwrapOr(r: P.integer(low: 0, high: 1000), fallback: P.constant(0))
+  bind secondGen <- P.string()
+  bind ordered: P.Gen[Box[Integer, String, Boolean]] <- genBox(element: firstGen, element2: secondGen)
+  bind orderedRun <- P.Gen.run(ordered)
+  bind actual <- orderedRun(generator: Random.fromSeed(12), size: 3)
+  bind secondRun <- P.Gen.run(secondGen)
+  bind second <- secondRun(generator: Random.fromSeed(12), size: 3)
+  bind firstRun <- P.Gen.run(firstGen)
+  bind first <- firstRun(generator: Pair.second(second), size: 3)
+  Assert.equal(actual: Box.first(Pair.first(actual)), expected: Pair.first(first))
+  Assert.equal(actual: Box.second(Pair.first(actual)), expected: Pair.first(second))
+  Assert.equal(actual: Pair.first(Random.nextInteger(generator: Pair.second(actual), low: 0, high: 1000000)), expected: Pair.first(Random.nextInteger(generator: Pair.second(first), low: 0, high: 1000000)))
+  bind phantom: P.Gen[Phantom[function() -> Unit]] <- genPhantom()
+  bind phantomShrink: P.Shrinker[Phantom[function() -> Unit]] <- shrinkPhantom()
+  bind phantomRun <- P.Gen.run(phantom)
+  bind ignored <- phantomRun(generator: Random.fromSeed(5), size: 0)
+  bind outerRun <- P.Gen.run(genOuter())
+  Assert.equal(actual: outerCount(Pair.first(outerRun(generator: Random.fromSeed(5), size: 4))) <= 5, expected: true)
+end function
+''', ['Box', 'Phantom', 'Inner', 'Outer'])
+        self.execute()
+
+    def test_feature_specific_rejections_do_not_write(self):
+        for source, reason in [
+            ('public record Impossible\n next: Impossible\nend record\n', 'no_finite_base'),
+            ('public record Nested[T]\n next: Option[Nested[List[T]]]\nend record\n', 'non_regular_recursion'),
+            ('public record Reordered[A, B]\n next: List[Reordered[B, A]]\nend record\n', 'non_regular_recursion'),
+            ('public record Higher[F[_]]\n values: F[Integer]\nend record\n', 'E0201'),
+        ]:
+            name = source.split()[2].split('[')[0]
+            with self.subTest(name=name):
+                self.configure(source, [name])
+                before = self.files()
+                result = subprocess.run([sys.executable, '-B', Path(derive.__file__), 'preview',
+                                         '--root', self.root, '--config', self.config,
+                                         '--out', self.root / 'refused'], capture_output=True)
+                self.assertEqual(result.returncode, 1, result.stderr.decode())
+                self.assertIn(reason, result.stderr.decode())
+                self.assertEqual(self.files(), before)
+
+        self.configure('import Other\npublic record A\n next: Option[Other.B]\nend record\n', ['A'])
+        (self.root / 'Other.bnt').write_text('import People\npublic record B\n next: Option[People.A]\nend record\n')
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'E0322'):
+            self.preview('cross-module')
+        self.assertEqual(self.files(), before)
+        for source, name, reason in [
+            ('public record Node\n children: List[Node]\nend record\n', 'Node', 'cyclic record dependency'),
+            ('public record Box[T]\n value: T\nend record\n', 'Box', 'must not have type parameters'),
+        ]:
+            with self.subTest(feature='json', name=name):
+                self.configure(source, [name])
+                self.config_value['targets'][0]['json'] = {'encode': 'encode', 'decode': 'decode'}
+                self.save_config()
+                before = self.files()
+                with self.assertRaisesRegex(ValueError, reason):
+                    self.preview('json-refused')
+                self.assertEqual(self.files(), before)
+
+    def test_mutual_shrinking_required_fields_map_order_and_dependency_review(self):
+        self.configure('''import Benitoite.Unofficial.Test.Property as P
+import Benitoite.Trait as T
+public record A[Element]
+  value: Element
+  child: B[Element]
+end record
+public record B[Element]
+  children: List[A[Element]]
+  keyed: Map[String, A[Element]]
+end record
+function count[Element](node: A[Element]) -> Integer
+  bind child <- A.child(node)
+  return 2 + List.fold(xs: B.children(child), initial: 0, f: lambda(acc, value) return acc + count(value) end lambda)
+    + List.fold(xs: Map.values(B.keyed(child)), initial: 0, f: lambda(acc, value) return acc + count(value) end lambda)
+end function
+function collect[Element](steps: P.ShrinkStep[Element], acc: List[Element]) -> List[Element]
+  return match steps with
+    case P.ShrinkStep.Done -> acc
+    case P.ShrinkStep.Skip(next) -> collect(steps: next(), acc: acc)
+    case P.ShrinkStep.Yield(value, next) -> collect(steps: next(), acc: List.append(xs: acc, x: value))
+  end match
+end function
+function leaf(value: Integer) -> A[Integer]
+  return A(value: value, child: B(children: [], keyed: Map.empty()))
+end function
+@test
+function mutualShrink() -> Unit uses Assert.Check
+  bind child <- B(children: [leaf(2)], keyed: Map.fromList([Pair("b", leaf(4)), Pair("a", leaf(0))]))
+  bind input <- A(value: 0, child: child)
+  bind candidates <- collect(steps: P.Shrinker.candidates(shrinkA(element: P.shrinkInteger()))(input), acc: [])
+  Assert.equal(actual: List.take(xs: candidates, n: 3), expected: [
+    A(..input, child: B(..child, children: [])),
+    A(..input, child: B(..child, keyed: Map.remove(m: B.keyed(child), k: "a"))),
+    A(..input, child: B(..child, keyed: Map.remove(m: B.keyed(child), k: "b")))])
+  Assert.equal(actual: List.length(candidates), expected: 8)
+  Assert.equal(actual: List.all(xs: candidates, p: lambda(value) return count(value) <= count(input) and not (value = input) end lambda), expected: true)
+  Assert.equal(actual: T.Show.show(leaf(3)), expected: "A(value: 3, child: B(children: [], keyed: Map.fromList([])))")
+end function
+''', ['A', 'B'])
+        for target in self.config_value['targets']:
+            target['show'] = True
+        self.save_config()
+        self.execute()
+        manifest, checksum = self.preview('stale')
+        # 相互再帰の相手の欄を変えたときは、review/applyだけでなく既存の
+        # 全管理領域のcheckも無効になる。本文は手で直さない。
+        self.source.write_text(self.source.read_text().replace('keyed: Map[String, A[Element]]', 'keyed: Map[String, A[Element]]\n  extra: Integer'))
+        self.reject_apply_unchanged(manifest, checksum, 'input hash mismatch')
+        with self.assertRaisesRegex(ValueError, 'regeneration mismatch'):
+            self.manager.check()
+        new, _ = self.preview('new-dependency')
+        previous = json.loads(self.manager.record.read_bytes())['targets']
+        current = json.loads(new.read_bytes())['recordAfter']['targets']
+        self.assertNotEqual(previous[0]['dependenciesSha256'], current[0]['dependenciesSha256'])
+        self.assertNotEqual(previous[1]['declarationSha256'], current[1]['declarationSha256'])
+
+
 class TraitGeneration(Project, unittest.TestCase):
     # 四問: preview/applyから実VMまで、表示・比較順・明示要求・手書き保護を守る。
     # 欄の逆順、暗黙の依存追加、既存implementの上書きで失敗する。
@@ -1103,7 +1460,7 @@ end function
         manifest, checksum = self.preview()
         plan = derive.read_json(manifest.read_bytes())
         rows = plan['recordAfter']['targets']
-        self.assertEqual(rows[0]['templates'], {'show': '1', 'order': '1'})
+        self.assertEqual(rows[0]['templates'], {'show': '2', 'order': '2'})
         self.assertTrue(rows[2]['traitTarget']['opaque'])
         self.assertTrue(any(d.get('template') == 'show' and d['target']['head']['name'] == 'Address.Address'
                             for d in rows[0]['implementationDependencies']))
@@ -1190,8 +1547,8 @@ end function
     def test_refusals_preserve_source_and_report_specific_contract(self):
         for declaration, settings, explanation in (
             ('record Person\n  callback: function(value: Integer) -> Integer\nend record\n', {}, 'derive.missing_implementation'),
-            ('record Person\n  next: Option[Person]\nend record\n', {}, 'derive.cyclic_dependency'),
-            ('record Person[T]\n  value: T\nend record\n', {}, 'type parameters'),
+            ('record Person[T]\n  next: Option[Person[List[T]]]\nend record\n', {}, 'derive.non_regular_recursion'),
+            ('record Person[T]\n  value: function(value: T) -> T\nend record\n', {}, 'derive.missing_implementation'),
             ('@opaque\npublic record Person\n  name: String\nend record\n', {'json': {'encode': 'enc', 'decode': 'dec'}}, 'derive.opaque_target'),
             ('@opaque\npublic record Person\n  name: String\nend record\n', {'property': {'generator': 'gen', 'shrinker': 'shrink'}}, 'derive.opaque_target'),
             ('record Child\n  value: Integer\nend record\nrecord Person\n  child: Child\nend record\n', {}, 'derive.missing_implementation'),
@@ -1227,6 +1584,94 @@ end function
         del target['show']
         del target['order']
         self.assertEqual(derive.normalized_config(inv['targets'][0]['config']), derive.normalized_config(target))
+
+    def test_polymorphic_recursive_traits_shrink_order_and_constraints(self):
+        # 作成時の関門: 道具の公開境界から生成した通常コードを実行する。
+        # 制約の過不足、factoryの即時再帰、葉より遅い削除、自己候補の混入を
+        # 独立の期待値で検出する。従来例は単相・非再帰だけであり、代用しない。
+        RecursiveGeneration.configure(self, '''import Benitoite.Unofficial.Test.Property as P
+import Benitoite.Trait as T
+public record Node[A]
+  value: A
+  children: List[Node[A]]
+  next: Option[Node[A]]
+end record
+public record Box[A, Phantom]
+  value: A
+end record
+function collect[A](steps: P.ShrinkStep[A], acc: List[A]) -> List[A]
+  return match steps with
+    case P.ShrinkStep.Done -> acc
+    case P.ShrinkStep.Skip(next) -> collect(steps: next(), acc: acc)
+    case P.ShrinkStep.Yield(value, next) -> collect(steps: next(), acc: List.append(xs: acc, x: value))
+  end match
+end function
+function leaf(value: Integer) -> Node[Integer]
+  return Node(value: value, children: [], next: Option.None)
+end function
+function chain(depth: Integer) -> Node[Integer]
+  if depth = 0 then return leaf(1) end if
+  return Node(value: 1, children: [], next: Option.Some(chain(depth - 1)))
+end function
+function boxShrink[A, B](element: P.Shrinker[A]) -> P.Shrinker[Box[A, B]]
+  return shrinkBox(element: element)
+end function
+@test
+function recursiveDerived() -> Unit uses Assert.Check
+  bind shrinker <- shrinkNode(element: P.shrinkInteger())
+  bind input <- Node(value: 4, children: [leaf(2)], next: Option.Some(leaf(0)))
+  bind candidates <- collect(steps: P.Shrinker.candidates(shrinker)(input), acc: [])
+  Assert.equal(actual: candidates, expected: [
+    Node(..input, children: []), Node(..input, next: Option.None),
+    Node(..input, value: 0), Node(..input, value: 2), Node(..input, value: 1),
+    Node(..input, children: [leaf(0)]), Node(..input, children: [leaf(1)])])
+  Assert.equal(actual: List.contains(xs: candidates, x: input), expected: false)
+  bind poison <- P.Shrinker(candidates: lambda(value: Integer)
+    bind never <- 1 div 0
+    return P.ShrinkStep.Done
+  end lambda)
+  bind bounded <- P.check(config: P.Config(seed: 0, trials: 1, size: 0, maxShrinks: 1, maxShrinkWork: 100), gen: P.constant(input), shrinker: shrinkNode(element: poison), property: lambda(value) return Result.Error("fails") end lambda)
+  match bounded with
+    case Result.Error(P.CheckFailure.Falsified(example)) ->
+      Assert.equal(actual: P.Counterexample.reduced(example), expected: Node(..input, children: []))
+      Assert.equal(actual: P.Counterexample.shrinks(example), expected: 1)
+      Assert.equal(actual: P.Counterexample.limitReached(example), expected: true)
+    case _ -> Assert.fail("expected a bounded recursive shrink")
+  end match
+  Assert.equal(actual: T.Show.show(input), expected: "Node(value: 4, children: [Node(value: 2, children: [], next: Option.None)], next: Option.Some(Node(value: 0, children: [], next: Option.None)))")
+  Assert.equal(actual: T.Order.compare(x: input, y: Node(..input, value: 5)), expected: T.Ordering.Less)
+  Assert.equal(actual: T.Order.compare(x: input, y: Node(..input, children: [leaf(1)])), expected: T.Ordering.Greater)
+  Assert.equal(actual: T.Order.compare(x: input, y: input), expected: T.Ordering.Equal)
+  bind box: Box[Integer, function(x: Integer) -> Integer] <- Box(value: 3)
+  Assert.equal(actual: T.Show.show(box), expected: "Box(value: 3)")
+  bind plain <- boxShrink(element: P.shrinkInteger())
+  ()
+end function
+@test
+function recursiveDepth() -> Unit uses Assert.Check
+  bind deep <- chain(128)
+  Assert.equal(actual: T.Order.compare(x: deep, y: deep), expected: T.Ordering.Equal)
+  Assert.equal(actual: String.startsWith(s: T.Show.show(deep), prefix: "Node(value: 1"), expected: true)
+end function
+''', ['Node', 'Box'])
+        for target in self.config_value['targets']:
+            target.update(show=True, order=True)
+        self.save_config()
+        RecursiveGeneration.execute(self)
+        limited = subprocess.run([derive.BENITOITE, 'test', '--max-call-stack=8KiB', self.source], capture_output=True, timeout=30)
+        self.assertEqual(limited.returncode, 1, limited.stderr.decode() + limited.stdout.decode())
+        self.assertIn('recursiveDepth ... FAILED', limited.stdout.decode())
+        self.assertIn('runtime error[R0901]', limited.stdout.decode())
+        self.assertIn('recursiveDerived ... ok', limited.stdout.decode())
+        original = self.source.read_text()
+        for value, code in [('T.Show.show(Box(value: lambda(x: Integer) return x end lambda))', 'E0705'),
+                            ('T.Order.compare(x: Box(value: lambda(x: Integer) return x end lambda), y: Box(value: lambda(x: Integer) return x end lambda))', 'E0705')]:
+            with self.subTest(code=code, value=value):
+                self.source.write_text(original + '\nfunction refused() -> Unit\n bind bad <- ' + value + '\n ()\nend function\n')
+                result = subprocess.run([derive.BENITOITE, 'check', self.source], capture_output=True, timeout=30)
+                self.assertEqual(result.returncode, 2, result.stderr.decode())
+                self.assertIn(code, result.stderr.decode())
+        self.source.write_text(original)
 
     def test_another_authenticated_region_cannot_authorize_replacing_an_implementation(self):
         body = ('implement Trait.Show[Person]\n  function show(x: Person) -> String\n'

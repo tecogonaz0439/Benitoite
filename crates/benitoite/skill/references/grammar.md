@@ -2,7 +2,7 @@
 
 The base grammar of Benitoite in EBNF. `{ ... }` means zero or more repetitions, `[ ... ]` means optional, and `|` separates alternatives. `NL` is a line break that separates items. `CommaList(X)` is a comma-separated list of `X` that may be empty and may end with a comma; `LineList(X)` is a list of `X` separated by line breaks.
 
-Identifiers exclude the 35 keywords listed in [Keywords as names](common-mistakes.md#keywords-as-names). `die` cannot be a name, including in labels, fields, import aliases, and names after a dot. It is accepted only as a failure action of `try`, not as a standalone expression. `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary identifiers. `as`, file-header words, built-in constraint names, and attribute names are read specially only in their own contexts. `extensible` is an ordinary identifier. The argument-free `@extensible` attribute applies to data and record declarations. Outside their defining package, patterns must cover future shapes with an unguarded variable or `_`. The argument-free `@opaque` attribute applies to public or package-public data and record declarations. It exposes the type and ordinary values while restricting constructors, record updates, representation patterns, and field accessors to the declaring module. Other modules of the same package are outside this boundary; use public construction and inspection functions.
+Identifiers exclude the 36 keywords listed in [Keywords as names](common-mistakes.md#keywords-as-names), except that `record` is also accepted where a lowercase name is required (including parameters, labels, bindings, and value references). `die` cannot be a name, including in labels, fields, import aliases, and names after a dot. It is accepted only as a failure action of `try`, not as a standalone expression. `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary identifiers. `as`, file-header words, built-in constraint names, and attribute names are read specially only in their own contexts. `extensible` is an ordinary identifier. The argument-free `@extensible` attribute applies to data and record declarations. Outside their defining package, patterns must cover future shapes with an unguarded variable or `_`. The argument-free `@opaque` attribute applies to public or package-public data and record declarations. It exposes the type and ordinary values while restricting constructors, record updates, representation patterns, and field accessors to the declaring module. Other modules of the same package are outside this boundary; use public construction and inspection functions.
 
 A physical line break immediately after `return` always ends the statement, even inside parentheses or before an operator on the next line. Comments and blank lines do not change this rule. For an ordinary `return`, start the required value on the same physical line (otherwise E0201). Once the value has started, ordinary multiline continuation is allowed after operators, inside parentheses or call arguments, and after `then`. A short lambda must still fit on one physical line.
 
@@ -63,7 +63,7 @@ DataDecl    = "data" UpperIdent [ TypeParams ] LineList(Variant) "end" "data" .
 AliasDecl   = "type" UpperIdent [ TypeParams ] "=" Type .
 TypeParams  = "[" UpperIdent { "," UpperIdent } [ "," ] "]" .
 Variant     = UpperIdent [ "(" CommaList(Type) ")" ] .
-RecordDecl  = "record" UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
+RecordDecl  = "record" [ NL ] UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
 Field       = LowerIdent ":" Type .
 TraitDecl   = "trait" UpperIdent "[" TypeParamDecl [ ":" QualUpper { "&" QualUpper } ] "]"
               LineList(MethodSig) "end" "trait" .
@@ -107,6 +107,7 @@ Primary     = Literal
             | MatchExpr
             | Lambda
             | RecordExpr
+            | "block" Body "end" "block"
             | "lazy" Body "end" "lazy"
             | WithExpr
             | HandleExpr

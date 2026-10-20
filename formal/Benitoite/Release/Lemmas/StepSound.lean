@@ -111,6 +111,32 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, _, _, _⟩ := hs
       have hfr : σ (fresh σ) = none := hfresh σ hσ.1
       cases m with
+      | builderLet kind body =>
+          simp only [step, Option.some.injEq, Prod.mk.injEq] at h
+          obtain ⟨rfl, rfl⟩ := h
+          exact .E_BuilderNew hfr
+      | builderOp kind op r args =>
+          cases r with
+          | bound _ => simp [step] at h
+          | loc l =>
+              cases hc : σ l with
+              | none => simp [step, hc] at h
+              | some cell =>
+                  cases cell with
+                  | builder c =>
+                      cases ha : builderApply op c args with
+                      | none => simp [step, hc, ha] at h
+                      | some reply =>
+                          cases reply with
+                          | value c' v =>
+                              simp only [step, hc, ha, Option.some.injEq, Prod.mk.injEq] at h
+                              obtain ⟨rfl, rfl⟩ := h
+                              exact .E_BuilderOp hc ha
+                          | error reason =>
+                              simp only [step, hc, ha, Option.some.injEq, Prod.mk.injEq] at h
+                              obtain ⟨rfl, rfl⟩ := h
+                              exact .E_BuilderErr hc ha
+                  | _ => simp [step, hc] at h
       | ret v =>
           cases k with
           | nil => simp [step] at h

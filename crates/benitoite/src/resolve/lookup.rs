@@ -1046,12 +1046,17 @@ impl Resolver<'_> {
             .and_then(|s| self.line_start(s))
     }
 
-    // 最後の段は位置に合わせて、標準のモジュールの同名の型と省略できる構成子を選ぶ。
+    // 最後の段は位置に合わせて、標準のモジュールの同名の型・エフェクトと省略できる構成子を選ぶ。
     // 候補の検査も同じ変換を使い、実際には解決できない置き換えを付けない（01-03）。
     fn final_name(&self, mut id: BindingId, position: Position) -> BindingId {
         if matches!(
             position,
-            Position::Type | Position::Record | Position::Class | Position::Ctor | Position::Value
+            Position::Type
+                | Position::Record
+                | Position::Class
+                | Position::Ctor
+                | Position::Value
+                | Position::Effect
         ) && let Some(ty) = self.type_in_module(id)
         {
             id = ty;

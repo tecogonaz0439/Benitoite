@@ -266,6 +266,41 @@ pub struct Handle<C> {
     pub handled: EffectSet,
 }
 
+/// 通常の変数とは別の構築器の識別子。
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+pub struct BuilderId(pub u32);
+
+/// 専用の局所文脈でだけ使える構築器の種類。
+#[derive(Clone, PartialEq, Debug)]
+pub enum BuilderKind {
+    String,
+    List(Ty),
+    Bytes,
+}
+
+impl BuilderKind {
+    /// 実行時に用いる三分類。List の要素型はコアの検査に残す。
+    pub fn class(&self) -> crate::resolve::builders::BuilderClass {
+        use crate::resolve::builders::BuilderClass;
+        match self {
+            Self::String => BuilderClass::String,
+            Self::List(_) => BuilderClass::List,
+            Self::Bytes => BuilderClass::Bytes,
+        }
+    }
+    /// copy が作る不変の通常値の型。
+    pub fn contents(&self) -> Ty {
+        use crate::types::TyCon;
+        use crate::types::builtin::BuiltinTypeId as B;
+        let (id, args) = match self {
+            Self::String => (B::STRING, vec![]),
+            Self::Bytes => (B::BYTES, vec![]),
+            Self::List(t) => (B::LIST, vec![t.clone()]),
+        };
+        Ty::Con(TyCon::Builtin(id), args)
+    }
+}
+
 /// 計算。
 #[derive(Clone, PartialEq, Debug)]
 pub struct Comp {
@@ -285,6 +320,19 @@ pub struct ExitReportArgs<C> {
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum CompKind {
+    /// 通常値に変換できない局所の根を束縛する。
+    BuilderLet {
+        id: BuilderId,
+        kind: BuilderKind,
+        body: Box<Comp>,
+    },
+    /// args だけが通常の値であり、id は専用の局所文脈から読む。
+    BuilderOp {
+        id: BuilderId,
+        kind: BuilderKind,
+        op: crate::resolve::builders::BuilderOp,
+        args: Vec<CoreVal>,
+    },
     Return(Val<Comp>),
     Let {
         var: Var,

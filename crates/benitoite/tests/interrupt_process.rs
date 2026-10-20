@@ -4,7 +4,7 @@
 // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use std::fs;
+use std::fs::{self, File};
 use std::io::Read;
 use std::os::unix::process::ExitStatusExt;
 use std::path::PathBuf;
@@ -16,6 +16,54 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 const LIMIT: Duration = Duration::from_secs(30);
 const READY: &[u8] = b"ready\n";
 const IMPORTS: &str = "import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Clock\nimport Benitoite.Unofficial.IO.File\n";
+
+// 読み手も書き手も非ブロッキングで親が保持する。FIFO の open や read で待つ
+// スレッドを作らないので、途中で失敗しても Process の Drop と fd の破棄で片付く
+// （設計書 07-03「中断の要求のテスト（初回リリース版）」）。
+struct Fifo {
+    reader: File,
+    filler: File,
+}
+
+impl Fifo {
+    fn new(path: &std::path::Path) -> Self {
+        use rustix::fs::{Mode, OFlags, open};
+        assert!(Command::new("mkfifo").arg(path).status().unwrap().success());
+        let reader = open(path, OFlags::RDONLY | OFlags::NONBLOCK, Mode::empty()).unwrap();
+        let filler = open(path, OFlags::WRONLY | OFlags::NONBLOCK, Mode::empty()).unwrap();
+        Self {
+            reader: reader.into(),
+            filler: filler.into(),
+        }
+    }
+
+    fn available(&self) -> usize {
+        usize::try_from(rustix::io::ioctl_fionread(&self.reader).unwrap()).unwrap()
+    }
+
+    fn fill(&self) -> usize {
+        let started = Instant::now();
+        let mut filled = 0_usize;
+        loop {
+            assert!(started.elapsed() < LIMIT, "FIFO did not fill");
+            match rustix::io::write(&self.filler, &[b'f'; 512]) {
+                Ok(count) => {
+                    assert_ne!(count, 0);
+                    filled = filled.checked_add(count).unwrap();
+                }
+                Err(rustix::io::Errno::AGAIN) => return filled,
+                Err(rustix::io::Errno::INTR) => continue,
+                Err(error) => panic!("cannot fill FIFO: {error}"),
+            }
+        }
+    }
+
+    fn read(&self, count: usize) -> Vec<u8> {
+        let mut bytes = vec![0; count];
+        (&self.reader).read_exact(&mut bytes).unwrap();
+        bytes
+    }
+}
 
 struct Directory(PathBuf);
 impl Directory {
@@ -57,6 +105,7 @@ struct Process {
     stderr: Receiver<Vec<u8>>,
     resume_stdout: Sender<()>,
     readers: Vec<thread::JoinHandle<()>>,
+    fifos: Vec<Fifo>,
     _directory: Directory,
 }
 
@@ -70,11 +119,25 @@ impl Process {
         hold_stdout: bool,
         files: &[(&str, &[u8])],
     ) -> Self {
+        Self::start_with_resources(source, mode, hold_stdout, files, &[])
+    }
+
+    fn start_with_resources(
+        source: &str,
+        mode: &str,
+        hold_stdout: bool,
+        files: &[(&str, &[u8])],
+        fifo_names: &[&str],
+    ) -> Self {
         let directory = Directory::new();
         fs::write(directory.0.join("input.txt"), b"resource\n").unwrap();
         for (name, bytes) in files {
             fs::write(directory.0.join(name), bytes).unwrap();
         }
+        let fifos = fifo_names
+            .iter()
+            .map(|name| Fifo::new(&directory.0.join(name)))
+            .collect();
         let script = directory.0.join("main.bnt");
         fs::write(&script, format!("{IMPORTS}{source}")).unwrap();
         let child = Command::new(env!("CARGO_BIN_EXE_benitoite"))
@@ -102,6 +165,7 @@ impl Process {
             stderr,
             resume_stdout,
             readers: Vec::new(),
+            fifos,
             _directory: directory,
         };
         let mut out = process.child.stdout.take().unwrap();
@@ -153,6 +217,28 @@ impl Process {
             .output()
             .unwrap();
         assert!(sent.status.success(), "kill failed: {sent:?}");
+    }
+
+    fn fifo(&self, index: usize) -> &Fifo {
+        self.fifos.get(index).expect("missing test FIFO")
+    }
+
+    fn await_fifo_bytes(&mut self, index: usize, condition: impl Fn(usize) -> bool) -> usize {
+        let started = Instant::now();
+        loop {
+            let count = self.fifo(index).available();
+            if condition(count) {
+                return count;
+            }
+            assert!(
+                self.child.try_wait().unwrap().is_none(),
+                "child exited before FIFO synchronization; stderr={:?}",
+                self.stderr.try_recv().ok()
+            );
+            assert!(started.elapsed() < LIMIT, "FIFO synchronization timed out");
+            // 時間は失敗の期限と再観測の間隔だけに使い、進行は実バイト数で確認する。
+            thread::sleep(Duration::from_millis(2));
+        }
     }
 
     fn wait(&mut self) -> ExitStatus {
@@ -380,6 +466,124 @@ end function
         process.resume_stdout.send(()).unwrap();
         let (_, stderr) = process.output();
         assert!(stderr.is_empty(), "{}", String::from_utf8_lossy(&stderr));
+    }
+}
+
+// 関門: Reader や stdout の検査では、未解放の Writer の Drop がバッファを捨てる
+// 退行を捕まえられない。実 CLI の with の解放だけが短文を全て書き出すことを確かめる
+// （設計書 07-03「中断の要求のテスト（初回リリース版）」）。
+#[test]
+fn first_signal_releases_buffered_file_writer() {
+    let source = r#"
+function main() -> Result[Unit, String] uses File.Write,State,Console.Write,Console.Read
+ with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return do
+  bind _ <- try File.write(writer: writer, text: "marker\nall buffered content\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+  Console.writeLine("ready")
+  bind _ <- Console.readLine()
+  return Result.Ok(())
+ end with
+end function
+"#;
+    for mode in ["direct", "request"] {
+        for signal in ["-INT", "-TERM"] {
+            let mut process = Process::start(source, mode, false);
+            process.await_ready();
+            let path = process._directory.0.join("output.txt");
+            assert_eq!(
+                fs::read(&path).unwrap(),
+                b"",
+                "{mode}/{signal}: flushed early"
+            );
+            process.signal(signal);
+            let status = process.wait();
+            let (stdout, stderr) = process.output();
+            assert_eq!(status.code(), Some(130), "{mode}/{signal}: {stderr:?}");
+            assert_eq!(stdout, READY, "{mode}/{signal}");
+            assert!(stderr.is_empty(), "{mode}/{signal}: {stderr:?}");
+            assert_eq!(
+                fs::read(path).unwrap(),
+                b"marker\nall buffered content\n",
+                "{mode}/{signal}: release did not flush the entire buffer"
+            );
+        }
+    }
+}
+
+// 関門: stdout の停止は File.Writer の解放を通らない。二つの実 Writer の FIFO で
+// 一度目の受信と解放の開始、外側の flush の未完了を独立に観測する。本番の差し込み口は
+// 加えない（設計書 07-03「中断の要求のテスト（初回リリース版）」）。
+#[test]
+fn second_sigint_terminates_during_file_writer_release() {
+    const PAYLOAD_LEN: usize = 8191;
+    const DRAIN: usize = 4096;
+    const INNER: &[u8] = b"inner released";
+    // BufWriter に残る量を用い、大きな通常 write による出力と区別する。
+    // 将来バッファの扱いが変わった場合も、中断前に FIFO が空という観測を必須とする。
+    let source = format!(
+        r#"
+function main() -> Result[Unit, String] uses File.Write,State,Console.Write,Console.Read
+ with outer = try File.openWriter(path: "outer.fifo", mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return do
+  bind _ <- try File.write(writer: outer, text: "{}") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+  with inner = try File.openWriter(path: "inner.fifo", mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return do
+   bind _ <- try File.write(writer: inner, text: "inner released") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+   Console.writeLine("ready")
+   bind _ <- Console.readLine()
+   return Result.Ok(())
+  end with
+ end with
+end function
+"#,
+        "o".repeat(PAYLOAD_LEN)
+    );
+    for mode in ["direct", "request"] {
+        let mut process =
+            Process::start_with_resources(&source, mode, false, &[], &["outer.fifo", "inner.fifo"]);
+        process.await_ready();
+        assert_eq!(
+            process.fifo(0).available(),
+            0,
+            "{mode}: ordinary outer write"
+        );
+        assert_eq!(
+            process.fifo(1).available(),
+            0,
+            "{mode}: ordinary inner write"
+        );
+        let filled = process.fifo(0).fill();
+        assert_eq!(process.fifo(0).available(), filled);
+        process.signal("-INT");
+
+        // 内側の短文は release で初めて FIFO に届く。一度目の受信をこの印で確認する。
+        assert_eq!(process.await_fifo_bytes(1, |count| count > 0), INNER.len());
+        assert_eq!(process.fifo(1).read(INNER.len()), INNER);
+        assert_eq!(process.fifo(0).available(), filled);
+
+        // 満杯の FIFO を一部だけ空ける。残る詰め物は読まず、FIONREAD の増加だけを
+        // 観測するため、flush が始めた部分書き込みで空いた容量を使い切る条件を保てる。
+        assert!(filled >= DRAIN);
+        assert_eq!(process.fifo(0).read(DRAIN), vec![b'f'; DRAIN]);
+        let remaining_filler = filled.checked_sub(DRAIN).unwrap();
+        let queued = process.await_fifo_bytes(0, |count| count > remaining_filler);
+        let written = queued.checked_sub(remaining_filler).unwrap();
+        assert!(written > 0 && written < PAYLOAD_LEN, "{mode}: {written}");
+        process.signal("-INT");
+        let status = process.wait();
+        assert_eq!(
+            status.signal(),
+            Some(signal_hook::consts::SIGINT),
+            "{mode}: {status:?}"
+        );
+
+        // 終了まで読み手を止めたままにする。最終内容でも部分書き込みを確認し、観測後に
+        // flush が全量を書き終えたケースを成功にしない。先頭の詰め物と実 Writer の内容も照合する。
+        let queued = process.fifo(0).available();
+        let written = queued.checked_sub(remaining_filler).unwrap();
+        assert!(written > 0 && written < PAYLOAD_LEN, "{mode}: {written}");
+        let expected = [vec![b'f'; remaining_filler], vec![b'o'; written]].concat();
+        assert_eq!(process.fifo(0).read(queued), expected);
+        let (stdout, stderr) = process.output();
+        assert_eq!(stdout, READY, "{mode}");
+        assert!(stderr.is_empty(), "{mode}: {stderr:?}");
     }
 }
 

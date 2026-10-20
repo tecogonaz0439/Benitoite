@@ -204,7 +204,7 @@ fn target<'p, 'e>(
     })
 }
 
-fn fits(state: &RunState, frames: u64, regs: u16) -> Result<(), Stop> {
+fn fits(state: &RunState, frames: u64, regs: u32) -> Result<(), Stop> {
     if state.meter.fits(frames, u64::from(regs)) {
         Ok(())
     } else {
@@ -269,6 +269,9 @@ fn frame<'e>(
 ) -> CallFrame {
     CallFrame {
         func: ctx.new_slot(called.value),
+        builders: std::iter::repeat_with(Slot::default)
+            .take(usize::from(called.proto.builder_slots))
+            .collect(),
         proto: called.index,
         pc: 0,
         base,
@@ -326,7 +329,7 @@ pub(super) fn handle(
             .ok_or_else(|| missing("clause arity overflow"))?;
         target(program, ctx, ctx.load(slot), arity)?;
     }
-    fits(state, 2, called.proto.num_regs)?;
+    fits(state, 2, called.proto.frame_slots())?;
     if !precall(config, state, ctx, cursor)? {
         return Ok(if state.stopping.is_some() {
             Control::Reload
@@ -367,10 +370,25 @@ pub(super) fn handle(
             at,
         }),
     });
-    segment.calls.push(frame(ctx, called, 0, None, at, None));
+    let inputs = &called.proto.builder_inputs;
+    let slots = called.proto.frame_slots();
+    let mut body_frame = frame(ctx, called, 0, None, at, None);
+    let parent = state.frame()?;
+    for input in inputs {
+        let source = parent
+            .builders
+            .get(usize::from(input.source))
+            .ok_or_else(|| missing("handle builder source missing"))?;
+        let target = body_frame
+            .builders
+            .get_mut(usize::from(input.target))
+            .ok_or_else(|| missing("handle builder target missing"))?;
+        ctx.store(target, ctx.load(source));
+    }
+    segment.calls.push(body_frame);
     save_next(state, cursor)?;
     state.stack.segments.push(segment);
-    state.meter.grow(2, u64::from(regs));
+    state.meter.grow(2, u64::from(slots));
     notify_collect(state, ctx);
     Ok(Control::Reload)
 }
@@ -541,7 +559,7 @@ fn invoke_clause<'e>(
         ),
         arity,
     )?;
-    fits(state, if local { 2 } else { 1 }, called.proto.num_regs)?;
+    fits(state, if local { 2 } else { 1 }, called.proto.frame_slots())?;
     let window = active_window(state.segment_mut()?, cursor.locals.base, cursor.active.size)?;
     reg_ref(window, instr.a())?;
     let range = reg_range(instr.c(), operation.arity)?;
@@ -608,7 +626,7 @@ fn invoke_clause<'e>(
         pc: cursor.locals.pc,
     };
     save_next(state, cursor)?;
-    let new_size = called.proto.num_regs;
+    let new_slots = called.proto.frame_slots();
     let segment = state
         .stack
         .segments
@@ -665,13 +683,13 @@ fn invoke_clause<'e>(
     ));
     state
         .meter
-        .grow(if local { 2 } else { 1 }, u64::from(new_size));
+        .grow(if local { 2 } else { 1 }, u64::from(new_slots));
     notify_collect(state, ctx);
     Ok(Control::Reload)
 }
 
 fn clear_captured(program: &CompiledProgram, segment: &mut Segment, ctx: &NoGcCtx<'_>) {
-    for frame in &segment.calls {
+    for frame in &mut segment.calls {
         // 継続の最上位の枠も操作の結果をまだ待つ。情報を引けない枠は保存する（設計書 02-08「枠を降ろす原因と処理」）。
         let Ok((live, dest)) = frame_live_registers(program, frame, false) else {
             continue;
@@ -685,6 +703,15 @@ fn clear_captured(program: &CompiledProgram, segment: &mut Segment, ctx: &NoGcCt
         let Some(window) = segment.regs.get_mut(base..end) else {
             continue;
         };
+        if let Some(proto) = program.proto(frame.proto) {
+            for item in proto.live.at(frame.pc) {
+                if let crate::bytecode::liveness::LiveItem::Builder(local) = item
+                    && let Some(slot) = frame.builders.get_mut(usize::from(*local))
+                {
+                    ctx.clear(slot);
+                }
+            }
+        }
         for (reg, slot) in window.iter_mut().enumerate() {
             let Ok(reg) = u16::try_from(reg) else {
                 continue;

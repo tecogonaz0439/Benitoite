@@ -1,0 +1,46 @@
+// spec: 01-02 ブロック式
+import Benitoite.StringBuilder
+function value() -> String
+  bind text <- block
+    bind b: StringBuilder <- StringBuilder.new()
+    StringBuilder.append(builder: b, text: "hello")
+    if true then
+      StringBuilder.append(builder: b, text: "!")
+    end if
+    StringBuilder.copy(b)
+  end block
+  return text
+end function
+function pick(early: Boolean) -> Integer
+  bind x <- block
+    if early then
+      return 7
+    end if
+    9
+  end block
+  return x
+end function
+function lambdaReturn() -> Integer
+  bind f: function() -> Integer <- lambda()
+    block return 3 end block
+  end lambda
+  return f()
+end function
+function ordinary() -> Integer uses State
+  bind r <- block Reference.new(1) end block
+  return Reference.get(r)
+end function
+function main() -> Result[Unit, String]
+  return if value() = "hello!" and pick(true) = 7 and pick(false) = 9 and lambdaReturn() = 3 then Result.Ok(()) else Result.Error("wrong") end if
+end function
+function blockValue() -> Integer
+  return block 7 end block
+end function
+function blockReturn() -> Integer
+  block return 7 end block
+end function
+function lambdaBlock() -> function() -> Integer
+  return lambda()
+    block return 7 end block
+  end lambda
+end function

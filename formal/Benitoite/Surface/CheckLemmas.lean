@@ -616,12 +616,11 @@ theorem eff_eq_empty_of_sub {ε : Eff} (h : Eff.Sub ε Eff.empty) : ε = Eff.emp
       exact False.elim ((Eff.memFail_empty x).mp (h.2 x hm))
 
 /-- 宣言のない中間状態では、任意の専用操作を公開の空分類表で拒否する。 -/
-theorem builderOp_empty_rejected {q mode C Γ R p path o i args refs s a s'}
-    (h : checkExprR q mode [] C Γ R p path (.builderOp o i args refs) s = .ok (a, s')) : False := by
+theorem builderOp_empty_rejected {q mode C Γ R p path o i args kind s a s'}
+    (h : checkExprR q mode [] C Γ R p path (.builderOp o i args kind) s = .ok (a, s')) : False := by
   have h := guardInferred_ok h
-  obtain ⟨u, _, h⟩ := checking_lift_bind_ok h
   obtain ⟨u, hr, _⟩ := checking_lift_bind_ok h
   have hr := (require_ok hr).1
-  simp [BuilderRefs.check, BuilderCtx.kindAt] at hr
+  simp [BuilderCtx.kindAt] at hr
 
 end Benitoite.Surface.Check

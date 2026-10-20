@@ -8,7 +8,7 @@
 use std::path::Path;
 use std::process::ExitCode;
 
-use benitoite::bytecode::program::{CompiledProgram, ProtoOrigin};
+use benitoite::bytecode::program::{CompiledProgram, Proto, ProtoOrigin};
 use benitoite::pipeline::{CheckOptions, CompileError, check_path, compile, desugar_checked};
 
 /// 原型の数・命令の数・定数の数。
@@ -17,13 +17,23 @@ struct Counts {
     protos: usize,
     instrs: usize,
     consts: usize,
+    builder_slots: usize,
+    builder_sites: usize,
+    builder_inputs: usize,
 }
 
 impl Counts {
-    fn add(&mut self, instrs: usize, consts: usize) {
+    fn add(&mut self, proto: &Proto) {
         self.protos = self.protos.saturating_add(1);
-        self.instrs = self.instrs.saturating_add(instrs);
-        self.consts = self.consts.saturating_add(consts);
+        self.instrs = self.instrs.saturating_add(proto.code.len());
+        self.consts = self.consts.saturating_add(proto.consts.len());
+        self.builder_slots = self
+            .builder_slots
+            .saturating_add(usize::from(proto.builder_slots));
+        self.builder_sites = self.builder_sites.saturating_add(proto.builder_sites.len());
+        self.builder_inputs = self
+            .builder_inputs
+            .saturating_add(proto.builder_inputs.len());
     }
 }
 
@@ -31,16 +41,14 @@ fn count(program: &CompiledProgram) -> (Counts, Counts) {
     let mut user = Counts::default();
     let mut total = Counts::default();
     for proto in &program.protos {
-        let instrs = proto.code.len();
-        let consts = proto.consts.len();
-        total.add(instrs, consts);
+        total.add(proto);
         match proto.origin {
             ProtoOrigin::UserFn
             | ProtoOrigin::UserMethod
             | ProtoOrigin::UserLambda
             | ProtoOrigin::UserHandleBody
             | ProtoOrigin::UserHandleClause
-            | ProtoOrigin::UserLazy => user.add(instrs, consts),
+            | ProtoOrigin::UserLazy => user.add(proto),
             ProtoOrigin::StdlibPublic | ProtoOrigin::StdlibHelper | ProtoOrigin::BuiltinValue => {}
         }
     }
@@ -95,14 +103,20 @@ fn main() -> ExitCode {
     };
     let (user, total) = count(&compiled);
     println!(
-        "{} user_protos={} user_instrs={} user_consts={} total_protos={} total_instrs={} total_consts={}",
+        "{} user_protos={} user_instrs={} user_consts={} total_protos={} total_instrs={} total_consts={} user_builder_slots={} user_builder_sites={} user_builder_inputs={} total_builder_slots={} total_builder_sites={} total_builder_inputs={}",
         text::STATS_PREFIX,
         user.protos,
         user.instrs,
         user.consts,
         total.protos,
         total.instrs,
-        total.consts
+        total.consts,
+        user.builder_slots,
+        user.builder_sites,
+        user.builder_inputs,
+        total.builder_slots,
+        total.builder_sites,
+        total.builder_inputs
     );
     ExitCode::SUCCESS
 }

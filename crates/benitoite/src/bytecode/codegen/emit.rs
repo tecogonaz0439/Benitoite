@@ -2,7 +2,6 @@
 
 use super::*;
 use crate::builtins::table::{ListPatternOp, list_pattern_builtin};
-use analysis::with_reads;
 
 impl<'p> Gen<'p> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -12,9 +11,44 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         match &c.kind {
+            LCompKind::BuilderLet { .. } => self.let_(fg, c, target, future),
+            LCompKind::BuilderOp { id, kind, op, args } => {
+                let (local, actual) = fg
+                    .builders
+                    .get(id)
+                    .cloned()
+                    .ok_or_else(|| internal("unbound builder"))?;
+                if actual != *kind {
+                    return Err(internal("builder kind mismatch"));
+                }
+                let mark = fg.next_reg;
+                let operands = args
+                    .iter()
+                    .map(|v| self.operand(fg, v, future).map(r16))
+                    .collect::<CgResult<Vec<_>>>()?;
+                let opcode = match op {
+                    crate::resolve::builders::BuilderOp::Append => Opcode::BuilderAppend,
+                    crate::resolve::builders::BuilderOp::AppendAll => Opcode::BuilderAppendAll,
+                    crate::resolve::builders::BuilderOp::Copy => Opcode::BuilderCopy,
+                    crate::resolve::builders::BuilderOp::Length => Opcode::BuilderLength,
+                };
+                let dst = fg.result(target);
+                Self::builder_emit(
+                    fg,
+                    opcode,
+                    r16(dst),
+                    local,
+                    kind.class(),
+                    operands,
+                    c.origin,
+                )?;
+                fg.returned(target, dst, Some(c.origin))?;
+                fg.release(mark);
+                Ok(())
+            }
             LCompKind::Return(v) => self.return_(fg, v, target, c.origin, future),
             LCompKind::Let { .. } => self.let_(fg, c, target, future),
             LCompKind::App { .. } => self.app(fg, c, target, future),
@@ -60,7 +94,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         _target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::Escape(v) = &c.kind else {
             return Err(internal("expected escape"));
@@ -80,7 +114,7 @@ impl<'p> Gen<'p> {
                 0,
             ),
             Some(c.origin),
-        );
+        )?;
         fg.release(mark);
         Ok(())
     }
@@ -92,7 +126,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        _future: &HashSet<Key>,
+        _future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::Lazy { body, .. } = &c.kind else {
             return Err(internal("expected lazy"));
@@ -111,8 +145,8 @@ impl<'p> Gen<'p> {
                 c.origin,
             ),
         )?;
-        fg.emit(Instr::abx(Opcode::Lazy, r16(dst), index.0), Some(c.origin));
-        fg.returned(target, dst, Some(c.origin));
+        fg.emit(Instr::abx(Opcode::Lazy, r16(dst), index.0), Some(c.origin))?;
+        fg.returned(target, dst, Some(c.origin))?;
         fg.release(mark);
         Ok(())
     }
@@ -124,7 +158,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::Resume { cont, value } = &c.kind else {
             return Err(internal("expected resume"));
@@ -137,8 +171,8 @@ impl<'p> Gen<'p> {
         fg.emit(
             Instr::abc(Opcode::Resume, r16(dst), r16(k), r16(v)),
             Some(c.origin),
-        );
-        fg.returned(target, dst, Some(c.origin));
+        )?;
+        fg.returned(target, dst, Some(c.origin))?;
         fg.release(mark);
         Ok(())
     }
@@ -151,14 +185,14 @@ impl<'p> Gen<'p> {
         v: &'p LowVal,
         target: Target,
         origin: Span,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         match target {
             Target::Reg(r) => self.val(fg, v, r, future),
             Target::Tail => {
                 let mark = fg.next_reg;
                 let r = self.operand(fg, v, future)?;
-                fg.returned(target, r, Some(origin));
+                fg.returned(target, r, Some(origin))?;
                 fg.release(mark);
                 Ok(())
             }
@@ -171,17 +205,36 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
-        // 各 bound の前に元の body の読み出しを数え、割り当てと別名の順を保つ。
+        // 各boundの前に索引の接尾範囲を参照し、割り当てと別名の順を保つ。
         // 解放は本体の後で逆順に行い、文の数に比例する再帰を避ける
         // （設計書 02-07「コード生成」、02-01「関数の呼び出しと処理系のスタック」）。
         let mut current = c;
         let mut bindings = Vec::new();
-        while let LCompKind::Let { var, bound, body } = &current.kind {
+        let mut builders = Vec::new();
+        loop {
+            if let LCompKind::BuilderLet { id, kind, body } = &current.kind {
+                let local = Self::builder_slot(fg, current.origin)?;
+                builders.push((*id, fg.builders.insert(*id, (local, kind.clone()))));
+                Self::builder_emit(
+                    fg,
+                    Opcode::BuilderNew,
+                    0,
+                    local,
+                    kind.class(),
+                    vec![],
+                    current.origin,
+                )?;
+                current = body;
+                continue;
+            }
+            let LCompKind::Let { var, bound, body } = &current.kind else {
+                break;
+            };
             let mark = fg.next_reg;
             let r = fg.alloc();
-            let next = Box::new(with_reads(future, Node::Comp(body)));
+            let next = Box::new(future.with(fg.analysis.range(Node::Comp(body))?));
             self.comp(fg, bound, Target::Reg(r), &next)?;
             fg.bind(Key::Var(var.id), Loc::Reg(r))?;
             if let LCompKind::Return(LowVal {
@@ -199,6 +252,13 @@ impl<'p> Gen<'p> {
             fg.unbind(Key::Var(var));
             fg.release(mark);
         }
+        for (id, old) in builders.into_iter().rev() {
+            if let Some(old) = old {
+                fg.builders.insert(id, old);
+            } else {
+                fg.builders.remove(&id);
+            }
+        }
         Ok(())
     }
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -208,7 +268,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::App {
             func,
@@ -242,13 +302,13 @@ impl<'p> Gen<'p> {
             {
                 return Err(internal("invalid exit report call"));
             }
-            let mut reads = future.clone();
+            let mut reads = future.with_values(&fg.analysis, args)?;
             for value in args
                 .iter()
                 .chain(std::iter::once(report.cause.as_ref()))
                 .chain(report.message.as_deref())
             {
-                reads.extend(free_keys(Node::Val(value), Vec::new()));
+                reads.add(&fg.analysis, Node::Val(value))?;
             }
             let cause_reg = self.operand(fg, &report.cause, &reads)?;
             let message_reg = report
@@ -292,11 +352,11 @@ impl<'p> Gen<'p> {
                         r16(base),
                     ),
                     Some(origin),
-                );
+                )?;
                 *fg.exit_reports
                     .get_mut(pc)
                     .ok_or_else(|| internal("missing exit report slot"))? = report_site;
-                fg.returned(target, dst, Some(origin));
+                fg.returned(target, dst, Some(origin))?;
             }
         } else if let ValKind::External { spec, .. } = &func.kind {
             if !dicts.is_empty() || args.len() != spec.params.len() {
@@ -309,8 +369,8 @@ impl<'p> Gen<'p> {
             fg.emit(
                 Instr::abc(Opcode::Ext, r16(dst), r16(index), r16(base)),
                 Some(origin),
-            );
-            fg.returned(target, dst, Some(origin));
+            )?;
+            fg.returned(target, dst, Some(origin))?;
         } else if let ValKind::Op { op, .. } = &func.kind {
             let index = self.operation(*op)?;
             let arity = self
@@ -328,17 +388,14 @@ impl<'p> Gen<'p> {
             fg.emit(
                 Instr::abc(Opcode::Perform, r16(dst), r16(index.0), r16(base)),
                 Some(origin),
-            );
-            fg.returned(target, dst, Some(origin));
+            )?;
+            fg.returned(target, dst, Some(origin))?;
         } else {
             let n = count(dicts.len().saturating_add(args.len()))?;
             let base = fg.alloc_block(n.saturating_add(1));
-            let mut next = future.clone();
+            let mut next = future.with_values(&fg.analysis, args)?;
             for d in dicts {
-                next.extend(free_keys(Node::Dict(d), Vec::new()));
-            }
-            for a in args {
-                next.extend(free_keys(Node::Val(a), Vec::new()));
+                next.add(&fg.analysis, Node::Dict(d))?;
             }
             self.val(fg, func, base, &next)?;
             self.dicts(fg, dicts, base.saturating_add(1))?;
@@ -352,7 +409,7 @@ impl<'p> Gen<'p> {
                 Target::Reg(r) => Instr::abc(Opcode::Call, r16(r), r16(base), r16(n)),
                 Target::Tail => Instr::abc(Opcode::TailCall, 0, r16(base), r16(n)),
             };
-            fg.emit(instr, Some(origin));
+            fg.emit(instr, Some(origin))?;
         }
         fg.release(mark);
         Ok(())
@@ -365,7 +422,7 @@ impl<'p> Gen<'p> {
         m: &'p MethodCall<LComp>,
         target: Target,
         origin: Span,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let mark = fg.next_reg;
         let class = self.trait_(m.dict.class)?;
@@ -384,7 +441,7 @@ impl<'p> Gen<'p> {
             Target::Reg(r) => Instr::abc(Opcode::Method, r16(r), r16(base), r16(m.method)),
             Target::Tail => Instr::abc(Opcode::TailMethod, 0, r16(base), r16(m.method)),
         };
-        let pc = fg.emit(instr, Some(origin));
+        let pc = fg.emit(instr, Some(origin))?;
         *fg.method_traits
             .get_mut(pc)
             .ok_or_else(|| internal("missing method trait slot"))? = Some(class);
@@ -398,21 +455,18 @@ impl<'p> Gen<'p> {
         types: &TypeArgs,
         args: &'p [LowVal],
         site: (Target, Span),
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let (target, origin) = site;
         let plan = plan(intrinsic, types)?;
         let mut regs = Vec::new();
-        let mut next = future.clone();
-        for a in args {
-            next.extend(free_keys(Node::Val(a), Vec::new()));
-        }
+        let next = future.with_values(&fg.analysis, args)?;
         for a in args {
             regs.push(self.operand(fg, a, &next)?);
         }
         let dst = fg.result(target);
         self.emit_plan(fg, plan, &regs, dst, Some(origin))?;
-        fg.returned(target, dst, Some(origin));
+        fg.returned(target, dst, Some(origin))?;
         Ok(())
     }
     fn emit_plan(
@@ -435,16 +489,16 @@ impl<'p> Gen<'p> {
                 let [x] = args else {
                     return Err(internal("unary intrinsic arity mismatch"));
                 };
-                fg.emit(Instr::abc(op, r16(dst), r16(*x), 0), origin);
+                fg.emit(Instr::abc(op, r16(dst), r16(*x), 0), origin)?;
             }
             Plan::Binary { op, swap, negate } => {
                 let [x, y] = args else {
                     return Err(internal("binary intrinsic arity mismatch"));
                 };
                 let (x, y) = if swap { (y, x) } else { (x, y) };
-                fg.emit(Instr::abc(op, r16(dst), r16(*x), r16(*y)), origin);
+                fg.emit(Instr::abc(op, r16(dst), r16(*x), r16(*y)), origin)?;
                 if negate {
-                    fg.emit(Instr::abc(Opcode::Not, r16(dst), r16(dst), 0), origin);
+                    fg.emit(Instr::abc(Opcode::Not, r16(dst), r16(dst), 0), origin)?;
                 }
             }
         }
@@ -457,7 +511,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::If {
             cond,
@@ -468,17 +522,15 @@ impl<'p> Gen<'p> {
             return Err(internal("expected if"));
         };
         let mark = fg.next_reg;
-        let next = with_reads(
-            &with_reads(future, Node::Comp(then_branch)),
-            Node::Comp(else_branch),
-        );
+        let mut next = future.with(fg.analysis.range(Node::Comp(then_branch))?);
+        next.add(&fg.analysis, Node::Comp(else_branch))?;
         let r = self.operand(fg, cond, &next)?;
-        let jf = fg.jump(Opcode::JmpF, r, c.origin);
+        let jf = fg.jump(Opcode::JmpF, r, c.origin)?;
         fg.release(mark);
         let before = fg.reuse.clone();
         self.comp(fg, then_branch, target, future)?;
         let after = fg.reuse.clone();
-        let end = fg.jump_to_end(target, c.origin);
+        let end = fg.jump_to_end(target, c.origin)?;
         fg.patch_here(jf)?;
         fg.reuse = before;
         self.comp(fg, else_branch, target, future)?;
@@ -492,19 +544,19 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::Use { resource, body } = &c.kind else {
             return Err(internal("expected use"));
         };
         let mark = fg.next_reg;
         let dst = fg.result(target);
-        let next = with_reads(future, Node::Comp(body));
+        let next = future.with(fg.analysis.range(Node::Comp(body))?);
         let r = self.operand(fg, resource, &next)?;
-        fg.emit(Instr::abc(Opcode::Use, r16(r), 0, 0), Some(c.origin));
+        fg.emit(Instr::abc(Opcode::Use, r16(r), 0, 0), Some(c.origin))?;
         self.comp(fg, body, Target::Reg(dst), future)?;
-        fg.emit(Instr::abc(Opcode::Release, 0, 0, 0), Some(c.origin));
-        fg.returned(target, dst, Some(c.origin));
+        fg.emit(Instr::abc(Opcode::Release, 0, 0, 0), Some(c.origin))?;
+        fg.returned(target, dst, Some(c.origin))?;
         fg.release(mark);
         Ok(())
     }
@@ -650,7 +702,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::CaseCtor {
             scrutinee,
@@ -669,7 +721,7 @@ impl<'p> Gen<'p> {
             .ctors
             .len();
         let mark = fg.next_reg;
-        let next = with_reads(future, Node::Comp(c));
+        let next = future.with(fg.analysis.range(Node::Comp(c))?);
         let s = self.operand(fg, scrutinee, &next)?;
         let table = fg.switch_tables.len();
         fg.switch_tables.push(SwitchTable {
@@ -679,7 +731,7 @@ impl<'p> Gen<'p> {
         let switch = fg.emit(
             Instr::abx(Opcode::Switch, r16(s), count(table)?),
             Some(c.origin),
-        );
+        )?;
         let arm_mark = fg.next_reg;
         let before = Box::new(fg.reuse.clone());
         let mut after = before.clone();
@@ -701,7 +753,7 @@ impl<'p> Gen<'p> {
                 fg.emit(
                     Instr::abc(Opcode::Field, r16(r), r16(s), r16(count(i)?)),
                     Some(c.origin),
-                );
+                )?;
             }
             let aliases = if let ValKind::Var(x) = scrutinee.kind {
                 fg.aliases
@@ -711,10 +763,10 @@ impl<'p> Gen<'p> {
             } else {
                 HashSet::new()
             };
-            let captured = analysis::captured(Node::Comp(&arm.body));
+            let captured = fg.analysis.captured(Node::Comp(&arm.body), &aliases)?;
             fg.reuse.push(state::Reuse {
                 reg: s,
-                captured: !aliases.is_disjoint(&captured),
+                captured,
                 aliases,
                 arity: arm.fields.len(),
                 used: false,
@@ -727,7 +779,7 @@ impl<'p> Gen<'p> {
             }
             fg.release(arm_mark);
             if (default.is_some() || i.saturating_add(1) < arms.len())
-                && let Some(j) = fg.jump_to_end(target, c.origin)
+                && let Some(j) = fg.jump_to_end(target, c.origin)?
             {
                 ends.push(j);
             }
@@ -765,7 +817,7 @@ impl<'p> Gen<'p> {
                 fg.load(t, k, Some(origin))?;
                 let ty = const_ty(c);
                 self.emit_plan(fg, equality(&ty, false)?, &[s, t], t, Some(origin))?;
-                jumps.push(fg.jump(Opcode::JmpF, t, origin));
+                jumps.push(fg.jump(Opcode::JmpF, t, origin)?);
             }
             ConstTest::Range(lo, hi) => {
                 let op = match (lo, hi) {
@@ -775,12 +827,12 @@ impl<'p> Gen<'p> {
                 };
                 let k = self.constant(tables::scalar(lo))?;
                 fg.load(t, k, Some(origin))?;
-                fg.emit(Instr::abc(op, r16(t), r16(t), r16(s)), Some(origin));
-                jumps.push(fg.jump(Opcode::JmpF, t, origin));
+                fg.emit(Instr::abc(op, r16(t), r16(t), r16(s)), Some(origin))?;
+                jumps.push(fg.jump(Opcode::JmpF, t, origin)?);
                 let k = self.constant(tables::scalar(hi))?;
                 fg.load(t, k, Some(origin))?;
-                fg.emit(Instr::abc(op, r16(t), r16(s), r16(t)), Some(origin));
-                jumps.push(fg.jump(Opcode::JmpF, t, origin));
+                fg.emit(Instr::abc(op, r16(t), r16(s), r16(t)), Some(origin))?;
+                jumps.push(fg.jump(Opcode::JmpF, t, origin)?);
             }
         }
         fg.release(mark);
@@ -793,7 +845,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::CaseConst {
             scrutinee,
@@ -804,7 +856,11 @@ impl<'p> Gen<'p> {
             return Err(internal("expected constant case"));
         };
         let mark = fg.next_reg;
-        let s = self.operand(fg, scrutinee, &with_reads(future, Node::Comp(c)))?;
+        let s = self.operand(
+            fg,
+            scrutinee,
+            &future.with(fg.analysis.range(Node::Comp(c))?),
+        )?;
         let before = Box::new(fg.reuse.clone());
         let mut after = before.clone();
         let mut ends = Vec::new();
@@ -818,7 +874,7 @@ impl<'p> Gen<'p> {
             };
             self.comp(fg, &arm.body, target, future)?;
             merge_reuse(&mut after, &fg.reuse);
-            if compare && let Some(j) = fg.jump_to_end(target, c.origin) {
+            if compare && let Some(j) = fg.jump_to_end(target, c.origin)? {
                 ends.push(j);
             }
             for j in jumps {
@@ -847,7 +903,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::CaseLength {
             scrutinee,
@@ -878,7 +934,7 @@ impl<'p> Gen<'p> {
             ListPatternOp::Length,
             &[],
             (Target::Reg(len), c.origin),
-            &with_reads(future, Node::Comp(c)),
+            &future.with(fg.analysis.range(Node::Comp(c))?),
         )?;
         let before = Box::new(fg.reuse.clone());
         let mut after = before.clone();
@@ -896,12 +952,12 @@ impl<'p> Gen<'p> {
         fg.emit(
             Instr::abc(Opcode::LeI, r16(t), r16(t), r16(len)),
             Some(c.origin),
-        );
-        let jf = fg.jump(Opcode::JmpF, t, c.origin);
+        )?;
+        let jf = fg.jump(Opcode::JmpF, t, c.origin)?;
         fg.release(temp_mark);
         self.comp(fg, otherwise, target, future)?;
         merge_reuse(&mut after, &fg.reuse);
-        if let Some(j) = fg.jump_to_end(target, c.origin) {
+        if let Some(j) = fg.jump_to_end(target, c.origin)? {
             ends.push(j);
         }
         fg.patch_here(jf)?;
@@ -921,7 +977,7 @@ impl<'p> Gen<'p> {
             self.comp(fg, &arm.body, target, future)?;
             merge_reuse(&mut after, &fg.reuse);
             if i.saturating_add(1) < exact.len()
-                && let Some(j) = fg.jump_to_end(target, c.origin)
+                && let Some(j) = fg.jump_to_end(target, c.origin)?
             {
                 ends.push(j);
             }
@@ -943,7 +999,7 @@ impl<'p> Gen<'p> {
         op: ListPatternOp,
         indices: &[u32],
         site: (Target, Span),
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let (target, origin) = site;
         let mark = fg.next_reg;
@@ -964,8 +1020,8 @@ impl<'p> Gen<'p> {
         fg.emit(
             Instr::abc(Opcode::Prim, r16(dst), r16(b.0), r16(base)),
             Some(origin),
-        );
-        fg.returned(target, dst, Some(origin));
+        )?;
+        fg.returned(target, dst, Some(origin))?;
         fg.release(mark);
         Ok(())
     }
@@ -976,7 +1032,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         c: &'p LComp,
         target: Target,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let LCompKind::Join {
             label,
@@ -1004,9 +1060,9 @@ impl<'p> Gen<'p> {
         {
             return Err(internal("duplicate join label"));
         }
-        let next = Box::new(with_reads(future, Node::Comp(handler)));
+        let next = Box::new(future.with(fg.analysis.range(Node::Comp(handler))?));
         self.comp(fg, body, target, &next)?;
-        let end = fg.jump_to_end(target, c.origin);
+        let end = fg.jump_to_end(target, c.origin)?;
         let here = fg.code.len();
         let join = fg
             .joins
@@ -1040,7 +1096,7 @@ impl<'p> Gen<'p> {
         label: JoinId,
         args: &'p [LowVal],
         origin: Span,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let params = fg
             .joins
@@ -1064,10 +1120,10 @@ impl<'p> Gen<'p> {
                     0,
                 ),
                 Some(origin),
-            );
+            )?;
         }
         fg.release(mark);
-        let pc = fg.jump(Opcode::Jmp, 0, origin);
+        let pc = fg.jump(Opcode::Jmp, 0, origin)?;
         let join = fg
             .joins
             .get_mut(&label)
@@ -1083,12 +1139,7 @@ impl<'p> Gen<'p> {
 }
 
 impl<'p> Gen<'p> {
-    fn operand(
-        &mut self,
-        fg: &mut FnGen<'p>,
-        v: &'p LowVal,
-        future: &HashSet<Key>,
-    ) -> CgResult<u32> {
+    fn operand(&mut self, fg: &mut FnGen<'p>, v: &'p LowVal, future: &Reads<'_>) -> CgResult<u32> {
         if let Some(r) = fg.reg_of(v) {
             return Ok(r);
         }
@@ -1111,20 +1162,20 @@ impl<'p> Gen<'p> {
             fg.emit(
                 Instr::abc(Opcode::GetDict, r16(dst), r16(i), 0),
                 Some(origin),
-            );
+            )?;
             return Ok(());
         }
         match fg.lookup(key)? {
             Loc::Reg(r) => {
                 if r != dst {
-                    fg.emit(Instr::abc(Opcode::Move, r16(dst), r16(r), 0), Some(origin));
+                    fg.emit(Instr::abc(Opcode::Move, r16(dst), r16(r), 0), Some(origin))?;
                 }
             }
             Loc::Cap(i) => {
                 fg.emit(
                     Instr::abc(Opcode::GetCap, r16(dst), r16(i), 0),
                     Some(origin),
-                );
+                )?;
             }
         }
         Ok(())
@@ -1134,33 +1185,15 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         values: &'p [LowVal],
         base: u32,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
-        // まだ移していない引数の読み出しを数える。長いリストでも同じ接尾列を何度も走査しない。
-        let keys: Vec<Vec<Key>> = values
-            .iter()
-            .map(|v| free_keys(Node::Val(v), Vec::new()))
-            .collect();
-        let mut reads: HashMap<Key, usize> = HashMap::new();
-        for ks in &keys {
-            for k in ks {
-                let n = reads.entry(*k).or_default();
-                *n = n.saturating_add(1);
-            }
-        }
+        // 残る引数は連続する使用位置の範囲として引く。集合の作成・複製は行わない
+        // （設計書 02-07「関数の値と捕捉」）。
         for (i, v) in values.iter().enumerate() {
-            if let Some(ks) = keys.get(i) {
-                for k in ks {
-                    if let Some(n) = reads.get_mut(k) {
-                        *n = n.saturating_sub(1);
-                        if *n == 0 {
-                            reads.remove(k);
-                        }
-                    }
-                }
-            }
-            let mut next = future.clone();
-            next.extend(reads.keys().copied());
+            let rest = values
+                .get(i.saturating_add(1)..)
+                .ok_or_else(|| internal("invalid argument suffix"))?;
+            let next = future.with_values(&fg.analysis, rest)?;
             self.val(fg, v, base.saturating_add(count(i)?), &next)?;
         }
         Ok(())
@@ -1172,7 +1205,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         v: &'p LowVal,
         dst: u32,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         match &v.kind {
             ValKind::Var(x) => self.key_into(fg, Key::Var(*x), dst, v.origin),
@@ -1221,7 +1254,7 @@ impl<'p> Gen<'p> {
                 fg.emit(
                     Instr::abx(Opcode::Closure, r16(dst), index.0),
                     Some(v.origin),
-                );
+                )?;
                 fg.release(mark);
                 Ok(())
             }
@@ -1234,7 +1267,7 @@ impl<'p> Gen<'p> {
                 fg.emit(
                     Instr::abc(Opcode::List, r16(dst), r16(base), r16(n)),
                     Some(v.origin),
-                );
+                )?;
                 fg.release(mark);
                 Ok(())
             }
@@ -1247,7 +1280,7 @@ impl<'p> Gen<'p> {
         fg: &mut FnGen<'p>,
         v: &'p LowVal,
         dst: u32,
-        future: &HashSet<Key>,
+        future: &Reads<'_>,
     ) -> CgResult<()> {
         let ValKind::Ctor { adt, tag, args, .. } = &v.kind else {
             return Err(internal("expected constructor"));
@@ -1263,17 +1296,26 @@ impl<'p> Gen<'p> {
         let mark = fg.next_reg;
         let n = count(args.len())?;
         let base = fg.alloc_block(n);
-        let mut reads = HashSet::new();
-        for a in args {
-            reads.extend(free_keys(Node::Val(a), Vec::new()));
-        }
-        self.vals(fg, args, base, &with_reads(future, Node::Val(v)))?;
+        let reads = Reads::default();
+        let reads = reads.with_values(&fg.analysis, args)?;
+        self.vals(
+            fg,
+            args,
+            base,
+            &future.with(fg.analysis.range(Node::Val(v))?),
+        )?;
         let candidate = fg.reuse.iter_mut().rev().find(|candidate| {
             !candidate.used
                 && !candidate.captured
                 && candidate.arity == args.len()
-                && candidate.aliases.is_disjoint(future)
-                && candidate.aliases.is_disjoint(&reads)
+                && !candidate
+                    .aliases
+                    .iter()
+                    .any(|key| future.contains(&fg.analysis, key))
+                && !candidate
+                    .aliases
+                    .iter()
+                    .any(|key| reads.contains(&fg.analysis, key))
                 && !(base..base.saturating_add(n)).contains(&candidate.reg)
         });
         if let Some(candidate) = candidate {
@@ -1282,18 +1324,18 @@ impl<'p> Gen<'p> {
             fg.emit(
                 Instr::abc(Opcode::ConR, r16(r), r16(ctor.0), r16(base)),
                 Some(v.origin),
-            );
+            )?;
             if dst != r {
                 fg.emit(
                     Instr::abc(Opcode::Move, r16(dst), r16(r), 0),
                     Some(v.origin),
-                );
+                )?;
             }
         } else {
             fg.emit(
                 Instr::abc(Opcode::Con, r16(dst), r16(ctor.0), r16(base)),
                 Some(v.origin),
-            );
+            )?;
         }
         fg.release(mark);
         Ok(())
@@ -1315,7 +1357,7 @@ impl<'p> Gen<'p> {
                 fg.emit(
                     Instr::abc(Opcode::Super, r16(dst), r16(r), r16(*index)),
                     Some(d.origin),
-                );
+                )?;
                 fg.release(mark);
                 Ok(())
             }
@@ -1333,13 +1375,42 @@ impl<'p> Gen<'p> {
                     fg.emit(
                         Instr::abc(Opcode::Dict, r16(dst), r16(index.0), r16(base)),
                         Some(d.origin),
-                    );
+                    )?;
                     fg.release(mark);
                     Ok(())
                 }
             }
         }
     }
+    fn builder_slot(fg: &mut FnGen<'p>, origin: Span) -> CgResult<u16> {
+        let local = fg.builder_slots;
+        fg.builder_slots = local.checked_add(1).ok_or_else(|| {
+            Box::new(CodegenError::Limit(vec![
+                DiagBuilder::new(DiagCode::L0101)
+                    .arg("name", &fg.def.name)
+                    .primary(origin)
+                    .note("limit")
+                    .build(),
+            ]))
+        })?;
+        Ok(local)
+    }
+
+    fn builder_emit(
+        fg: &mut FnGen<'p>,
+        opcode: Opcode,
+        dst: u16,
+        local: u16,
+        kind: crate::resolve::builders::BuilderClass,
+        args: Vec<u16>,
+        origin: Span,
+    ) -> CgResult<()> {
+        let site = count(fg.builder_sites.len())?;
+        fg.emit(Instr::abx(opcode, dst, site), Some(origin))?;
+        fg.builder_sites.push(BuilderSite { local, kind, args });
+        Ok(())
+    }
+
     fn body_proto(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -1348,8 +1419,10 @@ impl<'p> Gen<'p> {
         meta: (bool, String, ProtoOrigin, Span),
     ) -> CgResult<ProtoIdx> {
         let (boundary, name, user_origin, span) = meta;
-        let free = free_keys(Node::Comp(body), params.to_vec());
-        let mut inner = Box::new(FnGen::new(fg.def, boundary));
+        let analysis = std::rc::Rc::clone(&fg.analysis);
+        let free = analysis.captures(body)?;
+        let mut inner = Box::new(self.fn_gen(fg.def, boundary));
+        inner.analysis = std::rc::Rc::clone(&analysis);
         inner.method_body = false;
         for key in params {
             let r = inner.alloc();
@@ -1374,8 +1447,28 @@ impl<'p> Gen<'p> {
                 }
             }
         }
+        let needed = analysis.builders(body);
+        if user_origin != ProtoOrigin::UserHandleBody && !needed.is_empty() {
+            return Err(internal("builder captured by ordinary body"));
+        }
+        for (id, kind) in needed {
+            let (source, actual) = fg
+                .builders
+                .get(id)
+                .ok_or_else(|| internal("handle builder source missing"))?;
+            if actual != kind {
+                return Err(internal("handle builder kind mismatch"));
+            }
+            let target = Self::builder_slot(&mut inner, span)?;
+            inner.builders.insert(*id, (target, kind.clone()));
+            inner.builder_inputs.push(BuilderInput {
+                source: *source,
+                target,
+                kind: kind.class(),
+            });
+        }
         let index = self.reserve_proto()?;
-        let origin = if fg.def.origin == DefOrigin::User {
+        let origin = if !needed.is_empty() || fg.def.origin == DefOrigin::User {
             user_origin
         } else {
             ProtoOrigin::StdlibHelper
@@ -1402,7 +1495,7 @@ impl<'p> Gen<'p> {
             params,
         }) = self.pending.pop_front()
         {
-            self.comp(&mut inner, body, Target::Tail, &HashSet::new())?;
+            self.comp(&mut inner, body, Target::Tail, &Reads::default())?;
             let proto = self.finish(*inner, name, origin, Some(span), params)?;
             self.set_proto(index, proto)?;
         }
@@ -1433,7 +1526,7 @@ impl<'p> Gen<'p> {
         fg.emit(
             Instr::abx(Opcode::Closure, r16(base), index.0),
             Some(origin),
-        );
+        )?;
         let mut clauses = Vec::new();
         for (i, cl) in h.clauses.iter().enumerate() {
             let op = self.operation(cl.op)?;
@@ -1462,7 +1555,7 @@ impl<'p> Gen<'p> {
                     index.0,
                 ),
                 Some(cl.span),
-            );
+            )?;
             clauses.push(ClauseDesc {
                 op,
                 tail_resumptive: cl.tail_resumptive,
@@ -1476,8 +1569,8 @@ impl<'p> Gen<'p> {
         fg.emit(
             Instr::abc(Opcode::Handle, r16(dst), r16(base), r16(local)),
             Some(origin),
-        );
-        fg.returned(target, dst, Some(origin));
+        )?;
+        fg.returned(target, dst, Some(origin))?;
         fg.release(mark);
         Ok(())
     }
@@ -1501,7 +1594,7 @@ impl<'p> Gen<'p> {
         }
         let decl = crate::builtins::builtin_decl(id).ok_or_else(|| internal("unknown builtin"))?;
         let index = self.reserve_proto()?;
-        let mut fg = FnGen::new(def, true);
+        let mut fg = self.fn_gen(def, true);
         let n = u32::from(decl.arity);
         fg.alloc_block(n.max(1));
         if let Some(intrinsic) = info.intrinsic {
@@ -1521,9 +1614,9 @@ impl<'p> Gen<'p> {
                     0,
                 ),
                 None,
-            );
+            )?;
         }
-        fg.emit(Instr::abc(Opcode::Return, 0, 0, 0), None);
+        fg.emit(Instr::abc(Opcode::Return, 0, 0, 0), None)?;
         let proto = self.finish(
             fg,
             decl.name.to_string(),
@@ -1547,10 +1640,10 @@ impl<'p> Gen<'p> {
         let name = info.name.clone();
         let n = u32::from(info.arity);
         let index = self.reserve_proto()?;
-        let mut fg = FnGen::new(def, true);
+        let mut fg = self.fn_gen(def, true);
         fg.alloc_block(n.max(1));
-        fg.emit(Instr::abc(Opcode::Perform, 0, r16(op.0), 0), None);
-        fg.emit(Instr::abc(Opcode::Return, 0, 0, 0), None);
+        fg.emit(Instr::abc(Opcode::Perform, 0, r16(op.0), 0), None)?;
+        fg.emit(Instr::abc(Opcode::Return, 0, 0, 0), None)?;
         let proto = self.finish(fg, name, ProtoOrigin::BuiltinValue, None, n)?;
         self.set_proto(index, proto)?;
         self.op_protos.insert(binding, index);

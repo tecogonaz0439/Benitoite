@@ -1,0 +1,42 @@
+{
+  "patterns-integer-100": {
+    "before": {
+      "seconds": 0.01203775000000018,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.012965832999999982,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001655708,\"reparse\":0.001293083,\"resolve\":0.000795792,\"typeck\":0.00421275}\n",
+        "stderr": ""
+      },
+      "run_verified": {
+        "seconds": 0.01425266599999997,
+        "status": 0,
+        "stdout": "0\n99\n-1\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015138208999999847,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.01592070800000034,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001804459,\"reparse\":0.001445083,\"resolve\":0.000924875,\"typeck\":0.0068085}\n",
+        "stderr": ""
+      },
+      "run_verified": {
+        "seconds": 0.017486083999999735,
+        "status": 0,
+        "stdout": "0\n99\n-1\n",
+        "stderr": ""
+      }
+    }
+  }
+}

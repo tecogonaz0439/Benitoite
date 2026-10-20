@@ -1,8 +1,11 @@
 //! パターンの検査: 網羅性、選ばれない分岐、必ず照合するパターン（設計書 02-05「本体の後の検査」、01-05）。
 
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
+use std::hash::{DefaultHasher, Hash, Hasher};
 
-use super::limits::MAX_COVERAGE_WORK;
+use super::limits::{
+    MAX_COVERAGE_ENUM_WORK, MAX_COVERAGE_KEY_BYTES, MAX_COVERAGE_MEMO_CELLS, MAX_COVERAGE_WORK,
+};
 use crate::base::{BindingId, ModuleId};
 use crate::modules::ModuleTable;
 
@@ -110,12 +113,14 @@ pub struct BindingCheck {
 struct Witness {
     text: String,
     future_types: BTreeSet<BindingId>,
+    cells: usize,
 }
 impl From<String> for Witness {
     fn from(text: String) -> Self {
         Self {
             text,
             future_types: BTreeSet::new(),
+            cells: 1,
         }
     }
 }
@@ -125,19 +130,28 @@ impl From<&str> for Witness {
     }
 }
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq)]
 struct SearchKey {
+    hash: u64,
     types: Vec<Ty>,
     matrix: Vec<Vec<Pat>>,
     query: Vec<Pat>,
 }
 
 // 表と予算は一つの match または束縛の文の間だけ共有する。表を引く順序は探索の順序に影響しない。
+struct MemoEntry {
+    key: SearchKey,
+    result: Option<Vec<Witness>>,
+}
 struct Search<'a> {
     view: &'a CoverageView,
     limit: usize,
     used: usize,
-    memo: Option<HashMap<SearchKey, Option<Vec<Witness>>>>,
+    memo: Option<HashMap<u64, Vec<MemoEntry>>>,
+    enum_work: usize,
+    memo_cells: usize,
+    key_bytes: usize,
+    concrete: bool,
 }
 impl<'a> Search<'a> {
     fn new(limit: usize, view: &'a CoverageView) -> Self {
@@ -146,6 +160,10 @@ impl<'a> Search<'a> {
             limit,
             used: 0,
             memo: Some(HashMap::new()),
+            enum_work: 0,
+            memo_cells: 0,
+            key_bytes: 0,
+            concrete: false,
         }
     }
     fn charge(&mut self, work: usize) -> Result<(), Undecided> {
@@ -162,16 +180,125 @@ impl<'a> Search<'a> {
                 .fold(0usize, |n, row| n.saturating_add(row.len())),
         )
     }
+    fn enumerate(&mut self, work: usize) -> Result<(), Undecided> {
+        debit(&mut self.enum_work, work, MAX_COVERAGE_ENUM_WORK)
+    }
+    fn retain(&mut self, cells: usize, bytes: usize) -> Result<(), Undecided> {
+        debit(&mut self.memo_cells, cells, MAX_COVERAGE_MEMO_CELLS)?;
+        debit(&mut self.key_bytes, bytes, MAX_COVERAGE_KEY_BYTES)
+    }
     fn finish(
         &mut self,
         key: Option<Box<SearchKey>>,
         result: Option<Vec<Witness>>,
-    ) -> Option<Vec<Witness>> {
-        if let (Some(memo), Some(key)) = (&mut self.memo, key) {
-            memo.insert(*key, result.clone());
+    ) -> Result<Option<Vec<Witness>>, Undecided> {
+        if let Some(key) = key {
+            let cells = result.as_ref().map_or(0, |ws| {
+                ws.iter().fold(0usize, |n, w| n.saturating_add(w.cells))
+            });
+            self.enumerate(cells)?;
+            self.retain(cells, 0)?;
+            if let Some(memo) = &mut self.memo {
+                memo.entry(key.hash).or_default().push(MemoEntry {
+                    key: *key,
+                    result: result.clone(),
+                });
+            }
         }
-        result
+        Ok(result)
     }
+    fn key_cost(
+        &mut self,
+        types: &[Ty],
+        matrix: &[Vec<Pat>],
+        query: &[Pat],
+    ) -> Result<(usize, usize), Undecided> {
+        let (mut cells, mut bytes) = pattern_cost(matrix.iter().flatten().chain(query), self)?;
+        let mut pending = types.iter().collect::<Vec<_>>();
+        while let Some(ty) = pending.pop() {
+            self.enumerate(1)?;
+            cells = cells.saturating_add(1);
+            match ty {
+                Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args),
+                Ty::Fn(f) => {
+                    for name in &f.param_names {
+                        self.enumerate(name.len())?;
+                        bytes = bytes.saturating_add(name.len());
+                    }
+                    pending.extend(&f.params);
+                    pending.push(&f.ret);
+                    pending.extend(&f.effects.failures);
+                }
+                Ty::Param(_) | Ty::Rigid { .. } => {}
+            }
+        }
+        Ok((cells, bytes))
+    }
+}
+
+fn debit(used: &mut usize, work: usize, limit: usize) -> Result<(), Undecided> {
+    let next = used.checked_add(work).ok_or(Undecided)?;
+    if next > limit {
+        return Err(Undecided);
+    }
+    *used = next;
+    Ok(())
+}
+fn pattern_cost<'p>(
+    pats: impl IntoIterator<Item = &'p Pat>,
+    search: &mut Search,
+) -> Result<(usize, usize), Undecided> {
+    let mut cells = 0usize;
+    let mut bytes = 0usize;
+    for root in pats {
+        let mut pending = vec![root];
+        while let Some(p) = pending.pop() {
+            search.enumerate(1)?;
+            cells = cells.saturating_add(1);
+            match p {
+                Pat::Ctor { args, .. } => pending.extend(args),
+                Pat::List { before, after, .. } => {
+                    pending.extend(before);
+                    pending.extend(after);
+                }
+                Pat::String(s) => {
+                    search.enumerate(s.len())?;
+                    bytes = bytes.saturating_add(s.len());
+                }
+                Pat::Wild
+                | Pat::Integer(_)
+                | Pat::Character(_)
+                | Pat::Boolean(_)
+                | Pat::Unit
+                | Pat::IntegerRange(..)
+                | Pat::CharacterRange(..) => {}
+            }
+        }
+    }
+    Ok((cells, bytes))
+}
+
+/// 公開の交換結果は抽象的な形を保ち、ソース診断だけで具体的な整数を選ぶ。
+/// （設計書 02-05「本体の後の検査」）。
+pub(super) fn check_match_diagnostic(
+    scrutinee: &Ty,
+    arms: &[ArmPats],
+    adts: &AdtTable,
+    view: &CoverageView,
+) -> Result<MatchCheck, Undecided> {
+    let mut search = Search::new(MAX_COVERAGE_WORK, view);
+    search.concrete = true;
+    let mut checked = check_match_with(scrutinee, arms, adts, &mut search)?;
+    if matches!(scrutinee, Ty::Con(TyCon::Builtin(b), _) if *b == B::INTEGER) {
+        for issue in &mut checked.issues {
+            if let MatchIssue::NonExhaustive { witness, .. } = issue
+                && witness == "_"
+            {
+                *witness = i64::MIN.to_string();
+            }
+        }
+    }
+    Ok(checked)
 }
 
 /// 一つの `match` を検査する。構成子の名前は型名で修飾し、同名の構成子とレコードは修飾しない。
@@ -217,6 +344,7 @@ fn check_match_with(
                 });
             }
             // 同じ分岐の前の選択肢はガードによらず後の選択肢を覆う（01-05「選ばれない分岐の検査」）。
+            pattern_cost(std::iter::once(pat), search)?;
             rows.push(pat.clone());
         }
         if a.guarded {
@@ -283,6 +411,7 @@ enum Shape {
         elem: Ty,
     },
     Future(BindingId),
+    IntegerOther(i128),
     Other,
 }
 impl Shape {
@@ -298,12 +427,13 @@ impl Shape {
             | Self::Interval { .. }
             | Self::String(_)
             | Self::Future(_)
+            | Self::IntegerOther(_)
             | Self::Other => {
                 vec![]
             }
         }
     }
-    fn show(&self, args: &[String], adts: &AdtTable) -> String {
+    fn show(&self, args: &[String], adts: &AdtTable, concrete: bool) -> String {
         match self {
             Self::Ctor { adt, tag, .. } => {
                 let Some(def) = adts.get(*adt) else {
@@ -361,7 +491,14 @@ impl Shape {
                 .filter(|_| lo <= hi)
                 .map(show_character)
                 .unwrap_or_else(|| "_".into()),
-            Self::Interval {
+            Self::IntegerOther(lo)
+            | Self::Interval {
+                character: false,
+                lo,
+                ..
+            } if concrete => lo.to_string(),
+            Self::IntegerOther(_)
+            | Self::Interval {
                 character: false, ..
             }
             | Self::String(_)
@@ -383,21 +520,31 @@ fn interval(p: &Pat) -> Option<(i128, i128)> {
         | Pat::List { .. } => None,
     }
 }
-fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable, view: &CoverageView) -> Option<Vec<Shape>> {
-    Some(match ty {
+fn shapes(
+    ty: &Ty,
+    column: &[&Pat],
+    adts: &AdtTable,
+    search: &mut Search,
+) -> Result<Option<Vec<Shape>>, Undecided> {
+    search.enumerate(column.len().saturating_add(1))?;
+    Ok(Some(match ty {
         Ty::Con(TyCon::Adt(id), args) => {
             let Some(d) = adts.get(*id) else {
-                return Some(vec![Shape::Other]);
+                return Ok(Some(vec![Shape::Other]));
             };
             let mut result = Vec::new();
+            search.enumerate(d.ctors.len().saturating_add(1))?;
             for c in &d.ctors {
                 result.push(Shape::Ctor {
                     adt: *id,
                     tag: c.tag,
-                    fields: adts.field_types(*id, c.tag, args)?,
+                    fields: match adts.field_types(*id, c.tag, args) {
+                        Some(fields) => fields,
+                        None => return Ok(None),
+                    },
                 });
             }
-            if view.contains(id) {
+            if search.view.contains(id) {
                 result.push(Shape::Future(*id));
             }
             result
@@ -407,55 +554,75 @@ fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable, view: &CoverageView) -> Opt
         }
         Ty::Con(TyCon::Builtin(b), _) if *b == B::UNIT => vec![Shape::Unit],
         Ty::Con(TyCon::Builtin(b), _) if *b == B::INTEGER || *b == B::CHARACTER => {
-            let intervals = column
-                .iter()
-                .filter_map(|p| interval(p))
-                .collect::<Vec<_>>();
-            let mut bounds = intervals
-                .iter()
-                .flat_map(|(a, b)| [*a, b.saturating_add(1)])
-                .collect::<Vec<_>>();
             let character = *b == B::CHARACTER;
-            if character {
-                // 有効な値域の隙間も特殊化し、欄どうしの相関を保つ
-                // （設計書 02-05「本体の後の検査」）。
-                bounds.extend([0, 0xd800, 0xe000, 0x110000]);
-            }
-            bounds.sort_unstable();
-            bounds.dedup();
-            let mut result = if character {
-                vec![]
-            } else {
-                vec![Shape::Other]
-            };
-            for ends in bounds.windows(2) {
-                if let [a, hi_boundary] = ends {
-                    let hi = hi_boundary.saturating_sub(1);
-                    let include = if character {
-                        0 <= *a && *a <= hi && hi < 0x110000 && (hi < 0xd800 || 0xe000 <= *a)
-                    } else {
-                        intervals.iter().any(|(lo, high)| lo <= a && hi <= *high)
-                    };
-                    if include {
-                        result.push(Shape::Interval {
-                            character,
-                            lo: *a,
-                            hi,
-                        });
-                    }
+            // 整列した端点を一度だけ走査し、各最小区間の被覆を活動区間数で求める。
+            // max64+1 は i128 のまま保ち、Integer の値へ戻さない（02-05「本体の後の検査」）。
+            search.enumerate(column.len().saturating_mul(2).saturating_add(4))?;
+            let mut events = Vec::new();
+            for p in column {
+                if let Some((lo, hi)) = interval(p) {
+                    events.push((lo, 1i128));
+                    events.push((hi.saturating_add(1), -1i128));
                 }
+            }
+            let (min, domain_end) = if character {
+                (0, 0x110000)
+            } else {
+                (i128::from(i64::MIN), i128::from(i64::MAX).saturating_add(1))
+            };
+            events.extend([(min, 0), (domain_end, 0)]);
+            if character {
+                events.extend([(0xd800, 0), (0xe000, 0)]);
+            }
+            let mut comparisons = 0usize;
+            events.sort_unstable_by(|a, b| {
+                comparisons = comparisons.saturating_add(1);
+                a.0.cmp(&b.0)
+            });
+            search.enumerate(comparisons)?;
+            let mut result = Vec::new();
+            let mut other = None;
+            let mut active = 0i128;
+            let mut i = 0usize;
+            while let Some((lo, _)) = events.get(i).copied() {
+                while let Some((at, delta)) = events.get(i) {
+                    if *at != lo {
+                        break;
+                    }
+                    search.enumerate(1)?;
+                    active = active.saturating_add(*delta);
+                    i = i.saturating_add(1);
+                }
+                let Some((end, _)) = events.get(i).copied() else {
+                    break;
+                };
+                let hi = end.saturating_sub(1);
+                if lo < min || hi >= domain_end || (character && (0xd800..0xe000).contains(&lo)) {
+                    continue;
+                }
+                if character || active > 0 {
+                    search.enumerate(1)?;
+                    result.push(Shape::Interval { character, lo, hi });
+                } else if other.is_none() {
+                    other = Some(lo);
+                }
+            }
+            if let Some(lo) = other {
+                search.enumerate(1)?;
+                result.insert(0, Shape::IntegerOther(lo));
             }
             result
         }
         Ty::Con(TyCon::Builtin(b), _) if *b == B::STRING => {
             let mut result = vec![Shape::Other];
+            let mut seen = HashSet::new();
             for p in column {
-                if let Pat::String(s) = p
-                    && !result
-                        .iter()
-                        .any(|c| matches!(c, Shape::String(t) if s == t))
-                {
-                    result.push(Shape::String(s.clone()));
+                if let Pat::String(s) = p {
+                    search.enumerate(s.len().saturating_add(1))?;
+                    if seen.insert(s.as_str()) {
+                        search.enumerate(s.len().saturating_add(1))?;
+                        result.push(Shape::String(s.clone()));
+                    }
                 }
             }
             result
@@ -480,6 +647,7 @@ fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable, view: &CoverageView) -> Opt
                 }
             }
             let min = exact_end.max(front.saturating_add(back));
+            search.enumerate(min.saturating_add(1))?;
             let mut result = (0..min)
                 .map(|k| Shape::Exact(k, elem.clone()))
                 .collect::<Vec<_>>();
@@ -494,7 +662,28 @@ fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable, view: &CoverageView) -> Opt
         Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => {
             vec![Shape::Other]
         }
-    })
+    }))
+}
+fn budget_specialize(
+    p: &Pat,
+    shape: &Shape,
+    search: &mut Search,
+) -> Result<Option<Vec<Pat>>, Undecided> {
+    pattern_cost(std::iter::once(p), search)?;
+    let arity = match shape {
+        Shape::Ctor { fields, .. } => fields.len(),
+        Shape::Exact(n, _) => *n,
+        Shape::Long { front, back, .. } => front.saturating_add(*back),
+        Shape::Boolean(_)
+        | Shape::Unit
+        | Shape::Interval { .. }
+        | Shape::String(_)
+        | Shape::Future(_)
+        | Shape::IntegerOther(_)
+        | Shape::Other => 0,
+    };
+    search.enumerate(arity)?;
+    Ok(specialize(p, shape))
 }
 fn specialize(p: &Pat, shape: &Shape) -> Option<Vec<Pat>> {
     if matches!(p, Pat::Wild) {
@@ -561,6 +750,7 @@ fn useful(
     search: &mut Search,
 ) -> Result<Option<Witness>, Undecided> {
     search.charge(rows.len())?;
+    pattern_cost(rows.iter().chain(std::iter::once(pat)), search)?;
     let input = SearchInput {
         types: vec![ty.clone()],
         matrix: rows.iter().map(|p| vec![p.clone()]).collect(),
@@ -579,7 +769,34 @@ impl SearchInput {
         Some(
             self.query
                 .iter()
-                .map(|p| show_pattern(p, adts).into())
+                .map(|p| {
+                    let text = show_pattern(p, adts);
+                    let mut pending = vec![p];
+                    let mut cells = 0usize;
+                    while let Some(p) = pending.pop() {
+                        cells = cells.saturating_add(1);
+                        match p {
+                            Pat::Ctor { args, .. } => pending.extend(args),
+                            Pat::List { before, after, .. } => {
+                                pending.extend(before);
+                                pending.extend(after);
+                            }
+                            Pat::Wild
+                            | Pat::Integer(_)
+                            | Pat::Character(_)
+                            | Pat::String(_)
+                            | Pat::Boolean(_)
+                            | Pat::Unit
+                            | Pat::IntegerRange(..)
+                            | Pat::CharacterRange(..) => {}
+                        }
+                    }
+                    Witness {
+                        text,
+                        cells,
+                        future_types: BTreeSet::new(),
+                    }
+                })
                 .collect(),
         )
     }
@@ -643,6 +860,7 @@ fn usefulness(
                                     let text = shape.show(
                                         &fields.iter().map(|w| w.text.clone()).collect::<Vec<_>>(),
                                         adts,
+                                        search.concrete,
                                     );
                                     let mut future_types = fields
                                         .iter()
@@ -651,7 +869,24 @@ fn usefulness(
                                     if let Shape::Future(id) = shape {
                                         future_types.insert(id);
                                     }
-                                    let mut witness = vec![Witness { text, future_types }];
+                                    let cells = fields
+                                        .iter()
+                                        .fold(1usize, |n, w| n.saturating_add(w.cells));
+                                    let cells = if let Shape::Long {
+                                        min, front, back, ..
+                                    } = &shape
+                                    {
+                                        cells.saturating_add(
+                                            min.saturating_sub(front.saturating_add(*back)),
+                                        )
+                                    } else {
+                                        cells
+                                    };
+                                    let mut witness = vec![Witness {
+                                        text,
+                                        future_types,
+                                        cells,
+                                    }];
                                     witness.extend_from_slice(rest);
                                     Some(witness)
                                 } else {
@@ -660,7 +895,7 @@ fn usefulness(
                             } else {
                                 branches.input.fallback(adts)
                             };
-                            Step::Done(search.finish(branches.key, witness))
+                            Step::Done(search.finish(branches.key, witness)?)
                         } else {
                             next_branch(*branches, adts, search)?
                         }
@@ -729,7 +964,7 @@ fn enter(mut input: SearchInput, adts: &AdtTable, search: &mut Search) -> Result
         .filter_map(|row| row.first())
         .chain(std::iter::once(q))
         .collect::<Vec<_>>();
-    let Some(shapes) = shapes(ty, &column, adts, search.view) else {
+    let Some(shapes) = shapes(ty, &column, adts, search)? else {
         return Ok(Step::Done(input.fallback(adts)));
     };
     // 記憶は構成子で分ける段の入力だけに持つ。検索のための複製も、表で再利用
@@ -737,7 +972,32 @@ fn enter(mut input: SearchInput, adts: &AdtTable, search: &mut Search) -> Result
     let key = if search.memo.is_some() {
         search.matrix(&input.matrix)?;
         search.charge(input.types.len().saturating_add(input.query.len()))?;
+        let (cells, bytes) = search.key_cost(&input.types, &input.matrix, &input.query)?;
+        let mut hasher = DefaultHasher::new();
+        input.types.hash(&mut hasher);
+        input.matrix.hash(&mut hasher);
+        input.query.hash(&mut hasher);
+        let hash = hasher.finish();
+        let mut found = None;
+        if let Some(bucket) = search.memo.as_ref().and_then(|memo| memo.get(&hash)) {
+            // 衝突しても構造の等値で照合する。比較の走査も複製前に計上する。
+            let work = cells.saturating_add(bytes).saturating_mul(bucket.len());
+            debit(&mut search.enum_work, work, MAX_COVERAGE_ENUM_WORK)?;
+            found = bucket
+                .iter()
+                .find(|entry| {
+                    entry.key.types == input.types
+                        && entry.key.matrix == input.matrix
+                        && entry.key.query == input.query
+                })
+                .map(|entry| entry.result.clone());
+        }
+        if let Some(result) = found {
+            return Ok(Step::Done(result));
+        }
+        search.retain(cells, bytes)?;
         Some(Box::new(SearchKey {
+            hash,
             types: input.types.clone(),
             matrix: input.matrix.clone(),
             query: input.query.clone(),
@@ -745,12 +1005,6 @@ fn enter(mut input: SearchInput, adts: &AdtTable, search: &mut Search) -> Result
     } else {
         None
     };
-    if let Some(result) = key
-        .as_ref()
-        .and_then(|key| search.memo.as_ref()?.get(key.as_ref()))
-    {
-        return Ok(Step::Done(result.clone()));
-    }
     next_branch(
         Branches {
             key,
@@ -771,7 +1025,7 @@ fn next_branch(
         let Some(q) = branches.input.query.first() else {
             break;
         };
-        let Some(mut query) = specialize(q, &shape) else {
+        let Some(mut query) = budget_specialize(q, &shape, search)? else {
             continue;
         };
         branches.specialized = true;
@@ -781,7 +1035,7 @@ fn next_branch(
             let Some(first) = row.first() else {
                 continue;
             };
-            let Some(mut specialized) = specialize(first, &shape) else {
+            let Some(mut specialized) = budget_specialize(first, &shape, search)? else {
                 continue;
             };
             // 行全体を複製する前に数える。予算に当たる行があれば、その先の行を作らない。
@@ -815,7 +1069,7 @@ fn next_branch(
         } else {
             None
         };
-    Ok(Step::Done(search.finish(branches.key, result)))
+    Ok(Step::Done(search.finish(branches.key, result)?))
 }
 fn show_character(c: char) -> String {
     let body = match c {
@@ -842,6 +1096,7 @@ fn show_pattern(p: &Pat, adts: &AdtTable) -> String {
                 .map(|p| show_pattern(p, adts))
                 .collect::<Vec<_>>(),
             adts,
+            false,
         ),
         Pat::Boolean(v) => v.to_string(),
         Pat::Unit => "()".into(),
@@ -875,9 +1130,12 @@ fn overlaps(
     if matches!(a, Pat::Wild) || matches!(b, Pat::Wild) {
         return Ok(true);
     }
-    if let Some(shapes) = shapes(ty, &[a, b], adts, search.view) {
+    if let Some(shapes) = shapes(ty, &[a, b], adts, search)? {
         for shape in shapes {
-            let (Some(xs), Some(ys)) = (specialize(a, &shape), specialize(b, &shape)) else {
+            let (Some(xs), Some(ys)) = (
+                budget_specialize(a, &shape, search)?,
+                budget_specialize(b, &shape, search)?,
+            ) else {
                 continue;
             };
             if xs.len() != ys.len() {
@@ -1081,7 +1339,7 @@ mod tests {
             (
                 builtin(B::INTEGER),
                 vec![arm(Pat::IntegerRange(i64::MIN, i64::MAX))],
-                vec![missing("_")],
+                vec![],
             ),
             (
                 builtin(B::CHARACTER),
@@ -1233,7 +1491,7 @@ mod tests {
                     Pat::IntegerRange(i64::MIN, i64::MAX),
                     Pat::Wild,
                 ],
-                vec![unreachable(2, 0, &[0, 1])],
+                vec![unreachable(2, 0, &[0, 1]), unreachable(3, 0, &[2])],
             ),
             (
                 vec![Pat::IntegerRange(1, 5), Pat::IntegerRange(5, 10), Pat::Wild],
@@ -1802,6 +2060,77 @@ mod tests {
                 .witness,
             Some("false".into())
         );
+    }
+
+    // 判定 API の独立した三予算。枯渇直前の状態から本物の探索を通し、
+    // 公開の結果を部分的に返す退行と、境界ちょうどの拒否を捕まえる。
+    #[test]
+    fn enumeration_and_memo_budgets_are_independent() {
+        let view = CoverageView::new();
+        let table = AdtTable::default();
+        let ty = builtin(B::STRING);
+        let arms = [
+            arm(Pat::String("first".into())),
+            arm(Pat::String("second".into())),
+        ];
+        let mut measured = Search::new(MAX_COVERAGE_WORK, &view);
+        let expected = check_match_with(&ty, &arms, &table, &mut measured).unwrap();
+        assert_eq!(expected.issues, vec![missing("_")]);
+        for metric in 0..3 {
+            let (used, limit) = match metric {
+                0 => (measured.enum_work, MAX_COVERAGE_ENUM_WORK),
+                1 => (measured.memo_cells, MAX_COVERAGE_MEMO_CELLS),
+                _ => (measured.key_bytes, MAX_COVERAGE_KEY_BYTES),
+            };
+            assert!(used > 0);
+            for extra in [0, 1] {
+                let mut search = Search::new(MAX_COVERAGE_WORK, &view);
+                let initial = limit - used + extra;
+                match metric {
+                    0 => search.enum_work = initial,
+                    1 => search.memo_cells = initial,
+                    _ => search.key_bytes = initial,
+                }
+                let result = check_match_with(&ty, &arms, &table, &mut search);
+                assert_eq!(
+                    result,
+                    if extra == 0 {
+                        Ok(expected.clone())
+                    } else {
+                        Err(Undecided)
+                    }
+                );
+            }
+        }
+    }
+
+    // 900 行は design の受け入れ入力。大きさで決まる予算の契約なので
+    // GC に触れない判定 API では stress でも同じ行数を使う。
+    #[test]
+    fn nine_hundred_scalar_arms_fit_the_fixed_budgets() {
+        let table = AdtTable::default();
+        let view = CoverageView::new();
+        for string in [false, true] {
+            let ty = builtin(if string { B::STRING } else { B::INTEGER });
+            let mut arms = (0..900)
+                .map(|n| {
+                    arm(if string {
+                        Pat::String(format!("s{n}"))
+                    } else {
+                        Pat::Integer(n)
+                    })
+                })
+                .collect::<Vec<_>>();
+            arms.push(arm(Pat::Wild));
+            let mut search = Search::new(MAX_COVERAGE_WORK, &view);
+            let checked = check_match_with(&ty, &arms, &table, &mut search).unwrap();
+            assert_eq!(checked.issues, vec![]);
+            assert_eq!(checked.covering, vec![]);
+            println!(
+                "coverage scalar string={string}: cells={}, enumeration={}, memo={}, bytes={}",
+                search.used, search.enum_work, search.memo_cells, search.key_bytes
+            );
+        }
     }
 
     fn boolean_record(width: usize) -> (Ty, AdtTable) {

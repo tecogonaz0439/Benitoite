@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/private/tmp/benitoite-v1-manifests.py", line 11, in <module>
+    assert collections.Counter(map(classification,nonmatched))==collections.Counter(map(classification,m['programReports']['surfaceOutcomes'])),'classification boundary changed'
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/collections/__init__.py", line 593, in __init__
+    self.update(iterable, **kwds)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/collections/__init__.py", line 679, in update
+    _count_elements(self, iterable)
+  File "/private/tmp/benitoite-v1-manifests.py", line 10, in classification
+    def classification(o):return (o['group'],o['input'],o['category'],o['kind'],tuple(o.get('unconvertiblePrims',[])),o.get('error',{}).get('reason'))
+AttributeError: 'NoneType' object has no attribute 'get'

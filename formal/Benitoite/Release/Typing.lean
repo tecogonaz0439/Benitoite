@@ -199,12 +199,47 @@ def Ty.Le (a a' : Ty) : Prop :=
 
 /-- ストアの場所の型。可変のセル、明示遅延、継続（継続の型と、継続を作った節の R）。 -/
 inductive LocTy where
+  | builder (kind : BuilderKind)
   | ref (a : Ty)
   | lazy (a : Ty)
   | cont (b t : Ty) (ε : Eff) (r : Option Ty)
 
 /-- ストアの型付け Ψ。 -/
 abbrev StoreTy := Nat → Option LocTy
+
+/-- 既に型のある場所を同じ型で保つ拡張。 -/
+def StoreTy.Sub (Ψ Ψ' : StoreTy) : Prop := ∀ l x, Ψ l = some x → Ψ' l = some x
+
+/-- 専用セルの位置だけを隠し、場所の番号を保つ。 -/
+abbrev StoreTy.hideBuilders (Ψ : StoreTy) : StoreTy := fun l =>
+  match Ψ l with
+  | some (.builder _) => none
+  | x => x
+
+@[simp] theorem hideBuilders_idem (Ψ : StoreTy) :
+    Ψ.hideBuilders.hideBuilders = Ψ.hideBuilders := by
+  funext l
+  cases h : Ψ l with
+  | none => simp [StoreTy.hideBuilders, h]
+  | some x => cases x <;> simp [StoreTy.hideBuilders, h]
+
+@[simp] theorem hideBuilders_ref (Ψ : StoreTy) (l : Nat) (a : Ty) :
+    Ψ.hideBuilders l = some (.ref a) ↔ Ψ l = some (.ref a) := by
+  cases h : Ψ l with
+  | none => simp [StoreTy.hideBuilders, h]
+  | some x => cases x <;> simp [StoreTy.hideBuilders, h]
+
+@[simp] theorem hideBuilders_lazy (Ψ : StoreTy) (l : Nat) (a : Ty) :
+    Ψ.hideBuilders l = some (.lazy a) ↔ Ψ l = some (.lazy a) := by
+  cases h : Ψ l with
+  | none => simp [StoreTy.hideBuilders, h]
+  | some x => cases x <;> simp [StoreTy.hideBuilders, h]
+
+@[simp] theorem hideBuilders_cont (Ψ : StoreTy) (l : Nat) (b t : Ty) (e : Eff) (r : Option Ty) :
+    Ψ.hideBuilders l = some (.cont b t e r) ↔ Ψ l = some (.cont b t e r) := by
+  cases h : Ψ l with
+  | none => simp [StoreTy.hideBuilders, h]
+  | some x => cases x <;> simp [StoreTy.hideBuilders, h]
 
 /-- 環境から継続の型を持つ変数を除く。番号をずらさないように、要素を `none` にする。 -/
 def hideConts (Γ : List (Option Ty)) : List (Option Ty) :=
@@ -233,7 +268,7 @@ mutual
     | P_Const {c} :
         c.patternAllowed = true →
         PatTy P (.const c) c.type []
-    | P_RangeInt {lo hi : Int} :
+    | P_RangeInt {lo hi : Integer64Value} :
         PatTy P (.range (.integer lo) (.integer hi)) (.base .integer) []
     | P_RangeChar {lo hi : Char} :
         PatTy P (.range (.character lo) (.character hi)) (.base .character) []
@@ -305,10 +340,45 @@ theorem AltsTy.witness {P alts a δ} (h : AltsTy P alts a δ) :
 
 /-! ## 値と計算の型付け -/
 
+/-- Γ と番号を共有する分類表。末尾の none は省略でき、範囲外も利用不能である。 -/
+abbrev LocalCtx := List (Option BuilderKind)
+
+/-- 通常束縛の追加。専用名がない空の表は正規形のまま保つ。 -/
+def LocalCtx.extend (n : Nat) : LocalCtx → LocalCtx
+  | [] => []
+  | x :: xs => List.replicate n none ++ (x :: xs)
+
+/-- 通常の変数を読めない位置にある専用名の分類。 -/
+def LocalCtx.kindAt (Δ : LocalCtx) (i : Nat) : Option BuilderKind := (Δ[i]?).join
+
+/-- 末尾の none の省略は、通常束縛を追加した後の番号の対応を変えない。 -/
+theorem LocalCtx.kindAt_extend (Δ : LocalCtx) (n i : Nat) :
+    (Δ.extend n).kindAt i = if i < n then none else Δ.kindAt (i - n) := by
+  cases Δ with
+  | nil => simp [extend, kindAt]
+  | cons x xs =>
+      by_cases hi : i < n
+      · simp [extend, kindAt, List.getElem?_append_left, hi]
+      · simp [extend, kindAt, List.getElem?_append_right, Nat.le_of_not_gt hi, hi]
+
+/-- 専用参照の種類。通常値の型付け規則には専用場所を足さない。 -/
+inductive LocalRef.HasKind (Ψ : StoreTy) (Δ : LocalCtx) : LocalRef → BuilderKind → Prop
+  | bound {i k} : Δ.kindAt i = some k → HasKind Ψ Δ (.bound i) k
+  | loc {l k} : Ψ l = some (.builder k) → HasKind Ψ Δ (.loc l) k
+
+/-- 共有番号の付け替えによる、局所分類の対応。 -/
+def LocalRenOk (Δ Δ' : LocalCtx) (ξ : Nat → Nat) : Prop :=
+  ∀ i k, Δ.kindAt i = some k → Δ'.kindAt (ξ i) = some k
+
+/-- 局所置換の像は、通常値ではなく同じ種類の専用参照である。 -/
+def LocalSubstOk (Ψ : StoreTy) (Δ Δ' : LocalCtx) (ρ : Nat → LocalRef) : Prop :=
+  ∀ i k, Δ.kindAt i = some k → LocalRef.HasKind Ψ Δ' (ρ i) k
+
+
 mutual
   /-- `Γ ⊢v V : A`（制約の並び C とストアの型付け Ψ のもとで）。 -/
-  inductive HasTypeVQ (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → Val → Ty → Prop
+  inductive HasTypeVQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Val → Ty → Prop
     /-- 継続の型の変数は、`resume` の第一引数にだけ書ける（C-Resume。01-12「ハンドラ」）。 -/
     | V_Var {Γ i a} : Γ[i]? = some (some a) → (∀ b t ε, a ≠ .cont b t ε) →
         HasTypeVQ P B Ψ Q C Γ (.var i) a
@@ -328,7 +398,7 @@ mutual
         HasTypeVQ P B Ψ Q C Γ (.raise T E) (.fn ["error"] [E] T (Eff.singleFail E))
     | V_Lam {Γ names ps body r ε} :
         NamesWF names ps → Ty.WF C.length (.fn names ps r ε) →
-        HasTypeCQ P B Ψ Q C (binds ps ++ hideConts Γ) (some r) body r ε →
+        HasTypeCQ P B Ψ.hideBuilders Q C (binds ps ++ hideConts Γ) (some r) body r ε [] →
         HasTypeVQ P B Ψ Q C Γ (.lam names ps body) (.fn names ps r ε)
     | V_Con {Γ c ts args cd} :
         P.cons c = some cd → ts.length = cd.ntys →
@@ -361,118 +431,169 @@ mutual
     | V_Sub {Γ v a a'} :
         HasTypeVQ P B Ψ Q C Γ v a → Ty.Le a a' → Ty.WF C.length a' → HasTypeVQ P B Ψ Q C Γ v a'
 
-  inductive HasTypeVsQ (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → List Val → List Ty → Prop
+  inductive HasTypeVsQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop
     | nil {Γ} : HasTypeVsQ P B Ψ Q C Γ [] []
     | cons {Γ v vs a as} :
         HasTypeVQ P B Ψ Q C Γ v a → HasTypeVsQ P B Ψ Q C Γ vs as → HasTypeVsQ P B Ψ Q C Γ (v :: vs) (a :: as)
 
-  inductive HasTypeEachQ (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → List Val → Ty → Prop
+  inductive HasTypeEachQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → Ty → Prop
     | nil {Γ a} : HasTypeEachQ P B Ψ Q C Γ [] a
     | cons {Γ v vs a} :
         HasTypeVQ P B Ψ Q C Γ v a → HasTypeEachQ P B Ψ Q C Γ vs a → HasTypeEachQ P B Ψ Q C Γ (v :: vs) a
 
   /-- `Γ; R ⊢c M : A ! ε`。R は最も内側の関数の戻り値の型で、`none` は `escape` を許さない。 -/
-  inductive HasTypeCQ (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → Option Ty → Comp → Ty → Eff → Prop
-    | C_Return {Γ R v a} : HasTypeVQ P B Ψ Q C Γ v a → HasTypeCQ P B Ψ Q C Γ R (.ret v) a Eff.empty
-    | C_Sub {Γ R m a a' ε ε'} :
-        HasTypeCQ P B Ψ Q C Γ R m a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε'
+  inductive HasTypeCQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → Comp → Ty → Eff → (Δ : LocalCtx := []) → Prop
+    | C_BuilderLet {Δ Γ R kind body a ε} :
+        Ty.WF C.length kind.contents →
+        HasTypeCQ P B Ψ Q C (none :: Γ) R body a ε (some kind :: Δ) →
+        HasTypeCQ P B Ψ Q C Γ R (.builderLet kind body) a ε Δ
+    | C_BuilderOp {Δ Γ R kind op ref args} :
+        Ty.WF C.length kind.contents → LocalRef.HasKind Ψ Δ ref kind →
+        HasTypeVsQ P B Ψ Q C Γ args (op.params kind) →
+        HasTypeCQ P B Ψ Q C Γ R (.builderOp kind op ref args) (op.result kind) Eff.empty Δ
+    | C_Return {Δ Γ R v a} : HasTypeVQ P B Ψ Q C Γ v a → HasTypeCQ P B Ψ Q C Γ R (.ret v) a Eff.empty Δ
+    | C_Sub {Δ Γ R m a a' ε ε'} :
+        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
     /-- 結果の型を変えず、計算の許容エフェクトだけを広げる。型の整形式は元の導出から引き継ぐ。 -/
-    | C_Eff {Γ R m a ε ε'} :
-        HasTypeCQ P B Ψ Q C Γ R m a ε → Eff.Sub ε ε' → HasTypeCQ P B Ψ Q C Γ R m a ε'
-    | C_Let {Γ R m n a b ε} :
-        HasTypeCQ P B Ψ Q C Γ R m a ε → HasTypeCQ P B Ψ Q C (some a :: Γ) R n b ε →
-        HasTypeCQ P B Ψ Q C Γ R (.letIn m n) b ε
-    | C_App {Γ R f args names as b ε} :
+    | C_Eff {Δ Γ R m a ε ε'} :
+        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Eff.Sub ε ε' → HasTypeCQ P B Ψ Q C Γ R m a ε' Δ
+    | C_Let {Δ Γ R m n a b ε} :
+        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → HasTypeCQ P B Ψ Q C (some a :: Γ) R n b ε (LocalCtx.extend 1 Δ) →
+        HasTypeCQ P B Ψ Q C Γ R (.letIn m n) b ε Δ
+    | C_App {Δ Γ R f args names as b ε} :
         HasTypeVQ P B Ψ Q C Γ f (.fn names as b ε) → HasTypeVsQ P B Ψ Q C Γ args as →
-        HasTypeCQ P B Ψ Q C Γ R (.app f args) b ε
-    | C_If {Γ R v m n a ε} :
-        HasTypeVQ P B Ψ Q C Γ v (.base .boolean) → HasTypeCQ P B Ψ Q C Γ R m a ε →
-        HasTypeCQ P B Ψ Q C Γ R n a ε → HasTypeCQ P B Ψ Q C Γ R (.ite v m n) a ε
-    | C_Match {Γ R v arms a b ε} :
-        HasTypeVQ P B Ψ Q C Γ v a → HasTypeArmsQ P B Ψ Q C Γ R arms a b ε →
-        Exhaustive P a (unguardedPats arms) → HasTypeCQ P B Ψ Q C Γ R (.match v arms) b ε
+        HasTypeCQ P B Ψ Q C Γ R (.app f args) b ε Δ
+    | C_If {Δ Γ R v m n a ε} :
+        HasTypeVQ P B Ψ Q C Γ v (.base .boolean) → HasTypeCQ P B Ψ Q C Γ R m a ε Δ →
+        HasTypeCQ P B Ψ Q C Γ R n a ε Δ → HasTypeCQ P B Ψ Q C Γ R (.ite v m n) a ε Δ
+    | C_Match {Δ Γ R v arms a b ε} :
+        HasTypeVQ P B Ψ Q C Γ v a → HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δ →
+        Exhaustive P a (unguardedPats arms) → HasTypeCQ P B Ψ Q C Γ R (.match v arms) b ε Δ
     /-- `Γ ⊢c M : A ! { }` のとき `Γ ⊢c lazy M : Lazy[A] ! { }`。M は R を持たない判断で、継続の型を持つ
     変数を除いた環境で検査する（01-12「ストア：可変のセルと明示遅延」「関数の境界と `escape`：途中の `return` と `try`」「ハンドラ」）。 -/
-    | C_Lazy {Γ R m a} :
-        HasTypeCQ P B Ψ Q C (hideConts Γ) none m a Eff.empty →
-        HasTypeCQ P B Ψ Q C Γ R (.lazyC m) (.lazy a) Eff.empty
+    | C_Lazy {Δ Γ R m a} :
+        HasTypeCQ P B Ψ.hideBuilders Q C (hideConts Γ) none m a Eff.empty [] →
+        HasTypeCQ P B Ψ Q C Γ R (.lazyC m) (.lazy a) Eff.empty Δ
     /-- `Γ; R ⊢v V : R` のとき、`Γ; R ⊢c escape V : A ! ε`（任意の A と ε）。 -/
-    | C_Escape {Γ r v a ε} :
-        HasTypeVQ P B Ψ Q C Γ v r → Ty.WF C.length a → HasTypeCQ P B Ψ Q C Γ (some r) (.escape v) a ε
+    | C_Escape {Δ Γ r v a ε} :
+        HasTypeVQ P B Ψ Q C Γ v r → Ty.WF C.length a → HasTypeCQ P B Ψ Q C Γ (some r) (.escape v) a ε Δ
     /-- C-Use。解放のエフェクト `rel(O_r) = {State}` を ε が含む。 -/
-    | C_Use {Γ R v o m b ε} :
+    | C_Use {Δ Γ R v o m b ε} :
         HasTypeVQ P B Ψ Q C Γ v (.opaque o) → B.isResource o = true →
-        HasTypeCQ P B Ψ Q C Γ R m b ε → Eff.mem ε (.name stateEff) →
-        HasTypeCQ P B Ψ Q C Γ R (.use v m) b ε
+        HasTypeCQ P B Ψ Q C Γ R m b ε Δ → Eff.mem ε (.name stateEff) →
+        HasTypeCQ P B Ψ Q C Γ R (.use v m) b ε Δ
     /-- C-Handle。 -/
-    | C_Handle {Γ R m h t εm ε} :
-        HasTypeCQ P B Ψ Q C Γ R m t εm → Eff.Sub εm (Eff.union ε (handled P B h)) →
-        HasTypeClausesQ P B Ψ Q C Γ R h t ε →
-        HasTypeCQ P B Ψ Q C Γ R (.handle m h) t ε
-    | C_Handle_Fail {Γ R m h t E eb Rest ec} :
-        HasTypeCQ P B Ψ Q C Γ R m t eb →
+    | C_Handle {Δ Γ R m h t εm ε} :
+        HasTypeCQ P B Ψ Q C Γ R m t εm Δ → Eff.Sub εm (Eff.union ε (handled P B h)) →
+        HasTypeClausesQ P B Ψ Q C Γ R h t ε Δ →
+        HasTypeCQ P B Ψ Q C Γ R (.handle m h) t ε Δ
+    | C_Handle_Fail {Δ Γ R m h t E eb Rest ec} :
+        HasTypeCQ P B Ψ Q C Γ R m t eb Δ →
         Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) → NoFail Q Rest →
-        HasFailureClause P B Ψ Q C Γ E R h t ec →
-        HasTypeCQ P B Ψ Q C Γ R (.handle m h) t (Eff.union Rest ec)
+        HasFailureClause P B Ψ Q C Γ E R h t ec Δ →
+        HasTypeCQ P B Ψ Q C Γ R (.handle m h) t (Eff.union Rest ec) Δ
     /-- C-Resume（節の変数 k）と C-ResumeL（継続の場所 κ）。継続の型の値は、`resume` の第一引数に
     だけ書ける（01-12「ハンドラ」）。κ に `resume` するときは、κ を作った節の R が、いまの R と等しい。 -/
-    | C_Resume {Γ R i v b t ε} :
+    | C_Resume {Δ Γ R i v b t ε} :
         Γ[i]? = some (some (.cont b t ε)) → HasTypeVQ P B Ψ Q C Γ v b →
-        HasTypeCQ P B Ψ Q C Γ R (.resume (.var i) v) t ε
-    | C_ResumeL {Γ R l v b t ε} :
+        HasTypeCQ P B Ψ Q C Γ R (.resume (.var i) v) t ε Δ
+    | C_ResumeL {Δ Γ R l v b t ε} :
         Ψ l = some (.cont b t ε R) → HasTypeVQ P B Ψ Q C Γ v b →
-        HasTypeCQ P B Ψ Q C Γ R (.resume (.loc l) v) t ε
+        HasTypeCQ P B Ψ Q C Γ R (.resume (.loc l) v) t ε Δ
     /-- C-Meth。θ = [τ/P, S̄/γ̄, Ē/ρ̄] は、メソッドの型パラメータ γ̄ の番号 `0..g-1` を S̄ に、型クラスの引数 P の
     番号 g を τ に置き換える。メソッドの型パラメータの制約を、型引数 S̄ が満たす。 -/
-    | C_Meth {Γ R v cl τ cd m ms ss es ws} :
+    | C_Meth {Δ Γ R v cl τ cd m ms ss es ws} :
         HasTypeVQ P B Ψ Q C Γ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
         NamesWF ms.names ms.params → SatAll B C ss ms.tparams →
         (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
         MethodRowsAdmissible C Q ms es →
         HasTypeVsQ P B Ψ Q C Γ ws (ms.params.map (Ty.subst (ss ++ [τ]) es)) →
-        HasTypeCQ P B Ψ Q C Γ R (.meth v m ss es ws) (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)
+        HasTypeCQ P B Ψ Q C Γ R (.meth v m ss es ws) (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff) Δ
 
-  inductive HasTypeArmsQ (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → Option Ty → List Arm → Ty → Ty → Eff → Prop
-    | nil {Γ R a b ε} : Ty.WF C.length b → HasTypeArmsQ P B Ψ Q C Γ R [] a b ε
-    | plain {Γ R alts body arms a b ε δ} :
-        AltsTy P alts a δ → HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε →
-        HasTypeArmsQ P B Ψ Q C Γ R arms a b ε →
-        HasTypeArmsQ P B Ψ Q C Γ R (.mk alts none body :: arms) a b ε
-    | guarded {Γ R alts guard body arms a b ε δ} :
+  inductive HasTypeArmsQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Arm → Ty → Ty → Eff → (Δ : LocalCtx := []) → Prop
+    | nil {Δ Γ R a b ε} : Ty.WF C.length b → HasTypeArmsQ P B Ψ Q C Γ R [] a b ε Δ
+    | plain {Δ Γ R alts body arms a b ε δ} :
+        AltsTy P alts a δ → HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε (LocalCtx.extend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ R (.mk alts none body :: arms) a b ε Δ
+    | guarded {Δ Γ R alts guard body arms a b ε δ} :
         AltsTy P alts a δ →
-        HasTypeCQ P B Ψ Q C (hideConts (binds δ ++ Γ)) none guard (.base .boolean) Eff.empty →
-        HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε →
-        HasTypeArmsQ P B Ψ Q C Γ R arms a b ε →
-        HasTypeArmsQ P B Ψ Q C Γ R (.mk alts (some guard) body :: arms) a b ε
+        HasTypeCQ P B Ψ Q C (hideConts (binds δ ++ Γ)) none guard (.base .boolean) Eff.empty (LocalCtx.extend δ.length Δ) →
+        HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε (LocalCtx.extend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ R (.mk alts (some guard) body :: arms) a b ε Δ
 
   /-- C-Handle の各節 `op(x̄) k ⇒ N`：`Γ, x̄:Ā, k:Cont(B → T ! ε); R ⊢c N : T ! ε`。操作の型パラメータは、
   節の中の型の変数の番号 `0..k-1` に束縛した、宣言の制約を持つ、ほかの型とは等しくない型の変数である。
   節の外側の Γ・T・R の型は、番号を k だけずらす。 -/
-  inductive HasTypeClausesQ (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → Prop
-    | nil {Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε
-    | cons {Γ R o n k body cs t ε sg} :
+  inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+    | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
+    | cons {Δ Γ R o n k body cs t ε sg} :
         opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
-        HasTypeCQ P B Ψ Q (sg.tparams ++ C)
+        HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
           (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
-          (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) →
-        HasTypeClausesQ P B Ψ Q C Γ R cs t ε →
-        HasTypeClausesQ P B Ψ Q C Γ R (.mk o n k body :: cs) t ε
+          (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) [] →
+        HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δ →
+        HasTypeClausesQ P B Ψ Q C Γ R (.mk o n k body :: cs) t ε Δ
 
   /-- Fail 節は一つだけであり、予約した継続の位置には型を与えない。 -/
-  inductive HasFailureClause (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
-      List TParam → List (Option Ty) → Ty → Option Ty → List Clause → Ty → Eff → Prop
-    | one {C Γ E R body t ec} :
+  inductive HasFailureClause (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Ty → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+    | one {C Δ Γ E R body t ec} :
         Ty.WF C.length E → Ty.WF C.length t → Eff.WF C.length ec →
-        HasTypeCQ P B Ψ Q (({} : TParam) :: C)
+        HasTypeCQ P B Ψ.hideBuilders Q (({} : TParam) :: C)
           (none :: some (E.shift 1 0) :: shiftEnv 1 Γ)
-          (R.map (Ty.shift 1 0)) body (t.shift 1 0) (Eff.shift 1 0 ec) →
-        HasFailureClause P B Ψ Q C Γ E R [.fail E body] t ec
+          (R.map (Ty.shift 1 0)) body (t.shift 1 0) (Eff.shift 1 0 ec) [] →
+        HasFailureClause P B Ψ Q C Γ E R [.fail E body] t ec Δ
 
+end
+
+/-- 局所環境を明記する内部の入口。HasTypeC は空 Δ を使う。 -/
+abbrev HasTypeCL (P : Program) (B : Builtins) (Ψ : StoreTy) (C : List TParam)
+    (Δ : LocalCtx) (Γ : List (Option Ty)) (R : Option Ty) (m : Comp) (a : Ty) (ε : Eff) :=
+  HasTypeCQ P B Ψ Qempty C Γ R m a ε Δ
+
+
+/- 通常値は専用セルを捕捉しない。ラムダの本体には隠す操作の冪等性を使う。 -/
+mutual
+  theorem hideBuilders_strengthen_val {P B Ψ Q C Γ v a}
+      (h : HasTypeVQ P B Ψ Q C Γ v a) : HasTypeVQ P B Ψ.hideBuilders Q C Γ v a := by
+    match h with
+    | .V_Var hi hc => exact .V_Var hi hc
+    | .V_Const => exact .V_Const
+    | .V_Fun hd hn ha => exact .V_Fun hd hn ha
+    | .V_Prim hs hn ha => exact .V_Prim hs hn ha
+    | .V_Op ho hn ha => exact .V_Op ho hn ha
+    | .V_Raise ht he => exact .V_Raise ht he
+    | .V_Lam hn hw hb => exact .V_Lam hn hw (by simpa only [hideBuilders_idem] using hb)
+    | .V_Con hc ht hv => exact .V_Con hc ht (hideBuilders_strengthen_vals hv)
+    | .V_List hv hw => exact .V_List (hideBuilders_strengthen_each hv) hw
+    | .V_LocRef hl => exact .V_LocRef ((hideBuilders_ref _ _ _).mpr hl)
+    | .V_LocLazy hl => exact .V_LocLazy ((hideBuilders_lazy _ _ _).mpr hl)
+    | .V_Map hk hv hl hc ha hb =>
+        exact .V_Map (hideBuilders_strengthen_each hk) (hideBuilders_strengthen_each hv) hl hc ha hb
+    | .V_Set hv hc hw => exact .V_Set (hideBuilders_strengthen_each hv) hc hw
+    | .V_Bytes => exact .V_Bytes
+    | .V_Dict hi ht hv => exact .V_Dict hi ht (hideBuilders_strengthen_vals hv)
+    | .V_Super hv hc hs => exact .V_Super (hideBuilders_strengthen_val hv) hc hs
+    | .V_Sub hv hl hw => exact .V_Sub (hideBuilders_strengthen_val hv) hl hw
+
+  theorem hideBuilders_strengthen_vals {P B Ψ Q C Γ vs ts}
+      (h : HasTypeVsQ P B Ψ Q C Γ vs ts) : HasTypeVsQ P B Ψ.hideBuilders Q C Γ vs ts := by
+    match h with
+    | .nil => exact .nil
+    | .cons hv ht => exact .cons (hideBuilders_strengthen_val hv) (hideBuilders_strengthen_vals ht)
+
+  theorem hideBuilders_strengthen_each {P B Ψ Q C Γ vs t}
+      (h : HasTypeEachQ P B Ψ Q C Γ vs t) : HasTypeEachQ P B Ψ.hideBuilders Q C Γ vs t := by
+    match h with
+    | .nil => exact .nil
+    | .cons hv ht => exact .cons (hideBuilders_strengthen_val hv) (hideBuilders_strengthen_each ht)
 end
 
 abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty

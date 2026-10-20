@@ -136,13 +136,24 @@ class Batch2ExchangeTests(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             check_rust(self.directory / 'missing')
 
+    def test_rust_output_rejects_old_and_mismatched_versions(self):
+        for stale in (FILES, *((f,) for f in FILES)):
+            with self.subTest(stale=stale):
+                data = copy.deepcopy(self.data)
+                for f, document in data.items():
+                    document['version'] = ((12 if f == 'corpus' else 4) if f in stale
+                                           else (13 if f == 'corpus' else 5))
+                    (self.directory / f'{f}.json').write_text(json.dumps(document))
+                with self.assertRaisesRegex(AssertionError, f'{stale[0]}: expected batch2 version'):
+                    check_rust(self.directory)
+
 
 def check_rust(directory):
-    """O2/F3 の出力が存在し、今の版（12/4）と六入口の実比較を満たすことを確かめる。"""
+    """O2/F3 の出力が存在し、今の版（13/5）と六入口の実比較を満たすことを確かめる。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
-    # Rust の出力は今の交換器の版で書かれる。0.0.9 で corpus は 12 になった（手書きの独立入力の 11 は旧版互換として別に読む）。
+    # Rust の出力は今の交換器の 13/5 だけを要求する（手書きの独立入力の 11/4 は旧版互換として別に読む）。
     for f, document in data.items():
-        if document['version'] != (12 if f == 'corpus' else 4):
+        if document['version'] != (13 if f == 'corpus' else 5):
             raise AssertionError(f'{f}: expected batch2 version')
     inputs = [i for i in data['corpus']['inputs'] if not i['excluded']]
     if not inputs or not any(i['definitions'] for i in inputs):

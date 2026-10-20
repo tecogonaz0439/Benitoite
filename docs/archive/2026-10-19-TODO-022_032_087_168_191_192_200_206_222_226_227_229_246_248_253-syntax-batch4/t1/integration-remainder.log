@@ -1,0 +1,31 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/golden.rs (target/debug/deps/golden-b669124677d3f99d)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 49.39s
+
+     Running tests/spec_examples.rs (target/debug/deps/spec_examples-2e356302626f62be)
+
+running 7 tests
+test unextracted_text_fences_are_rejected ... ok
+test loading_errors_are_counted_as_failures ... ok
+test broken_syntax_example_is_counted_as_unreadable ... ok
+test expected_failure_must_still_be_invalid ... ok
+test local_binding_violations_are_counted_and_fragment_shadow_is_allowed ... ok
+test numeric_spec_examples_behave_as_written ... ok
+test spec_and_appendix_examples_are_readable ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s
+
+     Running tests/verify.rs (target/debug/deps/verify-9cf719a34ff729df)
+
+running 2 tests
+test builder_sets_depend_on_successful_size_checked_combination ... ok
+test golden_programs_and_seeded_single_site_mutations has been running for over 60 seconds
+test golden_programs_and_seeded_single_site_mutations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 62.84s
+

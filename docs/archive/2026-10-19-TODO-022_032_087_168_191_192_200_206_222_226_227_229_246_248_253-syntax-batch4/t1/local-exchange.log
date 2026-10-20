@@ -1,0 +1,9 @@
+integer: exit=0, cases=3, fuel=0, 0.189s
+accepted: exit=0, cases=2, fuel=0, 0.226s
+hole: exit=1, cases=1, fuel=0, 0.050s
+Traceback (most recent call last):
+  File "/Users/tecogonaz/src/Benitoite/docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t1/check_local_exchange.py", line 47, in <module>
+    compare(stem, 'coverageDiff', [corpus], 0, count)
+  File "/Users/tecogonaz/src/Benitoite/docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/t1/check_local_exchange.py", line 27, in compare
+    assert result.returncode == expected_exit, (label, result.returncode, result.stdout, result.stderr)
+AssertionError: ('named-all', 2, '', 'coverageDiff: Integer expected\n')

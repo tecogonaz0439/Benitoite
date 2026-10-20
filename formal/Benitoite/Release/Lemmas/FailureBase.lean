@@ -19,8 +19,8 @@ theorem opSig_ne_fail {o sg} (h : opSig P B o = some sg) : o ≠ .fail := by
   cases h
 
 /-- 通常節の型付けは Fail を捕捉しない。 -/
-theorem HasTypeClausesQ.no_failure {Ψ Q C Γ R h t ec}
-    (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec) : handles h .fail = false := by
+theorem HasTypeClausesQ.no_failure {Δl : LocalCtx} {Ψ Q C Γ R h t ec}
+    (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec Δl) : handles h .fail = false := by
   match hc with
   | .nil => rfl
   | .cons hs _ _ _ _ _ ht =>
@@ -29,20 +29,20 @@ theorem HasTypeClausesQ.no_failure {Ψ Q C Γ R h t ec}
     exact ⟨by simpa using opSig_ne_fail hs, ih⟩
 
 /-- Fail 節はちょうど一つであり、そのエラー型が注釈と一致する。 -/
-theorem HasFailureClause.shape {Ψ Q C Γ E R h t ec}
-    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec) :
+theorem HasFailureClause.shape {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec Δl) :
     ∃ body, h = [.fail E body] := by
   cases hc with
   | one _ _ _ _ => exact ⟨_, rfl⟩
 
-theorem HasFailureClause.handles {Ψ Q C Γ E R h t ec}
-    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec) : handles h .fail = true := by
+theorem HasFailureClause.handles {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec Δl) : handles h .fail = true := by
   obtain ⟨body, rfl⟩ := hc.shape
   simp [Release.handles, Clause.op]
 
 /-- Fail 節の予約した0番は、値置換で参照されない。 -/
-theorem HasFailureClause.no_resume {Ψ Q C Γ E R h t ec}
-    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec) :
+theorem HasFailureClause.no_resume {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec Δl) :
     ∀ body, h = [.fail E body] → IrrelevantSlot body 0 := by
   cases hc with
   | one _ _ _ hb =>
@@ -82,7 +82,7 @@ theorem failure_capture_base {Ψ R E h t Rest ec}
     (hc : HasFailureClause P B Ψ Qempty [] [] E R h t ec)
     (hn : NoFail Qempty Rest) (hw : Ty.WF 0 t) :
     ContTy P B Ψ R (Eff.union (Eff.singleFail E) Rest) [.handleF h] t t (captureEff Rest ec) R :=
-  .K_Handle_Fail (.K_Empty (Eff.Sub.refl _) hw) (captureEff_left _ _) hn hc (captureEff_right _ _) hw
+  .K_Handle_Fail (.K_Empty (Eff.Sub.refl _) hw) (captureEff_left _ _) hn hc.hideBuilders (captureEff_right _ _) hw
 
 /-- 保存した継続の型から、既存の drop の効果条件を導く。 -/
 theorem failure_drop {Ψ κ T t Rh Rest ec eout k2 b Eb Re}

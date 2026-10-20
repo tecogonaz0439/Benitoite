@@ -1,6 +1,6 @@
 # Benitoite でよくある誤り
 
-> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -121,7 +121,7 @@ end function
 
 ## ブロックの波括弧
 
-短いラムダ（`grammar.md` を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで終わる。`end function`、`end if`、`end match`、`end lambda`、`end handle`、`end with`、`end data`、`end record` である。
+短いラムダ（`grammar.md` を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで終わる。`end function`、`end if`、`end match`、`end lambda`、`end handle`、`end with`、`end data`、`end record`、`end block` である。
 
 ```benitoite error
 import Benitoite.Unofficial.IO.Console
@@ -467,7 +467,7 @@ end function
 
 ## キーワードを名前に使う
 
-次の 35 語はキーワードであり、名前にできない。`and`、`bind`、`case`、`const`、`data`、`die`、`div`、`do`、`effect`、`else`、`end`、`false`、`function`、`handle`、`if`、`implement`、`import`、`lambda`、`lazy`、`match`、`mod`、`not`、`or`、`public`、`record`、`resume`、`return`、`shadow`、`then`、`trait`、`true`、`try`、`type`、`uses`、`with`。別の名前を選ぶ。この制限は、引数のラベル、フィールド、取り込みの別名、ドットの後の名前にも適用する。`die` は失敗時の処置 `try value or die` と `try value or die(message)` としてだけ受理する。単独の `die` の式は拒否する。`Die`、`died`、`dieLater` は通常の識別子である。
+次の 36 語はキーワードである。`and`、`bind`、`block`、`case`、`const`、`data`、`die`、`div`、`do`、`effect`、`else`、`end`、`false`、`function`、`handle`、`if`、`implement`、`import`、`lambda`、`lazy`、`match`、`mod`、`not`、`or`、`public`、`record`、`resume`、`return`、`shadow`、`then`、`trait`、`true`、`try`、`type`、`uses`、`with`。`record` は、引数、引数のラベル、束縛、値の参照など、小文字の名前を要する位置でも使える。宣言の位置では引き続きレコードの宣言を始める。他のキーワードには別の名前を選ぶ。この制限は、引数のラベル、フィールド、取り込みの別名、ドットの後の名前にも適用する。`die` は失敗時の処置 `try value or die` と `try value or die(message)` としてだけ受理する。単独の `die` の式は拒否する。`Die`、`died`、`dieLater` は通常の識別子である。
 
 `fn`、`pub`、`impl`、`mut` は通常の名前であり、構文の略記ではない。宣言には `function`、`public`、`implement`、無名関数には `lambda` を使う。`for`、`while`、`loop`、`break`、`continue`、`switch`、`where`、`async`、`await`、`spawn`、`select` も予約語ではない。繰り返しには `List.map`、`List.fold`、`List.forEach` などのコレクションの関数、並行処理には `Task.await`、`TaskGroup.spawn`、`Task.race` などの API を使う。
 
@@ -553,4 +553,4 @@ Scope.checkHost、Scope.checkPath、Scope.checkEndpoint は、条件と対象を
 
 ## コールバックへの構築器の捕捉
 
-構築器は第二級の値であり、通常の関数の引数や格納できる可変コンテナではない。List.forEach へ渡すラムダは構築器を捕捉できない（E0465）。先に List.map で不変の断片を作って appendAll へ渡すか、コールバックを作る前に copy/length を束縛する。別モジュールの取り込みは名前を追加しないため、使うモジュールごとに各構築器を取り込む。直接の new と注釈付きの局所宣言を要する（E0463）。操作の関数値、穴、パイプは E0466 となる。new、append、appendAll、copy、length すべてに State を要する。
+構築器は第二級の値であり、通常の関数の引数や格納できる可変コンテナではない。List.forEach へ渡すラムダは構築器を捕捉できない（E0465）。先に List.map で不変の断片を作って appendAll へ渡すか、コールバックを作る前に copy/length を束縛する。別モジュールの取り込みは名前を追加しないため、使うモジュールごとに各構築器を取り込む。直接の new と注釈付きの局所宣言を要する（E0463）。操作の関数値、穴、パイプは E0466 となる。宣言と専用操作は State を加えず、通常の引数のエフェクトは残る。block ... end block で局所の範囲から不変のコピーを返せる。copy は物理コピーであり、繰り返すと内容に比例する費用を要する。通常の Reference、タスク、リソースの解放のエフェクトは残る。

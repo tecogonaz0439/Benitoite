@@ -972,7 +972,7 @@ fn export_coverage() {
         budget.stopped, 0,
         "coverage export must stay within the work budget"
     );
-    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":4,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
+    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":4,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats.iter().map(|(kind,count)| json!({"kind":kind,"count":count})).collect::<Vec<_>>(),"cases":cases});
     let bytes = serde_json::to_vec(&corpus).unwrap();
     let roundtrip: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(roundtrip, corpus, "JSON must preserve i64 boundaries");
@@ -992,4 +992,204 @@ fn export_coverage() {
         budget.stopped,
         budget.max_work
     );
+}
+
+// 関門: 有界整数の三つの入力を本番 parser と判定 API から二形式へ渡す。
+// 交換の other は `_`、ソース診断の一点の穴は 0 と独立に固定する。
+#[test]
+fn export_batch4_integer() {
+    use benitoite::base::{FileId, IdGen, SourceKind};
+    use benitoite::syntax::{ast as a, lexer, newline, parser};
+    let output = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../target/formal-t1-integer");
+    fs::create_dir_all(&output).unwrap();
+    let table = AdtTable::default();
+    let view = CoverageView::new();
+    let ty = base(B::INTEGER);
+    let mut budget = BudgetStats::default();
+    let mut cases = vec![];
+    let mut matches = vec![];
+    for (name, arms_text, accepted) in [
+        (
+            "full",
+            " case -9223372036854775808..9223372036854775807 -> ()",
+            true,
+        ),
+        (
+            "split",
+            " case -9223372036854775808..-1 -> ()\n case 0..9223372036854775807 -> ()",
+            true,
+        ),
+        (
+            "hole",
+            " case -9223372036854775808..-1 -> ()\n case 1..9223372036854775807 -> ()",
+            false,
+        ),
+    ] {
+        let source = format!(
+            "function f(x: Integer) -> Unit\n match x with\n{arms_text}\n end match\nend function\n"
+        );
+        let checked = benitoite::pipeline::check_text(
+            name,
+            source.as_bytes(),
+            benitoite::pipeline::CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count(),
+            usize::from(!accepted),
+            "{:?}",
+            checked.diagnostics
+        );
+        if !accepted {
+            assert_eq!(checked.diagnostics.len(), 1);
+            assert_eq!(
+                checked.diagnostics[0].code,
+                Some(benitoite::diag::DiagCode::E0601)
+            );
+            assert_eq!(
+                checked.diagnostics[0].primary.as_ref().unwrap().text,
+                "`0` is not matched"
+            );
+        }
+        let lexed = lexer::lex(FileId(0), source.as_bytes());
+        assert!(lexed.diagnostics.is_empty());
+        let parsed = parser::parse(
+            FileId(0),
+            SourceKind::User,
+            source.as_bytes(),
+            newline::resolve_newlines(lexed.tokens),
+            lexed.comments,
+            &mut IdGen::new(),
+        );
+        assert!(parsed.diagnostics.is_empty());
+        let a::Item::Fn(f) = &parsed.module.decls[0].item else {
+            panic!("function")
+        };
+        let a::Stmt::Expr(a::Expr::Match(m)) = &f.body.as_ref().unwrap().stmts[0] else {
+            panic!("match")
+        };
+        let end = |e: &a::RangeEnd| {
+            let a::Literal::Int { radix, digits } = &e.lit else {
+                panic!("integer")
+            };
+            let n = i128::from_str_radix(digits, *radix).unwrap();
+            i64::try_from(if e.negative { -n } else { n }).unwrap()
+        };
+        let arms = m
+            .arms
+            .iter()
+            .map(|a| ArmPats {
+                guarded: a.guard.is_some(),
+                alts: a
+                    .patterns
+                    .iter()
+                    .map(|p| {
+                        let a::Pattern::Range(r) = p else {
+                            panic!("range")
+                        };
+                        Pat::IntegerRange(end(&r.lo), end(&r.hi))
+                    })
+                    .collect(),
+            })
+            .collect::<Vec<_>>();
+        let expected = result(&ty, &arms, &table, &mut budget, &view);
+        assert_eq!(
+            expected,
+            json!({"exhaustive":accepted,"uncovered":if accepted { Value::Null } else { json!("_") },"unreachable":[]})
+        );
+        cases.push(json!({"name":name,"package":"root","coverageView":[],"decls":[],"ty":ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),"pattern":{"kind":"wild"},"expected":expected,"irrefutable":true,"irrefutableWitness":null}));
+        let program_match = json!({"node":m.id.0,"package":"root","coverageView":[],"scrutineeTy":{"base":{"name":"Integer"}},"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(|p| { let Pat::IntegerRange(lo,hi) = p else { panic!("range") }; json!({"range":{"lo":{"integer":{"value":lo}},"hi":{"integer":{"value":hi}}}}) }).collect::<Vec<_>>()})).collect::<Vec<_>>()});
+        matches.push(program_match);
+        fs::write(output.join(format!("{name}.bnt")), source).unwrap();
+    }
+    assert_eq!(budget.stopped, 0);
+    fs::write(output.join("coverage.json"), serde_json::to_vec_pretty(&json!({"version":4,"seedXor":0,"randomCases":0,"boundaryCases":3,"kinds":{},"cases":cases})).unwrap()).unwrap();
+    // プログラムの入口は受理済みの照合を要求する。穴は独立した拒否入力として渡す。
+    let hole = matches.pop().unwrap();
+    for (name, matches) in [("accepted", matches), ("hole", vec![hole])] {
+        fs::write(output.join(format!("{name}-program.json")), serde_json::to_vec_pretty(&json!({"version":4,"inputs":[{"group":"golden","name":name,"matches":matches,"bindings":[]}]})).unwrap()).unwrap();
+        fs::write(output.join(format!("{name}-builtins.json")), serde_json::to_vec_pretty(&json!({"version":4,"inputs":[{"group":"golden","name":name,"prims":[],"effects":[],"resources":[],"dataDecls":[],"summaries":[],"statePure":[],"supplementalData":[],"supplementalPrims":[]}]})).unwrap()).unwrap();
+    }
+}
+
+// 判定 API の予算だけでは届かない、実ソースの先頭・末尾・不一致の選択を守る。
+#[test]
+fn scalar_source_arms_preserve_selection() {
+    use benitoite::pipeline::{self, CheckOptions};
+    use benitoite::runtime::run::{self, EndKind, NoInterrupt, OutputTarget, RunEnv, StdinSource};
+    use std::sync::{Arc, Mutex};
+    let n = if cfg!(feature = "gc-stress") { 64 } else { 900 };
+    let mut source = String::from("import Benitoite.Unofficial.IO.Console\n");
+    for string in [false, true] {
+        let name = if string { "text" } else { "integer" };
+        let ty = if string { "String" } else { "Integer" };
+        source.push_str(&format!(
+            "function {name}(x: {ty}) -> Integer\n return match x with\n"
+        ));
+        for i in 0..n {
+            let pat = if string {
+                format!("\"s{i}\"")
+            } else {
+                i.to_string()
+            };
+            source.push_str(&format!(" case {pat} -> {i}\n"));
+        }
+        source.push_str(" case _ -> -1\n end match\nend function\n");
+    }
+    source.push_str("function main() -> Unit uses Console.Write\n");
+    for (name, argument) in [
+        ("integer", "0".to_owned()),
+        ("integer", (n - 1).to_string()),
+        ("integer", "-1".to_owned()),
+        ("text", "\"s0\"".to_owned()),
+        ("text", format!("\"s{}\"", n - 1)),
+        ("text", "\"missing\"".to_owned()),
+    ] {
+        source.push_str(&format!(
+            " Console.writeLine(Integer.toString({name}({argument})))\n"
+        ));
+    }
+    source.push_str("end function\n");
+    let checked = pipeline::check_text(
+        "scalar-arms.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let core = pipeline::desugar_checked(checked.program.as_ref().unwrap()).unwrap();
+    let compiled = pipeline::compile(&core, checked.sources).unwrap();
+    let stdout = Arc::new(Mutex::new(Vec::new()));
+    let stderr = Arc::new(Mutex::new(Vec::new()));
+    let end = run::run_program(
+        &compiled,
+        RunEnv {
+            input: benitoite::runtime::io::services::RunInput {
+                arguments: vec![],
+                working_directory: "/".into(),
+                script_directory: "/".into(),
+            },
+            stdin: StdinSource::Empty,
+            stdout: OutputTarget::Capture(Arc::clone(&stdout)),
+            stderr: OutputTarget::Capture(Arc::clone(&stderr)),
+            interrupt: Box::new(NoInterrupt),
+            parts: None,
+            mode: benitoite::vm::ExecMode::Direct,
+            vm: benitoite::vm::VmConfig::default(),
+            heap: benitoite::runtime::heap::HeapConfig::default(),
+            dev_panic_after_first_write: false,
+        },
+    );
+    assert_eq!(end.end, EndKind::Returned, "{end:?}");
+    assert_eq!(end.exit_code, 0, "{end:?}");
+    assert!(end.reports.is_empty(), "{end:?}");
+    assert_eq!(
+        *stdout.lock().unwrap(),
+        format!("0\n{}\n-1\n0\n{}\n-1\n", n - 1, n - 1).as_bytes()
+    );
+    assert!(stderr.lock().unwrap().is_empty());
 }

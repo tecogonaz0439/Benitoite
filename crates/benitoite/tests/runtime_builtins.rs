@@ -654,6 +654,167 @@ end function
 #[path = "fixtures/scope.rs"]
 mod scope_cases;
 
+// 関門: 同じ独立入力をLeanの小モデルへも渡し、全保存欄・失敗の優先順・Showを照合する。
+// 既存RangeはIntegerだけが対象で、Listの保持や成功要素の射影を通らない。
+#[test]
+fn checked_lists_preserve_inputs_and_error_boundaries() {
+    let cases: Vec<serde_json::Value> =
+        serde_json::from_str(include_str!("fixtures/checked-lists.json")).unwrap();
+    let mut source = String::from(
+        "import Benitoite.Unofficial.Range\nimport Benitoite.Unofficial.NonEmptyList\nimport Benitoite.Trait\nfunction main() -> Result[Unit, String]\n",
+    );
+    for (i, case) in cases.iter().enumerate() {
+        let field = |name| case.get(name).unwrap();
+        let xs = field("values");
+        let length = xs.as_array().unwrap().len();
+        source.push_str(&format!("bind values{i}: List[Integer] <- {xs}\n"));
+        let result = field("result").as_str().unwrap();
+        let (call, success, error) = match field("kind").as_str().unwrap() {
+            "length" => {
+                let lo = field("minimum");
+                let hi = field("maximum");
+                (
+                    format!("Range.checkLength(minimum: {lo}, maximum: {hi}, values: values{i})"),
+                    format!(
+                        "Range.lengthMinimum(v) = {lo} and Range.lengthMaximum(v) = {hi} and Range.checkedLength(v) = {length} and Range.lengthValues(v) = {xs}"
+                    ),
+                    if result == "InvalidBounds" {
+                        format!(
+                            "Range.LengthError.InvalidBounds(lo, hi) -> lo = {lo} and hi = {hi} and Trait.Show.show(e) = \"InvalidBounds({lo}, {hi})\""
+                        )
+                    } else {
+                        format!(
+                            "Range.LengthError.OutOfRange(lo, hi, n) -> lo = {lo} and hi = {hi} and n = {length} and Trait.Show.show(e) = \"OutOfRange({lo}, {hi}, {length})\""
+                        )
+                    },
+                )
+            }
+            "index" => {
+                let index = field("index");
+                (
+                    format!("Range.checkIndex(index: {index}, values: values{i})"),
+                    format!(
+                        "Range.indexValue(v) = {index} and Range.indexValues(v) = {xs} and Range.get(v) = {}",
+                        case.get("element").unwrap_or(&serde_json::Value::Null)
+                    ),
+                    format!(
+                        "Range.IndexError.OutOfBounds(i, n) -> i = {index} and n = {length} and Trait.Show.show(e) = \"OutOfBounds({index}, {length})\""
+                    ),
+                )
+            }
+            "nonempty" => (
+                format!("NonEmptyList.fromList(values{i})"),
+                if result == "ok" {
+                    format!(
+                        "NonEmptyList.toList(v) = {xs} and NonEmptyList.head(v) = {} and NonEmptyList.tail(v) = {} and NonEmptyList.toList(NonEmptyList.map(value: v, f: lambda(value) return value * 2)) = {}",
+                        field("head"),
+                        field("tail"),
+                        field("mapped")
+                    )
+                } else {
+                    String::new()
+                },
+                "NonEmptyList.EmptyListError.EmptyList -> Trait.Show.show(e) = \"EmptyList\""
+                    .into(),
+            ),
+            kind => panic!("unknown case kind {kind}"),
+        };
+        let branches = if result == "ok" {
+            format!("case Result.Ok(v) -> {success}\ncase Result.Error(_) -> false")
+        } else {
+            let other = if field("kind") == "length" {
+                "case _ -> false\n"
+            } else {
+                ""
+            };
+            format!(
+                "case Result.Ok(_) -> false\ncase Result.Error(e) -> match e with\ncase {error}\n{other}end match"
+            )
+        };
+        source.push_str(&format!("bind good{i} <- match {call} with\n{branches}\nend match\nif not good{i} then return Result.Error(\"case {i}\") end if\n"));
+    }
+    source.push_str("return Result.Ok(())\nend function\n");
+    let program = compile(&source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let end = run::run_program(&program, environment(mode, Arc::default()));
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
+        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
+    }
+}
+
+// 関門: 純粋な小モデルでは扱わない要素の共有・効果の順序・Failの伝播を実行境界で守る。
+// mapの先頭の二重評価、後続の先行実行、要素の複製を独立した観測値で検出する。
+#[test]
+fn checked_lists_share_elements_and_map_effects_in_order() {
+    let source = r#"
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.NonEmptyList
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Process
+function main() -> Result[Unit, String] uses State, Process.Exit
+  bind cell <- Reference.new(10)
+  bind original <- [cell]
+  bind length <- try Range.checkLength(minimum: 1, maximum: 1, values: original) or die
+  bind index <- try Range.checkIndex(index: 0, values: original) or die
+  bind nonempty <- try NonEmptyList.fromList(original) or die
+  Reference.set(reference: cell, value: 42)
+  bind kept <- try List.head(Range.lengthValues(length)) or die
+  bind indexed <- try List.head(Range.indexValues(index)) or die
+  if Reference.get(kept) <> 42 or Reference.get(indexed) <> 42 or Reference.get(Range.get(index)) <> 42 or Reference.get(NonEmptyList.head(nonempty)) <> 42 then
+    return Result.Error("elements were copied")
+  end if
+  if not List.isEmpty(NonEmptyList.tail(nonempty)) then return Result.Error("singleton tail") end if
+  bind log <- Reference.new([])
+  bind input <- try NonEmptyList.fromList([3, 1, 3]) or die
+  bind mapped <- NonEmptyList.map(value: input, f: lambda(value)
+    Reference.set(reference: log, value: List.append(xs: Reference.get(log), x: value))
+    return Integer.toString(value)
+  end lambda)
+  if Reference.get(log) <> [3, 1, 3] or NonEmptyList.toList(mapped) <> ["3", "1", "3"] then
+    return Result.Error("map order or result")
+  end if
+  bind failedInput <- try NonEmptyList.fromList([1, 2, 3]) or die
+  Reference.set(reference: log, value: [])
+  bind failed <- Failure.toResult(body: lambda()
+    return NonEmptyList.map(value: failedInput, f: lambda(value)
+      Reference.set(reference: log, value: List.append(xs: Reference.get(log), x: value))
+      if value = 2 then return Failure.raise("middle") end if
+      return value
+    end lambda)
+  end lambda)
+  bind failureKept <- match failed with
+    case Result.Error(e) -> e = "middle"
+    case Result.Ok(_) -> false
+  end match
+  if not failureKept or Reference.get(log) <> [1, 2] then return Result.Error("map continued after Fail") end if
+  Reference.set(reference: log, value: [])
+  bind headFailed <- Failure.toResult(body: lambda()
+    return NonEmptyList.map(value: failedInput, f: lambda(value)
+      Reference.set(reference: log, value: List.append(xs: Reference.get(log), x: value))
+      if value = 1 then return Failure.raise("head") end if
+      return value
+    end lambda)
+  end lambda)
+  bind headFailureKept <- match headFailed with
+    case Result.Error(e) -> e = "head"
+    case Result.Ok(_) -> false
+  end match
+  if not headFailureKept or Reference.get(log) <> [1] then return Result.Error("map continued after head Fail") end if
+  return Result.Ok(())
+end function
+"#;
+    let program = compile(source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let end = run::run_program(&program, environment(mode, Arc::default()));
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
+        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
+    }
+}
+
 // 四問: 独立入力で成功時の全保存欄と六失敗・優先順・Showを公開実行経路で守る。
 // 静的拒否の表だけでは、私有builtinの配線・Result/Pair・標準ラッパー・射影を通らない。
 // 通常の引数を通じて実行時Errorを観察し、差し込み口は増やさない。
@@ -756,5 +917,181 @@ end function
         assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
         assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
         assert!(output.lock().unwrap().is_empty());
+    }
+}
+
+// 関門: 標準ソースの辞書選択と全ての損失なし変換を、独立した値の期待で守る。
+#[test]
+fn log_scalar_conversions_use_explicit_instances_and_evaluate_inputs_once() {
+    let source = r#"
+import Benitoite.Unofficial.IO.Console
+record Custom
+ value: Integer
+end record
+implement Log.ToLogValue[Custom]
+ function toLogValue(value: Custom) -> Log.Value
+   return Log.Value.Integer(Custom.value(value) + 1)
+ end function
+end implement
+function input() -> Custom uses Console.Write
+ Console.write("input;")
+ return Custom(value: 8)
+end function
+function main() -> Result[Unit, String] uses Console.Write
+ bind actual <- [
+   Log.Attribute.value(Log.attribute(key: "x", value: "text")),
+   Log.Attribute.value(Log.attribute(key: "x", value: false)),
+   Log.Attribute.value(Log.attribute(key: "x", value: -9223372036854775808)),
+   Log.Attribute.value(Log.attribute(key: "x", value: 18446744073709551615u64)),
+   Log.Attribute.value(Log.attribute(key: "x", value: -0.0)),
+   Log.Attribute.value(Log.attribute(key: "x", value: -128s8)),
+   Log.Attribute.value(Log.attribute(key: "x", value: -32768s16)),
+   Log.Attribute.value(Log.attribute(key: "x", value: -2147483648s32)),
+   Log.Attribute.value(Log.attribute(key: "x", value: 255u8)),
+   Log.Attribute.value(Log.attribute(key: "x", value: 65535u16)),
+   Log.Attribute.value(Log.attribute(key: "x", value: 4294967295u32)),
+   Log.Attribute.value(Log.attribute(key: "x", value: 1.5f32)),
+   Log.Attribute.value(Log.attribute(key: "x", value: input()))]
+ bind expected <- [Log.Value.Text("text"), Log.Value.Boolean(false), Log.Value.Integer(-9223372036854775808),
+   Log.Value.UnsignedInteger(18446744073709551615u64), Log.Value.Float(-0.0),
+   Log.Value.Integer(-128), Log.Value.Integer(-32768), Log.Value.Integer(-2147483648),
+   Log.Value.Integer(255), Log.Value.Integer(65535), Log.Value.Integer(4294967295),
+   Log.Value.Float(1.5), Log.Value.Integer(9)]
+ return if actual = expected then Result.Ok(()) else Result.Error("wrong scalar conversion") end if
+end function
+"#;
+    let program = compile(source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let output = Arc::new(Mutex::new(Vec::new()));
+        let end = run::run_program(&program, environment(mode, Arc::clone(&output)));
+        assert_eq!(end.end, EndKind::Returned, "{end:?}");
+        assert_eq!(end.exit_code, 0);
+        assert_eq!(*output.lock().unwrap(), b"input;");
+        assert!(end.reports.is_empty(), "{end:?}");
+    }
+}
+
+// 外部writerの完了をidleまで止め、バッファの待ちを偶然のスレッド順に依存させない。
+#[derive(Debug)]
+struct ReleaseOutputOnIdle {
+    inner: Box<dyn WorkerExec>,
+    release: mpsc::Sender<()>,
+    observed: Arc<Mutex<bool>>,
+}
+impl WorkerExec for ReleaseOutputOnIdle {
+    fn wakeup(&self) -> Option<Wakeup> {
+        self.inner.wakeup()
+    }
+    fn submit(&mut self, job: WorkerJob) {
+        self.inner.submit(job);
+    }
+    fn try_recv(&mut self) -> Option<Completion> {
+        self.inner.try_recv()
+    }
+    fn idle(&mut self, deadline: Option<u64>) -> IdleWake {
+        *self.observed.lock().unwrap() = true;
+        let _sent = self.release.send(());
+        self.inner.idle(deadline)
+    }
+}
+
+// 関門: 大きい記録がバッファの待ちを通っても、同じstderrへ一回ずつ順番に届く。
+// 大きさは既存の1 MiBの未転送量の境界を越すために必要であり、要素数や再帰は増やさない。
+#[test]
+fn log_large_records_share_console_buffer_and_final_flush() {
+    let source = r#"
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Log, Console.Write
+ bind text <- String.repeat(s: "x", n: 2097152)
+ bind location <- SourceLocation.Location(file: "app", line: 1, column: 1)
+ Console.writeError("before\n")
+ Log.info(message: text, attributes: [], location: location)
+ Log.info(message: text, attributes: [], location: location)
+ Console.writeError("after\n")
+end function
+"#;
+    let program = compile(source);
+    let line = format!(
+        "level=INFO source=\"app:1:1\" message=\"{}\"\n",
+        "x".repeat(2_097_152)
+    );
+    let expected = format!("before\n{line}{line}after\n");
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let output = Arc::new(Mutex::new(Vec::new()));
+        let error = Arc::new(Mutex::new(Vec::new()));
+        let held = Arc::clone(&error);
+        let (release, receive) = mpsc::channel();
+        let (ready, initialized) = mpsc::channel();
+        let gate = std::thread::spawn(move || {
+            let guard = held.lock().unwrap();
+            ready.send(()).unwrap();
+            let timed_out = receive
+                .recv_timeout(std::time::Duration::from_secs(30))
+                .is_err();
+            drop(guard);
+            timed_out
+        });
+        initialized.recv().unwrap();
+        let script = ScheduleHandle::new([], false);
+        let mut parts = script.parts();
+        let observed = Arc::new(Mutex::new(false));
+        parts.workers = Box::new(ReleaseOutputOnIdle {
+            inner: parts.workers,
+            release: release.clone(),
+            observed: Arc::clone(&observed),
+        });
+        let mut env = environment(mode, Arc::clone(&output));
+        env.stderr = OutputTarget::Capture(Arc::clone(&error));
+        env.parts = Some(parts);
+        let end = run::run_program(&program, env);
+        let _sent = release.send(());
+        assert!(!gate.join().unwrap(), "output gate timed out");
+        assert!(*observed.lock().unwrap(), "output did not wait");
+        assert!(script.record().error.is_none(), "{:?}", script.record());
+        assert_eq!(end.end, EndKind::Returned, "{end:?}");
+        assert_eq!(end.exit_code, 0);
+        assert!(output.lock().unwrap().is_empty());
+        assert_eq!(*error.lock().unwrap(), expected.as_bytes());
+        assert!(end.reports.is_empty(), "{end:?}");
+    }
+}
+
+// 関門: 外部の出力先の失敗をLogもConsoleと同じR0202/終了1として返し、握りつぶさない。
+#[test]
+fn log_output_failure_uses_the_console_stop_and_exit_status() {
+    for operation in [
+        "Console.writeErrorLine(text)",
+        "Log.info(message: text, attributes: [], location: SourceLocation.here())",
+        "Log.withTextLogger(minimum: Log.Level.Debug, body: lambda() Log.debug(message: text, attributes: [], location: SourceLocation.here()) end lambda)",
+    ] {
+        let source = format!(
+            "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit uses Log, Console.Write\n bind text <- String.repeat(s: \"x\", n: 2097152)\n {operation}\n {operation}\nend function\n"
+        );
+        let program = compile(&source);
+        for mode in [ExecMode::Direct, ExecMode::Request] {
+            let output = Arc::new(Mutex::new(Vec::new()));
+            let error = Arc::new(Mutex::new(Vec::new()));
+            // Captureは外部の出力先である。公開の出力先を失敗させ、本番のwriterを通す。
+            let poisoned = Arc::clone(&error);
+            let result = std::panic::catch_unwind(move || {
+                let _guard = poisoned.lock().unwrap();
+                panic!("poison the external output target");
+            });
+            assert!(result.is_err());
+            let mut env = environment(mode, Arc::clone(&output));
+            env.stderr = OutputTarget::Capture(error);
+            let end = run::run_program(&program, env);
+            assert_eq!(end.end, EndKind::Stopped, "{operation}: {end:?}");
+            assert_eq!(end.exit_code, 1, "{operation}: {end:?}");
+            assert_eq!(
+                end.reports
+                    .iter()
+                    .filter_map(|d| d.code)
+                    .collect::<Vec<_>>(),
+                [benitoite::diag::DiagCode::R0202],
+                "{operation}: {end:?}"
+            );
+            assert!(output.lock().unwrap().is_empty());
+        }
     }
 }

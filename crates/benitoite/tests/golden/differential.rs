@@ -140,20 +140,29 @@ fn compare_on_stage(
     if let Err(error) = prepare_reference() {
         return Comparison::Failed(format!("reference preparation failed: {error}"));
     }
-    let mut io = ReferenceIo {
-        input,
-        stdout: Vec::new(),
-        stderr: Vec::new(),
-    };
-    let reference = refinterp::run(&core, &mut io);
+    let (reference, ref_stdout, ref_stderr) = run_reference(&core, input);
     compare_results(
         &program,
         &sources,
         &vm,
         (&stdout.lock().unwrap(), &stderr.lock().unwrap()),
         reference,
-        (&io.stdout, &io.stderr),
+        (&ref_stdout, &ref_stderr),
     )
+}
+
+/// 既存の独立参照評価と固定 IO の準備を、実行境界の検査から共有する。
+pub fn run_reference(
+    core: &benitoite::ir::core_ir::CoreProgram,
+    input: RunInput,
+) -> (RefOutcome, Vec<u8>, Vec<u8>) {
+    let mut io = ReferenceIo {
+        input,
+        stdout: Vec::new(),
+        stderr: Vec::new(),
+    };
+    let outcome = refinterp::run(core, &mut io);
+    (outcome, io.stdout, io.stderr)
 }
 
 /// 実行結果の比較。ランダムなプログラムの検出力の検査でも同じ判定を使う。

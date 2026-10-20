@@ -271,23 +271,9 @@ theorem directHeads_captures (fs : Exprs) :
         | some h => simpa [hd] using directCallee_captures p hd
       · exact directHeads_captures fs h hm p
 
-theorem BuilderPureRef.captures (r : BuilderPureRef) (p : Nat → Prop) :
-    Val.Captures p r.toVal := by
-  cases r <;> simp [BuilderPureRef.toVal, BuilderPrimRef.toVal, Val.Captures]
-
-theorem builderFinish_captures (op : BuilderOp) (r : BuilderRefs) (i : Nat) {vs}
+theorem builderFinish_captures (op : BuilderOp) (r : BuilderKind) (i : Nat) {vs}
     (hv : ∀ p, Vals.Captures p vs) (p : Nat → Prop) :
     Comp.Captures p (builderFinish op i r vs) := by
-  cases r <;> cases op <;> cases vs with
-  | nil => simp [builderFinish, Comp.Captures, Val.Captures, Vals.Captures,
-      BuilderRefs.cells, BuilderRefs.lengthRef, BuilderPrimRef.toVal, BuilderPureRef.captures]
-  | cons v vs =>
-      cases vs <;> simp only [builderFinish]
-      all_goals first
-        | (solve | simp [Comp.Captures, Val.Captures])
-        | (simp only [builderCombine, Comp.Captures, Val.Captures, Vals.Captures,
-            BuilderRefs.cells, BuilderPrimRef.toVal, Val.rename, BuilderPureRef.captures,
-            true_and, and_true]
-           exact Val.captures_free_rename (fun q => (hv q).1) _)
+  simpa only [builderFinish, Comp.Captures] using hv p
 
 end Benitoite.Surface

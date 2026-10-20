@@ -1,4 +1,5 @@
 import Benitoite.Release.WellFormed
+import Benitoite.Release.BuilderExec
 
 /-!
 # 実行の規則（段階 B）
@@ -36,6 +37,7 @@ abbrev Cont := List Frame
 
 /-- ストアの中身。 -/
 inductive Cell where
+  | builder (contents : BuilderContents)
   | val (v : Val)
   | thunk (m : Comp)
   | done (v : Val)
@@ -112,6 +114,17 @@ def MatchPrefix (v : Val) (arms : List Arm) (next : Nat) : Prop :=
 
 /-- 遷移。 -/
 inductive Step (P : Program) (B : Builtins) : State → Option Event → State → Prop
+  | E_BuilderNew {kind body k σ l} :
+      σ l = none →
+      Step P B (.run (.builderLet kind body) k σ) none
+        (.run (body.subst builderValueSubst (builderLocalSubst l)) k (σ.set l (.builder kind.empty)))
+  | E_BuilderOp {kind op l args k σ c c' v} :
+      σ l = some (.builder c) → builderApply op c args = some (.value c' v) →
+      Step P B (.run (.builderOp kind op (.loc l) args) k σ) none
+        (.run (.ret v) k (σ.set l (.builder c')))
+  | E_BuilderErr {kind op l args k σ c r} :
+      σ l = some (.builder c) → builderApply op c args = some (.error r) →
+      Step P B (.run (.builderOp kind op (.loc l) args) k σ) none (.error [r] k σ)
   | E_Let {m n k σ} : Step P B (.run (.letIn m n) k σ) none (.run m (.letF n :: k) σ)
   | E_Return {v n k σ} :
       Step P B (.run (.ret v) (.letF n :: k) σ) none (.run (n.instantiate [v]) k σ)
@@ -344,6 +357,18 @@ def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : Err
 位置による実行の遷移関係を `Step` に定義する（設計書 01-12「実行の規則」）。 -/
 def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option ErrKind)
     (fresh : Store → Nat) : State → Option (Option Event × State)
+  | .run (.builderLet kind body) k σ =>
+      let l := fresh σ
+      some (none, .run (body.subst builderValueSubst (builderLocalSubst l)) k (σ.set l (.builder kind.empty)))
+  | .run (.builderOp _ op (.loc l) args) k σ =>
+      match σ l with
+      | some (.builder c) =>
+          match builderApply op c args with
+          | some (.value c' v) => some (none, .run (.ret v) k (σ.set l (.builder c')))
+          | some (.error r) => some (none, .error [r] k σ)
+          | none => none
+      | _ => none
+  | .run (.builderOp _ _ (.bound _) _) _ _ => none
   | .run (.letIn m n) k σ => some (none, .run m (.letF n :: k) σ)
   | .run (.ret v) (.letF n :: k) σ => some (none, .run (n.instantiate [v]) k σ)
   | .run (.ret v) (.mark :: k) σ => some (none, .run (.ret v) k σ)
@@ -533,13 +558,13 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
   /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
   | K_Handle {R ε εc h k t b ε0 Re} :
-      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ [] [] R h t εc →
+      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ.hideBuilders [] [] R h t εc →
       Ty.WF 0 t →
       ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
   /-- Fail節の出力を、捕捉する本体の上限へ混ぜない。 -/
   | K_Handle_Fail {R ε ec Rest E h k t b ε0 Re} :
       ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub Rest ε → NoFail Qempty Rest →
-      HasFailureClause P B Ψ Qempty [] [] E R h t ec → Eff.Sub ec ε → Ty.WF 0 t →
+      HasFailureClause P B Ψ.hideBuilders Qempty [] [] E R h t ec → Eff.Sub ec ε → Ty.WF 0 t →
       ContTy P B Ψ R (Eff.union (Eff.singleFail E) Rest) (.handleF h :: k) t b ε0 Re
   /-- K-Drop。捨てる継続の解放の枠を、この位置で実行できるように、κ の継続の型のエフェクトが `State` を
   含むなら、ε も `State` を含む（01-12「確かめる性質」）。 -/
@@ -562,8 +587,9 @@ def EndsWithHandle (k : Cont) : Prop := ∃ k1 h, k = k1 ++ [.handleF h]
 
 /-- ストアの中身の型付け（01-12「確かめる性質」の箇条）。 -/
 def CellOk (P : Program) (B : Builtins) (Ψ : StoreTy) (l : Nat) : Cell → Prop
+  | .builder c => ∃ k, Ψ l = some (.builder k) ∧ BuilderCellOk P B Ψ k c
   | .val v => ∃ a, Ψ l = some (.ref a) ∧ HasTypeV P B Ψ [] [] v a
-  | .thunk m => ∃ a, Ψ l = some (.lazy a) ∧ HasTypeC P B Ψ [] [] none m a Eff.empty
+  | .thunk m => ∃ a, Ψ l = some (.lazy a) ∧ HasTypeC P B Ψ.hideBuilders [] [] none m a Eff.empty
   | .done v => ∃ a, Ψ l = some (.lazy a) ∧ HasTypeV P B Ψ [] [] v a
   | .cont k => ∃ b t ε r, Ψ l = some (.cont b t ε r) ∧ EndsWithHandle k ∧
       ∃ R' ε', ContTy P B Ψ R' ε' k b t ε r
@@ -571,6 +597,7 @@ def CellOk (P : Program) (B : Builtins) (Ψ : StoreTy) (l : Nat) : Cell → Prop
 
 /-- ストアの場所の型は、型の変数を含まない。 -/
 def LocTy.WF : LocTy → Prop
+  | .builder k => match k with | .list a => Ty.WF 0 a | _ => True
   | .ref a => Ty.WF 0 a
   | .lazy a => Ty.WF 0 a
   | .cont b t e r => Ty.WF 0 b ∧ Ty.WF 0 t ∧ (∀ x, r = some x → Ty.WF 0 x) ∧ Eff.WF 0 e ∧ Eff.Canonical e
@@ -590,7 +617,7 @@ def BuiltinOnly (P : Program) (B : Builtins) (ε : Eff) : Prop :=
 /-! ## 状態の中の項が閉じていること -/
 
 def Frame.Closed : Frame → Prop
-  | .letF n => Comp.VarsIn 0 (fun _ => True) n
+  | .letF n => Comp.VarsIn 0 (fun _ => True) n 1
   | .mark => True
   | .update _ => True
   | .release v => Val.VarsIn 0 (fun _ => True) v
@@ -602,6 +629,8 @@ def Frame.Closed : Frame → Prop
 def Cont.Closed (k : Cont) : Prop := ∀ f ∈ k, f.Closed
 
 def Cell.Closed : Cell → Prop
+  | .builder (.string _) | .builder (.bytes _) => True
+  | .builder (.list a vs) => Ty.VarsIn 0 (fun _ => True) a ∧ Val.VarsInList 0 (fun _ => True) vs
   | .val v => Val.VarsIn 0 (fun _ => True) v
   | .thunk m => Comp.VarsIn 0 (fun _ => True) m
   | .done v => Val.VarsIn 0 (fun _ => True) v

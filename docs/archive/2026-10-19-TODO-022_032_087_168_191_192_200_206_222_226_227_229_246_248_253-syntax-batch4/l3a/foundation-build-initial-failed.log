@@ -1,0 +1,109 @@
+✔ [62/276] Built Benitoite.Release.Syntax (595ms)
+✔ [64/276] Built Benitoite.Surface.BuilderSyntax:c.o (74ms)
+✔ [65/276] Built Benitoite.Release.Syntax:c.o (201ms)
+✔ [66/276] Built Benitoite.Release.Subst (415ms)
+✔ [69/276] Built Benitoite.Release.Subst:c.o (264ms)
+✔ [70/276] Built Benitoite.Release.SubstExamples (378ms)
+✔ [71/276] Built Benitoite.Release.Order.Shift (378ms)
+✔ [72/276] Built Benitoite.Release.LocalRef (406ms)
+✔ [73/276] Built Benitoite.Release.Typing (1.3s)
+✔ [76/276] Built Benitoite.Release.Typing:c.o (123ms)
+✔ [77/276] Built Benitoite.Release.TypeRegularity (427ms)
+✔ [79/276] Built Benitoite.Release.Lemmas.Basic (332ms)
+✔ [83/276] Built Benitoite.Release.TypeBounds (609ms)
+✔ [85/276] Built Benitoite.Release.SubstEnv (381ms)
+✔ [87/276] Built Benitoite.Release.TypeCongruence (468ms)
+✔ [89/276] Built Benitoite.Release.TypeVariables (572ms)
+✔ [91/276] Built Benitoite.Release.WellFormed (356ms)
+✔ [94/276] Built Benitoite.Release.TypeScopedSubst (428ms)
+✔ [102/276] Built Benitoite.Release.Semantics:c.o (117ms)
+✔ [103/276] Built Benitoite.Release.Lemmas.TyLemmas (353ms)
+✔ [105/276] Built Benitoite.Release.Examples (843ms)
+✔ [106/276] Built Benitoite.Release.Lemmas.Rename (3.4s)
+✔ [132/276] Built Benitoite.Release.Lemmas.TySubst:c.o (103ms)
+✔ [133/276] Built Benitoite.Release.Lemmas.Closed (2.4s)
+✔ [180/276] Built Benitoite.Surface.Builders:c.o (199ms)
+✔ [181/276] Built Benitoite.Release.CoverageShow (1.2s)
+✔ [183/276] Built Benitoite.Surface.FiniteExamples (945ms)
+✔ [184/276] Built Benitoite.Surface.NoFailCheck (1.1s)
+✔ [186/276] Built Benitoite.Surface.Lemmas.BlockSequence (1.4s)
+✔ [187/276] Built Benitoite.Surface.NoFailCheckExamples (495ms)
+✔ [188/276] Built Benitoite.Release.Lemmas.CoverageRuntime (1.7s)
+✔ [189/276] Built Benitoite.Surface.AdmissibleCheck (799ms)
+✔ [191/276] Built Benitoite.Surface.SingleFailCheck (963ms)
+✔ [193/276] Built Benitoite.Surface.BuilderCheck (517ms)
+✔ [194/276] Built Benitoite.Surface.BuilderCheck:c.o (261ms)
+✔ [195/276] Built Benitoite.Release.Lemmas.Progress (3.3s)
+✖ [199/276] Building Benitoite.Release.Model (589ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/Model.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Model.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/Model.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Model.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/Model.setup.json --json
+error: Benitoite/Release/Model.lean:385:0: cannot use specified measure for structural recursion:
+  its type Benitoite.Release.HasTypeVQ is an inductive family and indices are not variables
+    HasTypeVQ P B Ψ Qempty C Γ v a
+✔ [201/276] Built Benitoite.Surface.Check (1.8s)
+✔ [202/276] Built Benitoite.Exchange.Syntax (5.2s)
+✔ [204/276] Built Benitoite.Surface.CheckTables (720ms)
+✔ [205/276] Built Benitoite.Surface.CheckCounterexamples (745ms)
+✔ [207/276] Built Benitoite.Surface.CheckLemmas (811ms)
+✔ [208/276] Built Benitoite.Exchange.Version (1.0s)
+✔ [210/276] Built Benitoite.Surface.CheckComputeAtoms (602ms)
+✔ [211/276] Built Benitoite.Release.CoverageExtension (6.7s)
+✖ [212/276] Building Benitoite.Surface.CheckComputeCases (1.3s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/CheckComputeCases.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeCases.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeCases.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckComputeCases.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckComputeCases.setup.json --json
+error: Benitoite/Surface/CheckComputeCases.lean:16:67: Invalid field `params_atoms`: The environment does not contain `Benitoite.Release.BuilderOp.params_atoms`, so it is not possible to project the field `params_atoms` from an expression
+  o
+of type `BuilderOp`
+error: Benitoite/Surface/CheckComputeCases.lean:18:25: Invalid field `result_atoms`: The environment does not contain `Benitoite.Release.BuilderOp.result_atoms`, so it is not possible to project the field `result_atoms` from an expression
+  o
+of type `BuilderOp`
+✔ [230/276] Built Benitoite.Release.CoverageIntegerExamples (1.1s)
+✔ [231/276] Built Benitoite.Surface.CheckToolsExamples (2.1s)
+✖ [232/276] Building Benitoite.Exchange.Convert (1.8s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Exchange/Convert.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Exchange/Convert.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Exchange/Convert.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Exchange/Convert.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Exchange/Convert.setup.json --json
+error: Benitoite/Exchange/Convert.lean:278:56: Unknown identifier `Benitoite.Surface.BuilderKind`
+error: Benitoite/Exchange/Convert.lean:298:38: Unknown identifier `Benitoite.Surface.BuilderOp`
+warning: Benitoite/Exchange/Convert.lean:312:14: declaration uses `sorry`
+✔ [257/276] Built Benitoite.Surface.Lemmas.Typing (10s)
+✔ [263/276] Built Benitoite.Surface.Check:c.o (7.2s)
+✖ [270/276] Building Benitoite.Surface.Lemmas.BuilderCapture (4.9s)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderCapture.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderCapture.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Lemmas/BuilderCapture.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/Lemmas/BuilderCapture.setup.json --json
+error: Benitoite/Surface/Lemmas/BuilderCapture.lean:84:80: Application type mismatch: The argument
+  hb
+has type
+  HasTypeCQ P B Ψ.hideBuilders Q C (binds ps✝ ++ hideConts Γ) (some r✝) body✝ r✝ ε✝
+but is expected to have type
+  HasTypeCQ P B Ψ Q ?m.1689 ?m.1690 ?m.1691 ?m.1692 ?m.1693 ?m.1694
+in the application
+  @HasTypeCQ.reads ?m.1689 ?m.1690 ?m.1691 ?m.1692 ?m.1693 ?m.1694 hb
+error: Benitoite/Surface/Lemmas/BuilderCapture.lean:120:55: Application type mismatch: The argument
+  hm
+has type
+  HasTypeCQ P B Ψ.hideBuilders Q C (hideConts Γ) none m✝ a✝ Eff.empty
+but is expected to have type
+  HasTypeCQ P B Ψ Q ?m.4228 ?m.4229 ?m.4230 ?m.4231 ?m.4232 ?m.4233
+in the application
+  @HasTypeCQ.reads ?m.4228 ?m.4229 ?m.4230 ?m.4231 ?m.4232 ?m.4233 hm
+error: Benitoite/Surface/Lemmas/BuilderCapture.lean:154:33: Application type mismatch: The argument
+  hb
+has type
+  HasTypeCQ P B Ψ.hideBuilders Q (sg✝.tparams ++ C)
+    (some (sg✝.ret.cont (Ty.shift k✝ 0 t) (Eff.shift k✝ 0 ε)) :: (binds sg✝.params ++ shiftEnv k✝ Γ))
+    (Option.map (Ty.shift k✝ 0) R) body✝ (Ty.shift k✝ 0 t) (Eff.shift k✝ 0 ε)
+but is expected to have type
+  HasTypeCQ P B Ψ Q ?m.5114 ?m.5115 ?m.5116 ?m.5117 ?m.5118 ?m.5119
+in the application
+  @HasTypeCQ.reads ?m.5114 ?m.5115 ?m.5116 ?m.5117 ?m.5118 ?m.5119 hb
+error: Benitoite/Surface/Lemmas/BuilderCapture.lean:160:59: Application type mismatch: The argument
+  hb
+has type
+  HasTypeCQ P B Ψ.hideBuilders Q ({ } :: C) (none :: some (Ty.shift 1 0 E) :: shiftEnv 1 Γ)
+    (Option.map (Ty.shift 1 0) R) body✝ (Ty.shift 1 0 t) (Eff.shift 1 0 ε)
+but is expected to have type
+  HasTypeCQ P B Ψ Q ?m.5281 ?m.5282 ?m.5283 ?m.5284 ?m.5285 ?m.5286
+in the application
+  @HasTypeCQ.reads ?m.5281 ?m.5282 ?m.5283 ?m.5284 ?m.5285 ?m.5286 hb
+Some required targets logged failures:
+- Benitoite.Release.Model
+- Benitoite.Surface.CheckComputeCases
+- Benitoite.Exchange.Convert
+- Benitoite.Surface.Lemmas.BuilderCapture
+error: build failed

@@ -463,6 +463,7 @@ pub enum Expr {
     Lambda(Box<LambdaExpr>),
     Return(ReturnExpr),
     Try(TryExpr),
+    Block(BlockExpr),
     Lazy(LazyExpr),
     With(WithExpr),
     Handle(HandleExpr),
@@ -809,6 +810,14 @@ pub enum TryAction {
     },
 }
 
+/// `block … end block`。return の作用先は囲む関数かラムダのままとする。
+#[derive(Clone, PartialEq, Debug)]
+pub struct BlockExpr {
+    pub id: NodeId,
+    pub span: Span,
+    pub body: Block,
+}
+
 /// `lazy … end lazy`。
 #[derive(Clone, PartialEq, Debug)]
 pub struct LazyExpr {
@@ -1035,6 +1044,7 @@ impl Expr {
             Expr::Lambda(e) => e.id,
             Expr::Return(e) => e.id,
             Expr::Try(e) => e.id,
+            Expr::Block(e) => e.id,
             Expr::Lazy(e) => e.id,
             Expr::With(e) => e.id,
             Expr::Handle(e) => e.id,
@@ -1061,6 +1071,7 @@ impl Expr {
             Expr::Lambda(e) => e.span,
             Expr::Return(e) => e.span,
             Expr::Try(e) => e.span,
+            Expr::Block(e) => e.span,
             Expr::Lazy(e) => e.span,
             Expr::With(e) => e.span,
             Expr::Handle(e) => e.span,

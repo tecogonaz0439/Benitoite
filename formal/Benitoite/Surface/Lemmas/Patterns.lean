@@ -4,7 +4,7 @@ import Benitoite.Surface.Lemmas.PatternSupport
 namespace Benitoite.Surface
 open Benitoite.Release
 
-variable {Q : NoFailCtx}
+variable {Q : NoFailCtx} {Δl : LocalCtx}
 
 /-- 既存の単一パターンの分岐は、恒等対応の選択肢として型が付く。 -/
 theorem HasArmsQ.single {Δb : BuilderCtx} {D B op C Γ R pos pat body rest a b ε εs δ}
@@ -35,22 +35,22 @@ theorem AltsTy.clean {P : Release.Program}
 /-- 照合対象の let を、最初の選択肢の束縛の外側に挿入する。 -/
 theorem HasTypeCQ.shiftAlts {P B C Γ R m a ε alts t δ}
     (hp : AltsTy P alts t δ)
-    (h : HasTypeCQ P B StoreTy.empty Q C (binds δ ++ Γ) R m a ε) :
+    (h : HasTypeCQ P B StoreTy.empty Q C (binds δ ++ Γ) R m a ε (LocalCtx.extend δ.length Δl)) :
     HasTypeCQ P B StoreTy.empty Q C (binds δ ++ some t :: Γ) R
-      (m.rename (upRen (Arm.bindersOf alts) (· + 1))) a ε := by
+      (m.rename (upRen (Arm.bindersOf alts) (· + 1))) a ε (LocalCtx.extend δ.length (LocalCtx.extend 1 Δl)) := by
   have hr := (RenOk.shift [some t] Γ).up (binds δ)
   rw [binds_length, hp.2.1] at hr
-  exact h.rename hr
+  exact h.rename hr _ (by simpa only [hp.2.1, binds_length, List.length_cons, List.length_nil] using (LocalRenOk.shift Δl 1).extend δ.length)
 
 /-- ガードでは同じ付け替えを、継続を隠した二つの環境の間で行う。 -/
 theorem HasTypeCQ.shiftGuard {P B C Γ m alts t δ}
     (hp : AltsTy P alts t δ)
-    (h : HasTypeCQ P B StoreTy.empty Q C (hideConts (binds δ ++ Γ)) none m (.base .boolean) Eff.empty) :
+    (h : HasTypeCQ P B StoreTy.empty Q C (hideConts (binds δ ++ Γ)) none m (.base .boolean) Eff.empty (LocalCtx.extend δ.length Δl)) :
     HasTypeCQ P B StoreTy.empty Q C (hideConts (binds δ ++ some t :: Γ)) none
-      (m.rename (upRen (Arm.bindersOf alts) (· + 1))) (.base .boolean) Eff.empty := by
+      (m.rename (upRen (Arm.bindersOf alts) (· + 1))) (.base .boolean) Eff.empty (LocalCtx.extend δ.length (LocalCtx.extend 1 Δl)) := by
   have hr := (RenOk.shift [some t] Γ).up (binds δ)
   rw [binds_length, hp.2.1] at hr
-  exact h.rename hr.hide
+  exact h.rename hr.hide _ (by simpa only [hp.2.1, binds_length, List.length_cons, List.length_nil] using (LocalRenOk.shift Δl 1).extend δ.length)
 
 theorem desugarArms_patterns (op : OpPrim) (pos : Position) (arms : Arms) :
     unguardedPats (desugarArms op pos arms) = arms.unguardedPatterns := by

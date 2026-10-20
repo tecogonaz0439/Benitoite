@@ -31,6 +31,7 @@ mutual
     | .negFloat32 _ => True
     | .unit => True
     | .paren e => e.BuilderFree
+    | .block body => body.BuilderFree
     | .conCall _ _ args => args.BuilderFree
     | .record _ _ _ args => args.BuilderFree
     | .recordUpdate _ _ _ _ base args => base.BuilderFree ∧ args.BuilderFree

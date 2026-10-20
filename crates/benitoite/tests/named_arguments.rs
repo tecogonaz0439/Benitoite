@@ -1413,8 +1413,13 @@ end effect
     }
     for (name, source, expected) in [
         (
-            "state",
+            "local-pure",
             "function example() -> Unit\n bind b: StringBuilder <- StringBuilder.new()\nend function",
+            vec![],
+        ),
+        (
+            "state-in-argument",
+            "function example(text: Reference[String]) -> Unit\n bind b: StringBuilder <- StringBuilder.new()\n StringBuilder.append(builder: b, text: Reference.get(text))\nend function",
             vec![C::E0501],
         ),
         (
@@ -1660,8 +1665,13 @@ fn list_and_bytes_builders_keep_types_and_boundaries() {
             vec![C::E0463],
         ),
         (
-            "state",
+            "local-pure",
             "function f() -> Unit\n bind b: BytesBuilder <- BytesBuilder.new()\nend function",
+            vec![],
+        ),
+        (
+            "state-in-argument",
+            "function f(value: Reference[Byte]) -> Unit\n bind b: BytesBuilder <- BytesBuilder.new()\n BytesBuilder.append(builder: b, value: Reference.get(value))\nend function",
             vec![C::E0501],
         ),
         ("alias", "type B = ListBuilder[Integer]", vec![C::E0464]),
@@ -1708,5 +1718,128 @@ fn list_and_bytes_builders_keep_types_and_boundaries() {
                 "{name}"
             );
         }
+    }
+}
+
+// 関門: block を通じた持ち出し・捕捉・return の禁止と通常 State の残存を、
+// 公開 check の診断で守る。既存の構築器の入力は block 内の文脈を通らない。
+// spec: 01-02 ブロック式
+#[test]
+fn block_expressions_preserve_scope_effects_and_escape_diagnostics() {
+    for (name, body, expected) in [
+        ("empty", "bind x: Unit <- block end block", vec![]),
+        (
+            "last bind",
+            "bind x: Unit <- block bind n <- 1 end block",
+            vec![],
+        ),
+        ("last value", "bind x: Integer <- block 7 end block", vec![]),
+        (
+            "intermediate value",
+            "bind x <- block\n 1\n ()\nend block",
+            vec![C::E0416],
+        ),
+        (
+            "unknown outside",
+            "bind x <- block bind n <- 1 end block\nbind _ <- n",
+            vec![C::E0301],
+        ),
+        (
+            "bind cannot hide",
+            "bind n <- 1\nbind x <- block bind n <- 2 end block",
+            vec![C::E0334],
+        ),
+        (
+            "shadow",
+            "bind n <- 1\nbind x <- block shadow n <- 2\n n end block",
+            vec![],
+        ),
+        (
+            "builder escape",
+            "bind x <- block bind b: StringBuilder <- StringBuilder.new()\n b end block",
+            vec![C::E0464],
+        ),
+        (
+            "builder capture",
+            "bind b: StringBuilder <- StringBuilder.new()\nbind x <- block lambda() return StringBuilder.copy(b) end lambda end block",
+            vec![C::E0465],
+        ),
+        (
+            "lazy capture",
+            "bind b: StringBuilder <- StringBuilder.new()\nbind x <- lazy block StringBuilder.copy(b) end block end lazy",
+            vec![C::E0465],
+        ),
+        (
+            "handler capture",
+            "bind b: StringBuilder <- StringBuilder.new()\nbind x <- handle ask() with case ask() -> block bind _ <- StringBuilder.copy(b)\n () end block end handle",
+            vec![C::E0465],
+        ),
+        (
+            "ordinary State",
+            "bind x <- block Reference.new(1) end block",
+            vec![C::E0501],
+        ),
+        (
+            "lazy return",
+            "bind x <- lazy block return 1 end block end lazy",
+            vec![C::E0218],
+        ),
+        (
+            "lazy try",
+            "bind x <- lazy block try Option.Some(1) end block end lazy",
+            vec![C::E0218],
+        ),
+        (
+            "guard block if",
+            "bind x <- match 1 with case _ if block if true then true else false end if end block -> ()\ncase _ -> () end match",
+            vec![],
+        ),
+        (
+            "guard return",
+            "bind x <- match 1 with case _ if block return true end block -> ()\ncase _ -> () end match",
+            vec![C::E0218],
+        ),
+        (
+            "guard try",
+            "bind x <- match 1 with case _ if block try Option.Some(true) end block -> ()\ncase _ -> () end match",
+            vec![C::E0218],
+        ),
+        (
+            "unreachable inside",
+            "block return ()\n () end block",
+            vec![C::E0439],
+        ),
+        (
+            "unreachable after",
+            "block return () end block\n ()",
+            vec![C::E0439],
+        ),
+        ("reserved binding", "bind block <- 1", vec![C::E0216]),
+        ("mismatched end", "block () end if", vec![C::E0213]),
+        ("unclosed", "block ()", vec![C::E0214]),
+    ] {
+        let source = format!(
+            "import Benitoite.StringBuilder\neffect Ask\n function ask() -> Unit\nend effect\nfunction main() -> Unit\n{body}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{name}: {:?}",
+            checked.diagnostics
+        );
+        assert_eq!(checked.program.is_some(), expected.is_empty(), "{name}");
     }
 }

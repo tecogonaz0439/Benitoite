@@ -394,6 +394,7 @@ impl Resolver<'_> {
                     self.expr(ctx, message);
                 }
             }
+            Expr::Block(e) => self.block(ctx, &e.body),
             Expr::Lazy(e) => self.resolve_lazy(ctx, e),
             Expr::With(e) => self.resolve_with(ctx, e),
             Expr::Handle(e) => self.resolve_handle(ctx, e),

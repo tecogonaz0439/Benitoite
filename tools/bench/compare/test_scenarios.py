@@ -124,5 +124,41 @@ class VerificationTests(unittest.TestCase):
             validate(c, 'modern', dict(status=0, stdout='7\n', stderr=''))
 
 
+class NewFamilyContracts(unittest.TestCase):
+    # 関門: 自由な比較手法が builders の有無で落ちる退行と、R/2R の入力差を防ぐ。
+    def test_builder_requirements_and_dynamic_repeat_identity(self):
+        from scenarios import builders
+        for case in builders.cases(False):
+            builder = case.params.get('method', '').startswith('builder')
+            self.assertEqual(bool(case.requires), builder, case.id)
+            self.assertEqual('import Benitoite.'+dict(string='StringBuilder',list='ListBuilder',bytes='BytesBuilder').get(case.family,'none') in case.files['legacy']['main.bnt'], builder, case.id)
+        cases = {c.id:c for c in builders.repeated_cases(False)}
+        for cid, case in cases.items():
+            if '-r64-' in cid:
+                other = cases[cid.replace('-r64-', '-r128-')]
+                self.assertEqual(case.files, other.files)
+                self.assertEqual(case.expected_stdout, other.expected_stdout)
+                self.assertEqual(case.arguments, ('64',))
+                self.assertEqual(other.arguments, ('128',))
+        case = cases['build-string-repeat-128-4-r64-builder']
+        value = dict(status=0,stdout=case.expected_stdout,stderr='')
+        validate(case,'after',value)
+        with self.assertRaises(RuntimeError): validate(case,'after',dict(value,stdout=case.expected_stdout.replace('p0000雪','p0000違',1)))
+
+    def test_bridge_graph_counts_and_independent_validation(self):
+        from scenarios import bridge
+        for n in (16,32,64):
+            g = bridge.graph('nodes',n)
+            self.assertEqual(len(g['nodes']), n)
+            self.assertEqual(sum(map(len,g['nodes'])), 2*(n-1))
+            self.assertTrue(all(child < i for i, edges in enumerate(g['nodes']) for child in edges))
+        case = next(c for c in bridge.cases() if c.id == 'bridge-nodes-16')
+        fields = dict(bridge_to_heap=.01,bridge_from_heap=.02,bridge_time=.03,allocated_bytes=200,unique_nodes=16,heap_nodes=16,edges=30,observation=7)
+        result = dict(status=0,stderr='',stdout=json.dumps(fields))
+        validate(case,'after',result)
+        for key in ('unique_nodes','heap_nodes','edges','observation'):
+            with self.assertRaises(RuntimeError): validate(case,'after',dict(result,stdout=json.dumps(dict(fields,**{key:0}))))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -10,6 +10,8 @@ use super::InstrRef;
 pub struct CallFrame {
     /// 実行中の関数の値。メソッドの呼び出しでは辞書（`GETDICT` が読む）
     pub func: Slot,
+    /// 通常の値へ持ち出さない構築器の根。保存継続もこの配列を所有する。
+    pub builders: Vec<Slot>,
     pub proto: ProtoIdx,
     /// 次に実行する命令の位置。振り分けのループが局所に持つ間は古い
     pub pc: u32,
@@ -145,7 +147,10 @@ impl Segment {
     }
 
     pub fn reg_count(&self) -> u64 {
-        u64::try_from(self.regs.len()).unwrap_or(u64::MAX)
+        self.calls.iter().fold(
+            u64::try_from(self.regs.len()).unwrap_or(u64::MAX),
+            |n, frame| n.saturating_add(u64::try_from(frame.builders.len()).unwrap_or(u64::MAX)),
+        )
     }
 
     pub fn is_empty(&self) -> bool {
@@ -162,6 +167,7 @@ pub struct TaskStack {
 impl Trace for CallFrame {
     fn trace(&self, t: &mut Tracer<'_>) {
         t.slot(&self.func);
+        self.builders.trace(t);
     }
 }
 
@@ -199,6 +205,7 @@ impl Trace for TaskStack {
 impl Discard for CallFrame {
     fn discard(self, d: &mut Discarder<'_>) {
         d.slot(self.func);
+        self.builders.discard(d);
     }
 }
 

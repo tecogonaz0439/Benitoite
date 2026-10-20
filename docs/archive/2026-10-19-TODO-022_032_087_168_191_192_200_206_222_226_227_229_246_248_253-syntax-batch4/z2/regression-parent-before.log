@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.25s
+     Running tests/verify.rs (target/debug/deps/verify-9cf719a34ff729df)
+
+running 1 test
+test dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses ... FAILED
+
+failures:
+
+---- dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses stdout ----
+
+thread 'dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses' (14218044) panicked at crates/benitoite/tests/verify.rs:447:36:
+called `Result::unwrap_err()` on an `Ok` value: ()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.09s
+
+error: test failed, to rerun pass `-p benitoite --test verify`

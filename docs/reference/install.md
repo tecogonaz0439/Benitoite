@@ -1,6 +1,8 @@
 # Installing Benitoite
 
-This page explains how to install `benitoite` `0.0.9`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+This page explains how to install `benitoite` `0.0.10`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+
+Version 0.0.10 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.10 executable archive or SHA256SUMS is provided.
 
 ## Supported systems
 
@@ -28,20 +30,20 @@ Download the archive for your system and `SHA256SUMS` with `curl`. In the comman
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.9-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.1.0-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 Check the hash. On macOS:
 
 ```sh
-grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.1.0-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 On Linux:
 
 ```sh
-grep "benitoite-0.0.9-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.1.0-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 The command prints `OK` after the file name when the hash matches. If it does not, download the archive again and do not use it.
@@ -53,16 +55,16 @@ The command prints `OK` after the file name when the hash matches. If it does no
 Extract the archive into a new directory, and move the extracted `benitoite` to a directory on your `PATH`, such as `~/.local/bin`:
 
 ```sh
-mkdir benitoite-0.0.9
-tar -xzf "benitoite-0.0.9-$TARGET.tar.gz" -C benitoite-0.0.9
+mkdir benitoite-0.1.0
+tar -xzf "benitoite-0.1.0-$TARGET.tar.gz" -C benitoite-0.1.0
 mkdir -p ~/.local/bin
-find benitoite-0.0.9 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.1.0 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 Keep `LICENSE-MIT`, `LICENSE-APACHE`, and `THIRD_PARTY_LICENSES` from the archive if you redistribute `benitoite`. `benitoite --licenses` prints the same `THIRD_PARTY_LICENSES`.
 
-`benitoite --version` prints `benitoite 0.0.9` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
+`benitoite --version` prints `benitoite 0.1.0` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
 
 For an agent or harness, use `benitoite --version=json` as the first and only argument to query version, build, and supported-format information. Verify the required `formats` keys and understood integer versions instead of inferring capabilities from the release number. The output is one UTF-8 JSON object followed by LF. Success exits with 0, usage errors with 2, internal errors with 3, and output failures with 1. See [Version and supported formats](benitoite.md#version-and-supported-formats) for the fields and [Build information](#build-information) for the meaning of unknown values.
 
@@ -145,6 +147,12 @@ The Skill describes only the version of `benitoite` it comes with. When the vers
 
 See [Functions and lambdas](benitoite.md#6-functions-and-lambdas) for calling rules and function contracts. Use the Skill installed from the same executable to look up parameter names and callback contracts.
 
+### Updating from 0.0.9 to 0.0.10
+
+Build the source and reinstall the Skill from that executable. Read [the migration guide](../../CHANGELOG.md#0010-san-benito): rename block identifiers, review full-domain Integer catch-alls, new prelude names, builder effect contracts and physical copy costs, and warnings under --deny-warnings. Default logging needs uses Log and an explicit `Log` in accepted effects when declared; IO.All does not include it. For example, inspect with `benitoite check --report=json app.bnt`, then run with `benitoite run --allow-effects=Log app.bnt` if Log is the accepted declared bound. SourceLocation.here is a direct call; pass a Location to wrappers.
+
+Finish pending old derive recovery before switching tools. Inventory stays 2 and configuration 1; new generator/manifest/receipt/records are version 3 (3.0.0-syntax-batch4), while Property.libraryVersion remains 2.0.0. Verify old body hashes, review a fresh preview and its record/diff, apply its exact reviewed manifest SHA-256, and run normal check/test and derive check. Changing language or reinstalling Skill alone does not migrate source or authorize new dependency hashes. Update language to 0.0.10 and package hashes after review. The old named-argument tool has moved to the source repository's historical-tools directory; see the migration guide for restoration.
+
 ### Updating from 0.0.8 to 0.0.9
 
 This version is source-only: use the build instructions below, then reinstall the Skill from the new executable. Read the [0.0.9 migration](../../CHANGELOG.md#009-san-benito) before updating language declarations and dependency hashes. Review Regex constant rejection, Scope's spelling checks, Range's runtime Error, and any added @opaque boundary. Builders require State and cannot be captured. A harness using documentation examples must request --doc and understand report version 2; ordinary calls retain version 1.
@@ -202,4 +210,4 @@ rm ~/.local/bin/benitoite
 
 If you used `--project` or `--agent` when installing, pass the same options to `uninstall`.
 
-> Note: Releases `0.0.1` through `0.0.9` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`.
+> Note: Releases `0.0.1` through `0.0.10` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`.

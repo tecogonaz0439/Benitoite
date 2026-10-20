@@ -14,6 +14,7 @@ mod runtime;
 pub(crate) mod stats;
 mod text;
 mod typed;
+pub(crate) use runtime::ExternalSession;
 pub use runtime::{ExternalFailure, ExternalRuntime, Limits, call};
 mod types;
 pub(crate) use check::check_component;

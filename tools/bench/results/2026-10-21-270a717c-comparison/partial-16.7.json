@@ -1,0 +1,121 @@
+{
+  "section": "16.7",
+  "phase_seconds": {
+    "verify": 0.03543891699999957,
+    "cli": 0.3174890829999981
+  },
+  "measurements": {
+    "codegen-let-100": {
+      "before": {
+        "verify": [
+          0.015625541999999548
+        ],
+        "warmup": [
+          0.01534058400000049
+        ],
+        "cli": [
+          0.015049417000000176,
+          0.015874582999998665,
+          0.015562417000001716,
+          0.015231875000001338,
+          0.015820375000000553
+        ],
+        "control_cli": [
+          0.013146250000001913,
+          0.013482708999998039,
+          0.012851999999998753,
+          0.012449374999999208,
+          0.012605332999999774
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.019625541999999996
+        ],
+        "warmup": [
+          0.017030874999999668
+        ],
+        "cli": [
+          0.018795166000000307,
+          0.018187333000000194,
+          0.017762250000000535,
+          0.0170273750000014,
+          0.017717957999998646
+        ],
+        "control_cli": [
+          0.016691292000000857,
+          0.01897041599999838,
+          0.01701729099999838,
+          0.01569270800000311,
+          0.01666937499999932
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    }
+  },
+  "outputs": {
+    "codegen-let-100": {
+      "commands": {
+        "before": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/codegen-let-100/shared-1a4cfb0a60f28681/main.bnt"
+        ],
+        "after": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/270a717c670d9640d4c08f10bc400afa6e3fcef2-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/inputs/codegen-let-100/shared-1a4cfb0a60f28681/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "/Users/tecogonaz/src/Benitoite/target/bench/builds/270a717c670d9640d4c08f10bc400afa6e3fcef2-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "/Users/tecogonaz/src/Benitoite/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.015625541999999548,
+          "status": 0,
+          "stdout": "107\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.019625541999999996,
+          "status": 0,
+          "stdout": "107\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    }
+  }
+}

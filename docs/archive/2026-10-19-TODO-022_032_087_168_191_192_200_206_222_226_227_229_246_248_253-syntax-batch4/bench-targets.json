@@ -1,0 +1,1915 @@
+{
+  "schema_version": 1,
+  "min_samples": 10,
+  "states": [
+    "before",
+    "after"
+  ],
+  "cases": [
+    "bridge-empty",
+    "bridge-nodes-16",
+    "bridge-nodes-32",
+    "bridge-nodes-64",
+    "bridge-shared-12",
+    "bridge-shared-16",
+    "bridge-shared-24",
+    "bridge-shared-8",
+    "build-bytes-builder-0-0",
+    "build-bytes-builder-8-0",
+    "build-bytes-copy-only-1024-1-r128-builder",
+    "build-bytes-copy-only-1024-1-r64-builder",
+    "build-bytes-copy-only-1024-4-r128-builder",
+    "build-bytes-copy-only-1024-4-r64-builder",
+    "build-bytes-copy-only-128-1-r128-builder",
+    "build-bytes-copy-only-128-1-r64-builder",
+    "build-bytes-copy-only-128-4-r128-builder",
+    "build-bytes-copy-only-128-4-r64-builder",
+    "build-bytes-prepared-1024-0-r128-concatenate",
+    "build-bytes-prepared-1024-0-r64-concatenate",
+    "build-bytes-repeat-1024-0-r128-builder",
+    "build-bytes-repeat-1024-0-r128-builder-all",
+    "build-bytes-repeat-1024-0-r128-concatenate",
+    "build-bytes-repeat-1024-0-r64-builder",
+    "build-bytes-repeat-1024-0-r64-builder-all",
+    "build-bytes-repeat-1024-0-r64-concatenate",
+    "build-bytes-repeat-1024-1-r128-builder",
+    "build-bytes-repeat-1024-1-r64-builder",
+    "build-bytes-repeat-1024-4-r128-builder",
+    "build-bytes-repeat-1024-4-r64-builder",
+    "build-bytes-repeat-128-0-r128-builder-all",
+    "build-bytes-repeat-128-0-r128-concatenate",
+    "build-bytes-repeat-128-0-r64-builder-all",
+    "build-bytes-repeat-128-0-r64-concatenate",
+    "build-bytes-repeat-128-1-r128-builder",
+    "build-bytes-repeat-128-1-r64-builder",
+    "build-bytes-repeat-128-4-r128-builder",
+    "build-bytes-repeat-128-4-r64-builder",
+    "build-bytes-single-all-1024-0-r128-builder",
+    "build-bytes-single-all-1024-0-r64-builder",
+    "build-list-builder-0-0",
+    "build-list-builder-8-0",
+    "build-list-copy-only-1024-1-r128-builder",
+    "build-list-copy-only-1024-1-r64-builder",
+    "build-list-copy-only-1024-4-r128-builder",
+    "build-list-copy-only-1024-4-r64-builder",
+    "build-list-copy-only-128-1-r128-builder",
+    "build-list-copy-only-128-1-r64-builder",
+    "build-list-copy-only-128-4-r128-builder",
+    "build-list-copy-only-128-4-r64-builder",
+    "build-list-prepared-1024-0-r128-return",
+    "build-list-prepared-1024-0-r64-return",
+    "build-list-repeat-1024-0-r128-builder",
+    "build-list-repeat-1024-0-r128-builder-all",
+    "build-list-repeat-1024-0-r128-concatenate",
+    "build-list-repeat-1024-0-r128-fold",
+    "build-list-repeat-1024-0-r64-builder",
+    "build-list-repeat-1024-0-r64-builder-all",
+    "build-list-repeat-1024-0-r64-concatenate",
+    "build-list-repeat-1024-0-r64-fold",
+    "build-list-repeat-1024-1-r128-builder",
+    "build-list-repeat-1024-1-r64-builder",
+    "build-list-repeat-1024-4-r128-builder",
+    "build-list-repeat-1024-4-r64-builder",
+    "build-list-repeat-128-0-r128-builder-all",
+    "build-list-repeat-128-0-r128-concatenate",
+    "build-list-repeat-128-0-r128-fold",
+    "build-list-repeat-128-0-r64-builder-all",
+    "build-list-repeat-128-0-r64-concatenate",
+    "build-list-repeat-128-0-r64-fold",
+    "build-list-repeat-128-1-r128-builder",
+    "build-list-repeat-128-1-r64-builder",
+    "build-list-repeat-128-4-r128-builder",
+    "build-list-repeat-128-4-r64-builder",
+    "build-list-single-all-1024-0-r128-builder",
+    "build-list-single-all-1024-0-r64-builder",
+    "build-string-builder-0-0",
+    "build-string-builder-8-0",
+    "build-string-copy-only-1024-1-r128-builder",
+    "build-string-copy-only-1024-1-r64-builder",
+    "build-string-copy-only-1024-4-r128-builder",
+    "build-string-copy-only-1024-4-r64-builder",
+    "build-string-copy-only-128-1-r128-builder",
+    "build-string-copy-only-128-1-r64-builder",
+    "build-string-copy-only-128-4-r128-builder",
+    "build-string-copy-only-128-4-r64-builder",
+    "build-string-prepared-1024-0-r128-join",
+    "build-string-prepared-1024-0-r64-join",
+    "build-string-repeat-1024-0-r128-builder",
+    "build-string-repeat-1024-0-r128-builder-all",
+    "build-string-repeat-1024-0-r128-concatenate",
+    "build-string-repeat-1024-0-r128-join",
+    "build-string-repeat-1024-0-r64-builder",
+    "build-string-repeat-1024-0-r64-builder-all",
+    "build-string-repeat-1024-0-r64-concatenate",
+    "build-string-repeat-1024-0-r64-join",
+    "build-string-repeat-1024-1-r128-builder",
+    "build-string-repeat-1024-1-r64-builder",
+    "build-string-repeat-1024-4-r128-builder",
+    "build-string-repeat-1024-4-r64-builder",
+    "build-string-repeat-128-0-r128-builder-all",
+    "build-string-repeat-128-0-r128-concatenate",
+    "build-string-repeat-128-0-r128-join",
+    "build-string-repeat-128-0-r64-builder-all",
+    "build-string-repeat-128-0-r64-concatenate",
+    "build-string-repeat-128-0-r64-join",
+    "build-string-repeat-128-1-r128-builder",
+    "build-string-repeat-128-1-r64-builder",
+    "build-string-repeat-128-4-r128-builder",
+    "build-string-repeat-128-4-r64-builder",
+    "build-string-single-all-1024-0-r128-builder",
+    "build-string-single-all-1024-0-r64-builder",
+    "codegen-empty",
+    "codegen-holes-1-direct",
+    "codegen-holes-1-direct-r128",
+    "codegen-holes-1-direct-r64",
+    "codegen-holes-1-indirect",
+    "codegen-holes-1-indirect-r128",
+    "codegen-holes-1-indirect-r64",
+    "codegen-holes-4-direct",
+    "codegen-holes-4-direct-r128",
+    "codegen-holes-4-direct-r64",
+    "codegen-holes-4-indirect",
+    "codegen-holes-4-indirect-r128",
+    "codegen-holes-4-indirect-r64",
+    "codegen-holes-8-direct",
+    "codegen-holes-8-direct-r128",
+    "codegen-holes-8-direct-r64",
+    "codegen-holes-8-indirect",
+    "codegen-holes-8-indirect-r128",
+    "codegen-holes-8-indirect-r64",
+    "codegen-irenv-1000",
+    "codegen-irenv-500",
+    "codegen-irenv-empty",
+    "codegen-let-100",
+    "codegen-let-250",
+    "codegen-let-500",
+    "codegen-let-900",
+    "external-tests-adapter-1",
+    "external-tests-adapter-10",
+    "external-tests-adapter-50",
+    "external-tests-adapter-two-keys",
+    "external-tests-control-10",
+    "external-tests-control-50",
+    "external-tests-doc",
+    "external-tests-multiple-entry",
+    "external-tests-no-external",
+    "external-tests-normal-1",
+    "external-tests-normal-10",
+    "external-tests-normal-50",
+    "external-tests-stateful",
+    "patterns-empty",
+    "patterns-empty-run",
+    "patterns-integer-100",
+    "patterns-integer-250",
+    "patterns-integer-500",
+    "patterns-integer-900",
+    "patterns-string-100",
+    "patterns-string-250",
+    "patterns-string-500",
+    "patterns-string-900",
+    "patterns-tree-12",
+    "patterns-tree-13",
+    "patterns-tree-16",
+    "patterns-tree-24",
+    "patterns-tree-8"
+  ],
+  "targets": [
+    {
+      "label": "string: 1024追記の実行増分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-repeat-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-repeat-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "build-string-repeat-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "build-string-repeat-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "string: 1024追記の確保増分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-repeat-1024-0-r128-builder",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-repeat-1024-0-r64-builder",
+            "metric": "allocated_bytes"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "build-string-repeat-1024-0-r128-builder",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "build-string-repeat-1024-0-r64-builder",
+            "metric": "allocated_bytes"
+          }
+        }
+      }
+    },
+    {
+      "label": "string: 短い構築 n=0",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "build-string-builder-0-0",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "build-string-builder-0-0",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "string: 短い構築 n=8",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "build-string-builder-8-0",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "build-string-builder-8-0",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "string: 一括追加と既存一括操作",
+      "kind": "ratio",
+      "limit": 2,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-single-all-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-single-all-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-prepared-1024-0-r128-join",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-string-prepared-1024-0-r64-join",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "list: 1024追記の実行増分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-list-repeat-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-list-repeat-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "build-list-repeat-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "build-list-repeat-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "list: 1024追記の確保増分",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-list-repeat-1024-0-r128-builder",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-list-repeat-1024-0-r64-builder",
+            "metric": "allocated_bytes"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "build-list-repeat-1024-0-r128-builder",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "build-list-repeat-1024-0-r64-builder",
+            "metric": "allocated_bytes"
+          }
+        }
+      }
+    },
+    {
+      "label": "list: 短い構築 n=0",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "build-list-builder-0-0",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "build-list-builder-0-0",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "list: 短い構築 n=8",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "build-list-builder-8-0",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "build-list-builder-8-0",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "bytes: 1024追記の実行増分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-repeat-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-repeat-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "build-bytes-repeat-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "build-bytes-repeat-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "bytes: 1024追記の確保増分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-repeat-1024-0-r128-builder",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-repeat-1024-0-r64-builder",
+            "metric": "allocated_bytes"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "build-bytes-repeat-1024-0-r128-builder",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "build-bytes-repeat-1024-0-r64-builder",
+            "metric": "allocated_bytes"
+          }
+        }
+      }
+    },
+    {
+      "label": "bytes: 短い構築 n=0",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "build-bytes-builder-0-0",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "build-bytes-builder-0-0",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "bytes: 短い構築 n=8",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "build-bytes-builder-8-0",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "build-bytes-builder-8-0",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "bytes: 一括追加と既存一括操作",
+      "kind": "ratio",
+      "limit": 2,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-single-all-1024-0-r128-builder",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-single-all-1024-0-r64-builder",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-prepared-1024-0-r128-concatenate",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "build-bytes-prepared-1024-0-r64-concatenate",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "integer: 900区間の入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-integer-900",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "patterns-integer-900",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "integer: 250から500の伸び",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-integer-500",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-integer-250",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "string: 900区間の入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-string-900",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "patterns-string-900",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "string: 250から500の伸び",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-string-500",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-string-250",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "判定の共有: 12の入力部分",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-tree-12",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty-run",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "patterns-tree-12",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "patterns-empty-run",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "判定の共有: 12から24の伸び",
+      "kind": "growth",
+      "limit": 4,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-tree-24",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty-run",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-tree-12",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "patterns-empty-run",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "Let900の入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-let-900",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-empty",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-let-900",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-empty",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "Let250から500の伸び",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-let-500",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-empty",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-let-250",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-empty",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "IR環境1000の入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-irenv-1000",
+            "metric": "ir_check"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-irenv-empty",
+            "metric": "ir_check"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-irenv-1000",
+            "metric": "ir_check"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-irenv-empty",
+            "metric": "ir_check"
+          }
+        }
+      }
+    },
+    {
+      "label": "IR環境500から1000の伸び",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-irenv-1000",
+            "metric": "ir_check"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-irenv-empty",
+            "metric": "ir_check"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-irenv-500",
+            "metric": "ir_check"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-irenv-empty",
+            "metric": "ir_check"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴1/direct: Let減少数の上限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-direct",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-direct",
+            "metric": "hole_lets"
+          }
+        },
+        "right": 1
+      }
+    },
+    {
+      "label": "穴1/direct: Let減少数の下限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": 1,
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-direct",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-direct",
+            "metric": "hole_lets"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴1/direct: 実行増分",
+      "kind": "ratio",
+      "limit": 1.1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-direct-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-direct-r64",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-direct-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-direct-r64",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴1/indirect: Let減少数の上限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-indirect",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-indirect",
+            "metric": "hole_lets"
+          }
+        },
+        "right": 1
+      }
+    },
+    {
+      "label": "穴1/indirect: Let減少数の下限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": 1,
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-indirect",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-indirect",
+            "metric": "hole_lets"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴1/indirect: 実行増分",
+      "kind": "ratio",
+      "limit": 1.1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-indirect-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-1-indirect-r64",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-indirect-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-1-indirect-r64",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴4/direct: Let減少数の上限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-direct",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-direct",
+            "metric": "hole_lets"
+          }
+        },
+        "right": 4
+      }
+    },
+    {
+      "label": "穴4/direct: Let減少数の下限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": 4,
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-direct",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-direct",
+            "metric": "hole_lets"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴4/direct: 実行増分",
+      "kind": "ratio",
+      "limit": 1.1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-direct-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-direct-r64",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-direct-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-direct-r64",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴4/indirect: Let減少数の上限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-indirect",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-indirect",
+            "metric": "hole_lets"
+          }
+        },
+        "right": 4
+      }
+    },
+    {
+      "label": "穴4/indirect: Let減少数の下限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": 4,
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-indirect",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-indirect",
+            "metric": "hole_lets"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴4/indirect: 実行増分",
+      "kind": "ratio",
+      "limit": 1.1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-indirect-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-4-indirect-r64",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-indirect-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-4-indirect-r64",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴8/direct: Let減少数の上限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-direct",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-direct",
+            "metric": "hole_lets"
+          }
+        },
+        "right": 8
+      }
+    },
+    {
+      "label": "穴8/direct: Let減少数の下限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": 8,
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-direct",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-direct",
+            "metric": "hole_lets"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴8/direct: 実行増分",
+      "kind": "ratio",
+      "limit": 1.1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-direct-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-direct-r64",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-direct-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-direct-r64",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴8/indirect: Let減少数の上限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-indirect",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-indirect",
+            "metric": "hole_lets"
+          }
+        },
+        "right": 8
+      }
+    },
+    {
+      "label": "穴8/indirect: Let減少数の下限",
+      "kind": "ratio",
+      "limit": 1,
+      "expression": {
+        "op": "ratio",
+        "left": 8,
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-indirect",
+            "metric": "hole_lets"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-indirect",
+            "metric": "hole_lets"
+          }
+        }
+      }
+    },
+    {
+      "label": "穴8/indirect: 実行増分",
+      "kind": "ratio",
+      "limit": 1.1,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-indirect-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "codegen-holes-8-indirect-r64",
+            "metric": "vm_run"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-indirect-r128",
+            "metric": "vm_run"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "codegen-holes-8-indirect-r64",
+            "metric": "vm_run"
+          }
+        }
+      }
+    },
+    {
+      "label": "橋渡し/bridge_to_heap: 節数16から32",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-32",
+            "metric": "bridge_to_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_to_heap"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-16",
+            "metric": "bridge_to_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_to_heap"
+          }
+        }
+      }
+    },
+    {
+      "label": "橋渡し/bridge_to_heap: 節数32から64",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-64",
+            "metric": "bridge_to_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_to_heap"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-32",
+            "metric": "bridge_to_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_to_heap"
+          }
+        }
+      }
+    },
+    {
+      "label": "橋渡し/bridge_from_heap: 節数16から32",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-32",
+            "metric": "bridge_from_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_from_heap"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-16",
+            "metric": "bridge_from_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_from_heap"
+          }
+        }
+      }
+    },
+    {
+      "label": "橋渡し/bridge_from_heap: 節数32から64",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-64",
+            "metric": "bridge_from_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_from_heap"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-32",
+            "metric": "bridge_from_heap"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "bridge_from_heap"
+          }
+        }
+      }
+    },
+    {
+      "label": "橋渡し/allocated_bytes: 節数16から32",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-32",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "allocated_bytes"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-16",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "allocated_bytes"
+          }
+        }
+      }
+    },
+    {
+      "label": "橋渡し/allocated_bytes: 節数32から64",
+      "kind": "growth",
+      "limit": 3,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-64",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "allocated_bytes"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-nodes-32",
+            "metric": "allocated_bytes"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "bridge-empty",
+            "metric": "allocated_bytes"
+          }
+        }
+      }
+    },
+    {
+      "label": "外部normal: 単一test",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "external-tests-normal-1",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "external-tests-normal-1",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "外部normal: 10testの入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-normal-10",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-control-10",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-normal-10",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-control-10",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "外部normal: 50testの入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-normal-50",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-control-50",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-normal-50",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-control-50",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "外部adapter: 単一test",
+      "kind": "regression",
+      "old": {
+        "op": "median",
+        "state": "before",
+        "case": "external-tests-adapter-1",
+        "metric": "cli"
+      },
+      "new": {
+        "op": "median",
+        "state": "after",
+        "case": "external-tests-adapter-1",
+        "metric": "cli"
+      },
+      "relative": 0.1,
+      "absolute_seconds": 0.002
+    },
+    {
+      "label": "外部adapter: 10testの入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-adapter-10",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-control-10",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-adapter-10",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-control-10",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "外部adapter: 50testの入力部分",
+      "kind": "ratio",
+      "limit": 0.5,
+      "expression": {
+        "op": "ratio",
+        "left": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-adapter-50",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "after",
+            "case": "external-tests-control-50",
+            "metric": "cli"
+          }
+        },
+        "right": {
+          "op": "difference",
+          "left": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-adapter-50",
+            "metric": "cli"
+          },
+          "right": {
+            "op": "median",
+            "state": "before",
+            "case": "external-tests-control-50",
+            "metric": "cli"
+          }
+        }
+      }
+    },
+    {
+      "label": "外部: 実行用キーごと一回のコンパイル",
+      "kind": "invariant",
+      "select": {
+        "section": "16.9"
+      },
+      "states": [
+        "after"
+      ],
+      "field": "runtime_compilations",
+      "parameter": "component_keys",
+      "minimum": 0
+    }
+  ]
+}

@@ -564,7 +564,7 @@ mutual
     | .V_Lam (ps := ps) (r := r) hnames hw hbody =>
         simp only [Val.substTyAt, Ty.substAt, Ty.substTysAt_eq_map]
         refine .V_Lam (hnames.map _) (by simpa only [Ty.substAt, Ty.substTysAt_eq_map] using transportWF hw) ?_
-        have := HasTypeCQ.substTy hwf hb hbody hc hts hes' hsat hΨ hrow
+        have := HasTypeCQ.substTy hwf hb hbody hc hts hes' hsat hΨ.hideBuilders hrow
         rw [envSubst_binds] at this
         simp only [envSubst, Option.map_some] at this ⊢
         rw [hideConts_map hts]
@@ -649,11 +649,11 @@ mutual
         simp only [Val.substTyAtList]
         exact .cons (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow) (HasTypeEachQ.substTy hwf hb hvs hc hts hes' hsat hΨ hrow)
 
-  theorem HasTypeCQ.substTy (hwf : P.WellFormed) (hb : B.Assumptions P) {Q' : NoFailCtx} {Ψ C Γ R m a ε ts' es'} {c : Nat}
-      (h : HasTypeCQ P B Ψ Q C Γ R m a ε) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+  theorem HasTypeCQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P) {Q' : NoFailCtx} {Ψ C Γ R m a ε ts' es'} {c : Nat}
+      (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
       (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeCQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
-        (m.substTyAt c ts' es') (a.substAt c ts' es') (Eff.substAt c ts' es' ε) := by
+        (m.substTyAt c ts' es') (a.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
     have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
       intro x hx
@@ -661,6 +661,18 @@ mutual
       refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_
       rw [hsat.1]; exact Ty.WF.mono (by simp; omega) _ hx
     match h with
+    | .C_BuilderLet (kind := kind) hw hbdy =>
+        simp only [Comp.substTyAt]
+        refine .C_BuilderLet (by rw [BuilderKind.contents_substTyAt]; exact transportWF hw) ?_
+        simpa only [envSubst, List.map_cons, Option.map_none, LocalCtx.substTyAt, Option.map_some] using
+          HasTypeCQ.substTy hwf hb hbdy hc hts hes' hsat hΨ hrow
+    | .C_BuilderOp (kind := kind) (op := op) hw hr ha =>
+        simp only [Comp.substTyAt, Eff.substAt_empty]
+        rw [← BuilderOp.result_substTyAt]
+        refine .C_BuilderOp (by rw [BuilderKind.contents_substTyAt]; exact transportWF hw)
+          (hr.substTy hΨ) ?_
+        rw [BuilderOp.params_substTyAt]
+        exact HasTypeVsQ.substTy hwf hb ha hc hts hes' hsat hΨ hrow
     | .C_Return hv =>
         simp only [Comp.substTyAt]; rw [Eff.substAt_empty]
         exact .C_Return (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow)
@@ -672,7 +684,7 @@ mutual
     | .C_Let hm hn =>
         simp only [Comp.substTyAt]
         have h2 := HasTypeCQ.substTy hwf hb hn hc hts hes' hsat hΨ hrow
-        simp only [envSubst, List.map_cons, Option.map_some] at h2
+        simp only [envSubst, List.map_cons, Option.map_some, LocalCtx.substTyAt_extend] at h2
         exact .C_Let (HasTypeCQ.substTy hwf hb hm hc hts hes' hsat hΨ hrow) h2
     | .C_App hf hargs =>
         simp only [Comp.substTyAt]
@@ -694,7 +706,7 @@ mutual
         simp only [Comp.substTyAt, Ty.substAt]
         rw [Eff.substAt_empty]
         refine .C_Lazy ?_
-        have := HasTypeCQ.substTy hwf hb hm hc hts hes' hsat hΨ hrow
+        have := HasTypeCQ.substTy hwf hb hm hc hts hes' hsat hΨ.hideBuilders hrow
         rw [Eff.substAt_empty] at this
         simp only [envSubst, Option.map_none] at this ⊢
         rw [hideConts_map hts]
@@ -730,7 +742,7 @@ mutual
         exact .C_Resume this (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow)
     | .C_ResumeL hl hv =>
         simp only [Comp.substTyAt, Val.substTyAt]
-        obtain ⟨hb', ht', he', hr'⟩ := (hΨ c _).2.2 _ _ _ _ hl
+        obtain ⟨hb', ht', he', hr'⟩ := (hΨ c _).2.2.1 _ _ _ _ hl
         rw [ht', he']
         have := HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow
         rw [hb'] at this
@@ -753,7 +765,7 @@ mutual
         rw [hCsplit] at hsat'
         have hsat'' := SatAll.substAt (es' := es') hb hts hsat hsat'
         rw [htc] at hsat''
-        have := HasTypeCQ.C_Meth (R := R.map (Ty.substAt c ts' es')) (es := es.map (Eff.substAt c ts' es'))
+        have := HasTypeCQ.C_Meth (Δ := Δl.substTyAt c ts' es') (R := R.map (Ty.substAt c ts' es')) (es := es.map (Eff.substAt c ts' es'))
           hv' hcl hmeth hnames hsat''
           (by
             have hscope' : ∀ t ∈ (ss ++ [τ]).map (Ty.substAt c ts' es'),
@@ -768,13 +780,13 @@ mutual
         rw [h2, h3]
         simpa using this
 
-  theorem HasTypeArmsQ.substTy (hwf : P.WellFormed) (hb : B.Assumptions P)
+  theorem HasTypeArmsQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
       {Q' : NoFailCtx} {Ψ C Γ R arms a b ε ts' es'} {c : Nat}
-      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
       (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeArmsQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
         (Arm.substTyAtList c ts' es' arms) (a.substAt c ts' es')
-        (b.substAt c ts' es') (Eff.substAt c ts' es' ε) := by
+        (b.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
     have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
       intro x hx
@@ -793,7 +805,7 @@ mutual
         refine .plain (AltsTy.substAt hwf _ _ _ hp) ?_ (HasTypeArmsQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
         have hh := HasTypeCQ.substTy hwf hb hbody hc hts hes' hsat hΨ hrow
         rw [envSubst_binds] at hh
-        exact hh
+        simpa only [List.length_map, LocalCtx.substTyAt_extend] using hh
     | .guarded hp hg hbody hrest =>
         simp only [Arm.substTyAtList]
         refine .guarded (AltsTy.substAt hwf _ _ _ hp) ?_ ?_ (HasTypeArmsQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
@@ -801,19 +813,19 @@ mutual
           simp only [Ty.substAt, Option.map_none, Eff.substAt_empty] at hh
           simp only [envSubst] at hh
           rw [← hideConts_map hts] at hh
-          change HasTypeCQ _ _ _ _ _ (hideConts (envSubst c ts' es' (_ ++ Γ))) _ _ _ _ at hh
+          change HasTypeCQ _ _ _ _ _ (hideConts (envSubst c ts' es' (_ ++ Γ))) _ _ _ _ _ at hh
           rw [envSubst_binds] at hh
-          exact hh
+          simpa only [List.length_map, LocalCtx.substTyAt_extend] using hh
         · have hh := HasTypeCQ.substTy hwf hb hbody hc hts hes' hsat hΨ hrow
           rw [envSubst_binds] at hh
-          exact hh
+          simpa only [List.length_map, LocalCtx.substTyAt_extend] using hh
 
-  theorem HasTypeClausesQ.substTy (hwf : P.WellFormed) (hb : B.Assumptions P)
+  theorem HasTypeClausesQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
       {Q' : NoFailCtx} {Ψ C Γ R h t ε ts' es'} {c : Nat}
-      (hcl : HasTypeClausesQ P B Ψ Q C Γ R h t ε) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+      (hcl : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
       (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeClausesQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
-        (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) := by
+        (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     match hcl with
     | .nil => simp only [Clause.substTyAtList]; exact .nil
     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
@@ -831,7 +843,7 @@ mutual
         have htake : (sg.tparams ++ C).take (c + k) = sg.tparams ++ C.take c := by
           rw [hk, Nat.add_comm]; simp [List.take_append]
           exact List.take_of_length_le (by omega)
-        have := HasTypeCQ.substTy (c := c + k) hwf hb hbody hc' hts hes' (by rw [hdrop]; exact hsat) hΨ hrow
+        have := HasTypeCQ.substTy (c := c + k) hwf hb hbody hc' hts hes' (by rw [hdrop]; exact hsat) hΨ.hideBuilders hrow
         rw [htake] at this
         simp only [envSubst, List.map_cons, Option.map_some, Ty.substAt] at this
         rw [Ty.substAt_of_closed _ _ _ (Ty.VarsIn.mono (by omega) (fun _ h => h) _ (hk ▸ hsc.2.2)),
@@ -847,15 +859,15 @@ mutual
           | none => rfl
           | some r => simp only [Option.map_some]; rw [Ty.shift_substAt es' (fun t ht => (hts t ht).1) hes']
         rw [hR] at this
-        simpa only [envSubst, Eff.shift_substAt es' (fun t ht => (hts t ht).1) hes'] using this
-  theorem HasFailureClause.substTy (hwf : P.WellFormed) (hb : B.Assumptions P)
+        simpa only [LocalCtx.substTyAt, List.map_nil, envSubst, Eff.shift_substAt es' (fun t ht => (hts t ht).1) hes'] using this
+  theorem HasFailureClause.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
       {Q' : NoFailCtx} {Ψ C Γ E R h t ε ts' es'} {c : Nat}
-      (hcl : HasFailureClause P B Ψ Q C Γ E R h t ε) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+      (hcl : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
       (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c))
       (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasFailureClause P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (E.substAt c ts' es')
         (R.map (Ty.substAt c ts' es')) (Clause.substTyAtList c ts' es' h)
-        (t.substAt c ts' es') (Eff.substAt c ts' es' ε) := by
+        (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
     have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
       intro x hx
@@ -871,7 +883,7 @@ mutual
           rw [hsat.1]
           exact Eff.WF.mono (by simp; omega) ε hew
         · have hv := HasTypeCQ.substTy (c := c + 1) hwf hb hbdy (by simp; omega) hts hes'
-            (by simpa only [List.drop_succ_cons] using hsat) hΨ hrow
+            (by simpa only [List.drop_succ_cons] using hsat) hΨ.hideBuilders hrow
           have htake : (({} : TParam) :: C).take (c + 1) = ({} : TParam) :: C.take c := by simp
           rw [htake] at hv
           simp only [envSubst, List.map_cons, Option.map_none, Option.map_some] at hv

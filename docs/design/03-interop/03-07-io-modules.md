@@ -2,7 +2,7 @@
 
 ## 目的と範囲
 
-`Benitoite.IO` の下の IO を行うモジュール（`Console`・`File`・`Process`・`Clock`・`Random`）の範囲、関数、エフェクトを定める。外部コマンドの起動とシェルによる実行の API もここで扱う。
+`Benitoite.IO` の下の IO を行うモジュール（`Console`・`File`・`Process`・`Clock`・`Random`）の範囲、関数、エフェクトを定める。外部コマンドの起動とシェルによる実行の API、独立したLogの操作とSourceLocationもここで扱う。
 
 ネットワークの操作を行うモジュールは `Benitoite.IO` の下に置かず、[ネットワークのモジュール](03-09-network.md)で定める。
 
@@ -15,6 +15,38 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 ## 仕様
 
 関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
+### Log と SourceLocation
+
+【決定】非公式の `Benitoite.Unofficial.Log` と `Benitoite.Unofficial.SourceLocation` はpreludeへ含め、明示importも許す。Logの正規エフェクト名はLogであり、IO.Allには含めない。Logの宣言と明示的な利用者ハンドラには通常の型・エフェクトの規則を使う。
+
+| 型 | 宣言 |
+|---|---|
+| Log.Level | Debug / Info / Warn / Error |
+| Log.Value | Text(String) / Boolean(Boolean) / Integer(Integer) / UnsignedInteger(UnsignedInteger64) / Float(Float) |
+| Log.Attribute | key: String、value: Log.Value |
+| Log.Record | level: Log.Level、message: String、attributes: List[Log.Attribute]、location: SourceLocation.Location |
+| SourceLocation.Location | file: String、line: Integer、column: Integer |
+
+【決定】操作 `Log.emit(record: Log.Record) -> Unit uses Log` は一つの記録を渡し、`Log.enabled(level: Log.Level) -> Boolean uses Log` は選択する水準を問い合わせる。水準Errorは終了を意味しない。Locationは通常の公開レコードであり、手で作った位置も受け取れる。`SourceLocation.here() -> SourceLocation.Location` の直接呼び出しの位置の規則は[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md#位置の式)に従う。
+
+【決定】`Log.debug`・`info`・`warn`・`error` は、`message: String`、`attributes: List[Log.Attribute]`、`location: SourceLocation.Location` を取り、対応する水準のRecordをemitする通常の関数である。戻り値はUnit、エフェクトはLogである。引数は通常どおり評価する。構築を省きたい値は、`Log.enabled` が真の場合だけ作る。
+
+【決定】`Log.ToLogValue[T]` は純粋なメソッド `toLogValue(value: T) -> Log.Value` を持つ通常の型クラスである。`Log.attribute[T: Log.ToLogValue](key: String, value: T) -> Log.Attribute` は変換を一度呼ぶ。String・Boolean・Integer・UnsignedInteger64・FloatはそれぞれText・Boolean・Integer・UnsignedInteger・Floatへ変換する。Integer8/16/32・Byte（UnsignedInteger8）・UnsignedInteger16/32は全値が収まるIntegerへ、Float32はFloatへ広げる。任意のShowからの暗黙変換は行わない。
+
+| 通常の標準ハンドラ | 型と動作 |
+|---|---|
+| `Log.withAttributes[T, effect E](attributes: List[Log.Attribute], body: function() -> T uses Log, E)` | `-> T uses Log, E`。共通属性を記録の属性の前へ足し、重複と位置を保持して外側へ送り直す。enabledも外側へ問い合わせる |
+| `Log.withTextLogger[T, effect E](minimum: Log.Level, body: function() -> T uses Log, E)` | `-> T uses Console.Write, E`。両操作を処理し、最低水準以上を既定と同じ書式でstderrへ出す |
+| `Log.withSinks[T, effect E](sinks: List[Pair[Log.Level, (function(record: Log.Record) -> Unit uses E)]], body: function() -> T uses Log, E)` | `-> T uses E`。各Pairの最低水準以上の記録を、出力関数へ列順に一度ずつ渡す |
+
+【決定】withSinksのenabledは、指定水準を受ける出力先が一つでもあれば真とする。空列は偽を返し、全記録を捨てる。出力先が失敗・停止したら通常の順次評価に従い、後続を呼ばない。三つのハンドラは通常のhandleと一回のresumeを使い、本文と出力先の外側効果を保持する。リソースの捕捉にも既存の制限を適用する。
+
+【決定】未処理のLog操作だけを既定ハンドラが処理する。enabledはInfo以上で真となり、emitもInfo以上をstderrへ一記録一行で出す。利用者のハンドラが捕捉した記録を重ねて出力しない。節から送り直す操作は、そのハンドラの外側を探す。既定出力のためにConsole.Writeの宣言は要求しない。
+
+既定の書式は `level=INFO source="app/Main.bnt:12:3" message="完了" attr."count"=3` とする。level/source/message、続いて属性のリスト順に並べ、属性の重複を保つ。位置全体・メッセージ・属性の鍵・文字列値はJSONと同じ引用とエスケープを使い、改行と制御文字も一行へ収める。Booleanはtrue/false、整数は十進、有限FloatはFloat.toStringと同じ往復可能な表示、非有限Floatはnan/inf/-infとする。時刻は付けない。この一行はJSON形式ではない。
+
+【決定】既定のemitとwithTextLoggerは非公開の純粋な書式関数を共有し、整形途中も文字列の上限を検査する。既定のemitはConsoleと同じstderrバッファへ改行を含めて一度に渡す。待ち・中断・最終書き出し・出力失敗には既存のConsoleと同じ手順を使う。stderrの書き込み失敗はR0202であり、握りつぶさない。
 
 ### モジュールとエフェクト
 

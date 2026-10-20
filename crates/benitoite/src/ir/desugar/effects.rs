@@ -474,6 +474,8 @@ fn handle_effect(h: &Handle<Comp>, skipped: &[VarId]) -> EffectSet {
 }
 fn effect_without(c: &Comp, skipped: &[VarId]) -> EffectSet {
     match &c.kind {
+        CompKind::BuilderLet { body, .. } => effect_without(body, skipped),
+        CompKind::BuilderOp { .. } => EffectSet::empty(),
         CompKind::Return(_) | CompKind::Escape(_) | CompKind::Lazy { .. } => EffectSet::empty(),
         CompKind::Let { bound, body, .. } => {
             effect_without(bound, skipped).union(&effect_without(body, skipped))
@@ -511,6 +513,11 @@ fn settle_handle(h: &mut Handle<Comp>) {
 /// 再開を確定して外へエフェクトを求め直す。ラムダと遅延には入り込まない（`resume` はそこに書けない。設計書 02-03「文脈の制限」）。
 fn patch_resume(c: &mut Comp, target: VarId, eff: &EffectSet) {
     match &mut c.kind {
+        CompKind::BuilderLet { body, .. } => {
+            patch_resume(body, target, eff);
+            c.eff = body.eff.clone();
+        }
+        CompKind::BuilderOp { .. } => {}
         CompKind::Resume { cont, .. } => {
             if *cont == target {
                 c.eff = eff.clone();

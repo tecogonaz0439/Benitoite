@@ -1,0 +1,5 @@
+{"name": "work", "command": ["scripts/check.sh", "--level", "work", "--base", "498943fe6f1b87db71178354e65ba573e46cf492", "--only", "fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,doc_default,heap_local,stress_local", "--test", "golden", "--test", "random_programs", "--test", "runtime_builtins", "--test", "l13_external_commands"], "exit": 0, "seconds": 999.6}
+{"name": "clippy", "command": ["cargo", "clippy", "-p", "benitoite", "--all-targets", "--no-default-features", "--features", "gc-mark-sweep"], "exit": 0, "seconds": 33.27}
+{"name": "refinterp-heap", "command": ["cargo", "test", "-p", "benitoite", "--lib", "--no-default-features", "--features", "gc-mark-sweep,heap-verify", "refinterp::"], "exit": 0, "seconds": 34.23}
+{"name": "refinterp-stress", "command": ["cargo", "test", "-p", "benitoite", "--lib", "--no-default-features", "--features", "gc-mark-sweep,heap-verify,gc-stress", "refinterp::"], "exit": 0, "seconds": 33.6}
+{"name": "heap", "command": ["scripts/check-heap.sh"], "exit": 0, "seconds": 666.19}

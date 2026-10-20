@@ -1,0 +1,824 @@
+{
+  "base-default": {
+    "binary": "/private/tmp/z7-base-default",
+    "command": [
+      "xcrun",
+      "llvm-objdump",
+      "--demangle",
+      "--disassemble",
+      "/private/tmp/z7-base-default"
+    ],
+    "frames": {
+      "tree": {
+        "bytes": 2336,
+        "prologue": [
+          "1003d91ac: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003d91b0: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003d91b4: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003d91b8: d12403ff    \tsub\tsp, sp, #0x900",
+          "1003d91bc: f90003ff    \tstr\txzr, [sp]",
+          "1003d91c0: f9010fe8    \tstr\tx8, [sp, #0x218]",
+          "1003d91c4: f90113e0    \tstr\tx0, [sp, #0x220]",
+          "1003d91c8: f90117e1    \tstr\tx1, [sp, #0x228]",
+          "1003d91cc: f9011be2    \tstr\tx2, [sp, #0x230]",
+          "1003d91d0: f9011fe3    \tstr\tx3, [sp, #0x238]"
+        ]
+      },
+      "list_branch": {
+        "bytes": 2928,
+        "prologue": [
+          "1003dcb60: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003dcb64: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003dcb68: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003dcb6c: d12d43ff    \tsub\tsp, sp, #0xb50",
+          "1003dcb70: f90003ff    \tstr\txzr, [sp]",
+          "1003dcb74: 9125c3e9    \tadd\tx9, sp, #0x970",
+          "1003dcb78: f900bbe9    \tstr\tx9, [sp, #0x170]",
+          "1003dcb7c: f900bfe8    \tstr\tx8, [sp, #0x178]",
+          "1003dcb80: f900c3e0    \tstr\tx0, [sp, #0x180]",
+          "1003dcb84: f900c7e1    \tstr\tx1, [sp, #0x188]"
+        ]
+      },
+      "list_tree": {
+        "bytes": 3216,
+        "prologue": [
+          "1003dd3bc: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003dd3c0: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003dd3c4: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003dd3c8: d131c3ff    \tsub\tsp, sp, #0xc70",
+          "1003dd3cc: f90003ff    \tstr\txzr, [sp]",
+          "1003dd3d0: 9127c3e9    \tadd\tx9, sp, #0x9f0",
+          "1003dd3d4: f900d3e9    \tstr\tx9, [sp, #0x1a0]",
+          "1003dd3d8: f900d7e8    \tstr\tx8, [sp, #0x1a8]",
+          "1003dd3dc: f900dbe0    \tstr\tx0, [sp, #0x1b0]",
+          "1003dd3e0: f900dfe1    \tstr\tx1, [sp, #0x1b8]"
+        ]
+      },
+      "emit_length": {
+        "bytes": 6560,
+        "prologue": [
+          "1003de75c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003de760: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003de764: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003de768: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "1003de76c: f90003ff    \tstr\txzr, [sp]",
+          "1003de770: d12603ff    \tsub\tsp, sp, #0x980",
+          "1003de774: f90003ff    \tstr\txzr, [sp]",
+          "1003de778: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "1003de77c: 910a8129    \tadd\tx9, x9, #0x2a0",
+          "1003de780: f9007fe9    \tstr\tx9, [sp, #0xf8]"
+        ]
+      },
+      "emit": {
+        "bytes": 1184,
+        "prologue": [
+          "1003e0208: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003e020c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003e0210: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003e0214: d11203ff    \tsub\tsp, sp, #0x480",
+          "1003e0218: f90003ff    \tstr\txzr, [sp]",
+          "1003e021c: f90037e8    \tstr\tx8, [sp, #0x68]",
+          "1003e0220: f9003be0    \tstr\tx0, [sp, #0x70]",
+          "1003e0224: f9003fe1    \tstr\tx1, [sp, #0x78]",
+          "1003e0228: f90043e2    \tstr\tx2, [sp, #0x80]",
+          "1003e022c: f9013be0    \tstr\tx0, [sp, #0x270]"
+        ]
+      },
+      "emit_gets": {
+        "bytes": 4688,
+        "prologue": [
+          "1003e1208: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003e120c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003e1210: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003e1214: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "1003e1218: f90003ff    \tstr\txzr, [sp]",
+          "1003e121c: d108c3ff    \tsub\tsp, sp, #0x230",
+          "1003e1220: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "1003e1224: 9101cd29    \tadd\tx9, x9, #0x73",
+          "1003e1228: f9003fe9    \tstr\tx9, [sp, #0x78]",
+          "1003e122c: aa0803e9    \tmov\tx9, x8"
+        ]
+      }
+    }
+  },
+  "base-heap": {
+    "binary": "/private/tmp/z7-base-heap",
+    "command": [
+      "xcrun",
+      "llvm-objdump",
+      "--demangle",
+      "--disassemble",
+      "/private/tmp/z7-base-heap"
+    ],
+    "frames": {
+      "tree": {
+        "bytes": 2336,
+        "prologue": [
+          "10040892c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100408930: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100408934: 910043fd    \tadd\tx29, sp, #0x10",
+          "100408938: d12403ff    \tsub\tsp, sp, #0x900",
+          "10040893c: f90003ff    \tstr\txzr, [sp]",
+          "100408940: f9010fe8    \tstr\tx8, [sp, #0x218]",
+          "100408944: f90113e0    \tstr\tx0, [sp, #0x220]",
+          "100408948: f90117e1    \tstr\tx1, [sp, #0x228]",
+          "10040894c: f9011be2    \tstr\tx2, [sp, #0x230]",
+          "100408950: f9011fe3    \tstr\tx3, [sp, #0x238]"
+        ]
+      },
+      "list_branch": {
+        "bytes": 2928,
+        "prologue": [
+          "10040c2e0: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10040c2e4: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10040c2e8: 910043fd    \tadd\tx29, sp, #0x10",
+          "10040c2ec: d12d43ff    \tsub\tsp, sp, #0xb50",
+          "10040c2f0: f90003ff    \tstr\txzr, [sp]",
+          "10040c2f4: 9125c3e9    \tadd\tx9, sp, #0x970",
+          "10040c2f8: f900bbe9    \tstr\tx9, [sp, #0x170]",
+          "10040c2fc: f900bfe8    \tstr\tx8, [sp, #0x178]",
+          "10040c300: f900c3e0    \tstr\tx0, [sp, #0x180]",
+          "10040c304: f900c7e1    \tstr\tx1, [sp, #0x188]"
+        ]
+      },
+      "list_tree": {
+        "bytes": 3216,
+        "prologue": [
+          "10040cb3c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10040cb40: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10040cb44: 910043fd    \tadd\tx29, sp, #0x10",
+          "10040cb48: d131c3ff    \tsub\tsp, sp, #0xc70",
+          "10040cb4c: f90003ff    \tstr\txzr, [sp]",
+          "10040cb50: 9127c3e9    \tadd\tx9, sp, #0x9f0",
+          "10040cb54: f900d3e9    \tstr\tx9, [sp, #0x1a0]",
+          "10040cb58: f900d7e8    \tstr\tx8, [sp, #0x1a8]",
+          "10040cb5c: f900dbe0    \tstr\tx0, [sp, #0x1b0]",
+          "10040cb60: f900dfe1    \tstr\tx1, [sp, #0x1b8]"
+        ]
+      },
+      "emit_length": {
+        "bytes": 6560,
+        "prologue": [
+          "10040dedc: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10040dee0: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10040dee4: 910043fd    \tadd\tx29, sp, #0x10",
+          "10040dee8: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "10040deec: f90003ff    \tstr\txzr, [sp]",
+          "10040def0: d12603ff    \tsub\tsp, sp, #0x980",
+          "10040def4: f90003ff    \tstr\txzr, [sp]",
+          "10040def8: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "10040defc: 910a8129    \tadd\tx9, x9, #0x2a0",
+          "10040df00: f9007fe9    \tstr\tx9, [sp, #0xf8]"
+        ]
+      },
+      "emit": {
+        "bytes": 1184,
+        "prologue": [
+          "10040f988: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10040f98c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10040f990: 910043fd    \tadd\tx29, sp, #0x10",
+          "10040f994: d11203ff    \tsub\tsp, sp, #0x480",
+          "10040f998: f90003ff    \tstr\txzr, [sp]",
+          "10040f99c: f90037e8    \tstr\tx8, [sp, #0x68]",
+          "10040f9a0: f9003be0    \tstr\tx0, [sp, #0x70]",
+          "10040f9a4: f9003fe1    \tstr\tx1, [sp, #0x78]",
+          "10040f9a8: f90043e2    \tstr\tx2, [sp, #0x80]",
+          "10040f9ac: f9013be0    \tstr\tx0, [sp, #0x270]"
+        ]
+      },
+      "emit_gets": {
+        "bytes": 4688,
+        "prologue": [
+          "100410988: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10041098c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100410990: 910043fd    \tadd\tx29, sp, #0x10",
+          "100410994: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "100410998: f90003ff    \tstr\txzr, [sp]",
+          "10041099c: d108c3ff    \tsub\tsp, sp, #0x230",
+          "1004109a0: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "1004109a4: 9101cd29    \tadd\tx9, x9, #0x73",
+          "1004109a8: f9003fe9    \tstr\tx9, [sp, #0x78]",
+          "1004109ac: aa0803e9    \tmov\tx9, x8"
+        ]
+      }
+    }
+  },
+  "before-default": {
+    "binary": "/private/tmp/z7-before-default",
+    "command": [
+      "xcrun",
+      "llvm-objdump",
+      "--demangle",
+      "--disassemble",
+      "/private/tmp/z7-before-default"
+    ],
+    "frames": {
+      "build_tree": {
+        "bytes": 2160,
+        "prologue": [
+          "10088b240: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10088b244: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10088b248: 910043fd    \tadd\tx29, sp, #0x10",
+          "10088b24c: d12143ff    \tsub\tsp, sp, #0x850",
+          "10088b250: f90003ff    \tstr\txzr, [sp]",
+          "10088b254: f900f3e8    \tstr\tx8, [sp, #0x1e0]",
+          "10088b258: f900f7e0    \tstr\tx0, [sp, #0x1e8]",
+          "10088b25c: f900fbe1    \tstr\tx1, [sp, #0x1f0]",
+          "10088b260: f900ffe2    \tstr\tx2, [sp, #0x1f8]",
+          "10088b264: f90103e3    \tstr\tx3, [sp, #0x200]"
+        ]
+      },
+      "tree": {
+        "bytes": 2112,
+        "prologue": [
+          "10088c67c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10088c680: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10088c684: 910043fd    \tadd\tx29, sp, #0x10",
+          "10088c688: d12083ff    \tsub\tsp, sp, #0x820",
+          "10088c68c: f90003ff    \tstr\txzr, [sp]",
+          "10088c690: 910c43e9    \tadd\tx9, sp, #0x310",
+          "10088c694: f9008fe9    \tstr\tx9, [sp, #0x118]",
+          "10088c698: f90093e8    \tstr\tx8, [sp, #0x120]",
+          "10088c69c: f90097e0    \tstr\tx0, [sp, #0x128]",
+          "10088c6a0: f9009be1    \tstr\tx1, [sp, #0x130]"
+        ]
+      },
+      "list_branch": {
+        "bytes": 2512,
+        "prologue": [
+          "10088feb8: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10088febc: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10088fec0: 910043fd    \tadd\tx29, sp, #0x10",
+          "10088fec4: d126c3ff    \tsub\tsp, sp, #0x9b0",
+          "10088fec8: f90003ff    \tstr\txzr, [sp]",
+          "10088fecc: 9119c3e9    \tadd\tx9, sp, #0x670",
+          "10088fed0: f900a3e9    \tstr\tx9, [sp, #0x140]",
+          "10088fed4: f900a7e8    \tstr\tx8, [sp, #0x148]",
+          "10088fed8: f900abe0    \tstr\tx0, [sp, #0x150]",
+          "10088fedc: f900afe1    \tstr\tx1, [sp, #0x158]"
+        ]
+      },
+      "list_tree": {
+        "bytes": 2480,
+        "prologue": [
+          "100890678: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10089067c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100890680: 910043fd    \tadd\tx29, sp, #0x10",
+          "100890684: d12643ff    \tsub\tsp, sp, #0x990",
+          "100890688: f90003ff    \tstr\txzr, [sp]",
+          "10089068c: 9116c3e9    \tadd\tx9, sp, #0x5b0",
+          "100890690: f900b3e9    \tstr\tx9, [sp, #0x160]",
+          "100890694: f900b7e8    \tstr\tx8, [sp, #0x168]",
+          "100890698: f900bbe0    \tstr\tx0, [sp, #0x170]",
+          "10089069c: f900bfe1    \tstr\tx1, [sp, #0x178]"
+        ]
+      },
+      "emit_length": {
+        "bytes": 6208,
+        "prologue": [
+          "100892068: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10089206c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100892070: 910043fd    \tadd\tx29, sp, #0x10",
+          "100892074: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "100892078: f90003ff    \tstr\txzr, [sp]",
+          "10089207c: d12083ff    \tsub\tsp, sp, #0x820",
+          "100892080: f90003ff    \tstr\txzr, [sp]",
+          "100892084: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "100892088: 9117c529    \tadd\tx9, x9, #0x5f1",
+          "10089208c: f9005fe9    \tstr\tx9, [sp, #0xb8]"
+        ]
+      },
+      "emit": {
+        "bytes": 2064,
+        "prologue": [
+          "100893a64: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100893a68: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100893a6c: 910043fd    \tadd\tx29, sp, #0x10",
+          "100893a70: d11fc3ff    \tsub\tsp, sp, #0x7f0",
+          "100893a74: f90003ff    \tstr\txzr, [sp]",
+          "100893a78: f9004be8    \tstr\tx8, [sp, #0x90]",
+          "100893a7c: f9004fe0    \tstr\tx0, [sp, #0x98]",
+          "100893a80: f90053e1    \tstr\tx1, [sp, #0xa0]",
+          "100893a84: f90057e2    \tstr\tx2, [sp, #0xa8]",
+          "100893a88: f81703a0    \tstur\tx0, [x29, #-0x90]"
+        ]
+      },
+      "emit_gets": {
+        "bytes": 4640,
+        "prologue": [
+          "100894c2c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100894c30: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100894c34: 910043fd    \tadd\tx29, sp, #0x10",
+          "100894c38: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "100894c3c: f90003ff    \tstr\txzr, [sp]",
+          "100894c40: d10803ff    \tsub\tsp, sp, #0x200",
+          "100894c44: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "100894c48: 91006d29    \tadd\tx9, x9, #0x1b",
+          "100894c4c: f90037e9    \tstr\tx9, [sp, #0x68]",
+          "100894c50: aa0803e9    \tmov\tx9, x8"
+        ]
+      },
+      "emit_node": {
+        "bytes": 1440,
+        "prologue": [
+          "10089526c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100895270: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100895274: 910043fd    \tadd\tx29, sp, #0x10",
+          "100895278: d11603ff    \tsub\tsp, sp, #0x580",
+          "10089527c: f90003ff    \tstr\txzr, [sp]",
+          "100895280: f90037e8    \tstr\tx8, [sp, #0x68]",
+          "100895284: f9003be0    \tstr\tx0, [sp, #0x70]",
+          "100895288: f9003fe1    \tstr\tx1, [sp, #0x78]",
+          "10089528c: f90043e2    \tstr\tx2, [sp, #0x80]",
+          "100895290: f9017fe0    \tstr\tx0, [sp, #0x2f8]"
+        ]
+      }
+    }
+  },
+  "before-heap": {
+    "binary": "/private/tmp/z7-before-heap",
+    "command": [
+      "xcrun",
+      "llvm-objdump",
+      "--demangle",
+      "--disassemble",
+      "/private/tmp/z7-before-heap"
+    ],
+    "frames": {
+      "build_tree": {
+        "bytes": 2160,
+        "prologue": [
+          "1003b5cc4: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003b5cc8: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003b5ccc: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003b5cd0: d12143ff    \tsub\tsp, sp, #0x850",
+          "1003b5cd4: f90003ff    \tstr\txzr, [sp]",
+          "1003b5cd8: f900f3e8    \tstr\tx8, [sp, #0x1e0]",
+          "1003b5cdc: f900f7e0    \tstr\tx0, [sp, #0x1e8]",
+          "1003b5ce0: f900fbe1    \tstr\tx1, [sp, #0x1f0]",
+          "1003b5ce4: f900ffe2    \tstr\tx2, [sp, #0x1f8]",
+          "1003b5ce8: f90103e3    \tstr\tx3, [sp, #0x200]"
+        ]
+      },
+      "tree": {
+        "bytes": 2112,
+        "prologue": [
+          "1003b7100: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003b7104: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003b7108: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003b710c: d12083ff    \tsub\tsp, sp, #0x820",
+          "1003b7110: f90003ff    \tstr\txzr, [sp]",
+          "1003b7114: 910c43e9    \tadd\tx9, sp, #0x310",
+          "1003b7118: f9008fe9    \tstr\tx9, [sp, #0x118]",
+          "1003b711c: f90093e8    \tstr\tx8, [sp, #0x120]",
+          "1003b7120: f90097e0    \tstr\tx0, [sp, #0x128]",
+          "1003b7124: f9009be1    \tstr\tx1, [sp, #0x130]"
+        ]
+      },
+      "list_branch": {
+        "bytes": 2512,
+        "prologue": [
+          "1003ba93c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003ba940: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003ba944: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003ba948: d126c3ff    \tsub\tsp, sp, #0x9b0",
+          "1003ba94c: f90003ff    \tstr\txzr, [sp]",
+          "1003ba950: 9119c3e9    \tadd\tx9, sp, #0x670",
+          "1003ba954: f900a3e9    \tstr\tx9, [sp, #0x140]",
+          "1003ba958: f900a7e8    \tstr\tx8, [sp, #0x148]",
+          "1003ba95c: f900abe0    \tstr\tx0, [sp, #0x150]",
+          "1003ba960: f900afe1    \tstr\tx1, [sp, #0x158]"
+        ]
+      },
+      "list_tree": {
+        "bytes": 2480,
+        "prologue": [
+          "1003bb0fc: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bb100: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bb104: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bb108: d12643ff    \tsub\tsp, sp, #0x990",
+          "1003bb10c: f90003ff    \tstr\txzr, [sp]",
+          "1003bb110: 9116c3e9    \tadd\tx9, sp, #0x5b0",
+          "1003bb114: f900b3e9    \tstr\tx9, [sp, #0x160]",
+          "1003bb118: f900b7e8    \tstr\tx8, [sp, #0x168]",
+          "1003bb11c: f900bbe0    \tstr\tx0, [sp, #0x170]",
+          "1003bb120: f900bfe1    \tstr\tx1, [sp, #0x178]"
+        ]
+      },
+      "emit_length": {
+        "bytes": 6208,
+        "prologue": [
+          "1003bcaec: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bcaf0: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bcaf4: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bcaf8: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "1003bcafc: f90003ff    \tstr\txzr, [sp]",
+          "1003bcb00: d12083ff    \tsub\tsp, sp, #0x820",
+          "1003bcb04: f90003ff    \tstr\txzr, [sp]",
+          "1003bcb08: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "1003bcb0c: 9117c529    \tadd\tx9, x9, #0x5f1",
+          "1003bcb10: f9005fe9    \tstr\tx9, [sp, #0xb8]"
+        ]
+      },
+      "emit": {
+        "bytes": 2064,
+        "prologue": [
+          "1003be4e8: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003be4ec: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003be4f0: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003be4f4: d11fc3ff    \tsub\tsp, sp, #0x7f0",
+          "1003be4f8: f90003ff    \tstr\txzr, [sp]",
+          "1003be4fc: f9004be8    \tstr\tx8, [sp, #0x90]",
+          "1003be500: f9004fe0    \tstr\tx0, [sp, #0x98]",
+          "1003be504: f90053e1    \tstr\tx1, [sp, #0xa0]",
+          "1003be508: f90057e2    \tstr\tx2, [sp, #0xa8]",
+          "1003be50c: f81703a0    \tstur\tx0, [x29, #-0x90]"
+        ]
+      },
+      "emit_gets": {
+        "bytes": 4640,
+        "prologue": [
+          "1003bf6b0: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bf6b4: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bf6b8: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bf6bc: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "1003bf6c0: f90003ff    \tstr\txzr, [sp]",
+          "1003bf6c4: d10803ff    \tsub\tsp, sp, #0x200",
+          "1003bf6c8: 914007e9    \tadd\tx9, sp, #0x1, lsl #12   ; =0x1000",
+          "1003bf6cc: 91006d29    \tadd\tx9, x9, #0x1b",
+          "1003bf6d0: f90037e9    \tstr\tx9, [sp, #0x68]",
+          "1003bf6d4: aa0803e9    \tmov\tx9, x8"
+        ]
+      },
+      "emit_node": {
+        "bytes": 1440,
+        "prologue": [
+          "1003bfcf0: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bfcf4: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bfcf8: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bfcfc: d11603ff    \tsub\tsp, sp, #0x580",
+          "1003bfd00: f90003ff    \tstr\txzr, [sp]",
+          "1003bfd04: f90037e8    \tstr\tx8, [sp, #0x68]",
+          "1003bfd08: f9003be0    \tstr\tx0, [sp, #0x70]",
+          "1003bfd0c: f9003fe1    \tstr\tx1, [sp, #0x78]",
+          "1003bfd10: f90043e2    \tstr\tx2, [sp, #0x80]",
+          "1003bfd14: f9017fe0    \tstr\tx0, [sp, #0x2f8]"
+        ]
+      }
+    }
+  },
+  "after-default": {
+    "binary": "/private/tmp/z7-after-default",
+    "command": [
+      "xcrun",
+      "llvm-objdump",
+      "--demangle",
+      "--disassemble",
+      "/private/tmp/z7-after-default"
+    ],
+    "frames": {
+      "build_tree": {
+        "bytes": 2160,
+        "prologue": [
+          "10088b240: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10088b244: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10088b248: 910043fd    \tadd\tx29, sp, #0x10",
+          "10088b24c: d12143ff    \tsub\tsp, sp, #0x850",
+          "10088b250: f90003ff    \tstr\txzr, [sp]",
+          "10088b254: f900f3e8    \tstr\tx8, [sp, #0x1e0]",
+          "10088b258: f900f7e0    \tstr\tx0, [sp, #0x1e8]",
+          "10088b25c: f900fbe1    \tstr\tx1, [sp, #0x1f0]",
+          "10088b260: f900ffe2    \tstr\tx2, [sp, #0x1f8]",
+          "10088b264: f90103e3    \tstr\tx3, [sp, #0x200]"
+        ]
+      },
+      "tree": {
+        "bytes": 2112,
+        "prologue": [
+          "10088c67c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10088c680: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10088c684: 910043fd    \tadd\tx29, sp, #0x10",
+          "10088c688: d12083ff    \tsub\tsp, sp, #0x820",
+          "10088c68c: f90003ff    \tstr\txzr, [sp]",
+          "10088c690: 910c43e9    \tadd\tx9, sp, #0x310",
+          "10088c694: f9008fe9    \tstr\tx9, [sp, #0x118]",
+          "10088c698: f90093e8    \tstr\tx8, [sp, #0x120]",
+          "10088c69c: f90097e0    \tstr\tx0, [sp, #0x128]",
+          "10088c6a0: f9009be1    \tstr\tx1, [sp, #0x130]"
+        ]
+      },
+      "list_branch": {
+        "bytes": 2512,
+        "prologue": [
+          "10088feb8: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10088febc: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10088fec0: 910043fd    \tadd\tx29, sp, #0x10",
+          "10088fec4: d126c3ff    \tsub\tsp, sp, #0x9b0",
+          "10088fec8: f90003ff    \tstr\txzr, [sp]",
+          "10088fecc: 9119c3e9    \tadd\tx9, sp, #0x670",
+          "10088fed0: f900a3e9    \tstr\tx9, [sp, #0x140]",
+          "10088fed4: f900a7e8    \tstr\tx8, [sp, #0x148]",
+          "10088fed8: f900abe0    \tstr\tx0, [sp, #0x150]",
+          "10088fedc: f900afe1    \tstr\tx1, [sp, #0x158]"
+        ]
+      },
+      "list_tree": {
+        "bytes": 2480,
+        "prologue": [
+          "100890678: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10089067c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100890680: 910043fd    \tadd\tx29, sp, #0x10",
+          "100890684: d12643ff    \tsub\tsp, sp, #0x990",
+          "100890688: f90003ff    \tstr\txzr, [sp]",
+          "10089068c: 9116c3e9    \tadd\tx9, sp, #0x5b0",
+          "100890690: f900b3e9    \tstr\tx9, [sp, #0x160]",
+          "100890694: f900b7e8    \tstr\tx8, [sp, #0x168]",
+          "100890698: f900bbe0    \tstr\tx0, [sp, #0x170]",
+          "10089069c: f900bfe1    \tstr\tx1, [sp, #0x178]"
+        ]
+      },
+      "emit_length": {
+        "bytes": 5600,
+        "prologue": [
+          "100892068: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "10089206c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100892070: 910043fd    \tadd\tx29, sp, #0x10",
+          "100892074: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "100892078: f90003ff    \tstr\txzr, [sp]",
+          "10089207c: d11703ff    \tsub\tsp, sp, #0x5c0",
+          "100892080: f90003ff    \tstr\txzr, [sp]",
+          "100892084: d102ffa9    \tsub\tx9, x29, #0xbf",
+          "100892088: f9005fe9    \tstr\tx9, [sp, #0xb8]",
+          "10089208c: aa0803e9    \tmov\tx9, x8"
+        ]
+      },
+      "finish_gets": {
+        "bytes": 2480,
+        "prologue": [
+          "100892880: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100892884: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100892888: 910043fd    \tadd\tx29, sp, #0x10",
+          "10089288c: d12643ff    \tsub\tsp, sp, #0x990",
+          "100892890: f90003ff    \tstr\txzr, [sp]",
+          "100892894: f9001be8    \tstr\tx8, [sp, #0x30]",
+          "100892898: f9001fe0    \tstr\tx0, [sp, #0x38]",
+          "10089289c: f90023e2    \tstr\tx2, [sp, #0x40]",
+          "1008928a0: f90027e3    \tstr\tx3, [sp, #0x48]",
+          "1008928a4: 391f3fff    \tstrb\twzr, [sp, #0x7cf]"
+        ]
+      },
+      "finish_length": {
+        "bytes": 1088,
+        "prologue": [
+          "100893c54: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100893c58: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100893c5c: 910043fd    \tadd\tx29, sp, #0x10",
+          "100893c60: d11083ff    \tsub\tsp, sp, #0x420",
+          "100893c64: f90003ff    \tstr\txzr, [sp]",
+          "100893c68: f90017e8    \tstr\tx8, [sp, #0x28]",
+          "100893c6c: f9001be0    \tstr\tx0, [sp, #0x30]",
+          "100893c70: f9001fe1    \tstr\tx1, [sp, #0x38]",
+          "100893c74: b90047e2    \tstr\tw2, [sp, #0x44]",
+          "100893c78: f90027e3    \tstr\tx3, [sp, #0x48]"
+        ]
+      },
+      "emit": {
+        "bytes": 1296,
+        "prologue": [
+          "100893ef8: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100893efc: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100893f00: 910043fd    \tadd\tx29, sp, #0x10",
+          "100893f04: d113c3ff    \tsub\tsp, sp, #0x4f0",
+          "100893f08: f90003ff    \tstr\txzr, [sp]",
+          "100893f0c: f9003be8    \tstr\tx8, [sp, #0x70]",
+          "100893f10: f9003fe0    \tstr\tx0, [sp, #0x78]",
+          "100893f14: f90043e1    \tstr\tx1, [sp, #0x80]",
+          "100893f18: f90047e2    \tstr\tx2, [sp, #0x88]",
+          "100893f1c: f81703a0    \tstur\tx0, [x29, #-0x90]"
+        ]
+      },
+      "emit_gets": {
+        "bytes": 2720,
+        "prologue": [
+          "100894fb0: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100894fb4: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "100894fb8: 910043fd    \tadd\tx29, sp, #0x10",
+          "100894fbc: d12a03ff    \tsub\tsp, sp, #0xa80",
+          "100894fc0: f90003ff    \tstr\txzr, [sp]",
+          "100894fc4: f9002be8    \tstr\tx8, [sp, #0x50]",
+          "100894fc8: f9002fe0    \tstr\tx0, [sp, #0x58]",
+          "100894fcc: f90033e1    \tstr\tx1, [sp, #0x60]",
+          "100894fd0: f90037e2    \tstr\tx2, [sp, #0x68]",
+          "100894fd4: f81803a0    \tstur\tx0, [x29, #-0x80]"
+        ]
+      },
+      "emit_jump": {
+        "bytes": 880,
+        "prologue": [
+          "100895324: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "100895328: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "10089532c: 910043fd    \tadd\tx29, sp, #0x10",
+          "100895330: d10d43ff    \tsub\tsp, sp, #0x350",
+          "100895334: f9000be8    \tstr\tx8, [sp, #0x10]",
+          "100895338: aa0003e8    \tmov\tx8, x0",
+          "10089533c: b9001fe8    \tstr\tw8, [sp, #0x1c]",
+          "100895340: aa0103e0    \tmov\tx0, x1",
+          "100895344: f90013e0    \tstr\tx0, [sp, #0x20]",
+          "100895348: f90017e2    \tstr\tx2, [sp, #0x28]"
+        ]
+      },
+      "emit_node": {
+        "bytes": 1440,
+        "prologue": [
+          "1008954e4: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1008954e8: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1008954ec: 910043fd    \tadd\tx29, sp, #0x10",
+          "1008954f0: d11603ff    \tsub\tsp, sp, #0x580",
+          "1008954f4: f90003ff    \tstr\txzr, [sp]",
+          "1008954f8: f90037e8    \tstr\tx8, [sp, #0x68]",
+          "1008954fc: f9003be0    \tstr\tx0, [sp, #0x70]",
+          "100895500: f9003fe1    \tstr\tx1, [sp, #0x78]",
+          "100895504: f90043e2    \tstr\tx2, [sp, #0x80]",
+          "100895508: f9017fe0    \tstr\tx0, [sp, #0x2f8]"
+        ]
+      }
+    }
+  },
+  "after-heap": {
+    "binary": "/private/tmp/z7-after-heap",
+    "command": [
+      "xcrun",
+      "llvm-objdump",
+      "--demangle",
+      "--disassemble",
+      "/private/tmp/z7-after-heap"
+    ],
+    "frames": {
+      "build_tree": {
+        "bytes": 2160,
+        "prologue": [
+          "1003b5cc4: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003b5cc8: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003b5ccc: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003b5cd0: d12143ff    \tsub\tsp, sp, #0x850",
+          "1003b5cd4: f90003ff    \tstr\txzr, [sp]",
+          "1003b5cd8: f900f3e8    \tstr\tx8, [sp, #0x1e0]",
+          "1003b5cdc: f900f7e0    \tstr\tx0, [sp, #0x1e8]",
+          "1003b5ce0: f900fbe1    \tstr\tx1, [sp, #0x1f0]",
+          "1003b5ce4: f900ffe2    \tstr\tx2, [sp, #0x1f8]",
+          "1003b5ce8: f90103e3    \tstr\tx3, [sp, #0x200]"
+        ]
+      },
+      "tree": {
+        "bytes": 2112,
+        "prologue": [
+          "1003b7100: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003b7104: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003b7108: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003b710c: d12083ff    \tsub\tsp, sp, #0x820",
+          "1003b7110: f90003ff    \tstr\txzr, [sp]",
+          "1003b7114: 910c43e9    \tadd\tx9, sp, #0x310",
+          "1003b7118: f9008fe9    \tstr\tx9, [sp, #0x118]",
+          "1003b711c: f90093e8    \tstr\tx8, [sp, #0x120]",
+          "1003b7120: f90097e0    \tstr\tx0, [sp, #0x128]",
+          "1003b7124: f9009be1    \tstr\tx1, [sp, #0x130]"
+        ]
+      },
+      "list_branch": {
+        "bytes": 2512,
+        "prologue": [
+          "1003ba93c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003ba940: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003ba944: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003ba948: d126c3ff    \tsub\tsp, sp, #0x9b0",
+          "1003ba94c: f90003ff    \tstr\txzr, [sp]",
+          "1003ba950: 9119c3e9    \tadd\tx9, sp, #0x670",
+          "1003ba954: f900a3e9    \tstr\tx9, [sp, #0x140]",
+          "1003ba958: f900a7e8    \tstr\tx8, [sp, #0x148]",
+          "1003ba95c: f900abe0    \tstr\tx0, [sp, #0x150]",
+          "1003ba960: f900afe1    \tstr\tx1, [sp, #0x158]"
+        ]
+      },
+      "list_tree": {
+        "bytes": 2480,
+        "prologue": [
+          "1003bb0fc: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bb100: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bb104: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bb108: d12643ff    \tsub\tsp, sp, #0x990",
+          "1003bb10c: f90003ff    \tstr\txzr, [sp]",
+          "1003bb110: 9116c3e9    \tadd\tx9, sp, #0x5b0",
+          "1003bb114: f900b3e9    \tstr\tx9, [sp, #0x160]",
+          "1003bb118: f900b7e8    \tstr\tx8, [sp, #0x168]",
+          "1003bb11c: f900bbe0    \tstr\tx0, [sp, #0x170]",
+          "1003bb120: f900bfe1    \tstr\tx1, [sp, #0x178]"
+        ]
+      },
+      "emit_length": {
+        "bytes": 5600,
+        "prologue": [
+          "1003bcaec: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bcaf0: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bcaf4: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bcaf8: d14007ff    \tsub\tsp, sp, #0x1, lsl #12   ; =0x1000",
+          "1003bcafc: f90003ff    \tstr\txzr, [sp]",
+          "1003bcb00: d11703ff    \tsub\tsp, sp, #0x5c0",
+          "1003bcb04: f90003ff    \tstr\txzr, [sp]",
+          "1003bcb08: d102ffa9    \tsub\tx9, x29, #0xbf",
+          "1003bcb0c: f9005fe9    \tstr\tx9, [sp, #0xb8]",
+          "1003bcb10: aa0803e9    \tmov\tx9, x8"
+        ]
+      },
+      "finish_gets": {
+        "bytes": 2480,
+        "prologue": [
+          "1003bd304: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bd308: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bd30c: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bd310: d12643ff    \tsub\tsp, sp, #0x990",
+          "1003bd314: f90003ff    \tstr\txzr, [sp]",
+          "1003bd318: f9001be8    \tstr\tx8, [sp, #0x30]",
+          "1003bd31c: f9001fe0    \tstr\tx0, [sp, #0x38]",
+          "1003bd320: f90023e2    \tstr\tx2, [sp, #0x40]",
+          "1003bd324: f90027e3    \tstr\tx3, [sp, #0x48]",
+          "1003bd328: 391f3fff    \tstrb\twzr, [sp, #0x7cf]"
+        ]
+      },
+      "finish_length": {
+        "bytes": 1088,
+        "prologue": [
+          "1003be6d8: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003be6dc: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003be6e0: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003be6e4: d11083ff    \tsub\tsp, sp, #0x420",
+          "1003be6e8: f90003ff    \tstr\txzr, [sp]",
+          "1003be6ec: f90017e8    \tstr\tx8, [sp, #0x28]",
+          "1003be6f0: f9001be0    \tstr\tx0, [sp, #0x30]",
+          "1003be6f4: f9001fe1    \tstr\tx1, [sp, #0x38]",
+          "1003be6f8: b90047e2    \tstr\tw2, [sp, #0x44]",
+          "1003be6fc: f90027e3    \tstr\tx3, [sp, #0x48]"
+        ]
+      },
+      "emit": {
+        "bytes": 1296,
+        "prologue": [
+          "1003be97c: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003be980: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003be984: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003be988: d113c3ff    \tsub\tsp, sp, #0x4f0",
+          "1003be98c: f90003ff    \tstr\txzr, [sp]",
+          "1003be990: f9003be8    \tstr\tx8, [sp, #0x70]",
+          "1003be994: f9003fe0    \tstr\tx0, [sp, #0x78]",
+          "1003be998: f90043e1    \tstr\tx1, [sp, #0x80]",
+          "1003be99c: f90047e2    \tstr\tx2, [sp, #0x88]",
+          "1003be9a0: f81703a0    \tstur\tx0, [x29, #-0x90]"
+        ]
+      },
+      "emit_gets": {
+        "bytes": 2720,
+        "prologue": [
+          "1003bfa34: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bfa38: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bfa3c: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bfa40: d12a03ff    \tsub\tsp, sp, #0xa80",
+          "1003bfa44: f90003ff    \tstr\txzr, [sp]",
+          "1003bfa48: f9002be8    \tstr\tx8, [sp, #0x50]",
+          "1003bfa4c: f9002fe0    \tstr\tx0, [sp, #0x58]",
+          "1003bfa50: f90033e1    \tstr\tx1, [sp, #0x60]",
+          "1003bfa54: f90037e2    \tstr\tx2, [sp, #0x68]",
+          "1003bfa58: f81803a0    \tstur\tx0, [x29, #-0x80]"
+        ]
+      },
+      "emit_jump": {
+        "bytes": 880,
+        "prologue": [
+          "1003bfda8: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bfdac: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bfdb0: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bfdb4: d10d43ff    \tsub\tsp, sp, #0x350",
+          "1003bfdb8: f9000be8    \tstr\tx8, [sp, #0x10]",
+          "1003bfdbc: aa0003e8    \tmov\tx8, x0",
+          "1003bfdc0: b9001fe8    \tstr\tw8, [sp, #0x1c]",
+          "1003bfdc4: aa0103e0    \tmov\tx0, x1",
+          "1003bfdc8: f90013e0    \tstr\tx0, [sp, #0x20]",
+          "1003bfdcc: f90017e2    \tstr\tx2, [sp, #0x28]"
+        ]
+      },
+      "emit_node": {
+        "bytes": 1440,
+        "prologue": [
+          "1003bff68: a9be6ffc    \tstp\tx28, x27, [sp, #-0x20]!",
+          "1003bff6c: a9017bfd    \tstp\tx29, x30, [sp, #0x10]",
+          "1003bff70: 910043fd    \tadd\tx29, sp, #0x10",
+          "1003bff74: d11603ff    \tsub\tsp, sp, #0x580",
+          "1003bff78: f90003ff    \tstr\txzr, [sp]",
+          "1003bff7c: f90037e8    \tstr\tx8, [sp, #0x68]",
+          "1003bff80: f9003be0    \tstr\tx0, [sp, #0x70]",
+          "1003bff84: f9003fe1    \tstr\tx1, [sp, #0x78]",
+          "1003bff88: f90043e2    \tstr\tx2, [sp, #0x80]",
+          "1003bff8c: f9017fe0    \tstr\tx0, [sp, #0x2f8]"
+        ]
+      }
+    }
+  }
+}

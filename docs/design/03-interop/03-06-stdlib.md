@@ -42,12 +42,13 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 
 | 部分 | モジュール・型・エフェクト | 使い方 |
 |---|---|---|
-| prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`、各幅の数とその別名）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
+| prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`、各幅の数とその別名）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、`Log`・`SourceLocation`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
 | 関数内の構築器 | `Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`（後述の「StringBuilder」） | 各モジュールを明示importし、専用の注釈付きbindと直接操作を使う |
 | 標準の型クラス | `Benitoite.Trait`（後述の「標準の型クラス（初回リリース版）」） | `import Benitoite.Trait` で取り込み、`Trait.Monad.flatMap` と書く |
 | 型付きの失敗 | `Benitoite.Failure`（[エラー処理](../01-spec/01-09-errors.md#型付きの失敗と-result-の変換)） | `import Benitoite.Unofficial.Failure` で取り込み、raise/fromResult/toResult を使う |
 | 条件と対象の保持 | `Benitoite.Scope`（後述の「Scope」） | `import Benitoite.Unofficial.Scope` で取り込み、`Scope.checkHost` と書く |
-| 整数の閉区間の検査 | `Benitoite.Range`（後述の「Range」） | `import Benitoite.Unofficial.Range` で取り込み、`Range.checkInteger` と書く |
+| 整数の閉区間・Listの長さと添字の検査 | `Benitoite.Range`（後述の「Range」） | `import Benitoite.Unofficial.Range` で取り込み、`Range.checkInteger` と書く |
+| 非空Listの検査 | `Benitoite.NonEmptyList`（後述の「NonEmptyList」） | `import Benitoite.Unofficial.NonEmptyList` で明示的に取り込む |
 | 性質の試行 | `Benitoite.Test.Property`（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)） | `import Benitoite.Unofficial.Test.Property` で取り込み、`Property.check` と書く |
 | IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.Unofficial.IO.Console` で取り込み、`Console.writeLine` と書く |
 | ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)） | `import Benitoite.Unofficial.Network.Http` で取り込み、`Http.get` と書く |
@@ -76,10 +77,10 @@ end function
 
 | 状態 | モジュール | 取り込み方 |
 |---|---|---|
-| 標準 | prelude のすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait`・`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder` | prelude は import なしで使う。他はモジュールごとに明示importする |
-| 非公式 | `Benitoite.Scope`・`Benitoite.Range`、`Benitoite.Test.Property`、`Benitoite.Failure`、`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
+| 標準 | LogとSourceLocationを除くpreludeのすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait`・`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder` | prelude は import なしで使う。他はモジュールごとに明示importする |
+| 非公式 | `Benitoite.Log`・`Benitoite.SourceLocation`、`Benitoite.Scope`・`Benitoite.Range`・`Benitoite.NonEmptyList`、`Benitoite.Test.Property`、`Benitoite.Failure`、`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
 
-- 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは prelude に入らない。
+- 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは、LogとSourceLocationだけを例外としてpreludeに入れる。
 - 非公式のモジュールを `import Benitoite.IO.Console` と書くこと、標準のモジュールを `import Benitoite.Unofficial.Trait` と書くことは、どちらも標準ライブラリにないモジュールの取り込みの誤りである。診断は、その版で正しい取り込みの名前を修正案として示す（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
 - 本章とほかの章（01-spec、03-01、03-07〜03-09 など）は、非公式のモジュールも `Unofficial` を挟まない名前（`Benitoite.IO.Console`）で書く。モジュールの同一性、処理系による組み込みの型とエフェクトの照合、標準ライブラリのソースの置き場所（後述の「標準ライブラリのソースの書き方」）も、この名前による。`Benitoite.Unofficial.IO.Console` は、非公式の間の取り込みの名前である。
 - 非公式のモジュールも、設計書が定める意味に従う。パッチの版で変えないことも、標準のモジュールと同じである（[配布形態](../05-platform/05-01-distribution.md)の「互換性の方針」）。
@@ -153,7 +154,7 @@ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のSho
 
 ### Range
 
-【決定】`Benitoite.Range` は、整数の閉区間を検査する純粋な非公式モジュールである。`import Benitoite.Unofficial.Range` で取り込む。`CheckedInteger` は不透明型の `@opaque public record` とし、`minimum: Integer`・`maximum: Integer`・`value: Integer` をこの順で保存する。外部からの構築・更新・パターン・自動アクセサの使用をE0340で拒否し、型注釈と通常の値の受け渡しを許す。
+【決定】`Benitoite.Range` は、整数の閉区間とListの長さ・添字を検査する純粋な非公式モジュールである。`import Benitoite.Unofficial.Range` で取り込む。`CheckedInteger` は不透明型の `@opaque public record` とし、`minimum: Integer`・`maximum: Integer`・`value: Integer` をこの順で保存する。外部からの構築・更新・パターン・自動アクセサの使用をE0340で拒否し、型注釈と通常の値の受け渡しを許す。
 
 | 公開関数 | 型 |
 |---|---|
@@ -169,6 +170,54 @@ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のSho
 成功が表すのは、保存した端点に値が収まることである。同じCheckedInteger型でも値ごとに端点が異なるので、特定の区間を要求する関数は端点を確認するか、`value` で取り出した整数を新しい端点で再検査する。Integerへの暗黙変換や範囲付きの演算は提供しない。成否だけ要る場合は `Result.ok` でOptionへ変換できる。
 
 定数引数が逆転または範囲外でも、通常のResult.Errorを返す。Scope・Regexの定数引数の追加拒否の対象には含めない。トップレベルconstに書ける式は従来の規則に従う。実装は標準ソースの通常の関数・レコード・data・比較・Callであり、新しいVM値や範囲付きの型・エフェクトは加えない。
+
+【決定】`CheckedLength[T]` はminimum・maximum・実長・元のListを、`CheckedIndex[T]` は元のList・添字・成功した要素を保持する不透明な公開レコードである。いずれも外部の構築・更新・表現パターン・自動アクセサをE0340で拒否する。
+
+| 公開関数 | 型 |
+|---|---|
+| `checkLength` | `function[T](minimum: Integer, maximum: Integer, values: List[T]) -> Result[CheckedLength[T], LengthError]` |
+| `lengthMinimum` | `function[T](value: CheckedLength[T]) -> Integer` |
+| `lengthMaximum` | `function[T](value: CheckedLength[T]) -> Integer` |
+| `checkedLength` | `function[T](value: CheckedLength[T]) -> Integer` |
+| `lengthValues` | `function[T](value: CheckedLength[T]) -> List[T]` |
+| `checkIndex` | `function[T](index: Integer, values: List[T]) -> Result[CheckedIndex[T], IndexError]` |
+| `indexValue` | `function[T](value: CheckedIndex[T]) -> Integer` |
+| `indexValues` | `function[T](value: CheckedIndex[T]) -> List[T]` |
+| `get` | `function[T](value: CheckedIndex[T]) -> T` |
+
+`checkLength` は負のminimumまたはmaximum < minimumを先に `LengthError.InvalidBounds(minimum, maximum)` で返す。次に実長が閉区間の外なら `LengthError.OutOfRange(minimum, maximum, length)` を返し、それ以外なら端点・実長・対象の四欄を保存する。minimum = maximumは完全一致、minimum = maximum = 0は空Listを認める。`lengthMinimum`・`lengthMaximum`・`checkedLength`・`lengthValues` はそれぞれ保存した下端・上端・実長・対象を返す。
+
+`checkIndex` は0から数える添字が負または実長以上なら `IndexError.OutOfBounds(index, length)` を返す。成功時には `indexValue`・`indexValues`・`get` が保存した添字・対象・要素を返す。別のListを `get` へ渡す引数はない。理由: 長さが同じでも別の対象への検査の流用を防ぐためである。別の対象は `checkIndex` で検査し直す。
+
+二つの失敗型は公開dataであり、上記のIntegerだけを保持し、Listを保持しない。通常のTrait.Showは `InvalidBounds(-1, 0)`・`OutOfRange(1, 2, 0)`・`OutOfBounds(1, 1)` のように構成子と数値を表示する。定数の不正な入力も通常のResult.Errorであり、追加のコンパイルエラーにしない。
+
+保存したListは不変であり、検査後も成功した要素と位置が対応する。包みが存在する間は長い元Listも保持する。要素内のReferenceは共有され、中身の変更は各射影からも見える。長さの数値だけを検査する場合はCheckedIntegerを使う。長さや添字を型引数へ入れず、独自の等値やkeyの規則、Trait.Showの実装を加えない。
+
+要素が等値の型なら、`CheckedLength[T]` と `CheckedIndex[T]` の `=` は保存した欄全体を構造の等値で比べる。元のListも比較に含め、CheckedLengthではminimum・maximum・length・valuesを、CheckedIndexではvalues・index・elementを比べる。Assertの失敗の表示は、これらの内部の欄名と値を示す。表示された欄名でも、外部からの自動アクセサの使用は許さない。
+
+要素が鍵の型なら、`CheckedLength[T]` と `CheckedIndex[T]` も鍵の型であり、Mapの鍵とSetの要素に使える。鍵の比較は保存した欄の宣言順による辞書式の順序で行う。CheckedLengthではminimum・maximum・length・valuesの順、CheckedIndexではvalues・index・elementの順に比べる。Map.keysとSet.toListは、この順序の昇順で返す。
+
+実装のListの長さの上限 `MAX_LIST_LEN = 16,777,216` はIntegerの最大値 `9,223,372,036,854,775,807` 以下である。`List.length` はu32の長さを `i64::from` で損失なくIntegerへ変換する。成功し得る添字も0以上かつ実長未満なのでIntegerに収まる。数学上のList/Intを用いる独立した小モデルとの照合は、この実装上の上限の内側で行う。小モデルの証明だけで標準ソースの実装を証明したとは扱わない（[形式化の範囲](../07-quality/07-04-formal-semantics.md#01-12-との対応)）。
+
+### NonEmptyList
+
+【決定】`Benitoite.NonEmptyList` は `import Benitoite.Unofficial.NonEmptyList` で明示的に取り込む非公式モジュールであり、preludeには加えない。`NonEmptyList[T]` は先頭と残りを保存する不透明な公開レコードである。外部の構築・更新・表現パターン・自動アクセサをE0340で拒否する。内部の欄名はfirst/restとし、同名のモジュール・型の名前空間で公開関数head/tailと衝突させない。
+
+| 公開関数 | 型 |
+|---|---|
+| `fromList` | `function[T](values: List[T]) -> Result[NonEmptyList[T], EmptyListError]` |
+| `toList` | `function[T](value: NonEmptyList[T]) -> List[T]` |
+| `head` | `function[T](value: NonEmptyList[T]) -> T` |
+| `tail` | `function[T](value: NonEmptyList[T]) -> List[T]` |
+| `map` | `function[T, U, effect E](value: NonEmptyList[T], f: function(value: T) -> U uses E) -> NonEmptyList[U] uses E` |
+
+`fromList` は空Listなら公開dataの `EmptyListError.EmptyList`、非空なら先頭と残りを保存した成功値を返す。EmptyListErrorの通常のTrait.Showは `EmptyList` を返す。定数の空ListもResult.Errorである。`toList` は元の順序のListを返し、`head` は先頭の要素をOptionで包まず返す。`tail` は空でもよい。これらは純粋である。
+
+`map` は先頭を変換してから残りを元の順序で一度ずつ変換し、成功した結果も非空にする。fのエフェクトEをそのまま宣言し、途中のFailや停止を成功値へ包まない。要素内のReferenceは通常のListと同じく共有し、包みは要素を保持する。通常のList.head/getのOptionを返す契約は維持する。
+
+要素が等値の型なら、`NonEmptyList[T]` の `=` は保存したfirst・restの両方を構造の等値で比べる。Assertの失敗の表示は、内部の欄名first・restと値を示す。これらの欄名から外部の自動アクセサは使えず、公開のhead・tailを使う。Trait.Showの実装は加えない。
+
+要素が鍵の型なら、`NonEmptyList[T]` も鍵の型であり、Mapの鍵とSetの要素に使える。鍵の比較はfirst・restの順による辞書式の順序で行い、Map.keysとSet.toListは、この順序の昇順で返す。
 
 ### Integer
 
@@ -654,7 +703,7 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 
 ### 外部生成の宣言情報
 
-【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 2 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。
+【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 2 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。対象レコードの型パラメータを一律には拒否せず、再帰・型引数の対応範囲は機能ごとに生成道具が判定する。
 
 【決定】可視性はprivate・package・publicへ正規化し、互換のpublic/package欄との不一致を拒否する。opaqueと生成先からのcanConstruct/canInspectを明示する。生成先は型の宣言元のモジュールであり、宣言情報に表現を保持していても、不透明型自身のJSON復号・Property生成器・縮小器の自動生成を認めない。通常のレコードの不透明型の欄には、欄全体を扱う手書きのカスタム関数を要求する。理由: 宣言元での構築可否だけでは、検査を伴う作成経路の不変条件を守れないためである。
 
@@ -666,9 +715,9 @@ JSON 変換を要求する target では Json.Codec、Property を要求する t
 
 【決定】開発用の `tools/derive/derive.py` は、宣言情報を使う生成関数から本文を受け取り、`preview`・確認済み manifest の `apply`・再生成の `check` で管理する。CLI の引数・設定・記録の書式は [道具の契約](../../../tools/derive/README.md)で定める。JSON 変換の生成を提供する（[Json.Codec](03-08-text-and-data.md#jsoncodec)）。レコードの生成器・縮小器も提供する（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)）。JSON と Property は単独でも、同じ領域へ合わせても生成できる。
 
-【決定】型パラメータのない非循環レコードに、明示したShow・Orderの通常のimplementを生成する。Showは局所型名と宣言順の欄名を表示し、各値の引用・エスケープを欄のShowへ委ねる。Orderは宣言順に比較し、最初の非Equalで返り、それより後の欄は比較しない。すべてEqualならEqualを返す。表示の復元可能性、OrderのEqualから組み込み等値やkeyの成立は保証しない。空レコードの宣言は構文仕様どおりE0201で拒否する。
+【決定】値の型パラメータを持つレコードと同一モジュール内の正則な自己再帰・相互再帰レコードに、明示したShow・Orderの通常のimplementを生成する（[対応範囲と制約](03-08-text-and-data.md#レコードのproperty生成器)）。Showは局所型名と宣言順の欄名を表示し、各値の引用・エスケープを欄のShowへ委ねる。Orderは宣言順に比較し、最初の非Equalで返り、それより後の欄は比較しない。すべてEqualならEqualを返す。表示の復元可能性、OrderのEqualから組み込み等値やkeyの成立は保証しない。空レコードの宣言は構文仕様どおりE0201で拒否する。
 
-【決定】欄に必要な辞書は、解決済みの実装の頭・型引数・クラス制約を辿って確認する。依存する生成対象には対応するShow・Orderの明示要求を必要とし、依存先を先に生成する。dataや型パラメータのある欄も手書きの辞書があれば使える。辞書がなければderive.missing_implementation、既存の同じクラス・型の頭の実装と衝突すれば、位置を添えたderive.overlapping_implementationで拒否する。既に宣言が重複した入力は通常のE0702を保つ。本体・組み込みの制約は適用後の通常のcheck/testで検査する。
+【決定】欄に必要な辞書は、解決済みの実装の頭・型引数・クラス制約を辿って確認する。依存する生成対象には対応するShow・Orderの明示要求を必要とし、生成予定の署名を先に登録して制約を求め、依存先を先に生成する。dataや型パラメータのある欄も手書きの辞書があれば使える。辞書がなければderive.missing_implementation、既存の同じクラス・型の頭の実装と衝突すれば、位置を添えたderive.overlapping_implementationで拒否する。既に宣言が重複した入力は通常のE0702を保つ。本体・組み込みの制約は適用後の通常のcheck/testで検査する。
 
 【決定】生成先は型の宣言モジュールとし、private・package・publicの型に同じimplementを使う。不透明レコードのShow・Orderも、この場所での明示要求なら受理し、生成記録のtraitTargetにopaqueと選択したクラスを示す。JSON・Propertyも要求した場合は、無検査の構築を黙って除外せず要求全体を拒否する。同じ対象・クラスの、前回記録と本文のハッシュで認証した管理領域内の実装だけを置換できる。領域外・別領域の実装と手書きは保護する。
 
@@ -676,9 +725,9 @@ JSON 変換を要求する target では Json.Codec、Property を要求する t
 
 【決定】新たな import が必要な初回の領域は、モジュールの説明と先頭の宣言・既存の import の後、最初の通常の宣言の前へ置く。同じソースの新たな import は、この領域へ集める。既存領域がすべて宣言の後にあり、新規領域もない場合は import の追加を拒否し、利用者が宣言の前へ import を書いて再度 preview する。理由: 本番の parser は宣言の後の import を拒否するため、末尾への生成だけでは通常の検査を通らないからである。
 
-【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版2・inventoryVersion 2・hashVersion 2・道具の版2.0.0-syntax-batch3、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
+【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版3・inventoryVersion 2・hashVersion 3・道具の版3.0.0-syntax-batch4、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。宣言名順のグラフ・型引数付きの辺・強連結成分・有限基底の最小量・予算規則・生成する署名と制約・依存先の設定と指定関数・選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
 
-【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用と receipt の保存後に生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
+【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用後にreceiptへ版3・生成規則の版・新記録のSHA-256を保存してから生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
 
 【決定】旧記録のcheckは変更せずderive.migration_requiredを返し、旧manifestの新版applyはderive.incompatible_manifestで拒否する。未完の旧applyは旧道具で復旧してから、新previewで旧記録の出力ハッシュと現在の本文を照合する。不一致はderive.modified_regionで拒否する。一致した本文から新記録と差分を提案し、確認済みの新manifestを適用する。旧意味ハッシュを新版の承認として読み替えない。理由: 手書きの差分と確認した生成規則の対応を保つためである。
 

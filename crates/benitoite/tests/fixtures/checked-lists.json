@@ -1,0 +1,233 @@
+[
+  {
+    "kind": "length",
+    "minimum": 0,
+    "maximum": 0,
+    "values": [],
+    "result": "ok"
+  },
+  {
+    "kind": "length",
+    "minimum": 2,
+    "maximum": 2,
+    "values": [
+      10,
+      20
+    ],
+    "result": "ok"
+  },
+  {
+    "kind": "length",
+    "minimum": 0,
+    "maximum": 2,
+    "values": [
+      10,
+      20
+    ],
+    "result": "ok"
+  },
+  {
+    "kind": "length",
+    "minimum": 2,
+    "maximum": 5,
+    "values": [
+      10,
+      20
+    ],
+    "result": "ok"
+  },
+  {
+    "kind": "length",
+    "minimum": 1,
+    "maximum": 2,
+    "values": [],
+    "result": "OutOfRange"
+  },
+  {
+    "kind": "length",
+    "minimum": 0,
+    "maximum": 1,
+    "values": [
+      10,
+      20
+    ],
+    "result": "OutOfRange"
+  },
+  {
+    "kind": "length",
+    "minimum": -1,
+    "maximum": 0,
+    "values": [],
+    "result": "InvalidBounds"
+  },
+  {
+    "kind": "length",
+    "minimum": 2,
+    "maximum": 1,
+    "values": [],
+    "result": "InvalidBounds"
+  },
+  {
+    "kind": "length",
+    "minimum": -2,
+    "maximum": -1,
+    "values": [
+      10
+    ],
+    "result": "InvalidBounds"
+  },
+  {
+    "kind": "length",
+    "minimum": 0,
+    "maximum": -1,
+    "values": [
+      10
+    ],
+    "result": "InvalidBounds"
+  },
+  {
+    "kind": "length",
+    "minimum": 0,
+    "maximum": 9223372036854775807,
+    "values": [
+      10,
+      20
+    ],
+    "result": "ok"
+  },
+  {
+    "kind": "length",
+    "minimum": -9223372036854775808,
+    "maximum": 9223372036854775807,
+    "values": [],
+    "result": "InvalidBounds"
+  },
+  {
+    "kind": "length",
+    "minimum": 9223372036854775807,
+    "maximum": 9223372036854775807,
+    "values": [
+      10
+    ],
+    "result": "OutOfRange"
+  },
+  {
+    "kind": "index",
+    "index": 0,
+    "values": [],
+    "result": "OutOfBounds"
+  },
+  {
+    "kind": "index",
+    "index": -1,
+    "values": [
+      10
+    ],
+    "result": "OutOfBounds"
+  },
+  {
+    "kind": "index",
+    "index": 1,
+    "values": [
+      10
+    ],
+    "result": "OutOfBounds"
+  },
+  {
+    "kind": "index",
+    "index": 0,
+    "values": [
+      10
+    ],
+    "result": "ok",
+    "element": 10
+  },
+  {
+    "kind": "index",
+    "index": 1,
+    "values": [
+      10,
+      20
+    ],
+    "result": "ok",
+    "element": 20
+  },
+  {
+    "kind": "index",
+    "index": 0,
+    "values": [
+      10,
+      20
+    ],
+    "result": "ok",
+    "element": 10
+  },
+  {
+    "kind": "index",
+    "index": -9223372036854775808,
+    "values": [
+      10
+    ],
+    "result": "OutOfBounds"
+  },
+  {
+    "kind": "index",
+    "index": 9223372036854775807,
+    "values": [
+      10
+    ],
+    "result": "OutOfBounds"
+  },
+  {
+    "kind": "nonempty",
+    "values": [],
+    "result": "EmptyList"
+  },
+  {
+    "kind": "nonempty",
+    "values": [
+      3
+    ],
+    "result": "ok",
+    "head": 3,
+    "tail": [],
+    "mapped": [
+      6
+    ]
+  },
+  {
+    "kind": "nonempty",
+    "values": [
+      3,
+      4
+    ],
+    "result": "ok",
+    "head": 3,
+    "tail": [
+      4
+    ],
+    "mapped": [
+      6,
+      8
+    ]
+  },
+  {
+    "kind": "nonempty",
+    "values": [
+      4,
+      3,
+      4
+    ],
+    "result": "ok",
+    "head": 4,
+    "tail": [
+      3,
+      4
+    ],
+    "mapped": [
+      8,
+      6,
+      8
+    ]
+  }
+]

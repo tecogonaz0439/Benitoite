@@ -1,0 +1,24 @@
+{"name": "docs-local", "command": ["cargo", "test", "-p", "benitoite", "--test", "reference_examples", "--test", "skill_examples", "--test", "golden", "--", "--nocapture"], "exit": 101, "seconds": 81.538}
+{"name": "version-hash-local", "command": ["cargo", "test", "-p", "benitoite", "--lib", "modules::hash::tests::fixed_digest_and_inclusion_rules"], "exit": 0, "seconds": 5.951}
+{"name": "docs-local-fixed", "command": ["cargo", "test", "-p", "benitoite", "--test", "reference_examples", "--test", "skill_examples", "--", "--nocapture"], "exit": 0, "seconds": 13.572}
+{"name": "package-local", "command": ["cargo", "test", "-p", "benitoite", "--test", "package_command", "add_and_update_record_hashes_effect_deltas_and_unchanged_state"], "exit": 0, "seconds": 4.367}
+{"name": "dry-run", "command": ["scripts/check.sh", "--level", "work", "--base", "81fd3dc92ea6a62af681b05d155327456eb37d5e", "--only", "fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,spec_examples,reference_examples,skill_docs", "--test", "*", "--dry-run"], "exit": 0, "seconds": 0.014}
+{"name": "build", "command": ["cargo", "build", "-p", "benitoite", "--examples", "--bin", "benitoite"], "exit": 0, "seconds": 46.996}
+{"name": "clippy", "command": ["cargo", "clippy", "--all-targets"], "exit": 0, "seconds": 19.653}
+{"name": "derive", "command": ["python3", "-B", "tools/derive/test_derive.py"], "exit": 0, "seconds": 81.718}
+{"name": "scenarios", "command": ["python3", "-B", "tools/bench/compare/test_scenarios.py"], "exit": 0, "seconds": 0.761}
+{"name": "formal-build", "command": ["zsh", "-c", "cd formal && lake build"], "exit": 0, "seconds": 0.467}
+{"name": "refresh-input", "command": ["python3", "/private/tmp/benitoite-v1-refresh.py"], "exit": 0, "seconds": 4.19}
+{"name": "compare", "command": ["python3", "-B", "tools/bench/compare/test_compare.py"], "exit": 0, "seconds": 101.415}
+{"name": "export", "command": ["cargo", "test", "-p", "benitoite", "--test", "desugar_export", "export_desugar_corpus", "--", "--ignored", "--nocapture"], "exit": 0, "seconds": 763.719}
+{"name": "manifest-surface", "command": ["formal/.lake/build/bin/surfaceCheckAll", "target/formal-v1/manifest/named-programs-corpus.json", "target/formal-v1/manifest/named-programs-builtins.json", "target/formal-v1/manifest/named-programs-stdlib.json", "target/formal-v1/manifest/surface-report.json"], "exit": 0, "seconds": 47.051}
+{"name": "manifest-reconcile", "command": ["python3", "/private/tmp/benitoite-v1-manifests.py"], "exit": 1, "seconds": 20.548}
+{"name": "coverage-inputs", "command": ["cargo", "test", "-p", "benitoite", "--test", "coverage_export", "export_coverage", "--", "--ignored", "--nocapture"], "exit": 0, "seconds": 13.356}
+{"name": "manifest-reconcile-fixed", "command": ["python3", "/private/tmp/benitoite-v1-manifests.py"], "exit": 0, "seconds": 37.63}
+{"name": "work", "command": ["scripts/check.sh", "--level", "work", "--base", "81fd3dc92ea6a62af681b05d155327456eb37d5e", "--only", "fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,spec_examples,reference_examples,skill_docs", "--test", "*"], "exit": 0, "seconds": 612.08}
+{"name": "document-audit", "command": ["python3", "/private/tmp/benitoite-v1-audit.py"], "exit": 0, "seconds": 0.224}
+{"name": "manifest-boundaries", "command": ["python3", "/private/tmp/benitoite-v1-single.py"], "exit": 1, "seconds": 23.829}
+{"name": "manifest-boundaries-fixed", "command": ["python3", "/private/tmp/benitoite-v1-single.py"], "exit": 0, "seconds": 23.709}
+{"name": "version", "command": ["target/debug/benitoite", "--version=json"], "exit": 0, "seconds": 1.173}
+{"name": "skill-list", "command": ["target/debug/benitoite", "skill", "list", "--format=json"], "exit": 0, "seconds": 0.012}
+{"name": "final-audit", "command": ["python3", "/private/tmp/benitoite-v1-final-audit.py"], "exit": 0, "seconds": 0.424}

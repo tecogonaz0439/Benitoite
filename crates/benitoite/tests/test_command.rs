@@ -513,7 +513,7 @@ end function
         ),
         (
             include_str!("../testdata/patterns/todo195-decision-tree-budget.bnt"),
-            vec!["L0112", "E0512"],
+            vec!["E0512"],
             vec!["after"],
         ),
     ] {
@@ -1392,14 +1392,14 @@ fn check_does_not_run_user_code_or_write_result_lines() {
 fn check_report_and_execution_select_the_same_entries_and_functions() {
     use serde_json::{Value, json};
     let dir = Directory::new("selection-parity");
-    dir.write("suite/package.bnt", "language \"0.0.9\"\n");
+    dir.write("suite/package.bnt", "language \"0.0.10\"\n");
     dir.write("suite/Lib/Text.bnt", "public function message() -> String\n  return \"hello\"\nend function\n@test\nfunction libTest() -> Unit\nend function\n");
     dir.write("suite/tests.bnt", "import Lib.Text\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n");
     dir.write(
         "suite/none.bnt",
         "function helper() -> Unit\nend function\n",
     );
-    dir.write("suite/deps/package.bnt", "language \"0.0.9\"\n");
+    dir.write("suite/deps/package.bnt", "language \"0.0.10\"\n");
     dir.write(
         "suite/deps/tests.bnt",
         "@test\nfunction packageTest() -> Unit\nend function\n",
@@ -1902,7 +1902,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.9\"\n");
+    dir.write("package.bnt", "language \"0.0.10\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -1913,7 +1913,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.9\"\npackage Textkit\nend package\n",
+        "language \"0.0.10\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -2810,7 +2810,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     let dir = Directory::new("doc-environment");
     dir.write(
         "deps/words/package.bnt",
-        "language \"0.0.9\"\npackage Words\nend package\n",
+        "language \"0.0.10\"\npackage Words\nend package\n",
     );
     let imported_doc = documentation(
         " test",
@@ -2825,7 +2825,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
         " test",
         "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n",
         None,
-    ) + "language \"0.0.9\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
+    ) + "language \"0.0.10\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
     let file = dir.write("Docs.bnt", &source);
     let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
     assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
@@ -2834,7 +2834,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     // ディレクトリ選択の共通の根とpackage.bntの依存も引き継ぐ。
     dir.write(
         "package.bnt",
-        "language \"0.0.9\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
+        "language \"0.0.10\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
     );
     fs::remove_file(&file).unwrap();
     dir.write("nested/Docs.bnt", &documentation(" test", "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n", None));
@@ -2906,5 +2906,225 @@ fn doc_text_reports_escape_control_characters_in_example_ids() {
             out.stderr.escape_debug()
         );
         assert!(format!("{}{}", out.stdout, out.stderr).contains("doc\\u{1B}[2J.bnt"));
+    }
+}
+
+// 関門: 実行用コンパイルの回数と Store の隔離を CLI の通常/doc/複数入口で照合する。
+// 外部ランタイム単体のテストでは、test 起動が同じ所有者を渡し忘れる退行を捕まえない。
+// spec: 06-04 テストの実行
+#[test]
+fn external_session_shares_preparation_and_isolates_each_test() {
+    let dir = Directory::new("external-session");
+    fs::write(
+        dir.0.join("x.wasm"),
+        wat::parse_str(include_str!("../testdata/external/resource/x.wat")).unwrap(),
+    )
+    .unwrap();
+    dir.write(
+        "Lib/Cell.bnt",
+        include_str!("../testdata/external/resource/Lib/Cell.bnt"),
+    );
+    let pure = wat::parse_str(
+        r#"(component
+      (core module $m
+        (global $n (mut i32) (i32.const 40))
+        (func (export "typed") (result i64) i64.const 7)
+        (func (export "adapted") (result i32)
+          global.get $n i32.const 1 i32.add global.set $n global.get $n))
+      (core instance $i (instantiate $m))
+      (func (export "typed") (result s64) (canon lift (core func $i "typed")))
+      (func (export "adapted") (result u32) (canon lift (core func $i "adapted")) ))"#,
+    )
+    .unwrap();
+    fs::write(dir.0.join("pure.wasm"), &pure).unwrap();
+    // 同じ bytes を別のパスから読み込んでも、配列番号や表示名で分けない。
+    fs::write(dir.0.join("alias.wasm"), &pure).unwrap();
+    let header = r#"import Lib.Cell
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[constructor]cell")
+function newCell(start: Integer) -> Cell.Cell uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[method]cell.live")
+function live(self: Cell.Cell) -> Integer uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[method]cell.bump")
+function bump(self: Cell.Cell, by: Integer) -> Integer uses State
+@external("wasm", "pure.wasm", "typed")
+function typed() -> Integer
+@external("wasm", "pure.wasm", "adapted")
+function adapted() -> UnsignedInteger32
+"#;
+    let test_body = r#"  bind c <- newCell(10)
+  Assert.equal(actual: live(c), expected: 1)
+  Assert.equal(actual: bump(self: c, by: 2), expected: 12)
+  Assert.equal(actual: typed(), expected: 7)
+  Assert.equal(actual: adapted(), expected: 41u32)
+  Assert.equal(actual: adapted(), expected: 41u32)
+"#;
+    let stats = |out: &Outcome| -> serde_json::Value {
+        assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+        let lines: Vec<_> = out.stderr.lines().collect();
+        assert_eq!(lines.len(), 1, "{}", out.stderr);
+        serde_json::from_str(lines[0]).unwrap()
+    };
+    for count in [1, 10, 50] {
+        let cases = (0..count).map(|i| format!(
+            "@test\nfunction case{i}() -> Unit uses Assert.Check, State\n{test_body}end function\n"
+        )).collect::<String>();
+        let first = dir.write("First.bnt", &format!("{header}{cases}"));
+        let second = dir.write(
+            "Second.bnt",
+            &format!("{}{cases}", header.replace("pure.wasm", "alias.wasm")),
+        );
+        let out = run(&dir, &["--wasm-stats", &first, &second]);
+        let value = stats(&out);
+        assert_eq!(
+            value["runtime_compilations"],
+            serde_json::json!({"normal": 2, "adapter": 1})
+        );
+        assert_eq!(value["test_declaration_compilations"], 4);
+        assert_eq!(value["calls"], count * 12);
+        assert_eq!(
+            value["stateful_instances"].as_array().unwrap().len(),
+            count * 2
+        );
+        let mut source = documentation(" test", &format!("{header}{cases}"), None);
+        source.push_str(&documentation(
+            "",
+            r#"import Lib.Cell
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[constructor]cell")
+function newCell(start: Integer) -> Cell.Cell uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[method]cell.live")
+function live(self: Cell.Cell) -> Integer uses State
+@external("wasm", "pure.wasm", "adapted")
+function adapted() -> UnsignedInteger32
+function main() -> Unit uses State, Console.Write
+  bind c <- newCell(10)
+  Console.writeLine("${live(c)} ${adapted()}")
+end function
+"#,
+            Some(("output", "1 41\n")),
+        ));
+        source.push_str(&format!("{header}{cases}"));
+        let doc = dir.write("Docs.bnt", &source);
+        let out = run(&dir, &["--doc", "--wasm-stats", &doc, &second]);
+        let value = stats(&out);
+        assert_eq!(
+            value["runtime_compilations"],
+            serde_json::json!({"normal": 2, "adapter": 1})
+        );
+        assert_eq!(value["test_declaration_compilations"], 8);
+        assert_eq!(value["calls"], count * 18 + 3);
+        assert_eq!(
+            value["stateful_instances"].as_array().unwrap().len(),
+            count * 3 + 1
+        );
+    }
+    // キャッシュが既に埋まった入口の後も、次の入口の不正な外部宣言を静的に拒否する。
+    let bad = dir.write("Bad.bnt", "@external(\"wasm\", \"x.wasm\", \"bnt:test/counter@0.1.0#[constructor]cell\")\nfunction bad(start: Decimal) -> Integer\n");
+    let first = dir.path("First.bnt");
+    let out = run(&dir, &["--wasm-stats", &first, &bad]);
+    assert_eq!(out.exit, 2, "{} {}", out.stdout, out.stderr);
+    assert!(out.stderr.contains("E1010"), "{}", out.stderr);
+    // 宣言だけの実行と --check は、実行用 Engine/Component を準備しない。
+    let unused = dir.write("Unused.bnt", header);
+    let out = run(&dir, &["--wasm-stats", &unused]);
+    let value = stats(&out);
+    assert_eq!(
+        value["runtime_compilations"],
+        serde_json::json!({"normal": 0, "adapter": 0})
+    );
+    assert_eq!(value["calls"], 0);
+    let out = run(&dir, &["--check", &first]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert!(out.stderr.is_empty(), "{}", out.stderr);
+}
+
+// 関門: hereの通常レコードを実行して、Unicodeの列と包む関数の定義位置を独立期待値で照合する。
+// docでは型検査前の元コメントへの復元が必要であり、通常入力の試験では届かない。
+#[test]
+fn source_locations_execute_at_written_sites_and_original_doc_comments() {
+    let dir = Directory::new("source-location");
+    let ordinary = "function wrapped() -> SourceLocation.Location\n return SourceLocation.here()\nend function\nfunction keep(text: String, place: SourceLocation.Location) -> SourceLocation.Location\n return place\nend function\n@test\nfunction locations() -> Unit uses Assert.Check\n bind place <- keep(text: \"雪\", place: SourceLocation.here())\n Assert.equal(actual: SourceLocation.Location.file(place), expected: \"main.bnt\")\n Assert.equal(actual: SourceLocation.Location.line(place), expected: 9)\n Assert.equal(actual: SourceLocation.Location.column(place), expected: 39)\n Assert.equal(actual: SourceLocation.Location.line(wrapped()), expected: 2)\n Assert.equal(actual: SourceLocation.Location.column(wrapped()), expected: 9)\nend function\n";
+    let file = dir.write("main.bnt", ordinary);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let out = run_with(&dir, &[&file], Box::new(NoInterrupt), mode);
+        assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+        assert!(out.stdout.contains("1 passed"), "{}", out.stdout);
+    }
+    let doc = documentation(
+        " test",
+        "@test\nfunction documented() -> Unit uses Assert.Check\n bind place <- SourceLocation.here()\n Assert.equal(actual: SourceLocation.Location.file(place), expected: \"docs.bnt\")\n Assert.equal(actual: SourceLocation.Location.line(place), expected: 4)\n Assert.equal(actual: SourceLocation.Location.column(place), expected: 20)\nend function\n",
+        None,
+    );
+    let file = dir.write("docs.bnt", &doc);
+    let out = run(&dir, &["--doc", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    assert!(out.stdout.contains("1 passed"), "{}", out.stdout);
+}
+
+// 関門: 宣言上限のLogを実操作の有無で消さず、test報告と許可照合へ同じ正規名で渡す。
+#[test]
+fn log_test_report_and_effect_limits_use_the_canonical_name() {
+    let dir = Directory::new("log-contract");
+    let file = dir.write(
+        "log.bnt",
+        "@test\nfunction upper() -> Unit uses Log\n ()\nend function\n",
+    );
+    let out = run(&dir, &["--check", "--report=json", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    let report: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["schemaVersion"], 1);
+    assert_eq!(report["aggregateEffects"]["basis"], "declaredUpperBound");
+    assert_eq!(
+        report["aggregateEffects"]["expanded"],
+        serde_json::json!(["Log"])
+    );
+    let allowed = run(&dir, &["--allow-effects=Log", &file]);
+    assert_eq!(allowed.exit, 0, "{} {}", allowed.stdout, allowed.stderr);
+    let denied = run(&dir, &["--diagnostics=json", "--allow-effects=", &file]);
+    assert_eq!(denied.exit, 2, "{} {}", denied.stdout, denied.stderr);
+    assert!(denied.stderr.contains("E0512"), "{}", denied.stderr);
+    assert!(denied.stderr.contains("Log"), "{}", denied.stderr);
+}
+
+// 関門: hereの展開済みレコードと標準のLog操作を実ハンドラへ渡し、既定処理を起動せず観測する。
+#[test]
+fn log_handlers_receive_expanded_source_locations() {
+    let dir = Directory::new("log-handled-location");
+    let file = dir.write("handled.bnt", "@test\nfunction handled() -> Unit uses Assert.Check\n bind enabled <- handle Log.enabled(Log.Level.Debug) with\n  case Log.emit(record) -> resume(())\n  case Log.enabled(level) -> resume(false)\n end handle\n Assert.equal(actual: enabled, expected: false)\n handle Log.emit(record: Log.Record(level: Log.Level.Info, message: \"event\", attributes: [], location: SourceLocation.here())) with\n  case Log.emit(record) ->\n   Assert.equal(actual: Log.Record.message(record), expected: \"event\")\n   Assert.equal(actual: SourceLocation.Location.line(Log.Record.location(record)), expected: 8)\n   resume(())\n  case Log.enabled(level) -> resume(false)\n end handle\nend function\n");
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let out = run_with(&dir, &[&file], Box::new(NoInterrupt), mode);
+        assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+        assert!(out.stdout.contains("1 passed"), "{}", out.stdout);
+        assert_eq!(out.stderr, "");
+    }
+}
+
+// 関門: test実行器の捕捉・JSON報告へLogのstderrを一回渡し、stdoutと区別する。
+#[test]
+fn log_default_events_are_captured_once_by_the_test_runner() {
+    let dir = Directory::new("log-test-output");
+    let file = dir.write("events.bnt", "@test\nfunction event() -> Unit uses Log\n Log.info(message: \"test event\", attributes: [], location: SourceLocation.Location(file: \"app\", line: 1, column: 2))\nend function\n");
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let out = run_with(
+            &dir,
+            &["--diagnostics=json", "--allow-effects=Log", &file],
+            Box::new(NoInterrupt),
+            mode,
+        );
+        assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+        let lines: Vec<serde_json::Value> = out
+            .stdout
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        let tests: Vec<_> = lines.iter().filter(|line| line["kind"] == "test").collect();
+        assert_eq!(tests.len(), 1);
+        assert_eq!(tests[0]["outcome"], "passed");
+        assert_eq!(tests[0]["stdout"], "");
+        assert_eq!(
+            tests[0]["stderr"],
+            "level=INFO source=\"app:1:2\" message=\"test event\"\n"
+        );
+        assert_eq!(out.stderr, "");
     }
 }

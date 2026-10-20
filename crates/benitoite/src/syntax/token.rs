@@ -38,6 +38,7 @@ pub enum TokenKind {
     KwImplement,
     KwImport,
     KwLambda,
+    KwBlock,
     KwLazy,
     KwMatch,
     KwMod,

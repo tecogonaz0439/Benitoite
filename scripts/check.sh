@@ -244,7 +244,7 @@ check_python_tools() {
     python3 -c 'import ast, sys
 for path in sys.argv[1:]:
     with open(path, encoding="utf-8") as source:
-        ast.parse(source.read(), path)' tools/bench/*.py tools/bench/compare/*.py tools/bench/compare/scenarios/*.py tools/skill-eval/*.py tools/spec-coverage/*.py tools/syntax-measure/*.py tools/syntax-measure/bntmeasure/*.py tools/named-arguments-migrate/*.py tools/source-migrate/*.py tools/try-actions-migrate/*.py tools/derive/*.py
+        ast.parse(source.read(), path)' tools/bench/*.py tools/bench/compare/*.py tools/bench/compare/scenarios/*.py tools/skill-eval/*.py tools/spec-coverage/*.py tools/syntax-measure/*.py tools/syntax-measure/bntmeasure/*.py tools/source-migrate/*.py tools/try-actions-migrate/*.py tools/derive/*.py
 }
 
 check_formal() {
@@ -320,7 +320,7 @@ classify() {
         tools/skill-eval/*)
             select_check skill_eval "$file"
             select_check python "$file" ;;
-        tools/source-migrate/*|tools/named-arguments-migrate/*|tools/try-actions-migrate/*)
+        tools/source-migrate/*|tools/try-actions-migrate/*)
             select_check python "$file" ;;
         tools/*)
             select_check python "$file" ;;
@@ -498,7 +498,7 @@ unit_command() {
                 printf '%s\n' '      command: check_licenses (Python compares deny.toml and scripts/release/about.toml; cargo deny --version; cargo deny check licenses)'
                 return ;;
             check_python_tools)
-                printf '%s\n' '      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,named-arguments-migrate,source-migrate,try-actions-migrate,derive}/*.py)'
+                printf '%s\n' '      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,source-migrate,try-actions-migrate,derive}/*.py)'
                 return ;;
         esac
         printf '      command:'

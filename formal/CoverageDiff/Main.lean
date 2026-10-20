@@ -63,10 +63,10 @@ def field (j : Json) (k : String) : Except String Json := j.getObjVal? k
 def get [FromJson α] (j : Json) (k : String) : Except String α := field j k >>= fromJson?
 def array (j : Json) (k : String) : Except String (List Json) := get j k
 
-def readInt (j : Json) : Except String Int := do
+def readInt (j : Json) : Except String Integer64Value := do
   let n : Int ← fromJson? j
-  if n < -9223372036854775808 || n > 9223372036854775807 then throw "integer outside i64"
-  return n
+  if h : min64 ≤ n ∧ n ≤ max64 then return ⟨n, h⟩
+  else throw "integer outside i64"
 
 def readChar (j : Json) : Except String Char := do
   let n : Nat ← fromJson? j
@@ -119,7 +119,7 @@ partial def readPat (j : Json) : Except String Pat := do
   | "integerRange" =>
       let lo ← readInt (← field j "lo")
       let hi ← readInt (← field j "hi")
-      if lo > hi then throw "reversed integer range"
+      if lo.toInt > hi.toInt then throw "reversed integer range"
       return .range (.integer lo) (.integer hi)
   | "characterRange" =>
       let lo ← readChar (← field j "lo")

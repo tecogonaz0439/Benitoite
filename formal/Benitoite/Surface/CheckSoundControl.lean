@@ -477,6 +477,7 @@ theorem checkCasesSound (q : Input) : CheckCasesSound q := by
     | negFloat32 => exact negFloat32_case
     | unit => exact unit_case
     | paren => exact paren_case
+    | block => exact block_case
     | conCall => exact conCall_case
     | record => exact record_case
     | recordUpdate => exact recordUpdate_case

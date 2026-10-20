@@ -218,8 +218,8 @@ mod tests {
         }
     }
 
-    const FIXED: &str = "sha256:4a914ebb112c1bf69012b70dc9b88169f325fe05f8fb783fdd29f52dfaa927c1";
-    const CONFIG: &str = "language \"0.0.9\"\npackage Textkit\nend package\n";
+    const FIXED: &str = "sha256:93f5bee0e02fd1027351dc790ce74978714c2572ff641739894864de81d852f5";
+    const CONFIG: &str = "language \"0.0.10\"\npackage Textkit\nend package\n";
 
     fn fixture() -> MemFs {
         let mut fs = MemFs::new(&[

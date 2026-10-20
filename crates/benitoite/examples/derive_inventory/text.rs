@@ -29,7 +29,6 @@ pub const MISSING_RECORD_TYPE: &str = "missing record type";
 pub const MISSING_SOURCE: &str = "missing source";
 pub const SOURCE_ESCAPES_ROOT: &str = "source escapes root";
 pub const SOURCE_MUST_BE_RELATIVE_TO_ROOT: &str = "source must be relative to root";
-pub const TARGET_MUST_NOT_HAVE_TYPE_PARAMETERS: &str = "target must not have type parameters";
 pub const TARGET_SOURCE_DOES_NOT_MATCH_DECLARATION: &str =
     "target source does not match declaration";
 pub const TYPE_MUST_INCLUDE_ITS_MODULE_NAME: &str = "type must include its module name";

@@ -639,6 +639,8 @@ Character ranges covering all Unicode scalars need no catch-all: use `case '\u{0
 
 ## Records and data types
 
+`record` can be a lowercase name, including a parameter, argument label, binding, or value reference; it still starts a record declaration at declaration position.
+
 A record has named fields. Read a field with `Type.field(value)`; make a changed copy with `Type(..value, field: new)`. A data type lists its constructors, which are always written with the type name.
 
 Use the argument-free `@extensible` attribute on a data or record declaration when external patterns must also cover future shapes. Put it before `public` or `public(package)` if present. Inside its defining package, listing the current constructors can be exhaustive. Outside it, include an unguarded `case other ->` or `case _ ->`; a known constructor named `Other` does not cover future shapes. Guards do not count toward exhaustiveness. The rule applies through aliases and inside `Result`, `Option`, lists, and record fields. The package boundary is the same as for `public(package)`; a different module in the same package is still internal.
@@ -830,4 +832,27 @@ The checker selects `typed`, `adapter`, `dynamic`, or `stateful` before executio
 
 Default limits are 10^10 fuel, 64 MiB total guest/adapter linear memory, 16 each of core instances/memories/tables, 10,000 elements per table, and 256 MiB transfer per direction. The adapter counts the entire packed argument/result sequences, including a 32-byte header and padding. Separately, the same `--wasm-transfer` value limits logical construction per direction: 16 bytes per language value occurrence plus string/Bytes contents. Bytes elements do not count as separate values; List[Byte] elements do. Map entries discarded by duplicate-key normalization still count. ABI-only grouping tuples do not add a language value. These limits do not bound total process memory. Adapter instructions consume fuel and respond to SIGINT/SIGTERM; `Task.withTimeout` cannot cancel an external call. String/Bytes/list size limits also apply.
 
-Use `--wasm-stats` on `run` or `test` to inspect routes, fallback reasons, transfer, `construction_bytes` (the sum of both directions), and adapter failures. `--wasm-memory`, `--wasm-fuel`, and `--wasm-transfer` change limits without changing the function contract. Fuel exhaustion reports R0904, transfer/construction/memory exhaustion R0905, object limits R0906, and returned-value-size limits R0902. Traps and guest ABI violations report R0601; a declared `Result.Error` is an ordinary value. These runtime failures cannot be caught with `match` or `try`.
+Use `--wasm-stats` on `run` or `test` to inspect routes, fallback reasons, transfer, `construction_bytes` (the sum of both directions), and adapter failures. `--wasm-memory`, `--wasm-fuel`, and `--wasm-transfer` change limits without changing the function contract. Fuel exhaustion reports R0904, transfer/construction/memory exhaustion R0905, object limits R0906, and returned-value-size limits R0902. Traps and guest ABI violations report R0601; a declared `Result.Error` is an ordinary value. These runtime failures cannot be caught with `match` or `try`. `runtime_compilations.normal` and `runtime_compilations.adapter` count successful additions of runtime Components to their respective caches; `test_declaration_compilations` separately counts compilation attempts for static declaration checks of test entries and documentation examples.
+
+## Local construction and logging
+
+Use a block to return the immutable snapshot while keeping its builder local. No State is added by the dedicated operations.
+
+```benitoite
+import Benitoite.StringBuilder
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind text <- block
+    bind builder: StringBuilder <- StringBuilder.new()
+    StringBuilder.appendAll(builder: builder, texts: ["hello", " world"])
+    StringBuilder.copy(builder)
+  end block
+  Console.writeLine(text)
+end function
+```
+```output
+hello world
+```
+
+Use Log and SourceLocation from the prelude. Pass message, attributes and location explicitly; IO.All does not include Log. Use a complete handler or add Log to the accepted declared effects. For checked lengths/indices and nonempty lists, use the Range and NonEmptyList module references.

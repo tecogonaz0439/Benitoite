@@ -92,9 +92,9 @@
     }
   ],
   "namedVersions": {
-    "corpus": 12,
-    "table": 4,
-    "coverage": 4
+    "corpus": 13,
+    "table": 5,
+    "coverage": 5
   },
   "namedCoverageCases": 10,
   "namedExcluded": [],
@@ -10084,6 +10084,128 @@
       "coverage": null,
       "implementations": 0,
       "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/eval/hole_effect_order.bnt",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "group": "golden",
+      "name": "testdata/patterns/t1-integer-domain.bnt",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 1
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "group": "golden",
+      "name": "testdata/syntax/f02_block_expression.bnt",
+      "definitions": 8,
+      "scopes": {
+        "inScope": 8
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 8
+    },
+    {
+      "group": "golden",
+      "name": "testdata/test/opaque-wrapper-equality.bnt",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "group": "golden",
+      "name": "testdata/test/opaque-wrapper-key.bnt",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "group": "golden",
+      "name": "testdata/types/batch4-provenance.bnt",
+      "excluded": [
+        "Some(E0401)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/types/batch4-type-names",
+      "excluded": [
+        "Some(E0401)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/types/batch4-width-denied.bnt",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "group": "golden",
+      "name": "testdata/types/batch4-width-warnings.bnt",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
     },
     {
       "group": "random",
@@ -25708,13 +25830,50 @@
         "q3/wild",
         "q3/covered-by"
       ]
+    },
+    "future-": {
+      "version": 4,
+      "boundaryCases": 28,
+      "randomCases": 10000,
+      "seedXor": 57793,
+      "boundaryNames": [
+        "future/all-known/false",
+        "future/catchall/false",
+        "future/alternative/false",
+        "future/covered/false",
+        "future/guard/false",
+        "future/record/false",
+        "future/nested/false",
+        "future/list/false",
+        "future/single-constructor-binding/false",
+        "future/nested-record-field/false",
+        "future/guarded-catchall-after-known/false",
+        "future/duplicate-alternative/false",
+        "future/nested-catchall/false",
+        "future/list-catchall/false",
+        "future/all-known/true",
+        "future/catchall/true",
+        "future/alternative/true",
+        "future/covered/true",
+        "future/guard/true",
+        "future/record/true",
+        "future/nested/true",
+        "future/list/true",
+        "future/single-constructor-binding/true",
+        "future/nested-record-field/true",
+        "future/guarded-catchall-after-known/true",
+        "future/duplicate-alternative/true",
+        "future/nested-catchall/true",
+        "future/list-catchall/true"
+      ],
+      "randomPrefix": "future/random/"
     }
   },
   "programReports": {
     "desugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
-      "matched": 1034,
+      "matched": 1058,
       "excluded": 0
     },
     "surfaceCounts": {
@@ -25722,7 +25881,7 @@
       "preparationFailure": 0,
       "outOfScope": 19,
       "mismatched": 0,
-      "matched": 51701,
+      "matched": 51725,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
@@ -25790,7 +25949,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -25857,7 +26016,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -25924,7 +26083,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -25991,7 +26150,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -26058,7 +26217,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -26126,7 +26285,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -26188,7 +26347,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -26248,7 +26407,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "outOfScope"
       },
       {
@@ -26315,7 +26474,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:42",
+        "definition": "fn:44",
         "category": "outOfScope"
       },
       {
@@ -26370,7 +26529,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:42",
+        "definition": "fn:44",
         "category": "outOfScope"
       },
       {
@@ -26414,7 +26573,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:42",
+        "definition": "fn:44",
         "category": "outOfScope"
       },
       {
@@ -26458,7 +26617,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:42",
+        "definition": "fn:44",
         "category": "outOfScope"
       },
       {
@@ -26525,7 +26684,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:43",
+        "definition": "fn:45",
         "category": "outOfScope"
       },
       {
@@ -26591,7 +26750,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:43",
+        "definition": "fn:45",
         "category": "outOfScope"
       },
       {
@@ -26661,7 +26820,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:43",
+        "definition": "fn:45",
         "category": "outOfScope"
       },
       {
@@ -26733,7 +26892,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:43",
+        "definition": "fn:45",
         "category": "outOfScope"
       },
       {
@@ -26804,7 +26963,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:43",
+        "definition": "fn:45",
         "category": "outOfScope"
       },
       {
@@ -26874,7 +27033,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:44",
+        "definition": "fn:46",
         "category": "outOfScope"
       },
       {
@@ -26944,7 +27103,7 @@
           ]
         },
         "diagnosis": "classified",
-        "definition": "fn:45",
+        "definition": "fn:47",
         "category": "outOfScope"
       },
       {
@@ -26970,19 +27129,19 @@
         "group": "golden",
         "error": null,
         "diagnosis": "classified",
-        "definition": "fn:41",
+        "definition": "fn:43",
         "category": "q11"
       }
     ],
     "coverage": {
-      "matched": 22472,
+      "matched": 22482,
       "mismatched": 0,
       "outOfScope": 0,
       "fuelExhausted": 0
     },
-    "definitions": 73812,
-    "surfaceChecks": 51721,
-    "coverageEntries": 22472,
+    "definitions": 73836,
+    "surfaceChecks": 51745,
+    "coverageEntries": 22482,
     "randomDesugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
@@ -26991,8 +27150,8 @@
     },
     "desugarPrograms": {
       "golden": {
-        "matched": 363,
-        "excluded": 417,
+        "matched": 370,
+        "excluded": 419,
         "outside": 0,
         "mismatched": 0
       },
@@ -27043,5 +27202,10 @@
     "definitions": {
       "character-domain": 4
     }
+  },
+  "futureCoverageReport": {
+    "matched": 10028,
+    "mismatched": 0,
+    "fuelExhausted": 0
   }
 }

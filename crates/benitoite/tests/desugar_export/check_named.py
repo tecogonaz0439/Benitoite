@@ -108,8 +108,9 @@ def check_coverage_exports(directory, expected):
             require(corpus[key] == entry[key], f"{stem}coverage export: {key}")
         names = [case["name"] for case in corpus["cases"]]
         require(len(names) == len(set(names)), f"{stem}coverage export: duplicate cases")
+        prefix = entry.get("randomPrefix", "random/")
         require(set(names) == set(entry["boundaryNames"]) |
-                {f"random/{seed}" for seed in range(entry["randomCases"])},
+                {f"{prefix}{seed}" for seed in range(entry["randomCases"])},
                 f"{stem}coverage export: missing or unexpected cases")
 
 
@@ -174,7 +175,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 12, "width corpus version")
+    require(corpus["version"] == 13, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -495,7 +496,8 @@ def main():
                for entry in manifest["named"]}
     coverage = coverage_dir / "named-corpus.json"
     data = read(coverage)
-    require(data["version"] == manifest["namedVersions"]["coverage"], "coverage version")
+    # 独立Coverageの版4と、corpus13に付くプログラムsidecarの版5は別契約。
+    require(data["version"] == manifest["coverageExports"]["named-"]["version"], "coverage version")
     require(len(data["cases"]) == manifest["namedCoverageCases"], "coverage cases")
     report = run("coverageDiff", [coverage], coverage_dir / "named-report.json")
     require(report["matched"] == manifest["namedCoverageCases"] and report["mismatched"] == 0
@@ -507,7 +509,11 @@ def main():
     # 全件一致の条件と失敗の終了状態は維持する（設計書 07-04「01-12 との対応」）。
     report = run("coverageDiff", [coverage_dir / "named-all-corpus.json"], coverage_dir / "named-all-report.json")
     require({k: report[k] for k in manifest["allCoverageReport"]} == manifest["allCoverageReport"], "all independent coverage")
-    print("named export: manifest agrees; corpus 12, tables 4 and coverage 4 match all six entries")
+    # view付きの全件はcheck-formal.shが先に比較済みであり、その報告の件数も固定する。
+    future = read(coverage_dir / "future-report.json")
+    require({k: future[k] for k in manifest["futureCoverageReport"]} == manifest["futureCoverageReport"],
+            "all independent coverage with views")
+    print("named export: manifest agrees; corpus 13, tables/program coverage 5 and independent coverage 4 match all six entries")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.80s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-0a94ac17128e77fc)
+
+running 1 test
+
+thread 'named::export_hole_argument_plans' (12909848) panicked at crates/benitoite/tests/desugar_export/named.rs:827:9:
+assertion `left == right` failed: sample
+  left: Object {"ret": Object {"value": Object {"lam": Object {"body": Object {"letIn": Object {"body": Object {"letIn": Object {"body": Object {"letIn": Object {"body": Object {"letIn": Object {"body": Object {"letIn": Object {"body": Object {"app": Object {"args": Array [Object {"var": Object {"index": Number(0)}}, Object {"var": Object {"index": Number(1)}}, Object {"var": Object {"index": Number(2)}}, Object {"var": Object {"index": Number(3)}}], "callee": Object {"var": Object {"index": Number(4)}}}}, "bound": Object {"app": Object {"args": Array [], "callee": Object {"fnRef": Object {"effs": Array [], "name": String("fn:41"), "tys": Array []}}}}}}, "bound": Object {"ret": Object {"value": Object {"var": Object {"index": Number(3)}}}}}}, "bound": Object {"app": Object {"args": Array [], "callee": Object {"fnRef": Object {"effs": Array [], "name": String("fn:41"), "tys": Array []}}}}}}, "bound": Object {"ret": Object {"value": Object {"var": Object {"index": Number(2)}}}}}}, "bound": Object {"ret": Object {"value": Object {"var": Object {"index": Number(2)}}}}}}, "names": Array [String("d"), String("b")], "params": Array [Object {"base": Object {"name": String("Integer")}}, Object {"base": Object {"name": String("Integer")}}]}}}}
+ right: Object {"ret": Object {"value": Object {"lam": Object {"body": Object {"letIn": Object {"body": Object {"letIn": Object {"body": Object {"letIn": Object {"body": Object {"app": Object {"args": Array [Object {"var": Object {"index": Number(0)}}, Object {"var": Object {"index": Number(3)}}, Object {"var": Object {"index": Number(1)}}, Object {"var": Object {"index": Number(4)}}], "callee": Object {"var": Object {"index": Number(2)}}}}, "bound": Object {"app": Object {"args": Array [], "callee": Object {"fnRef": Object {"effs": Array [], "name": String("fn:41"), "tys": Array []}}}}}}, "bound": Object {"app": Object {"args": Array [], "callee": Object {"fnRef": Object {"effs": Array [], "name": String("fn:41"), "tys": Array []}}}}}}, "bound": Object {"ret": Object {"value": Object {"var": Object {"index": Number(2)}}}}}}, "names": Array [String("d"), String("b")], "params": Array [Object {"base": Object {"name": String("Integer")}}, Object {"base": Object {"name": String("Integer")}}]}}}}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test named::export_hole_argument_plans ... FAILED
+
+failures:
+
+failures:
+    named::export_hole_argument_plans
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.08s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

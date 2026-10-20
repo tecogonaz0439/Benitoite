@@ -47,6 +47,88 @@ impl Drop for Project {
     }
 }
 
+// 関門: 新しい標準型の属性・所有元を取り落とすと、利用者が保証を偽造できる。
+// 一般のopaqueのテストでは標準モジュールの登録漏れを捕まえられない。
+#[test]
+fn checked_lists_hide_representation_and_bind_indices_to_their_list() {
+    use benitoite::diag::DiagCode as C;
+    for (module, name, fields) in [
+        (
+            "Range",
+            "CheckedLength",
+            vec![
+                ("minimum", "0"),
+                ("maximum", "1"),
+                ("length", "0"),
+                ("values", "[]"),
+            ],
+        ),
+        (
+            "Range",
+            "CheckedIndex",
+            vec![("values", "[7]"), ("index", "0"), ("element", "7")],
+        ),
+        (
+            "NonEmptyList",
+            "NonEmptyList",
+            vec![("first", "7"), ("rest", "[]")],
+        ),
+    ] {
+        let ctor = format!("{module}.{name}");
+        let args = fields
+            .iter()
+            .map(|(name, value)| format!("{name}: {value}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let pattern = fields
+            .iter()
+            .map(|(name, _)| format!("{name}: _"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let mut expressions = vec![
+            format!("{ctor}({args})"),
+            format!("{ctor}(..value, {}: {})", fields[0].0, fields[0].1),
+            format!("match value with case {ctor}({pattern}) -> () end match"),
+            ctor.clone(),
+        ];
+        expressions.extend(
+            fields
+                .iter()
+                .map(|(field, _)| format!("{ctor}.{field}(value)")),
+        );
+        for expr in expressions {
+            let source = format!(
+                "import Benitoite.Unofficial.{module}\nfunction sample(value: {ctor}[Integer]) -> Unit\nbind _ <- {expr}\nend function\n"
+            );
+            let checked = pipeline::check_text(
+                "checked-lists.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+            );
+            let codes: Vec<_> = checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect();
+            assert_eq!(codes, [C::E0340], "{expr}: {:?}", checked.diagnostics);
+            assert!(checked.program.is_none());
+        }
+    }
+    let checked = pipeline::check_text("checked-index.bnt", b"import Benitoite.Unofficial.Range\nfunction sample(value: Range.CheckedIndex[Integer]) -> Integer\nreturn Range.get(value, [99])\nend function\n", CheckOptions { require_main: false, deny_warnings: false });
+    let codes: Vec<_> = checked
+        .diagnostics
+        .iter()
+        .filter(|d| d.is_error())
+        .filter_map(|d| d.code)
+        .collect();
+    assert_eq!(codes, [C::E0402], "{:?}", checked.diagnostics);
+    assert!(checked.program.is_none());
+}
+
 // 四問: 本体が未生成でも宣言の解決・制約・位置を取得できる契約を守る。
 // 通常の check を誤って呼ぶ退行と、宣言の検査を省く退行で失敗する。
 // 既存の check のテストは本体を無視する境界と JSON 出力を通らない。
@@ -422,4 +504,133 @@ fn inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries(
         result["target"],
         json!({"tag":"named","name":"Benitoite.Result.Result"})
     );
+}
+
+// 関門: 標準のLogだけを組み込みとして扱い、IO.All・利用者同名・as禁止を独立に確かめる。
+// 宣言の収集と公開checkを通すので、名前の綴りだけのテストにはしない。
+#[test]
+fn log_standard_declarations_and_effect_identity() {
+    use benitoite::diag::DiagCode as C;
+    use benitoite::pipeline::{self, CheckOptions};
+    let p = Project::new();
+    p.write(
+        "main.bnt",
+        "function main() -> Unit uses Log\n ()\nend function\n",
+    );
+    let result = collect_declarations(&p.entry(), &RealFs);
+    assert!(result.inventory.is_some(), "{:?}", result.diagnostics);
+    let inventory = result.inventory.unwrap();
+    let log = inventory.resolved.stdlib("Benitoite.Log.Log").unwrap();
+    let definition = inventory.types.effects.get(log).unwrap();
+    assert!(matches!(
+        definition.name,
+        benitoite::types::EffectName::Builtin(_)
+    ));
+    assert_eq!(definition.ops.len(), 2);
+    let opts = CheckOptions {
+        require_main: true,
+        deny_warnings: false,
+    };
+    for (header, expected) in [
+        ("uses Log", vec![]),
+        ("", vec![C::E0501]),
+        ("uses IO.All", vec![C::E0501]),
+    ] {
+        let source = format!(
+            "function main() -> Unit {header}\n bind _ <- Log.enabled(Log.Level.Debug)\nend function\n"
+        );
+        let checked = pipeline::check_text("main.bnt", source.as_bytes(), opts);
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{:?}",
+            checked.diagnostics
+        );
+    }
+    for (source, expected) in [
+        (
+            "import Benitoite.Unofficial.Log as L\nfunction main() -> Unit\n ()\nend function\n",
+            C::E0339,
+        ),
+        (
+            "effect Log\n function entry() -> Unit\nend effect\nfunction main() -> Unit uses Log\n ()\nend function\n",
+            C::E0506,
+        ),
+    ] {
+        let checked = pipeline::check_text("main.bnt", source.as_bytes(), opts);
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            [expected],
+            "{:?}",
+            checked.diagnostics
+        );
+    }
+    let checked = pipeline::check_text("main.bnt", b"function main() -> Unit\n handle Log.emit(record: Log.Record(level: Log.Level.Info, message: \"event\", attributes: [], location: SourceLocation.here())) with\n  case Log.emit(record) -> resume(())\n  case Log.enabled(level) -> resume(false)\n end handle\nend function\n", opts);
+    assert!(checked.program.is_some(), "{:?}", checked.diagnostics);
+}
+
+// 関門: Logを処理した後もsink/本文の外側効果を宣言し、withAttributesはLogを残す。
+#[test]
+fn log_standard_handlers_keep_the_outer_effect_contract() {
+    use benitoite::diag::DiagCode;
+    use benitoite::pipeline::{self, CheckOptions};
+    for (body, effect) in [
+        (
+            "Log.withTextLogger(minimum: Log.Level.Info, body: lambda() Log.info(message: \"event\", attributes: [], location: SourceLocation.here()) end lambda)",
+            "Console.Write",
+        ),
+        (
+            "Log.withAttributes(attributes: [], body: lambda() Log.info(message: \"event\", attributes: [], location: SourceLocation.here()) end lambda)",
+            "Log",
+        ),
+        (
+            "Log.withSinks(sinks: [Pair(Log.Level.Debug, lambda(record: Log.Record) Console.writeLine(Log.Record.message(record)) end lambda)], body: lambda() Log.info(message: \"event\", attributes: [], location: SourceLocation.here()) end lambda)",
+            "Console.Write",
+        ),
+    ] {
+        for declared in [false, true] {
+            let header = if declared {
+                format!("uses {effect}")
+            } else {
+                String::new()
+            };
+            let source = format!(
+                "import Benitoite.Unofficial.IO.Console\nfunction main() -> Unit {header}\n {body}\nend function\n"
+            );
+            let checked = pipeline::check_text(
+                "log-contract.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: true,
+                    deny_warnings: false,
+                },
+            );
+            let expected = if declared {
+                vec![]
+            } else {
+                vec![DiagCode::E0501]
+            };
+            assert_eq!(
+                checked
+                    .diagnostics
+                    .iter()
+                    .filter(|d| d.is_error())
+                    .filter_map(|d| d.code)
+                    .collect::<Vec<_>>(),
+                expected,
+                "{source}: {:?}",
+                checked.diagnostics
+            );
+        }
+    }
 }

@@ -274,6 +274,7 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
             Expr::Unary(u) => work.push(Work::Expr(&u.operand, owner)),
             Expr::Return(r) => work.push(Work::Expr(&r.value, owner)),
             Expr::Resume(r) => work.push(Work::Expr(&r.value, owner)),
+            Expr::Block(b) => work.push(Work::Block(&b.body, owner)),
             Expr::Lazy(l) => work.push(Work::Block(&l.body, owner)),
             Expr::With(w) => {
                 for b in &w.binds {

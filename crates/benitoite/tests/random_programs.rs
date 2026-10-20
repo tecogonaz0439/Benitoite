@@ -73,6 +73,14 @@ fn options() -> CheckOptions {
 
 // 比較から外した結果も生成器の誤りとして扱う。成功例を捨てて別の種で穴埋めしない。
 fn evaluate(seed: u64, source: &str) -> Result<(), Failure> {
+    evaluate_with_return_requirement(seed, source, false)
+}
+
+fn evaluate_with_return_requirement(
+    seed: u64,
+    source: &str,
+    require_returned: bool,
+) -> Result<(), Failure> {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         let checked =
             pipeline::check_text(&format!("random-{seed}.bnt"), source.as_bytes(), options());
@@ -94,7 +102,10 @@ fn evaluate(seed: u64, source: &str) -> Result<(), Failure> {
             input(),
             VmConfig::default(),
             mode,
-            differential::CompareOptions::default(),
+            differential::CompareOptions {
+                require_returned,
+                ..Default::default()
+            },
             Box::new(|| Ok(())),
         ) {
             Comparison::Matched => {}
@@ -319,5 +330,105 @@ fn constrained_operation_call_forms_differential() {
         if let Err(failure) = evaluate(u64::try_from(index).unwrap(), &source) {
             panic!("{name}: {}\n{source}", failure.detail);
         }
+    }
+}
+
+// 作成時の関門: ソースから生成した共有判定がコード生成で再展開されず、
+// VM と独立した Core Match の参照評価が先頭・末尾・不一致を実行できる契約を守る。
+// 下位化だけの比較では Join の引数とレジスタの接続の誤りを検出できない。
+#[test]
+fn shared_decisions_execute_previous_exponential_cases() {
+    for groups in [13, 16, 24] {
+        let mut source = String::from("import Benitoite.Unofficial.IO.Console\nrecord R\n");
+        for field in 0..groups * 2 {
+            source.push_str(&format!("  f{field}: Boolean\n"));
+        }
+        source.push_str("end record\nfunction choose(x: R) -> Integer\n  return match x with\n");
+        for group in 0..groups {
+            source.push_str(&format!(
+                "    case R(f{}: true, f{}: true, ..) -> {group}\n",
+                group * 2,
+                group * 2 + 1
+            ));
+        }
+        source.push_str("    case _ -> -1\n  end match\nend function\nfunction main() -> Unit uses Console.Write\n");
+        for selected in [Some(0), Some(groups - 1), None] {
+            let fields = (0..groups * 2)
+                .map(|field| format!("f{field}: {}", selected.is_some_and(|i| field / 2 == i)))
+                .collect::<Vec<_>>()
+                .join(", ");
+            source.push_str(&format!(
+                "  Console.writeLine(Integer.toString(choose(R({fields}))))\n"
+            ));
+        }
+        source.push_str("end function\n");
+        evaluate(200 + u64::try_from(groups).unwrap(), &source).unwrap();
+    }
+}
+
+// 作成時の関門: 長さ分割の試行を破棄しても、ガード偽で同じ case の次の選択肢へ戻らず、
+// 後続 case の末尾の束縛と slice を VM へ渡すことを守る。短いリストでは予算切替を通らない。
+#[test]
+fn row_fallback_preserves_guard_alternatives_and_list_bindings() {
+    // gc-stress の小さい入力は共有経路を通る。行照合そのものは decision の
+    // 同名の局所テストが予算を使い切り、両構成で VM まで通して確かめる。
+    let len = if cfg!(feature = "gc-stress") { 64 } else { 400 };
+    let mut first = vec!["_"; len];
+    first[0] = "x";
+    first[1] = "0";
+    let mut second = vec!["_"; len];
+    second[len - 1] = "x";
+    second[len - 2] = "0";
+    let source = format!(
+        "import Benitoite.Unofficial.IO.Console\nfunction pick(xs: List[Integer]) -> Integer\n return match xs with\n case [{}], [{}] if x > 1 -> 10\n case [_, ..tail] -> List.length(tail)\n case [] -> -2\n end match\nend function\nfunction main() -> Unit uses Console.Write\n Console.writeLine(Integer.toString(pick([1, {}, 2])))\n Console.writeLine(Integer.toString(pick([])))\nend function\n",
+        first.join(", "),
+        second.join(", "),
+        vec!["0"; len - 2].join(", ")
+    );
+    evaluate(260, &source).unwrap();
+}
+
+// 作成時の関門: 共有する通常値を比較から除かず、往復後の小さい観察結果を独立期待と比べる。
+// 変換単体ではList.getとList.lengthへ至る実ソースの接続を検査できない。
+#[test]
+fn shared_bridge_values_are_compared_with_small_observations() {
+    let depths: &[u32] = if cfg!(feature = "gc-stress") {
+        &[6]
+    } else {
+        &[8, 12]
+    };
+    for &depth in depths {
+        let source = format!(
+            r#"import Benitoite.Unofficial.IO.Console
+ data Tree
+   Leaf(Integer)
+   Fork(Tree, Tree)
+ end data
+ function doubled(depth: Integer) -> Tree
+   if depth = 0 then return Tree.Leaf(7) end if
+   bind child <- doubled(depth - 1)
+   return Tree.Fork(child, child)
+ end function
+ function leftmost(tree: Tree) -> Integer
+   return match tree with
+     case Tree.Leaf(n) -> n
+     case Tree.Fork(a, _) -> leftmost(a)
+   end match
+ end function
+ function main() -> Result[Unit, String] uses Console.Write
+   bind tree <- doubled({depth})
+   bind trees <- [tree, tree]
+   bind actual <- match List.get(xs: trees, i: 1) with
+     case Option.Some(value) -> leftmost(value)
+     case Option.None -> -1
+   end match
+   bind length <- List.length(trees)
+   Console.writeLine(Integer.toString(actual))
+   if actual = 7 and length = 2 then return Result.Ok(()) end if
+   return Result.Error("shared bridge observation")
+ end function
+"#
+        );
+        evaluate_with_return_requirement(u64::from(depth), &source, true).unwrap();
     }
 }

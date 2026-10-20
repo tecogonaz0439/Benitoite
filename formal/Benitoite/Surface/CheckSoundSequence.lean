@@ -130,7 +130,7 @@ theorem block_lastDiscard_case {q e} : CaseSound q (.block (.lastDiscard e)) := 
   cases eq
   exact ⟨.B_LastDiscard ht.1, trivial, ht.2.2⟩
 
-theorem block_builderBind_case {q k refs rest} : CaseSound q (.block (.builderBind k refs rest)) := by
+theorem block_builderBind_case {q k rest} : CaseSound q (.block (.builderBind k rest)) := by
   intro ih
   have ihr : BlockSound q rest := ih (.block rest) (by simp [CheckNode.size] <;> omega)
   intro Δ C Γ R p path s s' a ε hB hq he hΓ hR h
@@ -140,22 +140,9 @@ theorem block_builderBind_case {q k refs rest} : CaseSound q (.block (.builderBi
   have hk := Bool.and_eq_true_iff.mp (require_ok hkind).1
   have hc := (cleanTy_spec _ _ he.1).mp hk.1
   have hs := (singleTyCheck_spec _ he.1).mp hk.2
-  obtain ⟨u, hstateCheck, h⟩ := checking_lift_bind_ok h
-  have hstate := singleEff_atoms q.atoms (.name stateEff) (List.mem_of_elem_eq_true (require_ok hstateCheck).1)
-  obtain ⟨u, hrefs, h⟩ := checking_lift_bind_ok h
-  have hr := Bool.and_eq_true_iff.mp (require_ok hrefs).1
-  have heq := BuilderKind.contents_injective (tyEq_sound he.1
-    he.2.1 hr.1)
-  have hrAtoms : refs.kind.contents.AtomsIn q.atoms := heq ▸ he.1
-  have hrOk := BuilderRefs.check_sound hq.declarations hq.builtins hq.sat hq.admits
-    (BuilderCtx.atomsIn_builder hB.atoms he.1) hrAtoms he.2.2.1 (by simpa only [singleEff_eq_contains (require_ok hstateCheck).1] using hstate) hr.2
-  obtain ⟨⟨b, εs⟩, mid, hb, h⟩ := checking_bind_ok h
-  have ht := ihr (some k :: Δ) C (none :: Γ) R p _ _ _ _ _ (hB.builder hc he.1 hs) hq he.2.2.2
-    (by intro t ht; exact hΓ t (by simpa using ht)) hR hb
-  obtain ⟨eq, _⟩ := checking_pure_ok h
-  cases eq
-  rw [union_eq hstate ht.2.2, singleEff_eq_contains (require_ok hstateCheck).1]
-  exact ⟨.B_BuilderBind heq.symm hc hs hrOk ht.1, ht.2.1, (by simpa only [singleEff_eq_contains (require_ok hstateCheck).1] using CheckTools.union_atoms hstate ht.2.2)⟩
+  have ht := ihr (some k :: Δ) C (none :: Γ) R p _ _ _ _ _ (hB.builder hc he.1 hs) hq he.2
+    (by intro t ht; exact hΓ t (by simpa using ht)) hR h
+  exact ⟨.B_BuilderBind hc hs ht.1, ht.2⟩
 
 theorem block_bind_case {q k t e rest} : CaseSound q (.block (.bind k t e rest)) := by
   intro ih

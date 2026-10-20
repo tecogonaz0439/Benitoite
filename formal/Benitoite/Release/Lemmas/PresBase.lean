@@ -13,8 +13,8 @@ variable {P : Program} {B : Builtins}
 
 mutual
   /-- エフェクト変数の範囲の条件を外す。 -/
-  theorem Val.VarsIn.toTrue {n : Nat} {pe : Nat → Prop} : (v : Val) → Val.VarsIn n pe v →
-      Val.VarsIn n (fun _ => True) v
+  theorem Val.VarsIn.toTrue {depth n : Nat} {pe : Nat → Prop} : (v : Val) → Val.VarsIn n pe v depth →
+      Val.VarsIn n (fun _ => True) v depth
     | .var _, _ => trivial
     | .const _, _ => trivial
     | .fnRef _ _ es, h => by
@@ -45,14 +45,24 @@ mutual
         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Val.VarsInList.toTrue args h.2⟩
     | .super v _, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsIn.toTrue v h
 
-  theorem Val.VarsInList.toTrue {n : Nat} {pe : Nat → Prop} : (vs : List Val) →
-      Val.VarsInList n pe vs → Val.VarsInList n (fun _ => True) vs
+  theorem Val.VarsInList.toTrue {depth n : Nat} {pe : Nat → Prop} : (vs : List Val) →
+      Val.VarsInList n pe vs depth → Val.VarsInList n (fun _ => True) vs depth
     | [], _ => trivial
     | v :: vs, h => by
         simp only [Val.VarsInList] at h ⊢; exact ⟨Val.VarsIn.toTrue v h.1, Val.VarsInList.toTrue vs h.2⟩
 
-  theorem Comp.VarsIn.toTrue {n : Nat} {pe : Nat → Prop} : (m : Comp) → Comp.VarsIn n pe m →
-      Comp.VarsIn n (fun _ => True) m
+  theorem Comp.VarsIn.toTrue {depth n : Nat} {pe : Nat → Prop} : (m : Comp) → Comp.VarsIn n pe m depth →
+      Comp.VarsIn n (fun _ => True) m depth
+    | .builderLet k body, h => by
+        refine ⟨?_, Comp.VarsIn.toTrue body h.2⟩
+        cases k with
+        | list a => exact Ty.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) a h.1
+        | string | bytes => trivial
+    | .builderOp k op ref args, h => by
+        refine ⟨?_, h.2.1, Val.VarsInList.toTrue args h.2.2⟩
+        cases k with
+        | list a => exact Ty.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) a h.1
+        | string | bytes => trivial
     | .ret v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.toTrue v h
     | .letIn m k, h => by
         simp only [Comp.VarsIn] at h ⊢; exact ⟨Comp.VarsIn.toTrue m h.1, Comp.VarsIn.toTrue k h.2⟩
@@ -76,8 +86,8 @@ mutual
         exact ⟨Val.VarsIn.toTrue d h.1, Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.2.1,
           Eff.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) es h.2.2.1, Val.VarsInList.toTrue args h.2.2.2⟩
 
-  theorem Arm.VarsInList.toTrue {n : Nat} {pe : Nat → Prop} : (arms : List Arm) →
-      Arm.VarsInList n pe arms → Arm.VarsInList n (fun _ => True) arms
+  theorem Arm.VarsInList.toTrue {depth n : Nat} {pe : Nat → Prop} : (arms : List Arm) →
+      Arm.VarsInList n pe arms depth → Arm.VarsInList n (fun _ => True) arms depth
     | [], _ => trivial
     | .mk alts none m :: arms, h => by
         simp only [Arm.VarsInList] at h ⊢
@@ -87,8 +97,8 @@ mutual
         exact ⟨Comp.VarsIn.toTrue g h.1,
           Comp.VarsIn.toTrue m h.2.1, Arm.VarsInList.toTrue arms h.2.2⟩
 
-  theorem Clause.VarsInList.toTrue {n : Nat} {pe : Nat → Prop} : (hs : List Clause) →
-      Clause.VarsInList n pe hs → Clause.VarsInList n (fun _ => True) hs
+  theorem Clause.VarsInList.toTrue {depth n : Nat} {pe : Nat → Prop} : (hs : List Clause) →
+      Clause.VarsInList n pe hs depth → Clause.VarsInList n (fun _ => True) hs depth
     | [], _ => trivial
     | .mk _ _ _ m :: cs, h => by
         simp only [Clause.VarsInList] at h ⊢

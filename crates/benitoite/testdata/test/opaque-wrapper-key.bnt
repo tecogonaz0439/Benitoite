@@ -1,0 +1,43 @@
+// spec: 01-06 鍵の型（初回リリース版）
+// 03-06「Range」「NonEmptyList」: 包みをMap/Setの鍵にし、保存した欄の比較順を外部から確かめる。
+import Benitoite.Unofficial.NonEmptyList
+import Benitoite.Unofficial.Range
+
+@test
+function structuralKeys() -> Unit uses Assert.Check
+  match [
+    Range.checkLength(minimum: 0, maximum: 5, values: [9]),
+    Range.checkLength(minimum: 0, maximum: 5, values: [10]),
+    Range.checkLength(minimum: 0, maximum: 5, values: [1, 1]),
+    Range.checkLength(minimum: 0, maximum: 6, values: [0]),
+    Range.checkLength(minimum: 1, maximum: 1, values: [0])
+  ] with
+    case [Result.Ok(a), Result.Ok(b), Result.Ok(c), Result.Ok(d), Result.Ok(e)] ->
+      bind map <- Map.fromList([Pair(e, 5), Pair(c, 3), Pair(a, 1), Pair(d, 4), Pair(b, 2)])
+      Assert.equal(actual: Map.keys(map), expected: [a, b, c, d, e])
+      Assert.equal(actual: Set.toList(Set.fromList([e, c, a, d, b, a])), expected: [a, b, c, d, e])
+      Assert.equal(actual: Map.get(m: map, k: a), expected: Option.Some(1))
+    case _ -> Assert.fail("valid checked lengths were rejected")
+  end match
+  match [
+    Range.checkIndex(index: 1, values: [1, 9]),
+    Range.checkIndex(index: 0, values: [2, 0]),
+    Range.checkIndex(index: 0, values: [2, 0, 0]),
+    Range.checkIndex(index: 1, values: [2, 0, 0])
+  ] with
+    case [Result.Ok(a), Result.Ok(b), Result.Ok(c), Result.Ok(d)] ->
+      bind map <- Map.fromList([Pair(d, 4), Pair(c, 3), Pair(a, 1), Pair(b, 2)])
+      Assert.equal(actual: Map.keys(map), expected: [a, b, c, d])
+      Assert.equal(actual: Set.toList(Set.fromList([d, c, a, b, a])), expected: [a, b, c, d])
+      Assert.equal(actual: Map.get(m: map, k: a), expected: Option.Some(1))
+    case _ -> Assert.fail("valid checked indices were rejected")
+  end match
+  match [NonEmptyList.fromList([1]), NonEmptyList.fromList([1, 2]), NonEmptyList.fromList([1, 3]), NonEmptyList.fromList([2, 0])] with
+    case [Result.Ok(a), Result.Ok(b), Result.Ok(c), Result.Ok(d)] ->
+      bind map <- Map.fromList([Pair(d, 4), Pair(c, 3), Pair(a, 1), Pair(b, 2)])
+      Assert.equal(actual: Map.keys(map), expected: [a, b, c, d])
+      Assert.equal(actual: Set.toList(Set.fromList([d, c, a, b, a])), expected: [a, b, c, d])
+      Assert.equal(actual: Map.get(m: map, k: a), expected: Option.Some(1))
+    case _ -> Assert.fail("valid nonempty lists were rejected")
+  end match
+end function

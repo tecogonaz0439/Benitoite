@@ -193,9 +193,11 @@ fn collection_call(d: &Decls<'_>, e: &Expr) -> bool {
     .iter()
     .any(|s| std_call(d, e, s))
 }
+// 誤りの式は前段で報告済みであり、定数の形の診断を重ねない。評価ではUnavailableになる
+// （設計書 02-04「位置の式の事前展開」）。
 fn bad_shape(d: &Decls<'_>, e: &Expr) -> Option<Span> {
     match e {
-        Expr::Lit(_) | Expr::Unit(_) => None,
+        Expr::Lit(_) | Expr::Unit(_) | Expr::Error(_) => None,
         Expr::Name(n) => {
             if d.resolved.binding_of_ref(n.id).is_some_and(|b| {
                 b.kind == BindingKind::Const
@@ -254,11 +256,11 @@ fn bad_shape(d: &Decls<'_>, e: &Expr) -> Option<Span> {
         | Expr::Lambda(_)
         | Expr::Return(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)
-        | Expr::Resume(_)
-        | Expr::Error(_) => Some(e.span()),
+        | Expr::Resume(_) => Some(e.span()),
     }
 }
 fn dependencies(d: &Decls<'_>, e: &Expr) -> Vec<BindingId> {
@@ -430,6 +432,7 @@ fn eval(d: &Decls<'_>, e: &Expr, budget: &mut EvalBudget) -> EvalResult {
         | Expr::Lambda(_)
         | Expr::Return(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)
@@ -557,24 +560,28 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult
     }
     // 警告だけに使う標準関数も、名前の綴りでなく束縛を照合する（02-05「警告」）。
     budget.slots(c.args.len(), c.span)?;
-    if std_call(d, &c.callee, "Benitoite.Integer.absolute")
-        && c.args.len() == 1
-        && let Some(e) = standard_argument(c, 0, "n")
-        && let V::Integer(n) = eval(d, e, budget)?
-    {
-        return n
-            .checked_abs()
-            .map(V::Integer)
-            .ok_or(EvalError::Arithmetic(c.span, super::text::INTEGER_OVERFLOW));
-    }
-    let divide = std_call(d, &c.callee, "Benitoite.Integer.floorDivide");
-    let modulo = std_call(d, &c.callee, "Benitoite.Integer.floorModulo");
-    if (divide || modulo)
-        && c.args.len() == 2
-        && let (Some(a), Some(b)) = (standard_argument(c, 0, "a"), standard_argument(c, 1, "b"))
-        && let (V::Integer(a), V::Integer(b)) = (eval(d, a, budget)?, eval(d, b, budget)?)
-    {
-        return int_div(a, b, true, modulo, c.span);
+    if let Some((width, operation)) = integer_call(d, c) {
+        let a = standard_argument(
+            c,
+            0,
+            if operation == IntegerCall::Absolute {
+                "n"
+            } else {
+                "a"
+            },
+        )
+        .ok_or(EvalError::Unavailable)?;
+        let a = eval(d, a, budget)?;
+        let b = if operation == IntegerCall::Absolute {
+            None
+        } else {
+            Some(eval(
+                d,
+                standard_argument(c, 1, "b").ok_or(EvalError::Unavailable)?,
+                budget,
+            )?)
+        };
+        return eval_integer_call(width, operation, a, b, c.span);
     }
     Err(EvalError::Unavailable)
 }
@@ -588,6 +595,112 @@ pub(super) fn standard_argument<'a>(c: &'a CallExpr, index: usize, name: &str) -
             .and_then(Arg::expr)
     } else {
         c.args.get(index).and_then(Arg::expr)
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum IntegerCall {
+    Absolute,
+    Divide,
+    Modulo,
+}
+
+// 候補の選択と評価で同じ解決済みの束縛・幅を使う。別名は解決後に同一となるが、
+// 関数値・穴・パイプの呼び出しは直接の標準束縛ではない（設計書 02-05「警告」）。
+fn integer_call(
+    d: &Decls<'_>,
+    c: &CallExpr,
+) -> Option<(crate::types::builtin::BuiltinTypeId, IntegerCall)> {
+    use crate::types::builtin::BuiltinTypeId as B;
+    if c.args.iter().any(|a| a.expr().is_none()) {
+        return None;
+    }
+    for (module, width) in [
+        ("Integer8", B::INTEGER8),
+        ("Integer16", B::INTEGER16),
+        ("Integer32", B::INTEGER32),
+        ("Integer", B::INTEGER),
+        ("Integer64", B::INTEGER),
+        ("UnsignedInteger16", B::UNSIGNED_INTEGER16),
+        ("UnsignedInteger32", B::UNSIGNED_INTEGER32),
+        ("UnsignedInteger64", B::UNSIGNED_INTEGER64),
+        ("UnsignedInteger", B::UNSIGNED_INTEGER64),
+    ] {
+        for (name, op, arity) in [
+            ("absolute", IntegerCall::Absolute, 1),
+            ("floorDivide", IntegerCall::Divide, 2),
+            ("floorModulo", IntegerCall::Modulo, 2),
+        ] {
+            if c.args.len() == arity
+                && std_call(d, &c.callee, &format!("Benitoite.{module}.{name}"))
+            {
+                return Some((width, op));
+            }
+        }
+    }
+    None
+}
+
+fn eval_integer_call(
+    width: crate::types::builtin::BuiltinTypeId,
+    op: IntegerCall,
+    a: V,
+    b: Option<V>,
+    span: Span,
+) -> EvalResult {
+    use crate::types::builtin::BuiltinTypeId as B;
+    let overflow = || EvalError::Arithmetic(span, super::text::INTEGER_OVERFLOW);
+    macro_rules! signed {
+        ($a:expr, $variant:ident) => {{
+            let a = $a;
+            if op == IntegerCall::Absolute {
+                return a.checked_abs().map(V::$variant).ok_or_else(overflow);
+            }
+            let Some(V::$variant(b)) = b else { return Err(EvalError::Unavailable) };
+            if b == 0 { return Err(EvalError::Arithmetic(span, super::text::DIVISION_BY_ZERO)) }
+            // MIN % -1 は商を作らず零を返す。各幅の checked 演算で u64 の狭窄も避ける。
+            let remainder = a.checked_rem(b).unwrap_or(0);
+            let adjust = remainder != 0 && (remainder < 0) != (b < 0);
+            if op == IntegerCall::Modulo {
+                let value = if adjust { remainder.checked_add(b).ok_or_else(overflow)? } else { remainder };
+                return Ok(V::$variant(value));
+            }
+            let quotient = a.checked_div(b).ok_or_else(overflow)?;
+            let value = if adjust { quotient.checked_sub(1).ok_or_else(overflow)? } else { quotient };
+            Ok(V::$variant(value))
+        }};
+    }
+    macro_rules! unsigned {
+        ($a:expr, $variant:ident) => {{
+            let a = $a;
+            if op == IntegerCall::Absolute {
+                return Ok(V::$variant(a));
+            }
+            let Some(V::$variant(b)) = b else {
+                return Err(EvalError::Unavailable);
+            };
+            numeric::integer_binary(
+                if op == IntegerCall::Divide {
+                    ArithmeticOp::Divide
+                } else {
+                    ArithmeticOp::Modulo
+                },
+                a,
+                b,
+            )
+            .map(V::$variant)
+            .map_err(|e| arithmetic_error(e, span))
+        }};
+    }
+    match (width, a) {
+        (B::INTEGER8, V::Integer8(a)) => signed!(a, Integer8),
+        (B::INTEGER16, V::Integer16(a)) => signed!(a, Integer16),
+        (B::INTEGER32, V::Integer32(a)) => signed!(a, Integer32),
+        (B::INTEGER, V::Integer(a)) => signed!(a, Integer),
+        (B::UNSIGNED_INTEGER16, V::UnsignedInteger16(a)) => unsigned!(a, UnsignedInteger16),
+        (B::UNSIGNED_INTEGER32, V::UnsignedInteger32(a)) => unsigned!(a, UnsignedInteger32),
+        (B::UNSIGNED_INTEGER64, V::UnsignedInteger64(a)) => unsigned!(a, UnsignedInteger64),
+        _ => Err(EvalError::Unavailable),
     }
 }
 fn int_div(a: i64, b: i64, floor: bool, modulo: bool, span: Span) -> EvalResult {
@@ -942,6 +1055,7 @@ fn list_spans(d: &Decls<'_>, e: &Expr, map: bool) -> Vec<Span> {
         | Expr::Lambda(_)
         | Expr::Return(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)
@@ -1023,8 +1137,7 @@ fn arithmetic_candidate(d: &Decls<'_>, e: &Expr) -> bool {
     match e {
         Expr::Binary(_) | Expr::Unary(_) => bad_shape(d, e).is_none(),
         Expr::Call(c) => {
-            (std_call(d, &c.callee, "Benitoite.Integer.absolute")
-                || std_call(d, &c.callee, "Benitoite.Integer.floorDivide"))
+            integer_call(d, c).is_some()
                 && c.args
                     .iter()
                     .all(|a| a.expr().is_some_and(|e| bad_shape(d, e).is_none()))
@@ -1042,6 +1155,7 @@ fn arithmetic_candidate(d: &Decls<'_>, e: &Expr) -> bool {
         | Expr::Lambda(_)
         | Expr::Return(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)
@@ -1080,8 +1194,8 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
                 Some(b.rhs.as_ref())
             }
             Expr::Call(c)
-                if std_call(ctx.decls, &c.callee, "Benitoite.Integer.floorDivide")
-                    || std_call(ctx.decls, &c.callee, "Benitoite.Integer.floorModulo") =>
+                if integer_call(ctx.decls, c)
+                    .is_some_and(|(_, op)| op != IntegerCall::Absolute) =>
             {
                 standard_argument(c, 1, "b")
             }
@@ -1101,6 +1215,7 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
             | Expr::Lambda(_)
             | Expr::Return(_)
             | Expr::Try(_)
+            | Expr::Block(_)
             | Expr::Lazy(_)
             | Expr::With(_)
             | Expr::Handle(_)
@@ -1251,6 +1366,7 @@ fn visit_expr<'a>(e: &'a Expr, f: &mut impl FnMut(&'a Expr)) {
                 visit_expr(message, f);
             }
         }
+        Expr::Block(e) => visit_block(&e.body, f),
         Expr::Lazy(l) => visit_block(&l.body, f),
         Expr::With(w) => {
             for b in &w.binds {

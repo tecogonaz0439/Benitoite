@@ -1,0 +1,360 @@
+{
+  "inputs": 1789,
+  "golden_inputs": 789,
+  "programReports": {
+    "desugarDefinitions": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 1058,
+      "excluded": 0
+    },
+    "surfaceCounts": {
+      "q11": 1,
+      "preparationFailure": 0,
+      "outOfScope": 19,
+      "mismatched": 0,
+      "matched": 51725,
+      "lazyRestriction": 0
+    },
+    "coverage": {
+      "matched": 22482,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0
+    },
+    "definitions": 73836,
+    "surfaceChecks": 51745,
+    "coverageEntries": 22482,
+    "randomDesugarDefinitions": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 72778,
+      "excluded": 0
+    },
+    "desugarPrograms": {
+      "golden": {
+        "matched": 370,
+        "excluded": 419,
+        "outside": 0,
+        "mismatched": 0
+      },
+      "random": {
+        "matched": 1000,
+        "excluded": 0,
+        "outside": 0,
+        "mismatched": 0
+      }
+    }
+  },
+  "changed_programs": [
+    {
+      "name": "testdata/eval/hole_effect_order.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/eval/hole_effect_order.bnt",
+        "definitions": 5,
+        "scopes": {
+          "inScope": 5
+        },
+        "coverage": {
+          "matches": 0,
+          "bindings": 0
+        },
+        "implementations": 0,
+        "surfaceChecks": 5
+      }
+    },
+    {
+      "name": "testdata/patterns/t1-integer-domain.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/patterns/t1-integer-domain.bnt",
+        "definitions": 4,
+        "scopes": {
+          "inScope": 4
+        },
+        "coverage": {
+          "matches": 3,
+          "bindings": 1
+        },
+        "implementations": 0,
+        "surfaceChecks": 4
+      }
+    },
+    {
+      "name": "testdata/syntax/f02_block_expression.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/syntax/f02_block_expression.bnt",
+        "definitions": 8,
+        "scopes": {
+          "inScope": 8
+        },
+        "coverage": {
+          "matches": 0,
+          "bindings": 0
+        },
+        "implementations": 0,
+        "surfaceChecks": 8
+      }
+    },
+    {
+      "name": "testdata/test/opaque-wrapper-equality.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/test/opaque-wrapper-equality.bnt",
+        "definitions": 4,
+        "scopes": {
+          "inScope": 4
+        },
+        "coverage": {
+          "matches": 3,
+          "bindings": 0
+        },
+        "implementations": 0,
+        "surfaceChecks": 4
+      }
+    },
+    {
+      "name": "testdata/test/opaque-wrapper-key.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/test/opaque-wrapper-key.bnt",
+        "definitions": 1,
+        "scopes": {
+          "inScope": 1
+        },
+        "coverage": {
+          "matches": 3,
+          "bindings": 0
+        },
+        "implementations": 0,
+        "surfaceChecks": 1
+      }
+    },
+    {
+      "name": "testdata/types/batch4-provenance.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/types/batch4-provenance.bnt",
+        "excluded": [
+          "Some(E0401)"
+        ],
+        "definitions": 0,
+        "scopes": {},
+        "coverage": null,
+        "implementations": 0,
+        "surfaceChecks": 0
+      }
+    },
+    {
+      "name": "testdata/types/batch4-type-names",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/types/batch4-type-names",
+        "excluded": [
+          "Some(E0401)"
+        ],
+        "definitions": 0,
+        "scopes": {},
+        "coverage": null,
+        "implementations": 0,
+        "surfaceChecks": 0
+      }
+    },
+    {
+      "name": "testdata/types/batch4-width-denied.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/types/batch4-width-denied.bnt",
+        "definitions": 1,
+        "scopes": {
+          "inScope": 1
+        },
+        "coverage": {
+          "matches": 0,
+          "bindings": 0
+        },
+        "implementations": 0,
+        "surfaceChecks": 1
+      }
+    },
+    {
+      "name": "testdata/types/batch4-width-warnings.bnt",
+      "before": null,
+      "after": {
+        "group": "golden",
+        "name": "testdata/types/batch4-width-warnings.bnt",
+        "definitions": 1,
+        "scopes": {
+          "inScope": 1
+        },
+        "coverage": {
+          "matches": 0,
+          "bindings": 0
+        },
+        "implementations": 0,
+        "surfaceChecks": 1
+      }
+    }
+  ],
+  "nonmatched_categories_preserved": true,
+  "surface_report_sha256": "04d77da41a8c4b5029cd1dd3fb16fbdbdd225e4c52f440354b8f28afd6e42f7a",
+  "named": [
+    {
+      "stem": "named-types",
+      "definitions": 1,
+      "path": "target/named-types/export-45186/named-types-corpus.json",
+      "sha256": "e7b0ee09613e34f9998a938126ec8cb75abf940f3020b5e1a8be039db6315c08"
+    },
+    {
+      "stem": "named-declarations",
+      "definitions": 2,
+      "path": "target/named-declarations/export-45186/named-declarations-corpus.json",
+      "sha256": "b9a1968127940f0647787c07cad02e950dbb250a68481e2beef7677d00b4f674"
+    },
+    {
+      "stem": "named-calls",
+      "definitions": 5,
+      "path": "target/named-calls/export-45186/named-calls-corpus.json",
+      "sha256": "0f8d3ac2dfe089a7964acbc019e77c71ca589ab5489eef39c92f6a6fe21f9d51"
+    },
+    {
+      "stem": "named-static-calls",
+      "definitions": 3,
+      "path": "target/named-static-calls/export-45186/named-static-calls-corpus.json",
+      "sha256": "e7e1d4f4e97fce4ba58523e83dd4079648fa1f67883de5f4d5622b72be2f28c9"
+    },
+    {
+      "stem": "named-positional-holes",
+      "definitions": 1,
+      "path": "target/named-positional-holes/export-45186/named-positional-holes-corpus.json",
+      "sha256": "d88611d821c555f9933222681218ef7fb0452d63fef02c272898f7696ed5d159"
+    },
+    {
+      "stem": "named-annotation-only",
+      "definitions": 2,
+      "path": "target/named-annotation-only/export-45186/named-annotation-only-corpus.json",
+      "sha256": "a84f619ea669dfc412c05e88d006188015dcbb83b603fdeba0bde3d9dd90fb00"
+    },
+    {
+      "stem": "independent-program",
+      "definitions": 1,
+      "path": "target/independent-program/export-45186/independent-program-corpus.json",
+      "sha256": "17654c954a15ba591d97f82a252b749f0d1b3f358b0247d45ccfedbee700ec5d"
+    },
+    {
+      "stem": "extensible-package",
+      "definitions": 2,
+      "path": "target/extensible-package/export-45186/extensible-package-corpus.json",
+      "sha256": "3b4045712219ff5e0e3ef0b66cd13c86662b017d7b1a51b68a373c7ab4dfbd48"
+    },
+    {
+      "stem": "generated-record-property",
+      "definitions": 40,
+      "path": "target/generated-record-property/export-45186/generated-record-property-corpus.json",
+      "sha256": "0cdb0d1760509527499f265ea5896fe7f19312e1098875a92033ab6035ac2bcb"
+    }
+  ],
+  "single_surface_rejections": 17,
+  "independent_coverage": {
+    "named-": {
+      "version": 4,
+      "boundaryCases": 10,
+      "randomCases": 0,
+      "seedXor": 0,
+      "boundaryNames": [
+        "function-contract",
+        "nested-function-contract",
+        "source/Kind/author",
+        "source/Kind/consumer",
+        "source/Detail/author",
+        "source/Detail/consumer",
+        "source/IOErrorKind/author",
+        "source/IOErrorKind/consumer",
+        "source/NetworkErrorKind/author",
+        "source/NetworkErrorKind/consumer"
+      ],
+      "boundaryNamesCount": 10
+    },
+    "named-all-": {
+      "version": 4,
+      "boundaryCases": 20,
+      "randomCases": 10000,
+      "seedXor": 57793,
+      "boundaryNames": [
+        "golden/integer",
+        "golden/string",
+        "golden/character",
+        "golden/after-wild",
+        "golden/refutable-bind",
+        "golden/option",
+        "golden/tree",
+        "golden/covering-many",
+        "golden/toggle",
+        "boundary/i64",
+        "boundary/surrogate",
+        "boundary/list-0",
+        "boundary/list-1",
+        "boundary/list-2",
+        "boundary/list-3",
+        "boundary/front-back",
+        "q3/duplicate",
+        "q3/union",
+        "q3/wild",
+        "q3/covered-by"
+      ],
+      "boundaryNamesCount": 20
+    },
+    "future-": {
+      "version": 4,
+      "boundaryCases": 28,
+      "randomCases": 10000,
+      "seedXor": 57793,
+      "boundaryNames": [
+        "future/all-known/false",
+        "future/catchall/false",
+        "future/alternative/false",
+        "future/covered/false",
+        "future/guard/false",
+        "future/record/false",
+        "future/nested/false",
+        "future/list/false",
+        "future/single-constructor-binding/false",
+        "future/nested-record-field/false",
+        "future/guarded-catchall-after-known/false",
+        "future/duplicate-alternative/false",
+        "future/nested-catchall/false",
+        "future/list-catchall/false",
+        "future/all-known/true",
+        "future/catchall/true",
+        "future/alternative/true",
+        "future/covered/true",
+        "future/guard/true",
+        "future/record/true",
+        "future/nested/true",
+        "future/list/true",
+        "future/single-constructor-binding/true",
+        "future/nested-record-field/true",
+        "future/guarded-catchall-after-known/true",
+        "future/duplicate-alternative/true",
+        "future/nested-catchall/true",
+        "future/list-catchall/true"
+      ],
+      "randomPrefix": "future/random/",
+      "boundaryNamesCount": 28
+    }
+  },
+  "manifests": {
+    "exchange-manifest.json": "e9b7140e016dad2653f28f1f134e0ebc397365a9eb0d734013063e37664be2df",
+    "routing-manifest.json": "84afde742d63579709b1b7895bfa02133b1e4b8f50937d012059a2d6feebc146"
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.432,
+    "theorem_count": 40,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 40,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [],
+    "added_names": []
+  },
+  "builder-axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/builder-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.451,
+    "theorem_count": 69,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 69,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [],
+    "added_names": []
+  },
+  "connection-axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/connection-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.454,
+    "theorem_count": 25,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 0,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [],
+    "added_names": [
+      "Benitoite.Release.BuilderExamples.dedicatedProgram_prefixes",
+      "Benitoite.Release.BuilderExamples.dedicatedProgram_run",
+      "Benitoite.Release.BuilderExamples.dedicatedProgram_typed",
+      "Benitoite.Release.BuilderExamples.dedicated_inside_lambda",
+      "Benitoite.Release.BuilderExamples.dedicated_location_not_captured",
+      "Benitoite.Release.BuilderExamples.resumedProgram_run",
+      "Benitoite.Release.BuilderKind.contents_substTyAt",
+      "Benitoite.Release.BuilderOp.params_substTyAt",
+      "Benitoite.Release.BuilderOp.result_substTyAt",
+      "Benitoite.Release.CellOk.localRefs",
+      "Benitoite.Release.ContTy.localRefs",
+      "Benitoite.Release.HasTypeCQ.instantiate_local",
+      "Benitoite.Release.LocalCtx.substTyAt_extend",
+      "Benitoite.Release.LocalRef.HasKind.substTy",
+      "Benitoite.Release.LocalRef.HasKind.subst_congr",
+      "Benitoite.Release.LocalSubstAgree.builder",
+      "Benitoite.Release.LocalSubstAgree.empty",
+      "Benitoite.Release.LocalSubstAgree.extend",
+      "Benitoite.Release.LocalSubstAgree.refl",
+      "Benitoite.Release.StateTy.local_invariant",
+      "Benitoite.Release.StoreOk.builder_places",
+      "Benitoite.Release.SubstOk.inst_prefix",
+      "Benitoite.Release.capture_local_valid",
+      "Benitoite.Release.local_steps_invariant",
+      "Benitoite.Release.resume_local_valid"
+    ]
+  },
+  "coverage-axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/coverage-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.411,
+    "theorem_count": 10,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 10,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [],
+    "added_names": []
+  },
+  "dedicated-axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/dedicated-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.404,
+    "theorem_count": 28,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 26,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [
+      "Benitoite.Release.HasTypeCQ.not_builderLet",
+      "Benitoite.Release.HasTypeCQ.not_builderOp"
+    ],
+    "added_names": [
+      "Benitoite.Release.HasTypeCQ.inv_builderLet",
+      "Benitoite.Release.HasTypeCQ.inv_builderOp"
+    ]
+  },
+  "integer-axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/integer-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.439,
+    "theorem_count": 3,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 3,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [],
+    "added_names": []
+  },
+  "local-axioms": {
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "../docs/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/l3bc2/local-axioms.lean"
+    ],
+    "cwd": "/Users/tecogonaz/src/Benitoite/formal",
+    "exit_code": 0,
+    "elapsed_seconds": 1.409,
+    "theorem_count": 27,
+    "only_standard_axioms": true,
+    "sorryAx": false,
+    "retained_count": 27,
+    "retained_output_equal": true,
+    "changed_axioms": {},
+    "removed_names": [],
+    "added_names": []
+  }
+}

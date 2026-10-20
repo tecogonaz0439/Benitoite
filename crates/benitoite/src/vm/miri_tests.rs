@@ -49,6 +49,72 @@ fn request(vm: &mut Vm<'_>, io: &mut TestIo) -> RequestId {
     ids[0]
 }
 
+// 関門: 安全点で専用の根を保存し、最後の使用後は枠を残したまま解除する。
+// 内容の比較では検出できない Host の保持過剰を、到達対象の同一性で確かめる。
+#[test]
+fn builder_roots_survive_wait_and_clear_before_frame_return() {
+    use crate::bytecode::program::BuilderSite;
+    use crate::resolve::builders::BuilderClass;
+    let mut b = ProgramBuilder::new();
+    let main = b.proto("main", 0, 4).unwrap();
+    let write = b
+        .named_builtin("Benitoite.IO.Console.writeLine", 1, Capability::Io, None)
+        .unwrap();
+    let p = &mut b.code(main).unwrap().proto;
+    p.builder_slots = 1;
+    p.builder_sites = vec![
+        BuilderSite {
+            local: 0,
+            kind: BuilderClass::String,
+            args: vec![],
+        },
+        BuilderSite {
+            local: 0,
+            kind: BuilderClass::String,
+            args: vec![0],
+        },
+    ];
+    b.loadk(main, 0, ConstDesc::Str("tick".into())).unwrap();
+    let p = b.code(main).unwrap();
+    p.abx(Opcode::BuilderNew, 0, 0);
+    p.abx(Opcode::BuilderAppend, 1, 1);
+    p.op(Opcode::Io, 1, write.0.try_into().unwrap(), 0);
+    p.abx(Opcode::BuilderLength, 2, 0);
+    p.op(Opcode::Io, 1, write.0.try_into().unwrap(), 0);
+    b.loadk(main, 3, ConstDesc::Unit).unwrap();
+    b.code(main).unwrap().ret(3);
+    let program = b.finish(main).unwrap();
+    crate::bytecode::verify::verify(&program).unwrap();
+    let mut vm = Vm::new(
+        &program,
+        VmConfig {
+            call_budget: 1,
+            ..VmConfig::default()
+        },
+        stress(),
+    );
+    vm.start_main().unwrap();
+    let mut io = io();
+    let first = request(&mut vm, &mut io);
+    vm.heap.collect(&vm.state);
+    let host = vm.heap.epoch(|ctx| {
+        let frame = &test_support::stack(&vm.state, ctx).segments[0].calls[0];
+        ctx.object_id(ctx.load(&frame.builders[0])).unwrap()
+    });
+    assert!(vm.heap.object_ids().contains(&host));
+    vm.serve_request(&mut io.rt, first);
+    let second = request(&mut vm, &mut io);
+    vm.heap.collect(&vm.state);
+    assert!(!vm.heap.object_ids().contains(&host));
+    assert_eq!(vm.heap.verify(&vm.state), Ok(()));
+    vm.serve_request(&mut io.rt, second);
+    assert_eq!(
+        vm.run(io.runtime(ExecMode::Request)),
+        VmStep::Finished(MainOutcome::Ok)
+    );
+    assert_eq!(vm.state.meter.bytes(), 0);
+}
+
 // 関門: 既存の大きなケースの補助を再利用し、最後の使用の後に本物の安全点で回収する。
 #[test]
 fn safepoint_clears_dead_registers_and_keeps_live_values() {

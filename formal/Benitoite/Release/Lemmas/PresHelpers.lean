@@ -135,7 +135,7 @@ theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ 
         subst hc
         have : o' = o := by simpa [Clause.op] using heq
         subst this
-        exact ⟨_, hsg, hn, hk, hew, hbody⟩
+        exact ⟨_, hsg, hn, hk, hew, hbody.store (hideBuilders_sub _)⟩
       · exact HasTypeClausesQ.find hrest hc
 
 theorem findClause_op {hs : List Clause} {o c} (h : findClause hs o = some c) : c.op = o := by

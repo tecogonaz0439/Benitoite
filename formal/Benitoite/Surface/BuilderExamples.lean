@@ -1,4 +1,4 @@
-import Benitoite.Surface.CheckSound
+import Benitoite.Surface.CheckProgramSound
 import Benitoite.Surface.Lemmas.BuilderNoCapture
 import Benitoite.Release.Examples
 
@@ -33,57 +33,48 @@ private def input : Input :=
   { D := decls,
     B := { Release.Examples.builtins with sig := fun n => (entries.find? (·.1 == n)).map (·.2) },
     satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => true,
-    opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.name stateEff] }
-private def cells (t : Ty) : BuilderCellRefs :=
-  ⟨⟨"new", [t]⟩, ⟨"get", [t]⟩, ⟨"set", [t]⟩⟩
-private def prim (n : String) : BuilderPureRef := .prim ⟨n, []⟩
-private def refs : List BuilderRefs :=
-  [.string (cells strTy) (prim "add") (prim "join") (.funRef "strLen" []),
-   .list intTy (cells (.list intTy)) (prim "append") (prim "listCat") (prim "listLen"),
-   .bytes (cells .bytes) (prim "empty") (prim "fromList") (prim "bytesCat") (prim "bytesLen")]
+    opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [] }
+private def kinds : List BuilderKind := [.string, .list intTy, .bytes]
 private def ops : List BuilderOp := [.copy, .length, .append, .appendAll]
 private def args : BuilderOp → Exprs
   | .copy | .length => .nil
   | _ => .cons (.local 0) .nil
-private def run (r : BuilderRefs) (o : BuilderOp) (mode : ResumeMode) : Result Inferred :=
-  (checkExprR input mode [none, some r.kind] []
-    [some ((o.params r.kind).headD (.base .unit)), none] none .other []
+private def run (r : BuilderKind) (o : BuilderOp) (mode : ResumeMode) : Result Inferred :=
+  (checkExprR input mode [none, some r] []
+    [some ((o.params r).headD (.base .unit)), none] none .other []
     (.builderOp o 1 (args o) r)).run' {}
-private def got (r : BuilderRefs) (o : BuilderOp) (mode : ResumeMode) : Bool :=
+private def got (r : BuilderKind) (o : BuilderOp) (mode : ResumeMode) : Bool :=
   match run r o mode with
   | .error _ => false
-  | .ok (t, e) => tyEq input.atoms t (o.result r.kind) && effEq input.atoms e (Eff.single stateEff)
+  | .ok (t, e) => tyEq input.atoms t (o.result r) && effEq input.atoms e Eff.empty
 
--- 空の引数の操作も含めて、参照先を検査し、全操作に State を残す。
-example : refs.all (fun r => ops.all (fun o => [ResumeMode.strict, .relaxed].all (got r o))) = true := by decide
+-- State を支持に含めず、三種類・全操作を strict/relaxed の両方で検査する。
+example : kinds.all (fun r => ops.all (fun o => [ResumeMode.strict, .relaxed].all (got r o))) = true := by decide
 
 -- 構築器の位置を通常の local として読めない。
 example : (checkExprR input .strict [none, some .string] [] [some strTy, none] none .other []
     (.local 1)).run' {} = .error ⟨[], "local is missing or hidden"⟩ := by rfl
 
--- 種類の取り違えと、refGet であるべき参照先の取り違えを拒否する。
-private def stringRefs : BuilderRefs := refs.headD (.list intTy (cells (.list intTy)) (prim "append") (prim "listCat") (prim "listLen"))
+-- 種類と List の要素型の取り違えを、局所分類と照合して拒否する。
 example : (checkExprR input .strict [some .bytes] [] [none] none .other []
-    (.builderOp .copy 0 .nil stringRefs)).run' {} =
-    .error ⟨[], "invalid local builder or operation references"⟩ := by rfl
-private def badGet : BuilderRefs :=
-  .string { cells strTy with getRef := ⟨"new", [strTy]⟩ } (prim "add") (prim "join") (.funRef "strLen" [])
-example : (checkExprR input .strict [some .string] [] [none] none .other []
-    (.builderOp .copy 0 .nil badGet)).run' {} =
-    .error ⟨[], "invalid local builder or operation references"⟩ := by rfl
+    (.builderOp .copy 0 .nil .string)).run' {} =
+    .error ⟨[], "invalid local builder kind"⟩ := by rfl
+example : (checkExprR input .strict [some (.list intTy)] [] [none] none .other []
+    (.builderOp .copy 0 .nil (.list strTy))).run' {} =
+    .error ⟨[], "invalid local builder kind"⟩ := by rfl
 
 -- 操作の通常引数にも型の包含を要求し、子の元の経路を報告する。
 example : (checkExprR input .strict [some .string] [] [none] none .other []
-    (.builderOp .append 0 (.cons (.literal (.integer 1)) .nil) stringRefs)).run' {} =
+    (.builderOp .append 0 (.cons (.literal (.integer ⟨1, by decide⟩)) .nil) .string)).run' {} =
     .error ⟨[0, 0], "type is not included in the expected type"⟩ := by rfl
 
 -- 公開入口では Γ に十分な場所があっても Δ は空である。
 example : (checkExpr input .strict [] [none] none .other []
-    (.builderOp .copy 0 .nil stringRefs)) =
-    .error ⟨[], "invalid local builder or operation references"⟩ := by rfl
+    (.builderOp .copy 0 .nil .string)) =
+    .error ⟨[], "invalid local builder kind"⟩ := by rfl
 
--- 引数自身の追記を一度終えてから外側のgetを行う。読む順序の退行は最終の内容で検出する。
-private def append (arg : Expr) : Expr := .builderOp .append 0 (.cons arg .nil) stringRefs
+-- 引数自身の追記を一度終えてから外側の専用操作を行う。読む順序の退行は最終の内容で検出する。
+private def append (arg : Expr) : Expr := .builderOp .append 0 (.cons arg .nil) .string
 private def nestedAppend : Expr := append
   (.ite (.literal (.boolean true))
     (.seq (append (.literal (.string "x"))) (.last (.literal (.string "suffix"))))
@@ -94,34 +85,67 @@ private def runtimeBuiltins (fail : Bool) : Builtins :=
           if fail then some (.err "TooLarge") else some (.val (.const (.string (a ++ b))))
       | _, _ => none }
 private noncomputable def storedAfter (e : Expr) (fail : Bool) : Option (Bool × String) :=
-  let body := (desugarExpr (fun _ _ => none) .other e).instantiate [.loc 0]
+  let body := (desugarExpr (fun _ _ => none) .other e).subst builderValueSubst (builderLocalSubst 0)
   let state := (Release.run Release.Examples.program (runtimeBuiltins fail)
     Release.Examples.oracle Release.Examples.rel Release.Examples.fresh 80
-    (.run body [] (Store.empty.set 0 (.val (.const (.string "old"))))) []).1
+    (.run body [] (Store.empty.set 0 (.builder (.string "old")))) []).1
   let read := fun (failed : Bool) (store : Store) => match store 0 with
-    | some (.val (.const (.string text))) => some (failed, text)
+    | some (.builder (.string text)) => some (failed, text)
     | _ => none
   match state with
   | .run (.ret (.const .unit)) [] store => read false store
   | .error ["TooLarge"] [] store => read true store
   | _ => none
 example : storedAfter nestedAppend false = some (false, "oldxsuffix") := by decide
--- 純粋な結合が失敗したときは、元のセルを更新しない。
-example : storedAfter (append (.literal (.string "x"))) true = some (true, "old") := by decide
+-- 通常引数の計算が失敗したときは、専用セルを更新しない。
+-- 旧合成の組み込みは専用操作では呼ばないため、失敗する呼び出しを通常引数に置く。
+example : storedAfter (append (.call (.primName "add" [] []) [none, none] [0, 1]
+    (.cons (.literal (.string "")) (.cons (.literal (.string "x")) .nil)))) true = some (true, "old") := by decide
 
--- 宣言だけで終わる場合も、三種類とも Unit と State を返す。
+-- 宣言だけで終わる場合も、三種類とも Unit と空の効果を返す。
 private def checkedBlock (b : Block) : Result Inferred :=
   checkBlock input .strict [] [] none .other [] b
-example : refs.all (fun r => match checkedBlock (.builderBind r.kind r .empty) with
-    | .ok (t, e) => tyEq input.atoms t (.base .unit) && effEq input.atoms e (Eff.single stateEff)
+example : kinds.all (fun r => match checkedBlock (.builderBind r .empty) with
+    | .ok (t, e) => tyEq input.atoms t (.base .unit) && effEq input.atoms e Eff.empty
     | _ => false) = true := by decide
 
-private def copyAt (i : Nat) : Expr := .builderOp .copy i .nil stringRefs
+-- 通常の Reference.get を引数で呼べば、構築器が純粋でも State は残る。
+private def stateInput : Input := { input with atoms := [.name stateEff] }
+private def referenceArg : Expr := .call (.primName "get" [strTy] []) [none] [0]
+  (.cons (.local 1) .nil)
+example : (match checkBlock stateInput .strict [] [some (.reference strTy)] none .other []
+    (.builderBind .string (.last (.builderOp .append 0 (.cons referenceArg .nil) .string))) with
+    | .ok (t, ε) => tyEq stateInput.atoms t (.base .unit) && effEq stateInput.atoms ε (Eff.single stateEff)
+    | .error _ => false) = true := by decide
+
+private def copyAt (i : Nat) : Expr := .builderOp .copy i .nil .string
 private def appendAt (i : Nat) (s : String) : Expr :=
-  .builderOp .append i (.cons (.literal (.string s)) .nil) stringRefs
-private def declared (body : Block) : Block := .builderBind .string stringRefs body
+  .builderOp .append i (.cons (.literal (.string s)) .nil) .string
+private def declared (body : Block) : Block := .builderBind .string body
+/-- 空の効果を宣言した通常関数を、構築器の本体も含めて全プログラム検査へ渡す。 -/
+private def pureMaterials : CheckTables.Materials :=
+  { defs := [("main",
+      { tparams := [], neffs := 0, names := [], params := [],
+        ret := strTy, eff := Eff.empty,
+        body := declared (.seq (appendAt 0 "pure") (.last (.returnE strTy (copyAt 0)))) })],
+    conFields := [], accessors := [], data := [], ops := [], effects := [],
+    classes := [], impls := [], trustedFuns := [], trustedImpls := [] }
+
+theorem pure_program_checked : CheckTables.checkProgram
+    (pureMaterials.input input.B input.satDec input.admitsDec input.opPrim [])
+    pureMaterials pureMaterials.names = .ok () := by rfl
+
+/-- 通常引数と discard が増やす共有番号を、独立した期待コアで照合する。 -/
+theorem dedicated_lowering :
+    desugarBlock (fun _ _ => none) .other
+      (declared (.seq (appendAt 0 "x") (.last (copyAt 0)))) =
+    .builderLet .string
+      (.letIn (.letIn (.ret (.const (.string "x")))
+        (.builderOp .string .append (.bound 1) [.var 0]))
+        (.builderOp .string .copy (.bound 1) [])) := by rfl
+
 private def hiddenBuilder (r : Result α) : Bool := match r with
-  | .error e => e.reason == "invalid local builder or operation references"
+  | .error e => e.reason == "invalid local builder kind"
   | _ => false
 
 -- 捕捉の各境界に外側のセルを渡した場合は拒否する。同じ失敗を理由も含めて検査する。
@@ -136,7 +160,7 @@ private def captureBoundaries : List Expr :=
      strTy (Eff.single stateEff)]
 example : captureBoundaries.all (fun e => hiddenBuilder (checkedBlock (declared (.last e)))) = true := by decide
 example : checkedBlock (declared (.last (.lam [] [] strTy (Eff.single stateEff) (.last (.returnE strTy (copyAt 0)))))) =
-    .error ⟨[0, 0, 0, 0, 0], "invalid local builder or operation references"⟩ := by rfl
+    .error ⟨[0, 0, 0, 0, 0], "invalid local builder kind"⟩ := by rfl
 
 -- 専用名そのものの return と、タスクへ渡す関数の本体からの操作は拒否する。
 example : checkBlock input .strict [] [] (some strTy) .tail []
@@ -157,9 +181,9 @@ private def snapshotPartial : Block := declared
     (.expr (some "left") 0 (.local 0) (.hole (some "right") 1 strTy .nil)) strTy Eff.empty)))
 example : [snapshotLambda, snapshotPartial].all (fun b => (checkedBlock b).isOk) = true := by decide
 
--- 宣言の注釈と参照先の種類の不一致は、本体へ入る前に拒否する。
-example : checkedBlock (.builderBind .bytes stringRefs .empty) =
-    .error ⟨[], "invalid builder declaration references"⟩ := by rfl
+-- 宣言の内容の型は本体へ入る前に範囲を検査する。
+example : checkedBlock (.builderBind (.list (.tvar 0)) .empty) =
+    .error ⟨[], "invalid builder content type"⟩ := by rfl
 
 private noncomputable def returnedText (body : Block) : Option String :=
   match (Release.run Release.Examples.program (runtimeBuiltins false)
@@ -189,14 +213,14 @@ private def suspendedBody : Block := declared
       (.seq (appendAt 0 "after") (.last (copyAt 0)))))
 private def resumed : Block := .last (.handleE suspendedBody
   (.cons (.user "ask") 0 0
-    (declared (.seq (appendAt 0 "inside") (.last (.resume 1 (.literal (.integer 7)))))) .nil))
+    (declared (.seq (appendAt 0 "inside") (.last (.resume 1 (.literal (.integer ⟨7, by decide⟩)))))) .nil))
 example : (checkBlock handleInput .strict [] [] none .other [] resumed).isOk = true := by decide
 example : returnedText resumed = some "beforeafter" := by decide
 
 -- 外側のセルを節で使うことは、resume の可否とは別に拒否する。
 private def badClause : Block := declared (.last (.handleE
   (.last (.call (.opName "ask" []) [] [] .nil))
-  (.cons (.user "ask") 0 0 (.seq (appendAt 1 "bad") (.last (.resume 0 (.literal (.integer 7))))) .nil)))
+  (.cons (.user "ask") 0 0 (.seq (appendAt 1 "bad") (.last (.resume 0 (.literal (.integer ⟨7, by decide⟩))))) .nil)))
 example : hiddenBuilder (checkBlock handleInput .strict [] [] none .other [] badClause) = true := by decide
 
 -- 構成子の部分適用でも、固定式の専用操作を空表で拒否する。
@@ -227,15 +251,15 @@ example : (checkedBlock localFailClause).isOk = true := by decide
 -- コアの述語は、通常の計算でのセル利用を許し、全生成境界の自由参照を検出する。
 -- 入口の空Δではなく、すでにある外側の0番のセルを除外して確かめる。
 example : Comp.Captures (fun i => i ≠ 0) (desugarExpr (fun _ _ => none) .other (copyAt 0)) := by
-  simp [copyAt, stringRefs, refs, builderFinish, desugarExpr, desugarExprs, boundVars, sequence, letChain,
-    Comp.Captures, Val.Captures, Vals.Captures, BuilderRefs.cells, BuilderPrimRef.toVal]
+  simp [copyAt, builderFinish, desugarExpr, desugarExprs, boundVars, sequence, letChain,
+    Comp.Captures, Vals.Captures]
 example : ∀ e ∈ captureBoundaries,
     ¬ Comp.Captures (fun i => i ≠ 0) (desugarExpr (fun _ _ => none) .other e) := by
-  simp [captureBoundaries, copyAt, appendAt, stringRefs, refs, builderFinish, desugarExpr,
-    desugarBlock, desugarExprs, desugarHoleArgs, sequence, letChain, callComp, directCallee,
-    Comp.Captures, Val.Captures, Comp.Reads, Val.Reads, Vals.Reads,
-    Comp.rename, Val.rename, Val.renameList, liftReads, upRen, recordFields,
-    boundVars, BuilderRefs.cells, BuilderPrimRef.toVal]
+  simp [captureBoundaries, copyAt, appendAt, builderFinish, desugarExpr,
+    desugarBlock, desugarExprs, desugarHoleArgs, sequence, letChain, callArgs, sequenceArgs, argEvals, argValues, directCallee,
+    Comp.Captures, Val.Captures, Comp.Reads, LocalRef.Reads, Val.Reads, Vals.Reads,
+    Comp.rename, Val.rename, Val.renameList, LocalRef.rename, HoleArgs.holeTypes, liftReads, upRen, recordFields,
+    boundVars]
 
 -- 先行copyの通常値は捕捉できる。隣の専用位置を除外しても、値の番号は残る。
 example : Comp.Captures (fun i => i ≠ 1)
@@ -247,8 +271,49 @@ example : Comp.Captures (fun i => i ≠ 1)
 example : ¬ Comp.Captures (fun i => i ≠ 0)
     (desugarExpr (fun _ _ => none) .other
       (.handleFail strTy strTy (.last (.literal (.string "ok"))) (.last (copyAt 2)))) := by
-  simp [copyAt, stringRefs, refs, builderFinish, desugarExpr, desugarExprs, desugarBlock, boundVars, sequence, letChain,
-    Comp.Captures, Val.Captures, Clauses.Reads, Comp.Reads, Val.Reads, Vals.Reads,
-    liftReads, BuilderRefs.cells, BuilderPrimRef.toVal]
+  simp [copyAt, builderFinish, desugarExpr, desugarExprs, desugarBlock, boundVars, sequence, letChain,
+    Comp.Captures, Val.Captures, Clauses.Reads, Comp.Reads, LocalRef.Reads, Vals.Reads,
+    liftReads]
+
+
+-- block 内で作った構築器の不変な copy だけを通常の値として返せる。
+example : checkExpr input .strict [] [] none .other []
+    (.block (declared (.seq (appendAt 0 "x") (.last (copyAt 0))))) =
+    .ok (strTy, Eff.empty) := by rfl
+example : checkExpr input .strict [] [] none .other []
+    (.block (declared (.last (.local 0)))) =
+    .error ⟨[0, 0, 0], "local is missing or hidden"⟩ := by rfl
+example : captureBoundaries.all (fun e => hiddenBuilder
+    (checkedBlock (declared (.last (.block (.last e)))))) = true := by decide
+-- 外側の構築器は同じ分類表で操作し、その追記は block の後にも残る。
+private def blockAppend : Block := declared
+  (.seq (.block (.seq (appendAt 0 "block") (.last .unit))) (.last (copyAt 0)))
+example : checkedBlock blockAppend = .ok (strTy, Eff.empty) := by rfl
+example : returnedText blockAppend = some "block" := by decide
+-- 通常の Reference の State は block の出口でも残る。
+example : (checkExpr { input with atoms := [.name stateEff] } .strict []
+    [some (.reference strTy)] none .other []
+    (.block (.last (.call (.primName "get" [strTy] []) [none] [0] (.cons (.local 0) .nil))))).map
+      (fun (t,e) => tyEq [.name stateEff] t strTy && effEq [.name stateEff] e (Eff.single stateEff)) =
+    .ok true := by rfl
+
+private def pickBody : Block :=
+  .bind .bind intTy
+    (.block (.seq (.ifOnly (.local 0) (.last (.returnE (.base .unit) (.literal (.integer ⟨7, by decide⟩)))))
+      (.last (.literal (.integer ⟨9, by decide⟩)))))
+    (.last (.returnE intTy (.local 0)))
+private noncomputable def pick (flag : Bool) : Option Int :=
+  let call := Comp.app (.lam ["flag"] [.base .boolean]
+    (desugarBlock (fun _ _ => none) .tail pickBody)) [.const (.boolean flag)]
+  match (Release.run Release.Examples.program (runtimeBuiltins false)
+      Release.Examples.oracle Release.Examples.rel Release.Examples.fresh 40
+      (.run call [] Store.empty) []).1 with
+  | .run (.ret (.const (.integer n))) [] _ => some n.toInt
+  | _ => none
+-- block を関数に置き換える脱糖では、囲む関数への早期 return を保存できない。
+example : [pick true, pick false] = [some 7, some 9] := by decide
+example : checkExpr input .strict [] [] none .other []
+    (.lam ["flag"] [.base .boolean] intTy Eff.empty pickBody) =
+    .ok (.fn ["flag"] [.base .boolean] intTy Eff.empty, Eff.empty) := by rfl
 
 end Benitoite.Surface.BuilderExamples

@@ -1,0 +1,71 @@
+{
+  "raw_keyword_matches": [
+    [
+      "formal/Benitoite/Exchange/Version.lean",
+      181,
+      "        throw \"source match/binding in constant\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Version.lean",
+      202,
+      "    if c.package.isEmpty then throw \"empty constant package\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Version.lean",
+      220,
+      "      for constant in i.constants do"
+    ],
+    [
+      "formal/Benitoite/Exchange/Version.lean",
+      221,
+      "        validateConstantBody (toJson constant.body)"
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      144,
+      "  if n < 0 then throw \"negative unsigned integer constant\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      197,
+      "  | .opaque .. => throw \"unsupported Release constant\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      234,
+      "          throw \"width-specific numeric constant pattern is not supported\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      315,
+      "          | throw s!\"missing expanded constant: {name}\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      467,
+      "  if state.active.contains name then throw s!\"cyclic constant: {name}\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      468,
+      "  let some entry := table.find? (fun e => e.name == name) | throw s!\"missing constant: {name}\""
+    ],
+    [
+      "formal/Benitoite/Exchange/Convert.lean",
+      478,
+      "    throw \"duplicate constant name\""
+    ],
+    [
+      "formal/Benitoite/Core/Assumptions.lean",
+      8,
+      "仮定は `axiom` としては置かず、定理の引数（`Builtins.Assumptions`）として明示する。"
+    ],
+    [
+      "formal/Benitoite/Release/Assumptions.lean",
+      7,
+      "設計書 07-04「形式化で仮定するもの」の表に対応する。仮定は `axiom` としては置かず、定理の引数として明示する。"
+    ]
+  ],
+  "forbidden_declarations_or_holes": [],
+  "raw_matches_review": "13 raw matches are comments, diagnostic strings, and an identifier named constant; no axiom/constant declarations or proof holes."
+}

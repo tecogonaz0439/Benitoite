@@ -48,16 +48,16 @@ example : errorOf (checkDef input [] probe) =
     some ⟨[0,0,1,0],"Option return type mismatch"⟩ := by decide
 private def handled : Def :=
   { tparams := [], neffs := 0, names := [], params := [], ret := intTy, eff := emptyEff,
-    body := .last (.returnE intTy (.handleE (.last (.literal (.integer 1)))
+    body := .last (.returnE intTy (.handleE (.last (.literal (.integer ⟨1, by decide⟩)))
       (.cons (.user "Pick.value") 0 0
         (.bind .bind (.fn ["right"] [intTy] intTy emptyEff)
-          (partialAdd (.resume 0 (.literal (.integer 10))))
-          (.last (.resume 1 (.literal (.integer 10))))) .nil))) }
+          (partialAdd (.resume 0 (.literal (.integer ⟨10, by decide⟩))))
+          (.last (.resume 1 (.literal (.integer ⟨10, by decide⟩))))) .nil))) }
 -- 本物のハンドラの節で継続を束縛し、非穴の引数に到達してから拒否する。
 example : errorOf (checkDef input [] handled) =
     some ⟨[0,0,0,1,0,0,1,0],"continuation is missing or hidden"⟩ := by decide
 
 -- 対照: 同じ引数位置の Integer は受理され、宣言や個数による拒否ではない。
 example : (checkExpr input .strict [] [] (some strTy) .other []
-    (partialAdd (.literal (.integer 10)))).isOk = true := by decide
+    (partialAdd (.literal (.integer ⟨10, by decide⟩)))).isOk = true := by decide
 end Benitoite.Surface.Check.Counterexamples

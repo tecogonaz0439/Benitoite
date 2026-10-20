@@ -187,6 +187,7 @@ fn delimiter_pairs(ts: &[&Token]) -> BTreeMap<usize, usize> {
             | K::KwIf
             | K::KwMatch
             | K::KwHandle
+            | K::KwBlock
             | K::KwLazy
             | K::KwWith => stack.push((t.kind, i, None)),
             K::LowerIdent

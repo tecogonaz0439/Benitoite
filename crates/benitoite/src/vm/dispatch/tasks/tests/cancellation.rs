@@ -1340,6 +1340,7 @@ end function"#;
                 vm.state.meter.grow(2, 0);
                 let lower = Segment {
                     calls: vec![CallFrame {
+                        builders: Vec::new(),
                         func: Slot::default(),
                         proto: program.main.unwrap(),
                         pc: 0,
@@ -1558,6 +1559,7 @@ end function"#;
                     Segment {
                         regs: vec![ctx.new_slot(root)],
                         calls: vec![CallFrame {
+                            builders: Vec::new(),
                             func: Slot::default(),
                             proto: at.proto,
                             pc: at.pc,

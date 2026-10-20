@@ -1,0 +1,14 @@
+error[E0401]: mismatched types
+  --> testdata/types/batch4-type-names/main.bnt:4:19
+   |
+ 4 |   bind _ <- B.use(A.make())
+   |                   ^^^^^^^^ expected `B.Box`, found `A.Box`
+   |
+  ::: testdata/types/batch4-type-names/B.bnt:4:24
+   |
+ 4 | public function use(x: Box) -> Unit
+   |                        --- expected because of this
+   |
+   = note: argument 1 must match the parameter type of the called function
+
+error: could not check testdata/types/batch4-type-names/main.bnt due to 1 previous error

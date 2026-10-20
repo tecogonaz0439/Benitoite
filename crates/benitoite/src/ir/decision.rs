@@ -2,9 +2,16 @@
 //! （設計書 02-06「判定の木への変換」）。
 
 use crate::base::{BindingId, Span};
+use std::collections::HashMap;
+
+mod arena;
+#[cfg(test)]
+mod block_tests;
+mod rows;
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
 use crate::types::builtin::BuiltinTypeId;
 use crate::types::{AdtTable, EffectSet, Ty, TyCon};
+use arena::{DecisionArena, Edge, MatrixKey, Node, NodeId};
 
 use super::InternalError;
 use super::core_ir::*;
@@ -139,6 +146,9 @@ struct Lowerer<'a> {
     tree_work: usize,
     def_tree_work: usize,
     match_origin: Span,
+    arena: DecisionArena,
+    def_nodes: usize,
+    def_edges: usize,
 }
 
 impl<'a> Lowerer<'a> {
@@ -158,6 +168,9 @@ impl<'a> Lowerer<'a> {
             tree_work: 0,
             def_tree_work: 0,
             match_origin: origin,
+            arena: DecisionArena::default(),
+            def_nodes: 0,
+            def_edges: 0,
         }
     }
 
@@ -249,6 +262,21 @@ impl<'a> Lowerer<'a> {
     #[inline(never)]
     fn comp(&mut self, c: &Comp, renew: bool) -> Result<LComp, LowerError> {
         match &c.kind {
+            CompKind::BuilderLet { .. } => self.lower_lets(c, renew),
+            CompKind::BuilderOp { id, kind, op, args } => {
+                let args = self.vals(args, renew)?;
+                Ok(LComp {
+                    kind: LCompKind::BuilderOp {
+                        id: *id,
+                        kind: kind.clone(),
+                        op: *op,
+                        args,
+                    },
+                    ty: c.ty.clone(),
+                    eff: c.eff.clone(),
+                    origin: c.origin,
+                })
+            }
             CompKind::Return(..) => self.lower_return(c, renew),
             CompKind::Let { .. } => self.lower_lets(c, renew),
             CompKind::App { .. } => self.lower_app(c, renew),
@@ -271,26 +299,44 @@ impl<'a> Lowerer<'a> {
     #[inline(never)]
     fn lower_lets(&mut self, mut c: &Comp, renew: bool) -> Result<LComp, LowerError> {
         let mut bindings = Vec::new();
-        while let CompKind::Let { bound, body, .. } = &c.kind {
-            bindings.push((c, self.comp(bound, renew)?));
-            c = body;
+        loop {
+            if let CompKind::BuilderLet { body, .. } = &c.kind {
+                bindings.push((c, None));
+                c = body;
+            } else if let CompKind::Let { bound, body, .. } = &c.kind {
+                bindings.push((c, Some(self.comp(bound, renew)?)));
+                c = body;
+            } else {
+                break;
+            }
         }
         let body = self.comp(c, renew)?;
         Self::finish_lets(bindings, body)
     }
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
-    fn finish_lets(bindings: Vec<(&Comp, LComp)>, mut body: LComp) -> Result<LComp, LowerError> {
+    fn finish_lets(
+        bindings: Vec<(&Comp, Option<LComp>)>,
+        mut body: LComp,
+    ) -> Result<LComp, LowerError> {
         for (original, bound) in bindings.into_iter().rev() {
-            let CompKind::Let { var, .. } = &original.kind else {
-                return Err(error("expected let"));
-            };
-            body = made(
+            let kind = if let CompKind::BuilderLet { id, kind, .. } = &original.kind {
+                LCompKind::BuilderLet {
+                    id: *id,
+                    kind: kind.clone(),
+                    body: Box::new(body),
+                }
+            } else if let CompKind::Let { var, .. } = &original.kind {
                 LCompKind::Let {
                     var: var.clone(),
-                    bound: Box::new(bound),
+                    bound: Box::new(bound.ok_or_else(|| error("missing let bound"))?),
                     body: Box::new(body),
-                },
+                }
+            } else {
+                return Err(error("expected binding"));
+            };
+            body = made(
+                kind,
                 original.ty.clone(),
                 original.eff.clone(),
                 original.origin,
@@ -479,8 +525,42 @@ impl<'a> Lowerer<'a> {
         arms: &[MatchArm],
         renew: bool,
     ) -> Result<LComp, LowerError> {
-        let (tree, counts) = self.match_tree(c, scrutinee, rows, arms)?;
+        let saved = (
+            self.var_count,
+            self.join_count,
+            *self.body_count,
+            self.tree_work,
+            self.def_tree_work,
+            self.match_origin,
+            self.def_nodes,
+            self.def_edges,
+        );
+        self.match_origin = c.origin;
+        self.arena = DecisionArena::new(self.var_count, self.name, c.origin);
+        let attempt = self.match_tree(c, scrutinee, rows, arms).and_then(|tree| {
+            let counts = self.prepare_output(&tree, arms.len())?;
+            Ok((tree, counts))
+        });
+        let (tree, counts) = match attempt {
+            Ok(prepared) => prepared,
+            Err(LowerError::Limit(_)) => {
+                self.var_count = saved.0;
+                self.join_count = saved.1;
+                *self.body_count = saved.2;
+                self.tree_work = saved.3;
+                self.def_tree_work = saved.4;
+                self.def_nodes = saved.6;
+                self.def_edges = saved.7;
+                self.arena = DecisionArena::new(self.var_count, self.name, c.origin);
+                let tree = self.row_match(scrutinee, rows, arms)?;
+                let counts = self.prepare_output(&tree, arms.len())?;
+                (tree, counts)
+            }
+            Err(e) => return Err(e),
+        };
+        let mut arena = std::mem::take(&mut self.arena);
         let LoweredArms { labels, bodies } = self.match_bodies(arms, counts, renew)?;
+        let node_labels = arena.labels(&tree, &mut self.join_count)?;
         let mut emitted = Emission {
             arms,
             labels: &labels,
@@ -489,10 +569,54 @@ impl<'a> Lowerer<'a> {
             ty: &c.ty,
             origin: c.origin,
             renew,
+            arena: &mut arena,
+            node_labels: &node_labels,
         };
-        // 二回目で下位 IR を作る。本体はここで再び写さず、葉か join のどちらか一か所へ移す。
-        let body = self.emit(tree, &mut emitted)?;
-        Self::finish_match(body, &mut emitted, &labels, arms, c)
+        let mut body = self.emit(tree, &mut emitted)?;
+        // 子は親より先に配列へ置く。子の join を外側へ置けば全ての参照がスコープ内になる。
+        for i in (0..node_labels.len()).rev() {
+            if let Some(label) = node_labels.get(i).copied().flatten() {
+                let node = emitted.arena.take(NodeId(size(i)?))?;
+                let handler = self.emit_node(node.kind, &mut emitted)?;
+                let eff = handler.eff.union(&body.eff);
+                body = made(
+                    LCompKind::Join {
+                        label,
+                        params: node.params,
+                        handler: Box::new(handler),
+                        body: Box::new(body),
+                    },
+                    c.ty.clone(),
+                    eff,
+                    c.origin,
+                );
+            }
+        }
+        body = Self::finish_match(body, &mut emitted, &labels, arms, c)?;
+        self.match_origin = saved.5;
+        Ok(body)
+    }
+    // 表と Join/Jump を含む最終出力も共有判定の試行に含める。
+    fn prepare_output(&mut self, tree: &Edge, arm_count: usize) -> Result<Vec<u32>, LowerError> {
+        let mut arena = std::mem::take(&mut self.arena);
+        arena.table(
+            arena
+                .nodes
+                .len()
+                .checked_mul(32)
+                .ok_or_else(|| self.limit_error("table"))?,
+        )?;
+        let counts = arena.counts(tree, arm_count)?;
+        let (joins, jumps) = arena.emission_cost(tree)?;
+        self.reserve_output(
+            &arena,
+            joins
+                .checked_add(counts.iter().filter(|n| **n > 1).count())
+                .ok_or_else(|| self.limit_error("nodes"))?,
+            jumps,
+        )?;
+        self.arena = arena;
+        Ok(counts)
     }
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
@@ -502,10 +626,23 @@ impl<'a> Lowerer<'a> {
         scrutinee: &CoreVal,
         rows: &[MatchRow],
         arms: &[MatchArm],
-    ) -> Result<(Tree, Vec<u32>), LowerError> {
+    ) -> Result<Edge, LowerError> {
         let ValKind::Var(id) = scrutinee.kind else {
             return Err(error("match scrutinee is not a variable"));
         };
+        let mut bytes = 0_usize;
+        for row in rows {
+            bytes = bytes
+                .checked_add(
+                    arena::pattern_bytes(&row.pattern).map_err(|_| self.limit_error("table"))?,
+                )
+                .ok_or_else(|| self.limit_error("table"))?;
+        }
+        self.arena.table(
+            bytes
+                .checked_mul(2)
+                .ok_or_else(|| self.limit_error("table"))?,
+        )?;
         let matrix = Matrix {
             columns: vec![Var {
                 id,
@@ -525,11 +662,7 @@ impl<'a> Lowerer<'a> {
         };
         self.tree_work = 0;
         self.match_origin = c.origin;
-        let tree = self.tree(matrix, arms)?;
-        // 一回目はガード失敗後の木も数え、共有の必要な本体だけに印を振る（設計書 02-06「判定の木への変換」）。
-        let mut counts = vec![0_u32; arms.len()];
-        tree.count(&mut counts)?;
-        Ok((tree, counts))
+        self.tree(matrix, arms)
     }
 
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -626,74 +759,30 @@ enum Tree {
     Leaf {
         arm: usize,
         bindings: Vec<(VarId, Source)>,
-        fallback: Option<Box<Tree>>,
+        fallback: Option<Edge>,
     },
     Ctor {
         column: Var,
         adt: BindingId,
-        arms: Vec<(u32, Vec<Var>, Tree)>,
-        default: Option<Box<Tree>>,
+        arms: Vec<(u32, Vec<Var>, Edge)>,
+        default: Option<Edge>,
     },
     Constant {
         column: Var,
-        arms: Vec<(ConstTest, Tree)>,
-        default: Option<Box<Tree>>,
+        arms: Vec<(ConstTest, Edge)>,
+        default: Option<Edge>,
     },
     Length {
         column: Var,
-        exact: Vec<(u32, Tree)>,
+        exact: Vec<(u32, Edge)>,
         at_least: u32,
-        otherwise: Box<Tree>,
+        otherwise: Edge,
     },
     Gets {
         list: Var,
         fields: Vec<(Var, ListEnd, u32)>,
-        body: Box<Tree>,
+        body: Edge,
     },
-}
-
-impl Tree {
-    fn count(&self, counts: &mut [u32]) -> Result<(), LowerError> {
-        match self {
-            Tree::Leaf { arm, fallback, .. } => {
-                let n = counts
-                    .get_mut(*arm)
-                    .ok_or_else(|| error("invalid arm index"))?;
-                *n = n
-                    .checked_add(1)
-                    .ok_or_else(|| error("leaf count overflow"))?;
-                if let Some(t) = fallback {
-                    t.count(counts)?;
-                }
-            }
-            Tree::Ctor { arms, default, .. } => {
-                for (_, _, t) in arms {
-                    t.count(counts)?;
-                }
-                if let Some(t) = default {
-                    t.count(counts)?;
-                }
-            }
-            Tree::Constant { arms, default, .. } => {
-                for (_, t) in arms {
-                    t.count(counts)?;
-                }
-                if let Some(t) = default {
-                    t.count(counts)?;
-                }
-            }
-            Tree::Length {
-                exact, otherwise, ..
-            } => {
-                for (_, t) in exact {
-                    t.count(counts)?;
-                }
-                otherwise.count(counts)?;
-            }
-            Tree::Gets { body, .. } => body.count(counts)?,
-        }
-        Ok(())
-    }
 }
 
 fn simple(p: &CorePat) -> bool {
@@ -712,10 +801,18 @@ fn replace<T: Clone>(items: &[T], c: usize, with: &[T]) -> Result<Vec<T>, LowerE
 }
 
 impl Matrix {
-    fn specialize<F>(&self, c: usize, fields: &[Var], mut patterns: F) -> Result<Self, LowerError>
+    fn specialize<F>(
+        &self,
+        c: usize,
+        fields: &[Var],
+        arena: &mut DecisionArena,
+        mut patterns: F,
+    ) -> Result<Self, LowerError>
     where
         F: FnMut(&CorePat, &mut Vec<(VarId, Source)>) -> Result<Option<Vec<CorePat>>, LowerError>,
     {
+        let bytes = self.allocation_bytes(fields.len());
+        arena.table(bytes.unwrap_or(usize::MAX))?;
         let mut rows = Vec::new();
         for row in &self.rows {
             let pat = row
@@ -740,8 +837,8 @@ impl Matrix {
         })
     }
 
-    fn default(&self, c: usize) -> Result<Self, LowerError> {
-        self.specialize(c, &[], |pat, _| {
+    fn default(&self, c: usize, arena: &mut DecisionArena) -> Result<Self, LowerError> {
+        self.specialize(c, &[], arena, |pat, _| {
             Ok(matches!(pat, CorePat::Wild).then(Vec::new))
         })
     }
@@ -750,26 +847,51 @@ impl Matrix {
 impl Lowerer<'_> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
-    fn tree(&mut self, mut matrix: Matrix, arms: &[MatchArm]) -> Result<Tree, LowerError> {
+    fn tree(&mut self, mut matrix: Matrix, arms: &[MatchArm]) -> Result<Edge, LowerError> {
         // 特殊化した行列の幅も仕事として数える（設計書 02-06「判定の木への変換」）。
         let work = matrix
             .rows
             .iter()
             .fold(1_usize, |n, r| n.saturating_add(r.patterns.len()));
         self.tree_work = self.tree_work.saturating_add(work);
-        // match の数えは作るたびに戻すが、ガードを葉ごとに写す費用は定義に積算する
+        // match の数えは作るたびに戻すが、共有判定の試行量は定義に積算する
         // （設計書 02-07「処理系の制限」）。
         self.def_tree_work = self.def_tree_work.saturating_add(work);
-        let note = if self.tree_work > MAX_TREE_WORK {
-            Some("limit")
-        } else if self.def_tree_work > MAX_DEF_TREE_WORK {
-            Some("definition")
-        } else {
-            None
-        };
-        if let Some(note) = note {
-            return Err(self.limit_error(note));
+        if self.tree_work > MAX_TREE_WORK || self.def_tree_work > MAX_DEF_TREE_WORK {
+            // この Limit は共有判定の試行内の印であり、必ず行照合へ切り替える。
+            return Err(self.limit_error("nodes"));
         }
+        // 全行で不要な列を除く。値の取り出し元は束縛として残してから正規化する。
+        matrix.prune();
+        if matrix
+            .rows
+            .first()
+            .is_some_and(|r| r.patterns.iter().all(simple))
+        {
+            return self.build_tree(matrix, arms);
+        }
+        self.arena.table(
+            matrix
+                .allocation_bytes(0)
+                .map_err(|_| self.limit_error("table"))?,
+        )?;
+        let (key, params) = MatrixKey::new(&matrix, self.arena.first_var)?;
+        if let Some(id) = self.arena.memo.get(&key).copied() {
+            return Ok(Edge { id, args: params });
+        }
+        let edge = self.build_tree(matrix, arms)?;
+        self.arena
+            .set_params(edge.id, params.clone())
+            .map_err(|_| self.limit_error("table"))?;
+        self.arena.memo.insert(key, edge.id);
+        Ok(Edge {
+            id: edge.id,
+            args: params,
+        })
+    }
+
+    #[inline(never)]
+    fn build_tree(&mut self, mut matrix: Matrix, arms: &[MatchArm]) -> Result<Edge, LowerError> {
         // 手順 1: 網羅性検査を通った行列には行がある（設計書 02-06「判定の木への変換」）。
         let first = matrix
             .rows
@@ -851,7 +973,7 @@ impl Lowerer<'_> {
 
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
-    fn leaf_tree(&mut self, mut matrix: Matrix, arms: &[MatchArm]) -> Result<Tree, LowerError> {
+    fn leaf_tree(&mut self, mut matrix: Matrix, arms: &[MatchArm]) -> Result<Edge, LowerError> {
         let first = matrix
             .rows
             .first()
@@ -876,11 +998,11 @@ impl Lowerer<'_> {
                 .skip(1)
                 .filter(|r| r.arm != arm)
                 .collect();
-            Some(Box::new(self.tree(matrix, arms)?))
+            Some(self.tree(matrix, arms)?)
         } else {
             None
         };
-        Ok(Tree::Leaf {
+        self.node(Tree::Leaf {
             arm,
             bindings,
             fallback,
@@ -897,7 +1019,7 @@ impl Lowerer<'_> {
         adt: BindingId,
         args: &[Ty],
         match_arms: &[MatchArm],
-    ) -> Result<Tree, LowerError> {
+    ) -> Result<Edge, LowerError> {
         // 手順 4: タグの昇順で構成子を分け、宣言の型引数を置き換えた引数の列を作る。
         let def = self
             .adts
@@ -932,7 +1054,7 @@ impl Lowerer<'_> {
                 .into_iter()
                 .map(|t| self.var(t))
                 .collect::<Result<Vec<_>, _>>()?;
-            let specialized = m.specialize(c, &fields, |p, _| {
+            let specialized = m.specialize(c, &fields, &mut self.arena, |p, _| {
                 Ok(match p {
                     CorePat::Wild => Some(vec![CorePat::Wild; fields.len()]),
                     CorePat::Ctor { tag: t, args, .. } if *t == tag => Some(args.clone()),
@@ -947,11 +1069,14 @@ impl Lowerer<'_> {
             arms.push((tag, fields, self.tree(specialized, match_arms)?));
         }
         let default = if has_default {
-            Some(Box::new(self.tree(m.default(c)?, match_arms)?))
+            {
+                let next = m.default(c, &mut self.arena)?;
+                Some(self.tree(next, match_arms)?)
+            }
         } else {
             None
         };
-        Ok(Tree::Ctor {
+        self.node(Tree::Ctor {
             column: col.clone(),
             adt,
             arms,
@@ -968,7 +1093,7 @@ impl Lowerer<'_> {
         col: &Var,
         ty: BuiltinTypeId,
         match_arms: &[MatchArm],
-    ) -> Result<Tree, LowerError> {
+    ) -> Result<Edge, LowerError> {
         // 手順 5: 定数が最初に現れた順を保ち、同じ定数の行も元の順で残す。
         let mut constants = Vec::new();
         for row in &m.rows {
@@ -1001,7 +1126,7 @@ impl Lowerer<'_> {
             ty == BuiltinTypeId::STRING || (ty == BuiltinTypeId::BOOLEAN && constants.len() < 2);
         let mut arms = Vec::new();
         for k in constants {
-            let next = m.specialize(c, &[], |p, _| {
+            let next = m.specialize(c, &[], &mut self.arena, |p, _| {
                 Ok(match p {
                     CorePat::Wild => Some(Vec::new()),
                     CorePat::Const(other) => (other == &k).then(Vec::new),
@@ -1015,11 +1140,14 @@ impl Lowerer<'_> {
             arms.push((ConstTest::Eq(k), self.tree(next, match_arms)?));
         }
         let default = if has_default {
-            Some(Box::new(self.tree(m.default(c)?, match_arms)?))
+            {
+                let next = m.default(c, &mut self.arena)?;
+                Some(self.tree(next, match_arms)?)
+            }
         } else {
             None
         };
-        Ok(Tree::Constant {
+        self.node(Tree::Constant {
             column: col.clone(),
             arms,
             default,
@@ -1110,7 +1238,7 @@ impl Lowerer<'_> {
         col: &Var,
         ty: BuiltinTypeId,
         match_arms: &[MatchArm],
-    ) -> Result<Tree, LowerError> {
+    ) -> Result<Edge, LowerError> {
         // 手順 6: 下端と上端の次の値で分ける。文字はサロゲートを飛ばし、最大値の次は作らない。
         let domain = Domain {
             character: ty == BuiltinTypeId::CHARACTER,
@@ -1162,8 +1290,8 @@ impl Lowerer<'_> {
                 parts.push(Interval { lo, hi, rows });
             }
         }
-        let exhaustive_character = domain.character
-            && parts.first().is_some_and(|p| p.lo == 0)
+        let min = if domain.character { 0 } else { i64::MIN };
+        let exhaustive_domain = parts.first().is_some_and(|p| p.lo == min)
             && parts.last().is_some_and(|p| p.hi == domain.max())
             && parts.windows(2).all(|pair| match pair {
                 [a, b] => domain.next(a.hi) == Some(b.lo),
@@ -1171,7 +1299,7 @@ impl Lowerer<'_> {
             });
         let mut arms = Vec::new();
         for part in parts {
-            let next = m.specialize(c, &[], |p, _| {
+            let next = m.specialize(c, &[], &mut self.arena, |p, _| {
                 Ok(domain
                     .interval(p)?
                     .is_none_or(|(a, b)| a <= part.lo && part.lo <= b)
@@ -1189,12 +1317,15 @@ impl Lowerer<'_> {
         }
         // 全域なら既定分岐には届かない。既定の行だけでは残りの列を網羅しない場合もある
         // （設計書 02-06「判定の木への変換」）。
-        let default = if exhaustive_character {
+        let default = if exhaustive_domain {
             None
         } else {
-            Some(Box::new(self.tree(m.default(c)?, match_arms)?))
+            {
+                let next = m.default(c, &mut self.arena)?;
+                Some(self.tree(next, match_arms)?)
+            }
         };
-        Ok(Tree::Constant {
+        self.node(Tree::Constant {
             column: col.clone(),
             arms,
             default,
@@ -1210,7 +1341,7 @@ impl Lowerer<'_> {
         col: &Var,
         elem: &Ty,
         match_arms: &[MatchArm],
-    ) -> Result<Tree, LowerError> {
+    ) -> Result<Edge, LowerError> {
         // 手順 7: 最大の固定長 a と、残りのある行の前後の最大 p・s から分ける長さを決める。
         let mut a: Option<u32> = None;
         let mut p = 0_u32;
@@ -1263,11 +1394,11 @@ impl Lowerer<'_> {
             ));
         }
         let otherwise = self.list_branch(m, c, col, elem, (p, s, true), match_arms)?;
-        Ok(Tree::Length {
+        self.node(Tree::Length {
             column: col.clone(),
             exact,
             at_least,
-            otherwise: Box::new(otherwise),
+            otherwise,
         })
     }
 
@@ -1279,7 +1410,7 @@ impl Lowerer<'_> {
         elem: &Ty,
         ends: (u32, u32, bool),
         match_arms: &[MatchArm],
-    ) -> Result<Tree, LowerError> {
+    ) -> Result<Edge, LowerError> {
         let (front, back, unbounded) = ends;
         let mut gets = Vec::new();
         for i in 0..front {
@@ -1292,7 +1423,7 @@ impl Lowerer<'_> {
         let length = front
             .checked_add(back)
             .ok_or_else(|| error("list pattern length overflow"))?;
-        let next = m.specialize(c, &fields, |pat, bindings| {
+        let next = m.specialize(c, &fields, &mut self.arena, |pat, bindings| {
             let CorePat::List {
                 before,
                 rest,
@@ -1351,10 +1482,10 @@ impl Lowerer<'_> {
         })?;
         // 手順 8: 長さを確かめて取り出した列について手順 1 に戻る。
         let body = self.tree(next, match_arms)?;
-        Ok(Tree::Gets {
+        self.node(Tree::Gets {
             list: col.clone(),
             fields: gets,
-            body: Box::new(body),
+            body,
         })
     }
 }
@@ -1392,6 +1523,8 @@ fn let_comp(var: Var, bound: LComp, body: LComp, origin: Span) -> LComp {
 }
 
 struct Emission<'a> {
+    arena: &'a mut DecisionArena,
+    node_labels: &'a [Option<JoinId>],
     arms: &'a [MatchArm],
     labels: &'a [Option<JoinId>],
     bodies: Vec<Option<LComp>>,
@@ -1402,9 +1535,33 @@ struct Emission<'a> {
 }
 
 impl Lowerer<'_> {
+    #[inline(never)]
+    fn emit(&mut self, edge: Edge, e: &mut Emission<'_>) -> Result<LComp, LowerError> {
+        if let Some(label) = e.node_labels.get(index(edge.id.0)?).copied().flatten() {
+            return Self::emit_jump(label, edge.args, e);
+        }
+        let node = e.arena.take(edge.id)?;
+        self.emit_node(node.kind, e)
+    }
+
+    // Jump の構築用の値を、木を再帰で辿る枠へ置かない
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn emit_jump(label: JoinId, args: Vec<Var>, e: &Emission<'_>) -> Result<LComp, LowerError> {
+        Ok(made(
+            LCompKind::Jump {
+                label,
+                args: args.iter().map(|v| variable(v, e.origin)).collect(),
+            },
+            e.ty.clone(),
+            EffectSet::empty(),
+            e.origin,
+        ))
+    }
+
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
-    fn emit(&mut self, tree: Tree, e: &mut Emission<'_>) -> Result<LComp, LowerError> {
+    fn emit_node(&mut self, tree: Tree, e: &mut Emission<'_>) -> Result<LComp, LowerError> {
         match tree {
             Tree::Leaf {
                 arm,
@@ -1498,15 +1655,35 @@ impl Lowerer<'_> {
             eff = eff.union(&body.eff);
             out.push(LengthArm { len, body });
         }
-        let otherwise = self.emit(*otherwise, e)?;
+        let otherwise = self.emit(otherwise, e)?;
         eff = eff.union(&otherwise.eff);
-        let kind = LCompKind::CaseLength {
-            scrutinee: variable(&column, e.origin),
-            exact: out,
-            at_least,
-            otherwise: Box::new(otherwise),
-        };
-        Ok(made(kind, e.ty.clone(), eff, e.origin))
+        Ok(Self::finish_length(
+            column, out, at_least, otherwise, eff, e,
+        ))
+    }
+
+    // 子を下ろした後の組み立て用の値を、再帰の間は保持しない
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_length(
+        column: Var,
+        exact: Vec<LengthArm>,
+        at_least: u32,
+        otherwise: LComp,
+        eff: EffectSet,
+        e: &Emission<'_>,
+    ) -> LComp {
+        made(
+            LCompKind::CaseLength {
+                scrutinee: variable(&column, e.origin),
+                exact,
+                at_least,
+                otherwise: Box::new(otherwise),
+            },
+            e.ty.clone(),
+            eff,
+            e.origin,
+        )
     }
 
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -1515,31 +1692,43 @@ impl Lowerer<'_> {
         let Tree::Gets { list, fields, body } = tree else {
             return Err(error("unexpected decision tree"));
         };
-        let mut body = self.emit(*body, e)?;
+        let body = self.emit(body, e)?;
+        Ok(Self::finish_gets(list, fields, body, e.origin))
+    }
+
+    // ListGet と Let の組み立ては再帰から戻ってから行う
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_gets(
+        list: Var,
+        fields: Vec<(Var, ListEnd, u32)>,
+        mut body: LComp,
+        origin: Span,
+    ) -> LComp {
         for (var, from, index) in fields.into_iter().rev() {
             let bound = made(
                 LCompKind::ListGet {
-                    list: variable(&list, e.origin),
+                    list: variable(&list, origin),
                     from,
                     index,
                 },
                 var.ty.clone(),
                 EffectSet::empty(),
-                e.origin,
+                origin,
             );
-            body = let_comp(var, bound, body, e.origin);
+            body = let_comp(var, bound, body, origin);
         }
-        Ok(body)
+        body
     }
 
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     fn emit_default(
         &mut self,
-        tree: Option<Box<Tree>>,
+        tree: Option<Edge>,
         e: &mut Emission<'_>,
     ) -> Result<Option<Box<LComp>>, LowerError> {
-        tree.map(|t| self.emit(*t, e).map(Box::new)).transpose()
+        tree.map(|t| self.emit(t, e).map(Box::new)).transpose()
     }
 
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -1548,7 +1737,7 @@ impl Lowerer<'_> {
         &mut self,
         arm: usize,
         bindings: Vec<(VarId, Source)>,
-        fallback: Option<Box<Tree>>,
+        fallback: Option<Edge>,
         e: &mut Emission<'_>,
     ) -> Result<LComp, LowerError> {
         let branch = e.arms.get(arm).ok_or_else(|| error("invalid arm index"))?;
@@ -1645,7 +1834,7 @@ impl Lowerer<'_> {
         &mut self,
         body: LComp,
         guard: &Comp,
-        fallback: Option<Box<Tree>>,
+        fallback: Option<Edge>,
         arm: usize,
         e: &mut Emission<'_>,
     ) -> Result<LComp, LowerError> {
@@ -1657,7 +1846,7 @@ impl Lowerer<'_> {
         *seen = true;
         let guard = self.comp(guard, renew)?;
         let g = self.var(builtin_ty(BuiltinTypeId::BOOLEAN))?;
-        let fallback = self.emit(*fallback.ok_or_else(|| error("missing guard fallback"))?, e)?;
+        let fallback = self.emit(fallback.ok_or_else(|| error("missing guard fallback"))?, e)?;
         let eff = body.eff.union(&fallback.eff);
         let choice = made(
             LCompKind::If {
@@ -1913,6 +2102,12 @@ mod tests {
     fn visit(c: &LComp, f: &mut impl FnMut(&LComp)) {
         f(c);
         match &c.kind {
+            LCompKind::BuilderLet { body, .. } => visit(body, f),
+            LCompKind::BuilderOp { args, .. } => {
+                for v in args {
+                    visit_val(v, f);
+                }
+            }
             LCompKind::Let { bound, body, .. } => {
                 visit(bound, f);
                 visit(body, f);
@@ -2079,6 +2274,9 @@ mod tests {
     }
     fn eval_core(c: &Comp, env: &Env) -> Value {
         match &c.kind {
+            CompKind::BuilderLet { .. } | CompKind::BuilderOp { .. } => {
+                panic!("builder outside pattern evaluation fixture")
+            }
             CompKind::Return(v) => eval_val(v, env),
             CompKind::Let { var, bound, body } => {
                 let value = eval_core(bound, env);
@@ -2140,6 +2338,9 @@ mod tests {
         let mut joins: Vec<(JoinId, &'a [Var], &'a LComp, Env)> = Vec::new();
         loop {
             match &c.kind {
+                LCompKind::BuilderLet { .. } | LCompKind::BuilderOp { .. } => {
+                    panic!("builder outside pattern evaluation fixture")
+                }
                 LCompKind::Return(v) => return eval_val(v, &env),
                 LCompKind::Let { var, bound, body } => {
                     let v = eval_low(bound, &env);
@@ -2482,6 +2683,44 @@ mod tests {
         tests
     }
 
+    // 網羅した整数の列でも、存在しない既定の行を木へ変換しない。
+    // ソースの golden に加え、下位 IR に不要な既定分岐を残す回避策を捕まえる。
+    #[test]
+    fn exhaustive_integer_ranges_lower_without_a_default() {
+        let range = |lo, hi| CorePat::Range {
+            lo: Const::Int(lo),
+            hi: Const::Int(hi),
+        };
+        for rows in [
+            vec![(range(i64::MIN, i64::MAX), 0)],
+            vec![(range(i64::MIN, -1), 0), (range(0, i64::MAX), 1)],
+            vec![
+                (range(i64::MIN, -1), 0),
+                (CorePat::Const(Const::Int(0)), 1),
+                (range(1, i64::MAX), 2),
+            ],
+        ] {
+            let arms = (0..rows.len())
+                .map(|i| arm(u32::try_from(i).unwrap(), vec![], None))
+                .collect();
+            let body = matching(
+                vval(&var(0, builtin_ty(BuiltinTypeId::INTEGER))),
+                rows,
+                arms,
+            );
+            let low = lower(body.clone());
+            let LCompKind::CaseConst { default, .. } = &low.kind else {
+                panic!("expected constant cases")
+            };
+            assert!(default.is_none());
+            compare(
+                &body,
+                [i64::MIN, -1, 0, 1, i64::MAX].map(|n| Value::Const(Const::Int(n))),
+                &[],
+            );
+        }
+    }
+
     // 網羅した文字には既定分岐が不要であり、未被覆のコア入力は拒否する。
     #[test]
     fn exhaustive_character_ranges_lower_without_a_default() {
@@ -2803,6 +3042,8 @@ mod tests {
                 ..
             } => slices.push((*drop_front, *drop_back)),
             LCompKind::Return(_)
+            | LCompKind::BuilderLet { .. }
+            | LCompKind::BuilderOp { .. }
             | LCompKind::Let { .. }
             | LCompKind::App { .. }
             | LCompKind::Method(_)
@@ -3085,7 +3326,9 @@ mod tests {
                 ids.push(h.id);
                 ids.extend(h.clauses.iter().map(|cl| cl.id));
             }
-            LCompKind::Let { .. }
+            LCompKind::BuilderLet { .. }
+            | LCompKind::BuilderOp { .. }
+            | LCompKind::Let { .. }
             | LCompKind::CaseCtor { .. }
             | LCompKind::CaseConst { .. }
             | LCompKind::CaseLength { .. }
@@ -3156,6 +3399,8 @@ mod tests {
             LCompKind::Join { label, params, .. } => joins.push((*label, params.len())),
             LCompKind::Jump { label, args } => jumps.push((*label, args.len())),
             LCompKind::Return(_)
+            | LCompKind::BuilderLet { .. }
+            | LCompKind::BuilderOp { .. }
             | LCompKind::Let { .. }
             | LCompKind::App { .. }
             | LCompKind::Method(_)
@@ -3352,7 +3597,9 @@ mod tests {
                     assert_eq!(c.eff, io);
                 }
                 LCompKind::App { .. } | LCompKind::Return(_) => assert_eq!(c.origin, other_span()),
-                LCompKind::Let { .. }
+                LCompKind::BuilderLet { .. }
+                | LCompKind::BuilderOp { .. }
+                | LCompKind::Let { .. }
                 | LCompKind::Method(_)
                 | LCompKind::If { .. }
                 | LCompKind::CaseCtor { .. }
@@ -3653,7 +3900,8 @@ mod tests {
         let chain_ty = adt_ty(chain, vec![]);
         let mut pattern = CorePat::Wild;
         let mut value = Value::Ctor(chain, 0, vec![]);
-        for _ in 0..64 {
+        let depth = 64;
+        for _ in 0..depth {
             pattern = ctor(chain, 1, vec![pattern]);
             value = Value::Ctor(chain, 1, vec![value]);
         }
@@ -3691,12 +3939,13 @@ mod tests {
             },
         );
         let low = lower_program(&p).unwrap();
-        assert_eq!(low.defs[0].var_count, 164);
+        assert_eq!(low.defs[0].var_count, 100 + depth);
         for v in [value, Value::Ctor(chain, 0, vec![])] {
             let env = Env::from([(VarId(0), v)]);
             assert_eq!(eval_low(&low.defs[0].body, &env), eval_core(&body, &env));
         }
-        let len = 1024_u32;
+        let len = 4096_u32;
+        let selected = 777;
         let body = matching(
             vval(&var(0, list_ty(int_ty()))),
             vec![
@@ -3704,7 +3953,7 @@ mod tests {
                     list(
                         (0..len)
                             .map(|i| {
-                                if i == 777 {
+                                if i == selected {
                                     CorePat::Var(VarId(1))
                                 } else {
                                     CorePat::Wild
@@ -3728,22 +3977,24 @@ mod tests {
         )]);
         assert_eq!(
             eval_low(&low.defs[0].body, &env),
-            Value::Ctor(OBS, 0, vec![ivalue(777)])
+            Value::Ctor(OBS, 0, vec![ivalue(i64::from(selected))])
         );
         assert_eq!(eval_low(&low.defs[0].body, &env), eval_core(&body, &env));
     }
 
-    // 作成時の関門: 公開の変換で、予算の内側の照合結果と、超過時の制限・位置を守る。
+    // 作成時の関門: 公開の変換で、旧予算超過の入力も独立した照合器と同じ値になることを守る。
     // 小さい既存の行列では指数的に増える木を止めない退行を捕まえられない。
     // 本番の予算を下げず、差し込み口や時計に依存しない。
     #[test]
-    fn decision_tree_budget_preserves_matching_and_reports_a_limit() {
-        for (groups, extra, guarded, limited) in [
-            (8_u32, 0, false, false),
-            (12, 0, false, false),
-            (13, 0, false, true),
-            (8, 2000, false, true),
-            (8, 0, true, true),
+    fn decision_sharing_accepts_previous_limits_and_preserves_matching() {
+        for (groups, extra, guarded) in [
+            (8_u32, 0, false),
+            (12, 0, false),
+            (13, 0, false),
+            (16, 0, false),
+            (24, 0, false),
+            (8, 2000, false),
+            (8, 0, true),
         ] {
             let fields = groups * 2 + extra;
             let rows = (0..groups)
@@ -3779,7 +4030,7 @@ mod tests {
                 arms[0].body = body.clone();
             }
             if guarded {
-                // ガードは葉ごとに写すので、一つずつ小さくても定義の合計で止める。
+                // ガード内の大きな match も、共有して定義全体の予算の内側で受理する。
                 let mut guard = body.clone();
                 guard.ty = bool_ty();
                 let CompKind::Match { arms, .. } = &mut guard.kind else {
@@ -3799,21 +4050,7 @@ mod tests {
                 arms.push(arm(groups + 1, vec![], None));
             }
             let result = lower_program(&p);
-            if limited {
-                let Err(LowerError::Limit(diagnostics)) = result else {
-                    panic!("expected a limit: groups={groups}, extra={extra}, guarded={guarded}");
-                };
-                assert_eq!(diagnostics.len(), 1);
-                assert_eq!(diagnostics[0].code, Some(DiagCode::L0112));
-                if guarded {
-                    assert!(diagnostics[0].notes[0].contains("copies of guards"));
-                }
-                assert_eq!(diagnostics[0].primary.as_ref().unwrap().span, body.origin);
-                assert_eq!(
-                    diagnostics[0].message,
-                    "the `match` in `main` is too large to compile"
-                );
-            } else {
+            {
                 let low = result.unwrap();
                 for selected in [None, Some(0), Some(groups - 1)] {
                     let values = (0..fields)
@@ -3827,6 +4064,80 @@ mod tests {
                 }
             }
         }
+    }
+
+    // 関門: 共有判定は生成できても最終出力の予約で失敗する入力を、既存の
+    // 私有の定義予算で作る。仕事量だけの切替テストではこの退行を捕まえない。
+    #[test]
+    fn final_output_reservation_falls_back_to_rows() {
+        let body = matching(
+            vval(&var(0, list_ty(bool_ty()))),
+            vec![
+                (list(vec![CorePat::Wild; 4], None, vec![]), 0),
+                (CorePat::Wild, 1),
+            ],
+            vec![arm(0, vec![], None), arm(1, vec![], None)],
+        );
+        let p = program(body.clone());
+        let CompKind::Match {
+            scrutinee,
+            rows,
+            arms,
+        } = &body.kind
+        else {
+            panic!("match");
+        };
+        let mut sizes = vec![];
+        for fallback in [false, true] {
+            let mut bodies = 0;
+            let mut ctx = Lowerer::new(&p.adts, 100, &mut bodies, "main", span());
+            let tree = if fallback {
+                ctx.row_match(scrutinee, rows, arms).unwrap()
+            } else {
+                ctx.match_tree(&body, scrutinee, rows, arms).unwrap()
+            };
+            ctx.prepare_output(&tree, arms.len()).unwrap();
+            sizes.push(ctx.def_nodes);
+        }
+        assert!(sizes[0] > sizes[1], "shared/rows={sizes:?}");
+        let mut bodies = 0;
+        let mut ctx = Lowerer::new(&p.adts, 100, &mut bodies, "main", span());
+        ctx.def_nodes = 1_048_576 - sizes[1];
+        let lowered = ctx.comp(&body, false).unwrap();
+        assert_eq!(ctx.def_nodes, 1_048_576);
+        assert_eq!(ctx.def_tree_work, 0);
+        for len in [0, 4, 5] {
+            let env = Env::from([(VarId(0), Value::List(vec![bvalue(true); len]))]);
+            assert_eq!(eval_low(&lowered, &env), eval_core(&body, &env));
+        }
+    }
+
+    // 作成時の関門: 公開 lower_program に符号化前の IR を渡し、parser の深さと独立に
+    // 最終予算の拒否・診断の個数と位置を守る。小さい正常例ではこの契約を確かめられない。
+    #[test]
+    fn final_decision_budget_reports_one_limit_at_the_match() {
+        let body = matching(
+            vval(&var(0, list_ty(bool_ty()))),
+            vec![
+                (list(vec![CorePat::Wild; 1_048_576], None, vec![]), 0),
+                (CorePat::Wild, 1),
+            ],
+            vec![arm(0, vec![], None), arm(1, vec![], None)],
+        );
+        let Err(LowerError::Limit(diagnostics)) = lower_program(&program(body)) else {
+            panic!("expected a final limit");
+        };
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].code, Some(DiagCode::L0112));
+        assert_eq!(diagnostics[0].primary.as_ref().unwrap().span, span());
+        assert_eq!(
+            diagnostics[0].message,
+            "the definition `main` is too large to compile"
+        );
+        assert_eq!(
+            diagnostics[0].notes,
+            ["the match decision requires more than 64 MiB of working tables; simplify the match"]
+        );
     }
 
     #[test]

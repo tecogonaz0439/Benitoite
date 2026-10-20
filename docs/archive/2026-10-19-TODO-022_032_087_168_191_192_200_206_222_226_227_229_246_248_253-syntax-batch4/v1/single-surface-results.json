@@ -1,0 +1,627 @@
+[
+  {
+    "input": "testdata/concurrency/c12-cancelled-await.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/concurrency/c12-deadlock.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/concurrency/c12-group-join-await.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/concurrency/c12-group-released.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/concurrency/c12-inherited-handler.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/concurrency/inherited_operation_task_location.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/concurrency/r41-inherited-non-tail.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/redirect.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/respond-twice.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/routes-and-post.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/status-above-range.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/status-below-range.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/status-informational.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/todo194-json-parse-server.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/todo198-cancelled-accept-reregisters.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          2,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          2,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/network/unanswered-exchange.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "unknown primitive",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "input": "testdata/syntax/f04_list_spread.bnt",
+    "before": {
+      "ok": false,
+      "error": {
+        "reason": "type is not included in the expected type",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    "after": {
+      "ok": false,
+      "error": {
+        "reason": "type is not included in the expected type",
+        "path": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    }
+  }
+]

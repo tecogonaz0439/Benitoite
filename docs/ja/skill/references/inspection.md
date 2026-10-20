@@ -1,6 +1,6 @@
 # 実行前の検査
 
-> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 修正中は通常の `benitoite check main.bnt` または非実行の `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に JSON 報告を一度取得する。その報告を確認し、Skill の確認の規則に従って宣言したエフェクトを利用者に説明してから、了承済みの集合を実行へ渡す。
 
@@ -71,3 +71,5 @@ benitoite skill show --format=json references/stdlib/IO.Process.md
 版 2 は Target.tests を保ち、docExamples と ignoredDocBlocks を加える。例には自分自身の import と uses を書き、公開 API の境界を検査する。モードは test/check/error/run である。集計するエフェクトは通常のテストと実行する test/run の例だけで、check/error は実行の許可を加えない。期待した静的拒否は observedDiagnostics を持つ成功した error 例であり、最上位の診断の失敗ではない。不明なエフェクトとテストは null、成功した空の値は空配列とする。想定外の拒否や診断の不一致は検査を不完全にする。--check は main を実行せず、出力を検証しない。
 
 実行前に、実行する全例の準備と許す集合の照合を終える。実行は docExample 行、発見したモード別の数と ignoredBlocks を持つ docSummary、最終の testSummary を出力する。最終集計は通常のテスト関数と完了した例を数え、複数の @test を含む例も一件と数える。取り込んだ文書や標準文書は再帰的に集めない。各例は独立した状態と空の標準入力で実行する。
+
+Log は正規の原子的エフェクト名であり、--allow-effects に指定できる。IO.All、Console.Write、HTTP のどれにも含まれない。無効なログのレベルから宣言上限の Log を取り除くことはない。完全なハンドラで処理した後も、宣言した上限に従って許可を照合する。

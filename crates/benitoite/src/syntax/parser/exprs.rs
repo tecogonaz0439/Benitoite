@@ -272,10 +272,13 @@ fn skip_dot(p: &mut Parser, depth: u32, lhs: Box<Expr>) -> PResult<Box<Expr>> {
 }
 
 pub(super) fn record_ahead(p: &Parser) -> bool {
+    // recordも欄の並びとして読み、通常の引数ラベルとして受理せず欄名の診断を出す。
     p.at(TokenKind::LParen)
         && (p.peek_nth_kind(1) == TokenKind::DotDot
-            || matches!(p.peek_nth_kind(1), TokenKind::LowerIdent | TokenKind::KwDie)
-                && p.peek_nth_kind(2) == TokenKind::Colon)
+            || matches!(
+                p.peek_nth_kind(1),
+                TokenKind::LowerIdent | TokenKind::KwDie | TokenKind::KwRecord
+            ) && p.peek_nth_kind(2) == TokenKind::Colon)
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
@@ -298,6 +301,7 @@ fn parse_primary(p: &mut Parser, depth: u32, stop_action: bool) -> PResult<Box<E
         TokenKind::KwMatch => parse_match(p, depth),
         TokenKind::KwLambda => parse_lambda(p, depth),
         TokenKind::StrStart => interp::parse_interp(p, depth),
+        TokenKind::KwBlock => parse_block_expr(p, depth),
         TokenKind::KwLazy => effects::parse_lazy(p, depth),
         TokenKind::KwWith => effects::parse_with(p, depth),
         TokenKind::KwHandle => effects::parse_handle(p, depth),
@@ -373,7 +377,10 @@ fn parse_primary(p: &mut Parser, depth: u32, stop_action: bool) -> PResult<Box<E
 fn parse_leaf(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     // レコードの更新元は深さの上限まで再帰する。リテラルや診断の組み立てを
     // 同じ枠に置くと、上限内でもスタックを使い切る（設計書 02-03「入れ子の深さ」）。
-    if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::UpperIdent) {
+    if matches!(
+        p.peek_kind(),
+        TokenKind::LowerIdent | TokenKind::UpperIdent | TokenKind::KwRecord
+    ) {
         if foreign::fn_lambda_ahead(p) {
             return parse_foreign_lambda(p);
         }
@@ -546,8 +553,10 @@ fn parse_args(p: &mut Parser, depth: u32) -> PResult<Vec<Arg>> {
             indexed: true,
         },
         |p, depth, out| {
-            if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::KwDie)
-                && p.peek_nth_kind(1) == TokenKind::Colon
+            if matches!(
+                p.peek_kind(),
+                TokenKind::LowerIdent | TokenKind::KwDie | TokenKind::KwRecord
+            ) && p.peek_nth_kind(1) == TokenKind::Colon
             {
                 out.push(Arg::Named(parse_named_arg(p, depth)?));
                 Ok(())
@@ -630,6 +639,28 @@ fn finish_list(p: &mut Parser, start: usize, elems: Vec<ListElem>) -> Box<Expr> 
     };
     spread::check_list_spreads(p, &list);
     Box::new(Expr::List(list))
+}
+
+// return・ガード・lazy の文脈を保つ（設計書 02-03「式」）。
+#[inline(never)]
+fn parse_block_expr(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
+    p.enter(depth)?;
+    let start = p.pos;
+    let opened = p.bump().span;
+    p.open_block(TokenKind::KwBlock, opened);
+    let saved = p.ctx;
+    // block の内部は分岐の頭ではなく文列である。脱出の制限は保つ
+    // （設計書 02-03「文脈の制限」）。
+    p.ctx.in_arm_head = false;
+    let body = parse_block(p, child(depth), BlockEnd::End);
+    p.ctx = saved;
+    let body = body?;
+    p.close_block(TokenKind::KwBlock);
+    Ok(Box::new(Expr::Block(BlockExpr {
+        id: p.node_id(),
+        span: p.span_from(start),
+        body: *body,
+    })))
 }
 
 /// ブロックを終える語。`WithCase` は `handle` の本体で使う。
@@ -1193,6 +1224,7 @@ fn check_direct_lambdas(p: &mut Parser, body: &Block, ending: LambdaEnding, edit
             | Expr::Record(_)
             | Expr::If(_)
             | Expr::Match(_)
+            | Expr::Block(_)
             | Expr::Lazy(_)
             | Expr::With(_)
             | Expr::Handle(_)
@@ -1540,6 +1572,7 @@ pub(super) fn span_of(expr: &Expr) -> Span {
         Expr::Lambda(e) => e.span,
         Expr::Return(e) => e.span,
         Expr::Try(e) => e.span,
+        Expr::Block(e) => e.span,
         Expr::Lazy(e) => e.span,
         Expr::With(e) => e.span,
         Expr::Handle(e) => e.span,

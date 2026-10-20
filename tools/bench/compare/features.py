@@ -48,9 +48,12 @@ def configure(cases, features):
     skipped = []
     for case in cases:
         case.states = tuple(state for state, caps in features.items()
-                            if all(caps.get(f, False) for f in case.requires))
+                            if (not case.state_requires or state in case.state_requires) and
+                            all(caps.get(f, False) for f in case.requires))
         for state, caps in features.items():
             missing = [f for f in case.requires if not caps.get(f, False)]
             if missing:
                 skipped.append(dict(case=case.id, state=state, reason='missing features: '+', '.join(missing)))
+            elif case.state_requires and state not in case.state_requires:
+                skipped.append(dict(case=case.id, state=state, reason='case excludes this state'))
     return skipped

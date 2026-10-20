@@ -1,0 +1,76 @@
+{
+  "base": "c61704166d6e27a329ec1f6809409d6a8adcd2e6",
+  "entire_files_equal": {
+    "formal/Benitoite/Release/Theorems.lean": true,
+    "formal/Benitoite/Surface/Theorems.lean": true,
+    "formal/Benitoite/Release/Assumptions.lean": true,
+    "formal/Benitoite/Release/Typing.lean": true,
+    "formal/Benitoite/Release/Model.lean": true,
+    "formal/Benitoite/Surface/CheckComputeSound.lean": true,
+    "formal/Benitoite/Surface/CheckSound.lean": true,
+    "formal/Benitoite/Surface/CheckProgramSound.lean": true,
+    "formal/Benitoite/Surface/CheckTablesSound.lean": true
+  },
+  "public_signatures": [
+    {
+      "name": "checkExpr_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkBlock_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkArms_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkClauses_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkTypes_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkEach_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkHoleArgs_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkDict_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkDicts_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkDef_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkImpl_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkNamed_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkNamed_key_sound",
+      "signature_equal": true
+    },
+    {
+      "name": "checkProgram_sound",
+      "signature_equal": true
+    }
+  ],
+  "prior_imports_preserved": true,
+  "new_imports": [
+    "Benitoite.Exchange.BuilderExamples"
+  ]
+}

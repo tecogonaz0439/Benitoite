@@ -292,6 +292,14 @@ impl<'a> Parser<'a> {
                 span,
             });
         }
+        // 標準APIのrecordラベルを、名前を要求する位置だけで許す（設計書 01-02「名前付き引数と関数型」）。
+        if kind == TokenKind::LowerIdent && self.at(TokenKind::KwRecord) {
+            let span = self.bump().span;
+            return Ok(Name {
+                text: "record".into(),
+                span,
+            });
+        }
         if text::keyword(self.peek_kind()).is_some() {
             let repair = self.qualified_keyword_help();
             let token = self.bump();
@@ -489,6 +497,7 @@ impl<'a> Parser<'a> {
                         | TokenKind::KwMatch
                         | TokenKind::KwHandle
                         | TokenKind::KwWith
+                        | TokenKind::KwBlock
                         | TokenKind::KwLazy
                 ) || t.kind == TokenKind::KwReturn
                     && previous.next().is_some_and(|t| t.kind == TokenKind::KwOr)
@@ -816,6 +825,7 @@ fn recovery_nesting(stack: &mut Vec<TokenKind>, kind: TokenKind, previous: Token
             TokenKind::KwIf
                 | TokenKind::KwLambda
                 | TokenKind::KwMatch
+                | TokenKind::KwBlock
                 | TokenKind::KwLazy
                 | TokenKind::KwHandle
         )
@@ -1470,6 +1480,7 @@ mod tests {
             | Expr::Interp(_)
             | Expr::Record(_)
             | Expr::Try(_)
+            | Expr::Block(_)
             | Expr::Lazy(_)
             | Expr::With(_)
             | Expr::Handle(_)
@@ -1628,7 +1639,7 @@ mod tests {
     #[test]
     fn specification_examples_and_golden_programs_parse() {
         let examples = spec_examples();
-        assert_eq!(examples.len(), 14);
+        assert_eq!(examples.len(), 15);
         for source in &examples {
             let out = user(source);
             assert!(
@@ -1637,7 +1648,7 @@ mod tests {
                 out.diagnostics
             );
         }
-        let shape = user(&examples[11]);
+        let shape = user(&examples[12]);
         let Item::Fn(area) = &shape.module.decls[1].item else {
             panic!();
         };
@@ -1863,6 +1874,7 @@ mod tests {
                     assert_eq!(e.span.end, e.value.span().end);
                     self.expr(&e.value, e.span);
                 }
+                Expr::Block(e) => self.block(&e.body, e.span),
                 Expr::Interp(_)
                 | Expr::Record(_)
                 | Expr::Try(_)
@@ -2708,6 +2720,19 @@ mod tests {
                     "{}x{}",
                     "if c then ".repeat(1001),
                     " end if".repeat(1001)
+                )),
+            ),
+            (
+                "block",
+                wrap(format!(
+                    "{}(){}",
+                    "block ".repeat(498),
+                    " end block".repeat(498)
+                )),
+                wrap(format!(
+                    "{}(){}",
+                    "block ".repeat(1001),
+                    " end block".repeat(1001)
                 )),
             ),
             (

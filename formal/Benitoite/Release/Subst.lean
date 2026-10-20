@@ -70,6 +70,8 @@ mutual
     | v :: vs => Val.substTyAt c ts es v :: Val.substTyAtList c ts es vs
 
   def Comp.substTyAt (c : Nat) (ts : List Ty) (es : List Eff) : Comp → Comp
+    | .builderLet k body => .builderLet (k.substTyAt c ts es) (Comp.substTyAt c ts es body)
+    | .builderOp k op r args => .builderOp (k.substTyAt c ts es) op r (Val.substTyAtList c ts es args)
     | .ret v => .ret (Val.substTyAt c ts es v)
     | .letIn m n => .letIn (Comp.substTyAt c ts es m) (Comp.substTyAt c ts es n)
     | .app f args => .app (Val.substTyAt c ts es f) (Val.substTyAtList c ts es args)
@@ -108,6 +110,20 @@ def Val.substTy (ts : List Ty) (es : List Eff) (v : Val) : Val := Val.substTyAt 
 def upRen (k : Nat) (ξ : Nat → Nat) (i : Nat) : Nat :=
   if i < k then i else ξ (i - k) + k
 
+/-- 通常束縛と局所束縛は同じ番号を一つずつ増やす。 -/
+def upLocalSubst (k : Nat) (ρ : Nat → LocalRef) (i : Nat) : LocalRef :=
+  if i < k then .bound i else (ρ (i - k)).rename (· + k)
+
+/-- new の一歩で局所の0番だけを専用の場所へ替える。 -/
+def builderLocalSubst (l : Nat) : Nat → LocalRef
+  | 0 => .loc l
+  | i + 1 => .bound i
+
+/-- 同じ一歩の通常置換の0番は、型を要求されない閉じた Unit である。 -/
+def builderValueSubst : Nat → Val
+  | 0 => .const .unit
+  | i + 1 => .var i
+
 mutual
   def Val.rename (ξ : Nat → Nat) : Val → Val
     | .var i => .var (ξ i)
@@ -131,6 +147,8 @@ mutual
     | v :: vs => Val.rename ξ v :: Val.renameList ξ vs
 
   def Comp.rename (ξ : Nat → Nat) : Comp → Comp
+    | .builderLet k body => .builderLet k (Comp.rename (upRen 1 ξ) body)
+    | .builderOp k op r args => .builderOp k op (r.rename ξ) (Val.renameList ξ args)
     | .ret v => .ret (Val.rename ξ v)
     | .letIn m n => .letIn (Comp.rename ξ m) (Comp.rename (upRen 1 ξ) n)
     | .app f args => .app (Val.rename ξ f) (Val.renameList ξ args)
@@ -161,69 +179,81 @@ def upSubst (k : Nat) (σ : Nat → Val) (i : Nat) : Val :=
   if i < k then .var i else (σ (i - k)).rename (· + k)
 
 mutual
-  def Val.subst (σ : Nat → Val) : Val → Val
+  def Val.subst (σ : Nat → Val) (v : Val) (ρ : Nat → LocalRef := LocalRef.bound) : Val :=
+    match v with
     | .var i => σ i
     | .const c => .const c
     | .fnRef f tys effs => .fnRef f tys effs
     | .prim b tys effs => .prim b tys effs
-    | .lam names params body => .lam names params (Comp.subst (upSubst params.length σ) body)
-    | .con c tys args => .con c tys (Val.substList σ args)
-    | .list elems => .list (Val.substList σ elems)
+    | .lam names params body => .lam names params (Comp.subst (upSubst params.length σ) body (upLocalSubst params.length ρ))
+    | .con c tys args => .con c tys (Val.substList σ args ρ)
+    | .list elems => .list (Val.substList σ elems ρ)
     | .op o tys => .op o tys
     | .raise t e => .raise t e
     | .loc l => .loc l
-    | .mapV ks vs => .mapV (Val.substList σ ks) (Val.substList σ vs)
-    | .setV elems => .setV (Val.substList σ elems)
+    | .mapV ks vs => .mapV (Val.substList σ ks ρ) (Val.substList σ vs ρ)
+    | .setV elems => .setV (Val.substList σ elems ρ)
     | .bytesV bs => .bytesV bs
-    | .dict i tys args => .dict i tys (Val.substList σ args)
-    | .super v cl => .super (Val.subst σ v) cl
+    | .dict i tys args => .dict i tys (Val.substList σ args ρ)
+    | .super v cl => .super (Val.subst σ v ρ) cl
 
-  def Val.substList (σ : Nat → Val) : List Val → List Val
+  def Val.substList (σ : Nat → Val) (vs : List Val) (ρ : Nat → LocalRef := LocalRef.bound) : List Val :=
+    match vs with
     | [] => []
-    | v :: vs => Val.subst σ v :: Val.substList σ vs
+    | v :: vs => Val.subst σ v ρ :: Val.substList σ vs ρ
 
-  def Comp.subst (σ : Nat → Val) : Comp → Comp
-    | .ret v => .ret (Val.subst σ v)
-    | .letIn m n => .letIn (Comp.subst σ m) (Comp.subst (upSubst 1 σ) n)
-    | .app f args => .app (Val.subst σ f) (Val.substList σ args)
-    | .ite v m n => .ite (Val.subst σ v) (Comp.subst σ m) (Comp.subst σ n)
-    | .match v arms => .match (Val.subst σ v) (Arm.substList σ arms)
-    | .lazyC m => .lazyC (Comp.subst σ m)
-    | .escape v => .escape (Val.subst σ v)
-    | .use v m => .use (Val.subst σ v) (Comp.subst σ m)
-    | .handle m h => .handle (Comp.subst σ m) (Clause.substList σ h)
-    | .resume k v => .resume (Val.subst σ k) (Val.subst σ v)
-    | .meth d m tys effs args => .meth (Val.subst σ d) m tys effs (Val.substList σ args)
+  def Comp.subst (σ : Nat → Val) (m : Comp) (ρ : Nat → LocalRef := LocalRef.bound) : Comp :=
+    match m with
+    | .builderLet k body => .builderLet k (Comp.subst (upSubst 1 σ) body (upLocalSubst 1 ρ))
+    | .builderOp k op r args => .builderOp k op (r.subst ρ) (Val.substList σ args ρ)
+    | .ret v => .ret (Val.subst σ v ρ)
+    | .letIn m n => .letIn (Comp.subst σ m ρ) (Comp.subst (upSubst 1 σ) n (upLocalSubst 1 ρ))
+    | .app f args => .app (Val.subst σ f ρ) (Val.substList σ args ρ)
+    | .ite v m n => .ite (Val.subst σ v ρ) (Comp.subst σ m ρ) (Comp.subst σ n ρ)
+    | .match v arms => .match (Val.subst σ v ρ) (Arm.substList σ arms ρ)
+    | .lazyC m => .lazyC (Comp.subst σ m ρ)
+    | .escape v => .escape (Val.subst σ v ρ)
+    | .use v m => .use (Val.subst σ v ρ) (Comp.subst σ m ρ)
+    | .handle m h => .handle (Comp.subst σ m ρ) (Clause.substList σ h ρ)
+    | .resume k v => .resume (Val.subst σ k ρ) (Val.subst σ v ρ)
+    | .meth d m tys effs args => .meth (Val.subst σ d ρ) m tys effs (Val.substList σ args ρ)
 
-  def Arm.substList (σ : Nat → Val) : List Arm → List Arm
+  def Arm.substList (σ : Nat → Val) (arms : List Arm) (ρ : Nat → LocalRef := LocalRef.bound) : List Arm :=
+    match arms with
     | [] => []
     | .mk alts none m :: arms =>
-        .mk alts none (Comp.subst (upSubst (Arm.bindersOf alts) σ) m) :: Arm.substList σ arms
+        .mk alts none (Comp.subst (upSubst (Arm.bindersOf alts) σ) m (upLocalSubst (Arm.bindersOf alts) ρ)) :: Arm.substList σ arms ρ
     | .mk alts (some g) m :: arms =>
-        .mk alts (some (Comp.subst (upSubst (Arm.bindersOf alts) σ) g))
-          (Comp.subst (upSubst (Arm.bindersOf alts) σ) m) :: Arm.substList σ arms
+        .mk alts (some (Comp.subst (upSubst (Arm.bindersOf alts) σ) g (upLocalSubst (Arm.bindersOf alts) ρ)))
+          (Comp.subst (upSubst (Arm.bindersOf alts) σ) m (upLocalSubst (Arm.bindersOf alts) ρ)) :: Arm.substList σ arms ρ
 
-  def Clause.substList (σ : Nat → Val) : List Clause → List Clause
+  def Clause.substList (σ : Nat → Val) (cs : List Clause) (ρ : Nat → LocalRef := LocalRef.bound) : List Clause :=
+    match cs with
     | [] => []
-    | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m) :: Clause.substList σ cs
-    | .fail e m :: cs => .fail e (Comp.subst (upSubst 2 σ) m) :: Clause.substList σ cs
+    | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m (upLocalSubst (n + 1) ρ)) :: Clause.substList σ cs ρ
+    | .fail e m :: cs => .fail e (Comp.subst (upSubst 2 σ) m (upLocalSubst 2 ρ)) :: Clause.substList σ cs ρ
 end
 
 /-- 01-12 の `M[W̄/x̄]`。束縛した順の最後の値が番号 0 に当たる。 -/
 def instSubst (ws : List Val) (i : Nat) : Val :=
   if i < ws.length then (ws.reverse[i]?).getD (.var i) else .var (i - ws.length)
 
+/-- 通常束縛の除去でも残る局所番号を詰める。除く通常位置は局所判断では利用不能であり、
+その位置の構文上の置換には閉じた局所参照を指定する。 -/
+def instLocalSubst (k : Nat) (i : Nat) : LocalRef :=
+  if i < k then .loc 0 else .bound (i - k)
+
 def Comp.instantiate (ws : List Val) (m : Comp) : Comp :=
-  Comp.subst (instSubst ws) m
+  Comp.subst (instSubst ws) m (instLocalSubst ws.length)
 
 def Val.instantiate (ws : List Val) (v : Val) : Val :=
-  Val.subst (instSubst ws) v
+  Val.subst (instSubst ws) v (instLocalSubst ws.length)
 
 /-! ## パターンの照合と分岐の選択 -/
 
 /-- 範囲は Integer または Character の両端を含む。ほかの組合せは照合しない。 -/
 def Const.inRange : Const → Const → Const → Bool
-  | .integer lo, .integer hi, .integer n => decide (lo ≤ n ∧ n ≤ hi)
+  | .integer lo, .integer hi, .integer n => decide (lo.toInt ≤ n.toInt ∧ n.toInt ≤ hi.toInt)
   | .character lo, .character hi, .character c => decide (lo.toNat ≤ c.toNat ∧ c.toNat ≤ hi.toNat)
   | _, _, _ => false
 

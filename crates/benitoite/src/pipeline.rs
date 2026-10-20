@@ -16,6 +16,8 @@ use crate::typeck::TypeckOutput;
 /// 本体を検査せず、生成道具へ宣言を渡す入口。
 #[path = "pipeline/declarations.rs"]
 pub mod declarations;
+#[path = "pipeline/source_location.rs"]
+pub(crate) mod source_location;
 
 /// 検査・脱糖・コンパイルの段を動かすスレッドのスタックの大きさ（64 MiB。02-01「関数の呼び出しと処理系のスタック」）。
 pub const STAGE_STACK_BYTES: usize = 64 * 1024 * 1024;
@@ -124,7 +126,32 @@ pub fn entry_spec(path: &Path) -> Result<EntrySpec, EntryError> {
 /// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行う（02-01「関数の呼び出しと処理系のスタック」）。そのスレッドの panic は段のスレッドの
 /// 中で捕らえ、報告の種類が `Internal` の診断（段は `check`、スレッドは `Stage`）にして `diagnostics` に入れて返す。
 pub fn check(entry: &EntrySpec, fs: &(dyn ModuleFs + Sync), opts: CheckOptions) -> CheckResult {
-    match on_large_stack(|| crate::runtime::panic::catch(|| check_stages(entry, fs, opts))) {
+    check_with_external_compilation_count(entry, fs, opts).0
+}
+
+/// test の静的な外部照合のコンパイル数を、実行用コンパイルと分ける。
+pub(crate) fn check_with_external_compilation_count(
+    entry: &EntrySpec,
+    fs: &(dyn ModuleFs + Sync),
+    opts: CheckOptions,
+) -> (CheckResult, u64) {
+    check_with_source_origin(entry, fs, opts, None)
+}
+
+// docの位置対応は型検査・定数評価より前に使う。実行用の値を後から修正しない
+// （設計書 02-04「位置の式の事前展開」）。
+pub(crate) fn check_with_source_origin(
+    entry: &EntrySpec,
+    fs: &(dyn ModuleFs + Sync),
+    opts: CheckOptions,
+    origin: Option<source_location::DocOrigin<'_>>,
+) -> (CheckResult, u64) {
+    let mut compilations = 0;
+    let result = match on_large_stack(|| {
+        crate::runtime::panic::catch(|| {
+            check_stages_counted(entry, fs, opts, &mut compilations, origin)
+        })
+    }) {
         Ok(Ok(result)) => result,
         Ok(Err(panic)) => CheckResult {
             sources: Arc::new(SourceTable::new()),
@@ -148,7 +175,8 @@ pub fn check(entry: &EntrySpec, fs: &(dyn ModuleFs + Sync), opts: CheckOptions) 
             )],
             program: None,
         },
-    }
+    };
+    (result, compilations)
 }
 
 /// `entry_spec` と本番のファイルシステム（`RealFs`）で `check` を行う。
@@ -251,8 +279,18 @@ pub(super) fn on_large_stack<T: Send>(f: impl FnOnce() -> T + Send) -> std::io::
 }
 
 fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> CheckResult {
+    check_stages_counted(entry, fs, opts, &mut 0, None)
+}
+
+fn check_stages_counted(
+    entry: &EntrySpec,
+    fs: &dyn ModuleFs,
+    opts: CheckOptions,
+    compilations: &mut u64,
+    origin: Option<source_location::DocOrigin<'_>>,
+) -> CheckResult {
     let mut ids = crate::base::IdGen::new();
-    let loaded = crate::modules::load_program(entry, crate::prelude::STDLIB, fs, &mut ids);
+    let mut loaded = crate::modules::load_program(entry, crate::prelude::STDLIB, fs, &mut ids);
     let hidden_warnings: std::collections::BTreeSet<_> = loaded
         .modules
         .iter()
@@ -285,6 +323,16 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
             &hidden_warnings,
         );
         if !result.diagnostics.iter().any(Diagnostic::is_error) {
+            let diagnostics = source_location::expand(
+                &loaded.modules,
+                &mut loaded.asts,
+                &result.sources,
+                &mut resolved,
+                &mut ids,
+                origin,
+            );
+            append_stage(&mut result, diagnostics, &hidden_warnings);
+            // 位置の式の誤りはErrorへ置換済みなので、独立した型の誤りも報告する。
             let (types, diagnostics) = crate::typeck::typecheck(
                 &loaded.modules,
                 &loaded.asts,
@@ -294,7 +342,7 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
             );
             append_stage(&mut result, diagnostics, &hidden_warnings);
             if !result.diagnostics.iter().any(Diagnostic::is_error) {
-                let diagnostics = crate::external::check_externals(
+                let (diagnostics, count) = crate::external::check::check_externals_counted(
                     entry,
                     fs,
                     &loaded.modules,
@@ -303,6 +351,7 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
                     &mut resolved,
                     &types,
                 );
+                *compilations = compilations.saturating_add(count);
                 append_stage(&mut result, diagnostics, &hidden_warnings);
             }
             if !result.diagnostics.iter().any(Diagnostic::is_error) {
@@ -394,6 +443,7 @@ mod stack_test_inputs;
 
 #[cfg(test)]
 mod tests {
+
     // 関門: 公開の検査の入口が段の順、警告の扱い、深い入力への対応を守る。
     // 各段の単独のテストは段の接続と deny の適用順を確かめない（設計書 07-03）。
     // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
@@ -936,5 +986,136 @@ end function
         source.push_str("end function\n");
         let result = check_text("deep.bnt", source.as_bytes(), opts(false));
         assert!(result.program.is_some(), "{:?}", result.diagnostics);
+    }
+    // 関門: 値化・パイプ・不正な引数を混ぜた入力で、位置の式の拒否後も独立した型診断を一度に返す。
+    // 展開単体では、パイプラインが型検査を止める退行を捉えられない。
+    #[test]
+    fn source_location_errors_do_not_hide_independent_type_errors() {
+        use crate::diag::DiagCode as C;
+        for (source, expected) in [
+            (
+                r#"function main() -> Unit
+  bind f <- SourceLocation.here
+  bind x: Integer <- "not an integer"
+end function
+"#,
+                vec![C::E0467, C::E0401],
+            ),
+            (
+                r#"import Benitoite.Unofficial.IO.Console
+
+function apply(f: function() -> SourceLocation.Location) -> SourceLocation.Location
+  return f()
+end function
+
+function main() -> Unit uses Console.Write
+  bind f <- SourceLocation.here
+  bind g <- apply(SourceLocation.here)
+  bind h <- () |> SourceLocation.here
+  bind i <- () |> SourceLocation.here()
+  bind j <- SourceLocation.here(1)
+  bind k <- SourceLocation.here(x: 1)
+  bind m <- SourceLocation.here(_)
+end function
+"#,
+                vec![
+                    C::E0467,
+                    C::E0467,
+                    C::E0467,
+                    C::E0467,
+                    C::E0402,
+                    C::E0451,
+                    C::E0402,
+                ],
+            ),
+            (
+                r#"const loc: function() -> SourceLocation.Location = SourceLocation.here
+
+function main() -> Unit
+  return ()
+end function
+"#,
+                vec![C::E0467],
+            ),
+            (
+                r#"import Benitoite.Unofficial.IO.Console
+
+const locs: List[function() -> SourceLocation.Location] = [SourceLocation.here]
+const count: Integer = List.length(locs)
+const again: List[function() -> SourceLocation.Location] = locs
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(List.length(again)))
+end function
+"#,
+                vec![C::E0467, C::E0433],
+            ),
+            (
+                r#"import Benitoite.Unofficial.IO.Console
+
+function noisy() -> Integer uses Console.Write
+  Console.writeLine("x")
+  return 1
+end function
+
+function main() -> Unit uses IO.All
+  bind h <- () |> SourceLocation.here(noisy())
+end function
+"#,
+                vec![C::E0467],
+            ),
+            (
+                r#"import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind f <- SourceLocation.here
+  bind n: Integer <- f
+  match f with
+    case Option.Some(v) -> Console.writeLine(v)
+    case _ -> ()
+  end match
+end function
+"#,
+                vec![C::E0467, C::E0401],
+            ),
+        ] {
+            let result = check_text("main.bnt", source.as_bytes(), opts(false));
+            let codes: Vec<_> = result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect();
+            assert_eq!(codes, expected, "{:?}", result.diagnostics);
+            assert!(
+                !result.diagnostics.iter().any(|d| d.code == Some(C::W0501)),
+                "{:?}",
+                result.diagnostics
+            );
+            assert!(result.program.is_none());
+        }
+        // 同じファイルの独立した関数の警告は抑えない。
+        let source = "function main() -> Unit uses IO.All\n bind f <- SourceLocation.here\nend function\nfunction independent() -> Unit uses IO.All\n ()\nend function\n";
+        let result = check_text("main.bnt", source.as_bytes(), opts(false));
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            [C::E0467, C::W0501],
+            "{:?}",
+            result.diagnostics
+        );
+        let warning = result
+            .diagnostics
+            .iter()
+            .find(|d| d.code == Some(C::W0501))
+            .unwrap();
+        assert_eq!(
+            warning.primary.as_ref().unwrap().span.start.0 as usize,
+            source.rfind("IO.All").unwrap()
+        );
+        assert!(result.program.is_none());
     }
 }

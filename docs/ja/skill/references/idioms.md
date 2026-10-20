@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -628,6 +628,8 @@ Character の範囲で Unicode スカラー値の全域を覆う場合は、包�
 
 ## レコードとデータ型
 
+`record` は、引数、引数のラベル、束縛、値の参照などの小文字の名前にも使え、宣言の位置では引き続きレコードの宣言を始める。
+
 レコードは名前の付いたフィールドを持つ。フィールドは `Type.field(value)` で読み、一部を変えた写しは `Type(..value, field: new)` で作る。データ型はその構成子を並べる。構成子は常に型の名前を付けて書く。
 
 外部のパターンに将来の形も覆うことを求めるには、データ型かレコードの宣言に、引数のない属性 `@extensible` を使う。`public` または `public(package)` があれば、その前に置く。定義したパッケージの中では、現在の構成子の列挙で網羅的と判定できる。外では、ガードのない `case other ->` または `case _ ->` を含める。`Other` という名前の既知の構成子は、将来の形を覆わない。ガード付きの分岐は網羅性に数えない。この規則は、型の別名を通した位置や、`Result`、`Option`、リスト、レコードのフィールドの中にも適用する。パッケージの境界は `public(package)` と同じであり、同じパッケージの別のモジュールも内部に当たる。
@@ -819,4 +821,27 @@ WIT の形は、`value: s64` を持つレコード、入れ子のレコード、
 
 既定の上限は、燃料 10^10、ゲストとアダプタの線形メモリの合計 64 MiB、コアのインスタンス・メモリ・テーブル各 16 個、テーブルごとに 10,000 要素、方向ごとに転送量 256 MiB である。アダプタは、32 バイトのヘッダと詰め物を含め、詰めて格納した引数と結果の列全体を数える。それとは別に、同じ `--wasm-transfer` の値で、方向ごとの論理的な構築量も制限する。言語の値が現れるごとに 16 バイトを数え、文字列と Bytes の内容を加える。Bytes の要素は別の値として数えないが、List[Byte] の要素は数える。キーの重複の正規化で捨てる Map の項目も数える。ABI のためだけの、値をまとめるタプルは言語の値を加えない。これらの上限はプロセスのメモリ全体を制限しない。アダプタの命令は燃料を消費し、SIGINT/SIGTERM に応じる。`Task.withTimeout` は外部呼び出しを取り消せない。文字列、Bytes、リストの大きさの上限も適用する。
 
-`run` と `test` の `--wasm-stats` を使って、経路、代替の経路を選んだ理由、転送量、`construction_bytes`（両方向の合計）、アダプタの失敗を調べる。`--wasm-memory`、`--wasm-fuel`、`--wasm-transfer` は、関数の契約を変えずに上限を変える。燃料の枯渇は R0904、転送量・構築量・メモリの枯渇は R0905、対象数の上限は R0906、戻り値の大きさの上限は R0902 を報告する。トラップとゲストの ABI 違反は R0601 を報告し、宣言した `Result.Error` は通常の値である。これらの実行時の失敗は `match` や `try` で捕えられない。
+`run` と `test` の `--wasm-stats` を使って、経路、代替の経路を選んだ理由、転送量、`construction_bytes`（両方向の合計）、アダプタの失敗を調べる。`--wasm-memory`、`--wasm-fuel`、`--wasm-transfer` は、関数の契約を変えずに上限を変える。燃料の枯渇は R0904、転送量・構築量・メモリの枯渇は R0905、対象数の上限は R0906、戻り値の大きさの上限は R0902 を報告する。トラップとゲストの ABI 違反は R0601 を報告し、宣言した `Result.Error` は通常の値である。これらの実行時の失敗は `match` や `try` で捕えられない。 `runtime_compilations.normal` と `runtime_compilations.adapter` は、それぞれの共有表へ実行用 Component を追加できた回数を数え、`test_declaration_compilations` は、テストの入口と文書の例の静的な宣言照合でコンパイルを試みた回数を別に数える。
+
+## 局所の構築とログ
+
+block で構築器を局所に保ち、不変のコピーを返す。専用操作は State を加えない。
+
+```benitoite
+import Benitoite.StringBuilder
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind text <- block
+    bind builder: StringBuilder <- StringBuilder.new()
+    StringBuilder.appendAll(builder: builder, texts: ["hello", " world"])
+    StringBuilder.copy(builder)
+  end block
+  Console.writeLine(text)
+end function
+```
+```output
+hello world
+```
+
+Log と SourceLocation は prelude から使う。message、attributes、location を明示し、IO.All に Log が含まれないことに注意する。完全なハンドラで処理するか、宣言上限に残る Log を許可集合へ加える。検査済みの長さ・添字・非空リストは Range と NonEmptyList の参照文書を使う。

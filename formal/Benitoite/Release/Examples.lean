@@ -13,7 +13,7 @@ open Benitoite.Release
 
 def intTy : Ty := .base .integer
 def unitTy : Ty := .base .unit
-def int (n : Int) : Val := .const (.integer n)
+def int (n : Integer64Value) : Val := .const (.integer n)
 
 def sig (tps : List TParam) (names : List String) (ps : List Ty) (r : Ty) (e : Eff) (k : PrimKind)
     (op : Option EffName := none) : PrimSig :=
@@ -37,11 +37,13 @@ def builtins : Builtins where
     | _ => none
   delta
     | "add", _, _, [.const (.integer a), .const (.integer b)] =>
-        some (.val (.const (.integer (a + b))))
+        let n := a.toInt + b.toInt
+        if h : min64 ≤ n ∧ n ≤ max64 then some (.val (.const (.integer ⟨n, h⟩)))
+        else some (.err "IntegerOverflow")
     | _, _, _, _ => none
   ioResponse
     | "print", _, _, [_], o => o = .val (.const .unit)
-    | "exit", _, _, [.const (.integer n)], o => o = .exit n
+    | "exit", _, _, [.const (.integer n)], o => o = .exit n.toInt
     | _, _, _, _, _ => False
   releaseResponse _ r := r = none
   isResource o := o == "File"
@@ -55,7 +57,7 @@ def builtins : Builtins where
   refSet := "set"
 
 def oracle : Oracle
-  | "exit", _, _, [.const (.integer n)] => .exit n
+  | "exit", _, _, [.const (.integer n)] => .exit n.toInt
   | _, _, _, _ => .val (.const .unit)
 
 def rel : Val → Option ErrKind := fun _ => none
@@ -84,7 +86,7 @@ def monoidIntSupers : ClassName → Option Val
   | _ => none
 
 def monoidIntMeths : MethName → Option Comp
-  | "empty" => some (.ret (int 0))
+  | "empty" => some (.ret (int ⟨0, by decide⟩))
   | _ => none
 
 /-- 環境は d, x, y の順（y が番号 0）。 -/
@@ -132,7 +134,7 @@ def semigroupBox : ImplDecl where
 def program : Program where
   defs
     | "f" => some { tparams := [], neffs := 0, names := [], params := [], ret := intTy, eff := Eff.empty,
-                    body := .letIn (.escape (int 7)) (.ret (int 1)) }
+                    body := .letIn (.escape (int ⟨7, by decide⟩)) (.ret (int ⟨1, by decide⟩)) }
     | _ => none
   cons
     | "Box" => some { data := "Box", ntys := 1, args := [.tvar 0] }
@@ -167,9 +169,9 @@ inductive Result where
 def summarize : State × List Event → Result × Nat
   | (s, evs) =>
     let r := match s with
-      | .run (.ret (.const (.integer n))) [] _ => .returned n
+      | .run (.ret (.const (.integer n))) [] _ => .returned n.toInt
       | .run (.ret (.const .unit)) [] _ => .returnedUnit
-      | .run (.ret (.con "Box" _ [.const (.integer n)])) [] _ => .boxed n
+      | .run (.ret (.con "Box" _ [.const (.integer n)])) [] _ => .boxed n.toInt
       | .error rs [] _ => .error rs
       | .exit n _ [] _ => .exited n
       | _ => .other
@@ -184,58 +186,58 @@ def add (a b : Val) : Comp := .app (.prim "add" [] []) [a, b]
 
 /-- `handle (let x ⇐ fail[Integer]("bad") in add(x, 1)) with fail(m) k ⇒ return 0` は、`resume` せずに
 0 を返す（E-Handle、E-Op、E-DropRel）。 -/
-example : exec (.handle (.letIn (.app (.op "fail" [intTy]) [.const (.string "bad")]) (add (.var 0) (int 1)))
-    [.mk (.user "fail") 1 1 (.ret (int 0))]) = (.returned 0, 0) := by decide
+example : exec (.handle (.letIn (.app (.op "fail" [intTy]) [.const (.string "bad")]) (add (.var 0) (int ⟨1, by decide⟩)))
+    [.mk (.user "fail") 1 1 (.ret (int ⟨0, by decide⟩))]) = (.returned 0, 0) := by decide
 
 /-- `handle (let x ⇐ ask() in add(x, 1)) with ask() k ⇒ resume k 41` は 42 を返す（E-Resume、E-HRet、
 E-Drop）。 -/
-example : exec (.handle (.letIn (.app (.op "ask" []) []) (add (.var 0) (int 1)))
-    [.mk (.user "ask") 0 0 (.resume (.var 0) (int 41))]) = (.returned 42, 0) := by decide
+example : exec (.handle (.letIn (.app (.op "ask" []) []) (add (.var 0) (int ⟨1, by decide⟩)))
+    [.mk (.user "ask") 0 0 (.resume (.var 0) (int ⟨41, by decide⟩))]) = (.returned 42, 0) := by decide
 
 /-- 組み込みの操作 `print` を処理するハンドラの中の `print(3)` は、IO の事象を起こさない（E-OpPrim）。 -/
-example : exec (.handle (.app (.prim "print" [] []) [int 3])
+example : exec (.handle (.app (.prim "print" [] []) [int ⟨3, by decide⟩])
     [.mk (.prim "print") 1 0 (.resume (.var 0) (.const .unit))]) = (.returnedUnit, 0) := by decide
 
 /-- ハンドラがなければ、`print(3)` は IO の事象を一つ起こす（E-IO）。 -/
-example : exec (.app (.prim "print" [] []) [int 3]) = (.returnedUnit, 1) := by decide
+example : exec (.app (.prim "print" [] []) [int ⟨3, by decide⟩]) = (.returnedUnit, 1) := by decide
 
 /-- 同じ継続を二度再開すると、実行時エラー `ResumeTwice` で止まる（E-ResumeErr）。 -/
 example : exec (.handle (.app (.op "ask" []) [])
-    [.mk (.user "ask") 0 0 (.letIn (.resume (.var 0) (int 1)) (.resume (.var 1) (int 2)))]) =
+    [.mk (.user "ask") 0 0 (.letIn (.resume (.var 0) (int ⟨1, by decide⟩)) (.resume (.var 1) (int ⟨2, by decide⟩)))]) =
     (.error ["ResumeTwice"], 0) := by decide
 
 /-- `let r ⇐ new[Integer](1) in let _ ⇐ set[Integer](r, 5) in get[Integer](r)` は 5 を返す
 （E-RefNew、E-RefSet、E-RefGet）。 -/
-example : exec (.letIn (.app (.prim "new" [intTy] []) [int 1])
-    (.letIn (.app (.prim "set" [intTy] []) [.var 0, int 5])
+example : exec (.letIn (.app (.prim "new" [intTy] []) [int ⟨1, by decide⟩])
+    (.letIn (.app (.prim "set" [intTy] []) [.var 0, int ⟨5, by decide⟩])
       (.app (.prim "get" [intTy] []) [.var 1]))) = (.returned 5, 0) := by decide
 
 /-- `Reference.update` は、読んだ値に関数を適用して書き戻す（E-RefUpdate）。 -/
-example : exec (.letIn (.app (.prim "new" [intTy] []) [int 1])
-    (.letIn (.app (.prim "update" [intTy] []) [.var 0, .lam ["value"] [intTy] (add (.var 0) (int 10))])
+example : exec (.letIn (.app (.prim "new" [intTy] []) [int ⟨1, by decide⟩])
+    (.letIn (.app (.prim "update" [intTy] []) [.var 0, .lam ["value"] [intTy] (add (.var 0) (int ⟨10, by decide⟩))])
       (.app (.prim "get" [intTy] []) [.var 1]))) = (.returned 11, 0) := by decide
 
 /-- `let l ⇐ lazy add(1, 2) in let _ ⇐ force(l) in force(l)` は 3 を返す。二度目の `force` は、一度目に
 保存した値を使う（E-Lazy、E-Force、E-Update、E-ForceDone）。 -/
-example : exec (.letIn (.lazyC (add (int 1) (int 2)))
+example : exec (.letIn (.lazyC (add (int ⟨1, by decide⟩) (int ⟨2, by decide⟩)))
     (.letIn (.app (.prim "force" [intTy] []) [.var 0])
       (.app (.prim "force" [intTy] []) [.var 1]))) = (.returned 3, 0) := by decide
 
 /-- `f()` の本体の `escape 7` は、`f` の呼び出しの結果として 7 を返す（E-Fun の `mark`、E-EscLet、
 E-EscMark）。 -/
-example : exec (.letIn (.app (.fnRef "f" [] []) []) (add (.var 0) (int 100))) = (.returned 107, 0) := by
+example : exec (.letIn (.app (.fnRef "f" [] []) []) (add (.var 0) (int ⟨100, by decide⟩))) = (.returned 107, 0) := by
   decide
 
 /-- `use` したリソースは、本体を終えた後に解放の事象を一つ起こす（E-Use、E-Release）。 -/
-example : exec (.use (.const (.opaque "File" 1)) (.ret (int 1))) = (.returned 1, 1) := by decide
+example : exec (.use (.const (.opaque "File" 1)) (.ret (int ⟨1, by decide⟩))) = (.returned 1, 1) := by decide
 
 /-- 終了の状態は、継続に残る解放の枠を実行してから終わる（E-Exit、E-ExitRel）。 -/
-example : exec (.use (.const (.opaque "File" 1)) (.app (.prim "exit" [] []) [int 3])) =
+example : exec (.use (.const (.opaque "File" 1)) (.app (.prim "exit" [] []) [int ⟨3, by decide⟩])) =
     (.exited 3, 2) := by decide
 
 /-- `(MonoidInt[]()↑Semigroup).combine[;](1, 2)` は、上位の型クラスの辞書を取り出してから `combine` を呼び、
 3 を返す（E-Super、E-Meth）。 -/
-example : exec (.meth (.super (.dict "MonoidInt" [] []) "Semigroup") "combine" [] [] [int 1, int 2]) =
+example : exec (.meth (.super (.dict "MonoidInt" [] []) "Semigroup") "combine" [] [] [int ⟨1, by decide⟩, int ⟨2, by decide⟩]) =
     (.returned 3, 0) := by decide
 
 /-- `MonoidInt[]().empty[;]()` は 0 を返す（型クラスの引数を戻り値の型にだけ含むメソッド）。 -/
@@ -244,7 +246,7 @@ example : exec (.meth (.dict "MonoidInt" [] []) "empty" [] [] []) = (.returned 0
 /-- `SemigroupBox[Integer](MonoidInt[]()↑Semigroup).combine[;](Box(1), Box(2))` は `Box(3)` を返す。実装の
 メソッドの本体は、辞書の引数 d を通して `Integer` の `combine` を呼ぶ（E-Meth の辞書の引数の置き換え）。 -/
 example : exec (.meth (.dict "SemigroupBox" [intTy] [.super (.dict "MonoidInt" [] []) "Semigroup"]) "combine"
-    [] [] [.con "Box" [intTy] [int 1], .con "Box" [intTy] [int 2]]) = (.boxed 3, 0) := by decide
+    [] [] [.con "Box" [intTy] [int ⟨1, by decide⟩], .con "Box" [intTy] [int ⟨2, by decide⟩]]) = (.boxed 3, 0) := by decide
 
 /-! ## 拡張したパターン（C7）
 
@@ -253,62 +255,62 @@ example : exec (.meth (.dict "SemigroupBox" [intTy] [.super (.dict "MonoidInt" [
 -/
 
 /-- A(x, y), B(y, x) の二番目の選択肢では、x は二番目の束縛になる。 -/
-def choiceMatch : Comp := .match (.con "B" [] [int 10, int 20])
+def choiceMatch : Comp := .match (.con "B" [] [int ⟨10, by decide⟩, int ⟨20, by decide⟩])
   [.mk [⟨.con "A" [.var, .var], [0, 1]⟩, ⟨.con "B" [.var, .var], [1, 0]⟩] none (.ret (.var 1)),
-   .mk [⟨.wild, []⟩] none (.ret (int 99))]
+   .mk [⟨.wild, []⟩] none (.ret (int ⟨99, by decide⟩))]
 
 example : exec choiceMatch = (.returned 20, 0) := by decide
 
 /-- 二つとも照合する選択肢は、左の選択肢の束縛を使う。 -/
-example : exec (.match (.list [int 10, int 20])
+example : exec (.match (.list [int ⟨10, by decide⟩, int ⟨20, by decide⟩])
     [.mk [⟨.list [.var, .wild] none [], [0]⟩, ⟨.list [.wild, .var] none [], [0]⟩]
-      none (.ret (.var 0)), .mk [⟨.wild, []⟩] none (.ret (int 99))]) = (.returned 10, 0) := by decide
+      none (.ret (.var 0)), .mk [⟨.wild, []⟩] none (.ret (int ⟨99, by decide⟩))]) = (.returned 10, 0) := by decide
 
 /-- 一番目の選択肢は false を、二番目は true を束縛する。
 一番目でガードが偽なら、二番目の選択肢を試さず次の分岐へ進む。 -/
 def guardSkip : Comp := .match (.list [.const (.boolean false), .const (.boolean true)])
   [.mk [⟨.list [.var, .wild] none [], [0]⟩, ⟨.list [.wild, .var] none [], [0]⟩]
-    (some (.ret (.var 0))) (.ret (int 1)),
-   .mk [⟨.wild, []⟩] none (.ret (int 2))]
+    (some (.ret (.var 0))) (.ret (int ⟨1, by decide⟩)),
+   .mk [⟨.wild, []⟩] none (.ret (int ⟨2, by decide⟩))]
 
 example : exec guardSkip = (.returned 2, 0) := by decide
 
 /-- ガードを計算して真になったとき、束縛を置換した本体に戻る。 -/
-example : exec (.match (int 7)
+example : exec (.match (int ⟨7, by decide⟩)
     [.mk [⟨.var, [0]⟩]
       (some (.letIn (.ret (.const (.boolean true))) (.ret (.var 0)))) (.ret (.var 0)),
-     .mk [⟨.wild, []⟩] none (.ret (int 99))]) = (.returned 7, 0) := by decide
+     .mk [⟨.wild, []⟩] none (.ret (int ⟨99, by decide⟩))]) = (.returned 7, 0) := by decide
 
 /-- Integer の負の下端と両端を含み、範囲外は次の分岐へ進む。 -/
-example : ([-3, -2, 0, 2, 3] : List Int).map (fun n => exec (.match (int n)
-    [.mk [⟨.range (.integer (-2)) (.integer 2), []⟩] none (.ret (int 1)),
-     .mk [⟨.wild, []⟩] none (.ret (int 0))])) =
+example : ([⟨-3, by decide⟩, ⟨-2, by decide⟩, ⟨0, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List Integer64Value).map (fun n => exec (.match (int n)
+    [.mk [⟨.range (.integer ⟨(-2), by decide⟩) (.integer ⟨2, by decide⟩), []⟩] none (.ret (int ⟨1, by decide⟩)),
+     .mk [⟨.wild, []⟩] none (.ret (int ⟨0, by decide⟩))])) =
     [(.returned 0, 0), (.returned 1, 0), (.returned 1, 0), (.returned 1, 0), (.returned 0, 0)] := by decide
 
 /-- Character も両端を含む。 -/
 example : (['`', 'a', 'm', 'z', '{'] : List Char).map (fun c => exec (.match (.const (.character c))
-    [.mk [⟨.range (.character 'a') (.character 'z'), []⟩] none (.ret (int 1)),
-     .mk [⟨.wild, []⟩] none (.ret (int 0))])) =
+    [.mk [⟨.range (.character 'a') (.character 'z'), []⟩] none (.ret (int ⟨1, by decide⟩)),
+     .mk [⟨.wild, []⟩] none (.ret (int ⟨0, by decide⟩))])) =
     [(.returned 0, 0), (.returned 1, 0), (.returned 1, 0), (.returned 1, 0), (.returned 0, 0)] := by decide
 
 /-- 長さが一つなら残りなし、二つ以上なら残りを束縛せず末尾を返し、空なら 0 を返す。 -/
-example : ([[], [int 1], [int 1, int 2], [int 1, int 2, int 3, int 4]] : List (List Val)).map
+example : ([[], [int ⟨1, by decide⟩], [int ⟨1, by decide⟩, int ⟨2, by decide⟩], [int ⟨1, by decide⟩, int ⟨2, by decide⟩, int ⟨3, by decide⟩, int ⟨4, by decide⟩]] : List (List Val)).map
     (fun vs => exec (.match (.list vs)
       [.mk [⟨.list [.var] none [], [0]⟩] none (.ret (.var 0)),
        .mk [⟨.list [.wild] (some .skip) [.var], [0]⟩] none (.ret (.var 0)),
-       .mk [⟨.list [] none [], []⟩] none (.ret (int 0))])) =
+       .mk [⟨.list [] none [], []⟩] none (.ret (int ⟨0, by decide⟩))])) =
     [(.returned 0, 0), (.returned 1, 0), (.returned 2, 0), (.returned 4, 0)] := by decide
 
 /-- 前・残り・後の束縛順を、値として返す。残りは切り取ったリストである。 -/
 example : (run program builtins oracle rel fresh 20
-    (.run (.match (.list [int 1, int 2, int 3, int 4])
+    (.run (.match (.list [int ⟨1, by decide⟩, int ⟨2, by decide⟩, int ⟨3, by decide⟩, int ⟨4, by decide⟩])
       [.mk [⟨.list [.var] (some .bind) [.var], [0, 1, 2]⟩] none
         (.ret (.list [.var 2, .var 1, .var 0]))]) [] Store.empty) []).1 =
-    .run (.ret (.list [int 1, .list [int 2, int 3], int 4])) [] Store.empty := by rfl
+    .run (.ret (.list [int ⟨1, by decide⟩, .list [int ⟨2, by decide⟩, int ⟨3, by decide⟩], int ⟨4, by decide⟩])) [] Store.empty := by rfl
 
 /-- 必要な長さと等しい場合、残りの束縛は空のリストになる。 -/
 example : (run program builtins oracle rel fresh 20
-    (.run (.match (.list [int 1, int 4])
+    (.run (.match (.list [int ⟨1, by decide⟩, int ⟨4, by decide⟩])
       [.mk [⟨.list [.var] (some .bind) [.var], [0, 1, 2]⟩] none
         (.ret (.var 1))]) [] Store.empty) []).1 =
     .run (.ret (.list [])) [] Store.empty := by rfl
@@ -372,8 +374,8 @@ example : HasTypeC choiceProgram builtins StoreTy.empty [] [] none choiceMatch i
     (.V_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
       (by simp [choiceProgram]) rfl (by
         simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy, int, Const.type] using
-          (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer 10))
-            (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer 20)) .nil))))
+          (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer ⟨10, by decide⟩))
+            (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer ⟨20, by decide⟩)) .nil))))
     (.plain ha (.C_Return (.V_Var rfl (by intro b t e h; cases h)))
       (.plain (wildAltsTy choiceProgram _) (.C_Return .V_Const) (.nil trivial))) ?_
   intro v _

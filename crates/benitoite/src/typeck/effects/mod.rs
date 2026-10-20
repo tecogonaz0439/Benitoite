@@ -1,6 +1,6 @@
 //! エフェクトとハンドラ、遅延・リソース・試行の検査（設計書 02-05）。
 mod declarations;
-pub(super) use declarations::duplicate_use;
+pub(super) use declarations::{duplicate_use, effect_name};
 mod handle;
 mod special;
 mod tail;
@@ -34,7 +34,8 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
         Expr::Try(e) => try_expr(ctx, e),
         Expr::Handle(e) => handle::check(ctx, e),
         Expr::Resume(e) => resume_expr(ctx, e),
-        Expr::Lit(_)
+        Expr::Block(_)
+        | Expr::Lit(_)
         | Expr::Interp(_)
         | Expr::Name(_)
         | Expr::Unit(_)

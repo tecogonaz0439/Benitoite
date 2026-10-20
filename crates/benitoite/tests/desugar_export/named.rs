@@ -27,10 +27,10 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":4,"inputs":[table]})).unwrap(),
+        exchange::to_vec(&json!({"version":5,"inputs":[table]})).unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":4,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    let stdlib = json!({"version":5,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
         exchange::to_vec(&stdlib).unwrap(),
@@ -55,13 +55,13 @@ fn write_named(
     }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":12,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(&json!({"version":13,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":4,"inputs":tables})).unwrap(),
+        exchange::to_vec(&json!({"version":5,"inputs":tables})).unwrap(),
     )
     .unwrap();
     let stdlib = inputs
@@ -70,12 +70,12 @@ fn write_named(
         .collect::<Vec<_>>();
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&json!({"version":4,"inputs":stdlib})).unwrap(),
+        exchange::to_vec(&json!({"version":5,"inputs":stdlib})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-coverage.json")),
-        exchange::to_vec(&json!({"version":4,"inputs":coverage})).unwrap(),
+        exchange::to_vec(&json!({"version":5,"inputs":coverage})).unwrap(),
     )
     .unwrap();
 }
@@ -215,13 +215,7 @@ fn export_named_static_calls_smoke() {
     let header = json!({"tparams":[],"neffs":0,"effParams":[],"names":["callback"],"params":[callback],"ret":{"fn":{"names":["b","a"],"params":[integer,integer],"ret":integer,"eff":[]}},"eff":[]});
     let body = let_in(
         ret(var(2)),
-        let_in(
-            ret(var(2)),
-            let_in(
-                ret(var(2)),
-                json!({"app":{"callee":var(2),"args":[var(0),var(1)]}}),
-            ),
-        ),
+        json!({"app":{"callee":var(0),"args":[var(1),var(2)]}}),
     );
     let partial_def = definition(
         "partial (fn:1)",
@@ -285,11 +279,8 @@ fn export_named_static_calls_smoke() {
     let body = let_in(
         ret(var(1)),
         let_in(
-            ret(var(1)),
-            let_in(
-                ret(json!({"const":{"value":{"integer":{"value":17}}}})),
-                json!({"app":{"callee":var(2),"args":[var(0),var(1)]}}),
-            ),
+            ret(json!({"const":{"value":{"integer":{"value":17}}}})),
+            json!({"app":{"callee":var(1),"args":[var(0),var(2)]}}),
         ),
     );
     let mixed_def = definition(
@@ -429,7 +420,7 @@ impl Export {
         write_named(output, stem, self.inputs, self.tables, self.coverage);
         fs::write(
             output.join(format!("{stem}-stdlib.json")),
-            exchange::to_vec(&json!({"version":4,"inputs":self.declarations})).unwrap(),
+            exchange::to_vec(&json!({"version":5,"inputs":self.declarations})).unwrap(),
         )
         .unwrap();
     }
@@ -647,12 +638,12 @@ fn export_extensible_package() {
     fs::create_dir_all(root.join("dep")).unwrap();
     fs::write(
         root.join("package.bnt"),
-        "language \"0.0.9\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+        "language \"0.0.10\"\ndependency Dep\n path \"dep\"\nend dependency\n",
     )
     .unwrap();
     fs::write(
         root.join("dep/package.bnt"),
-        "language \"0.0.9\"\npackage Dep\nend package\n",
+        "language \"0.0.10\"\npackage Dep\nend package\n",
     )
     .unwrap();
     fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();
@@ -808,4 +799,63 @@ fn export_extensible_source() {
                 .any(|entry| entry["name"] == d["name"] && entry["extensible"] == true)
         );
     }
+}
+
+// 関門: 穴の数だけ Let を除き、callee と固定式の Let と番号を厳密に保つ。
+// 実行結果だけでは余分な Let を捕まえられず、独立した Lean 読者にも新入力を渡す。
+#[test]
+fn export_hole_argument_plans() {
+    let source = "function fixed() -> Integer\n return 7\nend function\nfunction sample(callback: function(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer) -> function(d: Integer, b: Integer) -> Integer\n return callback(d: _, c: fixed(), b: _, a: fixed())\nend function\nfunction all(callback: function(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer) -> function(d: Integer, c: Integer, b: Integer, a: Integer) -> Integer\n return callback(d: _, c: _, b: _, a: _)\nend function";
+    let p = checked(source).program.unwrap();
+    let core = pipeline::desugar_checked(&p).unwrap();
+    assert!(benitoite::ir::check::check_program(&core).is_empty());
+    let definitions = exchange::named_definitions(&p, &core);
+    let fixed = p
+        .resolved
+        .bindings
+        .iter()
+        .find(|(_, b)| b.name == "fixed")
+        .unwrap()
+        .0;
+    let var = |n: u32| json!({"var":{"index":n}});
+    let ret = |v: Value| json!({"ret":{"value":v}});
+    let fixed_call = json!({"app":{"callee":{"fnRef":{"name":format!("fn:{}", fixed.0),"tys":[],"effs":[]}},"args":[]}});
+    let integer = json!({"base":{"name":"Integer"}});
+    for (name, names, body) in [
+        (
+            "sample",
+            vec!["d", "b"],
+            json!({"letIn":{"bound":ret(var(2)),"body":{
+            "letIn":{"bound":fixed_call,"body":{"letIn":{"bound":fixed_call,
+            "body":{"app":{"callee":var(2),"args":[var(0),var(3),var(1),var(4)]}}}}}}}}),
+        ),
+        (
+            "all",
+            vec!["d", "c", "b", "a"],
+            json!({"letIn":{"bound":ret(var(4)),"body":{
+            "app":{"callee":var(0),"args":[var(1),var(2),var(3),var(4)]}}}}),
+        ),
+    ] {
+        let definition = definitions
+            .iter()
+            .find(|d| {
+                d["name"]
+                    .as_str()
+                    .unwrap()
+                    .starts_with(&format!("{name} ("))
+            })
+            .unwrap();
+        let params = names.iter().map(|_| integer.clone()).collect::<Vec<_>>();
+        assert_eq!(
+            definition["scope"]["inScope"]["core"]["body"],
+            ret(json!({"lam":{"names":names,"params":params,"body":body}})),
+            "{name}"
+        );
+    }
+    let mut export = Export::new();
+    export.push("golden", "t2-holes.bnt", &p, &exchange::complete_stdlib());
+    let output = export_directory("t2-holes");
+    fs::create_dir_all(&output).unwrap();
+    fs::write(output.join("t2-holes.bnt"), source).unwrap();
+    export.write_to(&output, "t2-holes");
 }

@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.9 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
@@ -88,14 +88,15 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 | `Random.Generate` | 乱数を作る |
 | `Http.Listen` | HTTP のサーバとしてネットワークの接続を受け付ける |
 | `Http.Connect` | ネットワーク越しに HTTP のサーバへ接続する |
+| `Log` | 構造化ログの事象。Console.Write と IO.All から独立 |
 | `State` | プログラムの中で可変のセルと並行のタスクを使う（外部への作用はない） |
 | `Assert.Check` | テストで期待を確かめる（外部への作用はない） |
 | `IO.All` | 前掲の `Console`、`File`、`Process`、`Clock`、`Random`、`State` のすべて |
 
 ## ほかの言語と異なる言語の規則
 
-- キーワードは 35 語ある。[キーワードを名前に使う](references/common-mistakes.md#キーワードを名前に使う)を参照する。`die` は予約語であり、ラベル、フィールド、取り込みの別名、ドットの後の名前を含め、名前に使えない。`try value or die` と `try value or die(message)` の中でだけ受理し、説明は純粋な String、Result のエラーには Show の制約、エフェクトには Process.Exit を要する。単独の `die` は拒否する。`fn`、`pub`、`impl`、`mut`、`async`、`await`、`spawn`、`select` は通常の名前のままであり、構文の略記ではない。宣言には `function`、`public`、`implement`、無名関数には `lambda` を使う。`as`、ファイルのヘッダの語、属性名は、それぞれの文脈でだけ特別な意味を持つ。`extensible` は通常の名前である。引数のない属性 `@extensible` は、データ型とレコードの宣言に使える。定義したパッケージの外では、ガードのない変数か `_` のパターンで将来の形も覆う必要がある。
-- 短いラムダを除き、ブロックは `end` とキーワードで終わる: `end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end handle`、`end with`。波括弧も字下げの規則もない。
+- キーワードは 36 語ある。[キーワードを名前に使う](references/common-mistakes.md#キーワードを名前に使う)を参照する。`block` は予約語であり、引数のラベル、フィールド、取り込みの別名、ドットの後の名前にも使えない（E0216）。`record` は、引数、引数のラベル、束縛、値の参照など、小文字の名前を要する位置でも使える。宣言の位置では引き続きレコードの宣言を始める。`die` は予約語であり、ラベル、フィールド、取り込みの別名、ドットの後の名前を含め、名前に使えない。`try value or die` と `try value or die(message)` の中でだけ受理し、説明は純粋な String、Result のエラーには Show の制約、エフェクトには Process.Exit を要する。単独の `die` は拒否する。`fn`、`pub`、`impl`、`mut`、`async`、`await`、`spawn`、`select` は通常の名前のままであり、構文の略記ではない。宣言には `function`、`public`、`implement`、無名関数には `lambda` を使う。`as`、ファイルのヘッダの語、属性名は、それぞれの文脈でだけ特別な意味を持つ。`extensible` は通常の名前である。引数のない属性 `@extensible` は、データ型とレコードの宣言に使える。定義したパッケージの外では、ガードのない変数か `_` のパターンで将来の形も覆う必要がある。
+- 短いラムダを除き、ブロックは `end` とキーワードで終わる: `end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end handle`、`end with`、`end block`。波括弧も字下げの規則もない。
 - 局所の名前は、`let` ではなく `bind x <- e` で束縛する。`shadow x <- e` は既に見えている局所名を隠せるが、推奨しない。意図的な隠蔽でも、新しい値の意味を表す別の名前を使う。名前に再代入はできない。
 - 関数は `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function` と書く。戻り値の型は `:` ではなく必ず `->` の後に書く。値は `return` で返す。値は `return` と同じ物理行で書き始める。直後の改行は、括弧の中でも文を終え、誤り（E0201）になる。値を書き始めた後は、通常の複数行の継続（演算子、括弧、呼び出しの引数、`then`）を使える。短いラムダは、一つの物理行に収める必要がある。
 - 値や処理の選択には `match` を推奨する。条件成立時だけの処理や早期リターンには、`else` のない `if` を使う。`else` と `else if` は有効な構文だが、推奨しない。この助言による警告は加えない。条件の評価回数と順序を保ち、選ばれた分岐だけを評価し、`return` の作用先を同じ関数かラムダに保つ。エフェクトを含む条件をガードへ移さず、真偽値に対する match を入れ子にする。
@@ -127,7 +128,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 実験的な `@external("wasm", "path.wasm", "export")` の関数は、取り込みのないバイナリの Component Model のコンポーネントを使い、本体も `end function` も持たない。具体的なレコードとデータ型、引数のない構成子の `Set` で表すフラグ、WIT に対応するキーを持つ `Map` を境界越しに渡せる。外部のリソース型には `uses State` が必要であり、ほかの外部呼び出しは純粋である。生成したアダプタは、詰めて格納したバイト数を数え、それとは別に、同じ `--wasm-transfer` の値で値の構築量の論理的な上限を設ける。`references/idioms.md` の WIT の例と上限を参照する。
 - 文字列補間は `"${expression}"` と書く。コメントは `//` で始まる。
 - `null` も例外もループの文もない。`Option`、`try` を伴う `Result`、および `List.map`・`List.fold`・`List.forEach` か再帰を使う。
-- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Json.Codec`、`Failure`、`Test.Property`、`Csv`、`Regex`、`Scope`、`Range`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
+- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Json.Codec`、`Failure`、`Test.Property`、`Csv`、`Regex`、`Scope`、`Range`、`NonEmptyList`、`Log`、`SourceLocation`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Log`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
 - エフェクトを直接または呼び出しを通して行う関数は、すべてそのエフェクトを `uses` の後に並べる。ネットワークのエフェクト（`Http.Connect`、`Http.Listen`）は `IO.All` に含まれない。
 - 値が `Unit` でない文は誤りである。各 `Result` を、`try`、`match`、`bind _ <-` のどれかで処理する。
 - `Process.shell` は、その文字列を `/bin/sh -c` で実行する。POSIX の sh だけを書く。bash の配列、`[[ ]]`、`{a,b}` の展開、`$'...'` は使わない。シェルの機能が要らないときは、引数の並びを渡す `Process.run` を使う。
@@ -166,7 +167,11 @@ first: one
 
 不透明型には公開の作成・検査関数を使う。構成子、更新、パターン、自動アクセサは所有モジュール内だけで使える（外では E0340）。Regex/Scope の直接呼び出しは、テスト内でも既知の不正な入力を拒否する。実行時 Error のテストには通常の関数の引数を経由させる。Range は定数にも実行時の Result.Error を保つ。Scope が保証するのは表記の所属であり、権限、DNS/ファイルの実体、IO の成功ではない。references/common-mistakes.md と、生成参照の Scope.md / Range.md を参照する。
 
-Benitoite.StringBuilder、Benitoite.ListBuilder、Benitoite.BytesBuilder を明示的に取り込む。構築器は第二級の値である。対応する種類を注釈した局所 bind と直接の new() で宣言し、専用の操作だけを直接呼ぶ。copy/length を含む全操作に State を要する。通常の関数への引数渡し、返却、格納、比較、文字列への埋め込み、ラムダ・lazy・部分適用・ハンドラ節への捕捉はできない。コールバックを作る前に copy や length を束縛し、appendAll の前に断片列を作る。コピーは不変の構造を保つが、参照を持つ要素のセルは共有する。State の消去、clear/reserve/finish、ネイティブのバッファによる高速化の保証はない。シグネチャは生成参照の各 Builder モジュールを参照する。
+Benitoite.StringBuilder、Benitoite.ListBuilder、Benitoite.BytesBuilder を明示的に取り込む。構築器は第二級の値である。対応する種類を注釈した局所 bind と直接の new() で宣言し、専用の操作だけを直接呼ぶ。宣言と専用操作は State を加えず、通常の引数のエフェクトだけを残す。通常の関数への引数渡し、返却、格納、比較、文字列への埋め込み、ラムダ・lazy・部分適用・ハンドラ節への捕捉はできない。コールバックを作る前に copy や length を束縛し、appendAll の前に断片列を作る。コピーは不変の構造を保つが、参照を持つ要素のセルは共有する。copy は不変の snapshot を物理的に作り、途中の copy を繰り返すと内容に比例する時間と容量を要する。参照・タスク・通常のリソースのエフェクトは残る。clear/reserve/finish はない。シグネチャは生成参照の各 Builder モジュールを参照する。
+
+block ... end block で構築器の宣言と操作を一つの式に閉じられる。最後の式が値であり、最後が束縛か空なら Unit となる。局所の名前の範囲を作るが、return の境界は作らない。構築器自体は返せない。Integer の符号付き 64 ビット全域を覆う範囲は網羅的となり、後続の全体を覆う分岐は E0602 となる。ガード付き区間と穴は別途覆う必要がある。
+
+Log と SourceLocation は prelude に含む。位置を記録したい場所で SourceLocation.here() を直接呼び、ラッパーには Location を明示して渡す。関数値・穴・パイプは E0467 となる。Log.info(message: ..., attributes: [Log.attribute(key: ..., value: ...)], location: SourceLocation.here()) は uses Log と、宣言上限に残る場合の許可集合の Log を要する。IO.All と Console.Write は Log を含まない。無効なレベルも引数は先に評価するため、重い書式化は Log.enabled(Log.Level.Debug) で囲む。既定は Info 以上を stderr へ出力し、Log.error は終了しない。emit と enabled の両方を処理する。withTextLogger は Console.Write を要し、withSinks は sink のエフェクトを保ち、withAttributes は Log を送り直す。Log の as は使えない。Range と NonEmptyList の検査済み値を使い、get には元のリストを保持する検査済み添字だけを渡す。references/idioms.md を参照する。
 
 ## コレクションと連結の関数を選ぶ
 
@@ -223,4 +228,6 @@ Config は明示した seed と、両端を含む予算 trials 1〜10000、size 
 
 Integer の生成は両端を含み、Float の生成は有限値に限る。入れ子のコンテナの size は資源全体の上限ではない。縮小は循環も含め、全候補の試行を数え、最小の反例を約束しない。再現には config、libraryVersion（2.0.0）、生成コードの GENERATOR_VERSION、手書きのソース、元と縮小後の入力と説明を残す。同じ seed だけではライブラリの版をまたいで反例を再現できない。Gen/Shrinker のフィールドと各 API は、references/stdlib/Test.Property.md を参照する。
 
-ソースのリポジトリには、レコードの codec、Gen/Shrinker 関数、明示的に要求した Show/Order 実装を生成する開発用の derive がある（tools/derive/README.md）。Show/Order の指定は独立した真偽値である。対象は循環せず型パラメータを持たないレコードに限り、各フィールドに対応する辞書を要する。Show は宣言順と各値の引用に従い、Order は最初の非 Equal で止まる。組み込みの等値、キー制約、直列化形式は提供しない。既存の手書き実装を保護する。不透明なレコードも所有モジュール内で Show/Order を明示的に要求できるが、適用前に表示の内容を確認する。宣言の inventory と生成記録は版 2、設定は版 1 である。古い記録は新しい preview を確認して移す。不透明型には手書きの検査済み作成関数を使い、不透明なフィールドには独自の codec/generator を指定する。配布した実行ファイルと Skill だけの環境では、Codec と Property の API を使って関数を直接書く。
+ソースのリポジトリには tools/derive/README.md に従う開発用 derive がある。Show/Order と Property は同じモジュール内の正則な自己・相互再帰と型パラメータを持つレコードに対応する。JSON は単相・非循環に限る。使用する型パラメータだけに宣言順の Gen/Shrinker 引数を渡し、phantom は省く。Show/Order の必要な制約を伝播し、全欄に辞書を要する。再帰する縮小器は要求まで遅延し、容器の削除を先行して一欄ずつ縮小する。制約のない T へ渡す独自 Shrinker は自己候補を除く。生成器は有限の基底とレコード節点数の総予算を要する。独自コールバックの停止・往復と反例の最小性は保証しない。
+
+生成規則は 3.0.0-syntax-batch4、inventory は 2、manifest・receipt・生成記録・意味ハッシュは 3、設定は 1 である。旧道具で未完の復旧を終え、旧本文のハッシュを読み取り専用で照合してから、新しい preview/review/apply/check を行う。旧 manifest で新版を承認しない。同じ種だけでは版をまたぐ分布を再現できず、Property.libraryVersion は 2.0.0 を保つ。不透明型には公開の検査済み作成関数、欄には独自の codec/generator を使う。配布実行ファイルと Skill だけの環境では、Codec/Property API を使って直接関数を書く。

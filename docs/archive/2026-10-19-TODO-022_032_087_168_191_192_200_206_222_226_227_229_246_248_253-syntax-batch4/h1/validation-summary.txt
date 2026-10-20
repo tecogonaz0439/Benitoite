@@ -1,0 +1,58 @@
+## work
+scripts/check.sh --level work --base 498943fe6f1b87db71178354e65ba573e46cf492 --only fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,doc_default,heap_local,stress_local --test golden --test random_programs --test runtime_builtins --test l13_external_commands
+== plan: level work against 498943fe6f1b87db71178354e65ba573e46cf492 (changed files not classified) (partial selection: --only fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally,doc_default,heap_local,stress_local)
+== fmt
+== lib_default
+test result: ok. 1244 passed; 0 failed; 21 ignored; 0 measured; 0 filtered out; finished in 63.14s
+== tests_related
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 62.79s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.12s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.66s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.44s
+== doc_default
+test result: ok. 17 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+== source_rules
+== source_rules
+== skill_generated
+== spec_tally
+== spec_tally
+== heap_local
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 57.06s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.11s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.30s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.51s
+== stress_local
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 641.63s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.13s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.61s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.55s
+selected checks passed
+exit=0; outer_seconds=999.6
+
+## clippy
+cargo clippy -p benitoite --all-targets --no-default-features --features gc-mark-sweep
+exit=0; outer_seconds=33.27
+
+## refinterp-heap
+cargo test -p benitoite --lib --no-default-features --features gc-mark-sweep,heap-verify refinterp::
+test result: ok. 37 passed; 0 failed; 1 ignored; 0 measured; 1234 filtered out; finished in 2.16s
+exit=0; outer_seconds=34.23
+
+## refinterp-stress
+cargo test -p benitoite --lib --no-default-features --features gc-mark-sweep,heap-verify,gc-stress refinterp::
+test result: ok. 37 passed; 0 failed; 1 ignored; 0 measured; 1234 filtered out; finished in 2.39s
+exit=0; outer_seconds=33.6
+
+## heap
+scripts/check-heap.sh
+== Miri availability
+== Miri (mark-sweep)
+test result: ok. 58 passed; 0 failed; 1 ignored; 0 measured; 1213 filtered out; finished in 793.09s
+== Miri per-object (mark-sweep)
+test result: ok. 51 passed; 0 failed; 1 ignored; 0 measured; 1220 filtered out; finished in 705.64s
+== heap random cases (mark-sweep)
+test result: ok. 50 passed; 0 failed; 2 ignored; 0 measured; 1220 filtered out; finished in 111.55s
+all heap checks passed
+exit=0; outer_seconds=666.19
+

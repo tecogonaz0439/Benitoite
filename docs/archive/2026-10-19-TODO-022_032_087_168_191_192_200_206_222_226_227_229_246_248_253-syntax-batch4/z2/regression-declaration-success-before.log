@@ -1,0 +1,30 @@
+error[E0401]: mismatched types
+  --> /private/tmp/z2-declared-success.bnt:6:15
+   |
+ 6 |  bind _ <- gs([s])
+   |               ^^^ expected `List[String]`, found `List[Integer]`
+   |
+  ::: /private/tmp/z2-declared-success.bnt:1:16
+   |
+ 1 | function gs(x: List[String]) -> Integer
+   |                ------------ expected because of this
+   |
+   = note: argument 1 must match the parameter type of the called function
+
+error[E0401]: mismatched types
+  --> /private/tmp/z2-declared-success.bnt:7:9
+   |
+ 7 |  return s
+   |         ^ expected `String`, found `Integer`
+   |
+  ::: /private/tmp/z2-declared-success.bnt:4:27
+   |
+ 4 | function f(n: Integer) -> String
+   |                           ------ expected because of this
+   |
+   = note: the returned value must match the declared return type
+
+error[E0414]: no `main` function
+   = help: define `function main() -> Unit` in the file where execution starts
+
+error: could not check /private/tmp/z2-declared-success.bnt due to 3 previous errors

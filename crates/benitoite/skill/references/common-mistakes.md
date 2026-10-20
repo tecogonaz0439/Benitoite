@@ -118,7 +118,7 @@ end function
 
 ## Braces for blocks
 
-Except for short lambdas (see `grammar.md`), blocks end with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end handle`, `end with`, `end data`, `end record`.
+Except for short lambdas (see `grammar.md`), blocks end with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end handle`, `end with`, `end data`, `end record`, `end block`.
 
 ```benitoite error
 import Benitoite.Unofficial.IO.Console
@@ -464,7 +464,7 @@ end function
 
 ## Keywords as names
 
-These 35 words are keywords and cannot be names: `and`, `bind`, `case`, `const`, `data`, `die`, `div`, `do`, `effect`, `else`, `end`, `false`, `function`, `handle`, `if`, `implement`, `import`, `lambda`, `lazy`, `match`, `mod`, `not`, `or`, `public`, `record`, `resume`, `return`, `shadow`, `then`, `trait`, `true`, `try`, `type`, `uses`, `with`. Choose another name. This restriction also applies to argument labels, fields, import aliases, and names after a dot. `die` is accepted only as a failure action: `try value or die` or `try value or die(message)`. A standalone `die` expression is rejected. `Die`, `died`, and `dieLater` are ordinary identifiers.
+These 36 words are keywords: `and`, `bind`, `block`, `case`, `const`, `data`, `die`, `div`, `do`, `effect`, `else`, `end`, `false`, `function`, `handle`, `if`, `implement`, `import`, `lambda`, `lazy`, `match`, `mod`, `not`, `or`, `public`, `record`, `resume`, `return`, `shadow`, `then`, `trait`, `true`, `try`, `type`, `uses`, `with`. `record` is also accepted where a lowercase name is required, including parameters, argument labels, bindings, and value references. It still starts a record declaration at declaration position. Choose another name for the other keywords; that restriction also applies to argument labels, fields, import aliases, and names after a dot. `die` is accepted only as a failure action: `try value or die` or `try value or die(message)`. A standalone `die` expression is rejected. `Die`, `died`, and `dieLater` are ordinary identifiers.
 
 `fn`, `pub`, `impl`, and `mut` are ordinary names, not abbreviations for syntax. Write declarations with `function`, `public`, and `implement`, and anonymous functions with `lambda`. `for`, `while`, `loop`, `break`, `continue`, `switch`, `where`, `async`, `await`, `spawn`, and `select` are not reserved either. Use collection functions such as `List.map`, `List.fold`, and `List.forEach` for iteration, and APIs such as `Task.await`, `TaskGroup.spawn`, and `Task.race` for concurrency.
 
@@ -552,4 +552,4 @@ An opaque type keeps its constructors private to its declaring module. `@opaque`
 
 ## Capturing a builder in a callback
 
-A builder is a second-class value, not an ordinary function argument or a stored mutable container. A lambda passed to List.forEach cannot capture it (E0465). Build immutable fragments with List.map first and pass the result to appendAll, or bind a snapshot/length before creating a callback. Import each builder module in the module that uses it, even if another module imports it. A direct annotated local new declaration is required (E0463); function values, holes and pipes for builder operations are E0466. State remains required for new, append, appendAll, copy and length.
+A builder is a second-class value, not an ordinary function argument or a stored mutable container. A lambda passed to List.forEach cannot capture it (E0465). Build immutable fragments with List.map first and pass the result to appendAll, or bind a snapshot/length before creating a callback. Import each builder module in the module that uses it, even if another module imports it. A direct annotated local new declaration is required (E0463); function values, holes and pipes for builder operations are E0466. Declarations and dedicated operations add no State; ordinary argument effects remain. Use block ... end block to return an immutable copy from a local scope. Copy allocates a physical snapshot; repeated copies have proportional cost. Ordinary Reference, task, and resource-release effects remain.

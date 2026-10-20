@@ -1,0 +1,330 @@
+formal/Benitoite/Exchange/Convert.lean:22:  | "Integer" | "Integer64" => .ok .integer
+formal/Benitoite/Exchange/Convert.lean:28:  | "Integer8" => .ok .integer8 | "Integer16" => .ok .integer16
+formal/Benitoite/Exchange/Convert.lean:29:  | "Integer32" => .ok .integer32
+formal/Benitoite/Exchange/Convert.lean:37:  | .integer => "Integer" | .float => "Float" | .string => "String"
+formal/Benitoite/Exchange/Convert.lean:40:  | .integer8 => "Integer8" | .integer16 => "Integer16" | .integer32 => "Integer32"
+formal/Benitoite/Exchange/Convert.lean:148:  | .integer n => return .integer n
+formal/Benitoite/Exchange/Convert.lean:157:  | .integer8 n => return .integer8 n
+formal/Benitoite/Exchange/Convert.lean:158:  | .integer16 n => return .integer16 n
+formal/Benitoite/Exchange/Convert.lean:159:  | .integer32 n => return .integer32 n
+formal/Benitoite/Exchange/Convert.lean:166:  | .integer n => return .integer n
+formal/Benitoite/Exchange/Convert.lean:174:  | .integer8 n => return .integer8 n
+formal/Benitoite/Exchange/Convert.lean:175:  | .integer16 n => return .integer16 n
+formal/Benitoite/Exchange/Convert.lean:176:  | .integer32 n => return .integer32 n
+formal/Benitoite/Exchange/Convert.lean:198:      | .integer _, .integer _ | .character _, .character _ =>
+formal/Benitoite/Exchange/Convert.lean:206:      | .integer n => if n < 0 then return .negInt n.natAbs else return .integer n.toNat
+formal/Benitoite/Exchange/Convert.lean:215:      | .byte _ | .integer8 _ | .integer16 _ | .integer32 _
+formal/Benitoite/Exchange/Convert.lean:313:        | .integer n => if n < 0 then return .negInt n.natAbs else return .literal (.integer n.toNat)
+formal/Benitoite/Exchange/Convert.lean:325:        | .integer8 n => if n < 0 then return .negInteger8 n.natAbs else return .literal (.integer8 n.toNat)
+formal/Benitoite/Exchange/Convert.lean:326:        | .integer16 n => if n < 0 then return .negInteger16 n.natAbs else return .literal (.integer16 n.toNat)
+formal/Benitoite/Exchange/Convert.lean:327:        | .integer32 n => if n < 0 then return .negInteger32 n.natAbs else return .literal (.integer32 n.toNat)
+formal/Benitoite/Exchange/Convert.lean:336:    | .negInteger8 n => return .negInteger8 n
+formal/Benitoite/Exchange/Convert.lean:337:    | .negInteger16 n => return .negInteger16 n
+formal/Benitoite/Exchange/Convert.lean:338:    | .negInteger32 n => return .negInteger32 n
+formal/Benitoite/Exchange/Syntax.lean:279:    | .negInteger8 magnitude => Json.mkObj [("negInteger8", Json.mkObj [("magnitude", toJson magnitude)])]
+formal/Benitoite/Exchange/Syntax.lean:280:    | .negInteger16 magnitude => Json.mkObj [("negInteger16", Json.mkObj [("magnitude", toJson magnitude)])]
+formal/Benitoite/Exchange/Syntax.lean:281:    | .negInteger32 magnitude => Json.mkObj [("negInteger32", Json.mkObj [("magnitude", toJson magnitude)])]
+formal/Benitoite/Exchange/Syntax.lean:420:      return .negInteger8 (← fromJson? (← o.getObjVal? "magnitude"))
+formal/Benitoite/Exchange/Syntax.lean:422:      return .negInteger16 (← fromJson? (← o.getObjVal? "magnitude"))
+formal/Benitoite/Exchange/Syntax.lean:424:      return .negInteger32 (← fromJson? (← o.getObjVal? "magnitude"))
+formal/Benitoite/Release/BuiltinTable.lean:139:  | .base .integer | .base .float | .base .string | .base .character
+formal/Benitoite/Release/BuiltinTable.lean:140:    | .base .byte | .base .decimal | .base .integer8 | .base .integer16
+formal/Benitoite/Release/BuiltinTable.lean:141:    | .base .integer32 | .base .unsignedInteger16 | .base .unsignedInteger32
+formal/Benitoite/Release/BuiltinTable.lean:148:  | .base .integer | .base .integer8 | .base .integer16 | .base .integer32 => true
+formal/Benitoite/Release/BuiltinTable.lean:192:example : satB [] [] (.base .integer) eqC = true ∧
+formal/Benitoite/Release/BuiltinTable.lean:199:    satB [] [] (.list (.base .integer)) keyC = true := by decide
+formal/Benitoite/Release/BuiltinTable.lean:202:    satB [] [] (.map (.fn [] [] (.base .unit) Eff.empty) (.base .integer)) eqC = false := by decide
+formal/Benitoite/Release/BuiltinTable.lean:218:example : satB sampleS [] (.data "Option" [.base .integer]) keyC = true ∧
+formal/Benitoite/Release/BuiltinTable.lean:223:    satB sampleS [] (.data "R" [.base .integer]) keyC = false := by decide
+formal/Benitoite/Release/BuiltinTable.lean:225:    (.data "Bad" [.base .integer]) eqC = false := by decide
+formal/Benitoite/Release/BuiltinTable.lean:238:example : [Ty.opaque "IOError", .reference (.base .integer), .lazy (.base .integer),
+formal/Benitoite/Release/BuiltinTable.lean:239:    .cont (.base .integer) (.base .integer) Eff.empty, .dict "Eq" (.base .integer),
+formal/Benitoite/Release/BuiltinTable.lean:240:    .ctor .list, .tapp 0 [.base .integer]].all (fun t => !satB [] [] t eqC) = true ∧
+formal/Benitoite/Release/BuiltinTable.lean:241:    satB [] [] .bytes keyC = true ∧ satB [] [] (.set (.base .integer)) keyC = true := by decide
+formal/Benitoite/Release/BuiltinTable.lean:242:example : [Ty.base .integer, .base .float, .base .string, .base .character,
+formal/Benitoite/Release/BuiltinTable.lean:245:example : [Ty.base .integer8, .base .integer16, .base .integer32,
+formal/Benitoite/Release/BuiltinTable.lean:253:    satB [] [] (.map (.base .integer8) (.list (.base .float32))) keyC = false := by decide
+formal/Benitoite/Release/BuiltinTable.lean:266:    admitsB [] [] [] [.base .integer] = false := by decide
+formal/Benitoite/Release/Coverage.lean:83:  | .base .integer, .const (.integer _) => true
+formal/Benitoite/Release/Coverage.lean:84:  | .base .integer, .range (.integer _) (.integer _) => true
+formal/Benitoite/Release/Coverage.lean:100:    | .base .integer, .const (.integer n) => some (n, n)
+formal/Benitoite/Release/Coverage.lean:101:    | .base .integer, .range (.integer lo) (.integer hi) => some (lo, hi)
+formal/Benitoite/Release/Coverage.lean:185:  | .base .integer =>
+formal/Benitoite/Release/Coverage.lean:186:      let intervals := column.filterMap (interval (.base .integer))
+formal/Benitoite/Release/Coverage.lean:231:      let (a, b) ← interval (if chars then .base .character else .base .integer) p
+formal/Benitoite/Release/Coverage.lean:278:        | .integer n => .interval false n n
+formal/Benitoite/Release/Coverage.lean:286:        | .integer lo, .integer hi => .interval false lo hi
+formal/Benitoite/Release/Coverage.lean:758:      Represents (.interval false lo hi) (.const (.integer n)) []
+formal/Benitoite/Release/Coverage.lean:771:    (h : interval (.base .integer) p = some (a, b)) (ha : a ≤ n) (hb : n ≤ b) :
+formal/Benitoite/Release/Coverage.lean:772:    (Pat.matchVal p (.const (.integer n))).isSome = true := by
+formal/Benitoite/Release/Coverage.lean:826:      change (interval (.base .integer) p).bind (fun ab => if ab.1 ≤ lo ∧ hi ≤ ab.2 then some [] else none) = some ps at hs
+formal/Benitoite/Release/Coverage.lean:827:      cases he : interval (.base .integer) p with
+formal/Benitoite/Release/Coverage.lean:880:    (hw : isWild q = false) (hc : compatible P (.base .integer) q = true)
+formal/Benitoite/Release/Coverage.lean:881:    (hm : (Pat.matchVal q (.const (.integer n))).isSome = true) :
+formal/Benitoite/Release/Coverage.lean:882:    ∃ a b, interval (.base .integer) q = some (a, b) ∧ a ≤ n ∧ n ≤ b := by
+formal/Benitoite/Release/Coverage.lean:911:    (hq : q ∈ column) (hi : interval (.base .integer) q = some (a, b))
+formal/Benitoite/Release/Coverage.lean:913:    ∃ lo hh, Shape.interval false lo hh ∈ shapes P ctors (.base .integer) column ∧
+formal/Benitoite/Release/Coverage.lean:915:  let intervals := column.filterMap (interval (.base .integer))
+formal/Benitoite/Release/Coverage.lean:1017:    (hq : q ∈ column) (hc : compatible P (.base .integer) q = true)
+formal/Benitoite/Release/Coverage.lean:1018:    (hm : (Pat.matchVal q (.const (.integer n))).isSome = true) :
+formal/Benitoite/Release/Coverage.lean:1019:    ShapeStep P ctors (.base .integer) column q (.const (.integer n)) := by
+formal/Benitoite/Release/Coverage.lean:1025:  refine ⟨.interval false lo hh, [], [], hs, .integer lo hh n hl hu, .nil, ?_, rfl⟩
+formal/Benitoite/Release/Coverage.lean:1739:def intTy : Ty := .base .integer
+formal/Benitoite/Release/Coverage.lean:1756:def int (n : Int) : Pat := .const (.integer n)
+formal/Benitoite/Release/Coverage.lean:1896:    (intTy, [plain [int 99], plain [.range (.integer 1) (.integer 5)],
+formal/Benitoite/Release/Coverage.lean:1897:      plain [.range (.integer 6) (.integer 10)], plain [.range (.integer 1) (.integer 10)]]),
+formal/Benitoite/Release/Coverage.lean:1898:    (intTy, [plain [.range (.integer 1) (.integer 5)], plain [.range (.integer 6) (.integer 10)],
+formal/Benitoite/Release/Coverage.lean:1899:      plain [.range (.integer 1) (.integer 20)], plain [.range (.integer 1) (.integer 10)]]),
+formal/Benitoite/Release/Coverage.lean:1923:    (intTy, int 1, .range (.integer 1) (.integer 5)),
+formal/Benitoite/Release/Coverage.lean:1924:    (intTy, int 6, .range (.integer 1) (.integer 5)),
+formal/Benitoite/Release/Coverage.lean:1999:    irrefutable program ctors intTy (.range (.integer (-9223372036854775808))
+formal/Benitoite/Release/Coverage.lean:2000:      (.integer 9223372036854775807))] = [true, false, false] := by decide
+formal/Benitoite/Release/Coverage.lean:2022:    [.range (.integer 0) (.integer 2)]).map (List.flatMap summarize) =
+formal/Benitoite/Release/Coverage.lean:2082:    .range (.integer 0) (.character 'z'), .const (.boolean true), .const .unit,
+formal/Benitoite/Release/Coverage.lean:2085:    .const (.integer8 97), .const (.integer16 97), .const (.integer32 97),
+formal/Benitoite/Release/Coverage.lean:2093:example : ([.integer8 1, .integer16 1, .integer32 1, .unsignedInteger16 1,
+formal/Benitoite/Release/Coverage.lean:2098:example : ([.const (.integer 97), .range (.integer 0) (.integer 127)] : List Pat).map
+formal/Benitoite/Release/Coverage.lean:2130:example : (firstAlt (.const (.integer 0)) (malformedSlots.headD (plain [])).alts).isNone = true ∧
+formal/Benitoite/Release/Coverage.lean:2131:    (Pat.matchVal .wild (.const (.integer 0))).isSome := by decide
+formal/Benitoite/Release/Examples.lean:14:def intTy : Ty := .base .integer
+formal/Benitoite/Release/Examples.lean:16:def int (n : Int) : Val := .const (.integer n)
+formal/Benitoite/Release/Examples.lean:39:    | "add", _, _, [.const (.integer a), .const (.integer b)] =>
+formal/Benitoite/Release/Examples.lean:40:        some (.val (.const (.integer (a + b))))
+formal/Benitoite/Release/Examples.lean:44:    | "exit", _, _, [.const (.integer n)], o => o = .exit n
+formal/Benitoite/Release/Examples.lean:58:  | "exit", _, _, [.const (.integer n)] => .exit n
+formal/Benitoite/Release/Examples.lean:170:      | .run (.ret (.const (.integer n))) [] _ => .returned n
+formal/Benitoite/Release/Examples.lean:172:      | .run (.ret (.con "Box" _ [.const (.integer n)])) [] _ => .boxed n
+formal/Benitoite/Release/Examples.lean:284:    [.mk [⟨.range (.integer (-2)) (.integer 2), []⟩] none (.ret (int 1)),
+formal/Benitoite/Release/Examples.lean:375:          (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer 10))
+formal/Benitoite/Release/Examples.lean:376:            (HasTypeVsQ.cons (HasTypeVQ.V_Const (c := .integer 20)) .nil))))
+formal/Benitoite/Release/Examples.lean:384:    (¬ PatTy P (.const (.integer8 n)) (.base .integer8) []) ∧
+formal/Benitoite/Release/Examples.lean:385:    (¬ PatTy P (.const (.integer16 n)) (.base .integer16) []) ∧
+formal/Benitoite/Release/Examples.lean:386:    (¬ PatTy P (.const (.integer32 n)) (.base .integer32) []) ∧
+formal/Benitoite/Release/Model.lean:149:  target := .base .integer
+formal/Benitoite/Release/Model.lean:151:  methods := fun m => if m = "m" then some (.ret (.const (.integer 0))) else none
+formal/Benitoite/Release/Model.lean:157:  target := .base .integer
+formal/Benitoite/Release/Model.lean:159:  methods := fun m => if m = "n" then some (.ret (.const (.integer 1))) else none
+formal/Benitoite/Release/Model.lean:219:theorem const_body_typed {Q : NoFailCtx} (k : Int) {id : ImplDecl} (ht : id.target = .base .integer) :
+formal/Benitoite/Release/Model.lean:222:      (some (id.methTy constSig constSig.ret)) (.ret (.const (.integer k)))
+formal/Benitoite/Release/Model.lean:224:  have e : id.methTy constSig constSig.ret = .base .integer := by
+formal/Benitoite/Release/Model.lean:240:        exact ⟨.ret (.const (.integer 0)), by simp [implC, *], by simp [NamesWF, constSig],
+formal/Benitoite/Release/Model.lean:251:        exact ⟨.ret (.const (.integer 1)), by simp [implD, *], by simp [NamesWF, constSig],
+formal/Benitoite/Release/Model.lean:269:      (.meth (.super (.dict "DInt" [] []) "C") "m" [] [] []) (.base .integer) Eff.empty := by
+formal/Benitoite/Release/Model.lean:270:  have hd : HasTypeV classProgram builtins StoreTy.empty [] [] (.dict "DInt" [] []) (.dict "D" (.base .integer)) := by
+formal/Benitoite/Release/Model.lean:298:example : NamesWF [] [] ∧ NamesWF ["value"] [.base .integer] ∧
+formal/Benitoite/Release/Model.lean:299:    NamesWF ["left", "right"] [.base .integer, .base .string] := by
+formal/Benitoite/Release/Model.lean:303:example : ¬ NamesWF [] [.base .integer] ∧
+formal/Benitoite/Release/Model.lean:304:    ¬ NamesWF ["value", "value"] [.base .integer, .base .integer] := by
+formal/Benitoite/Release/Model.lean:309:    [.base .integer, .base .integer] (.base .integer) Eff.empty)) ∧
+formal/Benitoite/Release/Model.lean:311:      (.reference (.fn [] [.base .integer] (.base .integer) Eff.empty)) := by
+formal/Benitoite/Release/Model.lean:315:example : ¬ Ty.Le (.fn ["value"] [.base .integer] (.base .integer) Eff.empty)
+formal/Benitoite/Release/Model.lean:316:    (.fn ["other"] [.base .integer] (.base .integer) Eff.empty) ∧
+formal/Benitoite/Release/Model.lean:317:    ¬ Ty.Le (.fn ["left", "right"] [.base .integer, .base .integer] (.base .integer) Eff.empty)
+formal/Benitoite/Release/Model.lean:318:      (.fn ["right", "left"] [.base .integer, .base .integer] (.base .integer) Eff.empty) := by
+formal/Benitoite/Release/Model.lean:328:    (.prim "Reference.get" [.base .integer] [])
+formal/Benitoite/Release/Model.lean:329:    (.fn ["reference"] [.reference (.base .integer)] (.base .integer) (Eff.single stateEff)) := by
+formal/Benitoite/Release/Model.lean:331:    (C := []) (Γ := []) (b := "Reference.get") (s := refGetSig) (ts := [.base .integer])
+formal/Benitoite/Release/Model.lean:338:  have he : Eff.substAt 0 [.base .integer] [] (Eff.single stateEff) = Eff.single stateEff :=
+formal/Benitoite/Release/Model.lean:343:def firstLambda : Val := .lam ["left", "right"] [.base .integer, .base .string] (.ret (.var 1))
+formal/Benitoite/Release/Model.lean:346:    (.fn ["left", "right"] [.base .integer, .base .string] (.base .integer) Eff.empty) := by
+formal/Benitoite/Release/Model.lean:389:    (.lam ["value", "value"] [.base .integer, .base .integer] (.ret (.const .unit))) a := by
+formal/Benitoite/Release/Model.lean:395:    (.run (.app firstLambda [.const (.integer 7), .const (.string "second")]) [] Store.empty) =
+formal/Benitoite/Release/Model.lean:396:    some (none, .run (.ret (.const (.integer 7))) [.mark] Store.empty) := by
+formal/Benitoite/Release/Model.lean:401:  .lam ["f"] [.fn ["value"] [.base .integer] (.base .integer) Eff.empty]
+formal/Benitoite/Release/Model.lean:406:    (.app higherOrderCallee [.lam ["value"] [.base .integer] (.ret (.var 0))])
+formal/Benitoite/Release/Model.lean:413:    (.app higherOrderCallee [.lam ["x"] [.base .integer] (.ret (.var 0))]) a ε := by
+formal/Benitoite/Release/Model.lean:418:  change [.fn ["value"] [.base .integer] (.base .integer) Eff.empty] = as at hps
+formal/Benitoite/Release/Order/Types.lean:19:  | .integer => 0 | .float => 1 | .string => 2 | .character => 3
+formal/Benitoite/Release/Order/Types.lean:21:  | .integer8 => 8 | .integer16 => 9 | .integer32 => 10
+formal/Benitoite/Release/Subst.lean:226:  | .integer lo, .integer hi, .integer n => decide (lo ≤ n ∧ n ≤ hi)
+formal/Benitoite/Release/Syntax.lean:61:  | .integer _ => .base .integer
+formal/Benitoite/Release/Syntax.lean:70:  | .integer8 _ => .base .integer8
+formal/Benitoite/Release/Syntax.lean:71:  | .integer16 _ => .base .integer16
+formal/Benitoite/Release/Syntax.lean:72:  | .integer32 _ => .base .integer32
+formal/Benitoite/Release/Syntax.lean:80:  | .integer _ | .string _ | .character _ | .boolean _ | .unit => true
+formal/Benitoite/Release/Syntax.lean:85:  | .integer a, .integer b => a == b
+formal/Benitoite/Release/Typing.lean:237:        PatTy P (.range (.integer lo) (.integer hi)) (.base .integer) []
+formal/Benitoite/Surface/BuilderCheck.lean:167:      len.check atoms D B sd ad nf C ["s"] [.base .string] (.base .integer)
+formal/Benitoite/Surface/BuilderCheck.lean:171:      len.check atoms D B sd ad nf C ["xs"] [.list t] (.base .integer)
+formal/Benitoite/Surface/BuilderCheck.lean:176:      len.check atoms D B sd ad nf C ["b"] [.bytes] (.base .integer)
+formal/Benitoite/Surface/BuilderExamples.lean:10:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/BuilderExamples.lean:77:    (.builderOp .append 0 (.cons (.literal (.integer 1)) .nil) stringRefs)).run' {} =
+formal/Benitoite/Surface/BuilderExamples.lean:192:    (declared (.seq (appendAt 0 "inside") (.last (.resume 1 (.literal (.integer 7)))))) .nil))
+formal/Benitoite/Surface/BuilderExamples.lean:199:  (.cons (.user "ask") 0 0 (.seq (appendAt 1 "bad") (.last (.resume 0 (.literal (.integer 7))))) .nil)))
+formal/Benitoite/Surface/BuilderFree.lean:25:    | .negInt _ => True
+formal/Benitoite/Surface/BuilderFree.lean:28:    | .negInteger8 _ => True
+formal/Benitoite/Surface/BuilderFree.lean:29:    | .negInteger16 _ => True
+formal/Benitoite/Surface/BuilderFree.lean:30:    | .negInteger32 _ => True
+formal/Benitoite/Surface/BuilderSyntax.lean:102:  | .length => .base .integer
+formal/Benitoite/Surface/Builders.lean:237:      len.Ok D B C Q ["s"] [.base .string] (.base .integer)
+formal/Benitoite/Surface/Builders.lean:241:      len.Ok D B C Q ["xs"] [.list t] (.base .integer)
+formal/Benitoite/Surface/Builders.lean:246:      len.Ok D B C Q ["b"] [.bytes] (.base .integer)
+formal/Benitoite/Surface/Check.lean:164:      (.fn ["code"] [.base .integer] t (singleEff q.atoms (.name "Process.Exit"))))
+formal/Benitoite/Surface/Check.lean:326:    | .negInt _ => pure (.base .integer, emptyEff)
+formal/Benitoite/Surface/Check.lean:329:    | .negInteger8 _ => pure (.base .integer8, emptyEff)
+formal/Benitoite/Surface/Check.lean:330:    | .negInteger16 _ => pure (.base .integer16, emptyEff)
+formal/Benitoite/Surface/Check.lean:331:    | .negInteger32 _ => pure (.base .integer32, emptyEff)
+formal/Benitoite/Surface/CheckCounterexamples.lean:8:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/CheckCounterexamples.lean:51:    body := .last (.returnE intTy (.handleE (.last (.literal (.integer 1)))
+formal/Benitoite/Surface/CheckCounterexamples.lean:54:          (partialAdd (.resume 0 (.literal (.integer 10))))
+formal/Benitoite/Surface/CheckCounterexamples.lean:55:          (.last (.resume 1 (.literal (.integer 10))))) .nil))) }
+formal/Benitoite/Surface/CheckCounterexamples.lean:62:    (partialAdd (.literal (.integer 10)))).isOk = true := by decide
+formal/Benitoite/Surface/CheckExamples.lean:9:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/CheckExamples.lean:11:private def eInt (n : Nat) : Expr := .literal (.integer n)
+formal/Benitoite/Surface/CheckExamples.lean:347:      | "intToString", [.const (.integer n)] => some (.val (.const (.string (toString n))))
+formal/Benitoite/Surface/CheckExamples.lean:366:example : [renderResult intTy "ShowInt" (.const (.integer 7)),
+formal/Benitoite/Surface/CheckExamples.lean:417:example : [(renderForms intTy).map (renderFormResult "ShowInt" (.const (.integer 7))),
+formal/Benitoite/Surface/CheckExamples.lean:454:      | "tagInt", [.const (.integer n)] => some (.val (.const (.string ("tag" ++ toString n))))
+formal/Benitoite/Surface/CheckExamples.lean:457:      | "first", [] => out = .val (.const (.integer 7))
+formal/Benitoite/Surface/CheckExamples.lean:458:      | "second", [] => out = .val (.const (.integer 9))
+formal/Benitoite/Surface/CheckExamples.lean:536:  | "first", _, _, _ => .val (.const (.integer 7))
+formal/Benitoite/Surface/CheckExamples.lean:537:  | "second", _, _, _ => .val (.const (.integer 9))
+formal/Benitoite/Surface/CheckPatterns.lean:11:  | .integer _ => some .integer
+formal/Benitoite/Surface/CheckPatterns.lean:29:    | .range (.integer _) (.integer _), .base .integer => some []
+formal/Benitoite/Surface/CheckPredicates.lean:113:    | .negInt _ => by simp [exprExits, Expr.Exits]
+formal/Benitoite/Surface/CheckPredicates.lean:116:    | .negInteger8 _ => by simp [exprExits, Expr.Exits]
+formal/Benitoite/Surface/CheckPredicates.lean:117:    | .negInteger16 _ => by simp [exprExits, Expr.Exits]
+formal/Benitoite/Surface/CheckPredicates.lean:118:    | .negInteger32 _ => by simp [exprExits, Expr.Exits]
+formal/Benitoite/Surface/CheckPredicates.lean:163:    | .range (.integer lo) (.integer hi) => decide (lo ≤ hi)
+formal/Benitoite/Surface/CheckPredicates.lean:178:    | .integer _ => by simp [patternValid, Pattern.Valid]
+formal/Benitoite/Surface/CheckPredicates.lean:179:    | .negInt _ => by simp [patternValid, Pattern.Valid]
+formal/Benitoite/Surface/CheckPredicates.lean:227:  | .negInt _ => by constructor <;> intro h <;> cases h
+formal/Benitoite/Surface/CheckPredicates.lean:230:  | .negInteger8 _ => by constructor <;> intro h <;> cases h
+formal/Benitoite/Surface/CheckPredicates.lean:231:  | .negInteger16 _ => by constructor <;> intro h <;> cases h
+formal/Benitoite/Surface/CheckPredicates.lean:232:  | .negInteger32 _ => by constructor <;> intro h <;> cases h
+formal/Benitoite/Surface/CheckPredicates.lean:292:  | .base .integer | .base .float | .base .character | .base .boolean
+formal/Benitoite/Surface/CheckPredicates.lean:293:    | .base .byte | .base .decimal | .base .integer8 | .base .integer16
+formal/Benitoite/Surface/CheckPredicates.lean:294:    | .base .integer32 | .base .unsignedInteger16 | .base .unsignedInteger32
+formal/Benitoite/Surface/CheckPredicates.lean:304:    (t = .base .integer ∨ t = .base .float ∨ t = .base .character ∨
+formal/Benitoite/Surface/CheckPredicates.lean:306:     t = .base .integer8 ∨ t = .base .integer16 ∨ t = .base .integer32 ∨
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:15:theorem negInt_case {q n} : CaseSound q (.expr (.negInt n)) := by
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:36:theorem negInteger8_case {q n} : CaseSound q (.expr (.negInteger8 n)) := by
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:43:theorem negInteger16_case {q n} : CaseSound q (.expr (.negInteger16 n)) := by
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:50:theorem negInteger32_case {q n} : CaseSound q (.expr (.negInteger32 n)) := by
+formal/Benitoite/Surface/CheckSoundDie.lean:54:    (show Ty.AtomsIn q.atoms (.fn ["code"] [.base .integer] t
+formal/Benitoite/Surface/CheckToolsExamples.lean:11:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/CheckToolsExamples.lean:89:example : patternValid (.range (.integer 2) (.integer 1)) = false := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:92:example : patternValid (.record "C" 1 [0] [.range (.integer 2) (.integer 1)]) = false := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:95:example : alternativesValid [⟨.range (.integer 1) (.integer 2), []⟩] = true := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:96:example : alternativesValid [⟨.range (.integer 2) (.integer 1), []⟩] = false := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:146:example : gotTypes (patTy atoms decls.patternProgram (.const (.integer 3)) intTy) [] = true := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:148:example : (patTy atoms decls.patternProgram (.const (.integer 3)) boolTy).isNone = true := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:149:example : gotTypes (patTy atoms decls.patternProgram (.range (.integer 1) (.integer 3)) intTy) [] = true := by decide
+formal/Benitoite/Surface/CheckToolsExamples.lean:245:private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+formal/Benitoite/Surface/CheckToolsExamples.lean:257:    (.call (.local 0) [none] [0] (.cons (.literal (.integer 7)) .nil))) intTy = true := by rfl
+formal/Benitoite/Surface/CheckToolsExamples.lean:267:example : (run [some fn] (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer 7)) .nil))).map (fun _ => ()) =
+formal/Benitoite/Surface/CheckToolsExamples.lean:306:example : got (run [some fn] (.pipe (.literal (.integer 7))
+formal/Benitoite/Surface/CheckToolsExamples.lean:308:example : (run [some fn] (.pipe (.literal (.integer 7))
+formal/Benitoite/Surface/CheckToolsExamples.lean:309:    (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer 8)) .nil)))).map (fun _ => ()) =
+formal/Benitoite/Surface/CheckToolsExamples.lean:311:example : (run [some fn] (.pipe (.literal (.integer 7))
+formal/Benitoite/Surface/CheckToolsExamples.lean:316:      (.hole (some "b") 1 boolTy (.expr (some "a") 0 (.literal (.integer 7)) .nil)) intTy emptyEff)))) intTy = true := by rfl
+formal/Benitoite/Surface/Desugar.lean:142:  let finish := Comp.app (.prim exit [t] []) [.const (.integer 1)]
+formal/Benitoite/Surface/Desugar.lean:192:    | .negInt n => .ret (.const (.integer (-Int.ofNat n)))
+formal/Benitoite/Surface/Desugar.lean:200:    | .negInteger8 n => .ret (.const (.integer8 (-Int.ofNat n)))
+formal/Benitoite/Surface/Desugar.lean:201:    | .negInteger16 n => .ret (.const (.integer16 (-Int.ofNat n)))
+formal/Benitoite/Surface/Desugar.lean:202:    | .negInteger32 n => .ret (.const (.integer32 (-Int.ofNat n)))
+formal/Benitoite/Surface/Desugar.lean:461:      (.partialCall (.local 0) ["input"] (.hole none 0 (.base .integer) .nil)
+formal/Benitoite/Surface/Desugar.lean:462:        (.base .integer) Eff.empty) =
+formal/Benitoite/Surface/Desugar.lean:463:      .ret (.lam ["input"] [.base .integer]
+formal/Benitoite/Surface/Desugar.lean:483:            (.hole (some "a") 0 (.base .integer) .nil))) (.base .integer) Eff.empty) =
+formal/Benitoite/Surface/Desugar.lean:484:      .ret (.lam ["b", "a"] [.base .boolean, .base .integer]
+formal/Benitoite/Surface/Desugar.lean:504:        (.cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil))) =
+formal/Benitoite/Surface/Desugar.lean:506:        (.letIn (.ret (.const (.integer 7))) (.app (.op "ask" []) [.var 0, .var 1])) := by rfl
+formal/Benitoite/Surface/Desugar.lean:512:        [.base .integer, .base .boolean]) [some "b", some "a"] [1, 0]
+formal/Benitoite/Surface/Desugar.lean:513:        (.cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil))) =
+formal/Benitoite/Surface/Desugar.lean:515:        (.letIn (.ret (.const (.integer 7)))
+formal/Benitoite/Surface/Desugar.lean:521:        (.expr none 0 (.literal (.integer 7)) (.hole none 1 (.base .boolean) .nil))) =
+formal/Benitoite/Surface/Desugar.lean:523:        (.letIn (.ret (.const (.integer 7)))
+formal/Benitoite/Surface/Desugar.lean:528:    desugarExpr op .other (.conValue "Pair" [] ["first", "second"] [.base .integer, .base .boolean]) =
+formal/Benitoite/Surface/Desugar.lean:529:      .ret (.lam ["first", "second"] [.base .integer, .base .boolean]
+formal/Benitoite/Surface/Desugar.lean:532:example : (accessorDef "Pair" ⟨"Pair", 0, [.base .integer, .base .boolean]⟩ 0).names = ["value"] := by rfl
+formal/Benitoite/Surface/Examples.lean:13:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/Examples.lean:33:  .call (.opName "read" []) [some "value"] [0] (.cons (.literal (.integer 7)) .nil)
+formal/Benitoite/Surface/Examples.lean:41:      (.cons (.literal (.integer 2)) (.cons readCall .nil))))
+formal/Benitoite/Surface/Examples.lean:96:      HasType.E_Call (p := Position.other) hf hp (HasTypes.cons (.E_Literal (l := .integer 7)) .nil)
+formal/Benitoite/Surface/Examples.lean:102:    (HasTypes.cons (.E_Literal (l := .integer 2)) (HasTypes.cons hr .nil))
+formal/Benitoite/Surface/Examples.lean:249:      (.last (.list intTy (.cons (.literal (.integer 3)) .nil))) (.last (.list intTy .nil))))
+formal/Benitoite/Surface/Examples.lean:253:        (.last (.list intTy (.cons (.literal (.integer 3)) .nil))) (.last (.list intTy .nil)))
+formal/Benitoite/Surface/Examples.lean:256:      (HasBlock.B_Last (HasType.E_List (a := intTy) (C := []) trivial (.cons (.E_Literal (l := .integer 3)) .nil)))
+formal/Benitoite/Surface/Examples.lean:290:               (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)]))]) := by rfl
+formal/Benitoite/Surface/Examples.lean:304:                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)])))]) := by rfl
+formal/Benitoite/Surface/Examples.lean:315:               (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)]))]) := by rfl
+formal/Benitoite/Surface/Examples.lean:324:          [none] [0] (.cons (.literal (.integer 7)) .nil)))) =
+formal/Benitoite/Surface/Examples.lean:332:                 (.letIn (.ret (.const (.integer 7))) (.app (.var 1) [.var 0])))
+formal/Benitoite/Surface/Examples.lean:334:                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer 1)])))]) := by rfl
+formal/Benitoite/Surface/Examples.lean:648:    (.resume 0 (.literal (.integer 1))) (.base .string) Eff.empty := by
+formal/Benitoite/Surface/FailureExamples.lean:12:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/FailureExamples.lean:17:private def value : Expr := .literal (.integer 7)
+formal/Benitoite/Surface/Lemmas/BuilderLower.lean:57:      have hl : r.lengthRef.Ok (p.declarationsFor view) B C Q r.kind.lengthNames [r.kind.contents] (.base .integer) := by
+formal/Benitoite/Surface/Lemmas/Builders.lean:202:      HasTypeVQ P B Ψ Q C Γ len.toVal (.fn ["s"] [.base .string] (.base .integer) Eff.empty)
+formal/Benitoite/Surface/Lemmas/Builders.lean:206:      HasTypeVQ P B Ψ Q C Γ len.toVal (.fn ["xs"] [.list t] (.base .integer) Eff.empty)
+formal/Benitoite/Surface/Lemmas/Builders.lean:211:      HasTypeVQ P B Ψ Q C Γ len.toVal (.fn ["b"] [.bytes] (.base .integer) Eff.empty)
+formal/Benitoite/Surface/Lemmas/ReturnTry.lean:176:      (.app (.prim exit [t] []) [.const (.integer 1)]) t (Eff.single "Process.Exit") := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:267:  .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+formal/Benitoite/Surface/Lemmas/Typing.lean:272:      [some (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty)] none
+formal/Benitoite/Surface/Lemmas/Typing.lean:274:      (.base .integer) Eff.empty := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:276:      [some (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty)] none .other
+formal/Benitoite/Surface/Lemmas/Typing.lean:277:      (.local 0) (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty) Eff.empty :=
+formal/Benitoite/Surface/Lemmas/Typing.lean:279:  have hp : CallOk ["a", "b"] [.base .integer, .base .boolean] false [some "b", some "a"] [1, 0] := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:284:      [some (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty)] none Eff.empty
+formal/Benitoite/Surface/Lemmas/Typing.lean:285:      (desugarExprs op reversedArgs) (sourceTypes [.base .integer, .base .boolean] [1, 0]) :=
+formal/Benitoite/Surface/Lemmas/Typing.lean:292:    (.expr (some "c") 2 (.call (.opName "fixed" []) [] [] .nil) (.hole (some "a") 0 (.base .integer) .nil))
+formal/Benitoite/Surface/Lemmas/Typing.lean:295:  { tparams := [], names := [], params := [], ret := .base .integer, eff := "Fixed" }
+formal/Benitoite/Surface/Lemmas/Typing.lean:301:      [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none
+formal/Benitoite/Surface/Lemmas/Typing.lean:302:      (desugarExpr op .other (.partialCall (.local 0) ["a", "b", "c"] mixedHoles (.base .integer) (Eff.single "Fixed")))
+formal/Benitoite/Surface/Lemmas/Typing.lean:303:      (.fn ["b", "a"] [.base .boolean, .base .integer] (.base .integer) (Eff.single "Fixed")) Eff.empty := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:305:      [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)]
+formal/Benitoite/Surface/Lemmas/Typing.lean:306:      (some (.base .integer)) .other (.local 0)
+formal/Benitoite/Surface/Lemmas/Typing.lean:307:      (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty) Eff.empty :=
+formal/Benitoite/Surface/Lemmas/Typing.lean:309:  have hp : CallOk ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] false
+formal/Benitoite/Surface/Lemmas/Typing.lean:318:        [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+formal/Benitoite/Surface/Lemmas/Typing.lean:319:      (some (.base .integer)) (Eff.single "Fixed") (desugarHoleArgs op mixedHoles.holeTypes.length mixedHoles)
+formal/Benitoite/Surface/Lemmas/Typing.lean:320:      (sourceTypes [.base .integer, .base .boolean, .base .integer] mixedHoles.positions) := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:323:          [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+formal/Benitoite/Surface/Lemmas/Typing.lean:324:        (some (.base .integer)) (desugarExpr op .other (.call (.opName "fixed" []) [] [] .nil))
+formal/Benitoite/Surface/Lemmas/Typing.lean:325:        (.base .integer) (Eff.single "Fixed") := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:330:            [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+formal/Benitoite/Surface/Lemmas/Typing.lean:331:          (.op "fixed" []) (.fn [] [] (.base .integer) (Eff.single "Fixed")) := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:335:              [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+formal/Benitoite/Surface/Lemmas/Typing.lean:339:        (HasTypeCQ.C_App (R := some (.base .integer)) hv HasTypeVsQ.nil)
+formal/Benitoite/Surface/Lemmas/Typing.lean:354:  .cons (.literal (.integer 7)) (.cons (.literal (.boolean true)) .nil)
+formal/Benitoite/Surface/Lemmas/Typing.lean:359:      [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none
+formal/Benitoite/Surface/Lemmas/Typing.lean:360:      (desugarExpr op .other (.pipe (.literal (.integer 5))
+formal/Benitoite/Surface/Lemmas/Typing.lean:361:        (.call (.local 0) [some "c", some "b"] [2, 1] pipeArgs))) (.base .integer) Eff.empty := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:363:      [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none .other
+formal/Benitoite/Surface/Lemmas/Typing.lean:364:      (.local 0) (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty) Eff.empty :=
+formal/Benitoite/Surface/Lemmas/Typing.lean:366:  have hp : CallOk ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] true
+formal/Benitoite/Surface/Lemmas/Typing.lean:372:      [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none Eff.empty
+formal/Benitoite/Surface/Lemmas/Typing.lean:373:      (desugarExprs op pipeArgs) (sourceTypes [.base .integer, .base .boolean, .base .integer] [2, 1]) :=
+formal/Benitoite/Surface/Lemmas/Typing.lean:375:  simpa only [union_empty_left Eff.empty rfl] using HasTypeQ.desugar_pipeCall (pos := .other) (lhs := .literal (.integer 5)) (fun _ _ hi => hi) hf hp
+formal/Benitoite/Surface/Monad2Examples.lean:18:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/Monad2Examples.lean:398:private def integer (n : Nat) : Expr := .literal (.integer n)
+formal/Benitoite/Surface/Monad2Examples.lean:449:  | .run (.ret (.con c _ [.const (.integer n)])) [] _ => some (c, toString n)
+formal/Benitoite/Surface/NoFailCheckExamples.lean:7:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/Syntax.lean:72:  | .integer n => .integer (Int.ofNat n)
+formal/Benitoite/Surface/Syntax.lean:78:  | .integer8 n => .integer8 (Int.ofNat n)
+formal/Benitoite/Surface/Syntax.lean:79:  | .integer16 n => .integer16 (Int.ofNat n)
+formal/Benitoite/Surface/Syntax.lean:80:  | .integer32 n => .integer32 (Int.ofNat n)
+formal/Benitoite/Surface/Syntax.lean:136:    | .integer n => .const (.integer (Int.ofNat n))
+formal/Benitoite/Surface/Syntax.lean:137:    | .negInt n => .const (.integer (-Int.ofNat n))
+formal/Benitoite/Surface/Syntax.lean:160:    | .range (.integer lo) (.integer hi) => lo ≤ hi
+formal/Benitoite/Surface/Syntax.lean:240:  | .base .integer | .base .integer8 | .base .integer16 | .base .integer32
+formal/Benitoite/Surface/Syntax.lean:258:      (t = .base .integer ∨ t = .base .float ∨ t = .base .character ∨
+formal/Benitoite/Surface/Syntax.lean:260:        t = .base .integer8 ∨ t = .base .integer16 ∨ t = .base .integer32 ∨
+formal/Benitoite/Surface/Typing.lean:81:      .fn ["code"] [.base .integer] t (Eff.single "Process.Exit")
+formal/Benitoite/Surface/Typing.lean:182:        HasTypeQ D B opPrim Q Δ C Γ R p (.negInt n) (.base .integer) Eff.empty
+formal/Benitoite/Surface/Typing.lean:191:        HasTypeQ D B opPrim Q Δ C Γ R p (.negInteger8 n) (.base .integer8) Eff.empty
+formal/Benitoite/Surface/Typing.lean:193:        HasTypeQ D B opPrim Q Δ C Γ R p (.negInteger16 n) (.base .integer16) Eff.empty
+formal/Benitoite/Surface/Typing.lean:195:        HasTypeQ D B opPrim Q Δ C Γ R p (.negInteger32 n) (.base .integer32) Eff.empty
+formal/Benitoite/Surface/Typing.lean:1080:private def intTy : Ty := .base .integer
+formal/Benitoite/Surface/Typing.lean:1097:private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+formal/Benitoite/Surface/Typing.lean:1134:      (.pipe (.literal (.integer 7))
+formal/Benitoite/Surface/WellFormed.lean:57:    | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _ |
+formal/Benitoite/Surface/WellFormed.lean:58:      .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit => True
+formal/CoverageDiff/Main.lean:102:      | "integer" => return .base .integer
+formal/CoverageDiff/Main.lean:114:  | "integer" => return .const (.integer (← readInt (← field j "value")))
+formal/CoverageDiff/Main.lean:123:      return .range (.integer lo) (.integer hi)
+formal/SurfaceCheck/Validation.lean:15:private def intTy : Ty := .base .integer
+formal/SurfaceCheck/Validation.lean:16:private def fn : Expr := .lam [] [] intTy emptyEff (.last (.returnE intTy (.literal (.integer 1))))
+formal/SurfaceCheck/Validation.lean:24:  (.single .wild (.last (.returnE (.base .unit) (.literal (.integer 1)))) .nil)
+formal/SurfaceCheck/Walk.lean:144:    let t := Ty.base .integer

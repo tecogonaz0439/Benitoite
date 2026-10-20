@@ -1271,7 +1271,7 @@ A program starts by calling `main` of the starting module.
 - `params`: `main` takes no parameters
 - `type_params`: `main` cannot have type parameters or effect variables
 - `ret`: `main` must return `Unit` or `Result[Unit, String]`
-- `effects`: `main` can only use the built-in effects in `IO.All` and the network effects
+- `effects`: `main` can only use the built-in effects in `IO.All`, the network effects, and `Log`
 - `assert`: `main` cannot use `Assert.Check`
 
 `main` has no parameters, returns `Unit` or `Result[Unit, String]`, and uses only built-in effects.
@@ -1673,6 +1673,14 @@ A lambda, lazy expression, partial application, or handler clause starts a fresh
 
 Builder operations cannot be used as function values, partially applied, or piped.
 
+## E0467
+
+- Kind: check (error)
+- Message: SourceLocation.here requires a direct call
+- `direct`: write `SourceLocation.here()` and pass the resulting location explicitly
+
+The standard here expression cannot be used as a function value, partially applied, or piped.
+
 ## E0462
 
 - Kind: check (error)
@@ -1954,7 +1962,7 @@ Earlier patterns match every value this alternative matches.
 
 - Kind: check (error)
 - Message: could not confirm that {subject}
-- Label: checking stopped after {limit} steps
+- Label: checking exceeded a coverage budget: {limit}
 - `split`: split the `match` into smaller ones, or check fewer fields in one branch
 - `split_pattern`: check fewer fields in this pattern, or bind the value first and check the fields separately
 
@@ -2816,6 +2824,14 @@ By default, external calls limit total guest linear memory to 64 MiB and each di
 
 Each external call limits core instances, memories, and tables to 16 each, and each guest table to 10,000 elements. Reduce the component's resource requirements.
 
+## R0907
+
+- Kind: resource (error)
+- Message: `{function}` could not reserve buffer memory
+- `capacity`: the requested buffer capacity was {requested_bytes} bytes
+
+The logical length was within the value size limit, but the host could not reserve the requested buffer capacity. This is not a process-wide memory usage measurement.
+
 ## R1001
 
 - Kind: runtime (error)
@@ -2929,8 +2945,11 @@ The bytecode addresses external functions with 16 bits.
 ## L0112
 
 - Kind: limit (error)
-- Message: the `match` in `{name}` is too large to compile
-- `limit`: the decision tree of a `match` is too large; split it into smaller ones
-- `definition`: building decision trees in this definition requires too much work, including copies of guards; simplify the matches or move them into separate functions
+- Message: the definition `{name}` is too large to compile
+- `definition_final`: the final match decisions in this definition exceed their node or edge budget; split it into smaller functions
+- `nodes`: the final match decision exceeds its node budget; split it into smaller matches
+- `edges`: the final match decision exceeds its edge budget; split it into smaller matches
+- `table`: the match decision requires more than 64 MiB of working tables; simplify the match
+- `instructions`: the definition requires more than 4,194,304 generated instructions; split it into smaller functions
 
-The decision tree of a `match` can grow exponentially in the number of its branches, so the compiler limits its size.
+The compiler shares match decisions and falls back to matching rows in source order; final decision nodes, edges, working tables, and generated instructions remain bounded.

@@ -39,7 +39,7 @@ fn standard_library_sources_and_dictionary_contracts() {
     let (l, r, t) = clean(
         "import Benitoite.Trait\nimport Benitoite.Unofficial.Json\nimport Benitoite.Unofficial.Csv\n",
     );
-    assert_eq!(t.traits.iter().count(), 12);
+    assert_eq!(t.traits.iter().count(), 13);
     let module = l
         .modules
         .modules
@@ -69,7 +69,7 @@ fn standard_library_sources_and_dictionary_contracts() {
             }
         }));
     }
-    assert_eq!(impls.len(), 65);
+    assert_eq!(impls.len(), 77);
     assert_eq!(t.impls.iter().count(), impls.len());
     for source in impls {
         let imp = t.impls.get(source.id).unwrap();
@@ -204,6 +204,7 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(NodeId, crate::base::Span)) {
         | Expr::Name(_)
         | Expr::Unit(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)

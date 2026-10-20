@@ -536,7 +536,7 @@ fn spawn_tasks<'e>(
             return Err(missing("spawned function requires arguments"));
         }
         let size = u32::from(proto.num_regs);
-        if !state.meter.fits(1, u64::from(size)) {
+        if !state.meter.fits(1, u64::from(proto.frame_slots())) {
             return Err(Stop::Resource(ResourceError::CallStackTooDeep {
                 frames: state.meter.frames(),
             }));
@@ -551,6 +551,9 @@ fn spawn_tasks<'e>(
                 .resize_with(usize::from(proto.num_regs), Slot::default);
             segment.calls.push(CallFrame {
                 func: ctx.new_slot(func),
+                builders: std::iter::repeat_with(Slot::default)
+                    .take(usize::from(proto.builder_slots))
+                    .collect(),
                 proto: proto_id,
                 pc: 0,
                 base: 0,
@@ -567,7 +570,7 @@ fn spawn_tasks<'e>(
             task_value = ctx.alloc_host(task);
             task_value
         });
-        state.meter.grow(1, u64::from(size));
+        state.meter.grow(1, u64::from(proto.frame_slots()));
         state.scheduling.serial = state
             .scheduling
             .serial

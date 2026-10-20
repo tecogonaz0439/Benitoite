@@ -161,7 +161,10 @@ impl<'a, 'd> Body<'a, 'd> {
     pub fn show_types<const N: usize>(&self, tys: [&ITy; N]) -> [String; N] {
         let mut names = self.type_param_names();
         let mut indices = BTreeMap::new();
-        tys.map(|ty| self.show_type_named(&self.solver, ty, &mut names, &mut indices))
+        let qualified = self.qualified_type_names(&self.solver, &tys);
+        tys.map(|ty| {
+            self.show_type_qualified(&self.solver, ty, &mut names, &mut indices, &qualified)
+        })
     }
     /// 解決中には solver が本体から取り出されているため、その状態で表示する。
     pub(super) fn show_type_with(&self, solver: &Solver, ty: &ITy) -> String {
@@ -188,15 +191,146 @@ impl<'a, 'd> Body<'a, 'd> {
         names: &mut Vec<String>,
         indices: &mut BTreeMap<(NodeId, u32), u32>,
     ) -> String {
+        self.show_type_qualified(
+            solver,
+            t,
+            names,
+            indices,
+            &self.qualified_type_names(solver, &[t]),
+        )
+    }
+    pub(super) fn show_type_qualified(
+        &self,
+        solver: &Solver,
+        t: &ITy,
+        names: &mut Vec<String>,
+        indices: &mut BTreeMap<(NodeId, u32), u32>,
+        qualified: &BTreeMap<crate::types::TyCon, String>,
+    ) -> String {
         let mut ty = solver.diagnostic_type(t);
         self.name_rigid_types(&mut ty, names, indices);
-        ty.show(&TyNames {
-            bindings: &self.decls.resolved.bindings,
-            adts: &self.decls.out.adts,
-            effects: &self.decls.out.effects,
-            type_params: names,
-            effect_params: &self.scheme.effect_params,
-        })
+        ty.show_qualified(
+            &TyNames {
+                bindings: &self.decls.resolved.bindings,
+                adts: &self.decls.out.adts,
+                effects: &self.decls.out.effects,
+                type_params: names,
+                effect_params: &self.scheme.effect_params,
+            },
+            qualified,
+        )
+    }
+
+    /// 本文・注記を作る前に全型を集め、同じ短名の異なる宣言だけを修飾する
+    /// （設計書 02-10「型の表示」）。型の同一性と prelude の判定には使わない。
+    pub(super) fn qualified_type_names(
+        &self,
+        solver: &Solver,
+        tys: &[&ITy],
+    ) -> BTreeMap<crate::types::TyCon, String> {
+        use crate::types::TyCon;
+        let mut by_name: BTreeMap<String, std::collections::BTreeSet<TyCon>> = BTreeMap::new();
+        let mut pending = tys
+            .iter()
+            .map(|t| solver.diagnostic_type(t))
+            .collect::<Vec<_>>();
+        while let Some(ty) = pending.pop() {
+            match ty {
+                Ty::Con(con, args) => {
+                    let name = Ty::Con(con, vec![]).show(&TyNames {
+                        bindings: &self.decls.resolved.bindings,
+                        adts: &self.decls.out.adts,
+                        effects: &self.decls.out.effects,
+                        type_params: &[],
+                        effect_params: &[],
+                    });
+                    by_name.entry(name).or_default().insert(con);
+                    pending.extend(args);
+                }
+                Ty::Fn(f) => {
+                    pending.extend(f.params);
+                    pending.push(f.ret);
+                    pending.extend(f.effects.failures);
+                }
+                Ty::App(_, args) => pending.extend(args),
+                Ty::Param(_) | Ty::Rigid { .. } => {}
+            }
+        }
+        let mut result = BTreeMap::new();
+        for (short, cons) in by_name.into_iter().filter(|(_, cons)| cons.len() > 1) {
+            for con in cons {
+                let module = match con {
+                    TyCon::Adt(id) | TyCon::External(id) => {
+                        self.decls.resolved.bindings.get(id).map(|b| b.module)
+                    }
+                    TyCon::Builtin(_) => None,
+                };
+                let prefix = module
+                    .and_then(|m| self.decls.modules.get(m))
+                    .map(|m| {
+                        let mut aliases = self
+                            .decls
+                            .modules
+                            .get(self.module)
+                            .into_iter()
+                            .flat_map(|m| &m.imports)
+                            .filter(|link| link.target == Some(m.id))
+                            .filter_map(|link| {
+                                self.decls
+                                    .asts
+                                    .iter()
+                                    .flat_map(|a| &a.imports)
+                                    .find(|i| i.id == link.decl)
+                            })
+                            .filter_map(|i| i.alias.as_ref().map(|a| a.text.clone()))
+                            .collect::<Vec<_>>();
+                        aliases.sort_by(|a, b| {
+                            a.chars().count().cmp(&b.chars().count()).then(a.cmp(b))
+                        });
+                        aliases.into_iter().next().unwrap_or_else(|| {
+                            if m.kind == crate::modules::ModuleKind::Entry {
+                                super::text::MAIN_MODULE.into()
+                            } else if m.kind == crate::modules::ModuleKind::Prelude
+                                && m.name.0.last() == Some(&short)
+                            {
+                                super::text::STANDARD_PACKAGE.into()
+                            } else {
+                                m.name.dotted()
+                            }
+                        })
+                    })
+                    .unwrap_or_else(|| super::text::STANDARD_PACKAGE.into());
+                result.insert(con, format!("{prefix}.{short}"));
+            }
+        }
+        result
+    }
+
+    pub(super) fn type_declaration_notes(
+        &self,
+        diagnostic: &mut Diagnostic,
+        qualified: &BTreeMap<crate::types::TyCon, String>,
+    ) {
+        use crate::types::TyCon;
+        for (con, name) in qualified {
+            if qualified.values().filter(|other| *other == name).count() < 2 {
+                continue;
+            }
+            let (TyCon::Adt(id) | TyCon::External(id)) = con else {
+                continue;
+            };
+            if let Some(span) = self.decls.resolved.bindings.get(*id).and_then(|b| b.span)
+                && let Some(source) = self.decls.sources.get(span.file)
+            {
+                let pos = source.line_col(span.start);
+                diagnostic.notes.push(super::text::type_declaration(
+                    name,
+                    source.name(),
+                    pos.line,
+                    pos.column,
+                ));
+            }
+        }
     }
     /// 型の深さは検査の上限で抑えられる。同じ節の同じ型パラメータには同じ番号を使い、
     /// 外側の関数の型パラメータと区別する（設計書 02-05「誤りの報告と検査の継続」）。
@@ -302,7 +436,7 @@ impl<'a, 'd> Body<'a, 'd> {
         let mut solver = std::mem::take(&mut self.solver);
         let result = solver.equal(expected, found, r);
         if let Err(code) = result {
-            solver.failure(self, code, expected, found, r);
+            solver.pair_failure(self, code, expected, found, r);
         }
         self.solver = solver;
         result.is_ok()

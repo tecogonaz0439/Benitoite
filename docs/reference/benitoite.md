@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.9`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.10`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.9`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.10`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
@@ -156,7 +156,7 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "unicodeVersion": "17.0.0",
   "build": {
     "commit": null,
@@ -264,7 +264,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 benitoite --allow-effects= pure.bnt
 ```
 
-The last command allows the empty set. The option accepts one comma-separated set in any order, using the 13 atomic names in [Effects](#10-effects), with `State` and `Assert.Check` included. It rejects duplicate names, empty elements, whitespace anywhere, unknown or user-defined names, import aliases, `IO.All`, and `*`; it does not trim the value. The option may occur once. It is not accepted by `check`, `test --check`, or `fmt`. After a `run` script path it is a script argument.
+The last command allows the empty set. The option accepts one comma-separated set in any order, using the 14 atomic names in [Effects](#10-effects), with `State` and `Assert.Check` included. It rejects duplicate names, empty elements, whitespace anywhere, unknown or user-defined names, import aliases, `IO.All`, and `*`; it does not trim the value. The option may occur once. It is not accepted by `check`, `test --check`, or `fmt`. After a `run` script path it is a script argument.
 
 The newly checked declared upper bound must be a subset of the supplied set; extra allowed names are accepted. A missing effect produces one `E0512` per offending function, with its location, the missing effects, and the allowed set, and exits with 2 before execution. With `--diagnostics=json`, these are ordinary diagnostic lines on standard error, without an approval object on standard output. Earlier type or effect errors take precedence over comparing an unknown contract.
 
@@ -278,7 +278,7 @@ A program starts at the function `main` in the script file. `main` takes no para
 
 The top level of a file contains, in this order, `import` declarations and then declarations: functions, constants, data types, type aliases, records, type classes, implementations, and effects. Code that runs is written only inside functions.
 
-Except for a short lambda (see [Functions and lambdas](#6-functions-and-lambdas)), blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons. A physical line break immediately after `return` always ends the statement, even inside parentheses or before a continuation operator on the next line. Comments and blank lines do not change this rule.
+Except for a short lambda (see [Functions and lambdas](#6-functions-and-lambdas)), blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`, `end block`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons. A physical line break immediately after `return` always ends the statement, even inside parentheses or before a continuation operator on the next line. Comments and blank lines do not change this rule.
 
 Inside a block:
 
@@ -290,6 +290,8 @@ Inside a block:
 A function whose return type is not `Unit` must end with `return` (or with an `if` or `match` whose every branch returns). The value of an `if`, of a `match` branch, of a handler clause, and of the bodies of `with`, `handle`, and `lazy` is its last expression. A `return` inside an `if`, a `match` branch, a handler clause, or the body of `with` or `handle` returns from the function that contains it. A `lazy` body and a `match` guard cannot contain `return` or `try`, except inside a `lambda ... end lambda` written there; the arguments of a call with `_` placeholders are not such an exception.
 
 `//` starts a comment that runs to the end of the line. `///` before a declaration documents it, and `//!` at the start of a file documents the module. Identifiers use ASCII letters, digits, and `_`. Names of functions, values, and parameters start with a lowercase letter; names of types, constructors, modules, and effects start with an uppercase letter.
+
+`record` is accepted where a lowercase name is required, including parameters, argument labels, bindings, and value references; at declaration position it still starts a record declaration.
 
 `die` is reserved and cannot be used as a name, including an argument label, field, import alias, or name after a dot; it is accepted only in `try e or die` and `try e or die(message)`, never as a standalone expression.
 
@@ -532,6 +534,29 @@ To pass a function with a different contract, wrap it in a lambda with the requi
 
 A call through an unannotated function parameter does not determine contract order from its labels. If constraints in the same function body do not establish the contract, add a type annotation, for example `g: function(a: Integer, b: Integer) -> Integer`. Otherwise the checker reports `E0455`, also for an unused lambda or a call with one positional argument. A caller cannot later supply the missing contract of an already checked function.
 
+### Block expressions
+
+`block ... end block` groups statements into one expression. Its value is the last expression; an empty block or a final binding has type Unit. Local bindings stay inside it, and effects are the union of its statements. A block does not create a return boundary: `return` and `try ... or return` still target the enclosing function or lambda. The existing restrictions on `return` and `try` in a lazy body or guard also apply inside a block there. A builder may be declared and used inside the block, but its final value must be an ordinary value such as a copy.
+
+```benitoite
+import Benitoite.StringBuilder
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind text <- block
+    bind builder: StringBuilder <- StringBuilder.new()
+    StringBuilder.appendAll(builder: builder, texts: ["hello", " world"])
+    StringBuilder.copy(builder)
+  end block
+  Console.writeLine(text)
+end function
+```
+```output
+hello world
+```
+
+`block` is reserved, including in names after a dot and argument labels. Rename existing identifiers with that spelling.
+
 ### Holes and pipes
 
 `_` as a direct argument of a call makes a function of the missing argument: `Integer.maximum(a: _, b: 0)` has type `function(a: Integer) -> Integer`. Each hole inherits the name of its target parameter, and multiple holes are ordered as written: `between(high: _, value: 3, low: _)` takes `high, low`, not `low, high`. A direct positional constructor hole inherits its original position name: `Pair(_, "one")` takes `arg1`. The callee and fixed argument expressions are evaluated when the generated function is called, not when it is created. `return` and `try` inside those expressions target the generated function; `resume` cannot cross that boundary.
@@ -700,7 +725,7 @@ Patterns can be:
 - several alternatives separated by commas, `case 1, 2 ->`;
 - followed by a guard, `case n if n > 0 ->`.
 
-Character ranges can cover the entire Unicode scalar domain. A single `case '\u{0}'..'\u{10ffff}' ->` or the two ranges `'\u{0}'..'\u{d7ff}'` and `'\u{e000}'..'\u{10ffff}'` are exhaustive without a catch-all. The same rule applies inside records, constructors and lists, and a full range can be used in a `bind` pattern. A later catch-all is rejected with `E0602`; a redundant comma alternative uses `E0608`. Guarded branches do not establish exhaustiveness. Integer ranges still require a catch-all even when they cover the entire `Integer` implementation range. For a missing character, `E0601` shows a concrete uncovered scalar, such as `'\u{0}'` for a match containing only `'a'`.
+Character ranges can cover the entire Unicode scalar domain. A single `case '\u{0}'..'\u{10ffff}' ->` or the two ranges `'\u{0}'..'\u{d7ff}'` and `'\u{e000}'..'\u{10ffff}'` are exhaustive without a catch-all. The same rule applies inside records, constructors and lists, and a full range can be used in a `bind` pattern. A later catch-all is rejected with `E0602`; a redundant comma alternative uses `E0608`. Guarded branches do not establish exhaustiveness. Integer ranges covering -9223372036854775808 through 9223372036854775807 are also exhaustive, whether written as one range or several adjacent ranges. A following catch-all is E0602. A gap, a guarded range, or missing correlation between fields still needs coverage; E0601 shows a concrete missing Integer. For a missing character, `E0601` shows a concrete uncovered scalar, such as `'\u{0}'` for a match containing only `'a'`.
 
 ```benitoite check
 function scalarHalf(c: Character) -> Integer
@@ -713,6 +738,19 @@ end function
 
 function main() -> Unit
   bind _ <- scalarHalf('\u{e000}')
+end function
+```
+
+```benitoite check
+function sign(n: Integer) -> Integer
+  return match n with
+    case -9223372036854775808..-1 -> -1
+    case 0..9223372036854775807 -> 1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- sign(0)
 end function
 ```
 
@@ -992,9 +1030,10 @@ The built-in effects are:
 | `Random.Generate` | generating random numbers |
 | `Http.Listen` | accepting connections as an HTTP server |
 | `Http.Connect` | connecting to HTTP servers |
+| `Log` | structured log events; independent of Console.Write and IO.All |
 | `State` | mutable cells and concurrent tasks inside the program |
 | `Assert.Check` | checking expectations in tests |
-| `IO.All` | all of `Console`, `File`, `Process`, `Clock`, `Random`, and `State` (not the network effects) |
+| `IO.All` | all of `Console`, `File`, `Process`, `Clock`, `Random`, and `State` (not Log or the network effects) |
 
 Effects say what *kind* of operation a function may perform, not which file, command, or host. A script that passes `check` performs no built-in operation outside the `uses` of `main`. This release does not restrict operations while a script runs; run scripts you do not trust inside a sandbox. Prefer listing specific effects over `IO.All`, so that readers of `main` see what the script does.
 
@@ -1017,6 +1056,29 @@ error[E0501]
 Adding `uses Console.Write` to `greet` fixes the error.
 
 An effect is part of the type of a function value: `function(text: String) -> Unit uses Console.Write`.
+
+### Structured logging and source locations
+
+`Log` and `SourceLocation` are unofficial modules included in the prelude. Explicit imports use `Benitoite.Unofficial.Log` and `Benitoite.Unofficial.SourceLocation`. `Log.debug`, `info`, `warn`, and `error` take explicit `message: String`, `attributes: List[Log.Attribute]`, and `location: SourceLocation.Location`, return Unit, and use Log. `Log.emit(record: Log.Record)` and `Log.enabled(level: Log.Level)` are the two operations. `Log.Level` has Debug, Info, Warn, Error in that order. Error logs do not terminate execution.
+
+```benitoite check
+function main() -> Unit uses Log
+  if Log.enabled(Log.Level.Debug) then
+    Log.debug(message: "starting", attributes: [Log.attribute(key: "count", value: 3)], location: SourceLocation.here())
+  end if
+  Log.info(message: "ready", attributes: [], location: SourceLocation.here())
+end function
+```
+
+`SourceLocation.here()` is a pure, direct zero-argument call expanded to the location where it is written. Line and column are one-based Unicode positions; the file is a display path, not an absolute-path promise. A wrapper reports its own call site, so accept an explicit Location to preserve the caller's position. Function values, holes, and pipes are E0467; invalid argument counts or labels use ordinary call diagnostics first. Locations may also be constructed as ordinary `Location(file: ..., line: ..., column: ...)` records. SourceLocation import aliases work; Log cannot be renamed with `as` (E0339). Review user names colliding with the new prelude modules.
+
+Arguments evaluate eagerly once in source order, including for a level the handler drops. Use `Log.enabled` around expensive message construction. Attributes retain order and duplicate keys. `Log.attribute(key: ..., value: ...)` uses `Log.ToLogValue`; String, Boolean, integer widths and floating-point widths have standard implementations. There is no implicit Show conversion for arbitrary records or collections.
+
+Unhandled Log uses the default logger: Info and above go to stderr as `level=INFO source="app/Main.bnt:12:3" message="ready" attr."count"=3`, followed by LF. Control characters, quotes, and backslashes are escaped. It adds no timestamp, color, or sorting. Direct and request IO modes use the same format and stderr buffer; output or flush failure follows ordinary IO failure rules. `Log.enabled` follows the selected handler's threshold.
+
+`Log.withAttributes(attributes: ..., body: ...)` prepends attributes and forwards both operations to the outer handler. `Log.withTextLogger(minimum: ..., body: ...)` handles Log and requires Console.Write. `Log.withSinks(sinks: ..., body: ...)` handles both operations, calls accepted `(minimum, sink)` pairs once in list order, and propagates a failure before later sinks. An empty list discards events. The sink callback takes `record`; its effects remain in the result. A custom handler must handle both operations to remove Log.
+
+Log is independent of IO.All, Console.Write, and HTTP. Declare `uses Log` and include canonical `Log` in `--allow-effects` when it remains in the declared upper bound: `benitoite run --allow-effects=Log script.bnt`. A complete handler may remove Log while leaving the declared effects of its output. Inspection reports declared upper bounds, including unused entries; it does not infer permission from a level being disabled.
 
 ## 11. Effect handlers
 
@@ -1530,6 +1592,8 @@ handled: bad
 
 `Result.andThen`/`flatMap` chains existing Result values; it does not catch Fail. The conversion help is specific to the standard Fail. Other user effects, such as Log or a user-defined effect named Fail, need their own handler.
 
+Width-specific integer helpers also report W0401 for a known zero divisor, even with an unknown dividend, and W0402 for known overflow. Signed minimum absolute/floorDivide(minimum, -1) warn; floorModulo(minimum, -1) = 0 does not. Runtime Result and stop behavior is unchanged. Under `--deny-warnings`, review these new warnings before running. Declaration-derived constraints suppress duplicate downstream errors while independent errors remain; distinct same-named types include their module in diagnostics.
+
 ### Calls, function contracts, and lambdas
 
 | Code | Meaning and correction |
@@ -1562,10 +1626,11 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Bytes`, `ByteOrder` | prelude | Immutable byte sequences |
 | `IOError`, `IOErrorKind`, `NetworkError`, `NetworkErrorKind` | prelude | Failures of IO and network operations |
 | `Reference`, `Lazy`, `Task`, `TaskGroup`, `State` | prelude | Mutable cells, explicit laziness, tasks, and the effect `State` |
+| `Log`, `SourceLocation` | prelude | Structured logging and explicit call-site locations |
 | `Assert` | prelude | Checks in tests |
 | `IO` | prelude | The effect `IO.All` |
-| `StringBuilder` | `import Benitoite.StringBuilder` | Dedicated local string construction; all operations require State |
-| `ListBuilder`, `BytesBuilder` | Import each module explicitly | Dedicated local list/byte construction; all operations require State |
+| `StringBuilder` | `import Benitoite.StringBuilder` | Dedicated local string construction; dedicated operations add no State |
+| `ListBuilder`, `BytesBuilder` | Import each module explicitly | Dedicated local list/byte construction; dedicated operations add no State |
 | `Trait` | `import Benitoite.Trait` | Standard type classes |
 | `IO.Console` | `import Benitoite.Unofficial.IO.Console` | Standard input and output |
 | `IO.File` | `import Benitoite.Unofficial.IO.File` | Files and directories |
@@ -1580,7 +1645,8 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Json.Codec` | `import Benitoite.Unofficial.Json.Codec` | Pure Result-based JSON conversion |
 | `Csv` | `import Benitoite.Unofficial.Csv` | CSV (RFC 4180) |
 | `Scope` | `import Benitoite.Unofficial.Scope` | Checked hosts, absolute paths, and inclusive port ranges, retaining their conditions |
-| `Range` | `import Benitoite.Unofficial.Range` | Checked inclusive Integer ranges, retaining both bounds and the value |
+| `Range` | `import Benitoite.Unofficial.Range` | Checked Integer ranges, list lengths and indices, retaining the validated values |
+| `NonEmptyList` | `import Benitoite.Unofficial.NonEmptyList` | Checked nonempty lists and direct head/tail/map |
 | `Regex` | `import Benitoite.Unofficial.Regex` | Regular expressions; finding one match takes time proportional to the input length times the pattern size, and finding all matches can take time proportional to the square of the input length |
 | `Encoding` | `import Benitoite.Unofficial.Encoding` | Base64 |
 | `Hash` | `import Benitoite.Unofficial.Hash` | SHA-256 hash values of bytes |
@@ -1668,12 +1734,12 @@ food: 300
 
 ### Function-local builders
 
-Import `Benitoite.StringBuilder` and declare a builder with an annotated local bind and a direct `new()` call. A builder is a second-class value: it cannot be stored in an ordinary variable, returned from a function, or captured by a lambda or lazy expression. `StringBuilder` names its kind, not an ordinary type. All five operations require `State`, including `copy` and `byteLength`.
+Import `Benitoite.StringBuilder` and declare a builder with an annotated local bind and a direct `new()` call. A builder is a second-class value: it cannot be stored in an ordinary variable, returned from a function, or captured by a lambda or lazy expression. `StringBuilder` names its kind, not an ordinary type. Declaration and dedicated operations add no State; ordinary argument effects remain.
 
 ```benitoite
 import Benitoite.StringBuilder
 
-function main() -> Unit uses State
+function main() -> Unit
   bind b: StringBuilder <- StringBuilder.new()
   StringBuilder.append(builder: b, text: "a")
   bind before <- StringBuilder.copy(b)
@@ -1687,9 +1753,9 @@ end function
 exit 0
 ```
 
-`append` takes a String; `appendAll` takes a List[String] and adds its elements in order without a separator. Both return Unit. `copy` returns the current immutable String, and `byteLength` returns its UTF-8 byte count. In the example, `before` remains `"a"`, `after` is `"abc"`, and `size` is 3. Copy may share immutable storage; later appends replace the builder's contents. Each ordinary argument is evaluated once in source order before the current contents are read. A size-limit failure during concatenation stops the run with the existing runtime error; the builder is never left partially updated.
+`append` takes a String; `appendAll` takes a List[String] and adds its elements in order without a separator. Both return Unit. `copy` returns the current immutable String, and `byteLength` returns its UTF-8 byte count. In the example, `before` remains `"a"`, `after` is `"abc"`, and `size` is 3. Copy allocates an immutable snapshot of the current buffer. Later appends leave it unchanged. Repeated intermediate copies cost time and space proportional to their contents. Each ordinary argument is evaluated once in source order before the current contents are read. A size-limit failure during concatenation stops the run with the existing runtime error; the builder is never left partially updated.
 
-Import `Benitoite.ListBuilder` or `Benitoite.BytesBuilder` explicitly to use the corresponding kind of second-class builder. Declare `bind xs: ListBuilder[T] <- ListBuilder.new()` with an explicit ordinary element type T, or `bind bs: BytesBuilder <- BytesBuilder.new()`. Each starts empty and all operations require State.
+Import `Benitoite.ListBuilder` or `Benitoite.BytesBuilder` explicitly to use the corresponding kind of second-class builder. Declare `bind xs: ListBuilder[T] <- ListBuilder.new()` with an explicit ordinary element type T, or `bind bs: BytesBuilder <- BytesBuilder.new()`. Each starts empty and dedicated operations add no State.
 
 | Direct operation | ListBuilder[T] | BytesBuilder |
 |---|---|---|
@@ -1704,7 +1770,7 @@ Both append operations return Unit, evaluate each ordinary argument once before 
 import Benitoite.ListBuilder
 import Benitoite.BytesBuilder
 
-function main() -> Unit uses State
+function main() -> Unit
   bind xs: ListBuilder[Integer] <- ListBuilder.new()
   ListBuilder.append(value: 1, builder: xs)
   bind before <- ListBuilder.copy(xs)
@@ -1719,11 +1785,17 @@ end function
 exit 0
 ```
 
-A builder cannot be returned, passed to an ordinary function, stored, compared, or interpolated (E0464). Its kind cannot be used in ordinary annotations, type arguments, data fields, or Failure.Fail arguments. Lambda, lazy, partial-application, and handler-clause boundaries reject references to outer builders (E0465). Partial application includes both the callee expression and fixed arguments. Bind a copy or length before creating the function value, or declare a new builder inside the boundary. Ordinary branches and handler bodies can use builders from their enclosing block. Guards, die messages, and lazy bodies still require purity; even a builder declared inside a lazy body would require State.
+A builder cannot be returned, passed to an ordinary function, stored, compared, or interpolated (E0464). Its kind cannot be used in ordinary annotations, type arguments, data fields, or Failure.Fail arguments. Lambda, lazy, partial-application, and handler-clause boundaries reject references to outer builders (E0465). Partial application includes both the callee expression and fixed arguments. Bind a copy or length before creating the function value, or declare a new builder inside the boundary. Ordinary branches and handler bodies can use builders from their enclosing block. Guards, die messages, and lazy bodies still require purity; a builder declared inside a lazy body may be used there when its ordinary arguments are pure.
 
-Operations require direct calls; function values, holes, and pipes are rejected (E0466). The declaration requires both the dedicated annotation and a matching direct new call (E0463). Import aliases referring to the same standard module are accepted. A final builder bind produces Unit and still requires State. Build dynamic fragment lists before calling appendAll; a List.forEach callback cannot capture the builder. There is no clear, reserve, finish, or State-elimination rule.
+Operations require direct calls; function values, holes, and pipes are rejected (E0466). The declaration requires both the dedicated annotation and a matching direct new call (E0463). Import aliases referring to the same standard module are accepted. A final builder bind produces Unit. Build dynamic fragment lists before calling appendAll; a List.forEach callback cannot capture the builder. There is no clear, reserve, or finish operation. Existing uses State declarations remain valid; making an API pure is an explicit contract change. Reference operations, tasks, IO, and ordinary resource release retain their effects.
 
 ## 20. Compatibility
+
+### Migrating to 0.0.10
+
+Read the [0.0.10 migration guide](../../CHANGELOG.md#0010-san-benito) before updating `language` and dependency hashes. Rename identifiers spelled block, review catch-alls after full-domain Integer ranges, and check new prelude names Log/SourceLocation. Local builders no longer add State; explicitly review any public effect contract you make pure, and account for the cost of physical copies. Declare Log independently of IO.All and include it in accepted effect sets when it remains in the declared bound. Width-specific numeric warnings can now fail --deny-warnings.
+
+Development derive uses inventory 2, configuration 1, and generator/manifest/receipt/record version 3 (`3.0.0-syntax-batch4`); Property.libraryVersion stays 2.0.0. Finish pending old recovery with the saved old tool. Verify old protected bodies against their record, then make and review a new preview and its exact manifest hash before apply/check. Never approve changed dependency hashes automatically. See [derive migration](../../tools/derive/README.md#markers-records-and-review-artifacts). The retired named-argument migrator is preserved with [restoration instructions](../archive/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/historical-tools/named-arguments-migrate/README.md). Rebuild and reinstall the Skill from the matching executable.
 
 ### Migrating to 0.0.9
 
@@ -1738,7 +1810,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.9` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.10` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1750,7 +1822,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.9"
+language "0.0.10"
 
 package Textkit
   license "MIT"
@@ -1768,7 +1840,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.9"
+language "0.0.10"
 
 dependency Textkit
   path "packages/textkit"
@@ -1800,7 +1872,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.9"
+language "0.0.10"
 ```
 
 ```benitoite check
@@ -1811,7 +1883,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.9`, a declaration of `0.0.9` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.10`, a declaration of `0.0.10` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -1999,7 +2071,7 @@ Value-size limits apply before construction: strings and `Bytes` at most 2^30 by
 
 `run` and `test` accept `--wasm-memory=<size>`, `--wasm-fuel=<count>`, and `--wasm-transfer=<size>` to change these limits. Sizes are byte counts or integers with a `KiB`, `MiB`, or `GiB` suffix, from 1 MiB through 4 GiB. Fuel is a decimal integer from 1 through 2^64−1. Invalid or duplicate settings are usage errors (exit status 2). For `run`, put these options before the script path; `test` also accepts them between paths. Every test function uses the same configured limits.
 
-`--wasm-stats` writes one JSON line to stderr at the end, including the configured `limits`, explicit `overrides`, `calls`, `functions`, `fuel`, `memory`, `arguments_transfer`, `results_transfer`, `stateful_instances`, and `reached_limits`. It also includes `routes` (call counts for `typed`, `adapter`, `dynamic`, and `stateful`), `fallback_reasons`, adapter-only `construction_bytes`, and `adapter_failures` with a numeric `code`, `requested`, `limit`, and `calls`. Each consumption object contains `total`, `maximum`, and `incomplete_calls`. `construction_bytes` aggregates argument and result logical costs so its maximum is the largest per-call sum; it is separate from packed transfer bytes. Typed, dynamic, and stateful calls do not increase `construction_bytes` or its `incomplete_calls`; only adapter calls stopped before the whole construction cost is measured increase that field. The memory total counts growth once; its maximum counts the whole call or stateful instance lifetime. Calls rejected during argument validation are included in the call count. Transfer totals include only calls whose values could be counted; unavailable consumption increases `incomplete_calls`. Dynamic and typed string statistics count host UTF-8 bytes, which may differ from the guest-encoded bytes charged during lifting. Adapter transfer statistics count the packed byte sequences. `test` aggregates all test executions into one report without a per-test breakdown. Without this option, output is unchanged. The public embedding API and reference interpreter keep the default limits.
+`--wasm-stats` writes one JSON line to stderr at the end, including the configured `limits`, explicit `overrides`, `calls`, `functions`, `fuel`, `memory`, `arguments_transfer`, `results_transfer`, `stateful_instances`, and `reached_limits`. It also includes `routes` (call counts for `typed`, `adapter`, `dynamic`, and `stateful`), `fallback_reasons`, adapter-only `construction_bytes`, and `adapter_failures` with a numeric `code`, `requested`, `limit`, and `calls`. Each consumption object contains `total`, `maximum`, and `incomplete_calls`. `construction_bytes` aggregates argument and result logical costs so its maximum is the largest per-call sum; it is separate from packed transfer bytes. Typed, dynamic, and stateful calls do not increase `construction_bytes` or its `incomplete_calls`; only adapter calls stopped before the whole construction cost is measured increase that field. The memory total counts growth once; its maximum counts the whole call or stateful instance lifetime. Calls rejected during argument validation are included in the call count. Transfer totals include only calls whose values could be counted; unavailable consumption increases `incomplete_calls`. Dynamic and typed string statistics count host UTF-8 bytes, which may differ from the guest-encoded bytes charged during lifting. Adapter transfer statistics count the packed byte sequences. `test` aggregates all test executions into one report without a per-test breakdown. Without this option, output is unchanged. The public embedding API and reference interpreter keep the default limits. `runtime_compilations.normal` and `runtime_compilations.adapter` count successful additions of runtime Components to their respective caches; `test_declaration_compilations` separately counts compilation attempts for static declaration checks of test entries and documentation examples.
 
 Traps, ABI violations, and instantiation failures other than resource-limit failures stop execution with `R0601`; exhausted fuel reports `R0904`, memory, transfer, and construction limits report `R0905` with notes identifying the exhausted budget and the adapter failure stage when available, table-size and core object-count limits report `R0906` with the resource kind and required count, and returned-value-size limits report `R0902`. The diagnostic code and failure category are consistent across routes, but trap wording can differ: a guest ABI violation may surface while the adapter lowers a value or calls the guest. These failures are not converted to `Result.Error`. A component that returns an error through a declared `Result` returns an ordinary value.
 
@@ -2064,7 +2136,7 @@ dictionary. Order compares fields in that order and stops at the first non-Equal
 result; otherwise it returns Equal. Equal does not establish builtin equality
 or a key constraint, and Show output is not a serialization format.
 
-Targets must be noncyclic records without type parameters. Every field needs
+Targets may be regular self-recursive or mutually recursive records within one module, with type parameters. Required dictionaries propagate through recursive fields; phantom parameters add no constraints. Every field needs
 the requested dictionary; another generated record needs its own explicit
 selection for that class. Handwritten implementations for field types can be
 used. Existing implementations outside the authenticated target region block
@@ -2074,31 +2146,18 @@ and selected classes in the proposed record before approving their display.
 Automatic JSON/Property construction of the opaque target remains refused.
 Use preview, review, apply with the exact manifest hash, normal check/test and
 derive check for these implementations too. The checked-in People/Address
-example has completed the combined API migration with a version 2 record and
+example has completed the combined API migration with a version 3 record and
 Property library 2.0.0. Person requests Show; Address requests Show and Order.
 
 ### Record generators and shrinkers
 
-The same derive configuration can request `property.generator` and
-`property.shrinker`, together or separately from JSON. They generate pure,
-zero-argument functions returning Gen and Shrinker for the record. Fields use
-successive random states and the same size in declaration order; shrinking
-changes one field at a time in that order. Supported types are String, Boolean,
-Integer across its full range, finite Float, noncyclic records, List,
-String-keyed Map, and Option. Property-only nested Option is supported.
-A dependent record needs its own Property target and public functions across
-modules. Generic and recursive records are not generated.
+The development derive tool accepts `property.generator` and `property.shrinker` independently, including regular self/mutual recursion within one module and type parameters. Only used parameters receive Gen/Shrinker arguments, in declaration order; phantom parameters add none. JSON retains its monomorphic, noncyclic scope. Unsupported selections are rejected rather than silently omitted.
 
-Custom `fields.gen` and `fields.shrink` must be paired, fully qualified pure
-monomorphic zero-argument functions returning Gen/Shrinker of the field type.
-They replace the entire field; their bodies and distribution remain the user's
-responsibility. Relationships between fields require a handwritten generator
-and shrinker for the entire record. For a saved failure report, attach the
-`.generated.json` record containing generatorVersion and configSha256, alongside
-the Property failure's seed/config, library version, and concrete inputs. Replay
-also depends on unchanged type structures, generation settings, custom
-functions, and the property. No generator-identification function is emitted.
+Generators need a finite base and regular recursive type arguments. The size budget bounds total generated record nodes, not each branch's depth separately; optional/container edges may form a finite base. Nonregular recursion, required cycles without a finite base, and constraints that cannot close are refused. Fields consume successive random states in declaration order. Recursive factories defer their work until generation or candidate demand.
 
+Shrinkers delete recursive container contents before shrinking one field at a time in declaration order. A required record field shrinks itself; it does not replace its parent with a child. Standard leaves/containers discard self candidates and do not increase recursive node count. A custom Shrinker supplied for an unconstrained type parameter must exclude its own input. Custom callback termination and global minimality are not guaranteed. Show/Order constraints propagate through the declaration graph; Order does not imply builtin equality.
+
+Custom fields.gen/fields.shrink remain paired, fully qualified pure monomorphic zero-argument functions replacing an entire field. Save the version 3 `.generated.json` record (`generatorVersion: 3.0.0-syntax-batch4`), config, libraryVersion 2.0.0, source, concrete failures, and custom functions. Inventory stays 2, configuration stays 1. Verify old body hashes before a new preview; old manifests cannot authorize new apply. A seed alone cannot reproduce distributions across generator versions. See the [derive tool](../../tools/derive/README.md) for preview/review/apply/check and recovery.
 
 ### Range
 
@@ -2142,6 +2201,45 @@ end function
 10
 OutOfRange(0, 10, 11)
 ```
+
+### Checked lengths, indices, and nonempty lists
+
+Import `Benitoite.Unofficial.Range` and `Benitoite.Unofficial.NonEmptyList` explicitly. Their wrappers are opaque: use public checks and projections, not constructors, updates, patterns, or automatic field accessors (E0340). Invalid constant inputs return ordinary Result.Error.
+
+| Check | Successful wrapper and projections | Failure, in priority order |
+|---|---|---|
+| `Range.checkLength(minimum: Integer, maximum: Integer, values: List[T])` | CheckedLength[T]; lengthMinimum, lengthMaximum, checkedLength, lengthValues (each takes value) | LengthError.InvalidBounds(minimum, maximum) for a negative minimum or reversed bounds, then OutOfRange(minimum, maximum, actualLength) |
+| `Range.checkIndex(index: Integer, values: List[T])` | CheckedIndex[T]; indexValue, indexValues, get (each takes value) | IndexError.OutOfBounds(index, length) for a negative or too-large zero-based index |
+| `NonEmptyList.fromList(values: List[T])` | NonEmptyList[T]; toList, head, tail (each takes value) | EmptyListError.EmptyList |
+
+```benitoite test
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.NonEmptyList
+
+@test("checked lists retain their values")
+function checkedLists() -> Unit uses Assert.Check
+  match Range.checkLength(minimum: 2, maximum: 2, values: [10, 20]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: Range.checkedLength(checked), expected: 2)
+      Assert.equal(actual: Range.lengthValues(checked), expected: [10, 20])
+    case Result.Error(_) -> Assert.fail("valid length was rejected")
+  end match
+  match Range.checkIndex(index: 1, values: [10, 20]) with
+    case Result.Ok(checked) -> Assert.equal(actual: Range.get(checked), expected: 20)
+    case Result.Error(_) -> Assert.fail("valid index was rejected")
+  end match
+  match NonEmptyList.fromList([10, 20]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: NonEmptyList.head(checked), expected: 10)
+      Assert.equal(actual: NonEmptyList.tail(checked), expected: [20])
+    case Result.Error(_) -> Assert.fail("nonempty list was rejected")
+  end match
+end function
+```
+
+Successful wrappers retain the original immutable list; `get` takes only the checked index and returns the retained element without a second list/check. A different list must be checked again. Reference elements remain shared. Failures retain only bounds/counts/indices, not the list. Error types have Show implementations; wrappers do not. Wrapper equality and key ordering follow their stored contents when the element type permits them.
+
+`NonEmptyList.head` returns T, and tail returns a possibly empty List[T]. `NonEmptyList.map(value: ..., f: ...)` calls `f(value: T)` once per element from first to last, preserves its effects and failures, and returns a nonempty result on success. These checks do not change ordinary List or IO function argument types.
 
 ### Scope
 

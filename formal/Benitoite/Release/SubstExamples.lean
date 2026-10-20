@@ -27,4 +27,17 @@ example :
       (.data "Box" [.tapp 1 [.dict "C" (.tvar 2)], .tvar 0, .tvar 4]) =
         .data "Box" [.list (.dict "C" (.tvar 1)), .tvar 0, .tvar 2] := rfl
 
+-- 通常束縛を一つ除き、内側の let を越えて残る専用番号も一つ詰める。
+-- 通常置換だけを接続した場合には bound 2 が残り、この等式は成り立たない。
+theorem dedicated_normal_instantiation :
+    (Comp.letIn (.ret (.var 0)) (.builderOp .string .copy (.bound 2) [])).instantiate [.const .unit] =
+      .letIn (.ret (.const .unit)) (.builderOp .string .copy (.bound 1) []) := rfl
+
+-- new の本体では、通常の0番は Unit、局所の0番は専用の場所になる。
+-- 内側の通常束縛を越えても専用の場所は変わらない。
+theorem dedicated_new_substitution :
+    (Comp.letIn (.ret (.var 0)) (.builderOp .string .copy (.bound 1) [])).subst
+        builderValueSubst (builderLocalSubst 7) =
+      .letIn (.ret (.const .unit)) (.builderOp .string .copy (.loc 7) []) := rfl
+
 end Benitoite.Release

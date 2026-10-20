@@ -40,6 +40,27 @@
 //! ```diagnostic
 //! E0340
 //! ```
+//!
+//! Checked lengths and indices retain their original immutable list. In particular, get takes only a checked index; a different list must be checked again. Reference elements remain shared.
+//! When the element type supports equality, = compares every stored field structurally, including the original list: minimum/maximum/length/values for CheckedLength and values/index/element for CheckedIndex. Assert failure output shows these internal field names and values; it does not make their automatic accessors public. These wrappers do not implement Trait.Show.
+//! When the element type is a key type, both wrappers are key types and can be Map keys or Set elements. Keys compare lexicographically in stored field declaration order: minimum, maximum, length, values for CheckedLength; values, index, element for CheckedIndex. Map.keys and Set.toList return ascending key order.
+//!
+//! ```benitoite test
+//! import Benitoite.Unofficial.Range
+//! @test
+//! function checkedListExample() -> Unit uses Assert.Check
+//!   match Range.checkLength(minimum: 2, maximum: 2, values: [10, 20]) with
+//!     case Result.Ok(value) ->
+//!       Assert.equal(actual: Range.checkedLength(value), expected: 2)
+//!       Assert.equal(actual: Range.lengthValues(value), expected: [10, 20])
+//!     case Result.Error(_) -> Assert.fail("exact length was rejected")
+//!   end match
+//!   match Range.checkIndex(index: 1, values: [10, 20]) with
+//!     case Result.Ok(value) -> Assert.equal(actual: Range.get(value), expected: 20)
+//!     case Result.Error(_) -> Assert.fail("valid index was rejected")
+//!   end match
+//! end function
+//! ```
 
 import Benitoite.Trait
 
@@ -84,6 +105,104 @@ implement Trait.Show[RangeError]
     return match x with
       case RangeError.InvalidBounds(minimum, maximum) -> "InvalidBounds(${minimum}, ${maximum})"
       case RangeError.OutOfRange(minimum, maximum, value) -> "OutOfRange(${minimum}, ${maximum}, ${value})"
+    end match
+  end function
+end implement
+
+/// A list and its checked inclusive length bounds. This wrapper retains the original list, including references in its elements.
+@opaque
+public record CheckedLength[T]
+  minimum: Integer
+  maximum: Integer
+  length: Integer
+  values: List[T]
+end record
+
+/// InvalidBounds takes priority over OutOfRange. Failures retain only bounds and the actual length, never the list.
+public data LengthError
+  InvalidBounds(Integer, Integer)
+  OutOfRange(Integer, Integer, Integer)
+end data
+
+/// Checks the element count. A negative minimum or reversed bounds is rejected before comparing the length. Constant invalid inputs still return Result.Error.
+public function checkLength[T](minimum: Integer, maximum: Integer, values: List[T]) -> Result[CheckedLength[T], LengthError]
+  if minimum < 0 or maximum < minimum then
+    return Result.Error(LengthError.InvalidBounds(minimum, maximum))
+  end if
+  bind length <- List.length(values)
+  return if length < minimum or maximum < length then Result.Error(LengthError.OutOfRange(minimum, maximum, length))
+  else Result.Ok(CheckedLength(minimum: minimum, maximum: maximum, length: length, values: values)) end if
+end function
+
+/// Returns the inclusive minimum length retained by the check.
+public function lengthMinimum[T](value: CheckedLength[T]) -> Integer
+  return CheckedLength.minimum(value)
+end function
+
+/// Returns the inclusive maximum length retained by the check.
+public function lengthMaximum[T](value: CheckedLength[T]) -> Integer
+  return CheckedLength.maximum(value)
+end function
+
+/// Returns the element count at the successful check.
+public function checkedLength[T](value: CheckedLength[T]) -> Integer
+  return CheckedLength.length(value)
+end function
+
+/// Returns the original immutable list. Its elements, including Reference values, remain shared.
+public function lengthValues[T](value: CheckedLength[T]) -> List[T]
+  return CheckedLength.values(value)
+end function
+
+/// A list, its checked zero-based index and the element found there. This wrapper retains the original list.
+@opaque
+public record CheckedIndex[T]
+  values: List[T]
+  index: Integer
+  element: T
+end record
+
+/// The rejected index and the element count. The original list is not retained.
+public data IndexError
+  OutOfBounds(Integer, Integer)
+end data
+
+/// Checks the zero-based index and retains its successful element. Both negative and too-large indices return OutOfBounds, including constant inputs.
+public function checkIndex[T](index: Integer, values: List[T]) -> Result[CheckedIndex[T], IndexError]
+  return match List.get(xs: values, i: index) with
+    case Option.None -> Result.Error(IndexError.OutOfBounds(index, List.length(values)))
+    case Option.Some(element) -> Result.Ok(CheckedIndex(values: values, index: index, element: element))
+  end match
+end function
+
+/// Returns the zero-based index retained by the check.
+public function indexValue[T](value: CheckedIndex[T]) -> Integer
+  return CheckedIndex.index(value)
+end function
+
+/// Returns the original immutable list retained by the check.
+public function indexValues[T](value: CheckedIndex[T]) -> List[T]
+  return CheckedIndex.values(value)
+end function
+
+/// Returns the element found during construction. A different list requires a new checkIndex call.
+public function get[T](value: CheckedIndex[T]) -> T
+  return CheckedIndex.element(value)
+end function
+
+implement Trait.Show[LengthError]
+  function show(x: LengthError) -> String
+    return match x with
+      case LengthError.InvalidBounds(minimum, maximum) -> "InvalidBounds(${minimum}, ${maximum})"
+      case LengthError.OutOfRange(minimum, maximum, length) -> "OutOfRange(${minimum}, ${maximum}, ${length})"
+    end match
+  end function
+end implement
+
+implement Trait.Show[IndexError]
+  function show(x: IndexError) -> String
+    return match x with
+      case IndexError.OutOfBounds(index, length) -> "OutOfBounds(${index}, ${length})"
     end match
   end function
 end implement

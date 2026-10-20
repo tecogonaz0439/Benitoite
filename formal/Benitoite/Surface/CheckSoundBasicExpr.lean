@@ -68,25 +68,26 @@ theorem unit_case {q} : CaseSound q (.expr .unit) := by
   cases eq
   exact ⟨.E_Unit, by trivial, emptyEff_atoms _⟩
 
-theorem builderOp_case {q o i args refs} : CaseSound q (.expr (.builderOp o i args refs)) := by
+theorem builderOp_case {q o i args k} : CaseSound q (.expr (.builderOp o i args k)) := by
   intro ih
   have iha : TypesSound q args := (ih (.exprs args) (by simp [CheckNode.size]; omega)).1
   intro Δ C Γ R p path s s' a ε hB hq he hΓ hR h
   simp only [Expr.AtomsIn] at he
   have h := guardInferred_ok h
-  obtain ⟨u, hstate, h⟩ := checking_lift_bind_ok h
-  obtain ⟨u, hrefs, h⟩ := checking_lift_bind_ok h
+  obtain ⟨u, hkind, h⟩ := checking_lift_bind_ok h
+  have hk := (require_ok hkind).1
+  have hi : Δ.kindAt i = some k := by
+    cases hi : Δ.kindAt i with
+    | none => simp [hi] at hk
+    | some actual =>
+        simp only [hi] at hk
+        have eq := BuilderKind.contents_injective (tyEq_sound (hB.atoms _ _ hi) he.1 hk)
+        exact congrArg some eq
   obtain ⟨εa, mid, ha, h⟩ := checking_bind_ok h
-  have hargs := iha Δ _ _ _ _ _ _ _ _ _ hB hq he.2.2 hΓ hR (o.params_atoms he.1) ha
+  have hargs := iha Δ _ _ _ _ _ _ _ _ _ hB hq he.2 hΓ hR (o.params_atoms he.1) ha
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  have hs := singleEff_atoms q.atoms (.name stateEff) (List.mem_of_elem_eq_true (require_ok hstate).1)
-  have hse := singleEff_eq_contains (require_ok hstate).1
-  have hr := BuilderRefs.check_sound hq.declarations hq.builtins hq.sat hq.admits hB.atoms
-    he.1 he.2.1 (by rw [← hse]; exact hs) (require_ok hrefs).1
-  refine ⟨?_, o.result_atoms he.1, union_atoms hargs.2 hs⟩
-  rw [union_eq hargs.2 hs, hse]
-  exact .E_BuilderOp hr hargs.1
+  exact ⟨.E_BuilderOp hi hargs.1, o.result_atoms he.1, hargs.2⟩
 
 theorem local_case {q i} : CaseSound q (.expr (.local i)) := by
   intro ih Δ C Γ R p path s s' a ε hB hq he hΓ hR h
@@ -110,6 +111,15 @@ theorem const_case {q t body} : CaseSound q (.expr (.constE t body)) := by
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
   exact ⟨.E_Const (.E_Sub ht (Or.inl rfl) (acceptEff_sound hb (emptyEff_atoms _) hu) hbClean), he.1, emptyEff_atoms _⟩
+
+theorem block_case {q body} : CaseSound q (.expr (.block body)) := by
+  intro ih
+  have ihb : BlockSound q body := ih (.block body) (by simp [CheckNode.size] <;> omega)
+  intro Δ C Γ R p path s s' a ε hB hq he hΓ hR h
+  have h := guardInferred_ok h
+  simp only [Expr.AtomsIn] at he
+  have ht := ihb Δ _ _ _ _ _ _ _ _ _ hB hq he hΓ hR h
+  exact ⟨.E_Block ht.1, ht.2⟩
 
 theorem paren_case {q e} : CaseSound q (.expr (.paren e)) := by
   intro ih

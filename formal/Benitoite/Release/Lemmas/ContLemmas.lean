@@ -24,8 +24,8 @@ theorem ContTy.store {Ψ Ψ' R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε
   | K_Mark _ hw ih => exact .K_Mark ih hw
   | K_Update hl _ ih => exact .K_Update (hΨ _ _ hl) ih
   | K_Release hv hr hs _ ih => exact .K_Release (hv.store hΨ) hr hs ih
-  | K_Handle _ hs hc hw ih => exact .K_Handle ih hs (hc.store hΨ) hw
-  | K_Handle_Fail _ hr hn hc he hw ih => exact .K_Handle_Fail ih hr hn (hc.store hΨ) he hw
+  | K_Handle _ hs hc hw ih => exact .K_Handle ih hs (hc.store (hideBuilders_mono hΨ)) hw
+  | K_Handle_Fail _ hr hn hc he hw ih => exact .K_Handle_Fail ih hr hn (hc.store (hideBuilders_mono hΨ)) he hw
   | K_Drop hl hs _ ih => exact .K_Drop (hΨ _ _ hl) hs ih
   | K_Guard hm hs hp hb _ ih => exact .K_Guard (hm.store hΨ) hs hp (hb.store hΨ) ih
   | K_Sub _ hle ih => exact .K_Sub ih hle
@@ -134,7 +134,7 @@ theorem ContTy.inv_handle {Ψ R ε hs k a b ε0 Re}
       Eff.Sub εc εb ∧ HasTypeClauses P B Ψ [] [] R hs t εc ∧ Ty.WF 0 t := by
   generalize hk : (Frame.handleF hs :: k) = k0 at h
   induction h with
-  | K_Handle hrest hsub hc hw _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, rfl, hrest, hsub, hc, hw⟩
+  | K_Handle hrest hsub hc hw _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, rfl, hrest, hsub, hc.store (hideBuilders_sub _), hw⟩
   | K_Handle_Fail _ _ _ hc _ _ _ =>
       cases hk
       rw [hc.handles] at ho
@@ -302,7 +302,7 @@ theorem ContTy.split {Ψ R ε a b E Re hs k2 k1}
           simp only [List.nil_append, List.cons.injEq, Frame.handleF.injEq] at heq
           obtain ⟨rfl, rfl⟩ := heq
           exact ⟨_, _, _, _, .K_Handle (.K_Empty (Eff.Sub.refl _) hw) (Eff.Sub.refl _) hc hw,
-            ht, hsub, hc, hw⟩
+            ht, hsub, hc.store (hideBuilders_sub _), hw⟩
       | cons f k1 =>
           simp only [List.cons_append, List.cons.injEq] at heq
           obtain ⟨rfl, heq⟩ := heq

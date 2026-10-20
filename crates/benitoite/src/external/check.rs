@@ -32,6 +32,13 @@ pub(crate) enum ComponentError {
 
 /// 検査とパッケージの報告で共有する、コンポーネントの検証と純粋性の判定。
 pub(crate) fn check_component(engine: &Engine, bytes: &[u8]) -> Result<Component, ComponentError> {
+    check_component_counted(engine, bytes, &mut 0)
+}
+fn check_component_counted(
+    engine: &Engine,
+    bytes: &[u8],
+    compilations: &mut u64,
+) -> Result<Component, ComponentError> {
     if !bytes.starts_with(b"\0asm") {
         return Err(ComponentError::NotWasm);
     }
@@ -40,6 +47,7 @@ pub(crate) fn check_component(engine: &Engine, bytes: &[u8]) -> Result<Component
         Some([13, 0, 1, 0]) => {}
         Some(_) | None => return Err(ComponentError::Invalid(text::INVALID.into())),
     }
+    *compilations = compilations.saturating_add(1);
     let component = Component::from_binary(engine, bytes)
         .map_err(|error| ComponentError::Invalid(format!("{error:#}")))?;
     let ty = component.component_type();
@@ -96,10 +104,32 @@ pub fn check_externals(
     resolved: &mut ResolveOutput,
     types: &TypeckOutput,
 ) -> Vec<Diagnostic> {
+    check_externals_counted(entry, fs, modules, asts, sources, resolved, types).0
+}
+
+/// 宣言の照合のコンパイル試行数を、実行用の共有表と分けて返す。
+pub(crate) fn check_externals_counted(
+    entry: &EntrySpec,
+    fs: &dyn ModuleFs,
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    resolved: &mut ResolveOutput,
+    types: &TypeckOutput,
+) -> (Vec<Diagnostic>, u64) {
     if resolved.externals.iter().next().is_none() {
-        return Vec::new();
+        return (Vec::new(), 0);
     }
-    match check_all(entry, fs, modules, asts, sources, resolved, types) {
+    let mut compilations = 0;
+    let diagnostics = match check_all(
+        entry,
+        fs,
+        modules,
+        asts,
+        sources,
+        resolved,
+        (types, &mut compilations),
+    ) {
         Ok(diagnostics) => diagnostics,
         Err(message) => vec![Diagnostic {
             kind: crate::diag::ReportKind::Internal,
@@ -115,7 +145,8 @@ pub fn check_externals(
             waiting: Vec::new(),
             backtrace: None,
         }],
-    }
+    };
+    (diagnostics, compilations)
 }
 
 fn check_all(
@@ -125,7 +156,7 @@ fn check_all(
     asts: &[Module],
     sources: &SourceTable,
     resolved: &mut ResolveOutput,
-    types: &TypeckOutput,
+    (types, compilations): (&TypeckOutput, &mut u64),
 ) -> Result<Vec<Diagnostic>, String> {
     let engine = Engine::new(&super::engine_config())
         .map_err(|error| format!("cannot create Wasmtime engine: {error}"))?;
@@ -273,8 +304,8 @@ fn check_all(
             if bytes.len() > crate::base::source::MAX_SOURCE_BYTES {
                 return Err(CachedError::Read(text::TOO_LARGE));
             }
-            let component =
-                super::check_component(&engine, &bytes).map_err(CachedError::Component)?;
+            let component = check_component_counted(&engine, &bytes, compilations)
+                .map_err(CachedError::Component)?;
             let source = Arc::new(ComponentSource {
                 display: Path::new(&display_root)
                     .join(&decl.path.value)

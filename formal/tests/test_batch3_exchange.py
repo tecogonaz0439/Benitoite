@@ -18,6 +18,16 @@ def definition(data, key):
                 if d['name'].endswith(f'({key})'))
 
 
+def builder_free(data):
+    data = copy.deepcopy(data)
+    kept = ['fn:8', *[f'fn:{n}' for n in range(101, 107)], *[f'fn:{n}' for n in range(220, 224)]]
+    data['corpus']['inputs'][0]['definitions'] = [d for d in data['corpus']['inputs'][0]['definitions']
+        if any(d['name'].endswith(f'({key})') for key in kept)]
+    # 末尾matchのfn:211は新版へ移した集合に属する。
+    data['corpus']['annotations']['tailMatch'] = [0, 0]
+    return data
+
+
 class Batch3ExchangeTests(unittest.TestCase):
     def setUp(self):
         self.data = {f: json.loads((FIXTURES / f'{f}.json').read_text()) for f in FILES}
@@ -29,12 +39,14 @@ class Batch3ExchangeTests(unittest.TestCase):
         return shared['ExchangeTests'].run_tool(self, tool, data, selected, 'independent-batch3')
 
     def test_six_entries(self):
+        # 構築器を含まない既存11定義の意味は変えない。
+        self.data = builder_free(self.data)
         for tool in TOOLS:
             with self.subTest(tool=tool):
                 result, report = self.run_tool(tool)
                 self.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
                 if tool == 'desugarDiff':
-                    self.assertEqual(report['golden']['definitions'], dict(matched=30, mismatched=0, outside=0, excluded=0))
+                    self.assertEqual(report['golden']['definitions'], dict(matched=11, mismatched=0, outside=0, excluded=0))
                     self.assertEqual(report['mismatches'], [])
                 elif tool == 'builtinCheck':
                     self.assertEqual(report['errors'], [])
@@ -44,14 +56,21 @@ class Batch3ExchangeTests(unittest.TestCase):
                 elif tool == 'surfaceCheck':
                     self.assertEqual(report['result'], {'ok': True})
                 else:
-                    self.assertEqual(report['counts'], dict(matched=30, mismatched=0, outOfScope=0,
+                    self.assertEqual(report['counts'], dict(matched=11, mismatched=0, outOfScope=0,
                                      q11=0, lazyRestriction=0, preparationFailure=0))
+
+    def test_corpus12_builders_require_regeneration(self):
+        for tool in ('desugarDiff', 'builtinCheck', 'surfaceCheck', 'surfaceCheckAll'):
+            result, _ = self.run_tool(tool)
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('builder syntax requires exchange version 13; regenerate with version 13', result.stderr)
 
     def test_old_versions_reject_nested_builder_information(self):
         for f in FILES:
             for version in ([8, 9, 10, 11] if f == 'corpus' else [2, 3, 4]):
                 for field in ('builderBind', 'builderOp', 'refs', 'newRef', 'getRef', 'setRef'):
                     data = copy.deepcopy(self.data)
+                    data['corpus']['inputs'][0]['definitions'] = []
                     data[f]['version'] = version
                     data[f]['deep'] = [{'unknown': {field: None}}]
                     tool = next(t for t, fs in TOOLS.items() if f in fs)
@@ -61,6 +80,7 @@ class Batch3ExchangeTests(unittest.TestCase):
                         self.assertIn(f'new exchange version: {field}', result.stderr)
 
     def test_corpus11_batch2_and_sidecar_versions(self):
+        self.data = builder_free(self.data)
         data = {f: json.loads((Path(__file__).with_name('batch2-exchange') / f'{f}.json').read_text()) for f in FILES}
         for v in (11, 12):
             data['corpus']['version'] = v
@@ -74,7 +94,7 @@ class Batch3ExchangeTests(unittest.TestCase):
             result, _ = self.run_tool('surfaceCheck', data)
             self.assertEqual(result.returncode, 2, result.stdout)
         for f in FILES:
-            for v in (0, 1, 5, 6, 7, 13):
+            for v in ((0, 1, 5, 6, 7, 14) if f == 'corpus' else (0, 1, 6, 7, 13)):
                 data = copy.deepcopy(self.data)
                 data[f]['version'] = v
                 tool = next(t for t, fs in TOOLS.items() if f in fs)
@@ -82,107 +102,8 @@ class Batch3ExchangeTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2, result.stdout)
                 self.assertIn('version', result.stderr)
 
-    def test_required_builder_fields(self):
-        for key in ('kind', 'refs', 'rest'):
-            data = copy.deepcopy(self.data)
-            del definition(data, 'fn:201')['surface']['body']['builderBind'][key]
-            result, _ = self.run_tool('desugarDiff', data)
-            self.assertEqual(result.returncode, 2, result.stdout)
-        for key in ('op', 'index', 'args', 'refs'):
-            data = copy.deepcopy(self.data)
-            del definition(data, 'fn:201')['surface']['body']['builderBind']['rest']['last']['expr']['returnE']['inner']['builderOp'][key]
-            result, _ = self.run_tool('desugarDiff', data)
-            self.assertEqual(result.returncode, 2, result.stdout)
-
-    def test_unknown_fields_are_not_discarded(self):
-        for mutation in ('outer', 'payload', 'reference', 'kind', 'batch2'):
-            data = copy.deepcopy(self.data)
-            surface = definition(data, 'fn:201')['surface']
-            bind = surface['body']['builderBind']
-            if mutation == 'outer': surface['body']['empty'] = None
-            elif mutation == 'payload': bind['newField'] = None
-            elif mutation == 'reference': bind['refs']['string']['cell']['newRef']['effs'] = []
-            elif mutation == 'kind': bind['kind'] = {'list': {'element': {'base': {'name': 'Integer'}}, 'extra': None}}
-            else: del surface['header']['effParams']
-            result, _ = self.run_tool('desugarDiff', data)
-            self.assertEqual(result.returncode, 2, result.stdout)
-
-    def test_builder_semantic_rejections(self):
-        for mutation, reason in [('kind', 'invalid builder declaration references'),
-                                 ('get', 'invalid builder declaration references'),
-                                 ('ordinary', 'local is missing or hidden'),
-                                 ('index', 'invalid local builder or operation references'),
-                                 ('effect', 'effect exceeds the allowed effect')]:
-            data = copy.deepcopy(self.data)
-            s = definition(data, 'fn:201')['surface']
-            if mutation == 'kind': s['body']['builderBind']['kind'] = 'bytes'
-            elif mutation == 'get': s['body']['builderBind']['refs']['string']['cell']['getRef']['name'] = 'set'
-            elif mutation == 'ordinary': s['body']['builderBind']['rest']['last']['expr']['returnE']['inner'] = {'local': {'index': 0}}
-            elif mutation == 'index': s['body']['builderBind']['rest']['last']['expr']['returnE']['inner']['builderOp']['index'] = 1
-            else: s['header']['eff'] = []
-            result, report = self.run_tool('surfaceCheck', data, 'fn:201')
-            self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-            self.assertEqual(report['result']['error']['reason'], reason)
-
-    def test_capture_boundaries(self):
-        root = definition(self.data, 'fn:201')['surface']['body']['builderBind']
-        copied = root['rest']['last']['expr']['returnE']['inner']
-        string = {'base': {'name': 'String'}}
-        integer = {'base': {'name': 'Integer'}}
-        state = [{'name': {'value': 'State'}}]
-        lam = {'lam': dict(names=[], params=[], ret=string, eff=state,
-                          body={'last': {'expr': {'returnE': dict(ret=string, inner=copied)}}})}
-        fixed = {'expr': dict(label='left', position=0, inner=copied)}
-        hole = {'hole': dict(label='right', position=1, ty=string)}
-        add = {'primName': dict(name='add', tys=[], effs=[])}
-        partial = {'partialCall': dict(callee=add, names=['left', 'right'], args=[fixed, hole], ret=string, eff=state)}
-        callee = copy.deepcopy(partial)
-        callee['partialCall']['args'] = [dict(hole=dict(label='left', position=0, ty=string)), hole]
-        callee['partialCall']['callee'] = {'ite': dict(cond={'literal': {'value': {'boolean': {'value': True}}}},
-            yes={'seq': dict(expr=copied, rest={'last': {'expr': add}})}, no={'last': {'expr': add}})}
-        variants = [lam, {'lazyE': dict(body={'last': {'expr': copied}})}, partial, callee,
-            {'partialCon': dict(name='PosPair', tys=[], args=[{'expr': dict(label=None, position=0, inner=copied)},
-                                                        {'hole': dict(label=None, position=1, ty=integer)}])},
-            {'call': dict(callee={'funName': dict(name='task', tys=[], effs=[])}, labels=['f'], positions=[0], args=[lam])},
-            {'handleFail': dict(error=string, result=string, body={'last': {'expr': {'literal': {'value': {'string': {'value': 'ok'}}}}}},
-                                clause={'last': {'expr': {'builderOp': dict(copied['builderOp'], index=2)}}})}]
-        for n, expression in enumerate(variants):
-            data = copy.deepcopy(self.data)
-            definition(data, 'fn:201')['surface']['body']['builderBind']['rest']['last']['expr']['returnE']['inner'] = expression
-            with self.subTest(boundary=n):
-                result, report = self.run_tool('surfaceCheck', data, 'fn:201')
-                self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-                self.assertEqual(report['result']['error']['reason'], 'invalid local builder or operation references')
-
-    def test_shared_numbering(self):
-        for variant in ('depth', 'resume', 'value', 'received-dict', 'outer-cell'):
-            data = copy.deepcopy(self.data)
-            clause = definition(data, 'fn:210')['surface']['body']['last']['expr']['returnE']['inner']['handleE']['clauses'][0]
-            rest = clause['body']['builderBind']['rest']['bind']['rest']['discard']
-            if variant == 'depth': rest['expr']['opDicts']['dicts'][0]['clause']['depth'] = 1
-            elif variant == 'resume': rest['rest']['last']['expr']['resume']['index'] = 1
-            elif variant == 'value': rest['rest']['last']['expr']['resume']['inner']['local']['index'] = 2
-            elif variant == 'outer-cell':
-                s = definition(data, 'fn:214')['surface']['body']['builderBind']['rest']['last']['expr']['returnE']['inner']['handleE']
-                s['clauses'][0]['body'] = {'last': {'expr': {'builderOp': dict(
-                    definition(data, 'fn:201')['surface']['body']['builderBind']['rest']['last']['expr']['returnE']['inner']['builderOp'], index=2)}}}
-            else:
-                definition(data, 'fn:209')['surface']['body']['builderBind']['rest']['last']['expr']['returnE']['inner']['methName']['dict']['local']['index'] = 1
-            key = 'fn:209' if variant == 'received-dict' else 'fn:214' if variant == 'outer-cell' else 'fn:210'
-            with self.subTest(variant=variant):
-                result, report = self.run_tool('surfaceCheck', data, key)
-                self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-                self.assertFalse(report['result']['ok'])
-                expected = {
-                    'depth': 'clause dictionary scope mismatch',
-                    'resume': 'continuation is missing or hidden',
-                    'value': 'continuations cannot be used as ordinary locals',
-                    'received-dict': 'expected a dictionary type',
-                    'outer-cell': 'invalid local builder or operation references',
-                }
-                self.assertEqual(report['result']['error']['reason'], expected[variant])
-
     def test_monad2_wrong_super_and_error_type(self):
+        self.data = builder_free(self.data)
         for key, mutation in [('fn:220', 'super'), ('fn:223', 'error')]:
             data = copy.deepcopy(self.data)
             call = definition(data, key)['surface']['body']['last']['expr']['returnE']['inner']['call']
@@ -192,17 +113,6 @@ class Batch3ExchangeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
             self.assertFalse(report['result']['ok'])
 
-    def test_constants_reject_builders(self):
-        for body in (definition(self.data, 'fn:201')['surface']['body']['builderBind']['rest']['last']['expr']['returnE']['inner'],
-                     {'ite': {'cond': {'literal': {'value': {'boolean': {'value': True}}}},
-                              'yes': definition(self.data, 'fn:201')['surface']['body'], 'no': 'empty'}}):
-            data = copy.deepcopy(self.data)
-            data['corpus']['inputs'][0]['constants'] = [dict(name='bad', package='author', ty={'base': {'name': 'String'}}, body=body)]
-            for tool in ('desugarDiff', 'builtinCheck', 'surfaceCheck', 'surfaceCheckAll'):
-                with self.subTest(tool=tool, body=body):
-                    result, _ = self.run_tool(tool, data)
-                    self.assertEqual(result.returncode, 2, result.stdout)
-                    self.assertIn('source match/binding in constant', result.stderr)
 
     def test_missing_or_empty_rust_output_is_not_success(self):
         with self.assertRaises(FileNotFoundError):
@@ -249,9 +159,12 @@ class Batch3ExchangeTests(unittest.TestCase):
 def rust_inputs(directory, profile=None):
     """五形式と、実ソースごとの固定した期待件数を照合する。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
+    version = data['corpus']['version']
+    if version not in (12, 13):
+        raise AssertionError('expected corpus12 or corpus13')
     for f, doc in data.items():
-        if doc['version'] != (12 if f == 'corpus' else 4):
-            raise AssertionError(f'{f}: expected corpus12/sidecar4')
+        if doc['version'] != (version if f == 'corpus' else (5 if version == 13 else 4)):
+            raise AssertionError(f'{f}: corpus/sidecar version mismatch')
     inputs = data['corpus']['inputs']
     if not inputs or not any(i['definitions'] for i in inputs):
         raise AssertionError('Rust batch3 corpus must contain definitions')

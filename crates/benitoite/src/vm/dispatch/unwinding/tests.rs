@@ -25,6 +25,7 @@ fn at() -> InstrRef {
 }
 fn call(base: u32, size: u32) -> CallFrame {
     CallFrame {
+        builders: Vec::new(),
         func: Slot::default(),
         proto: ProtoIdx(0),
         pc: 0,

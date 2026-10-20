@@ -120,17 +120,39 @@ partial def validateBatch2 : Json → Except String Unit
       xs.toArray.toList.forM (fun (_,v) => validateBatch2 v)
   | _ => pure ()
 
+/-- 比較専用の期待コアや未使用の定数も、型付けへの変換前に有界にする。
+型の名前や文字列の値を整数と解釈せず、交換の Const.integer のタグだけを読む
+（設計書 07-04「証明する性質」）。 -/
+partial def validateIntegerConstants : Json → Except String Unit
+  | .arr xs => xs.toList.forM validateIntegerConstants
+  | j@(.obj xs) => do
+      if let .ok value := j.getObjVal? "integer" then
+        let n ← value.getObjValAs? Int "value"
+        if !(Benitoite.Release.min64 ≤ n && n ≤ Benitoite.Release.max64) then
+          throw "integer outside i64"
+      xs.toArray.toList.forM (fun (_,v) => validateIntegerConstants v)
+  | _ => pure ()
+
 /-- corpus と sidecar の世代を独立に判定し、旧版の深い位置でも新情報を捨てない。 -/
 def exchangeJson (kind : String) (j : Json) : Except String Json := do
   let version ← j.getObjValAs? Nat "version"
   let corpus := kind == "corpus"
-  if !(if corpus then [8, 9, 10, 11, 12] else [2, 3, 4]).contains version then
+  if !(if corpus then [8, 9, 10, 11, 12, 13] else [2, 3, 4, 5]).contains version then
     -- 契約名導入前の入力にも、既存の具体的な拒否理由を保つ。
     if version == (if corpus then 7 else 1) then
       rejectFields ["names", "labels", "positions", "fields"] j
     throw s!"unsupported {kind} exchange version: {version}"
-  if !corpus || version < 12 then
-    rejectFields ["builderBind", "builderOp", "refs", "newRef", "getRef", "setRef"] j
+  if !corpus || version < 13 then
+    rejectFields ["block"] j
+  if corpus && version == 12 then
+    match rejectFields ["builderBind", "builderOp", "builderLet", "refs", "newRef", "getRef", "setRef"] j with
+    | .error _ => throw "builder syntax requires exchange version 13; regenerate with version 13"
+    | .ok _ => pure ()
+  if !corpus || version < 13 then
+    rejectFields ["builderBind", "builderOp", "builderLet", "localRef", "refs", "newRef", "getRef", "setRef"] j
+  else
+    rejectFields ["refs", "newRef", "getRef", "setRef"] j
+  validateIntegerConstants j
   if corpus && version < 10 then
     rejectFields ["tryResultReturn", "tryOptionReturn", "tryResultDie", "tryOptionDie"] j
   let batch2 := version >= (if corpus then 11 else 4)
@@ -146,9 +168,9 @@ def exchangeJson (kind : String) (j : Json) : Except String Json := do
     return j
   return batch2Defaults j
 
-/-- corpus 11 と 12 は同じ sidecar 4 を使う。 -/
+/-- corpus 13 は sidecar 5、11 と 12 は sidecar 4 を使う。 -/
 def sidecarVersion (corpusVersion : Nat) : Nat :=
-  if corpusVersion >= 11 then 4 else if corpusVersion >= 9 then 3 else 2
+  if corpusVersion >= 13 then 5 else if corpusVersion >= 11 then 4 else if corpusVersion >= 9 then 3 else 2
 
 def validateDataTypes (ds : List DataTypeInfo) : Except String Unit := do
   if (ds.map (·.name)).eraseDups.length != ds.length then throw "duplicate data type metadata"

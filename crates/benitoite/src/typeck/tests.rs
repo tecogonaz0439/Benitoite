@@ -16,6 +16,8 @@ use crate::syntax::ast::*;
 use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId as B};
 use crate::types::{ConstValue as V, EffectName, Ty, TyCon, TypeArg};
 
+mod diagnostics_batch4;
+
 fn check(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) {
     check_files(&[("main.bnt", s)], false)
 }
@@ -1194,6 +1196,7 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(NodeId, crate::base::Span)) {
         | Expr::Name(_)
         | Expr::Unit(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)

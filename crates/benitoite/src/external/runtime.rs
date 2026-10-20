@@ -5,13 +5,18 @@ use super::{ExternalRoute, ExternalSpec, TypedShape, convert, engine_config, tex
 use crate::bytecode::program::ExternalTable;
 use crate::runtime::heap::{NoGcCtx, Value};
 use crate::runtime::{ResourceError, RuntimeError, Stop};
+use sha2::{Digest, Sha256};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
 };
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::BTreeMap,
+    rc::Rc,
+};
 use wasmtime::{
     Engine, ResourceLimiter, Store, Trap,
     component::{Component, Func, Instance, Linker, ResourceAny, Val},
@@ -39,57 +44,173 @@ pub(in crate::external) fn internal(e: impl std::fmt::Display) -> Stop {
     Stop::Internal(e.to_string())
 }
 
+/// 一回の起動で実行用の準備だけを共有する。Store と言語の値は保持しない
+/// （設計書 03-10「実行」、02-11「テストの実行」）。
+pub(crate) struct ExternalSession {
+    interrupt: Option<Arc<AtomicBool>>,
+    prepared: RefCell<Option<SessionPrepared>>,
+    next_run: Cell<u64>,
+}
+struct CachedComponent {
+    bytes: Arc<[u8]>,
+    component: Component,
+}
+struct CachedAdapter {
+    key: super::adapter::component::ComponentKey,
+    bytes: Arc<[u8]>,
+    component: Component,
+}
+struct SessionPrepared {
+    engine: Engine,
+    components: BTreeMap<[u8; 32], Vec<CachedComponent>>,
+    adapters: BTreeMap<[u8; 32], Vec<CachedAdapter>>,
+    _watcher: Option<Watcher>,
+}
+impl ExternalSession {
+    /// 外部を呼ぶまでEngineと見張りを作らない所有者を用意する（設計書 03-10「実行」）。
+    pub(crate) fn new(interrupt: Option<Arc<AtomicBool>>) -> Self {
+        Self {
+            interrupt,
+            prepared: RefCell::new(None),
+            next_run: Cell::new(0),
+        }
+    }
+    fn engine(&self) -> Result<Engine, Stop> {
+        let mut prepared = self.prepared.try_borrow_mut().map_err(internal)?;
+        if prepared.is_none() {
+            let engine = Engine::new(&engine_config()).map_err(internal)?;
+            let watcher = self
+                .interrupt
+                .as_ref()
+                .map(|flag| Watcher::new(engine.clone(), Arc::clone(flag)))
+                .transpose()?;
+            *prepared = Some(SessionPrepared {
+                engine,
+                components: BTreeMap::new(),
+                adapters: BTreeMap::new(),
+                _watcher: watcher,
+            });
+        }
+        Ok(prepared
+            .as_ref()
+            .ok_or_else(|| internal("external session not prepared"))?
+            .engine
+            .clone())
+    }
+    // Engine の識別は所有者の表で分け、hash の一致後にも元 bytes を照合する。
+    fn component(
+        &self,
+        bytes: &Arc<[u8]>,
+        stats: Option<&super::stats::Collector>,
+    ) -> Result<Component, Stop> {
+        let hash = Sha256::digest(bytes).into();
+        let mut prepared = self.prepared.try_borrow_mut().map_err(internal)?;
+        let prepared = prepared
+            .as_mut()
+            .ok_or_else(|| internal("external session not prepared"))?;
+        let entries = prepared.components.entry(hash).or_default();
+        if let Some(cached) = entries.iter().find(|c| c.bytes == *bytes) {
+            return Ok(cached.component.clone());
+        }
+        let component = Component::from_binary(&prepared.engine, bytes).map_err(internal)?;
+        if let Some(stats) = stats {
+            stats.compiled(false)?;
+        }
+        entries.push(CachedComponent {
+            bytes: Arc::clone(bytes),
+            component: component.clone(),
+        });
+        Ok(component)
+    }
+    /// 生成規則とbytesが一致する補助だけを同じEngineで共有する（設計書 03-10「実行」）。
+    pub(in crate::external) fn adapter(
+        &self,
+        key: &super::adapter::component::ComponentKey,
+        bytes: &Arc<[u8]>,
+        original: &[u8],
+        stats: Option<&super::stats::Collector>,
+    ) -> Result<Component, Stop> {
+        let hash = Sha256::digest(bytes).into();
+        let mut prepared = self.prepared.try_borrow_mut().map_err(internal)?;
+        let prepared = prepared
+            .as_mut()
+            .ok_or_else(|| internal("external session not prepared"))?;
+        let entries = prepared.adapters.entry(hash).or_default();
+        if let Some(cached) = entries.iter().find(|c| &c.key == key && c.bytes == *bytes) {
+            return Ok(cached.component.clone());
+        }
+        // 合成の外側だけに内部の取り込みを許し、元ゲストの純粋性の再確認を省かない。
+        super::check_component(&prepared.engine, original)
+            .map_err(|e| internal(format!("unchecked adapter source: {e:?}")))?;
+        let component = Component::from_binary(&prepared.engine, bytes).map_err(internal)?;
+        if let Some(stats) = stats {
+            stats.compiled(true)?;
+        }
+        entries.push(CachedAdapter {
+            key: key.clone(),
+            bytes: Arc::clone(bytes),
+            component: component.clone(),
+        });
+        Ok(component)
+    }
+}
+
 /// 言語の値を保持しない実行ごとの外部の関数の状態。
 pub struct ExternalRuntime {
     pub(in crate::external) engine: Engine,
-    components: Vec<Option<Component>>,
-    pub(in crate::external) adapters: Vec<(super::adapter::component::ComponentKey, Component)>,
+    pub(in crate::external) session: Rc<ExternalSession>,
     stateful: Vec<Option<Stateful>>,
     linker: Linker<CallLimits>,
     pub(in crate::external) adapter_linker: Linker<CallLimits>,
-    _watcher: Option<Watcher>,
     limits: Limits,
-    stats: Option<super::stats::Collector>,
+    pub(in crate::external) stats: Option<super::stats::Collector>,
     run_id: u64,
 }
 impl ExternalRuntime {
     /// 最初の外部の呼び出しでだけ作る。印を持たない実行ではスレッドを起こさない。
     pub fn new(interrupt: Option<Arc<AtomicBool>>) -> Result<Self, Stop> {
-        let engine = Engine::new(&engine_config()).map_err(internal)?;
-        let watcher = interrupt
-            .map(|flag| Watcher::new(engine.clone(), flag))
-            .transpose()?;
+        Self::new_in(Rc::new(ExternalSession::new(interrupt)), Default::default())
+    }
+    /// 準備を共有し、実行ごとのStoreとハンドルの領域を新しくする（設計書 02-11「テストの実行」）。
+    pub(crate) fn new_in(
+        session: Rc<ExternalSession>,
+        options: super::stats::ExecutionOptions,
+    ) -> Result<Self, Stop> {
+        let engine = session.engine()?;
+        let run_id = session.next_run.get();
+        session.next_run.set(
+            run_id
+                .checked_add(1)
+                .ok_or_else(|| internal("external run count overflow"))?,
+        );
+        let run_id = options
+            .stats
+            .as_ref()
+            .map(|s| s.next_run())
+            .transpose()?
+            .unwrap_or(run_id);
         let mut adapter_linker = Linker::new(&engine);
         super::adapter::runtime::link_failure(&mut adapter_linker).map_err(internal)?;
         Ok(Self {
             adapter_linker,
             linker: Linker::new(&engine),
             engine,
-            components: vec![],
-            adapters: vec![],
+            session,
             stateful: vec![],
-            _watcher: watcher,
-            limits: Limits::default(),
-            stats: None,
-            run_id: 0,
+            limits: options.limits,
+            stats: options.stats,
+            run_id,
         })
     }
-}
-impl ExternalRuntime {
     pub(crate) fn configured(
         interrupt: Option<Arc<AtomicBool>>,
-        options: super::stats::ExecutionOptions,
+        mut options: super::stats::ExecutionOptions,
     ) -> Result<Self, Stop> {
-        let mut runtime = Self::new(interrupt)?;
-        runtime.limits = options.limits;
-        runtime.run_id = options
-            .stats
-            .as_ref()
-            .map(|stats| stats.next_run())
-            .transpose()?
-            .unwrap_or(0);
-        runtime.stats = options.stats;
-        Ok(runtime)
+        let session = options
+            .session
+            .take()
+            .unwrap_or_else(|| Rc::new(ExternalSession::new(interrupt)));
+        Self::new_in(session, options)
     }
 }
 
@@ -469,20 +590,9 @@ fn call_inner<'e>(
             return Err(stop.into());
         }
     };
-    runtime
-        .components
-        .resize_with(table.components.len(), || None);
     let component = runtime
-        .components
-        .get_mut(source_index)
-        .ok_or_else(|| internal("external component cache missing"))?;
-    if component.is_none() {
-        *component =
-            Some(Component::from_binary(&runtime.engine, &source.bytes).map_err(internal)?);
-    }
-    let component = component
-        .as_ref()
-        .ok_or_else(|| internal("external component not compiled"))?;
+        .session
+        .component(&source.bytes, runtime.stats.as_ref())?;
     if spec.route == ExternalRoute::Stateful {
         let slot = runtime
             .stateful
@@ -491,7 +601,7 @@ fn call_inner<'e>(
         let before = slot.as_ref().map_or(0, |s| s.store.data().memory);
         if slot.is_none() {
             let mut store = new_store(&runtime.engine, limits)?;
-            let instance = runtime.linker.instantiate(&mut store, component);
+            let instance = runtime.linker.instantiate(&mut store, &component);
             if instance.is_err() {
                 record_store(usage, &store, limits, before)?;
             }
@@ -517,7 +627,7 @@ fn call_inner<'e>(
             .ok_or_else(|| internal("stateful instance missing"))?;
         let result = call_stateful(
             state,
-            component,
+            &component,
             (reference.component, before),
             ctx,
             spec,
@@ -537,9 +647,9 @@ fn call_inner<'e>(
     let result = (|| {
         let instance = runtime
             .linker
-            .instantiate(&mut store, component)
+            .instantiate(&mut store, &component)
             .map_err(|e| failure(e, spec, limits))?;
-        let func = function(component, instance, &mut store, spec)?;
+        let func = function(&component, instance, &mut store, spec)?;
         match (&spec.route, &prepared) {
             (ExternalRoute::Dynamic, PreparedArgs::Dynamic(params)) => {
                 call_dynamic(&mut store, &func, ctx, spec, params, limits, usage)
@@ -1042,8 +1152,10 @@ mod tests {
         let table = resources();
         let mut heap = Heap::new(HeapConfig::default());
         heap.epoch(|ctx| {
-            let mut runtime = ExternalRuntime::new(None).unwrap();
-            let mut other = ExternalRuntime::new(None).unwrap();
+            let session = Rc::new(ExternalSession::new(None));
+            let mut runtime =
+                ExternalRuntime::new_in(Rc::clone(&session), Default::default()).unwrap();
+            let mut other = ExternalRuntime::new_in(session, Default::default()).unwrap();
             let a = call(&mut runtime, &table, 0, ctx, &[Value::Int(1)]).unwrap();
             let b = call(&mut runtime, &table, 4, ctx, &[]).unwrap();
             assert!(matches!(
@@ -1973,6 +2085,7 @@ mod tests {
                 let mut runtime = ExternalRuntime::configured(
                     None,
                     ExecutionOptions {
+                        session: None,
                         limits: Limits {
                             transfer,
                             ..Limits::default()
@@ -2012,6 +2125,7 @@ mod tests {
         let mut runtime = ExternalRuntime::configured(
             None,
             ExecutionOptions {
+                session: None,
                 limits: Limits {
                     transfer: 6_000_000,
                     ..Limits::default()
@@ -2083,6 +2197,7 @@ mod tests {
         let mut runtime = ExternalRuntime::configured(
             None,
             ExecutionOptions {
+                session: None,
                 limits: Limits::default(),
                 stats: Some(stats.clone()),
             },
@@ -2124,6 +2239,7 @@ mod tests {
         let mut other_runtime = ExternalRuntime::configured(
             None,
             ExecutionOptions {
+                session: None,
                 limits: Limits::default(),
                 stats: Some(stats.clone()),
             },
@@ -2142,6 +2258,7 @@ mod tests {
         let mut runtime = ExternalRuntime::configured(
             None,
             ExecutionOptions {
+                session: None,
                 limits: Limits::default(),
                 stats: Some(stats.clone()),
             },
@@ -2163,6 +2280,7 @@ mod tests {
         let mut runtime = ExternalRuntime::configured(
             None,
             ExecutionOptions {
+                session: None,
                 limits: Limits {
                     memory: 2 * 65536,
                     ..Limits::default()
@@ -2279,6 +2397,7 @@ mod tests {
                     let mut runtime = ExternalRuntime::configured(
                         None,
                         ExecutionOptions {
+                            session: None,
                             limits: Limits {
                                 transfer: 2048,
                                 ..Limits::default()
@@ -2382,3 +2501,7 @@ mod tests {
 #[cfg(test)]
 #[path = "runtime/adapter_tests.rs"]
 mod adapter_tests;
+
+#[cfg(test)]
+#[path = "runtime/session_tests.rs"]
+mod session_tests;

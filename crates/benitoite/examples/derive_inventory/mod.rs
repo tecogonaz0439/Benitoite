@@ -374,13 +374,6 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
             .get(name)
             .cloned()
             .ok_or_else(|| text::not_record(name))?;
-        if record
-            .get("typeParams")
-            .and_then(Value::as_array)
-            .is_some_and(|p| !p.is_empty())
-        {
-            return Err(text::TARGET_MUST_NOT_HAVE_TYPE_PARAMETERS.into());
-        }
         let source = record
             .pointer("/span/path")
             .and_then(Value::as_str)

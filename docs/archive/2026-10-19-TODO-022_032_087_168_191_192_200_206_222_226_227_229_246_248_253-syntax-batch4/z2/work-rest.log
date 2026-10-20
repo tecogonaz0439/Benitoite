@@ -1,0 +1,1431 @@
+== plan: level work against 376cc390b98b232ad4f27af5cbb3ea4941053965 (changed files not classified) (partial selection: --only fmt,lib_default,tests_related,source_rules,skill_generated,spec_tally)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lib_default] because of --only (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test golden --test random_programs --test verify --test coverage_export --test desugar_export
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lib_default
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.82s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-419be97b4a7eb7bf)
+
+running 1260 tests
+test base::source::tests::line_text_excludes_only_lf_and_its_preceding_cr ... ok
+test base::source::tests::line_col_counts_invalid_utf8_bytes_and_crlf_belongs_to_the_previous_line ... ok
+test base::source::tests::source_accessors_and_line_col_use_byte_positions_and_code_points ... ok
+test base::prim::tests::key_leaf_order_and_type_boundary ... ok
+test base::prim::tests::float32_text_uses_binary32_precision_and_float_notation ... ok
+test base::file_read::tests::reads_at_most_one_byte_past_the_limit ... ok
+test base::source::tests::source_table_assigns_ids_and_supports_lookup_and_iteration ... ok
+test base::decimal::tests::rounding_modes_and_mantissa_boundaries ... ok
+test base::decimal::tests::scale_preservation_division_and_representation ... ok
+test builtins::funcs::bytes::tests::encoded_and_concatenated_lengths_reject_large_results ... ok
+test builtins::funcs::character::tests::unicode_character_properties ... ok
+test builtins::funcs::character::tests::unicode_character_case_mappings ... ok
+test builtins::funcs::byte::tests::conversions_bitwise_functions_and_shift_boundaries ... ok
+test builtins::funcs::bytes::tests::get_slice_boundaries_and_concatenation ... ok
+test builtins::funcs::bytes::tests::integers_all_widths_orders_and_limits ... ok
+test builtins::funcs::clock::tests::sleep_normalizes_nonpositive_durations_and_monotonic_time_uses_services ... ok
+test builtins::funcs::console::tests::input_failures_keep_the_os_message_and_classify_error_kinds ... ok
+test builtins::funcs::console::tests::read_all_returns_only_the_remaining_bytes_and_checks_utf8 ... ok
+test builtins::funcs::console::tests::read_all_lines_and_bytes_preserve_input_contracts ... ok
+test builtins::funcs::console::tests::read_line_handles_line_endings_eof_and_invalid_utf8 ... ok
+test builtins::funcs::console::tests::remaining_input_checks_byte_limit_before_building_value ... ok
+test builtins::funcs::clock::tests::now_and_local_offset_use_the_supplied_clock_and_check_overflow ... ok
+test builtins::funcs::csv::tests::format_quotes_special_fields_and_round_trips_comma_and_tab ... ok
+test builtins::funcs::csv::tests::headers_make_sorted_maps_and_accept_empty_input_and_header_only ... ok
+test builtins::funcs::csv::tests::delimiters_must_be_ascii_and_not_quote_or_line_breaks ... ok
+test builtins::funcs::decimal::tests::absolute_integer_conversion_and_truncation ... ok
+test builtins::funcs::csv::tests::parse_errors_point_to_record_start_across_blank_lines_and_multiline_fields ... ok
+test builtins::funcs::bytes::tests::byte_list_construction_and_conversion ... ok
+test builtins::funcs::csv::tests::parse_records_with_newlines_quotes_empty_fields_and_unequal_widths ... ok
+test builtins::funcs::decimal::tests::rounding_modes_places_and_overflow ... ok
+test builtins::funcs::decimal::tests::float_conversion_uses_shortest_text_and_half_even_at_scale_28 ... ok
+test builtins::funcs::decimal::tests::text_conversion_preserves_scale_and_parse_rejects_non_literals ... ok
+test builtins::funcs::encoding::tests::rfc4648_vectors_and_url_alphabet ... ok
+test builtins::funcs::encoding::tests::decoding_rejects_padding_whitespace_alphabet_and_length_errors ... ok
+test builtins::funcs::encoding::tests::encoding_long_inputs_keeps_only_final_padding ... ok
+test builtins::funcs::file::path_tests::info_reports_file_kind_size_and_signed_modification_nanoseconds ... ok
+test builtins::funcs::file::path_tests::modification_nanoseconds_preserve_integer_boundaries_and_reject_overflow ... ok
+test builtins::funcs::file::path_tests::directory_names_and_walk_paths_are_sorted_by_utf8_bytes ... ok
+test builtins::funcs::file::path_tests::path_errors_follow_the_ioerror_kind_table ... ok
+test builtins::funcs::file::path_tests::links_are_described_without_following_and_invalid_names_fail ... ok
+test builtins::funcs::bytes::tests::hex_and_binary_parse_format_and_round_trip ... ok
+test builtins::funcs::csv::tests::long_fields_preserve_utf8_and_quotes_across_reader_output_chunks ... ok
+test builtins::funcs::file::path_tests::path_permissions_allow_search_only_parents_and_report_denied_access ... ok
+test builtins::funcs::file::path_tests::path_operations_succeed_and_preserve_bytes_lines_and_relative_paths ... ok
+test builtins::funcs::assert::tests::assert_effect_and_equal_call_typecheck_without_main ... ok
+test builtins::funcs::file::path_tests::tree_replacements_do_not_delete_or_enumerate_outside_files ... ok
+test builtins::funcs::file::resource_tests::close_writer_returns_the_blocking_release_failure_as_ioerror ... ok
+test builtins::funcs::file::resource_tests::failed_writer_discards_buffered_data_before_release ... ok
+test builtins::funcs::file::resource_tests::failed_writer_keeps_error_for_later_writes_and_close ... ok
+test builtins::funcs::clock::tests::sleeping_task_waits_for_virtual_time_while_another_task_progresses ... ok
+test builtins::funcs::file::resource_tests::read_chunk_is_bounded_reports_eof_and_continues_the_buffered_reader ... ok
+test builtins::funcs::console::tests::prompt_reaches_output_before_stdin_work_starts ... ok
+test builtins::funcs::file::resource_tests::cancelled_write_returns_writer_before_flushing_in_both_io_modes ... ok
+test builtins::funcs::file::path_tests::source_copy_and_info_records_work_with_both_io_modes ... ok
+test builtins::funcs::file::resource_tests::writer_modes_and_all_writes_round_trip_through_close_and_read_text ... ok
+test builtins::funcs::file::resource_tests::writes_return_io_errors_and_unreleased_buffers_are_discarded ... ok
+test builtins::funcs::file::resource_tests::outstanding_write_cancelled_by_race_is_never_invoked_or_lent ... ok
+test builtins::funcs::file::resource_tests::writing_after_close_stops_with_released_resource_used ... ok
+test builtins::funcs::file::tests::read_line_limit_counts_content_without_line_ending ... ok
+test builtins::funcs::file::tests::reader_preserves_lines_registers_site_and_close_is_idempotent ... ok
+test builtins::funcs::file::tests::cancelled_read_returns_the_reader_before_releasing_it ... ok
+test builtins::funcs::file::resource_tests::with_failed_writer_reports_release_failure_unless_explicitly_closed ... ok
+test builtins::funcs::file::resource_tests::with_flushes_writer_on_return_and_division_by_zero_in_both_io_modes ... ok
+test builtins::funcs::fixed_io::tests::fixed_io_supplies_environment_clocks_and_records_unexpected_registration ... ok
+test builtins::funcs::hash::tests::sha256_empty_and_abc_match_known_digests ... ok
+test builtins::funcs::http_client::tests::body_limit_reads_at_most_one_extra_byte_and_stops ... ok
+test builtins::funcs::http_client::tests::configured_network_faults_return_without_worker ... ok
+test builtins::funcs::http_client::tests::invalid_urls_and_timeout_finish_before_worker_submission ... ok
+test builtins::funcs::http_client::tests::missing_cpu_features_return_other_with_names ... ok
+test builtins::funcs::file::tests::write_and_append_round_trip_and_classify_os_errors ... ok
+test builtins::funcs::http_client::tests::request_headers_check_argument_zero_and_allow_utf8_and_tab ... ok
+test builtins::funcs::http_client::tests::resolver_io_becomes_host_not_found_and_timeout_is_preserved ... ok
+test builtins::funcs::http_client::tests::wrapped_certificate_failure_is_other_not_invalid_http_data ... ok
+test builtins::funcs::http_server::tests::explicit_close_returns_other_and_then_release_is_idempotent ... ok
+test builtins::funcs::http_server::tests::listen_port_checks_argument_one_before_io ... ok
+test builtins::funcs::http_server::tests::listen_returns_each_configured_network_fault ... ok
+test builtins::funcs::http_server::tests::request_record_fields_and_release_check ... ok
+test builtins::funcs::http_server::tests::respond_headers_reject_invalid_bytes_before_resource_access ... ok
+test builtins::funcs::http_server::tests::respond_status_checks_argument_one ... ok
+test builtins::funcs::http_util::tests::segments_decode_valid_utf8_and_preserve_entire_invalid_segments ... ok
+test builtins::funcs::integer::tests::bitwise_functions_and_shift_boundaries ... ok
+test builtins::funcs::io_error::tests::kind_returns_each_of_the_nine_kinds ... ok
+test builtins::funcs::json::tests::numbers_preserve_integer_float_distinction_and_negative_zero ... ok
+test builtins::funcs::json::tests::parse_errors_report_character_columns_and_separate_reasons ... ok
+test builtins::funcs::file::resource_tests::child_die_waits_for_cancelled_write_and_releases_it_once ... ok
+test builtins::funcs::json::tests::pretty_layout_and_non_finite_floats_follow_json_rules ... ok
+test builtins::funcs::json::tests::special_number_key_remains_an_object ... ok
+test builtins::funcs::json::tests::values_round_trip_with_escapes_sorted_keys_and_last_duplicate ... ok
+test builtins::funcs::lazy::tests::raw_force_rejects_execution_outside_the_force_instruction ... ok
+test builtins::funcs::map::tests::construction_and_sorted_list_conversion_keep_first_keys ... ok
+test builtins::funcs::file::tests::reading_a_closed_reader_stops_with_released_resource_used ... ok
+test builtins::funcs::file::resource_tests::with_reports_release_failure_unless_close_has_already_returned_it ... ok
+test builtins::funcs::map::tests::set_keeps_original_decimal_key_while_replacing_only_the_value ... ok
+test builtins::funcs::network_error::tests::all_kinds_and_messages_are_preserved ... ok
+test builtins::funcs::operators::float32::tests::arithmetic_rounds_each_result_and_preserves_ieee_values ... ok
+test builtins::funcs::operators::tests::decimal_and_byte_ordering_use_numeric_values ... ok
+test builtins::funcs::operators::tests::decimal_operators_preserve_results_and_stop_reasons ... ok
+test builtins::funcs::path::tests::absolute_and_components_follow_unix_roots_and_remove_curdir ... ok
+test builtins::funcs::path::tests::decomposition_returns_options_for_parents_names_stems_and_extensions ... ok
+test builtins::funcs::path::tests::join_all_folds_in_order_including_empty_and_absolute_parts ... ok
+test builtins::funcs::path::tests::join_preserves_spelling_and_replaces_base_for_absolute_child ... ok
+test builtins::funcs::path::tests::normalize_cancels_only_normal_components_and_never_crosses_root ... ok
+test builtins::funcs::path::tests::seeded_paths_preserve_normalized_parent_name_reconstruction_and_idempotence ... ok
+test builtins::funcs::path::tests::with_extension_replaces_removes_and_preserves_nameless_paths ... ok
+test builtins::funcs::process::external_tests::closed_child_input_preserves_exit_status_and_output ... ok
+test builtins::funcs::json::tests::parser_depth_boundary_and_iterative_writing_of_deep_values ... ok
+test builtins::funcs::process::external_tests::input_and_both_outputs_progress_without_filling_pipes ... ok
+test builtins::funcs::process::external_tests::oversized_output_is_drained_before_reporting_input_limit ... ok
+test builtins::funcs::process::external_tests::run_preserves_arguments_streams_and_nonzero_exit_status ... ok
+test builtins::funcs::file::tests::with_releases_the_opened_reader_once_on_return_error_and_exit ... ok
+test builtins::funcs::process::external_tests::run_reports_not_found_invalid_input_and_invalid_utf8 ... ok
+test builtins::funcs::process::tests::directories_use_run_input_and_reject_invalid_utf8 ... ok
+test builtins::funcs::process::tests::environment_variable_validates_names_and_preserves_values ... ok
+test builtins::funcs::process::tests::exit_validates_both_endpoints_and_rejects_out_of_domain_codes ... ok
+test builtins::funcs::process::external_tests::command_resolves_directory_relative_program_and_environment ... ok
+test builtins::funcs::random::tests::hidden_generator_matches_pure_operations_and_empty_choose_does_not_draw ... ok
+test builtins::funcs::random::tests::rejected_draw_is_skipped_and_invalid_ranges_report_high_argument ... ok
+test builtins::funcs::random::tests::fixed_seed_sequences_match_independent_reference_and_preserve_inputs ... ok
+test builtins::funcs::reference::tests::new_get_and_set_preserve_values_and_increment_version ... ok
+test builtins::funcs::reference::tests::raw_update_rejects_execution_outside_the_update_instruction ... ok
+test builtins::funcs::regex::tests::compile_errors_omit_long_patterns_and_keep_the_reason ... ok
+test builtins::funcs::process::external_tests::shell_interprets_pipes_variables_and_signal_exit_status ... ok
+test builtins::funcs::regex::tests::find_all_keeps_nonoverlapping_matches_and_empty_matches_at_utf8_boundaries ... ok
+test builtins::funcs::regex::tests::leftmost_match_has_byte_positions_and_numbered_and_named_captures ... ok
+test builtins::funcs::regex::tests::matches_keep_only_the_matched_text ... ok
+test builtins::funcs::regex::tests::position_searches_preserve_context_and_retry_empty_matches ... ok
+test builtins::funcs::random::tests::scripts_handle_random_operations_and_both_run_entries_seed_the_generator ... ok
+test builtins::funcs::file::resource_tests::cancelled_close_failure_is_discarded_only_for_unbound_starter_in_both_io_modes ... ok
+test builtins::funcs::regex::tests::replace_first_does_not_build_all_replacements ... ok
+test builtins::funcs::http_server::tests::close_failures_and_exchange_implicit_release_follow_vm_scopes ... ok
+test builtins::funcs::map::tests::remaining_functions_cover_empty_singleton_and_large_maps_for_each_key_kind ... ok
+test builtins::funcs::regex::tests::replace_all_with_calls_each_match_from_the_left_and_uses_groups ... ok
+test builtins::funcs::samples::tests::absolute_body_and_wrapper_report_overflow ... ok
+test builtins::funcs::samples::tests::calls_require_services_for_their_capability ... ok
+test builtins::funcs::samples::tests::declarations_and_wrappers_reject_argument_mismatches ... ok
+test builtins::funcs::samples::tests::read_text_body_and_wrapper_complete_files_and_failures ... ok
+test builtins::funcs::samples::tests::repeat_body_and_wrapper_check_size_before_allocation ... ok
+test builtins::funcs::samples::tests::synchronous_worker_rejects_lending_before_running_the_job ... ok
+test builtins::funcs::samples::tests::worker_completion_receives_call_site_and_arguments ... ok
+test builtins::funcs::set::tests::add_and_set_operations_keep_original_decimal_elements ... ok
+test builtins::funcs::set::tests::construction_and_sorted_list_conversion_keep_first_keys ... ok
+test builtins::funcs::regex::tests::replacements_are_literal_and_preserve_unmatched_text ... ok
+test builtins::funcs::regex::tests::split_preserves_empty_parts_and_skips_empty_matches_next_to_nonempty_matches ... ok
+test builtins::funcs::string::tests::unicode_case_lengths_check_byte_limit_without_large_allocations ... ok
+test builtins::funcs::string::tests::unicode_string_case_mappings ... ok
+test builtins::funcs::string::tests::utf8_conversion_preserves_bytes_and_bom_and_rejects_invalid_input ... ok
+test builtins::funcs::task::tests::timeout_normalizes_non_positive_milliseconds ... ok
+test builtins::funcs::tests::character_conversion_checks_scalar_ranges_and_ascii_classes ... ok
+test builtins::funcs::tests::console_bodies_and_wrappers_record_streams_and_call_order ... ok
+test builtins::funcs::tests::file_read_text_uses_working_directory_and_reports_io_failures ... ok
+test builtins::funcs::tests::float_and_text_operators_follow_ieee_and_scalar_order ... ok
+test builtins::funcs::tests::float_conversion_uses_the_shared_format_and_preserves_signed_zero ... ok
+test builtins::funcs::tests::growing_values_are_rejected_before_heap_allocation ... ok
+test builtins::funcs::tests::integer_conversions_and_helpers_cover_the_signed_range ... ok
+test builtins::funcs::tests::integer_operators_check_overflow_and_signed_division ... ok
+test builtins::funcs::tests::list_bodies_observe_sequence_and_pattern_bounds ... ok
+test builtins::funcs::tests::list_sort_is_stable_for_nan_and_signed_zero_and_supports_text ... ok
+test builtins::funcs::tests::process_arguments_body_and_wrapper_return_the_supplied_list ... ok
+test builtins::funcs::tests::pure_wrappers_from_each_implemented_part_match_the_bodies ... ok
+test builtins::funcs::tests::show_quotes_and_escapes_literals_and_ioerror_returns_its_message ... ok
+test builtins::funcs::tests::string_positions_count_bytes_and_scalars_separately ... ok
+test builtins::funcs::tests::string_transforms_keep_empty_fields_and_documented_line_rules ... ok
+test builtins::funcs::time::tests::arithmetic_checks_final_sum_and_floors_wide_differences ... ok
+test builtins::funcs::time::tests::calendar_round_trips_offsets_fraction_and_range_endpoints ... ok
+test builtins::funcs::time::tests::format_accepts_only_the_specified_tokens_and_uses_nine_fraction_digits ... ok
+test builtins::funcs::time::tests::invalid_calendar_fields_are_result_errors_but_offset_is_a_runtime_error ... ok
+test builtins::funcs::time::tests::iso_format_preserves_fraction_and_offset_and_round_trips ... ok
+test builtins::funcs::time::tests::iso_parse_accepts_timestamp_syntax_and_rejects_missing_offset_or_range ... ok
+test builtins::funcs::time::tests::unix_conversions_floor_negative_values_and_check_the_instant_range ... ok
+test builtins::funcs::width_bits::tests::shifts_reject_amounts_outside_each_width ... ok
+test builtins::iface::tests::width_declarations_preserve_bits_and_reject_argument_mismatches ... ok
+test builtins::table::tests::internal_lookup_functions_supply_the_language_types_and_intrinsics ... ok
+test builtins::table::tests::table_names_parts_capabilities_and_schemes_are_consistent ... ok
+test builtins::table::tests::u3_declarations_match_the_frozen_interface ... ok
+test bytecode::asm::tests::assembly_rejects_bad_labels_and_propagates_analysis_failures ... ok
+test bytecode::asm::tests::assembly_resolves_tables_labels_and_liveness_for_every_prototype ... ok
+test builtins::funcs::regex::tests::scripts_observe_dynamic_pattern_errors_and_extract_dates_and_literal_replacements ... ok
+test builtins::funcs::regex::tests::invalid_or_oversized_patterns_return_nonempty_error_reasons ... ok
+test bytecode::codegen::tables::tests::global_limits_have_no_span_and_are_reported_once_per_table ... ok
+test bytecode::codegen::tests::constructor_reuse_preserves_values_with_both_heap_settings ... ok
+test builtins::funcs::console::tests::read_all_lines_checks_element_limit_before_building_lines ... ok
+test bytecode::codegen::tests::builtin_value_prototypes_respect_type_dependent_instructions ... ok
+test bytecode::codegen::tests::exit_report_values_survive_lowering_captures_and_liveness ... ok
+test bytecode::codegen::tests::dictionaries_method_arguments_and_captured_impl_parameters ... ok
+test builtins::funcs::file::path_tests::oversized_sparse_bytes_and_too_many_lines_stop_before_building_values ... ok
+test bytecode::codegen::tests::lazy_force_update_and_builtin_value_sharing ... ok
+test bytecode::codegen::tests::handlers_escapes_and_nested_continuation_capture ... ok
+test bytecode::codegen::tests::list_patterns_and_copied_guard_scopes ... ok
+test bytecode::codegen::tests::malformed_length_cases_are_internal_errors ... ok
+test bytecode::codegen::tests::nested_constants_are_shared_and_children_precede_parents ... ok
+test bytecode::codegen::tests::nested_closures_capture_registers_then_captures ... ok
+test bytecode::codegen::tests::module_names_and_standard_library_origins ... ok
+test bytecode::codegen::tests::operator_selection_and_tail_returns ... ok
+test bytecode::codegen::tests::resource_body_keeps_call_before_release ... ok
+test bytecode::codegen::tests::reused_input_is_rejected_when_live_captured_or_constructor_sizes_differ ... ok
+test bytecode::codegen::tests::structural_equality_and_record_getters ... ok
+test builtins::funcs::regex::tests::regex_replacements_join_multiple_chunks ... ok
+test bytecode::liveness::tests::all_opcodes_obey_register_operand_contracts ... ok
+test bytecode::liveness::tests::branches_clear_only_the_unused_path_and_loops_keep_values ... ok
+test bytecode::liveness::tests::live_in_sets_include_branch_merges_and_backward_edges ... ok
+test bytecode::liveness::tests::malformed_operands_and_tables_return_liveness_errors ... ok
+test bytecode::codegen::tests::width_constants_compile_and_verify_without_changing_their_representation ... ok
+test bytecode::liveness::tests::reuse_candidate_is_last_even_when_the_new_value_is_live ... ok
+test bytecode::liveness::tests::straight_line_overwrites_and_terminal_windows ... ok
+test bytecode::liveness::tests::waiting_arguments_survive_until_the_next_instruction ... ok
+test bytecode::verify::tests::every_opcode_accepts_valid_operands_and_rejects_outside_registers ... ok
+test bytecode::verify::tests::exit_report_tables_keep_reads_and_reject_malformed_sites ... ok
+test bytecode::verify::tests::rejects_table_and_liveness_contract_violations_at_the_right_site ... ok
+test bytecode::liveness::tests::random_prototypes_agree_with_path_and_register_state_exploration ... ok
+test cli::tests::file_positions_check_errors_json_and_missing_main ... ok
+test bytecode::codegen::tests::nested_prototype_limits_are_reported_once_per_definition ... ok
+test cli::tests::licenses_in_development_build_say_list_is_not_bundled ... ok
+test cli::tests::invalid_utf8_script_argument_reports_r0301_without_running ... ok
+test cli::tests::parse_commands_sizes_options_and_passthrough ... ok
+test cli::tests::prelude_source_errors_are_internal_and_user_errors_are_check_failures ... ok
+test builtins::funcs::map::tests::remaining_map_operations_match_model_and_preserve_inputs_across_collection ... ok
+test cli::tests::run_reports_put_the_adopted_die_before_supplementary_failures ... ok
+test cli::tests::usage_errors_have_two_lines_and_exit_two ... ok
+test cli::tests::main_result_runtime_error_and_panic_exit_states ... ok
+test bytecode::codegen::tests::prototype_limits_report_definition_spans_and_keep_generating ... ok
+test cli::tests::wasm_options_accept_units_and_reject_invalid_ranges ... ok
+test cli::tools::args::tests::bnt_files_collects_sorted_regular_bnt_files_and_skips_links ... ok
+test cli::tools::args::tests::bnt_files_reports_a_missing_directory ... ok
+test cli::tools::args::tests::path_arguments_accept_check_and_reject_usage_errors ... ok
+test cli::tools::args::tests::reads_options_before_and_after_the_name_alike ... ok
+test cli::tools::doc_examples::tests::diagnostic_primary_secondary_and_edit_explanations_return_to_comments ... ok
+test cli::tools::doc_examples::tests::doc_examples_preserve_modes_output_and_diagnostic_inclusion ... ok
+test cli::tools::doc_examples::tests::doc_format_errors_are_e0260_only_on_explicit_extraction ... ok
+test cli::tools::doc_examples::tests::every_attached_doc_is_collected_once_in_source_order ... ok
+test cli::tools::doc_examples::tests::markdown_adapter_keeps_exit_and_legacy_diagnostic_expectations ... ok
+test cli::tools::doc_examples::tests::source_positions_survive_unicode_blank_lines_crlf_and_synthetic_ranges ... ok
+test cli::tests::warnings_are_reported_before_execution_and_deny_prevents_it ... ok
+test cli::tools::formatter::print::tests::canonical_forms_are_fixed_points ... ok
+test cli::tools::formatter::print::tests::formats_into_the_canonical_form ... ok
+test cli::tools::formatter::roles::tests::blank_line_handling_follows_the_kind_of_line ... ok
+test cli::tools::formatter::roles::tests::blank_lines_are_removed_at_the_start_of_each_branch_in_an_else_if_chain ... ok
+test cli::tools::formatter::roles::tests::closing_tokens_carry_the_level_inside_the_construct ... ok
+test cli::tools::formatter::roles::tests::top_ranges_cover_each_declaration_with_its_attributes ... ok
+test cli::tools::formatter::tests::command::internal_errors_win_over_other_statuses_and_leave_files_alone ... ok
+test cli::tools::formatter::tests::command::read_source_rejects_sources_over_the_limit ... ok
+test cli::tools::formatter::tests::command::replace_file_does_not_touch_an_existing_temporary_file ... ok
+test cli::tools::formatter::tests::command::replacement_refuses_a_different_owner ... ok
+test cli::tools::formatter::tests::command::temporary_file_is_private_from_creation ... ok
+test cli::tools::formatter::tests::formats_the_example_of_the_design ... ok
+test cli::tools::formatter::print::tests::deep_nesting_uses_the_default_test_thread_stack ... ok
+test cli::tools::formatter::tests::moves_multiline_strings_with_their_opening_line ... ok
+test cli::tools::formatter::tests::normalizes_blank_lines ... ok
+test cli::tools::formatter::tests::normalizes_line_ends_and_characters ... ok
+test cli::tools::formatter::tests::only_lexical_and_syntax_errors_refuse_formatting ... ok
+test cli::tools::formatter::tests::places_comments ... ok
+test cli::tools::formatter::tests::preserves_short_lambdas_and_their_boundaries ... ok
+test cli::tests::run_implicit_shebang_directory_and_request_execution ... ok
+test cli::tools::formatter::tests::syntax_errors_are_reported_with_diagnostics ... ok
+test cli::tools::formatter::verify::tests::accepts_removed_blank_lines_before_outer_lambda_ending ... ok
+test cli::tools::formatter::verify::tests::accepts_whitespace_only_changes ... ok
+test cli::tools::formatter::verify::tests::die_formatting_preserves_actions_messages_and_short_lambda_layout ... ok
+test cli::tools::formatter::verify::tests::preserves_lambda_layouts_across_whitespace_changes ... ok
+test cli::tools::formatter::verify::tests::rejects_changed_comments ... ok
+test cli::tools::formatter::verify::tests::rejects_changed_lambda_boundaries ... ok
+test cli::tools::formatter::verify::tests::rejects_changed_tokens ... ok
+test cli::tools::formatter::verify::tests::rejects_changed_try_actions_and_short_lambda_lines ... ok
+test cli::tools::formatter::verify::tests::rejects_syntax_errors_with_the_same_tokens ... ok
+test cli::tools::package::tests::effect_imports_must_match_library_names ... ok
+test cli::tools::package::tests::header_edit_keeps_body_comments_and_line_endings ... ok
+test cli::tools::package::tests::package_visibility_contracts_are_excluded_from_effect_reports ... ok
+test cli::tools::package::tests::public_contracts_include_nested_function_types_and_trait_methods ... ok
+test cli::tools::package::tests::update_replaces_quoted_values_and_adds_missing_fields_without_changing_the_body ... ok
+test cli::tools::skill::generate::tests::comments_and_lines_left_empty_are_removed ... ok
+test cli::tools::skill::generate::tests::doc_lines_lose_leading_spaces ... ok
+test cli::tools::skill::generate::tests::first_sentence_ignores_periods_inside_backticks ... ok
+test cli::tools::skill::generate::tests::grammar_heading_without_block_is_an_error ... ok
+test cli::tools::skill::generate::tests::grammar_without_heading_is_an_error ... ok
+test cli::tools::skill::tests::a_directory_not_written_by_install_is_left_unchanged ... ok
+test builtins::funcs::set::tests::remaining_functions_cover_empty_singleton_and_large_sets_for_each_key_kind ... ok
+test cli::tools::skill::tests::an_unwritable_parent_fails_and_leaves_no_temporary_directory ... ok
+test cli::tools::skill::tests::document_retrieval_ignores_the_supplied_home ... ok
+test cli::tools::skill::tests::inconsistent_document_lists_are_rejected_before_returning_partial_results ... ok
+test cli::tools::skill::tests::an_old_install_that_cannot_be_removed_keeps_the_new_install ... ok
+test cli::tools::skill::tests::install_refuses_symlinked_and_oversized_skill_files ... ok
+test cli::tools::skill::tests::install_refuses_a_fifo_skill_without_blocking ... ok
+test cli::tools::formatter::tests::stdlib_sources_are_canonical ... ok
+test cli::tools::skill::tests::project_writes_under_the_working_directory_and_agents_share_a_directory ... ok
+test cli::tools::skill::tests::install_writes_every_agent_directory_under_home ... ok
+test cli::tools::skill::tests::replacing_under_an_unwritable_parent_keeps_the_old_install ... ok
+test cli::tools::skill::tests::reinstall_replaces_the_old_install_without_leftover_files ... ok
+test cli::tools::skill::tests::usage_errors_have_two_lines_and_exit_two ... ok
+test cli::tools::skill::tests::skill_messages_escape_paths_and_preserve_template_names ... ok
+test cli::tools::skill::tests::user_scope_rejects_home_that_is_not_an_absolute_existing_directory ... ok
+test cli::tools::skill::tests::user_scope_without_home_reports_no_home ... ok
+test cli::tools::skill::tests::version_key_is_found_only_under_metadata_in_the_front_matter ... ok
+test cli::tools::test_runner::report::tests::a_passing_test_has_no_failure_details ... ok
+test cli::tools::test_runner::report::tests::assert_details_put_release_notes_before_the_tail_note ... ok
+test cli::tools::test_runner::report::tests::exit_details_keep_die_separate_from_captured_output_and_release_notes ... ok
+test cli::tools::test_runner::report::tests::exit_json_notes_list_release_failures ... ok
+test cli::tools::test_runner::report::tests::summary_is_ok_only_when_the_exit_status_is_zero ... ok
+test cli::tools::test_runner::report::tests::template_names_inside_values_are_kept_verbatim ... ok
+test cli::tools::skill::tests::uninstall_removes_installs_and_ignores_missing_directories ... ok
+test diag::render::acceptance_tests::diagnostic_table_preserves_ids_keys_and_literal_braces ... ok
+test diag::render::acceptance_tests::edit_shapes_expand_lines_mark_insertions_and_separate_helps ... ok
+test diag::render::acceptance_tests::edits_in_other_files_are_grouped_sorted_and_use_the_largest_line_number ... ok
+test diag::render::acceptance_tests::new_frame_names_and_runtime_json_have_stable_order ... ok
+test diag::render::acceptance_tests::specification_deadlock_and_absent_wait_location ... ok
+test diag::render::acceptance_tests::specification_release_failure_and_other_report_kinds ... ok
+test diag::render::acceptance_tests::specification_runtime_and_task_origins_align_together_and_keep_notes_in_order ... ok
+test diag::render::acceptance_tests::specification_type_excerpt_and_other_files ... ok
+test diag::render::acceptance_tests::specification_uses_io_edit_and_json ... ok
+test diag::render::acceptance_tests::warning_and_edit_colors_follow_their_roles ... ok
+test diag::render::acceptance_tests::warnings_counts_deny_and_truncation_follow_severity ... ok
+test cli::tools::skill::tests::user_scope_installs_through_a_symlink_to_a_home_directory ... ok
+test diag::render::help_tests::deprecated_warning_preserves_the_message_without_guessing_a_replacement ... ok
+test builtins::funcs::set::tests::remaining_set_operations_match_model_and_preserve_both_inputs_across_collection ... ok
+test diag::render::help_tests::qualified_keyword_repairs_rename_the_module_and_member ... ok
+test diag::render::help_tests::syntax_repairs_remove_the_original_code_when_reparsed ... ok
+test cli::tools::test_runner::tests::collecting_tests_rejects_missing_checked_metadata ... ok
+test diag::render::help_tests::text_only_repairs_and_multiple_candidates_do_not_attach_edits ... ok
+test diag::render::tests::bom_is_hidden_in_edited_first_line ... ok
+test diag::render::tests::check_text_reports_empty_single_and_multiple_error_lists ... ok
+test diag::render::tests::check_text_shows_at_most_fifty_diagnostics_and_reports_the_counts ... ok
+test diag::render::tests::color_is_applied_only_when_requested ... ok
+test diag::render::tests::embedded_controls_are_escaped_without_changing_json_or_layout ... ok
+test diag::render::tests::internal_reports_have_no_code_and_put_backtrace_last_in_json ... ok
+test diag::render::tests::invalid_utf8_bytes_are_rendered_as_single_replacement_characters ... ok
+test diag::render::tests::json_escapes_quotes_slashes_newlines_and_other_control_characters ... ok
+test diag::render::tests::json_line_has_stable_field_order_and_byte_offsets ... ok
+test diag::render::tests::missing_edit_source_omits_the_whole_help_edit_group ... ok
+test diag::render::tests::multiline_and_empty_spans_get_visible_markers ... ok
+test diag::render::tests::omitted_trace_frames_are_written_between_visible_groups ... ok
+test diag::render::tests::positionless_runtime_error_text_shows_only_its_note ... ok
+test diag::render::tests::runtime_error_text_includes_the_call_trace_and_tail_note ... ok
+test diag::render::tests::runtime_json_contains_named_trace_frames_and_omitted_count ... ok
+test diag::render::tests::same_line_secondary_markers_are_ordered_by_column ... ok
+test diag::render::tests::tab_expansion_keeps_the_marker_under_the_selected_character ... ok
+test diag::render::tests::terminal_controls_are_escaped_in_excerpts_and_locations ... ok
+test diag::render::tests::terminal_controls_in_edits_keep_markers_and_line_endings ... ok
+test diag::render::tests::terminal_controls_in_summary_filenames_are_escaped ... ok
+test diag::render::tests::type_error_text_matches_the_rust_style_example ... ok
+test diag::render::tests::waiting_json_has_empty_trace_when_no_trace_was_recorded ... ok
+test diag::render::help_tests::module_repairs_update_the_file_selected_by_the_edit ... ok
+test exchange_tests::die_exchange_keeps_operand_then_message_lambda_effects ... ok
+test external::adapter::abi_tests::empty_functions_and_empty_aggregates_need_no_indirect_result ... ok
+test external::adapter::abi_tests::flattening_preserves_scalar_widths_field_order_and_variant_slots ... ok
+test external::adapter::abi_tests::handwritten_component_types_validate_and_execute_both_indirect_directions ... ok
+test external::adapter::abi_tests::handwritten_variants_validate_join_types_and_pass_payload_bits ... ok
+test external::adapter::abi_tests::variant_joins_and_generated_conversions_preserve_bits ... ok
+test external::adapter::codec::tests::decode_rejects_bad_references_scalars_and_padding_before_any_value_allocation ... ok
+test external::adapter::codec::tests::decode_validates_and_charges_disappearing_map_values_before_last_wins_normalization ... ok
+test external::adapter::codec::tests::decoded_nested_lists_and_leaf_boundaries_survive_collection ... ok
+test external::adapter::codec::tests::deep_values_and_long_lists_use_bounded_cursor_work ... ok
+test external::adapter::codec::tests::header_and_zero_regions_reject_corruption ... ok
+test external::adapter::codec::tests::map_keys_and_flags_use_wit_order_and_no_intermediate_values ... ok
+test external::adapter::codec::tests::plan_value_mismatches_are_internal_failures ... ok
+test external::adapter::codec::tests::references_reserve_all_elements_then_visit_children_in_declaration_order ... ok
+test external::adapter::codec::tests::root_counts_numeric_bits_and_transfer_boundary_match_independent_bytes ... ok
+test external::adapter::codec::tests::same_wit_shapes_have_declaration_specific_construction_costs ... ok
+test external::adapter::codec::tests::selected_payloads_zero_unused_regions_and_count_actual_fields ... ok
+test external::adapter::collection_tests::flags_unknown_result_bits_are_rejected_before_copying ... ok
+test external::adapter::collection_tests::flags_width_boundaries_use_i32_and_charge_only_selected_items ... ok
+test external::adapter::collection_tests::map_rejects_invalid_values_even_when_later_keys_would_replace_them ... ok
+test external::adapter::collection_tests::nested_map_counts_duplicates_before_host_normalizes_last_values ... ok
+test external::adapter::fixed_tests::dynamic_transfer_construction_and_value_size_limits_keep_failure_contract ... ok
+test external::adapter::fixed_tests::invalid_guest_utf8_remains_a_component_abi_error ... ok
+test cli::tools::formatter::tests::large_inputs_are_formatted_idempotently ... ok
+test external::adapter::fixed_tests::malformed_dynamic_arguments_stop_before_guest_call ... ok
+test external::adapter::fixed_tests::malformed_fixed_values_and_fixed_budgets_stop_before_guest_call ... ok
+test external::adapter::fixed_tests::mixed_references_align_in_order_and_use_indirect_arguments ... ok
+test external::adapter::fixed_tests::nested_lists_reserve_fixed_regions_and_charge_both_directions ... ok
+test external::adapter::fixed_tests::nested_record_and_tuple_use_direct_arguments_and_indirect_result_once ... ok
+test external::adapter::fixed_tests::nested_strings_keep_parent_iteration_and_reject_malformed_children ... ok
+test external::adapter::fixed_tests::scalar_widths_signed_extension_and_float_bits_cross_generated_adapter ... ok
+test external::adapter::fixed_tests::simple_lists_cross_generated_adapter_with_all_widths_and_empty_values ... ok
+test external::adapter::fixed_tests::sixteen_and_seventeen_arguments_and_empty_results_follow_lower_abi ... ok
+test external::adapter::fixed_tests::strings_and_bytes_copy_content_and_relocate_results ... ok
+test external::adapter::fixed_tests::variable_length_children_use_element_alignment_and_zero_fixed_padding ... ok
+test external::adapter::fixed_tests::zero_sized_list_elements_still_cost_one_language_value_each ... ok
+test external::adapter::lifetime_tests::deeply_nested_singletons_copy_changed_leaf_through_internal_call ... ok
+test external::adapter::lifetime_tests::malformed_guest_strings_and_tags_remain_external_failures ... ok
+test external::adapter::lifetime_tests::post_return_poisoning_preserves_results_and_pure_calls_start_fresh ... ok
+test cli::tests::wasm_limits_and_stats_reach_run_and_test ... ok
+test external::adapter::lifetime_tests::utf16_guest_converts_surrogate_pairs_and_empty_strings ... ok
+test external::adapter::limit_tests::byte_and_string_result_copying_has_bounded_fuel_overhead ... ok
+test external::adapter::limit_tests::adapter_memory_and_instances_count_toward_store_totals ... ok
+test external::adapter::limit_tests::memory32_array_product_stops_before_missing_payload_or_guest_call ... ok
+test external::adapter::limit_tests::nested_construction_is_checked_before_each_direction_allocates ... ok
+test diag::render::help_tests::type_repairs_pass_typechecking_when_applied ... ok
+test external::adapter::memory_tests::fuel_interrupt_and_store_limiter_failures_take_priority_over_adapter_reports ... ok
+test external::adapter::memory_tests::header_checks_version_length_roots_budgets_and_transfer_before_reading_payload ... ok
+test external::adapter::memory_tests::invalid_alignment_ranges_and_memory32_addition_stop_with_typed_reports ... ok
+test external::adapter::memory_tests::known_and_unknown_failure_numbers_and_unsigned_quantities_cross_component_boundary ... ok
+test external::adapter::memory_tests::realloc_aligns_preserves_bytes_reuses_shrinks_and_checks_growth ... ok
+test external::adapter::limit_tests::transfer_and_construction_boundaries_apply_without_statistics ... ok
+test external::adapter::memory_tests::repeated_allocations_keep_headers_aligned_on_the_same_instance ... ok
+test external::adapter::runtime::tests::adapter_linking_failure_is_internal ... ok
+test external::adapter::runtime::tests::generated_calls_report_success_and_guest_traps_without_retry ... ok
+test external::adapter::runtime::tests::composed_reports_keep_their_type_quantities_and_diagnostic_class ... ok
+test external::adapter::sharing_tests::constructor_tags_share_code_but_payload_construction_rules_do_not ... ok
+test external::adapter::sharing_tests::generation_limits_allow_fallback_without_hiding_invalid_code_or_imports ... ok
+test external::adapter::sharing_tests::grouped_exports_sources_and_interface_functions_keep_their_results ... ok
+test external::adapter::tests::aggregates_preserve_field_order_padding_and_element_stride ... ok
+test external::adapter::tests::handwritten_guest_reads_record_and_variant_at_computed_offsets ... ok
+test external::adapter::tests::type_and_memory32_limits_are_checked_before_unbounded_work ... ok
+test external::adapter::tests::variants_options_and_results_align_the_shared_payload ... ok
+test external::adapter::sharing_tests::shared_byte_list_exports_preserve_host_construction_budgets ... ok
+test external::adapter::tests::widths_references_and_discriminants_have_canonical_memory32_layouts ... ok
+test external::adapter::variant_tests::nested_variants_join_i32_and_f32_and_keep_multiple_arguments_separate ... ok
+test external::adapter::variant_tests::options_and_unit_result_sides_select_fields_and_charge_unit_values ... ok
+test external::adapter::variant_tests::result_memory_copies_only_selected_leaves_and_rejects_invalid_discriminants ... ok
+test external::adapter::variant_tests::single_and_distributed_payloads_charge_only_language_constructors ... ok
+test external::adapter::variant_tests::selected_references_reserve_depth_first_in_declaration_order ... ok
+test external::adapter::variant_tests::variant_cases_join_numeric_bits_and_zero_unused_slots ... ok
+test external::convert::tests::nested_conversion_and_size_boundaries ... ok
+test external::runtime::adapter_tests::adapter_arguments_fail_before_lazy_compile_and_guest_start ... ok
+test external::runtime::adapter_tests::adapter_and_resource_caches_coexist_and_pure_instances_are_fresh ... ok
+test external::runtime::adapter_tests::adapter_candidates_keep_the_remaining_type_budget_and_generation_fallback ... ok
+test external::runtime::adapter_tests::adapter_cache_keeps_construction_rules_sources_and_host_tags_distinct ... ok
+test external::adapter::limit_tests::generated_list_walk_obeys_shared_fuel_and_epoch ... ok
+test external::runtime::adapter_tests::core_instance_limits_choose_dynamic_before_entering_the_guest ... ok
+test external::runtime::tests::argument_budget_precedes_instantiation ... ok
+test external::runtime::adapter_tests::generation_fallback_for_one_function_preserves_other_adapter_calls ... ok
+test external::runtime::tests::bytes_and_byte_list_share_typed_call_and_sum_transfer_costs ... ok
+test external::runtime::adapter_tests::unused_adapter_declarations_do_not_exhaust_core_instances ... ok
+test external::runtime::tests::collected_handles_are_released_before_next_call ... ok
+test external::runtime::tests::destructor_failures_identify_resource_drop ... ok
+test external::runtime::tests::failures_and_fresh_instances ... ok
+test external::runtime::tests::floats_and_empty_string_roundtrip ... ok
+test external::runtime::tests::handles_from_other_execution_or_resource_are_internal_failures ... ok
+test external::runtime::tests::initial_and_growing_memories_share_call_budget ... ok
+test external::runtime::tests::memory_grow_beyond_guest_maximum_returns_minus_one ... ok
+test external::runtime::tests::mixed_typed_and_dynamic_calls_agree ... ok
+test external::runtime::tests::object_count_limits_are_resource_failures ... ok
+test external::runtime::tests::routes_follow_declared_types_and_arity ... ok
+test external::runtime::tests::bytes_transfer_budget_and_empty_values ... ok
+test external::runtime::tests::stateful_calls_keep_values_and_reset_limits ... ok
+test external::runtime::tests::statistics_count_typed_dynamic_and_stateful_calls ... ok
+test external::runtime::tests::three_argument_list_calls_follow_their_routes ... ok
+test external::runtime::tests::typed_arguments_share_transfer_budget ... ok
+test external::runtime::tests::typed_list_result_obeys_element_limit ... ok
+test external::runtime::tests::typed_lists_and_dynamic_calls_agree ... ok
+test external::runtime::tests::typed_loop_exhausts_fuel ... ok
+test external::runtime::tests::typed_transfer_limits_apply_to_arguments_and_results ... ok
+test cli::tests::codegen_limit_is_a_run_error_but_check_succeeds ... ok
+test external::runtime::tests::epoch_interrupts_running_wasm_and_watcher_joins ... ok
+test external::tests::async_components_are_rejected_by_the_fixed_engine_features ... ok
+test external::adapter::fixed_tests::list_type_depth_boundary_runs_with_small_values_and_rejects_one_more_level ... ok
+test external::tests::aggregate_types_match_structure_and_normalized_names ... ok
+test external::tests::declaration_notes_use_lowercase_non_keyword_parameter_names ... ok
+test external::tests::declaration_plan_checks_dependencies_and_record_fields ... ok
+test diag::render::help_tests::resolver_repairs_remove_the_original_code_when_reloaded ... ok
+test external::tests::dynamic_flags_transfer_budgets_count_selected_names_in_both_directions ... ok
+test external::tests::directories_lost_after_loading_are_component_read_errors ... ok
+test external::tests::exported_resource_identity_matches_borrow ... ok
+test external::tests::aggregate_mismatches_report_the_first_reason_in_both_directions ... ok
+test external::tests::dynamic_map_transfer_limits_include_disappearing_entries_and_strings ... ok
+test exchange_tests::typed_try_exchange_matches_independent_corpus_ten ... ok
+test external::tests::component_and_signature_errors ... ok
+test external::tests::generic_state_budget_reports_the_root_type ... ok
+test external::tests::flags_match_concrete_data_and_reject_invalid_members ... ok
+test external::tests::map_resources_require_state_and_release_disappearing_values ... ok
+test external::tests::generic_concrete_types_match_used_fields ... ok
+test external::tests::mismatch_type_displays_are_bounded ... ok
+test external::runtime::tests::six_megabyte_byte_list_uses_one_transfer_byte_per_element ... ok
+test external::tests::module_roots_and_package_wasm_boundaries ... ok
+test external::tests::named_external_calls_keep_positions_independent_of_wit_names ... ok
+test bytecode::codegen::tests::rewritten_eval_programs_keep_outputs ... ok
+test external::tests::one_component_read_serves_multiple_declarations ... ok
+test external::tests::generic_state_follows_instantiated_fields ... ok
+test external::tests::mismatches_include_nested_types_and_omitted_result_sides ... ok
+test external::tests::map_keys_and_member_mismatches ... ok
+test external::tests::recursive_types_are_rejected_before_reading_components ... ok
+test external::tests::paths_are_exact_and_stay_under_their_root ... ok
+test external::tests::user_named_standard_types_are_identified_in_mismatches ... ok
+test external::tests::unmapped_component_types_omit_declaration_notes ... ok
+test ir::check::tests::all_independent_errors_are_reported_across_branches_and_definitions ... ok
+test ir::check::tests::builtin_declarations_and_builtin_constraints ... ok
+test ir::check::tests::capture_boundaries_restore_return_and_continuations_after_a_rejected_body ... ok
+test ir::check::tests::constant_definitions_and_references_are_pure ... ok
+test ir::check::tests::constrained_top_functions_check_equality_key_and_declaration_summaries ... ok
+test ir::check::tests::continuations_are_hidden_by_lambda_and_lazy_but_visible_in_nested_handlers ... ok
+test ir::check::tests::deep_ir_is_checked_without_changing_the_thread_stack ... ok
+test ir::check::tests::dictionary_types_supertraits_scope_and_method_contracts ... ok
+test ir::check::tests::effect_arguments_substitute_inside_function_types_and_remain_distinct ... ok
+test ir::check::tests::effect_contracts_and_escape_boundaries ... ok
+test external::tests::external_types_and_effects_match_component_contracts ... ok
+test external::tests::tuple_and_multi_argument_variant_contracts ... ok
+test ir::check::tests::handled_effects_require_every_operation_and_never_include_state ... ok
+test ir::check::tests::handlers_resume_and_rigid_clause_parameters ... ok
+test ir::check::tests::higher_kinded_dictionaries_substitute_constructor_heads ... ok
+test ir::check::tests::implementation_dictionary_type_arguments_satisfy_builtin_constraints ... ok
+test ir::check::tests::lambda_effect_annotation_may_include_more_than_its_body ... ok
+test ir::check::tests::lazy_purity_and_resource_release_effects ... ok
+test ir::check::tests::local_scopes_restore_overwritten_and_absent_variables_even_after_errors ... ok
+test ir::check::exit_report_tests::reports_require_canonical_exit_one_and_checked_strings ... ok
+test ir::check::tests::operation_application_uses_its_declaration ... ok
+test ir::check::tests::failure_clause_error_type_kind_and_unavailable_continuation_are_checked ... ok
+test ir::check::tests::pattern_alternatives_ranges_lists_and_guards ... ok
+test ir::check::tests::polymorphic_values_applications_and_node_annotations ... ok
+test ir::check::tests::rigid_parameters_cannot_escape_their_clause_scope ... ok
+test ir::check::tests::rigid_parameters_use_the_operation_builtin_constraints ... ok
+test ir::check::tests::subsumption_only_widens_the_outer_function_effects ... ok
+test ir::check::tests::failure_handle_preserves_the_remaining_body_effects ... ok
+test external::tests::unsupported_types_are_rejected_at_the_declared_type ... ok
+test ir::decision::tests::constant_cases_preserve_first_occurrence_order_and_required_defaults ... ok
+test ir::decision::tests::constructors_nested_fields_records_and_default_obey_the_contract ... ok
+test ir::decision::tests::copied_guards_renew_lambda_lazy_handle_and_clause_body_ids ... ok
+test ir::decision::block_tests::block_guard_order_survives_shared_decisions_and_row_fallback ... ok
+test ir::decision::tests::exhaustive_character_columns_preserve_correlated_rows ... ok
+test ir::decision::tests::exhaustive_character_ranges_lower_without_a_default ... ok
+test ir::decision::tests::exhaustive_integer_ranges_lower_without_a_default ... ok
+test ir::decision::tests::exhaustive_values_preserve_branch_selection_and_pattern_bindings ... ok
+test ir::decision::block_tests::row_fallback_preserves_guard_alternatives_and_list_bindings ... ok
+test ir::decision::tests::final_output_reservation_falls_back_to_rows ... ok
+test ir::decision::tests::generated_nodes_have_minimal_effects_types_and_match_origins ... ok
+test ir::decision::tests::interval_splitting_preserves_overlapping_rows_guards_and_extreme_endpoints ... ok
+test ir::decision::tests::joins_share_bodies_and_false_guards_skip_the_other_alternatives ... ok
+test ir::decision::tests::list_lengths_elements_and_rest_slices_follow_the_command_example ... ok
+test ir::decision::tests::malformed_core_inputs_report_decision_internal_errors ... ok
+test ir::decision::tests::final_decision_budget_reports_one_limit_at_the_match ... ok
+test ir::decision::tests::non_match_nodes_metadata_methods_constants_and_nested_bodies_are_preserved ... ok
+test ir::decision::tests::decision_sharing_accepts_previous_limits_and_preserves_matching ... ok
+test ir::decision::tests::nested_patterns_and_long_lists_preserve_bindings_without_changing_stack_size ... ok
+test external::tests::numeric_mismatches_preserve_widths_and_declaration_notes ... ok
+test ir::desugar::tests::binder_patterns_and_match_extensions_preserve_rows_arm_variables_and_origins ... ok
+test ir::check::tests::method_arguments_preserve_parameter_contracts ... ok
+test ir::check::tests::operation_clause_dictionary_count_order_type_and_scope_are_checked ... ok
+test ir::desugar::tests::constants_and_returns_preserve_boundaries_and_tail_calls ... ok
+test ir::desugar::tests::direct_callees_pipe_rules_and_placeholder_lambdas ... ok
+test ir::desugar::tests::handlers_keep_operation_identity_and_recompute_nested_resume_effects ... ok
+test ir::desugar::tests::interpolation_and_list_spread_use_only_required_calls ... ok
+test ir::desugar::tests::dictionaries_and_eta_lambdas_keep_constraint_context_and_superclasses ... ok
+test ir::desugar::tests::named_argument_without_a_plan_cannot_be_lowered_as_positional ... ok
+test ir::desugar::tests::operators_choose_intrinsics_and_negative_literals_keep_checked_values ... ok
+test ir::desugar::tests::prelude_and_entry_pass_core_check ... ok
+test ir::desugar::tests::prepared_named_call_lowering_preserves_callee_then_source_order_and_argument_values ... ok
+test ir::desugar::tests::records_preserve_field_evaluation_order_and_decompose_updates ... ok
+test ir::desugar::tests::nested_expressions_and_long_list_literals_pass_with_the_normal_stack ... ok
+test ir::desugar::tests::result_types_follow_function_boundaries_and_stay_out_of_other_positions ... ok
+test ir::desugar::tests::short_circuit_branches_keep_tail_calls_and_constructor_values_have_bodies ... ok
+test ir::desugar::tests::try_reconstructs_failure_using_function_return_type_arguments ... ok
+test ir::desugar::tests::all_stdlib_sources_and_module_definition_order_and_names ... ok
+test modules::hash::tests::count_and_total_size_limits_include_the_boundary ... ok
+test modules::hash::tests::editor_lock_links_do_not_block_imports_or_hashes ... ok
+test modules::hash::tests::fixed_digest_and_inclusion_rules ... ok
+test modules::hash::tests::loading_reports_hash_errors_without_reading_package_modules ... ok
+test modules::hash::tests::malformed_hashes_do_not_trigger_hash_calculation ... ok
+test modules::hash::tests::real_files_reject_links_and_non_regular_files ... ok
+test modules::hash::tests::rejects_colliding_paths_and_newlines ... ok
+test modules::package::tests::interpreter_version_has_three_numbers ... ok
+test modules::package::tests::version_check_reports_all_applicable_changes_in_version_order ... ok
+test modules::package::tests::version_format_and_order ... ok
+test modules::tests::config_cannot_be_a_starting_file ... ok
+test modules::tests::config_is_a_module_between_entry_and_prelude_and_uses_exact_name ... ok
+test ir::desugar::tests::variable_ids_are_per_definition_and_body_ids_are_global_and_dense ... ok
+test modules::tests::cycles_use_closing_spans_and_do_not_repeat_on_shared_paths ... ok
+test ir::desugar::tests::with_nested_releases_lazy_and_annotated_lambdas ... ok
+test modules::tests::dependency_configs_precede_prelude_and_imported_modules ... ok
+test modules::tests::dependency_without_path_reports_only_the_missing_field ... ok
+test modules::tests::die_internal_dependencies_keep_source_spans_and_participate_in_cycles ... ok
+test modules::tests::dependency_import_edits_only_use_valid_module_names ... ok
+test modules::tests::duplicate_dependency_locations_do_not_also_report_root_overlap ... ok
+test modules::tests::exact_size_boundaries_and_embedded_sources_count_toward_total ... ok
+test modules::tests::every_stdlib_source_and_its_imports_load_without_cycles ... ok
+test modules::tests::fifo_order_identity_comments_and_display_names ... ok
+test modules::tests::io_failures_keep_each_import_and_continue_loading_readable_modules ... ok
+test modules::tests::missing_and_case_only_names_do_not_depend_on_fs_case_sensitivity ... ok
+test modules::tests::overlapping_dependency_roots_are_rejected_before_imports ... ok
+test modules::tests::package_imports_keep_their_canonical_root_and_reject_the_entry ... ok
+test modules::tests::prelude_order_kinds_and_clock_dependency ... ok
+test modules::tests::real_fs_matches_memory_for_files_imports_and_missing_modules ... ok
+test modules::tests::root_link_to_the_dependency_imports_the_package ... ok
+test modules::tests::root_settings_do_not_come_from_parent_directories ... ok
+test modules::tests::settings_sources_count_toward_source_limits ... ok
+test modules::tests::size_limits_reject_sources_without_breaking_ids_or_import_order ... ok
+test modules::tests::stdlib_last_segment_candidates_precede_distance_and_require_uniqueness ... ok
+test modules::tests::stdlib_spelling_status_and_reserved_root_diagnostics ... ok
+test modules::tests::symbolic_links_enforce_root_and_entry_but_keep_named_module_identity ... ok
+test modules::tests::language_versions_check_the_release_boundary_in_each_header_location ... ok
+test modules::tests::syntax_and_lexical_errors_precede_import_errors_and_cycles ... ok
+test modules::tests::unreadable_entry_continues_prelude_without_reserving_an_id ... ok
+test modules::tests::user_similar_names_and_wrong_entry_kinds ... ok
+test pipeline::tests::checking_sorts_each_stage_and_stops_before_later_errors ... ok
+test pipeline::tests::deep_if_and_else_if_check_on_the_stage_stack ... ok
+test pipeline::tests::deep_patterns_check_at_the_parser_depth_limit ... ignored, long: 構文の上限直前のリストと構成子のパターンを検査する（約26秒）
+test pipeline::tests::long_list_patterns_and_boolean_matrix_check_near_the_depth_limit ... ok
+test pipeline::tests::missing_entry_does_not_assign_a_prelude_id_and_main_is_optional ... ok
+test pipeline::tests::stages_fit_the_measured_stack_for_flat_sequences ... ignored, long: wide expressions require repeated type and liveness traversal
+test pipeline::tests::stages_fit_the_measured_stack_for_statement_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_blocks ... ignored, long: nested Lazy types require repeated traversal
+test builtins::funcs::file::path_tests::deep_walk_and_remove_tree_use_bounded_stack_and_close_directory_handles ... ok
+test pipeline::tests::deep_expressions_check_at_the_parser_depth_limit ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_records ... ignored, long: nested record types require repeated traversal
+test ir::desugar::die_tests::die_failure_core_has_one_message_then_one_cause_and_canonical_exit ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_lists ... ignored, long: nested list types and pattern coverage are expensive
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_patterns ... ignored, long: nested pattern coverage is expensive
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_branches ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_guard_fallbacks ... ok
+test pipeline::tests::warnings_are_kept_until_the_last_reached_stage_and_prelude_warnings_are_removed ... ok
+test refinterp::convert::tests::builtin_calls_collect_only_when_the_budget_is_reached ... ok
+test refinterp::convert::tests::exit_spawn_and_other_waits_remain_distinct ... ok
+test refinterp::convert::tests::million_element_lists_and_million_deep_constructors_round_trip_and_drop ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test refinterp::convert::tests::opaque_values_remain_rooted_across_builtin_calls ... ok
+test refinterp::convert::tests::read_text_worker_finishes_synchronously_and_preserves_io_errors ... ok
+test refinterp::convert::tests::round_trips_preserve_values_and_heap_kinds ... ok
+test refinterp::convert::tests::samples_match_direct_bodies_and_preserve_stops ... ok
+test refinterp::convert::tests::unsupported_and_malformed_values_are_internal_errors ... ok
+test refinterp::resources::tests::reference_and_fixed_services_do_not_expose_vm_runtime_views ... ok
+test ir::desugar::tests::result_position_returns_pass_core_check ... ok
+test refinterp::tests::continuation_cannot_be_resumed_twice ... ok
+test refinterp::tests::deep_handlers_resume_or_discard_and_replace_builtin_operations ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_recursive_types ... ok
+test refinterp::tests::escape_and_try_stop_at_the_called_function_boundary ... ok
+test refinterp::tests::exit_report_tests::cancelled_exit_report_does_not_leak_into_a_later_exit ... ok
+test external::tests::supported_types_and_aliases_produce_matching_plans ... ok
+test refinterp::tests::discarded_nested_continuations_release_their_resources ... ok
+test refinterp::tests::exit_report_tests::competing_exit_reports_belong_only_to_the_selected_request ... ok
+test ir::desugar::die_tests::die_evaluation_uses_only_the_failure_branch_in_source_order ... ok
+test refinterp::tests::io_order_closure_capture_and_constant_references ... ok
+test refinterp::tests::lazy_memoizes_and_reference_operations_use_the_store ... ok
+test refinterp::tests::external_call_after_deep_language_calls_fits_the_test_stack ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_operators ... ok
+test refinterp::tests::match_skips_guarded_arm_alternatives_and_checks_ranges_and_lists ... ok
+test refinterp::tests::process_exit_keeps_output_and_requested_status ... ok
+test external::tests::declaration_expansion_stops_at_depth_and_node_limits ... ok
+test refinterp::tests::operation_dictionaries_are_passed_and_captured_by_clause_lambdas ... ok
+test refinterp::tests::record_updates_and_methods_select_each_implementation ... ok
+test refinterp::tests::main_results_and_missing_main ... ok
+test refinterp::tests::runtime_error_reports_the_operator_origin ... ok
+test refinterp::tests::task_calls_are_explicitly_unsupported ... ok
+test refinterp::value::tests::equality_obeys_scalar_and_structural_rules ... ok
+test refinterp::tests::width_constant_collections_reach_reference_builtin_calls ... ok
+test resolve::tests::acceptance_fixtures_resolve ... ok
+test refinterp::tests::release_failures_preserve_primary_stop_exit_and_order ... ok
+test resolve::tests::all_stdlib_sources_resolve ... ok
+test resolve::tests::contract_visibility_applies_across_modules ... ok
+test refinterp::tests::releases_run_once_inside_out_on_each_kind_of_unwinding ... ok
+test refinterp::tests::exit_report_tests::source_die_handlers_observe_one_operand_and_discard_the_report ... ok
+test resolve::tests::deprecated_references_warn_outside_declaration ... ok
+test resolve::tests::declaration_cycles_and_implementation_methods ... ok
+test resolve::tests::duplicate_effect_module_import_does_not_offer_overlapping_alias_removal ... ok
+test refinterp::value::tests::shared_closure_captures_release_deep_values_iteratively ... ok
+test resolve::tests::effect_alias_references_cover_types_patterns_and_name_conflicts ... ok
+test resolve::tests::declaration_collisions_and_parameter_names ... ok
+test resolve::tests::binding_keywords_and_implicit_binders ... ok
+test resolve::tests::hidden_standard_library_name_has_no_make_public_help ... ok
+test resolve::tests::import_repair_preserves_leading_docs_attributes_and_utf8 ... ok
+test resolve::tests::effect_module_declaration_collisions_suggest_renaming_the_declaration ... ok
+test resolve::tests::independent_errors_survive_and_unresolved_imports_do_not_cascade ... ok
+test refinterp::tests::exit_report_tests::exit_report_is_owned_only_by_the_default_call ... ok
+test resolve::tests::lookup_modules_constructors_and_prelude_shadowing ... ok
+test resolve::tests::imports_conflicts_and_whole_line_removal ... ok
+test resolve::tests::member_import_does_not_edit_a_conflicting_import_name ... ok
+test resolve::tests::member_assists_respect_module_identity ... ok
+test resolve::tests::match_alternatives_share_bindings_and_rest_counts_as_variable ... ok
+test resolve::tests::member_lists_follow_visibility_and_the_segment_position ... ok
+test resolve::tests::pattern_constant_guard_repair_is_conditional ... ok
+test resolve::tests::prelude_shadowing_assists_follow_the_failed_segment ... ok
+test resolve::tests::prepared_named_labels_are_not_value_references_or_bindings ... ok
+test resolve::tests::name_errors_have_the_failed_segment_and_appropriate_guidance ... ok
+test resolve::tests::prepared_function_type_names_are_unique_without_binding_values ... ok
+test resolve::tests::effect_module_import_collisions_rename_the_other_import ... ok
+test modules::tests::dependency_chain_of_2000_modules_uses_no_rust_recursion ... ok
+test resolve::tests::prepared_record_calls_distinguish_constructor_bindings_and_preserve_name_errors ... ok
+test resolve::tests::qualified_typo_candidates_follow_the_segment_position ... ok
+test resolve::tests::pure_and_user_module_aliases_remain_valid ... ok
+test resolve::tests::record_fields_and_deprecated_children_are_references ... ok
+test resolve::tests::rename_targets_resolve_in_the_current_standard_library ... ok
+test resolve::tests::shadow_rhs_and_scope_exit_refer_to_outer_binding ... ok
+test resolve::tests::record_values_with_named_annotations_do_not_depend_on_statement_order ... ok
+test resolve::tests::type_and_effect_parameter_numbers_have_separate_indices_and_owners ... ok
+test resolve::tests::effect_module_aliases_are_rejected_without_cascading_errors ... ok
+test resolve::tests::typo_edits_require_a_unique_candidate ... ok
+test resolve::tests::width_type_names_share_identity_through_modules_and_imports ... ok
+test resolve::tests::uses_repair_only_closes_a_valid_effect_prefix_in_a_type_list ... ok
+test resolve::tests::stdlib_source_and_table_contracts ... ok
+test runtime::assert::tests::constructor_names_do_not_use_an_outer_lambda_instance ... ok
+test resolve::tests::public_contracts_include_nested_types_effects_and_supertraits ... ok
+test runtime::assert::tests::constructor_names_do_not_use_an_outer_tail_call_instance ... ok
+test runtime::assert::tests::constructor_names_do_not_use_another_escaped_closure_instance ... ok
+test resolve::tests::repairs_for_missing_imports_constructors_and_uses_resolve ... ok
+test runtime::assert::tests::constructor_names_require_all_implementation_uses ... ok
+test resolve::tests::record_construction_assists_preserve_field_order_and_qualification ... ok
+test runtime::assert::tests::constructor_names_require_all_type_constructor_uses ... ok
+test runtime::assert::tests::generic_helpers_recover_constructor_names ... ok
+test runtime::assert::tests::failed_equality_renders_both_values_in_show_form ... ok
+test runtime::assert::tests::message_operations_report_the_message_and_passing_checks_continue ... ok
+test runtime::assert::tests::repeated_uses_recover_constructor_names ... ok
+test runtime::equal::tests::decimal_components_compare_numbers_in_options_and_records ... ok
+test runtime::equal::tests::equality_compares_scalars_strings_bytes_and_constructor_trees ... ok
+test runtime::assert::tests::non_tail_helper_chain_recovers_constructor_names_for_each_type ... ok
+test runtime::assert::tests::unknown_types_render_by_shape_and_pipes_use_the_static_type ... ok
+test runtime::equal::tests::million_element_lists_and_million_deep_trees_do_not_recurse ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::equal::tests::non_equality_values_and_incompatible_kinds_are_internal_errors ... ok
+test runtime::equal::tests::pair_hash_spreads_low_bits_for_power_of_two_spaced_ids ... ok
+test runtime::assert::tests::shared_values_stop_rendering_at_the_limit ... ok
+test runtime::heap::builders::tests::capacity_arithmetic_rejects_overflow_and_clamps_growth ... ok
+test runtime::heap::builders::tests::failed_reservation_preserves_length_contents_and_capacity ... ok
+test runtime::heap::builders::tests::logical_limits_fail_before_reservation_without_partial_append ... ok
+test runtime::heap::builders::tests::owned_capacity_is_charged_once_and_released_with_host ... ok
+test runtime::heap::builders::tests::snapshots_capacity_and_list_children_survive_collection ... ok
+test runtime::heap::core::mode::tests::discarded_opaque_owned_capacity_requests_collection ... ok
+test runtime::heap::core::mode::tests::host_shrinkage_does_not_reduce_allocations_since_collection ... ok
+test runtime::heap::core::mode::tests::million_linked_and_nested_fields_use_bounded_rust_stack ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::heap::core::mode::tests::pause_samples_are_recorded_when_requested ... ok
+test runtime::heap::core::mode::tests::reachability_cycles_and_stats_match_independent_model ... ok
+test runtime::heap::core::mode::tests::reachable_child_survives_collection_after_marking_panics ... ok
+test runtime::heap::core::mode::tests::stress_always_requests_and_allocation_rearms_signal ... ok
+test runtime::heap::core::mode::tests::threshold_and_signal_follow_allocated_bytes_and_last_live_bytes ... ok
+test runtime::heap::core::tests::free_reuse_and_exact_accounting ... ok
+test runtime::heap::core::tests::heap_numbers_are_unique_across_simultaneous_and_recreated_heaps ... ok
+test runtime::heap::core::tests::host_owned_capacity_tracks_growth_and_shrinkage_until_free ... ok
+test runtime::heap::core::tests::identity_and_immediates ... ok
+test runtime::heap::core::tests::live_enumeration_matches_an_independent_set ... ok
+test runtime::assert::tests::width_immediates_render_with_and_without_static_types ... ok
+test runtime::heap::core::tests::object_kinds_headers_and_payloads ... ok
+test runtime::heap::core::tests::opaque_owned_capacity_is_charged_and_removed_on_free ... ok
+test runtime::heap::core::tests::overflowing_layouts_fail_before_allocating ... ok
+test runtime::heap::core::tests::rust_payloads_drop_once_on_free_and_heap_drop ... ok
+test runtime::heap::core::tests::size_class_boundaries_preserve_contents_and_existing_borrows ... ok
+test runtime::heap::ctx::r04_tests::r04_candidates_survive_resaving_and_free_exactly_once ... ok
+test runtime::equal::tests::shared_structures_compare_without_expansion_and_preserve_leaf_checks ... ok
+test runtime::heap::ctx::r04_tests::r04_million_linked_and_nested_objects_free_without_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::heap::ctx::r04_tests::r04_reachable_sets_match_an_independent_graph ... ok
+test runtime::heap::ctx::r04_tests::r04_reuse_checks_contract_and_returns_none_without_mutation ... ok
+test runtime::heap::ctx::r04_tests::r04_shared_substructure_and_host_edges_remain_until_last_owner ... ok
+test runtime::heap::ctx::tests::cell_writes_update_value_and_version_and_reject_other_kinds ... ok
+test runtime::heap::ctx::tests::collection_preserves_rooted_contents_and_counts_one_collection ... ok
+test runtime::heap::ctx::tests::decimal_values_preserve_representation_across_collection ... ok
+test runtime::heap::ctx::tests::discard_notifies_each_owned_object_reference_once ... ok
+test runtime::heap::ctx::tests::foreign_slots_are_rejected_before_reading_or_notifying_their_heap ... ok
+test runtime::heap::ctx::tests::host_mutation_uses_slot_ops_and_checks_rust_types ... ok
+test runtime::heap::ctx::tests::r06_checked_lengths_accept_limits_and_reject_one_more ... ok
+test runtime::heap::ctx::tests::r06_opaque_checks_rust_type_and_object_kind ... ok
+test runtime::heap::ctx::tests::r06_string_parts_reject_oversize_and_overflow_without_allocating ... ok
+test runtime::heap::ctx::tests::r06_strings_bytes_and_fields_preserve_contents_and_check_kinds ... ok
+test runtime::heap::ctx::tests::r06_value_and_slot_sizes_are_sixteen_bytes ... ok
+test runtime::heap::ctx::tests::root_stack_tracks_positions_and_truncation ... ok
+test runtime::heap::ctx::tests::slots_preserve_values_between_epochs_and_transfer_ownership ... ok
+test runtime::heap::ctx::tests::width_immediates_preserve_kinds_and_bits_across_collection ... ok
+test runtime::equal::tests::list_equality_compares_sequences_across_concatenation_and_slicing ... ok
+test runtime::io::event::tests::interrupt_attachment_rejects_missing_or_already_taken_poll ... ok
+test runtime::io::event::tests::ordinary_readiness_is_collected_and_drained_after_poll_transfer ... ok
+test runtime::io::event::tests::poll_failure_limit_counts_only_consecutive_failures ... ok
+test runtime::io::event::tests::reserved_interrupt_token_returns_interrupted ... ok
+test runtime::io::event::tests::wake_before_or_during_poll_is_kept_after_ownership_transfer ... ok
+test runtime::heap::ctx::verification_tests::random_reachability_matches_model_and_preserves_contents ... ok
+test pipeline::tests::u3_sources_import_names_and_record_tags_pass_check ... ok
+test runtime::io::http::tests::exchange_respond_twice_and_releasing_checks_precede_socket_access ... ok
+test runtime::io::http::tests::registration_without_poll_is_internal_error ... ok
+test runtime::io::http::tests::rejected_connection_closes_only_after_discard_limit ... ok
+test runtime::io::http::tests::rejected_connection_closes_when_peer_shuts_down_write ... ok
+test runtime::io::http::tests::rejected_connection_deadline_survives_registration_retry ... ok
+test runtime::io::http::tests::request_absolute_target_becomes_origin_path_and_query ... ok
+test runtime::io::http::tests::request_continue_requires_http11_body_and_no_received_body_bytes ... ok
+test runtime::io::http::tests::request_host_count_and_value_follow_http_version ... ok
+test runtime::io::http::tests::request_trailers_use_header_syntax_and_limits ... ok
+test runtime::io::http::tests::response_body_and_content_length_follow_status_and_method ... ok
+test runtime::io::http::tests::response_replaces_framing_headers_and_uses_known_reason_phrases ... ok
+test runtime::equal::tests::map_and_set_equality_ignores_tree_shape_and_compares_values ... ok
+test runtime::io::http::tests::resume_peeks_before_validation_and_checks_pending_owner_and_registration_failure ... ok
+test runtime::assert::tests::long_values_are_cut_at_4_kib_with_an_ellipsis ... ok
+test runtime::io::http::tests::stopping_an_exchange_with_a_pending_or_dispatched_release_closes_without_waiting ... ok
+test runtime::io::ops::tests::completion_returns_before_delivery_and_keeps_detached_cleanup_and_bugs ... ok
+test runtime::io::ops::tests::release_completion_finishes_without_delivery_and_rejects_wrong_return ... ok
+test runtime::io::output::testing::capacity_counts_in_flight_and_queue_keeps_fifo_and_cancellation ... ok
+test runtime::io::output::testing::failed_thread_start_is_recorded_and_can_be_dropped ... ok
+test runtime::io::output::testing::failure_or_panic_releases_waiters_and_rejects_later_writes ... ok
+test runtime::io::output::testing::oversized_write_waits_for_empty_and_flush_only_waits_for_its_target ... ok
+test runtime::io::output::testing::threshold_and_terminal_newline_request_transfer_before_finish ... ok
+test runtime::io::output::testing::write_if_room_drops_without_deferring_and_does_not_overtake_pending_writes ... ok
+test runtime::io::resources::tests::completed_releases_do_not_accumulate_resource_entries ... ok
+test runtime::io::resources::tests::deferred_release_jobs_keep_start_order_and_failure_after_immediate_return ... ok
+test runtime::io::resources::tests::lending_is_fifo_and_cancelled_waiters_are_removed_from_every_resource ... ok
+test runtime::io::resources::tests::os_state_transitions_and_one_release_job ... ok
+test runtime::io::resources::tests::preflight_rejects_missing_or_inconsistent_resources_without_changing_them ... ok
+test runtime::io::resources::tests::released_resources_remove_attachments_on_every_path ... ok
+test runtime::io::resources::tests::repeated_release_requests_while_lent_preserve_first_starter ... ok
+test runtime::io::resources::tests::silent_close_and_late_return_drop_os_handles_without_language_release ... ok
+test runtime::io::resources::tests::task_group_returns_children_again_after_becoming_released ... ok
+test runtime::io::tests::dispatchers_preserve_live_phases_and_expired_requests_are_inert ... ok
+test runtime::heap::ctx::r04_tests::r04_cell_cycles_remain_reachable_then_free_with_exact_statistics ... ok
+test runtime::list::tests::fallible_leaf_builder_propagates_element_failure_and_checks_completion ... ok
+test runtime::list::tests::hundred_thousand_short_concatenations_match_vec ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::io::http::tests::closing_listener_wakes_parked_accept_without_waiting_for_retry_deadline ... ok
+test runtime::list::tests::iterator_build_rejects_length_mismatches_and_checks_limit_first ... ok
+test runtime::list::tests::limits_and_invalid_inputs_fail_before_building_nodes ... ok
+test runtime::list::tests::million_appends_gets_and_repeated_splits_do_not_recurse ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::list::tests::operations_match_vec_and_keep_previous_lists ... ok
+test runtime::list::tests::repeated_cuts_of_joined_lists_preserve_sequences ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::list::tests::ten_million_elements_are_traversed_without_rust_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::map::tests::equal_decimal_keys_keep_the_first_representation_in_updates_and_set_operations ... ok
+test runtime::io::http::tests::shortage_retries_use_vm_timers_and_one_warning_in_both_modes ... ok
+test runtime::map::tests::million_element_trees_support_updates_and_union_shares_the_large_input ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test runtime::list::tests::iterator_build_matches_values_at_leaf_and_tree_boundaries ... ok
+test runtime::map::tests::shared_keys_preserve_lexicographic_order_without_expansion ... ok
+test runtime::io::http::tests::resume_finishes_pending_response_without_replacement_bytes ... ok
+test runtime::map::tests::width_integer_keys_sort_replace_and_survive_collection ... ok
+test runtime::panic::tests::caught_panic_carries_message_and_location ... ok
+test runtime::report::tests::deadlock_lists_waiters_in_record_order_without_a_primary_or_call_frames ... ok
+test runtime::report::tests::die_reports_preserve_optional_messages_causes_and_locations ... ok
+test runtime::report::tests::internal_reports_order_notes_and_preserve_panic_details ... ok
+test runtime::report::tests::invalid_report_records_become_internal_diagnostics ... ok
+test runtime::report::tests::origin_names_preserve_definitions_and_qualified_names ... ok
+test runtime::report::tests::release_failures_preserve_all_reasons_and_the_stop_cause ... ok
+test runtime::report::tests::stops_choose_codes_and_fill_arguments ... ok
+test runtime::report::tests::task_origins_use_spawned_builtins_and_promote_stdlib_calls ... ok
+test runtime::report::tests::trace_filters_helpers_and_selects_the_innermost_user_location ... ok
+test runtime::report::tests::trace_truncates_after_filtering_helpers ... ok
+test runtime::report::tests::write_failures_have_no_location_and_flush_notes_precede_the_trace_tail ... ok
+test resolve::tests::opaque_representation_is_private_to_its_declaring_module ... ok
+test runtime::map::tests::key_order_is_lexicographic_for_all_key_kinds_and_rejects_invalid_values ... ok
+test runtime::run::tests::internal_panic_reports_preserve_distinct_faults_and_replace_copies ... ok
+test runtime::run::tests::development_panic_returns_only_after_accepted_output_is_transferred ... ok
+test runtime::run::tests::interrupt::computing_interrupts_at_the_next_call_and_flushes_buffered_output ... ok
+test runtime::run::tests::final_output_failure_preserves_the_reason_for_ending_and_reports_once ... ok
+test runtime::run::tests::interrupt::no_interrupt_does_not_attach_to_an_event_loop ... ok
+test runtime::run::tests::interrupt::interrupt_request_overrides_a_main_value_without_calls ... ok
+test runtime::run::tests::output_thread_start_failure_stops_before_execution ... ok
+test runtime::run::tests::interrupt::release_reports_keep_interrupt_and_exit_statuses ... ok
+test runtime::run::tests::panicked_external_work_is_reported_as_worker_failure ... ok
+test runtime::run::tests::test_entry::failed_check_releases_resources_innermost_first ... ok
+before panic
+test runtime::run::tests::start_main_failure_invalid_targets_and_panic_are_internal ... ok
+test runtime::run::tests::test_entry::failed_check_stops_at_the_call_and_keeps_captured_output ... ok
+test runtime::run::tests::test_entry::interrupt_request_ends_a_test_as_interrupted ... ok
+test runtime::run::tests::interrupt::implicit_calls_observe_the_flag_before_running_the_body ... ok
+test refinterp::tests::deep_calls_use_the_explicit_continuation ... ok
+test runtime::run::tests::test_entry::interrupt_request_overrides_a_test_value_without_calls ... ok
+test runtime::sched::contract_tests::invalid_picker_keeps_the_ready_queue ... ok
+test runtime::sched::contract_tests::notifications_match_wait_reason_and_parking_rejects_duplicates ... ok
+test runtime::run::tests::test_entry::spawned_tasks_fail_checks_and_user_handlers_take_precedence ... ok
+test runtime::sched::contract_tests::only_internal_waits_deadlock_and_timers_expire_in_deadline_order ... ok
+test runtime::sched::parts::tests::blocking_release_runs_once_on_worker_and_returns_failure ... ok
+test runtime::sched::parts::tests::completion_wakes_idle_without_deadline_and_expired_timer_does_not_wait ... ok
+test runtime::sched::parts::tests::network_faults_lookup_is_ascii_case_insensitive_and_uses_first_match ... ok
+test runtime::sched::parts::tests::dropping_runtime_does_not_wait_and_late_return_drops_resource ... ok
+test runtime::sched::parts::tests::panic_returns_lent_resource_and_stdin_and_worker_remains_usable ... ok
+test runtime::sched::testing::tests::unknown_serial_out_of_range_unperformed_work_and_strict_exhaustion_are_errors ... ok
+test runtime::sched::testing::tests::virtual_clock_picker_and_worker_share_the_script_and_record ... ok
+test runtime::sched::tests::external_operation_and_timer_numbers_are_independent ... ok
+test syntax::lexer::tests::char_errors ... ok
+test syntax::lexer::tests::char_literals ... ok
+test syntax::lexer::tests::char_to_string_edits_preserve_text ... ok
+test syntax::lexer::tests::comments ... ok
+test runtime::sched::parts::tests::sixty_four_workers_queue_the_next_job_and_reuse_idle_threads ... ok
+test syntax::lexer::tests::decimal_literals_and_errors ... ok
+test runtime::run::tests::test_entry::test_functions_end_as_the_runner_table_requires ... ok
+test syntax::lexer::tests::disallowed_characters ... ok
+test syntax::lexer::tests::doc_comments_and_shebang ... ok
+test syntax::lexer::tests::float_literals ... ok
+test syntax::lexer::tests::identifier_values ... ok
+test syntax::lexer::tests::integer_literals ... ok
+test syntax::lexer::tests::first_release_keywords_and_identifiers ... ok
+test syntax::lexer::tests::interpolation_values_and_spans ... ok
+test syntax::lexer::tests::interpolation_errors_discard_literal_and_recover ... ok
+test syntax::lexer::tests::invalid_utf8 ... ok
+test syntax::lexer::tests::line_breaks ... ok
+test syntax::lexer::tests::multiline_and_raw_values ... ok
+test syntax::lexer::tests::multiline_errors_keep_original_positions ... ok
+test syntax::lexer::tests::malformed_numbers ... ok
+test syntax::lexer::tests::physical_lines_include_literal_contents_and_skipped_text ... ok
+test syntax::lexer::tests::spans_stay_in_source_and_end_with_empty_eof ... ok
+test syntax::lexer::tests::string_errors ... ok
+test syntax::lexer::tests::string_literals ... ok
+test syntax::lexer::tests::unterminated_char_literal ... ok
+test syntax::lexer::tests::symbols_and_number_boundaries ... ok
+test syntax::lexer::tests::unterminated_string_recovers_on_next_line ... ok
+test syntax::lexer::tests::width_literal_values_and_separate_minus ... ok
+test syntax::newline::tests::guards_parenthesized_if_and_else_if ... ok
+test syntax::newline::tests::continuation_and_new_statement_boundaries ... ok
+test syntax::newline::tests::malformed_closings_and_lexical_errors_do_not_break_resolution ... ok
+test syntax::newline::tests::with_scopes_and_handler_arms ... ok
+test syntax::newline::tests::lexical_spec_examples ... ok
+test syntax::parser::effects::tests::die_actions_share_pratt_boundaries_in_production ... ok
+test syntax::parser::effects::tests::explicit_try_return_preserves_statement_boundaries ... ok
+test syntax::parser::effects::tests::lazy_escape_and_try_operand_extent ... ok
+test syntax::parser::effects::tests::legacy_handler_clause_is_reported_without_secondary_errors ... ok
+test syntax::parser::effects::tests::log_example_and_operation_restrictions ... ok
+test syntax::parser::effects::tests::operation_type_parameters_reject_constructors_and_keep_class_and_builtin_bounds ... ok
+test syntax::parser::effects::tests::resource_bindings_do_not_end_the_handler_body ... ok
+test syntax::parser::effects::tests::resume_context_follows_nested_handlers_and_restores_on_exit ... ok
+test syntax::parser::effects::tests::try_actions_belong_to_the_innermost_expression_scope ... ok
+test syntax::parser::effects::tests::try_actions_keep_operand_extent_and_reject_values_and_continuations ... ok
+test syntax::parser::exprs::named_argument_tests::invalid_named_labels_keep_normal_syntax_diagnostics ... ok
+test syntax::parser::exprs::named_argument_tests::named_values_and_holes_keep_separate_label_and_value_spans ... ok
+test syntax::parser::exprs::named_argument_tests::ordinary_input_parses_named_holes_and_pipe_arguments ... ok
+test syntax::parser::exprs::named_argument_tests::prepared_named_arguments_format_labels_comments_and_nested_values ... ok
+test syntax::parser::header::tests::duplicate_header_items_point_at_the_keyword ... ok
+test syntax::parser::header::tests::header_preserves_order_names_and_values ... ok
+test syntax::parser::header::tests::malformed_headers_report_and_recover ... ok
+test syntax::parser::header::tests::misplaced_headers_are_discarded_and_do_not_hide_the_next_declaration ... ok
+test syntax::parser::header::tests::missing_header_end_preserves_the_next_item ... ok
+test syntax::parser::header::tests::unknown_header_fields_list_usable_fields ... ok
+test syntax::parser::interp::tests::interpolation_parts_and_nested_spans_cover_dollar_to_brace ... ok
+test syntax::parser::interp::tests::interpolation_sequence_and_nesting_limits_use_default_stack ... ok
+test syntax::parser::items::external_tests::external_header_rules_and_body_recovery ... ok
+test syntax::parser::items::tests::aliases_constants_and_record_declarations_build_their_ast ... ok
+test syntax::parser::items::tests::builtin_signatures_and_missing_bodies_preserve_the_next_function ... ok
+test syntax::parser::items::tests::documentation_is_attached_and_also_preserved_as_comments ... ok
+test syntax::parser::items::tests::extensible_attributes_accept_only_data_and_records ... ok
+test syntax::parser::items::tests::imports_preserve_names_aliases_and_report_order_and_paths ... ok
+test syntax::parser::items::tests::invalid_attributes_report_one_diagnostic_per_attribute ... ok
+test syntax::parser::items::tests::misplaced_docs_and_foreign_forms_report_repairs_and_recover ... ok
+test syntax::parser::items::tests::opaque_attribute_contract ... ok
+test syntax::parser::items::tests::package_visibility_preserves_spans ... ok
+test syntax::parser::items::tests::package_visibility_repairs_only_closed_arguments ... ok
+test syntax::parser::items::tests::public_and_attributes_are_attached_to_the_declaration ... ok
+test syntax::parser::effects::tests::extension_sequence_and_nesting_limits_use_default_thread_stack ... ok
+test syntax::parser::items::tests::standard_library_sources_parse_as_prelude ... ok
+test syntax::parser::patterns_ext::tests::alternatives_respect_constructor_parentheses_and_fix_foreign_separator ... ok
+test syntax::parser::patterns_ext::tests::comma_after_guard_reports_one_error_and_recovers_to_next_arm ... ok
+test syntax::parser::patterns_ext::tests::alternatives_and_nested_lists_count_pattern_nodes ... ok
+test syntax::parser::patterns_ext::tests::guard_context_requires_parenthesized_if_and_restores_escape ... ok
+test syntax::parser::patterns_ext::tests::list_pattern_rest_splits_before_and_after_and_reports_each_duplicate ... ok
+test syntax::parser::patterns_ext::tests::tuple_diagnostics_choose_pair_triple_or_record_in_all_positions ... ok
+test syntax::parser::records::tests::constructor_calls_and_patterns_are_distinct_from_records ... ok
+test syntax::parser::patterns_ext::tests::ranges_preserve_endpoints_and_offer_inclusive_replacements ... ok
+test syntax::parser::records::tests::record_construction_update_and_patterns_preserve_fields ... ok
+test syntax::parser::records::tests::empty_updates_patterns_and_placeholders_report_exact_repairs ... ok
+test syntax::parser::spread::tests::spreads_preserve_elements_and_report_repair_locations ... ok
+test syntax::parser::tests::bindings_data_and_type_parameters ... ok
+test syntax::parser::tests::bracket_assist_requires_a_name_and_only_repairs_calls ... ok
+test syntax::parser::tests::builtin_body_rule_is_ready_for_f03 ... ok
+test syntax::parser::tests::diagnostic_locations_and_source_based_suggestions ... ok
+test syntax::parser::tests::diagnostics_and_recovery_for_foreign_forms ... ok
+test syntax::parser::tests::eof_without_a_token_still_identifies_the_source_end ... ok
+test syntax::parser::tests::fixes_have_exact_locations_and_resulting_text ... ok
+test syntax::parser::tests::incomplete_short_lambda_bodies_do_not_suggest_moving_the_outer_end ... ok
+test syntax::parser::tests::independent_errors_and_lexical_error_tokens ... ok
+test syntax::parser::tests::lambda_endings_preserve_explicit_spans_and_recovery ... ok
+test syntax::parser::tests::mismatched_and_missing_ends_identify_the_opening ... ok
+test syntax::parser::records::tests::records_obey_sequence_and_recursive_depth_limits ... ok
+test runtime::io::http::tests::continue_waits_for_writable_before_reading_body_and_sends_once ... ok
+test syntax::parser::tests::nodes_cover_their_tokens_and_have_distinct_ids_across_files ... ok
+test syntax::parser::tests::precedence_calls_and_written_forms ... ok
+test syntax::parser::tests::return_value_must_start_on_the_same_physical_line ... ok
+test runtime::heap::core::tests::many_small_and_mixed_objects_remain_nonmoving ... ok
+test syntax::parser::tests::short_lambda_diagnostics_keep_syntax_errors_and_outer_recovery ... ok
+test syntax::parser::tests::short_lambdas_leave_outer_endings_independent_of_spacing ... ok
+test syntax::parser::tests::short_lambdas_preserve_boundaries_and_explicit_endings ... ok
+test syntax::parser::tests::two_line_inline_lambda_endings_explain_the_migration ... ok
+test syntax::parser::tests::uses_attaches_to_the_innermost_type_and_reads_longest_list ... ok
+test syntax::parser::tests::specification_examples_and_golden_programs_parse ... ok
+test syntax::parser::tests::uses_before_type_arguments_can_be_repaired_with_parentheses ... ok
+test syntax::parser::traits::tests::constraint_diagnostics_remove_only_the_invalid_constraint ... ok
+test syntax::parser::traits::tests::implementation_functions_keep_docs_and_distinct_reference_ids ... ok
+test syntax::parser::traits::tests::trait_parameters_supertraits_and_method_signatures ... ok
+test syntax::parser::types::final_type_tests::unnamed_function_types_report_the_parameter_without_inventing_names ... ok
+test syntax::parser::types::named_type_tests::function_types_keep_names_and_nested_types ... ok
+test syntax::parser::types::named_type_tests::ordinary_input_accepts_named_function_types ... ok
+test syntax::parser::types::named_type_tests::prepared_named_function_type_formats_from_each_label ... ok
+test syntax::parser::types::tests::declaration_constraints_are_reported_and_left_out_of_the_ast ... ok
+test syntax::parser::types::tests::uses_bracket_repairs_require_a_type_list_and_a_local_closing_bracket ... ok
+test syntax::parser::traits::tests::golden_programs_and_resource_specification_example_parse ... ok
+test typeck::consts::tests::duplicate_key_warning_stops_at_the_second_key_when_budget_is_exhausted ... ok
+test syntax::parser::tests::nesting_and_sequence_limits_use_the_default_test_thread_stack ... ok
+test typeck::consts::tests::single_value_limits_allow_the_boundary_and_reject_the_next_size ... ok
+test typeck::consts::tests::interpolation_counts_the_output_once ... ok
+test typeck::consts::tests::spread_list_checks_the_length_after_expansion ... ok
+test typeck::consts::tests::duplicate_key_display_is_bounded_at_utf8_boundaries ... ok
+test runtime::run::tests::writer_failure_and_panic_finish_with_the_required_reports ... ok
+test typeck::consts::width_tests::width_float_constants_round_each_operation_and_keep_ieee_values ... ok
+test typeck::consts::width_tests::width_arithmetic_failures_are_errors_in_consts_and_warnings_in_functions ... ok
+test typeck::consts::width_tests::width_collection_constants_sort_keys_and_detect_duplicates ... ok
+test typeck::consts::width_tests::width_invalid_types_are_not_evaluated_and_conversions_do_not_warn ... ok
+test typeck::consts::width_tests::width_integer_constants_preserve_each_width_and_division_rules ... ok
+test typeck::effects::tests::clause_parameters_include_wildcards_and_rigid_types ... ok
+test typeck::effects::tests::declared_operation_bounds_are_available_in_clauses ... ok
+test typeck::effects::tests::all_standard_library_sources_are_checked_without_diagnostics ... ok
+test typeck::effects::tests::die_production_loading_keeps_imports_and_effect_help_explicit ... ok
+test typeck::consts::tests::duplicate_key_headings_use_show_notation ... ok
+test typeck::effects::tests::die_keeps_const_rejection_and_hides_only_the_outer_continuation ... ok
+test typeck::effects::tests::failure_row_contract_survives_modules_and_higher_order_values ... ok
+test typeck::effects::tests::die_message_and_input_diagnostics_keep_their_owners ... ok
+test typeck::effects::tests::entry_effects_and_uses_duplicates ... ok
+test typeck::effects::tests::die_uses_standard_show_and_exit_despite_local_names_and_aliases ... ok
+test typeck::effects::tests::nested_clauses_distinguish_same_named_operation_parameters ... ok
+test typeck::effects::tests::invalid_clauses_and_effects_have_precise_diagnostics ... ok
+test typeck::effects::tests::operation_type_parameters_are_qualified_when_outer_names_collide ... ok
+test typeck::effects::tests::die_types_and_dictionaries_do_not_constrain_the_enclosing_return ... ok
+test typeck::effects::tests::rigid_constraint_help_targets_the_operation_declaration ... ok
+test typeck::effects::tests::io_all_warning_edits_and_full_effect_body ... ok
+test typeck::effects::tests::try_error_type_escape_does_not_annotate_a_deferred_return_mismatch ... ok
+test typeck::effects::tests::lazy_resources_and_taskgroup_placement ... ok
+test runtime::list::tests::boundary_operations_match_vec_and_preserve_shared_inputs ... ok
+test typeck::effects::tests::tail_resumption_checks_every_path_and_excludes_inner_lambda_escapes ... ok
+test typeck::effects::tests::user_failure_spelling_keeps_ordinary_operation_semantics ... ok
+test typeck::effects::tests::type_escape_note_is_not_reused_for_other_failures ... ok
+test typeck::effects::tests::specification_examples_and_output_tables ... ok
+test typeck::effects::tests::try_notes_follow_lambda_and_placeholder_return_boundaries ... ok
+test typeck::pattern_ext::tests::deep_constructor_patterns_stay_within_the_normal_stack ... ok
+test typeck::pattern_ext::tests::binding_budget_reports_only_coverage_stopped_at_the_pattern ... ok
+test typeck::effects::tests::try_infers_return_types_and_reports_incompatible_types ... ok
+test typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack ... ok
+test typeck::pattern_ext::tests::exhaustive_and_irrefutable_examples ... ok
+test typeck::pattern_ext::tests::character_domain_source_contracts ... ok
+test typeck::pattern_ext::tests::guards_and_alternative_bindings_use_their_own_reasons ... ok
+test typeck::effects::tests::rigid_types_keep_operation_names_in_body_diagnostics ... ok
+test typeck::pattern_ext::tests::future_diagnostics_keep_declaration_identity_and_nested_witnesses ... ok
+test syntax::lexer::tests::deep_interpolation_uses_no_rust_recursion ... ok
+test typeck::pattern_ext::tests::range_and_list_outputs_feed_lowering ... ok
+test typeck::pattern_ext::tests::match_budget_keeps_independent_type_errors ... ok
+test typeck::pattern_ext::tests::repeated_boolean_groups_check_without_diagnostics ... ok
+test typeck::pattern_ext::tests::nonexhaustive_witnesses_and_refutable_bindings ... ok
+test typeck::patterns::tests::budget_stops_instead_of_returning_partial_coverage ... ok
+test typeck::patterns::tests::character_domain_partition_and_witnesses ... ok
+test typeck::patterns::tests::constructor_fields_are_instantiated_and_combined ... ok
+test typeck::patterns::tests::coverage_views_follow_package_identity_and_type_flags ... ok
+test typeck::patterns::tests::enumeration_and_memo_budgets_are_independent ... ok
+test typeck::patterns::tests::extensible_shapes_require_catchalls_in_nested_source_patterns ... ok
+test typeck::patterns::tests::finite_and_open_types_have_the_specified_coverage ... ok
+test typeck::patterns::tests::guarded_alternatives_cover_only_later_alternatives_in_the_same_arm ... ok
+test typeck::patterns::tests::guards_never_cover_later_rows ... ok
+test typeck::patterns::tests::inconsistent_constructor_matrices_remain_useful ... ok
+test typeck::patterns::tests::intervals_choose_single_cover_before_minimal_joint_cover ... ok
+test typeck::patterns::tests::lists_distinguish_exact_lengths_and_front_back_alignment ... ok
+test typeck::pattern_ext::tests::malformed_patterns_do_not_cascade_into_coverage_errors ... ok
+test typeck::patterns::tests::repeated_boolean_groups_fit_with_memo_and_stop_without_it ... ok
+test typeck::patterns::tests::wide_record_tail_checks_fit_the_budget ... ok
+test typeck::pattern_ext::tests::unreachable_diagnostics_identify_covering_alternatives ... ok
+test typeck::tests::conflicting_declaration_flows_report_the_annotation_once ... ok
+test typeck::tests::binding_mismatch_suppresses_spurious_variable_use_failures ... ok
+test typeck::pattern_ext::tests::specified_golden_examples_and_all_standard_modules_typecheck ... ok
+test typeck::pattern_ext::tests::integer_domain_source_contracts ... ok
+test typeck::tests::data_without_constructors_is_reported_by_the_type_checker ... ok
+test typeck::tests::contracts_come_from_declarations_and_written_lambda_parameters ... ok
+test typeck::tests::constant_failures_dependencies_and_duplicate_keys ... ok
+test typeck::tests::decimal_and_integer_literals_and_interpolation ... ok
+test typeck::patterns::tests::nine_hundred_scalar_arms_fit_the_fixed_budgets ... ok
+test typeck::tests::constant_collections_numeric_semantics_and_golden_examples ... ok
+test typeck::tests::declaration_flow_preserves_inner_failure_positions_and_repairs ... ok
+test typeck::tests::declaration_flow_keeps_variable_use_failures_at_the_argument ... ok
+test typeck::tests::effect_flow_direction_call_errors_and_float_fix ... ok
+test typeck::tests::diagnostics_batch4::same_named_types_use_one_qualification_table ... ok
+test typeck::tests::diagnostics_batch4::standard_integer_calls_warn_by_width_and_operation ... ok
+test typeck::tests::named_collection_constants_are_evaluated ... ok
+test typeck::tests::effect_inference_names_and_stubs ... ok
+test typeck::tests::higher_kinded_instantiation_and_equatable_declaration_summaries ... ok
+test typeck::tests::final_expression_reports_once_at_the_expression ... ok
+test typeck::tests::named_constant_arguments_check_values_and_constructor_rules ... ok
+test typeck::tests::named_collection_duplicate_diagnostics_keep_key_positions ... ok
+test typeck::tests::placeholder_callee_return_uses_generated_function_boundary ... ok
+test typeck::tests::diagnostics_batch4::declaration_provenance_preserves_causes_and_independent_errors ... ok
+test runtime::map::tests::skewed_workloads_keep_update_paths_logarithmic ... ok
+test typeck::tests::named_function_annotations_compare_names_in_nested_types ... ok
+test runtime::map::tests::randomized_operations_match_models_and_preserve_inputs_across_collection ... ok
+test typeck::tests::prepared_named_call_arguments_keep_higher_order_contracts_strict ... ok
+test typeck::tests::named_numeric_warnings_use_the_declared_argument ... ok
+test typeck::tests::records_aliases_constants_and_output_tables ... ok
+test typeck::pattern_ext::tests::extensible_source_patterns_keep_package_and_nested_context ... ok
+test typeck::pattern_ext::tests::deep_list_patterns_stay_within_the_normal_stack ... ok
+test typeck::tests::source_diagnostics_and_constant_type_parameters ... ok
+test typeck::tests::record_errors_and_alias_spelling ... ok
+test typeck::tests::returned_binding_mismatch_uses_the_declared_return_reason ... ok
+test typeck::tests::return_call_mismatch_reports_return_reason ... ok
+test typeck::tests::return_call_keeps_argument_position_diagnostics ... ok
+test typeck::tests::standard_result_and_option_reject_extensible_declarations ... ok
+test typeck::tests::prepared_named_calls_map_known_contracts_and_report_only_the_primary_cause ... ok
+test typeck::tests::unreachable_statements_are_reported_once_per_block ... ok
+test typeck::tests::returns_monomorphism_unknown_types_and_error_recovery ... ok
+test typeck::tests::operators_warnings_and_fixes ... ok
+test typeck::tests::standard_library_and_entry_contracts ... ok
+test typeck::tests::unreachable_statements_are_reported_once_per_block_in_effect_children ... ok
+test typeck::tests::zero_field_constructors_and_signed_literal_outputs ... ok
+test typeck::traits::tests::builtin_constraints_and_standard_trait_examples ... ok
+test typeck::tests::width_float_literals_round_directly_to_binary32 ... ok
+test typeck::tests::prelude_type_shadowing_in_nested_types_and_type_arity ... ok
+test typeck::traits::tests::builtin_parameter_bounds_and_strength ... ok
+test typeck::traits::tests::constructor_parameter_constraint_fixes_preserve_the_kind_and_qualification ... ok
+test typeck::tests::width_integer_division_waits_for_operands_and_defaults_unconstrained_lambdas ... ok
+test typeck::traits::tests::higher_kinded_methods_select_heads_and_keep_method_arguments ... ok
+test typeck::traits::tests::implementation_and_method_constraints_keep_separate_indices ... ok
+test typeck::tests::width_literals_keep_their_exact_types_and_values ... ok
+test typeck::traits::tests::invalid_declarations_do_not_produce_secondary_errors ... ok
+test typeck::traits::tests::coherence_and_method_contracts ... ok
+test typeck::traits::tests::interpolation_suggestion_stops_at_the_dictionary_budget ... ok
+test typeck::traits::tests::declaration_and_implementation_rules_report_codes_and_positions ... ok
+test typeck::traits::tests::operation_clause_bounds_are_kept_when_constructing_implementation_dictionaries ... ok
+test typeck::tests::width_keys_reject_float32_and_accept_integers_and_interpolation ... ok
+test typeck::traits::tests::permuted_implementation_arguments_and_method_dictionaries_keep_their_order ... ok
+test typeck::traits::tests::show_example_records_nested_dictionaries_and_method_values ... ok
+test typeck::traits::tests::parameter_dictionary_selection_prefers_exact_shortest_then_first ... ok
+test typeck::traits::tests::supertraits_and_result_annotations_select_dictionaries ... ok
+test types::tests::constructor_fields_are_instantiated_and_missing_entries_return_none ... ok
+test types::tests::function_contracts_affect_structure_hash_and_display ... ok
+test types::tests::function_type_display_groups_all_io_effects_and_keeps_other_effects ... ok
+test types::tests::function_type_display_keeps_nine_io_effects_separate ... ok
+test types::tests::substitution_is_simultaneous_and_preserves_unbound_parameters ... ok
+test typeck::traits::tests::standard_library_sources_and_dictionary_contracts ... ok
+test types::tests::width_type_display_preserves_legacy_names ... ok
+test vm::dispatch::cell::tests::retry_reloads_version_and_argument_after_collecting_and_returns_to_same_destination ... ok
+test vm::dispatch::cell::tests::unwind_respects_version_and_cause_and_roots_the_returned_value ... ok
+test vm::dispatch::cell::tests::update_frame_is_the_only_root_for_cell_and_original_function ... ok
+test vm::dispatch::collections::tests::loadk_builds_nested_sorted_collections_and_caches_them_across_collection ... ok
+test vm::dispatch::handlers::tests::call_results_survive_handle_and_resume_safepoints ... ok
+test vm::dispatch::handlers::tests::discarded_nested_continuations_escape_and_stop ... ok
+test vm::dispatch::handlers::tests::dropping_one_hundred_thousand_continuations_does_not_accumulate_stack ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::dispatch::handlers::tests::frame_only_closure_and_capture_are_collected_after_drop_escape_and_stop ... ok
+test vm::dispatch::handlers::tests::frame_only_roots_survive_collection_and_are_released_after_return_or_stop ... ok
+test vm::dispatch::handlers::tests::heap_fault_during_return_records_origin_and_only_remaining_calls ... ok
+test vm::dispatch::handlers::tests::inherited_clause_search_skips_the_callers_inner_handlers ... ok
+test vm::dispatch::handlers::tests::io_operations_use_the_handler_before_invoking_external_services ... ok
+test vm::dispatch::handlers::tests::long_dropped_continuation_roots_clause_result_between_steps ... ok
+test vm::dispatch::handlers::tests::million_completed_handlers_use_constant_space_but_pending_resumes_grow ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::dispatch::handlers::tests::nested_handlers_keep_inner_handlers_and_search_outside_clauses ... ok
+test vm::dispatch::handlers::tests::perform_pre_call_collection_keeps_arguments_and_counts_the_call_once ... ok
+test vm::dispatch::handlers::tests::repeated_operations_and_computation_around_resume ... ok
+test vm::dispatch::handlers::tests::returning_value_is_rooted_after_the_body_and_handle_are_popped ... ok
+test vm::dispatch::handlers::tests::second_resume_stops_at_the_second_instruction ... ok
+test vm::dispatch::handlers::tests::stack_limits_preserve_the_performing_frame_and_clear_the_meter ... ok
+test vm::dispatch::handlers::tests::unhandled_io_with_operation_keeps_results_in_deep_calls ... ok
+test vm::dispatch::handlers::tests::wrapped_return_checks_collection_before_executing_the_caller ... ok
+test vm::dispatch::lazy::tests::a_hundred_thousand_lazies_stop_at_the_vm_stack_limit ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::dispatch::lazy::tests::force_rejects_invalid_values_and_checks_limits_before_starting_evaluation ... ok
+test vm::dispatch::lazy::tests::lazy_captures_and_update_frame_survive_collection_and_cache_the_result ... ok
+test vm::dispatch::lazy::tests::stopping_a_lazy_body_restores_before_and_preserves_its_captures ... ok
+test vm::dispatch::lazy::tests::update_unwind_obeys_every_cause_and_rejects_non_evaluating_states ... ok
+test typeck::traits::tests::missing_or_unknown_dictionary_and_parameter_fixes ... ok
+test vm::dispatch::numeric::tests::decimal_constant_is_cached_across_collection_and_invalid_descriptions_stop ... ok
+test vm::dispatch::numeric::tests::decimal_and_byte_instructions_produce_language_results_after_collection ... ok
+test vm::dispatch::resource::tests::callee_return_keeps_callers_release_and_uses_plain_return ... ok
+test vm::dispatch::resource::tests::captured_releases_drop_stop_escape_and_perform_limit ... ok
+test vm::dispatch::resource::tests::invalid_use_and_release_report_internal_without_creating_frames ... ok
+test vm::dispatch::numeric::tests::numeric_errors_stop_at_the_faulting_instruction_and_match_builtins ... ok
+test vm::dispatch::resource::tests::own_releases_return_explicit_release_and_failure_aggregation ... ok
+test vm::dispatch::resource::tests::release_and_return_wait_keep_live_values_across_collection ... ok
+test vm::dispatch::resource::tests::releases_around_a_wrapped_clause_in_one_segment_keep_order ... ok
+test vm::dispatch::resource::tests::use_limit_and_release_ownership_preserve_cleanup ... ok
+test vm::dispatch::resource::tests::waiting_release_rechecks_completion_and_current_cause ... ok
+test vm::dispatch::cell::tests::division_by_zero_in_update_stops_without_writing_cell ... ok
+test vm::dispatch::tasks::io::output_tests::recorded_writer_failure_is_seen_by_the_next_write_instruction ... ok
+test typeck::traits::tests::selected_implementations_require_their_builtin_bounds ... ok
+test typeck::traits::tests::interpolation_of_type_parameters_reports_conversion_help ... ok
+test vm::dispatch::tasks::io::output_tests::cancelling_output_wait_keeps_accepted_bytes_and_discards_pending_write_or_work ... ok
+test vm::dispatch::tasks::io::output_tests::stalled_stdout_preserves_capacity_frame_and_allows_stderr_and_virtual_timer ... ok
+test typeck::traits::tests::operation_constraints_keep_public_contracts_and_rigid_clause_bounds ... ok
+test vm::dispatch::tasks::io::output_tests::work_waits_for_stdout_then_stderr_while_other_tasks_progress ... ok
+test vm::dispatch::tasks::io::output_tests::work_with_empty_output_does_not_enter_a_flush_wait ... ok
+test vm::dispatch::tasks::io::output_tests::budget_switch_transfers_both_short_outputs_while_another_task_computes ... ok
+test typeck::tests::width_integer_literals_check_both_boundaries_and_record_exact_values ... ok
+test vm::dispatch::tasks::io::output_tests::transfer_only_prevents_deadlock_when_a_task_waits_for_it ... ok
+test vm::dispatch::tasks::io::tests::cancelling_readiness_waits_removes_their_records_and_keeps_live_registrations ... ok
+test vm::dispatch::tasks::io::tests::outstanding_request_cancelled_by_race_is_never_invoked ... ok
+test vm::dispatch::tasks::io::output_tests::writer_failure_or_panic_stops_capacity_and_flush_waiters_without_delivering_deferred_bytes ... ok
+test vm::dispatch::tasks::io::tests::blocking_release_keeps_the_frame_until_worker_completion_and_preserves_failure_site ... ok
+test vm::dispatch::tasks::io::tests::cancellation_of_lend_wait_discards_the_saved_work_for_resource_and_stdin ... ok
+test vm::dispatch::tasks::io::tests::outstanding_response_without_ready_tasks_returns_to_executor ... ok
+test vm::dispatch::tasks::io::tests::detached_unfinished_stdin_does_not_delay_ending_or_mask_a_later_deadlock ... ok
+test vm::dispatch::tasks::io::tests::readiness_deduplicates_live_operations_and_discards_stale_tokens ... ok
+test vm::dispatch::tasks::io::tests::lend_wait_restarts_without_reinvoking_and_stdin_preserves_fifo ... ok
+test vm::dispatch::tasks::io::tests::request_batch_preserves_first_stop_and_expires_after_serve_failure ... ok
+test vm::dispatch::tasks::io::tests::queued_work_and_completion_progress_while_another_task_computes ... ok
+test vm::dispatch::tasks::io::tests::sleep_reparks_at_io_and_virtual_deadline_writes_unit ... ok
+test vm::dispatch::tasks::tests::a_million_inherited_tail_resumes_fit_a_small_stack ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::dispatch::tasks::io::tests::stopping_during_a_batch_expires_the_remaining_request ... ok
+test vm::dispatch::tasks::io::tests::timer_arguments_survive_collection_by_another_task_before_the_deadline ... ok
+test vm::dispatch::tasks::io::tests::worker_panic_returns_the_lent_resource_and_stops_as_an_internal_bug ... ok
+test vm::dispatch::tasks::io::tests::synchronous_output_parks_and_wakes_without_overwriting_the_wait ... ok
+test vm::dispatch::tasks::io::tests::waiting_work_prevents_deadlock_until_its_completion_is_taken ... ok
+test vm::dispatch::tasks::tests::budget_switches_are_fair_and_collection_does_not_change_the_schedule ... ok
+test vm::dispatch::tasks::tests::blocking_drop_release_preserves_clause_return_while_another_task_returns ... ok
+test vm::dispatch::tasks::io::tests::return_then_blocking_release_keeps_cancelled_owner_and_preserves_global_stop ... ok
+test vm::dispatch::tasks::tests::await_reexecutes_prim_after_completion_and_keeps_the_result_through_collection ... ok
+test vm::dispatch::tasks::tests::cancellation::a_non_resuming_clause_cancels_handler_members_before_returning ... ok
+test vm::dispatch::tasks::tests::all_returns_spawn_order_under_reversed_completion_and_empty_input ... ok
+test vm::dispatch::tasks::tests::cancellation::cancelling_a_spawn_wait_keeps_the_parent_parked_until_both_children_finish ... ok
+test vm::dispatch::tasks::tests::cancellation::cancelling_an_awaiter_detaches_it_and_late_completion_cannot_resume_it ... ok
+test vm::dispatch::tasks::tests::cancellation::collection_preserves_spawn_results_and_unwind_segments_while_cancellation_waits_for_release ... ok
+test vm::dispatch::tasks::tests::cancellation::cancellation_removes_lend_waiters_but_preserves_release_waits ... ok
+test vm::dispatch::tasks::tests::cancellation::cancelling_the_lazy_evaluator_restarts_the_waiter_and_cancelling_the_waiter_leaves_the_evaluator_running ... ok
+test vm::dispatch::tasks::tests::cancellation::cancellation_preserves_release_waits_and_drop_traversal_and_releases_each_resource_once ... ok
+test vm::dispatch::tasks::tests::cancellation::deadlock_reports_unwinding_handle_and_group_frames_and_both_segment_stacks ... ok
+test vm::dispatch::tasks::tests::cancellation::await_of_a_cancelled_task_stops_at_its_own_prim_even_after_waiting ... ok
+test vm::dispatch::tasks::tests::cancellation::deadlock_names_the_cancelling_wait_mode ... ok
+test vm::dispatch::tasks::tests::cancellation::outer_timeout_cancels_a_parent_waiting_for_its_timeout_decision ... ok
+test vm::dispatch::tasks::tests::cancellation::timeout_breaks_cyclic_awaits_instead_of_reporting_a_deadlock ... ok
+test vm::dispatch::tasks::tests::cancellation::race_cancels_a_parent_already_waiting_for_group_release_before_delivering_the_winner ... ok
+test vm::dispatch::tasks::tests::cancellation::global_stop_escalates_cancel_and_drop_waits_and_keeps_prior_release_failures ... ok
+test vm::dispatch::tasks::tests::cancellation::global_stop_does_not_deliver_cancelling_spawn_results_before_the_parent_finishes ... ok
+test vm::dispatch::tasks::tests::cancellation::timeout_discards_a_child_result_completed_at_or_after_the_deadline ... ok
+test vm::dispatch::tasks::tests::cancellation::all_ok_selects_the_first_error_in_input_order_and_cancels_only_later_children ... ok
+test vm::dispatch::tasks::tests::cleanup_terminates_when_a_traversal_error_does_not_advance ... ok
+test vm::dispatch::tasks::tests::every_task_owned_root_survives_collection_in_isolation ... ok
+test vm::dispatch::tasks::tests::child_failure_stops_all_tasks_and_preserves_spawn_history ... ok
+test vm::dispatch::tasks::tests::cyclic_await_reports_waiters_in_spawn_order ... ok
+test vm::dispatch::tasks::tests::completed_children_do_not_accumulate_in_groups_or_spawners ... ok
+test vm::dispatch::tasks::tests::inherited_non_tail_clause_stops_before_executing_it ... ok
+test vm::dispatch::tasks::tests::deep_spawn_history_keeps_all_origins_in_child_to_parent_order ... ok
+test vm::dispatch::tasks::tests::interrupt::idle_interrupt_stops_timer_waits_in_both_execution_modes ... ok
+test vm::dispatch::tasks::tests::inherited_handler_waits_for_grandchild_and_preserves_wrapped_return ... ok
+test vm::dispatch::tasks::tests::interrupt::interrupt_requested_before_attach_stops_stdin_wait_without_a_notification ... ok
+test vm::dispatch::tasks::tests::lazy_unwind_wakes_all_matching_waiters_except_while_stopping ... ok
+test vm::dispatch::tasks::tests::group_release_await_and_released_spawn_follow_resource_contract ... ok
+test vm::dispatch::tasks::tests::interrupt::interrupt_does_not_wait_for_running_work_and_late_resource_is_dropped ... ok
+test vm::dispatch::tasks::tests::invalid_script_selection_stops_instead_of_repeating_cleanup ... ok
+test vm::dispatch::tasks::tests::task_table_reuses_entries_without_accepting_old_generations ... ok
+test vm::dispatch::tasks::tests::interrupt::stopping_releases_every_task_inside_out_and_preserves_the_first_reason ... ok
+test vm::dispatch::tasks::tests::stopping_finishes_when_switching_cannot_make_progress ... ok
+test vm::dispatch::tests::builtin_exit_finishes_the_stop_procedure_with_its_status ... ok
+test vm::dispatch::tests::registered_builtin_arguments_fit_inline_operands ... ok
+test vm::dispatch::tasks::tests::lazy_waits_and_retries_without_evaluating_twice ... ok
+test vm::dispatch::tests::width_constants_preserve_fields_through_vm_io ... ok
+test vm::dispatch::traits::tests::constant_dictionary_is_shared_and_method_constraints_are_arguments ... ok
+test vm::dispatch::traits::tests::dictionary_instructions_reject_wrong_values_and_missing_entries ... ok
+test vm::dispatch::traits::tests::method_calls_report_stack_limits_at_the_call_site ... ok
+test vm::dispatch::traits::tests::superclass_recipes_select_the_correct_dictionary ... ok
+test vm::dispatch::traits::tests::tail_methods_repeat_a_million_times_and_resize_windows ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::dispatch::unwinding::tests::escalation_preserves_progress_log_and_resource_wait ... ok
+test vm::dispatch::unwinding::tests::stopping_inside_nested_drop_keeps_progress_and_uses_stop_cause ... ok
+test vm::dispatch::unwinding::tests::traversal_segments_and_clause_return_value_remain_roots_across_collection ... ok
+test vm::dispatch::unwinding::tests::traversal_selects_call_then_wrapper_then_own_release_then_call ... ok
+test vm::miri_tests::builder_roots_survive_wait_and_clear_before_frame_return ... ok
+test vm::miri_tests::continuation_capture_resume_and_discard ... ok
+test vm::miri_tests::io_completion_reads_saved_arguments_after_collection ... ok
+test vm::miri_tests::lazy_result_and_cell_write_survive_collection ... ok
+test vm::miri_tests::resource_loan_returns_after_worker_completion ... ok
+test vm::miri_tests::safepoint_clears_dead_registers_and_keeps_live_values ... ok
+test vm::miri_tests::waiting_parent_register_is_a_root_during_child_collection ... ok
+test vm::dispatch::tasks::tests::stopping_escalates_a_blocked_drop_traversal_and_keeps_earlier_release_failures ... ok
+test vm::state::tests::begin_close_returns_release_failure_once_for_immediate_and_blocking_resources ... ok
+test vm::state::tests::default_begin_close_maps_the_existing_release_reply ... ok
+test vm::state::tests::u3_runtime_views_reborrow_the_vm_runtime_and_resources ... ok
+test vm::tests::arithmetic_and_comparisons_follow_language_rules ... ok
+test vm::tests::arithmetic_stops_preserve_instruction_and_frames ... ok
+test vm::dispatch::tasks::tests::cancellation::timeouts_wait_for_cancellation_and_remove_obsolete_timers ... ok
+test vm::tests::budget_requests_preserve_saved_remaining_and_calls_execute_once ... ok
+test vm::tests::branches_use_constructor_tags_and_relative_offsets ... ok
+test vm::state::tests::deep_spawn_chain_can_be_dropped_without_recursion ... ok
+test vm::tests::caller_registers_and_frame_function_keep_their_values_and_release_them ... ok
+test vm::tests::calls_read_two_arguments_and_flattened_captures ... ok
+test vm::tests::conr_matches_con_and_rejects_invalid_candidates ... ok
+test vm::tests::consecutive_calls_keep_returned_heap_arguments_at_pre_call_safepoints ... ok
+test vm::tests::constants_data_and_main_outcomes ... ok
+test vm::dispatch::tasks::tests::update_retries_after_another_task_sets_the_cell ... ok
+test vm::tests::deep_returns_collect_requested_allocations_without_rust_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::tests::dead_large_list_is_reclaimed_after_its_last_use ... ok
+test vm::tests::exit_report_tests::exit_report_runtime_checks_unverified_operands ... ok
+test vm::tests::exit_report_tests::exit_report_owns_strings_in_both_execution_modes ... ok
+test vm::tests::exit_report_tests::exit_report_runtime_result_distinguishes_an_ordinary_exit ... ok
+test vm::tests::exit_report_tests::request_exit_report_does_not_replace_an_adopted_stop ... ok
+test vm::tests::exit_report_tests::request_exit_report_survives_collection_and_is_consumed_once ... ok
+test vm::dispatch::tasks::tests::timer_wakes_only_at_the_virtual_deadline ... ok
+test vm::tests::heap_constants_keep_identity_when_only_the_cache_roots_them ... ok
+test vm::tests::invalid_operands_and_unknown_instructions_stop_and_disassembly_lists_all ... ok
+test vm::tests::loadk_rejects_constant_indices_outside_the_table ... ok
+test vm::tests::io_modes_write_the_same_output_and_finish_reports_sink_failure ... ok
+test vm::tests::invalid_safepoint_information_is_conservative_or_an_internal_stop ... ok
+test vm::tests::recorded_heap_fault_becomes_internal_stop ... ok
+test vm::tests::non_tail_recursion_stops_at_meter_limit ... ok
+test vm::tests::roots_constants_and_waiting_arguments_survive_collection ... ok
+test vm::tests::suspended_callers_release_old_arguments_and_results_before_collection ... ok
+test vm::tests::tail_window_old_objects_are_cleared_at_collection ... ok
+test vm::tests::verification_tests::conr_argument_alias_keeps_original_node_and_never_creates_self_edge ... ok
+test vm::tests::overlapping_tail_arguments_preserve_many_heap_values_in_order ... ok
+test vm::dispatch::traits::tests::constrained_dictionary_and_call_frame_survive_collection ... ok
+test vm::tests::verification_tests::conr_constructs_each_node_and_preserves_shared_chain ... ok
+test vm::tests::builder_tests::cancelling_waiting_task_discards_builder_slots_and_stack_cost ... ok
+test vm::dispatch::tasks::tests::cancellation::regex_find_all_times_out_between_matches ... ok
+test vm::tests::verification_tests::workload_results_and_output_agree_with_and_without_stress ... ok
+test vm::tests::builder_tests::dedicated_builders_survive_handle_resume_drop_and_nested_bodies ... ok
+test vm::tests::tail_calls_keep_one_frame_and_resize_both_ways ... ok
+test typeck::tests::width_operators_accept_matching_types_and_reject_invalid_uses ... ok
+test typeck::traits::tests::dictionary_budget_preserves_small_dictionaries_and_reports_the_use ... ok
+test bytecode::codegen::tests::corpus_prototype_entries_use_only_parameters has been running for over 60 seconds
+test bytecode::codegen::tests::corpus_prototype_entries_use_only_parameters ... ok
+
+test result: ok. 1239 passed; 0 failed; 21 ignored; 0 measured; 0 filtered out; finished in 62.45s
+
+== tests_related
+   Compiling benitoite v0.0.9 (/Users/tecogonaz/src/Benitoite/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.78s
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-72987e9b4faea213)
+
+running 4 tests
+test export_coverage ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_named_coverage ... ok
+test export_batch4_integer ... ok
+test scalar_source_arms_preserve_selection ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.05s
+
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-0a94ac17128e77fc)
+
+running 28 tests
+test batch3::export_batch4_blocks ... ok
+test batch3::export_batch3_solve ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test export_batch2_character ... ok
+test export_batch2_failure ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_independent_program_exchange ... ok
+test export_width_smoke ... ok
+test export_named_types_smoke ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test export_named_declarations_smoke ... ok
+test named::export_extensible_source ... ok
+test named::export_extensible_package ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_named_calls_smoke ... ok
+test named::export_named_static_calls_smoke ... ok
+test named::export_generated_record_property ... ok
+test named::export_general_named_programs ... ok
+test export_batch2_op ... ok
+test batch3::export_batch3_builders ... ok
+
+test result: ok. 27 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.72s
+
+     Running tests/golden.rs (target/debug/deps/golden-b669124677d3f99d)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.15s
+
+     Running tests/random_programs.rs (target/debug/deps/random_programs-bcda9acda3f47183)
+
+running 6 tests
+test row_fallback_preserves_guard_alternatives_and_list_bindings ... ok
+test seed_reproduces_source ... ok
+test shared_decisions_execute_previous_exponential_cases ... ok
+test detects_and_shrinks_changed_output ... ok
+test constrained_operation_call_forms_differential ... ok
+test random_differential ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 36.00s
+
+     Running tests/verify.rs (target/debug/deps/verify-9cf719a34ff729df)
+
+running 3 tests
+test dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses ... ok
+test reference_sets_depend_on_successful_size_checked_combination ... ok
+test golden_programs_and_seeded_single_site_mutations ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 54.60s
+
+== source_rules
+== source_rules
+== skill_generated
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Logの通常宣言とハンドラの具体例
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 文字列補間
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層のブロック式
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+selected checks passed

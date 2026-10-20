@@ -13,6 +13,7 @@ use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 
 mod effect_key;
+mod provenance;
 use effect_key::EffectConstraintKey;
 
 // 子を左から順に展開し、親の型は子をすべて作ってから組み立てる。
@@ -98,6 +99,7 @@ pub(super) struct Solver {
     // 宣言どうしと変数を使う側の食い違いは、束縛との食い違いを先に示してから報告の要否を決める
     // （設計書 02-05「誤りの報告と検査の継続」）。
     dependent_late: Vec<LateFailure>,
+    provenance: provenance::Provenance,
 }
 impl Solver {
     pub fn fresh_contract(&mut self) -> IContract {
@@ -583,6 +585,7 @@ impl Solver {
                 && let Some(n) = self.node_mut(v)
             {
                 n.parent = w.0;
+                self.provenance.connect(v.0, w.0);
             }
             return Ok(());
         }
@@ -635,7 +638,11 @@ impl Solver {
     }
     pub fn equal(&mut self, a: &ITy, b: &ITy, reason: &Reason) -> Result<(), DiagCode> {
         self.clear_escape();
-        self.equal_with_outer(a, b, reason, a, b)
+        let result = self.equal_with_outer(a, b, reason, a, b);
+        if result.is_ok() && !self.contains_error(a) && !self.contains_error(b) {
+            self.record_provenance(a, b, reason);
+        }
+        result
     }
     /// 独自の診断で扱った単一化の脱出情報を、後の報告へ残さない。
     pub(super) fn clear_escape(&mut self) {
@@ -757,6 +764,13 @@ impl Solver {
         }
     }
     fn flow(&mut self, a: &ITy, b: &ITy, r: &Reason) -> Result<bool, DiagCode> {
+        let result = self.flow_inner(a, b, r);
+        if matches!(result, Ok(true)) && !self.contains_error(a) && !self.contains_error(b) {
+            self.record_provenance(a, b, r);
+        }
+        result
+    }
+    fn flow_inner(&mut self, a: &ITy, b: &ITy, r: &Reason) -> Result<bool, DiagCode> {
         self.clear_escape();
         let a = self.zonk_checked(a).map_err(|_| DiagCode::E0208)?;
         let b = self.zonk_checked(b).map_err(|_| DiagCode::E0208)?;
@@ -803,6 +817,7 @@ impl Solver {
                     && let ITy::Var(v) = a
                 {
                     self.declared.insert(self.root(v).0, r.clone());
+                    self.provenance.declare(self.root(v).0, r);
                 }
                 self.equal(&b, &a, r)?;
                 Ok(true)
@@ -847,16 +862,23 @@ impl Solver {
             return true;
         }
         if let Err(code) = self.equal(&x.ret, &y.ret, &r) {
+            let expected = self.zonk(&x.ret);
+            self.record_redirected(&x.ret, &y.ret);
             self.late
-                .push((code, x.ret.clone(), y.ret.clone(), r, self.escaped.take()));
+                .push((code, expected, y.ret.clone(), r, self.escaped.take()));
         }
         true
     }
     fn poison(&mut self, types: &[ITy]) {
         let mut todo = types.to_vec();
+        let mut seen = BTreeSet::new();
         while let Some(t) = todo.pop() {
             match t {
                 ITy::Var(v) => {
+                    if !seen.insert(v.0) {
+                        continue;
+                    }
+                    todo.extend(self.origin_neighbors(v.0).map(|v| ITy::Var(TyVar(v))));
                     let bound = self.node(v).and_then(|n| n.binding.clone());
                     if let Some(t) = bound {
                         todo.push(t);
@@ -984,7 +1006,8 @@ impl Solver {
         }
         let mut names = ctx.type_param_names();
         let mut indices = BTreeMap::new();
-        let mut exp = ctx.show_type_named(self, expected, &mut names, &mut indices);
+        let qualified = ctx.qualified_type_names(self, &[expected, found]);
+        let mut exp = ctx.show_type_qualified(self, expected, &mut names, &mut indices, &qualified);
         let shown = exp.clone();
         if let Some(span) = r.related
             && ctx
@@ -996,7 +1019,7 @@ impl Solver {
         {
             exp = text.into();
         }
-        let mut f = ctx.show_type_named(self, found, &mut names, &mut indices);
+        let mut f = ctx.show_type_qualified(self, found, &mut names, &mut indices, &qualified);
         if code == DiagCode::E0402
             && let (ITy::Fn(e), ITy::Fn(actual)) = (self.zonk(expected), self.zonk(found))
         {
@@ -1226,7 +1249,9 @@ impl Solver {
         if code == DiagCode::E0514 {
             d = d.help("convert");
         }
-        ctx.diagnostic(d.build());
+        let mut diagnostic = d.build();
+        ctx.type_declaration_notes(&mut diagnostic, &qualified);
+        ctx.diagnostic(diagnostic);
         self.poison(&[expected.clone(), found.clone()]);
     }
     pub fn solve(&mut self, ctx: &mut Body<'_, '_>, constraints: Vec<Constraint>) {
@@ -1360,10 +1385,12 @@ impl Solver {
                     break;
                 }
                 for c in std::mem::take(&mut deferred) {
-                    if let Constraint::Flow { from, to, reason } = c
-                        && let Err(code) = self.equal(&to, &from, &reason)
-                    {
-                        self.pair_failure(ctx, code, &to, &from, &reason);
+                    if let Constraint::Flow { from, to, reason } = c {
+                        if let Err(code) = self.equal(&to, &from, &reason) {
+                            self.pair_failure(ctx, code, &to, &from, &reason);
+                        } else {
+                            self.record_use(&to, &from, &reason);
+                        }
                     }
                 }
             }
@@ -1379,9 +1406,29 @@ impl Solver {
         for (code, expected, found, reason, escaped) in std::mem::take(&mut self.late) {
             self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
         }
-        for (code, expected, found, reason, escaped) in std::mem::take(&mut self.dependent_late) {
-            // 移し替えた報告から伝わった誤りの型は、両辺を調べる failure_with_escape が抑える。
-            self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
+        let recovered_uses = self.recovered_uses();
+        let dependent = std::mem::take(&mut self.dependent_late)
+            .into_iter()
+            .map(|failure| {
+                let (_, expected, found, reason, _) = &failure;
+                let corrected = (reason.priority != Priority::Declared
+                    && (self.has_recovery(expected) || self.has_recovery(found)))
+                .then(|| (self.recovered_type(expected), self.recovered_type(found)));
+                (failure, corrected)
+            })
+            .collect::<Vec<_>>();
+        self.poison_redirected();
+        for (a, b, reason) in recovered_uses {
+            self.failure(ctx, DiagCode::E0401, &a, &b, &reason);
+        }
+        for ((code, expected, found, reason, escaped), corrected) in dependent {
+            if let Some((a, b)) = corrected {
+                if a != b && !has_error(&a) && !has_error(&b) {
+                    self.failure_with_escape(ctx, code, &a, &b, &reason, escaped);
+                }
+            } else {
+                self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
+            }
         }
         bounds = self.bounds(ctx, bounds, false);
         self.solve_effects(ctx);
@@ -1441,12 +1488,14 @@ impl Solver {
                 }
                 if let Err(code) = self.equal(&expected, &found, &reason) {
                     self.pair_failure(ctx, code, &expected, &found, &reason);
+                } else {
+                    self.record_use(&expected, &found, &reason);
                 }
             }
             Constraint::Flow { from, to, reason } => match self.flow(&from, &to, &reason) {
                 Ok(false) => deferred.push(Constraint::Flow { from, to, reason }),
                 Err(code) => self.pair_failure(ctx, code, &to, &from, &reason),
-                _ => {}
+                Ok(true) => self.record_use(&to, &from, &reason),
             },
             Constraint::OneOf { .. }
             | Constraint::Equality { .. }
@@ -1461,7 +1510,7 @@ impl Solver {
     // 型の表示は、ほかの制約で引数の型が決まった後まで待つ（設計書 02-05「誤りの報告と検査の継続」）。
     #[cold]
     #[inline(never)]
-    fn pair_failure(
+    pub(super) fn pair_failure(
         &mut self,
         ctx: &mut Body<'_, '_>,
         code: DiagCode,
@@ -1469,6 +1518,9 @@ impl Solver {
         found: &ITy,
         reason: &Reason,
     ) {
+        if code == DiagCode::E0401 && self.provenance_failure(ctx, expected, found, reason) {
+            return;
+        }
         if code == DiagCode::E0401 && reason.kind == ReasonKind::FnBody {
             // ラムダを渡す引数の制約も解いてから、戻り値の編集が可能か判定する。
             // 既に報告対象となった本体では、既定の Unit との比較を重ねない。
@@ -1563,6 +1615,22 @@ impl Solver {
             };
             let t = self.zonk(&ty);
             if has_error(&t) {
+                continue;
+            }
+            if !final_pass && !self.has_recovery(&ty) && self.provisional_dependency(&ty, &r) {
+                waiting.push(original);
+                continue;
+            }
+            if let Some(set) = set
+                && self.has_recovery(&ty)
+            {
+                let actual = self.recovered_type(&ty);
+                if !has_error(&actual)
+                    && !matches!(&actual, ITy::Con(TyCon::Builtin(b), args) if args.is_empty() && set.contains(*b))
+                {
+                    self.bound_failure(ctx, &actual, outer.as_ref(), &r, mode, Some(set));
+                    self.poison(&[ty]);
+                }
                 continue;
             }
             // 型変数は呼び出し側の制約を待ち、最後まで幅が決まらなければ Integer にする。
@@ -2027,8 +2095,18 @@ impl Solver {
                         effect: fixed(set),
                     })),
                 );
-                let name = shown.split_once(" uses ").map_or("_", |(_, s)| s);
-                let d = missing_effect(ctx, &r, name, origin);
+                let name = if let Elem::Name(name @ EffectName::Builtin(b)) = elem
+                    && b.def()
+                        .is_some_and(|d| d.module.last().copied() == Some(d.name))
+                {
+                    super::effects::effect_name(ctx, name, Some(ctx.module))
+                } else {
+                    shown
+                        .split_once(" uses ")
+                        .map_or("_", |(_, s)| s)
+                        .to_owned()
+                };
+                let d = missing_effect(ctx, &r, &name, origin);
                 ctx.diagnostic(d);
             }
         }

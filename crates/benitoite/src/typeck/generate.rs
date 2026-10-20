@@ -83,6 +83,7 @@ pub(super) fn integer_literal(ctx: &Body<'_, '_>, e: &Expr) -> Option<String> {
         | Expr::Lambda(_)
         | Expr::Return(_)
         | Expr::Try(_)
+        | Expr::Block(_)
         | Expr::Lazy(_)
         | Expr::With(_)
         | Expr::Handle(_)
@@ -180,6 +181,7 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
         Expr::Pipe(p) => pipe(ctx, p),
         Expr::If(e) => if_expr(ctx, e),
         Expr::Match(e) => match_expr(ctx, e),
+        Expr::Block(e) => ctx.block(&e.body),
         Expr::Lambda(e) => lambda(ctx, e),
         Expr::Return(e) => return_expr(ctx, e),
         Expr::Try(_) | Expr::Lazy(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) => {
@@ -963,6 +965,7 @@ fn always_expr(e: &Expr) -> bool {
         Expr::Paren(p) => always_expr(&p.inner),
         Expr::If(i) => always_if(i),
         Expr::Match(m) => !m.arms.is_empty() && m.arms.iter().all(|a| always_block(&a.body)),
+        Expr::Block(e) => always_block(&e.body),
         Expr::With(w) => always_block(&w.body),
         Expr::Lit(_)
         | Expr::Interp(_)
@@ -1123,6 +1126,7 @@ fn reach_expr(ctx: &mut Body<'_, '_>, e: &Expr) {
                 reach_expr(ctx, message);
             }
         }
+        Expr::Block(e) => reachability(ctx, &e.body, None),
         Expr::Lazy(l) => reachability(ctx, &l.body, None),
         Expr::Handle(h) => {
             reachability(ctx, &h.body, None);

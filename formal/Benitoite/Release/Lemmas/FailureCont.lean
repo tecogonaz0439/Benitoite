@@ -130,7 +130,7 @@ theorem ContTy.failure_prefix {Ψ R ein k1 E body k2 a b Eb Re E'}
           obtain ⟨rfl, rfl⟩ := heq
           cases hc with
           | one hew htw hecw hb =>
-              exact ⟨_, _, _, _, _, .one hew htw hecw hb, hn, hr, hec, hw, ht, he⟩
+              exact ⟨_, _, _, _, _, .one hew htw hecw (by simpa only [hideBuilders_idem] using hb), hn, hr, hec, hw, ht, he⟩
       | cons f k1 =>
           simp only [List.cons_append, List.cons.injEq] at heq
           obtain ⟨rfl, heq⟩ := heq
@@ -219,7 +219,7 @@ theorem ContTy.split_failure {Ψ R ein k1 E body k2 a b Eb Re}
           obtain ⟨rfl, rfl⟩ := heq
           cases hc with
           | one hew htw hecw hb =>
-              have hcl := HasFailureClause.one hew htw hecw hb
+              have hcl := HasFailureClause.one (Δ := []) hew htw hecw (by simpa only [hideBuilders_idem] using hb)
               exact ⟨_, _, _, _, _, hcl, hn, hr, he, hw, ht, failure_capture_base hcl hn hw⟩
       | cons f k1 =>
           simp only [List.cons_append, List.cons.injEq] at heq
@@ -241,18 +241,19 @@ theorem HasTypeVQ.inv_raise {Ψ Q C Γ v a T E}
     (hv : HasTypeVQ P B Ψ Q C Γ v a) (heq : v = .raise T E) :
     Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le (.fn ["error"] [E] T (Eff.singleFail E)) a := by
   match hv with
+  | .V_Const => cases heq
   | .V_Raise ht he => cases heq; exact ⟨ht, he, Ty.Le.refl _⟩
   | .V_Sub hv hl _ =>
       obtain ⟨ht, he, hl'⟩ := hv.inv_raise heq
       exact ⟨ht, he, hl'.trans hl⟩
 
 /-- Fail 専用の handle の入力上限と、外へ残す効果を取り出す。 -/
-theorem HasTypeCQ.inv_handle_failure {Ψ Q C Γ R m' a ε m h}
-    (hh : HasTypeCQ P B Ψ Q C Γ R m' a ε) (hm : m' = .handle m h)
+theorem HasTypeCQ.inv_handle_failure {Δl : LocalCtx} {Ψ Q C Γ R m' a ε m h}
+    (hh : HasTypeCQ P B Ψ Q C Γ R m' a ε Δl) (hm : m' = .handle m h)
     (ho : handles h .fail = true) :
-    ∃ t eb E Rest ec, HasTypeCQ P B Ψ Q C Γ R m t eb ∧
+    ∃ t eb E Rest ec, HasTypeCQ P B Ψ Q C Γ R m t eb Δl ∧
       Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) ∧ NoFail Q Rest ∧
-      HasFailureClause P B Ψ Q C Γ E R h t ec ∧ Ty.Le t a ∧ Eff.Sub (Eff.union Rest ec) ε := by
+      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Sub (Eff.union Rest ec) ε := by
   match hh with
   | .C_Handle _ _ hc => cases hm; rw [hc.no_failure] at ho; cases ho
   | .C_Handle_Fail ht hs hn hc =>
@@ -263,10 +264,11 @@ theorem HasTypeCQ.inv_handle_failure {Ψ Q C Γ R m' a ε m h}
   | .C_Eff ht hs =>
       obtain ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs'⟩ := ht.inv_handle_failure hm ho
       exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs'.trans hs⟩
+  | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
 
 /-- raise の適用で必要な Fail は C_Sub/C_Eff/V_Sub を通っても残る。 -/
-theorem HasTypeCQ.inv_raise_app {Ψ Q C Γ R T E v a em}
-    (hm : HasTypeCQ P B Ψ Q C Γ R (.app (.raise T E) [v]) a em) :
+theorem HasTypeCQ.inv_raise_app {Δl : LocalCtx} {Ψ Q C Γ R T E v a em}
+    (hm : HasTypeCQ P B Ψ Q C Γ R (.app (.raise T E) [v]) a em Δl) :
     Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le T a ∧
       Eff.Sub (Eff.singleFail E) em ∧ HasTypeVQ P B Ψ Q C Γ v E := by
   obtain ⟨names, as, b, e, hf, ha, hl, hs⟩ := hm.inv_app rfl

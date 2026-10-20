@@ -1,0 +1,14 @@
+error[E0401]: mismatched types
+  --> testdata/types/batch4-provenance.bnt:7:10
+   |
+ 7 |   return s
+   |          ^ expected `String`, found `Integer`
+   |
+  ::: testdata/types/batch4-provenance.bnt:4:29
+   |
+ 4 | function bad(n: Integer) -> String
+   |                             ------ expected because of this
+   |
+   = note: the returned value must match the declared return type
+
+error: could not check testdata/types/batch4-provenance.bnt due to 1 previous error

@@ -3,7 +3,7 @@
 Status: standard. Import it with `import Benitoite.BytesBuilder`.
 
 Function-local bytes construction. Import Benitoite.BytesBuilder explicitly.
-Declare with bind b: BytesBuilder <- BytesBuilder.new(). Every operation uses State.
+Declare with bind b: BytesBuilder <- BytesBuilder.new(). Local operations add no effects; effects from ordinary arguments are preserved.
 A builder is a second-class value: it cannot be stored in an ordinary variable,
 returned from a function, or captured by a lambda or lazy expression.
 Its kind name is not an ordinary type; builders cannot be ordinary function arguments.

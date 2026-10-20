@@ -27,6 +27,27 @@ def letChain (depth : Nat) (ms : List Comp) (body : Comp) : Comp :=
 def sequence (ms : List Comp) (finish : List Val → Comp) : Comp :=
   letChain 0 ms (finish (boundVars ms.length))
 
+/-- 評価済みの値と、ソース順に一度だけ評価する固定式を区別する。 -/
+inductive ArgPlan where
+  | direct (value : Val)
+  | evaluate (comp : Comp)
+
+/-- 値だけの引数は通常束縛を増やさない。 -/
+def argEvals : List ArgPlan → List Comp
+  | [] => []
+  | .direct _ :: rest => argEvals rest
+  | .evaluate m :: rest => m :: argEvals rest
+
+/-- 直接値は追加した束縛の総数だけ移し、固定式は右に残る固定式の数を指す。 -/
+def argValues (shift : Nat) : List ArgPlan → List Val
+  | [] => []
+  | .direct v :: rest => v.rename (· + shift) :: argValues shift rest
+  | .evaluate _ :: rest => .var (argEvals rest).length :: argValues shift rest
+
+/-- depth は callee 等、引数列より先に挿入した束縛の数である。 -/
+def sequenceArgs (depth : Nat) (plans : List ArgPlan) (finish : List Val → Comp) : Comp :=
+  letChain depth (argEvals plans) (finish (argValues (depth + (argEvals plans).length) plans))
+
 /-- 呼び出しの頭。辞書は計算を作らず、値引数より先に渡す。 -/
 inductive CallHead where
   | app (func : Val) (dicts : List Val)
@@ -123,6 +144,16 @@ def callComp (shift : Nat) (inserted : List Val) (f : Expr) (callee : Comp)
         (.app (.var ms.length)
           (ordered (Val.renameList (· + (ms.length + 1)) inserted ++ boundVars ms.length))))
 
+/-- 穴の列は引数を直接参照する。callee の評価は固定式より先に一度だけ行う。 -/
+def callArgs (shift : Nat) (f : Expr) (callee : Comp) (positions : List Nat)
+    (plans : List ArgPlan) : Comp :=
+  let ordered := fun vs => recordFields positions.length positions vs (.const .unit)
+  match directCallee f with
+  | some h => sequenceArgs 0 plans (fun vs =>
+      (h.rename (· + (shift + (argEvals plans).length))).apply (ordered vs))
+  | none => .letIn (callee.rename (· + shift))
+      (sequenceArgs 1 plans (fun vs => .app (.var (argEvals plans).length) (ordered vs)))
+
 /-- パターンの束縛数だけ書いた値をずらし、残すフィールドの番号を右から数える。 -/
 def recordUpdateValues (c : ConName) (n : Nat) (positions : List Nat) (vs : List Val) : List Val :=
   let b := (recordUpdatePattern c n positions).binders
@@ -139,7 +170,7 @@ def mkArm (pat : Release.Pat) (body : Comp) : Arm :=
 説明と原因の計算は省かない（設計書 01-12「die の先行モデル」）。 -/
 def dieFailure (t : Ty) (exit : PrimName) (depth : Nat) (cause : Comp)
     (message : Option Comp) : Comp :=
-  let finish := Comp.app (.prim exit [t] []) [.const (.integer 1)]
+  let finish := Comp.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]
   match message with
   | none => .letIn cause finish
   | some msg => .letIn (msg.rename (· + depth))
@@ -149,9 +180,9 @@ mutual
   def desugarExpr (opPrim : OpPrim) (p : Position) : Expr → Comp
     -- 01-12「名前とリテラル」: 局所の束縛の名前 x | return x
     | .local i => .ret (.var i)
-    | .builderOp op i args refs =>
+    | .builderOp op i args kind =>
         let ms := desugarExprs opPrim args
-        sequence ms (builderFinish op (i + ms.length) refs)
+        sequence ms (builderFinish op (i + ms.length) kind)
     -- 01-12「トップレベルの定数」:
     -- 定数 `const k: A = e` の名前 `k` を、`⟦e⟧` に置き換える。
     -- `e` の中の定数の名前も同じく置き換える。
@@ -189,7 +220,7 @@ mutual
     -- 01-12「基本型とコレクションの型」: Decimal のリテラル（1.25m など）は return c に移す。
     | .literal l => .ret (.const l.toConst)
     -- 01-12「名前とリテラル」: 単項の - を整数リテラルに直接適用した式 -n | return c（c は −n）
-    | .negInt n => .ret (.const (.integer (-Int.ofNat n)))
+    | .negInt n => .ret (.const (.integer n.negValue))
     -- 同節: 単項の - を Float リテラルに直接適用した式 -x | return c（c は −x）
     | .negFloat x => .ret (.const (.float (-x)))
     -- 01-12「基本型とコレクションの型」: 単項の - を Decimal のリテラルに直接適用した式
@@ -206,6 +237,7 @@ mutual
     | .unit => .ret (.const .unit)
     -- 同節: (e) | ⟦e⟧
     | .paren e => desugarExpr opPrim p e
+    | .block body => desugarBlock opPrim p body
     -- 01-12「呼び出し」: T.C(e1,…,en) | let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in return C[T̄](x1,…,xn)
     -- 01-12「レコード」: R(g1:e1,…,gn:en) | let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in
     -- return C_R[T̄](y1,…,yn)（yi は宣言の i 番目を書いた位置の xj）。
@@ -243,13 +275,13 @@ mutual
         | other => callComp 1 [.var 0] other (desugarExpr opPrim .other other) [] [])
     -- 01-12「表層からの脱糖」の前段: プレースホルダをラムダに展開してから移す。
     -- 01-12「リスト、ラムダ、条件分岐、match」のラムダの行: return λ(p̄). ⟦B⟧。
-    -- 非穴の式と callee はラムダの本体で評価する。穴も let x ⇐ return p で束縛する。
+    -- 非穴の式と callee はラムダの本体で評価し、穴は引数の直接参照にする。
     | .partialCall f names args _ _ => .ret (.lam (args.holeNames names) args.holeTypes
-        (callComp args.holeTypes.length [] f (desugarExpr opPrim .other f) args.positions
+        (callArgs args.holeTypes.length f (desugarExpr opPrim .other f) args.positions
           (desugarHoleArgs opPrim args.holeTypes.length args)))
     -- 同前段: T.C(a1,…,_,…,an) | return λ(p̄). ⟦T.C(a1,…,p,…,an)⟧
     | .partialCon c ts args => .ret (.lam (args.holeNames (positionalNames args.positions.length)) args.holeTypes
-        (sequence (desugarHoleArgs opPrim args.holeTypes.length args)
+        (sequenceArgs 0 (desugarHoleArgs opPrim args.holeTypes.length args)
           (fun vs => .ret (.con c ts vs))))
     -- 01-12「演算子」: e1 ⊕ e2 | let x ⇐ ⟦e1⟧ in let y ⇐ ⟦e2⟧ in ⊕_T(x,y)
     -- 02-06: =・<> は eq[T]・ne[T]、ほかは型ごとの項目で型引数なし。
@@ -370,12 +402,12 @@ mutual
     | .cons e es => desugarExpr opPrim .other e :: desugarExprs opPrim es
 
   /-- n 個のラムダ引数の下での計算列。穴の番号は右に残る穴の個数である。
-  穴の値も計算にして letChain に渡すので、Rust placeholder と同じ再束縛になる。 -/
-  def desugarHoleArgs (opPrim : OpPrim) (n : Nat) : HoleArgs → List Comp
+  固定式だけを計算とし、穴の値は直接参照として保持する。 -/
+  def desugarHoleArgs (opPrim : OpPrim) (n : Nat) : HoleArgs → List ArgPlan
     | .nil => []
-    | .expr _ _ e rest => (desugarExpr opPrim .other e).rename (· + n) ::
+    | .expr _ _ e rest => .evaluate ((desugarExpr opPrim .other e).rename (· + n)) ::
         desugarHoleArgs opPrim n rest
-    | .hole _ _ _ rest => .ret (.var rest.holeTypes.length) :: desugarHoleArgs opPrim n rest
+    | .hole _ _ _ rest => .direct (.var rest.holeTypes.length) :: desugarHoleArgs opPrim n rest
 
   /-- 選択肢・ガード・本体を一つの Arm に移す。照合対象の let の下でも、
   最初の選択肢の束縛を保護する。ガードは常に非末尾位置で脱糖する。 -/
@@ -398,7 +430,7 @@ mutual
         .mk o (ndicts + n) ntys (desugarBlock opPrim .other body) :: desugarClauses opPrim rest
 
   def desugarBlock (opPrim : OpPrim) (p : Position) : Block → Comp
-    | .builderBind _ r rest => .letIn (builderNew r) (desugarBlock opPrim p rest)
+    | .builderBind k rest => .builderLet k (desugarBlock opPrim p rest)
     -- 01-12「ブロック」: { } | return ()
     | .empty => .ret (.const .unit)
     -- 同節: { e }（最後の文が式） | ⟦e⟧
@@ -461,8 +493,7 @@ example (op : OpPrim) :
       (.partialCall (.local 0) ["input"] (.hole none 0 (.base .integer) .nil)
         (.base .integer) Eff.empty) =
       .ret (.lam ["input"] [.base .integer]
-        (.letIn (.ret (.var 1))
-          (.letIn (.ret (.var 1)) (.app (.var 1) [.var 0])))) := by rfl
+        (.letIn (.ret (.var 1)) (.app (.var 0) [.var 1]))) := by rfl
 
 -- callee の計算、b の計算、a の計算の順を保つ。最後の app だけが a, b の順になる。
 example (op : OpPrim) :
@@ -483,9 +514,7 @@ example (op : OpPrim) :
             (.hole (some "a") 0 (.base .integer) .nil))) (.base .integer) Eff.empty) =
       .ret (.lam ["b", "a"] [.base .boolean, .base .integer]
         (.letIn (.ret (.var 2))
-          (.letIn (.ret (.var 2))
-            (.letIn (.app (.op "fixed" []) [])
-              (.letIn (.ret (.var 3)) (.app (.var 3) [.var 0, .var 2, .var 1])))))) := by rfl
+          (.letIn (.app (.op "fixed" []) []) (.app (.var 1) [.var 2, .var 3, .var 0])))) := by rfl
 
 -- パイプ左辺を最初に束縛し、次に callee と明示引数を評価する。
 example (op : OpPrim) :
@@ -501,27 +530,27 @@ example (op : OpPrim) :
 example (op : OpPrim) :
     desugarExpr op .other
       (.call (.opName "ask" []) [some "b", some "a"] [1, 0]
-        (.cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil))) =
+        (.cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil))) =
       .letIn (.ret (.const (.boolean true)))
-        (.letIn (.ret (.const (.integer 7))) (.app (.op "ask" []) [.var 0, .var 1])) := by rfl
+        (.letIn (.ret (.const (.integer ⟨7, by decide⟩))) (.app (.op "ask" []) [.var 0, .var 1])) := by rfl
 
 -- メソッドの辞書と、メソッド自身の制約の辞書を let の下へ移す。
 example (op : OpPrim) :
     desugarExpr op .other
       (.call (.methName (.local 0) "combine" [] [] [.local 1] ["a", "b"]
         [.base .integer, .base .boolean]) [some "b", some "a"] [1, 0]
-        (.cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil))) =
+        (.cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil))) =
       .letIn (.ret (.const (.boolean true)))
-        (.letIn (.ret (.const (.integer 7)))
+        (.letIn (.ret (.const (.integer ⟨7, by decide⟩)))
           (.meth (.var 2) "combine" [] [] [.var 3, .var 0, .var 1])) := by rfl
 
 example (op : OpPrim) :
     desugarExpr op .other
       (.partialCon "Pair" []
-        (.expr none 0 (.literal (.integer 7)) (.hole none 1 (.base .boolean) .nil))) =
+        (.expr none 0 (.literal (.integer ⟨7, by decide⟩)) (.hole none 1 (.base .boolean) .nil))) =
       .ret (.lam ["arg2"] [.base .boolean]
-        (.letIn (.ret (.const (.integer 7)))
-          (.letIn (.ret (.var 1)) (.ret (.con "Pair" [] [.var 1, .var 0]))))) := by rfl
+        (.letIn (.ret (.const (.integer ⟨7, by decide⟩)))
+          (.ret (.con "Pair" [] [.var 0, .var 1])))) := by rfl
 
 -- 構成子の関数値と取り出す関数はそれぞれ宣言上のフィールド名と value を維持する。
 example (op : OpPrim) :
@@ -536,6 +565,28 @@ private def dictDef : Def :=
     ret := .base .unit, eff := Eff.empty, dictParams := [("Show", 0)], body := .empty }
 
 example (op : OpPrim) : (desugarDef op dictDef).names = ["%dict1", "value"] := by rfl
+
+
+-- block は専用のコアも mark も追加せず、末尾位置だけを既存の文列へ渡す。
+example (op : OpPrim) : desugarExpr op .tail
+    (.block (.last (.returnE (.base .unit) (.local 0)))) = .ret (.var 0) := by rfl
+example (op : OpPrim) : desugarExpr op .other
+    (.block (.last (.returnE (.base .unit) (.local 0)))) =
+    .letIn (.ret (.var 0)) (.escape (.var 0)) := by rfl
+-- 穴だけの直接呼び出しには Let がなく、固定式が複数あればソース順にだけ束縛する。
+example (op : OpPrim) : desugarExpr op .other
+    (.partialCall (.opName "take" []) ["x"] (.hole none 0 (.base .integer) .nil)
+      (.base .integer) Eff.empty) =
+    .ret (.lam ["x"] [.base .integer] (.app (.op "take" []) [.var 0])) := by rfl
+example (op : OpPrim) : desugarExpr op .other
+    (.partialCall (.opName "combine" []) ["a", "b", "c"]
+      (.expr (some "c") 2 (.call (.opName "readC" []) [] [] .nil)
+        (.hole (some "a") 0 (.base .integer)
+          (.expr (some "b") 1 (.call (.opName "readB" []) [] [] .nil) .nil)))
+      (.base .integer) Eff.empty) =
+    .ret (.lam ["a"] [.base .integer]
+      (.letIn (.app (.op "readC" []) [])
+        (.letIn (.app (.op "readB" []) []) (.app (.op "combine" []) [.var 2, .var 0, .var 1])))) := by rfl
 
 end DefinitionExamples
 

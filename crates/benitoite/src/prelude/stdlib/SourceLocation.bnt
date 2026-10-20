@@ -1,0 +1,12 @@
+//! Explicit source locations. `here()` is expanded before type checking.
+
+/// A display path and one-based Unicode line and column. User-created locations are allowed.
+public record Location
+  file: String
+  line: Integer
+  column: Integer
+end record
+
+/// The location of this zero-argument direct call. Cannot be stored, partially applied, or piped.
+@builtin("SourceLocation.here")
+public function here() -> Location

@@ -1,0 +1,273 @@
+== plan: level work against 7279140720c9aac817f3d4661de244f6470e040d (changed files not classified) (partial selection: --only formal_build,spec_examples,spec_tally)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 文字列補間
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+== spec_examples
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s
+
+== formal_build
+✔ [62/274] Built Benitoite.Release.Syntax (568ms)
+✔ [63/274] Built Benitoite.Surface.BuilderSyntax (385ms)
+✔ [64/274] Built Benitoite.Release.Syntax:c.o (355ms)
+✔ [66/274] Built Benitoite.Release.Subst (492ms)
+✔ [67/274] Built Benitoite.Release.Subst:c.o (310ms)
+✔ [68/274] Built Benitoite.Release.SubstExamples (461ms)
+✔ [69/274] Built Benitoite.Release.Order.Shift (473ms)
+✔ [70/274] Built Benitoite.Surface.BuilderLower (461ms)
+✔ [72/274] Built Benitoite.Release.Typing (1.2s)
+✔ [74/274] Built Benitoite.Release.TypeRegularity (522ms)
+✔ [76/274] Built Benitoite.Release.BuiltinTable (603ms)
+✔ [78/274] Built Benitoite.Release.Lemmas.Basic (344ms)
+✔ [80/274] Built Benitoite.Release.TypeBounds (667ms)
+✔ [82/274] Built Benitoite.Release.SubstEnv (786ms)
+✔ [84/274] Built Benitoite.Release.TypeCongruence (1.1s)
+✔ [86/274] Built Benitoite.Release.TypeVariables (1.4s)
+✔ [88/274] Built Benitoite.Release.WellFormed (690ms)
+✔ [89/274] Built Benitoite.Release.TypeScopedSubst (700ms)
+✔ [92/274] Built Benitoite.Release.Lemmas.TyLemmas (802ms)
+✔ [93/274] Built Benitoite.Release.Admissible (792ms)
+✔ [94/274] Built Benitoite.Release.FailureEffects (792ms)
+✔ [97/274] Built Benitoite.Release.Semantics (2.1s)
+✔ [99/274] Built Benitoite.Release.Assumptions (905ms)
+✔ [101/274] Built Benitoite.Release.Examples (3.9s)
+✔ [102/274] Built Benitoite.Release.Lemmas.Rename (9.3s)
+✔ [104/274] Built Benitoite.Release.Lemmas.Names (8.5s)
+✔ [105/274] Built Benitoite.Release.Lemmas.Closed (8.1s)
+✔ [107/274] Built Benitoite.Release.Lemmas.NoFailContext (2.3s)
+✔ [109/274] Built Benitoite.Release.Lemmas.VariableBind (646ms)
+✔ [110/274] Built Benitoite.Surface.Lemmas.ScopedRename (659ms)
+✔ [111/274] Built Benitoite.Release.Lemmas.Irrelevant (3.1s)
+✔ [112/274] Built Benitoite.Surface.Lemmas.ShiftClean (1.1s)
+✔ [113/274] Built Benitoite.Release.Lemmas.FailureBase (397ms)
+✔ [114/274] Built Benitoite.Release.Lemmas.ContLemmas (562ms)
+✔ [115/274] Built Benitoite.Release.Lemmas.Inversion (14s)
+✔ [117/274] Built Benitoite.Release.Lemmas.Regularity (1.5s)
+✔ [119/274] Built Benitoite.Release.Lemmas.OuterC (1.8s)
+✔ [121/274] Built Benitoite.Release.Lemmas.SubstTyping (1.9s)
+✔ [123/274] Built Benitoite.Release.Lemmas.TySubst (421ms)
+✔ [125/274] Built Benitoite.Release.Lemmas.FailureCont (4.5s)
+✔ [126/274] Built Benitoite.Release.Lemmas.StoreLemmas (738ms)
+✔ [127/274] Built Benitoite.Release.Lemmas.PresHelpers (545ms)
+✔ [128/274] Built Benitoite.Release.CoverageTypes (1.2s)
+✔ [130/274] Built Benitoite.Release.Lemmas.TySubstMain (3.2s)
+✔ [131/274] Built Benitoite.Release.Lemmas.Canonical (1.4s)
+✔ [132/274] Built Benitoite.Release.Lemmas.Preservation (484ms)
+✔ [133/274] Built Benitoite.Release.Lemmas.PresBase (507ms)
+✔ [134/274] Built Benitoite.Release.Coverage (4.9s)
+✔ [135/274] Built Benitoite.Release.Lemmas.Dict (849ms)
+✔ [136/274] Built Benitoite.Release.Lemmas.PresFailure (772ms)
+✔ [137/274] Built Benitoite.Release.CoverageShow (1.5s)
+✔ [139/274] Built Benitoite.Release.Lemmas.CoverageRuntime (1.5s)
+✔ [140/274] Built Benitoite.Surface.Syntax (2.1s)
+✔ [141/274] Built Benitoite.Release.Coverage:c.o (2.2s)
+✔ [142/274] Built Benitoite.Release.Lemmas.PresMain (2.1s)
+✔ [143/274] Built Benitoite.Surface.Lemmas.NoFailSignature (643ms)
+✔ [144/274] Built Benitoite.Surface.Builders (844ms)
+✔ [145/274] Built Benitoite.Surface.WellFormed (804ms)
+✔ [146/274] Built Benitoite.Surface.Syntax:c.o (794ms)
+✔ [148/274] Built Benitoite.Surface.Desugar (1.1s)
+✔ [149/274] Built Benitoite.Surface.Desugar:c.o (538ms)
+✔ [150/274] Built Benitoite.Release.Lemmas.Progress (2.3s)
+✔ [151/274] Built Benitoite.Release.Lemmas.EffectSound (521ms)
+✔ [152/274] Built Benitoite.Surface.BuilderFree (4.1s)
+✔ [154/274] Built Benitoite.Release.Lemmas.StepSound (1.7s)
+✔ [155/274] Built Benitoite.Release.Theorems (334ms)
+✔ [156/274] Built Benitoite.Release.CoverageExtension (6.9s)
+✔ [157/274] Built Benitoite.Release.Model (702ms)
+✔ [158/274] Built Benitoite.Exchange.Syntax (4.3s)
+✔ [160/274] Built Benitoite.Release.FailureExamples (456ms)
+✔ [161/274] Built Benitoite.Exchange.Version (781ms)
+✔ [163/274] Built Benitoite.Surface.Typing (11s)
+✔ [165/274] Built Benitoite.Surface.Lemmas.DictSupport (414ms)
+✔ [166/274] Built Benitoite.Surface.FiniteTools (1.2s)
+✔ [168/274] Built Benitoite.Surface.CheckTools (441ms)
+✔ [170/274] Built Benitoite.Surface.FinitePredicates (677ms)
+✔ [172/274] Built Benitoite.Surface.NoFailCheck (476ms)
+✔ [174/274] Built Benitoite.Surface.FiniteExamples (460ms)
+✔ [175/274] Built Benitoite.Surface.NoFailCheckExamples (370ms)
+✔ [176/274] Built Benitoite.Surface.SingleFailCheck (679ms)
+✔ [178/274] Built Benitoite.Surface.CheckPredicates (1.9s)
+✔ [180/274] Built Benitoite.Surface.AdmissibleCheck (591ms)
+✔ [182/274] Built Benitoite.Surface.CheckPatterns (639ms)
+✔ [184/274] Built Benitoite.Surface.Lemmas.Invariants (6.1s)
+✔ [185/274] Built Benitoite.Surface.Lemmas.SubstClean (348ms)
+✔ [186/274] Built Benitoite.Surface.Lemmas.Sequence (461ms)
+✔ [187/274] Built Benitoite.Surface.Lemmas.ScopedSupport (414ms)
+✔ [188/274] Built Benitoite.Surface.Lemmas.PatternSupport (449ms)
+✔ [189/274] Built Benitoite.Surface.Lemmas.ExtensionsScoped (517ms)
+✔ [190/274] Built Benitoite.Surface.Lemmas.Calls (593ms)
+✔ [191/274] Built Benitoite.Surface.CheckSupport (3.2s)
+✔ [192/274] Built Benitoite.Surface.Lemmas.Patterns (590ms)
+✔ [194/274] Built Benitoite.Surface.BuilderCheck (525ms)
+✔ [196/274] Built Benitoite.Surface.Lemmas.CallHead (669ms)
+✔ [197/274] Built Benitoite.Surface.Lemmas.Records (549ms)
+✔ [198/274] Built Benitoite.Surface.Lemmas.Builders (513ms)
+✔ [199/274] Built Benitoite.Surface.Lemmas.Dict (570ms)
+✔ [200/274] Built Benitoite.Surface.Lemmas.Extensions (679ms)
+✔ [201/274] Built Benitoite.Surface.Lemmas.BuilderLower (480ms)
+✔ [202/274] Built Benitoite.Surface.Lemmas.ReturnTry (1.1s)
+✔ [203/274] Built Benitoite.Surface.Check (1.7s)
+✔ [204/274] Built Benitoite.Surface.Lemmas.BlockSequence (797ms)
+✔ [205/274] Built Benitoite.Surface.CheckTables (613ms)
+✔ [206/274] Built Benitoite.Surface.CheckCounterexamples (626ms)
+✔ [208/274] Built Benitoite.Surface.CheckLemmas (747ms)
+✔ [209/274] Built Benitoite.Surface.CheckComputeAtoms (602ms)
+✔ [210/274] Built Benitoite.Exchange.Convert (1.9s)
+✔ [211/274] Built Benitoite.Surface.CheckComputeCases (1.3s)
+✔ [212/274] Built Benitoite.Surface.CheckToolsExamples (2.1s)
+✔ [213/274] Built Benitoite.Surface.CheckComputeCalls (741ms)
+✔ [214/274] Built Benitoite.Exchange.IntegerExamples (1.2s)
+✔ [215/274] Built Benitoite.Surface.CheckComputeControl (587ms)
+✔ [216/274] Built Benitoite.Exchange.Builtins (1.7s)
+✔ [218/274] Built DesugarDiff.Main (1.8s)
+✔ [220/274] Built Benitoite.Surface.CheckComputePipe (519ms)
+✔ [221/274] Built CoverageDiff.Main (1.0s)
+✔ [222/274] Built BuiltinCheck.Main (1.5s)
+✔ [224/274] Built Benitoite.Exchange.CheckInput (1.6s)
+✔ [226/274] Built CoverageProgramDiff.Main (1.7s)
+✔ [228/274] Built Benitoite.Exchange.Convert:c.o (3.7s)
+✔ [229/274] Built CoverageDiff.Main:c.o (1.7s)
+✔ [230/274] Built Benitoite.Surface.CheckComputeSound (1.9s)
+✔ [231/274] Built SurfaceCheck.Main (1.2s)
+✔ [233/274] Built SurfaceCheck.Walk (1.3s)
+✔ [235/274] Built SurfaceCheck.Batch (1.4s)
+✖ [237/274] Building SurfaceCheck.Validation (957ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/SurfaceCheck/Validation.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/SurfaceCheck/Validation.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/SurfaceCheck/Validation.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/SurfaceCheck/Validation.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/SurfaceCheck/Validation.setup.json --json
+error: SurfaceCheck/Validation.lean:16:94: failed to synthesize instance of type class
+  OfNat Integer64Literal 1
+numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
+  Integer64Literal
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: SurfaceCheck/Validation.lean:19:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.fn' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:20:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.fn' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:21:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.fn' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:24:68: failed to synthesize instance of type class
+  OfNat Integer64Literal 1
+numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
+  Integer64Literal
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: SurfaceCheck/Validation.lean:27:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:28:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:29:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:30:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:31:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:32:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+error: SurfaceCheck/Validation.lean:40:0: cannot evaluate code because '_private.SurfaceCheck.Validation.0.SurfaceCheck.Validation.tailMatch' uses 'sorry' and/or contains errors
+✔ [241/274] Built Benitoite.Surface.Check:c.o (10s)
+✔ [243/274] Built Benitoite.Surface.CheckInduction (5.4s)
+ℹ [244/274] Built desugarDiff:exe (1.7s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [245/274] Built builtinCheck:exe (1.7s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [246/274] Built coverageDiff:exe (1.7s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [247/274] Built coverageProgramDiff:exe (1.7s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [248/274] Built surfaceCheck:exe (1.7s)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [249/274] Built Benitoite.Surface.Lemmas.Scoped (12s)
+✔ [250/274] Built Benitoite.Surface.CheckDictSupport (925ms)
+✔ [251/274] Built Benitoite.Surface.CheckSoundSequence (644ms)
+✔ [252/274] Built Benitoite.Surface.CheckSoundBasicExpr (752ms)
+✔ [253/274] Built Benitoite.Surface.CheckSoundDie (741ms)
+✔ [254/274] Built Benitoite.Surface.CheckSoundCollections (510ms)
+✔ [255/274] Built Benitoite.Surface.CheckSoundCalls (793ms)
+✔ [256/274] Built Benitoite.Surface.CheckSoundControl (601ms)
+✔ [257/274] Built Benitoite.Surface.CheckSoundDicts (480ms)
+✔ [258/274] Built Benitoite.Surface.CheckSound (336ms)
+✔ [259/274] Built Benitoite.Surface.CheckTablesSound (337ms)
+✔ [260/274] Built Benitoite.Surface.CheckProgramSound (354ms)
+✔ [261/274] Built Benitoite.Surface.Lemmas.Typing (9.3s)
+✔ [262/274] Built Benitoite.Surface.Lemmas.Program (546ms)
+✔ [263/274] Built Benitoite.Surface.Theorems (391ms)
+✔ [264/274] Built Benitoite.Surface.CheckExamples (6.4s)
+✔ [265/274] Built Benitoite.Surface.FailureExamples (1.8s)
+✔ [266/274] Built Benitoite.Surface.Monad2Examples (3.4s)
+✔ [267/274] Built Benitoite.Surface.Examples (5.4s)
+✔ [268/274] Built Benitoite.Surface.Lemmas.BuilderCapture (6.7s)
+✔ [269/274] Built Benitoite.Surface.Lemmas.BuilderCaptureAll (1.6s)
+✔ [270/274] Built Benitoite.Surface.Lemmas.BuilderCaptureCompose (473ms)
+✔ [271/274] Built Benitoite.Surface.Lemmas.BuilderNoCapture (6.7s)
+✔ [272/274] Built Benitoite.Surface.BuilderExamples (2.3s)
+✔ [273/274] Built Benitoite (678ms)
+Some required targets logged failures:
+- SurfaceCheck.Validation
+error: build failed
+FAILED: formal_build

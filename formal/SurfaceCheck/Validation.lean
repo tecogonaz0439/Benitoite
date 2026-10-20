@@ -13,7 +13,7 @@ private def q : Input := {
 #guard category q { prims := ["supported"] } ["unsupported"] (.ok ()) == "matched"
 
 private def intTy : Ty := .base .integer
-private def fn : Expr := .lam [] [] intTy emptyEff (.last (.returnE intTy (.literal (.integer 1))))
+private def fn : Expr := .lam [] [] intTy emptyEff (.last (.returnE intTy (.literal (.integer ⟨1, by decide⟩))))
 private def lazyWalk : WalkState := {
   nodes := #[⟨[0],.lazyE (.last fn),some (.lazy (.fn [] [] intTy (Eff.single "A")))⟩] }
 #guard category q lazyWalk [] (.error ⟨[0],"type is not included in the expected type"⟩) == "lazyRestriction"
@@ -21,7 +21,7 @@ private def lazyWalk : WalkState := {
 #guard category q lazyWalk [] (.error ⟨[0,0,0,0],"type is not included in the expected type"⟩) == "mismatched"
 
 private def tailMatch : Expr := .matchE (.base .unit) (.literal (.boolean true))
-  (.single .wild (.last (.returnE (.base .unit) (.literal (.integer 1)))) .nil)
+  (.single .wild (.last (.returnE (.base .unit) (.literal (.integer ⟨1, by decide⟩)))) .nil)
 private def changes (e : Expr) (p : Position) : Nat :=
   ((walkExpr q (some (.base .string)) p [] none e).run {}).2.changes.size
 #guard changes tailMatch .tail == 1

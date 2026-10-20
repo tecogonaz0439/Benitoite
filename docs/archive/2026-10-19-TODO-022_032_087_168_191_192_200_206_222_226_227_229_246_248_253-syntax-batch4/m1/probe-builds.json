@@ -1,0 +1,96 @@
+{
+  "before": {
+    "commit": "c31e64b03d2810343e1779926bea4ebc958b6164",
+    "features": [
+      "default"
+    ],
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+    "cargo_lock_sha256": "5c6516a1f5afe7e7908f4e354643b2e96d8c61b52aa1dba374bfa41d5493090c",
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "benitoite",
+      "--manifest-path",
+      "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/source/Cargo.toml",
+      "--target-dir",
+      "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default"
+    ],
+    "probe": "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/timing-probe",
+    "probe_sha256": "9acf9a1c3d9294b2400e380f345f1e7857b28ebfb653be169def0d23f90c78f5",
+    "probe_key": "52d694d9aca7c80dcbf8257aede720790ca7e69e57da4e0184ca31bc61db2e85df90acbc1ce557e7fbcbf9f527e7490e55fa07fe33572b5a0a39f942e5f2fa40",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "/Users/tecogonaz/src/Benitoite/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/deps",
+      "-o",
+      "/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/timing-probe",
+      "--extern",
+      "serde_json=/Users/tecogonaz/src/Benitoite/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/deps/libserde_json-8caac38b8bfac622.rlib"
+    ],
+    "bridge_sources": {
+      "original_convert": "0f61f76c99cee1c9d9aa02a652085689290a4a273c74da53b7a6a162625e0ea1",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "d3fda75c9ea5a7208bc834089e5c657cb7bfd8b3f6ab802e31f70f8846560a6a",
+      "wrapper": "be115064def68cb40c661f2bcdcbbb1bbc70db3fedca1a95777c8dbc79df89b9",
+      "conversion_unit": "03b3c54da5f2b125d82ee5bd2af5c1ec0fd091b9f3153ecddf411d323f4344b8"
+    },
+    "seconds": 87.806338083,
+    "build_invocation_seconds": 87.806343667
+  },
+  "after": {
+    "commit": "ac3a434f9e6996839318cc586085a4b809f3bcbb",
+    "features": [
+      "default"
+    ],
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+    "cargo_lock_sha256": "5c6516a1f5afe7e7908f4e354643b2e96d8c61b52aa1dba374bfa41d5493090c",
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "benitoite",
+      "--manifest-path",
+      "/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default/source/Cargo.toml",
+      "--target-dir",
+      "/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default"
+    ],
+    "probe": "/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default/timing-probe",
+    "probe_sha256": "6672f95f1f265e37fc0e21bed1dc012f346f6481baf1e21ab91e0a88317a7964",
+    "probe_key": "52d694d9aca7c80dcbf8257aede720790ca7e69e57da4e0184ca31bc61db2e85e6a85d67ff445855c91a85717f8ff5505f976d2409de01d5916e6e242893a58a",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "/Users/tecogonaz/src/Benitoite/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default/release/deps",
+      "-o",
+      "/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default/timing-probe",
+      "--extern",
+      "serde_json=/Users/tecogonaz/src/Benitoite/target/bench/builds/ac3a434f9e6996839318cc586085a4b809f3bcbb-default/release/deps/libserde_json-8caac38b8bfac622.rlib"
+    ],
+    "bridge_sources": {
+      "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "72f17adb8da4e02d8a83ec6da38676c2d2bfb149a88278a22eddc962049f0953",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    },
+    "seconds": 88.93732558399999,
+    "build_invocation_seconds": 88.937328542
+  }
+}

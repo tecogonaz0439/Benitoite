@@ -86,14 +86,14 @@ example : exprExits (.matchE intTy .unit .nil) = true := by decide
 example : blockExits (.seq (.returnE intTy .unit) .empty) = true := by decide
 example : blockExits (.lastBind .bind intTy (.returnE intTy .unit)) = false := by decide
 example : armsExits (.cons [] none .empty .nil) = false := by decide
-example : patternValid (.range (.integer 2) (.integer 1)) = false := by decide
+example : patternValid (.range (.integer ⟨2, by decide⟩) (.integer ⟨1, by decide⟩)) = false := by decide
 example : patternValid (.range (.character 'a') (.character 'z')) = true := by decide
 example : patternValid (.list [] none [.wild]) = false := by decide
-example : patternValid (.record "C" 1 [0] [.range (.integer 2) (.integer 1)]) = false := by decide
+example : patternValid (.record "C" 1 [0] [.range (.integer ⟨2, by decide⟩) (.integer ⟨1, by decide⟩)]) = false := by decide
 example : patternValid (.con none "C" [.list [] (some .skip) [.wild]]) = true := by decide
 example : patternsValid [.wild, .var, .unit] = true := by decide
-example : alternativesValid [⟨.range (.integer 1) (.integer 2), []⟩] = true := by decide
-example : alternativesValid [⟨.range (.integer 2) (.integer 1), []⟩] = false := by decide
+example : alternativesValid [⟨.range (.integer ⟨1, by decide⟩) (.integer ⟨2, by decide⟩), []⟩] = true := by decide
+example : alternativesValid [⟨.range (.integer ⟨2, by decide⟩) (.integer ⟨1, by decide⟩), []⟩] = false := by decide
 example : isIf (.elseIf .unit .empty (.ifOnly .unit .empty)) = true := by decide
 example : isIf (.elseIf .unit .empty (.paren (.ifOnly .unit .empty))) = false := by decide
 example : nontrivial .var = false := by decide
@@ -143,10 +143,10 @@ private def ctors : DataName → List ConName
 
 example : gotTypes (patTy atoms decls.patternProgram .wild intTy) [] = true := by decide
 example : gotTypes (patTy atoms decls.patternProgram .var intTy) [intTy] = true := by decide
-example : gotTypes (patTy atoms decls.patternProgram (.const (.integer 3)) intTy) [] = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.const (.integer ⟨3, by decide⟩)) intTy) [] = true := by decide
 example : (patTy atoms decls.patternProgram (.const (.byte 3)) (.base .byte)).isNone = true := by decide
-example : (patTy atoms decls.patternProgram (.const (.integer 3)) boolTy).isNone = true := by decide
-example : gotTypes (patTy atoms decls.patternProgram (.range (.integer 1) (.integer 3)) intTy) [] = true := by decide
+example : (patTy atoms decls.patternProgram (.const (.integer ⟨3, by decide⟩)) boolTy).isNone = true := by decide
+example : gotTypes (patTy atoms decls.patternProgram (.range (.integer ⟨1, by decide⟩) (.integer ⟨3, by decide⟩)) intTy) [] = true := by decide
 example : gotTypes (patTy atoms decls.patternProgram (.range (.character 'a') (.character 'z')) (.base .character)) [] = true := by decide
 example : gotTypes (patTy atoms decls.patternProgram (.list [.var] (some .bind) [.var]) (.list intTy))
     [intTy, .list intTy, intTy] = true := by decide
@@ -242,7 +242,7 @@ private def q : Input :=
     B := stringBuiltins, satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => true,
     opPrim := stringOp, ctors := ctors, atoms := .name "Ask" :: atoms }
 private def fn : Ty := .fn ["a", "b"] [intTy, boolTy] intTy emptyEff
-private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)
 private def reversedHoles : HoleArgs := .hole (some "b") 1 boolTy (.hole (some "a") 0 intTy .nil)
 private def run (env : List (Option Ty)) (e : Expr) : Result Inferred :=
   checkExpr q .strict [] env none .other [] e
@@ -254,7 +254,7 @@ private def got (result : Result Inferred) (t : Ty) (ε : Eff := emptyEff) : Boo
 -- 異なる引数型を逆順に指定し、ソース順の期待型を実際に使うことを確かめる。
 example : got (run [some fn] (.call (.local 0) [some "b", some "a"] [1, 0] reversed)) intTy = true := by rfl
 example : got (run [some (.fn ["value"] [intTy] intTy emptyEff)]
-    (.call (.local 0) [none] [0] (.cons (.literal (.integer 7)) .nil))) intTy = true := by rfl
+    (.call (.local 0) [none] [0] (.cons (.literal (.integer ⟨7, by decide⟩)) .nil))) intTy = true := by rfl
 example : got (run [some (.fn [] [] intTy emptyEff)] (.call (.local 0) [] [] .nil)) intTy = true := by rfl
 
 -- ラベルの誤りは型の検査に進む前に、呼び出しそのものの経路で拒否する。
@@ -264,7 +264,7 @@ example : (run [some fn] (.call (.local 0) [some "b", some "a"] [0, 1] reversed)
     .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
 example : (run [some fn] (.call (.local 0) [some "a", some "a"] [0, 0] reversed)).map (fun _ => ()) =
     .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
-example : (run [some fn] (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer 7)) .nil))).map (fun _ => ()) =
+example : (run [some fn] (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer ⟨7, by decide⟩)) .nil))).map (fun _ => ()) =
     .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
 example : (run [some fn] (.call (.local 0) [some "a", some "b"] [0, 2] reversed)).map (fun _ => ()) =
     .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
@@ -303,17 +303,17 @@ example : (run [] (.partialCon "PosPair" [intTy]
     .error ⟨[], "partial constructor labels or positions are invalid"⟩ := by rfl
 
 -- パイプ挿入は位置 0 を占める。括弧付きの穴は生成された一引数関数への適用になる。
-example : got (run [some fn] (.pipe (.literal (.integer 7))
+example : got (run [some fn] (.pipe (.literal (.integer ⟨7, by decide⟩))
     (.call (.local 0) [some "b"] [1] (.cons (.literal (.boolean true)) .nil)))) intTy = true := by rfl
-example : (run [some fn] (.pipe (.literal (.integer 7))
-    (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer 8)) .nil)))).map (fun _ => ()) =
+example : (run [some fn] (.pipe (.literal (.integer ⟨7, by decide⟩))
+    (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer ⟨8, by decide⟩)) .nil)))).map (fun _ => ()) =
     .error ⟨[1], "pipe labels and positions do not match the contract"⟩ := by rfl
-example : (run [some fn] (.pipe (.literal (.integer 7))
+example : (run [some fn] (.pipe (.literal (.integer ⟨7, by decide⟩))
     (.call (.local 0) [none] [1] (.cons (.literal (.boolean true)) .nil)))).map (fun _ => ()) =
     .error ⟨[1], "pipe labels and positions do not match the contract"⟩ := by rfl
 example : got (run [some fn] (.pipe (.literal (.boolean true))
     (.paren (.partialCall (.local 0) ["a", "b"]
-      (.hole (some "b") 1 boolTy (.expr (some "a") 0 (.literal (.integer 7)) .nil)) intTy emptyEff)))) intTy = true := by rfl
+      (.hole (some "b") 1 boolTy (.expr (some "a") 0 (.literal (.integer ⟨7, by decide⟩)) .nil)) intTy emptyEff)))) intTy = true := by rfl
 
 -- ラムダの整形式、高階の期待名、レコード構成子の関数値の名前を検査する。
 example : got (run [] (.lam ["value"] [intTy] intTy emptyEff (.last (.returnE intTy (.local 0)))))

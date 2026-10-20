@@ -501,6 +501,7 @@ fn parse_try_action(p: &mut Parser, depth: u32) -> PResult<TryAction> {
                 | TokenKind::KwLambda
                 | TokenKind::KwIf
                 | TokenKind::KwMatch
+                | TokenKind::KwBlock
                 | TokenKind::KwLazy
                 | TokenKind::KwNot
                 | TokenKind::KwHandle

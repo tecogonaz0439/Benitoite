@@ -57,6 +57,9 @@ fn parse_base(p: &mut Parser, depth: u32) -> PResult<Option<Box<Expr>>> {
     Ok(Some(base))
 }
 fn field_name(p: &mut Parser) -> PResult<Name> {
+    if p.at(TokenKind::KwRecord) {
+        return Err(p.unexpected(text::FIELD));
+    }
     let name = p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME)?;
     p.expect(TokenKind::Colon)?;
     Ok(name)
@@ -320,6 +323,81 @@ mod tests {
     }
     fn function(expr: &str) -> String {
         format!("function f() -> Unit\n{expr}\nend function")
+    }
+
+    // 関門: 値のrecordの後の文区切りと、宣言の改行許可を公開parseで守る。
+    // 既存のrecordラベルの例は、次行が大文字で始まる場合を含まない。
+    #[test]
+    fn record_values_preserve_statement_boundaries() {
+        for statement in ["bind y <- record", "return record"] {
+            let out = user(&function(&format!(
+                "{statement}\nConsole.writeLine(\"next\")"
+            )));
+            assert!(
+                out.diagnostics.is_empty(),
+                "{statement}: {:?}",
+                out.diagnostics
+            );
+            assert_eq!(body(&out).stmts.len(), 2);
+            assert!(matches!(&body(&out).stmts[1], Stmt::Expr(Expr::Call(_))));
+            match &body(&out).stmts[0] {
+                Stmt::Bind(b) => {
+                    assert!(matches!(&b.value, Expr::Name(n) if n.path[0].text == "record"))
+                }
+                Stmt::Expr(Expr::Return(r)) => {
+                    assert!(matches!(r.value.as_ref(), Expr::Name(n) if n.path[0].text == "record"))
+                }
+                other @ (Stmt::Expr(_) | Stmt::Error(_)) => {
+                    panic!("unexpected statement: {other:?}")
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn record_declarations_allow_newlines_before_the_type_name() {
+        for header in [
+            "record",
+            "public record",
+            "@opaque\npublic record",
+            "@opaque\npublic\nrecord",
+        ] {
+            let out = user(&format!("{header}\nBox\n value: Integer\nend record\n"));
+            assert!(
+                out.diagnostics.is_empty(),
+                "{header}: {:?}",
+                out.diagnostics
+            );
+            assert!(
+                matches!(&out.module.decls[0].item, Item::Record(r) if r.name.text == "Box" && r.fields[0].name.text == "value")
+            );
+        }
+    }
+
+    // 関門: recordラベルの許可を、欄名へ誤って広げない。構築・更新・照合の
+    // 先読みから欄の診断までを本物のparseで確かめる。
+    #[test]
+    fn record_is_rejected_as_a_field_name() {
+        for source in [
+            &function("Box(record: 1)"),
+            &function("Box(..box, record: 1)"),
+            &function("Box(value: 1, record: 2)"),
+            &function("match box with case Box(record: value) -> () end match"),
+            "record Box\n record: Integer\nend record\n",
+            "record Box\n value: Integer\n record: Integer\nend record\n",
+        ] {
+            let out = user(source);
+            assert_eq!(
+                codes(&out),
+                [DiagCode::E0201],
+                "{source}: {:?}",
+                out.diagnostics
+            );
+            assert_eq!(
+                out.diagnostics[0].message,
+                "expected a record field, found `record`"
+            );
+        }
     }
 
     #[test]

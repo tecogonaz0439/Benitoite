@@ -1,0 +1,5 @@
+import A
+import B
+function main() -> Unit
+  bind _ <- B.use(A.make())
+end function

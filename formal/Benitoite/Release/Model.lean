@@ -148,7 +148,7 @@ def implC : ImplDecl where
   cls := "C"
   target := .base .integer
   supers := fun _ => none
-  methods := fun m => if m = "m" then some (.ret (.const (.integer 0))) else none
+  methods := fun m => if m = "m" then some (.ret (.const (.integer ⟨0, by decide⟩))) else none
 
 def implD : ImplDecl where
   tparams := []
@@ -156,7 +156,7 @@ def implD : ImplDecl where
   cls := "D"
   target := .base .integer
   supers := fun s => if s = "C" then some (.dict "CInt" [] []) else none
-  methods := fun m => if m = "n" then some (.ret (.const (.integer 1))) else none
+  methods := fun m => if m = "n" then some (.ret (.const (.integer ⟨1, by decide⟩))) else none
 
 def classProgram : Program where
   defs := fun _ => none
@@ -216,7 +216,7 @@ theorem classProgram_wellFormed : classProgram.WellFormed := by
         · cases hb
 
 /-- メソッドの本体 `return k` に、D-Impl が求める型 `Integer` が付く。 -/
-theorem const_body_typed {Q : NoFailCtx} (k : Int) {id : ImplDecl} (ht : id.target = .base .integer) :
+theorem const_body_typed {Q : NoFailCtx} (k : Integer64Value) {id : ImplDecl} (ht : id.target = .base .integer) :
     HasTypeCQ classProgram builtins StoreTy.empty Q ([] ++ id.tparams)
       (binds (id.dictTys.map (Ty.shift 0 0) ++ constSig.params.map (id.methTy constSig)))
       (some (id.methTy constSig constSig.ret)) (.ret (.const (.integer k)))
@@ -237,8 +237,8 @@ theorem classProgram_wellTyped : classProgram.WellTyped builtins := by
       simp only [classC] at hm
       split at hm
       · cases hm
-        exact ⟨.ret (.const (.integer 0)), by simp [implC, *], by simp [NamesWF, constSig],
-          (by simpa [constSig, implC, ImplDecl.methTy, Eff.substAt_empty] using const_body_typed (id := implC) 0 rfl)⟩
+        exact ⟨.ret (.const (.integer ⟨0, by decide⟩)), by simp [implC, *], by simp [NamesWF, constSig],
+          (by simpa [constSig, implC, ImplDecl.methTy, Eff.substAt_empty] using const_body_typed (id := implC) ⟨0, by decide⟩ rfl)⟩
       · cases hm
     · intro s hs; simp [classC] at hs
   · refine ⟨classD, by simp [classProgram, implD], ?_, ?_, ?_, ?_⟩
@@ -248,8 +248,8 @@ theorem classProgram_wellTyped : classProgram.WellTyped builtins := by
       simp only [classD] at hm
       split at hm
       · cases hm
-        exact ⟨.ret (.const (.integer 1)), by simp [implD, *], by simp [NamesWF, constSig],
-          (by simpa [constSig, implD, ImplDecl.methTy, Eff.substAt_empty] using const_body_typed (id := implD) 1 rfl)⟩
+        exact ⟨.ret (.const (.integer ⟨1, by decide⟩)), by simp [implD, *], by simp [NamesWF, constSig],
+          (by simpa [constSig, implD, ImplDecl.methTy, Eff.substAt_empty] using const_body_typed (id := implD) ⟨1, by decide⟩ rfl)⟩
       · cases hm
     · intro s hs
       simp [classD] at hs
@@ -273,7 +273,7 @@ theorem super_call_typed :
       (by simp [classProgram]) ⟨rfl, fun _ _ _ h _ => by simp at h⟩ .nil
     simpa [implD, Ty.subst, Ty.substAt, Eff.substAt] using this
   have hs := HasTypeVQ.V_Super (s := "C") (cd := classD) hd (by simp [classProgram]) (by simp [classD])
-  have hm := HasTypeCQ.C_Meth (R := none) (m := "m") (ss := []) (es := []) (ws := []) (cd := classC)
+  have hm := HasTypeCQ.C_Meth (Δ := []) (R := none) (m := "m") (ss := []) (es := []) (ws := []) (cd := classC)
     (ms := constSig) hs
     (by simp [classProgram]) (by simp [classC]) (by simp [NamesWF, constSig]) ⟨rfl, fun _ _ _ h _ => by simp at h⟩
     (by intro t ht; simp only [List.nil_append, List.mem_singleton] at ht; subst t
@@ -362,8 +362,8 @@ example : HasTypeV emptyProgram builtins StoreTy.empty [({} : TParam)] []
     (.C_Return (.V_Var rfl (by intros; intro h; cases h)))
 
 /-- 型の包含を何度通しても、ラムダ自身の契約名の整形式は必要である。 -/
-theorem lambda_names_wellFormed {P B Ψ C Γ v a names ps body}
-    (h : HasTypeV P B Ψ C Γ v a) (hv : v = .lam names ps body) : NamesWF names ps := by
+theorem lambda_names_wellFormed {P B Ψ Q C Γ v a names ps body}
+    (h : HasTypeVQ P B Ψ Q C Γ v a) (hv : v = .lam names ps body) : NamesWF names ps := by
   match h with
   | .V_Lam hn hw _ => cases hv; exact hn
   | .V_Sub h _ hw => exact lambda_names_wellFormed h hv
@@ -392,8 +392,8 @@ example : ∀ a, ¬ HasTypeV emptyProgram builtins StoreTy.empty [] []
   simp [NamesWF] at hn
 
 example : step emptyProgram builtins (fun _ _ _ _ => .err "unused") (fun _ => none) (fun _ => 0)
-    (.run (.app firstLambda [.const (.integer 7), .const (.string "second")]) [] Store.empty) =
-    some (none, .run (.ret (.const (.integer 7))) [.mark] Store.empty) := by
+    (.run (.app firstLambda [.const (.integer ⟨7, by decide⟩), .const (.string "second")]) [] Store.empty) =
+    some (none, .run (.ret (.const (.integer ⟨7, by decide⟩))) [.mark] Store.empty) := by
   rfl
 
 /-- 高階の引数では、引数型・戻り値型が同じでも、ラムダの契約名を読み替えない。 -/

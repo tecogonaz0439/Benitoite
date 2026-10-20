@@ -1,0 +1,19 @@
+import Benitoite
+#print axioms Benitoite.Surface.ArgTypesQ.length
+#print axioms Benitoite.Surface.ArgTypesQ.evals
+#print axioms Benitoite.Surface.ArgTypesQ.weaken
+#print axioms Benitoite.Surface.ArgTypesQ.values
+#print axioms Benitoite.Surface.ArgTypesQ.renameId
+#print axioms Benitoite.Surface.sequenceArgs_typed
+#print axioms Benitoite.Surface.argEvals_scoped
+#print axioms Benitoite.Surface.argValues_scoped
+#print axioms Benitoite.Surface.sequenceArgs_scoped_local
+#print axioms Benitoite.Surface.callArgs_typed
+#print axioms Benitoite.Surface.callArgs_scoped_local
+#print axioms Benitoite.Surface.HasHoleArgsQ.desugar_of_expr
+#print axioms Benitoite.Surface.HasHoleArgsQ.desugar
+#print axioms Benitoite.Surface.HasHoleArgsQ.desugar_scoped
+#print axioms Benitoite.Surface.HasHoleArgsQ.captures
+#print axioms Benitoite.Surface.HasBlockQ.desugar
+#print axioms Benitoite.Surface.Check.block_case
+#print axioms Benitoite.Surface.Check.computes_block

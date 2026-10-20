@@ -1,48 +1,55 @@
 """Generic JSON target evaluation; uncertainty never becomes a ratio."""
 from __future__ import annotations
 import statistics
-
+import math
+from observations import METRIC_UNITS
 
 def summary(values):
     mid = statistics.median(values)
-    return dict(median=mid, noise=(max(values)-min(values))/2, samples=len(values))
+    q1, _, q3 = statistics.quantiles(values, n=4, method='inclusive') if len(values) > 1 else (mid, mid, mid)
+    return dict(median=mid, noise=(max(values)-min(values))/2, iqr=q3-q1, samples=len(values))
 
 
 def increment(point, zero):
     value = point['median'] - zero['median']
-    noise = point['noise'] + zero['noise']
-    return value if value > max(noise, 1e-9) else None
+    noise = point['iqr'] + zero['iqr']
+    return value if value > noise and value >= .002 else None
 
 
 def ratio(numerator, denominator, threshold, label):
-    if numerator is None or denominator is None or denominator <= 0:
+    if numerator is None or denominator is None or numerator <= 0 or denominator <= 0:
         return dict(label=label, status='判定不能', reason='入力不足または差し引きが計時のぶれ以下')
     value = numerator / denominator
     return dict(label=label, status='達成' if value <= threshold else '未達', value=value, threshold=threshold)
 
 
-def expression(spec, measurements, min_samples):
+def expression(spec, measurements, min_samples, positive=False):
     if isinstance(spec, (int, float)):
         return dict(median=spec, noise=0, samples=min_samples)
     op = spec['op']
     if op == 'median':
         values = measurements.get(spec['case'], {}).get(spec['state'], {}).get(spec.get('metric', 'cli'), [])
-        if len(values) < min_samples:
+        if len(values) < min_samples or any(not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0 for v in values):
             return None
-        return summary(values)
+        return dict(summary(values), unit=METRIC_UNITS.get(spec.get('metric', 'cli'), 'count'))
     if op in ('difference', 'ratio'):
-        a = expression(spec['left'], measurements, min_samples)
-        b = expression(spec['right'], measurements, min_samples)
+        a = expression(spec['left'], measurements, min_samples, positive=op == 'ratio')
+        b = expression(spec['right'], measurements, min_samples, positive=op == 'ratio')
         if a is None or b is None:
             return None
         if op == 'difference':
             value = a['median']-b['median']
-            noise = a['noise']+b['noise']
-            if abs(value) <= max(noise, 1e-9):
+            unit = a.get('unit', b.get('unit', 'count'))
+            if a.get('unit', unit) != b.get('unit', unit):
+                raise ValueError('difference between incompatible units')
+            noise = a.get('iqr', 0)+b.get('iqr', 0)
+            if (positive and value <= 0) or abs(value) <= noise or (unit == 'seconds' and abs(value) < .002):
                 return None
-            return dict(median=value, noise=noise, samples=min(a['samples'], b['samples']))
-        if a['median'] < 0 or b['median'] <= max(b['noise'], 1e-9):
+            return dict(median=value, noise=noise, iqr=noise, unit=unit, samples=min(a['samples'], b['samples']))
+        if a['median'] <= 0 or b['median'] <= 0:
             return None
+        if a.get('unit') and b.get('unit') and a['unit'] != b['unit']:
+            raise ValueError('ratio between incompatible units')
         return dict(median=a['median']/b['median'], noise=0, samples=min(a['samples'], b['samples']))
     raise ValueError(f'unknown expression: {op}')
 
@@ -69,16 +76,21 @@ def evaluate(config, measurements, outputs=None, cases=()):
                 if abs(delta) > old['noise']+new['noise'] or old['noise']+new['noise'] == 0:
                     value = delta
         elif kind == 'invariant':
-            violations, checked = [], 0
-            for cid, states in (outputs or {}).items():
-                case = case_index.get(cid)
-                if case is None or any(getattr(case, k, None) != v for k, v in goal.get('select', {}).items()):
+            violations, checked, missing = [], 0, []
+            for cid, case in case_index.items():
+                if any(getattr(case, k, None) != v for k, v in goal.get('select', {}).items()):
                     continue
-                for state, result in states.items():
+                states = (outputs or {}).get(cid, {})
+                wanted = goal.get('states') or case.states or tuple(states)
+                for state in wanted:
                     if goal.get('states') and state not in goal['states']:
                         continue
+                    result = states.get(state, {})
                     # Repeated processes may emit the same field several times.
-                    fields = [line.split('=', 1) for line in result['stdout'].splitlines() if '=' in line]
+                    fields = [line.split('=', 1) for line in result.get('stdout', '').splitlines() if '=' in line]
+                    fields += list(result.get('observations', {}).items())
+                    if not any(field == goal['field'] for field, _ in fields):
+                        missing.append(dict(case=cid, state=state))
                     for field, text in fields:
                         if field != goal['field']:
                             continue
@@ -86,9 +98,9 @@ def evaluate(config, measurements, outputs=None, cases=()):
                         checked += 1
                         if not goal.get('minimum', 0) <= int(text) <= bound:
                             violations.append(dict(case=cid, state=state, field=field, value=int(text), limit=bound))
-            results.append(dict(label=label, status=('未達' if violations else '達成') if checked else '判定不能',
-                                checked=checked, violations=violations,
-                                reason='' if checked else '対応する出力フィールドが未取得'))
+            results.append(dict(label=label, status='未達' if violations else '判定不能' if missing or not checked else '達成',
+                                checked=checked, violations=violations, missing=missing,
+                                reason='対応する出力フィールドが未取得' if missing or not checked else ''))
             continue
         else:
             raise ValueError(f'unknown target kind: {kind}')

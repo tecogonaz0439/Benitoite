@@ -11,9 +11,14 @@ use wasmtime::component::Val;
 pub(crate) struct ExecutionOptions {
     pub limits: Limits,
     pub stats: Option<Collector>,
+    pub session: Option<Rc<super::ExternalSession>>,
 }
 #[derive(Clone)]
-pub(crate) struct Collector(Rc<RefCell<Stats>>);
+pub(crate) struct Collector {
+    stats: Rc<RefCell<Stats>>,
+    // 段のスレッドへ渡さず、準備が返した件数を実行器で加える。
+    declaration_compilations: Rc<std::cell::Cell<Option<u64>>>,
+}
 #[derive(Default)]
 pub(super) struct CallUsage {
     pub route: Option<&'static str>,
@@ -109,6 +114,8 @@ struct StatefulMemory {
 #[derive(Default)]
 struct Stats {
     next_run: u64,
+    normal_compilations: u64,
+    adapter_compilations: u64,
     stateful_indices: BTreeMap<(u64, u32), usize>,
     total: FunctionStats,
     functions: BTreeMap<String, BTreeMap<String, FunctionStats>>,
@@ -116,11 +123,23 @@ struct Stats {
 }
 impl Collector {
     pub(crate) fn new() -> Self {
-        Self(Rc::new(RefCell::new(Stats::default())))
+        Self {
+            stats: Rc::new(RefCell::new(Stats::default())),
+            declaration_compilations: Rc::new(std::cell::Cell::new(None)),
+        }
+    }
+    /// 準備が返した静的照合の回数を実行用の表と分ける（設計書 03-10「実行」）。
+    pub(crate) fn declarations_compiled(&self, count: u64) {
+        self.declaration_compilations.set(Some(
+            self.declaration_compilations
+                .get()
+                .unwrap_or(0)
+                .saturating_add(count),
+        ));
     }
     pub(super) fn next_run(&self) -> Result<u64, Stop> {
         let mut stats = self
-            .0
+            .stats
             .try_borrow_mut()
             .map_err(|e| Stop::Internal(e.to_string()))?;
         let id = stats.next_run;
@@ -128,6 +147,21 @@ impl Collector {
             .checked_add(1)
             .ok_or_else(|| Stop::Internal("external run count overflow".into()))?;
         Ok(id)
+    }
+    pub(super) fn compiled(&self, adapter: bool) -> Result<(), Stop> {
+        let mut stats = self
+            .stats
+            .try_borrow_mut()
+            .map_err(|e| Stop::Internal(e.to_string()))?;
+        let count = if adapter {
+            &mut stats.adapter_compilations
+        } else {
+            &mut stats.normal_compilations
+        };
+        *count = count
+            .checked_add(1)
+            .ok_or_else(|| Stop::Internal("external compilation count overflow".into()))?;
+        Ok(())
     }
     pub(super) fn record(
         &self,
@@ -153,7 +187,8 @@ impl Collector {
                         )));
                     }
                 }),
-                ResourceError::CallStackTooDeep { .. }
+                ResourceError::AllocationFailed { .. }
+                | ResourceError::CallStackTooDeep { .. }
                 | ResourceError::ExternalValueTooLarge { .. }
                 | ResourceError::ValueTooLarge { .. }
                 | ResourceError::InputTooLarge { .. } => None,
@@ -161,7 +196,7 @@ impl Collector {
             _ => None,
         };
         let mut stats = self
-            .0
+            .stats
             .try_borrow_mut()
             .map_err(|e| Stop::Internal(e.to_string()))?;
         stats.total.add(&usage, limit);
@@ -206,13 +241,17 @@ impl Collector {
     }
     pub(crate) fn json(&self) -> Result<serde_json::Value, Stop> {
         let stats = self
-            .0
+            .stats
             .try_borrow()
             .map_err(|e| Stop::Internal(e.to_string()))?;
         let mut value = stats.total.json();
         let object = value
             .as_object_mut()
             .ok_or_else(|| Stop::Internal("external statistics object missing".into()))?;
+        if let Some(count) = self.declaration_compilations.get() {
+            object.insert("test_declaration_compilations".into(), count.into());
+        }
+        object.insert("runtime_compilations".into(), serde_json::json!({"normal": stats.normal_compilations, "adapter": stats.adapter_compilations}));
         object.insert(
             "functions".into(),
             serde_json::Value::Object(

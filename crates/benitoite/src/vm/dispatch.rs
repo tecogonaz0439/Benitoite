@@ -355,7 +355,7 @@ fn clear_stack(
         returning.is_some_and(|work| work.stage == super::unwind::ReturnStage::Wrapping);
     for (segment_index, segment) in stack.segments.iter_mut().enumerate() {
         let top_call = segment.calls.len().checked_sub(1);
-        for (call_index, frame) in segment.calls.iter().enumerate() {
+        for (call_index, frame) in segment.calls.iter_mut().enumerate() {
             let innermost = !wrapping_return
                 && Some(segment_index) == top_segment
                 && Some(call_index) == top_call;
@@ -380,6 +380,17 @@ fn clear_stack(
                     continue;
                 }
             };
+            if let Some(proto) = program.proto(frame.proto) {
+                for item in proto.live.at(frame.pc) {
+                    if let crate::bytecode::liveness::LiveItem::Builder(local) = item {
+                        let slot = frame
+                            .builders
+                            .get_mut(usize::from(*local))
+                            .ok_or_else(|| missing("dead builder slot missing"))?;
+                        clear(slot);
+                    }
+                }
+            }
             let mut remaining = live.iter().copied().peekable();
             for (reg, slot) in window.iter_mut().enumerate() {
                 let keep = remaining
@@ -479,6 +490,14 @@ fn execute<'p, 'e>(
     }
     'fast: {
         match opcode {
+            Opcode::BuilderNew
+            | Opcode::BuilderAppend
+            | Opcode::BuilderAppendAll
+            | Opcode::BuilderCopy
+            | Opcode::BuilderLength => {
+                builder_instruction(ctx, proto, calls, window, instr, opcode)?;
+                return Ok(after_alloc(state, ctx));
+            }
             Opcode::GetDict => traits::get_dict(window, calls, ctx, instr)?,
             Opcode::Dict => {
                 traits::dict(program, window, ctx, instr)?;
@@ -847,6 +866,56 @@ fn execute<'p, 'e>(
         instr,
         BuiltinServices { rt },
     )
+}
+
+#[inline(never)]
+fn builder_instruction<'e>(
+    ctx: &mut NoGcCtx<'e>,
+    proto: &Proto,
+    calls: &mut [CallFrame],
+    window: &mut [Slot],
+    instr: Instr,
+    opcode: Opcode,
+) -> Result<(), Stop> {
+    use crate::resolve::builders::BuilderOp;
+    let site = proto
+        .builder_sites
+        .get(index(instr.bx())?)
+        .ok_or_else(|| missing("builder site missing"))?;
+    let frame = calls
+        .last_mut()
+        .ok_or_else(|| missing("builder frame missing"))?;
+    let slot = frame
+        .builders
+        .get_mut(usize::from(site.local))
+        .ok_or_else(|| missing("builder slot missing"))?;
+    if opcode == Opcode::BuilderNew {
+        if instr.a() != 0 || !site.args.is_empty() {
+            return Err(missing("invalid builder new"));
+        }
+        ctx.store(slot, crate::runtime::heap::builders::new(ctx, site.kind)?);
+    } else {
+        let op = if opcode == Opcode::BuilderAppend {
+            BuilderOp::Append
+        } else if opcode == Opcode::BuilderAppendAll {
+            BuilderOp::AppendAll
+        } else if opcode == Opcode::BuilderCopy {
+            BuilderOp::Copy
+        } else if opcode == Opcode::BuilderLength {
+            BuilderOp::Length
+        } else {
+            return Err(missing("invalid builder opcode"));
+        };
+        let args = site
+            .args
+            .iter()
+            .map(|reg| read_one(ctx, window, *reg))
+            .collect::<Result<Vec<_>, _>>()?;
+        let result =
+            crate::runtime::heap::builders::apply(ctx, site.kind, op, ctx.load(slot), &args)?;
+        write(ctx, window, instr.a(), result)?;
+    }
+    Ok(())
 }
 
 // 包む枠のない戻りは ReturnWork を作らない（設計書 02-08「実行の手順」）。
@@ -1223,10 +1292,12 @@ fn call<'p, 'e, const TAIL: bool>(
     } = called;
     let old_size = active.size;
     let new_size = u32::from(called.num_regs);
+    let old_slots = active.proto.frame_slots();
+    let new_slots = called.frame_slots();
     let added_regs = if TAIL {
-        new_size.saturating_sub(old_size)
+        new_slots.saturating_sub(old_slots)
     } else {
-        new_size
+        new_slots
     };
     if !state.meter.fits(u64::from(!TAIL), u64::from(added_regs)) {
         return Err(Stop::Resource(ResourceError::CallStackTooDeep {
@@ -1325,18 +1396,22 @@ fn call<'p, 'e, const TAIL: bool>(
             .ok_or_else(|| missing("call frame missing"))?;
         locals.save(frame);
         ctx.store(&mut frame.func, func);
+        ctx.discard(std::mem::take(&mut frame.builders));
+        frame.builders = std::iter::repeat_with(Slot::default)
+            .take(usize::from(called.builder_slots))
+            .collect();
         frame.proto = target;
         frame.pc = 0;
         frame.size = new_size;
         frame.call_site = Some(at);
         frame.boundary = true;
         frame.chain_resume = None;
-        if new_size > old_size {
+        if new_slots > old_slots {
             state.meter.grow(0, u64::from(added_regs));
-        } else if new_size < old_size {
+        } else if new_slots < old_slots {
             state
                 .meter
-                .shrink(0, u64::from(old_size.saturating_sub(new_size)));
+                .shrink(0, u64::from(old_slots.saturating_sub(new_slots)));
         }
     } else {
         locals.pc = locals
@@ -1351,6 +1426,9 @@ fn call<'p, 'e, const TAIL: bool>(
         );
         segment.calls.push(CallFrame {
             func: ctx.new_slot(func),
+            builders: std::iter::repeat_with(Slot::default)
+                .take(usize::from(called.builder_slots))
+                .collect(),
             proto: target,
             pc: 0,
             base,
@@ -1360,7 +1438,7 @@ fn call<'p, 'e, const TAIL: bool>(
             boundary: called.boundary,
             chain_resume: None,
         });
-        state.meter.grow(1, u64::from(new_size));
+        state.meter.grow(1, u64::from(new_slots));
     }
     *locals = LoopLocals {
         proto: target,
@@ -1890,8 +1968,11 @@ fn pop_call(state: &mut RunState, ctx: &NoGcCtx<'_>) -> Result<(), Stop> {
         ctx.clear(slot);
     }
     segment.regs.truncate(base);
+    state.meter.shrink(
+        1,
+        u64::from(size).saturating_add(u64::try_from(frame.builders.len()).unwrap_or(u64::MAX)),
+    );
     ctx.discard(frame);
-    state.meter.shrink(1, u64::from(size));
     Ok(())
 }
 

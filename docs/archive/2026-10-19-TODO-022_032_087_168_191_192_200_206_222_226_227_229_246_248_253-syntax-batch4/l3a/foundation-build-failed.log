@@ -1,0 +1,69 @@
+✔ [216/276] Built Benitoite.Release.Model (1.0s)
+✔ [217/276] Built Benitoite.Surface.CheckComputeCases (1.2s)
+✔ [218/276] Built Benitoite.Surface.CheckComputeCalls (478ms)
+✖ [219/276] Building Benitoite.Release.FailureExamples (608ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Release/FailureExamples.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/FailureExamples.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Release/FailureExamples.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/FailureExamples.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Release/FailureExamples.setup.json --json
+error: Benitoite/Release/FailureExamples.lean:120:4: Type mismatch: After simplification, term
+  HasTypeCQ.C_Return hr
+ has type
+  HasTypeCQ program B Ψ Qempty [{ }] [none, some E] (Option.map (Ty.shift 1 0) R)
+    (Comp.ret (errorValue T E (Val.var 1))) (resultTy T E) (EffR.mk (fun x => false) [])
+but is expected to have type
+  HasTypeCQ program B Ψ.hideBuilders Qempty [{ }] [none, some E] (Option.map (Ty.shift 1 0) R)
+    (Comp.ret (errorValue T E (Val.var 1))) (resultTy T E) (EffR.mk (fun x => false) [])
+✔ [220/276] Built Benitoite.Exchange.Convert (1.8s)
+✔ [222/276] Built Benitoite.Surface.CheckComputeControl (602ms)
+✔ [223/276] Built Benitoite.Surface.CheckComputePipe (487ms)
+✔ [224/276] Built Benitoite.Exchange.IntegerExamples (1.1s)
+✔ [225/276] Built Benitoite.Exchange.Builtins (1.6s)
+✔ [226/276] Built DesugarDiff.Main (1.6s)
+✔ [229/276] Built CoverageDiff.Main (1.8s)
+ℹ [231/276] Built desugarDiff:exe (716ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [232/276] Built coverageDiff:exe (780ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [233/276] Built Benitoite.Surface.CheckComputeSound (1.8s)
+✔ [234/276] Built Benitoite.Exchange.CheckInput (1.4s)
+✔ [235/276] Built BuiltinCheck.Main (1.3s)
+✔ [238/276] Built CoverageProgramDiff.Main (1.4s)
+ℹ [240/276] Built builtinCheck:exe (652ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+ℹ [241/276] Built coverageProgramDiff:exe (731ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [242/276] Built SurfaceCheck.Main (1.1s)
+✔ [244/276] Built SurfaceCheck.Walk (1.3s)
+ℹ [246/276] Built surfaceCheck:exe (580ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [247/276] Built SurfaceCheck.Batch (1.0s)
+✔ [249/276] Built Benitoite.Surface.Examples (6.3s)
+✔ [250/276] Built SurfaceCheck.Validation (696ms)
+✔ [252/276] Built Benitoite.Surface.Lemmas.BuilderCapture (8.0s)
+✔ [253/276] Built SurfaceCheck.All (629ms)
+✔ [255/276] Built Benitoite.Surface.CheckInduction (4.2s)
+ℹ [256/276] Built surfaceCheckAll:exe (488ms)
+info: stderr:
+ld64.lld: warning: directory not found for option -L/usr/local/lib
+✔ [257/276] Built Benitoite.Surface.Lemmas.BuilderCaptureAll (1.6s)
+✔ [258/276] Built Benitoite.Surface.CheckDictSupport (851ms)
+✔ [259/276] Built Benitoite.Surface.Lemmas.BuilderCaptureCompose (627ms)
+✖ [260/276] Building Benitoite.Surface.CheckSoundBasicExpr (628ms)
+trace: .> LEAN_PATH=/Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean /Users/tecogonaz/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/tecogonaz/src/Benitoite/formal/Benitoite/Surface/CheckSoundBasicExpr.lean -o /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundBasicExpr.olean -i /Users/tecogonaz/src/Benitoite/formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundBasicExpr.ilean -c /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckSoundBasicExpr.c --setup /Users/tecogonaz/src/Benitoite/formal/.lake/build/ir/Benitoite/Surface/CheckSoundBasicExpr.setup.json --json
+error: Benitoite/Surface/CheckSoundBasicExpr.lean:80:62: Invalid field `params_atoms`: The environment does not contain `Benitoite.Release.BuilderOp.params_atoms`, so it is not possible to project the field `params_atoms` from an expression
+  o
+of type `BuilderOp`
+error: Benitoite/Surface/CheckSoundBasicExpr.lean:87:16: Invalid field `result_atoms`: The environment does not contain `Benitoite.Release.BuilderOp.result_atoms`, so it is not possible to project the field `result_atoms` from an expression
+  o
+of type `BuilderOp`
+✔ [261/276] Built Benitoite.Surface.CheckSoundSequence (597ms)
+✔ [263/276] Built Benitoite.Surface.CheckSoundDie (632ms)
+✔ [264/276] Built Benitoite.Surface.CheckSoundCalls (675ms)
+✔ [273/276] Built Benitoite.Surface.Lemmas.BuilderNoCapture (6.2s)
+Some required targets logged failures:
+- Benitoite.Release.FailureExamples
+- Benitoite.Surface.CheckSoundBasicExpr
+error: build failed
