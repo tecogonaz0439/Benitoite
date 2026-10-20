@@ -14,6 +14,7 @@ description: Benitoite のビルドの生成物（本体と git worktree の作�
 | 置き場所 | 中身 | 消した後 |
 |---|---|---|
 | `target/` | Rust のビルドの生成物（`cargo clean` で消す） | 次の `check.sh` や `cargo test` が最初からビルドし直すので、数分余計にかかる |
+| `target/debug/incremental/` | Rust の増分ビルドのキャッシュ | 次のビルドで作り直す。`target/` 全体を消す前の片付けの候補とする |
 | `target/desugar-diff/` | `scripts/check-formal.sh` の差分テストの出力（1〜2 GB） | `check-formal.sh` を走らせるたびに作り直される。レビューの記録として残す必要はない |
 | `fuzz/target/` | fuzzing のクレートのビルドの生成物 | `scripts/fuzz-short.sh` が作り直す |
 | `formal/.lake/` | Lean のビルドの生成物（外部の依存はなく、`build/` だけ） | `lake build` が作り直す。証明の検査を含むので時間がかかる。形式化を触る改造の途中では消さない |
@@ -24,17 +25,19 @@ description: Benitoite のビルドの生成物（本体と git worktree の作�
 
 ## 手順
 
+作業（Codex など）を起動する前と、作業の確認のたびに `df -h /` でディスクの空きを見る。片付けのしきい値は 30 GB とする。
+
 1. 大きさを確かめる。`.claude/skills/clean-build/clean.sh` を引数なしで走らせると、本体と各作業ディレクトリの生成物の大きさ、作業ディレクトリのブランチが `san_benito` に取り込み済みか、コミットしていない変更があるか、ディスクの空きを示す。何も消さない。
 2. 結果を設計者に示し、何を消すかを確かめる。次の場合は、確かめずに消してよい。
    - 取り込み済みで変更のない作業ディレクトリ（設計者が改造の後片付けで消すと言ったとき）。
    - 本体の `target/desugar-diff/`（ディスクの空きが 30 GB を切ったとき）。
 3. 消す。
    - 作業ディレクトリ: `clean.sh --worktrees`。ブランチが `san_benito` に取り込み済みで、コミットしていない変更がない作業ディレクトリだけを、生成物を消してから `git worktree remove` で消し、ブランチを `git branch -d` で消す。当てはまらない作業ディレクトリは理由を示して残す。
-   - 本体: `clean.sh --main <対象,...>`。対象は `desugar-diff`、`target`、`fuzz`、`lean`、`all`。次の改造ですぐビルドするなら、`target` は残して `desugar-diff` だけを消すのがよい。
+   - 本体: `clean.sh --main <対象,...>`。対象は `desugar-diff`、`target`、`fuzz`、`lean`、`all`。次の改造ですぐビルドするなら、`target` は残して `desugar-diff` だけを消すのがよい。部分的に片付けるなら、使っていない `target/debug/incremental/` と古い `target/desugar-diff/run-*` を候補として示し、上の確認の規則に従う。進行中のビルドや差分テストが使うものは消さない。
 4. `clean.sh` は最後にディスクの空きを示す。消した量を設計者に報告する。
 
 ## 注意
 
 - `clean.sh` は、`cargo`・`rustc`・`lake`・`codex exec`（Codex の作業。常駐するアプリのサーバは見ない）の動いている間は消さずに止まる（終了状態 3）。走っている検査や Codex の作業の生成物を消すと、その作業が壊れるためである。動いているものが無関係だと確かめたときだけ `--force` を付ける。
-- 取り込んでいないブランチの作業ディレクトリは消さない。消す必要があるときは、設計者に確かめ、先に bundle に保存する（記憶の「消したブランチの bundle」の手順。`work/` に出す）。
+- 取り込んでいないブランチの作業ディレクトリは消さない。消す必要があるときは、設計者に確かめ、先にスキル `archive-and-bundle` に従って bundle に保存する。保存先と戻し方は `work/bundles.md` に記録する。
 - ディスクの空きが 30 GB を切ったら、まず取り込み済みの作業ディレクトリと `target/desugar-diff/` を消し、それでも足りなければ使っていない `target/` を `cargo clean` する。

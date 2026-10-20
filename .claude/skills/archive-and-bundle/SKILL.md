@@ -23,13 +23,13 @@ description: Benitoite のソースのアーカイブ（git archive の tar.gz �
 
 ブランチを整理するときは、消す前に bundle に保存する。消すのは設計者の指示があるときだけで、push 済みの `san_benito` とリモートのタグは扱わない。
 
-1. 消す候補を示す。`git branch -vv`、`git tag`、`git worktree list` で、ブランチとタグ、作業ディレクトリが使っているブランチを確かめ、`san_benito` に取り込み済みか（`git merge-base --is-ancestor`）を添えて設計者に示す。記録の文書（`tools/bench/results/`、`docs/archive/` など）が引くコミットを持つブランチは、そのことも示す（消しても bundle から戻せるが、どこにあるかを記憶に残す必要がある）。
+1. 消す候補を示す。`git branch -vv`、`git tag`、`git worktree list` で、ブランチとタグ、作業ディレクトリが使っているブランチを確かめ、`san_benito` に取り込み済みか（`git merge-base --is-ancestor`）を添えて設計者に示す。記録の文書（`tools/bench/results/`、`docs/archive/` など）が引くコミットを持つブランチは、そのことも示す（保存先は `work/bundles.md` に記録する）。
 2. 保存する。
    - 選んだ参照: `archive.sh bundle <名前> <ブランチやタグ>...`
    - `san_benito` とリリースのタグ（`v0.0.1` など。公開済み）以外のすべて: `archive.sh bundle <名前> --all-except-main`
    出力は `work/Benitoite-<名前>-<日付>.bundle`（例: `Benitoite-branches-and-tags-before-cleanup-2026-10-11.bundle`）。道具は `git bundle verify` に加えて、保存した参照ごとに bundle の中の値が手元の値と一致することを確かめ、一つでも合わなければ何も消さずに止まる。
 3. 消す。設計者の指示があれば、同じ呼び出しに `--delete` を付ける（保存と確かめの後に、保存した手元のブランチとタグを消す）。`san_benito`、今のブランチ、リリースのタグ（`v<数字>…`）は消さない。作業ディレクトリが使っているブランチは git が拒むので残る（作業ディレクトリはスキル `clean-build` で先に片付ける）。
-4. 記録する。bundle のファイル名、中の参照の数、記録の文書が引くコミットとそのブランチ、戻し方を、記憶（reference の種類）に残す。`work/` は git の追跡外なので、消さないよう記憶に書いておく。
+4. 記録する。bundle のファイル名、中の参照の数、記録の文書が引くコミットとそのブランチ、戻し方を、`work/bundles.md`（git の追跡外）に残す。手元に残す控えのブランチも同じ文書に記録する。bundle とこの記録は片付けで消さない。
 
 戻し方: `git fetch work/<bundle> 'refs/heads/<名前>:refs/heads/<名前>'`（タグは `refs/tags/<名前>:refs/tags/<名前>`）。中の参照の一覧は `git bundle list-heads work/<bundle>`。
 

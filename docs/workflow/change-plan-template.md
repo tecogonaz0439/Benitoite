@@ -19,6 +19,8 @@
 |---|---|---|---|---|
 | `<段>` | `<ID>` | `<依存>` | `<契約・受け渡し>` | `<担当・観点>` |
 
+実装担当を起動する前に、作業文書を現行の設計書・インターフェース・取り込み済みのコードと突き合わせて事前点検し、食い違いを直す。残りの検査・測定・レビュー・受け入れは、見込み時間とともに一つの表で設計者に示す。時間の上限と、長い作業を短い試行で見積もる手順も具体化する。
+
 ## 作業 `<ID>`: `<機能のまとまり>`
 
 - 目的: `<守る契約と結果の振る舞い>`
@@ -51,10 +53,13 @@ Rust の work は lib 全件・関連統合テスト・clippy・fmt を上の入
 | 局所の heap-verify・gc-stress と check-heap.sh | `<必要な work 行、または理由付きの対象外>` | `<不変条件・安全点を越える値。統合なら heap_local/stress_local と --test、libなら直接の Cargo コマンド。heap_checks と成功の引用元>` | `<次の作業の前提にする前、担当・保存先>` |
 | Lean の既定ビルド・レビュー | `<形式化を先行する work 行、または理由付きの対象外>` | `<formal_build または lake build、sorry の拒否、定義・言明・仮定のレビュー>` | `<処理系より先、担当・保存先>` |
 | check-formal.sh 全体 | `<接続を閉じる区切りと最終の関係状態、または理由付きの対象外>` | `scripts/check-formal.sh`。`<六入口・独立入力・交換と manifest、最後の成功の引用元>` | `<担当・時期・results.md>` |
-| 性能の比較の段 | `<性能に関わる改造は short、約束した目標は targets、要所だけ full。性能と関係しなければ short は任意>` | `python3 tools/bench/compare/run.py --tier <選んだ段> --state before=<開始版> --state after=<候補>`。`<targets の JSON と状態、full の --confirm-full、quick と見込み、本測定前の了承を具体化>` | `<担当・改造末・見込み時間・tools/bench/results/ の記録と results.md>` |
+| 性能の比較 short | `<処理系を変えた作業の取り込みごと。少なくとも段の区切りごと。文書だけ等は対象外と記す>` | `python3 tools/bench/compare/run.py --tier short --state before=<開始版> --state after=<取り込み後>`。`<既存の compare の族を使い、追加する族があれば名指し>` | `<担当・取り込みごと・見込み時間・tools/bench/results/ の記録と results.md。了承は待たない>` |
+| 性能の比較 targets・full | `<約束した目標は targets、要所だけ full、または理由付きの対象外>` | `python3 tools/bench/compare/run.py --tier <選んだ段> --state before=<開始版> --state after=<対象>`。`<目標の JSON と状態、full の --confirm-full、quick と時間の上限、範囲と見込みを示した開始前の了承を具体化>` | `<担当・change/release とリリース準備の前・見込み時間・tools/bench/results/ の記録と results.md>` |
 | release_stack | `<release 行。公開しない改造なら必要な change 行>` | `<再帰の形・枠・最適化・ビルド設定を変えるときは関係作業にも名指し。最終候補の構成へ対応する結果>` | `<担当・時期・results.md>` |
 
 段の検査を省く場合は理由と引用元を記す。終了0は選んだ検査の成功であり、release の受け入れは候補と証拠の手動照合を終えて判定する。水準なしの旧 only/full は互換指定であり、change/release の代わりにしない。指定の誤り2は計画を直し、分類不能・基準不明3では該当箇所を示して設計者の当該水準の `--level … --only`（停止までに選んだ単位を案内し、分類不能のファイルに必要な単位を補う）、互換の `--full`・水準なしの `--only`、`--none` の判断に従う。
+
+性能の退行の疑いはその段で調べ、直すか docs/todo に回すかを設計者に尋ねる。測定（試走を含む）はリリースの準備の後に回さない。targets・full は計画にあっても、開始前に範囲と見込み時間を示して了承を得る。測定の詳しい手順はスキル `benchmark` に従う。
 
 ## 結果とレビュー修正の管理
 
