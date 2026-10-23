@@ -124,8 +124,26 @@ partial def Ty.checkDataNames (ds : List DataEntry) : Ty → Except String Unit
   | .map k v => do k.checkDataNames ds; v.checkDataNames ds
   | _ => pure ()
 
+/-- 書式化の内部頭は名前で固定署名へ対応付け、δの算法を仮定へ追加しない。 -/
+def BuiltinEntry.validateFormat (b : BuiltinEntry) : Except String Unit := do
+  if !b.name.startsWith "%Format." then return
+  let types : List Benitoite.Release.Ty := [
+    .base .integer, .base .integer8, .base .integer16, .base .integer32,
+    .base .byte, .base .unsignedInteger16, .base .unsignedInteger32, .base .unsignedInteger64,
+    .base .float, .base .float32, .base .decimal, .base .string, .base .character, .base .boolean]
+  let some t := types.find? (fun t => Benitoite.Surface.FormatSpec.headName t == some b.name)
+    | throw s!"unknown format builtin: {b.name}"
+  let actual : Benitoite.Release.Ty := .fn b.names (← b.params.mapM Ty.toRelease)
+    (← b.ret.toRelease) (← b.eff.toRelease)
+  if !Benitoite.Surface.CheckTools.tyEq [] actual (Benitoite.Surface.FormatSpec.converterType t) ||
+      !b.eff.isEmpty || !b.tparams.isEmpty ||
+      b.neffs != 0 || !b.effParams.isEmpty || b.kind != "pure" || b.opEff.isSome ||
+      !b.classConstraints.isEmpty || !b.unconvertibleTypes.isEmpty then
+    throw s!"invalid format builtin signature: {b.name}"
+
 /-- 対象外の印を信頼して、変換できない型を黙って通さない。 -/
 def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := do
+  b.validateFormat
   checkNames b.names b.params.length
   let h : Header := ⟨b.tparams.map (fun c => (c.equality,c.key)), b.neffs, b.effParams, b.names, b.params, b.ret, b.eff⟩
   h.validateNoFail
@@ -147,6 +165,7 @@ def DataEntry.info (d : DataEntry) : DataTypeInfo :=
 def readBuiltins (j : Json) : Except String BuiltinCorpus := do
   let c : BuiltinCorpus ← fromJson? (← exchangeJson "builtins" j)
   for i in c.inputs do
+    i.prims.forM BuiltinEntry.validateFormat
     validateDataTypes (i.dataDecls.map DataEntry.info)
     for d in i.dataDecls do
       validateBuiltinShape d.builtin d.ntys d.isRecord (d.ctors.map fun c =>

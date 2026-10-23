@@ -283,6 +283,22 @@ def BuilderKind.toSurface : BuilderKind → Except String Benitoite.Release.Buil
 def BuilderOp.toSurface : BuilderOp → Benitoite.Release.BuilderOp
   | .append => .append | .appendAll => .appendAll | .copy => .copy | .length => .length
 
+/-- 文字列の列挙値を閉じた表層の指定へ変換する。 -/
+def FormatSpec.toSurface (s : FormatSpec) : Except String Benitoite.Surface.FormatSpec := do
+  let kind ← match s.kind with
+    | "default" => pure .default | "d" => pure .d | "b" => pure .b
+    | "o" => pure .o | "x" => pure .x | "X" => pure .upperX
+    | "f" => pure .f | "s" => pure .s | "c" => pure .c
+    | _ => throw "invalid format kind"
+  let align ← match s.align with
+    | "default" => pure .default | "left" => pure .left
+    | "right" => pure .right | "center" => pure .center
+    | _ => throw "invalid format align"
+  let sign ← match s.sign with
+    | "default" => pure .default | "plus" => pure .plus
+    | _ => throw "invalid format sign"
+  return ⟨kind, align, sign, s.alternate, s.zero, s.width, s.precision⟩
+
 def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.InterpPart
   | .text s => return .text s
   | .stringExpr => return .stringExpr
@@ -292,6 +308,12 @@ def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.Interp
       if basic == .string || basic == .unit then
         throw "invalid converted interpolation type"
       return .converted (← t.toRelease)
+  | .formatted t spec => do
+      let t ← t.toRelease
+      let spec ← spec.toSurface
+      if !(decide spec.SyntaxValid && decide (spec.Compatible t)) then
+        throw "invalid formatted interpolation type or spec"
+      return .formatted t spec
 
 /-- 専用種類内の通常の型だけを交換する。 -/
 def fromBuilderKind (atoms : Eff) : Benitoite.Release.BuilderKind → Except String BuilderKind
@@ -388,6 +410,20 @@ mutual
         let converted ← fs.mapM (Expr.toSurface constants)
         if converted.any (fun f => (Benitoite.Surface.directCallee f).isNone) then
           throw "indirect interpolation converter"
+        -- 名前の一致は交換の境界で検査する。表層の型検査は署名を検査する。
+        let mut heads := converted
+        for part in ps do
+          match part with
+          | .converted _ => heads := heads.drop 1
+          | .formatted t _ =>
+              let some name := Benitoite.Surface.FormatSpec.headName t
+                | throw "missing format head name"
+              match heads.head? with
+              | some (.primName n [] []) =>
+                  if n != name then throw "formatted interpolation head name mismatch"
+              | _ => throw "formatted interpolation requires direct primitive head"
+              heads := heads.drop 1
+          | _ => pure ()
         return .interpolation ps (← toExprs constants es) (← toExprs constants fs)
     | .lam names ps r e b => return .lam names (← ps.mapM Ty.toRelease) (← r.toRelease) (← e.toRelease) (← b.toSurface constants)
     | .ite c y n => return .ite (← c.toSurface constants) (← y.toSurface constants) (← n.toSurface constants)

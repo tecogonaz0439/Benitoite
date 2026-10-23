@@ -1,0 +1,422 @@
+{
+  "functions-main-0-0": {
+    "before": {
+      "seconds": 0.014157208999989734,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014721167000004698,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001817917,\"reparse\":0.001376666,\"resolve\":0.000903709,\"typeck\":0.005607292}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.013398917000003507,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.4354289579999886,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.005713375,\"reparse\":0.002466667,\"resolve\":0.00252825,\"typeck\":0.0123045}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-main-0-1": {
+    "before": {
+      "seconds": 0.019360292000001778,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":30,\"offset\":53},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":12,\"offset\":35},\"end\":{\"line\":2,\"column\":19,\"offset\":42},\"label\":\"expected because of this\"}],\"notes\":[\"the value must match the type annotation\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.017374000000003775,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.002219833,\"reparse\":0.001542334,\"resolve\":0.001109667,\"typeck\":0.006667958}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014298666000001958,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":30,\"offset\":53},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":12,\"offset\":35},\"end\":{\"line\":2,\"column\":19,\"offset\":42},\"label\":\"expected because of this\"}],\"notes\":[\"the value must match the type annotation\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014727666999988287,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.001850417,\"reparse\":0.0014085,\"resolve\":0.000921709,\"typeck\":0.005728542}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-main-1000-0": {
+    "before": {
+      "seconds": 0.030991124999999897,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.033708916000009026,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002913917,\"reparse\":0.002422542,\"resolve\":0.001399583,\"typeck\":0.021370666}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.03116550000000018,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.03355658300000641,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002904666,\"reparse\":0.002489084,\"resolve\":0.001384208,\"typeck\":0.02125925}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-main-1000-1": {
+    "before": {
+      "seconds": 0.03157824999999548,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-1000-1/shared-88e462a325e809ba/main.bnt\",\"start\":{\"line\":2999,\"column\":9,\"offset\":51763},\"end\":{\"line\":2999,\"column\":16,\"offset\":51770},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-1000-1/shared-88e462a325e809ba/main.bnt\",\"start\":{\"line\":2998,\"column\":20,\"offset\":51747},\"end\":{\"line\":2998,\"column\":27,\"offset\":51754},\"label\":\"expected because of this\"}],\"notes\":[\"the returned value must match the declared return type\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.03410591699999088,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.002937541,\"reparse\":0.002446375,\"resolve\":0.001381417,\"typeck\":0.021454916}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.031356375000001435,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-1000-1/shared-88e462a325e809ba/main.bnt\",\"start\":{\"line\":2999,\"column\":9,\"offset\":51763},\"end\":{\"line\":2999,\"column\":16,\"offset\":51770},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-main-1000-1/shared-88e462a325e809ba/main.bnt\",\"start\":{\"line\":2998,\"column\":20,\"offset\":51747},\"end\":{\"line\":2998,\"column\":27,\"offset\":51754},\"label\":\"expected because of this\"}],\"notes\":[\"the returned value must match the declared return type\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.03357166700000391,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.00287725,\"reparse\":0.002438417,\"resolve\":0.001406208,\"typeck\":0.021459125}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-args-0-0": {
+    "before": {
+      "seconds": 0.013550874999992857,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014936916999999994,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001869375,\"reparse\":0.001365792,\"resolve\":0.000896333,\"typeck\":0.005777125}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.013295333000002074,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014559792000000016,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001832209,\"reparse\":0.00137575,\"resolve\":0.000878625,\"typeck\":0.005631166}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-args-0-1": {
+    "before": {
+      "seconds": 0.013265333000006763,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":30,\"offset\":53},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":12,\"offset\":35},\"end\":{\"line\":2,\"column\":19,\"offset\":42},\"label\":\"expected because of this\"}],\"notes\":[\"the value must match the type annotation\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014580791999989628,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.001804667,\"reparse\":0.001371083,\"resolve\":0.000912709,\"typeck\":0.00569375}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01368062499999212,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":30,\"offset\":53},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":12,\"offset\":35},\"end\":{\"line\":2,\"column\":19,\"offset\":42},\"label\":\"expected because of this\"}],\"notes\":[\"the value must match the type annotation\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014578000000000202,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.001830375,\"reparse\":0.0014075,\"resolve\":0.000931458,\"typeck\":0.005598041}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-args-1000-0": {
+    "before": {
+      "seconds": 0.04791837499999474,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.05103154200000404,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003859208,\"reparse\":0.003297291,\"resolve\":0.0020285,\"typeck\":0.035773542}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.04766766599999528,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.0516802079999934,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003943375,\"reparse\":0.003426792,\"resolve\":0.00207175,\"typeck\":0.036118458}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-args-1000-1": {
+    "before": {
+      "seconds": 0.048142624999997,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-1000-1/shared-730276b4063425a2/main.bnt\",\"start\":{\"line\":3998,\"column\":9,\"offset\":78746},\"end\":{\"line\":3998,\"column\":16,\"offset\":78753},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-1000-1/shared-730276b4063425a2/main.bnt\",\"start\":{\"line\":3997,\"column\":30,\"offset\":78730},\"end\":{\"line\":3997,\"column\":37,\"offset\":78737},\"label\":\"expected because of this\"}],\"notes\":[\"the returned value must match the declared return type\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.051554333000012775,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.003808666,\"reparse\":0.003304625,\"resolve\":0.002047375,\"typeck\":0.036204292}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.048120416000003274,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-1000-1/shared-730276b4063425a2/main.bnt\",\"start\":{\"line\":3998,\"column\":9,\"offset\":78746},\"end\":{\"line\":3998,\"column\":16,\"offset\":78753},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-args-1000-1/shared-730276b4063425a2/main.bnt\",\"start\":{\"line\":3997,\"column\":30,\"offset\":78730},\"end\":{\"line\":3997,\"column\":37,\"offset\":78737},\"label\":\"expected because of this\"}],\"notes\":[\"the returned value must match the declared return type\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.051847459000001095,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.003834542,\"reparse\":0.003446,\"resolve\":0.0021175,\"typeck\":0.036005542}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-modules-0-0": {
+    "before": {
+      "seconds": 0.014166583000005062,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015041541999991637,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001836958,\"reparse\":0.001372,\"resolve\":0.000895167,\"typeck\":0.0056415}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01383608400000469,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015166415999999572,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001848792,\"reparse\":0.001407084,\"resolve\":0.000922541,\"typeck\":0.005723042}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-modules-0-1": {
+    "before": {
+      "seconds": 0.01503762500000505,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":30,\"offset\":53},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":12,\"offset\":35},\"end\":{\"line\":2,\"column\":19,\"offset\":42},\"label\":\"expected because of this\"}],\"notes\":[\"the value must match the type annotation\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014817542000002959,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.00182375,\"reparse\":0.00136975,\"resolve\":0.000929875,\"typeck\":0.005642}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.013883458000009341,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":30,\"offset\":53},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-0-1/shared-90603c0786f58d6a/main.bnt\",\"start\":{\"line\":2,\"column\":12,\"offset\":35},\"end\":{\"line\":2,\"column\":19,\"offset\":42},\"label\":\"expected because of this\"}],\"notes\":[\"the value must match the type annotation\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014931500000002984,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.001831167,\"reparse\":0.001365625,\"resolve\":0.000915166,\"typeck\":0.005697208}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-modules-1000-0": {
+    "before": {
+      "seconds": 0.02495975000000783,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.027504124999992996,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003459125,\"reparse\":0.002313792,\"resolve\":0.001479541,\"typeck\":0.014622958}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.025354541000012887,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.027540958000003002,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003442167,\"reparse\":0.00237825,\"resolve\":0.001519291,\"typeck\":0.01468225}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "functions-modules-1000-1": {
+    "before": {
+      "seconds": 0.02552004199999658,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-1000-1/shared-db89b167e3c0a405/Part9.bnt\",\"start\":{\"line\":299,\"column\":9,\"offset\":5883},\"end\":{\"line\":299,\"column\":16,\"offset\":5890},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-1000-1/shared-db89b167e3c0a405/Part9.bnt\",\"start\":{\"line\":298,\"column\":27,\"offset\":5867},\"end\":{\"line\":298,\"column\":34,\"offset\":5874},\"label\":\"expected because of this\"}],\"notes\":[\"the returned value must match the declared return type\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.02776270799999736,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.003620792,\"reparse\":0.002341167,\"resolve\":0.001521209,\"typeck\":0.01459075}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.025159125000001836,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",\"message\":\"mismatched types\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-1000-1/shared-db89b167e3c0a405/Part9.bnt\",\"start\":{\"line\":299,\"column\":9,\"offset\":5883},\"end\":{\"line\":299,\"column\":16,\"offset\":5890},\"label\":\"expected `Integer`, found `String`\"},\"secondary\":[{\"file\":\"<repo>/target/bench/compare/inputs/functions-modules-1000-1/shared-db89b167e3c0a405/Part9.bnt\",\"start\":{\"line\":298,\"column\":27,\"offset\":5867},\"end\":{\"line\":298,\"column\":34,\"offset\":5874},\"label\":\"expected because of this\"}],\"notes\":[\"the returned value must match the declared return type\"],\"helps\":[]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.027881583999999293,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.003507084,\"reparse\":0.00239175,\"resolve\":0.001532,\"typeck\":0.014737167}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "existing-fib": {
+    "before": {
+      "seconds": 0.014437916999995082,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015576249999995184,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00190275,\"reparse\":0.001426083,\"resolve\":0.000967834,\"typeck\":0.006007917}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014281167000007144,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.0160556249999928,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00195625,\"reparse\":0.001431792,\"resolve\":0.000974,\"typeck\":0.006181041}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "existing-loop": {
+    "before": {
+      "seconds": 0.014366792000004125,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015836166999989132,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00192325,\"reparse\":0.001444167,\"resolve\":0.000970333,\"typeck\":0.006096583}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014302041999997073,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015671292000007497,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.0019055,\"reparse\":0.001428417,\"resolve\":0.000961375,\"typeck\":0.006117541}\n",
+        "stderr": ""
+      }
+    }
+  },
+  "existing-string": {
+    "before": {
+      "seconds": 0.013992833000003202,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.01558145799999977,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001880625,\"reparse\":0.001428375,\"resolve\":0.000976209,\"typeck\":0.0060415}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014441208999997457,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.01569787499998654,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001938542,\"reparse\":0.001434584,\"resolve\":0.000964541,\"typeck\":0.006106459}\n",
+        "stderr": ""
+      }
+    }
+  }
+}

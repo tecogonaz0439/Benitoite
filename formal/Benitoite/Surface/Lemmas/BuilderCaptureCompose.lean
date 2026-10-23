@@ -223,6 +223,12 @@ theorem joinStringParts_captures {vs} (hv : ∀ p, Vals.Captures p vs) (op : OpP
   | nil => simp [joinStringParts, Comp.Captures, Val.Captures]
   | cons v vs => exact joinStringFrom_captures (fun q => (hv q).1) (fun q => (hv q).2) op 0 p
 
+/-- 定数だけの書式引数は専用セルを捕捉しない。 -/
+theorem FormatSpec.arguments_captures (s : FormatSpec) (p : Nat → Prop) :
+    Vals.Captures p s.arguments := by
+  unfold FormatSpec.arguments
+  split <;> simp [FormatSpec.constants, Vals.Captures, Val.Captures]
+
 theorem interpolate_captures (parts : List InterpPart) {vs hs acc}
     (hv : ∀ p, Vals.Captures p vs) (hh : ∀ h ∈ hs, ∀ p, CallHead.Captures p h)
     (ha : ∀ p, Vals.Captures p acc) (op : OpPrim) (p : Nat → Prop) :
@@ -252,6 +258,20 @@ theorem interpolate_captures (parts : List InterpPart) {vs hs acc}
               | cons h hs =>
                   simp only [interpolate, Comp.Captures]
                   refine ⟨CallHead.captures_apply (hh h (by simp) p) ⟨(hv p).1, trivial⟩, ?_⟩
+                  apply ih (Vals.captures_free_rename (fun q => (hv q).2))
+                  · intro h hm q
+                    obtain ⟨h', hm', rfl⟩ := List.mem_map.mp hm
+                    exact CallHead.captures_free_rename (hh h' (by simp [hm'])) q
+                  · intro q; exact Vals.captures_append (Vals.captures_free_rename ha q) ⟨trivial, trivial⟩
+      | formatted t s =>
+          cases vs with
+          | nil => simp [interpolate, Comp.Captures, Val.Captures]
+          | cons v vs =>
+              cases hs with
+              | nil => simp [interpolate, Comp.Captures, Val.Captures]
+              | cons h hs =>
+                  simp only [interpolate, Comp.Captures]
+                  refine ⟨CallHead.captures_apply (hh h (by simp) p) ⟨(hv p).1, s.arguments_captures p⟩, ?_⟩
                   apply ih (Vals.captures_free_rename (fun q => (hv q).2))
                   · intro h hm q
                     obtain ⟨h', hm', rfl⟩ := List.mem_map.mp hm

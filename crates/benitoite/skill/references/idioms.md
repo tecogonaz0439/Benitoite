@@ -30,6 +30,7 @@ All examples import the IO modules under `Benitoite.Unofficial`, because those m
 - [Concrete and generic containers](#concrete-and-generic-containers)
 - [Records and data types](#records-and-data-types)
 - [Writing tests](#writing-tests)
+- [Static interpolation formats](#static-interpolation-formats)
 - [Numeric widths and conversions](#numeric-widths-and-conversions)
 - [WASM external functions and WIT types](#wasm-external-functions-and-wit-types)
 
@@ -743,6 +744,25 @@ function gitBranchRunsGit() -> Unit uses Assert.Check, Process.Run
 end function
 ```
 
+## Static interpolation formats
+
+Use a static `${expression:spec}` format for output columns and decimal places. `benitoite check` reports format syntax errors (E0262) and type incompatibility (E0468) before execution. Width uses display width, preserves long content, and adds spaces by default. Use `String.displayWidthPadStartCJK` or `String.displayWidthPadEndCJK` explicitly when CJK width is needed. Integer base formats apply to integer types, `f` to Float/Float32/Decimal, `s` to String, and `c` to Character. Precision requires `f`; zero padding requires a numeric value and width. All expressions are evaluated once from left to right before formatting and concatenation. Constants use the same rules.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind amount <- 2.675m
+  bind number <- -42
+  bind label <- "猫"
+  Console.writeLine("${amount:.2f}|${number:#08x}|${label:>5s}")
+end function
+```
+
+```output
+2.68|-0x0002a|   猫
+```
+
 ## Numeric widths and conversions
 
 Use the aliases `Integer`, `Float`, and `Byte` as the usual names. `Integer64`, `Float64`, and `UnsignedInteger8` are their canonical names, and `UnsignedInteger` is an alias of `UnsignedInteger64`. Aliases are the same type. The seven types (`Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`, and `Float32`) are distinct. All numeric types and modules are in the prelude; no import is needed.
@@ -856,3 +876,51 @@ hello world
 ```
 
 Use Log and SourceLocation from the prelude. Pass message, attributes and location explicitly; IO.All does not include Log. Use a complete handler or add Log to the accepted declared effects. For checked lengths/indices and nonempty lists, use the Range and NonEmptyList module references.
+
+## File-level effects and pure helpers
+
+Use a file-level declaration for common logging or console output, after all imports and before declarations. Every top-level function, including main and tests, receives the union of this declaration and its own uses. Even an unused Log needs acceptance before execution. Pure callbacks, including Property generators, shrinkers and properties, can live in another file without that declaration:
+
+```files
+name: Pure.bnt
+public function double(value: Integer) -> Integer
+  return value * 2
+end function
+```
+
+```benitoite
+import Pure
+import Benitoite.Unofficial.IO.Console
+uses Console.Write, Log
+
+function main() -> Unit
+  bind values <- List.map(xs: [3], f: Pure.double)
+  Console.writeLine(Integer.toString(List.fold(xs: values, initial: 0, f: lambda(acc, value) return acc + value)))
+end function
+```
+```output
+6
+```
+
+The report for this main declares Console.Write and Log. Review that bound and pass the accepted set as `--allow-effects=Console.Write,Log`, even though this example emits no log. Moving double into this file would add those effects to its function type; moving a pure helper to another file keeps its pure contract. Lambdas, function types and trait/implement methods do not receive the shared additions. Documentation examples also use independent virtual modules and declare their own imports and effects.
+
+A handler processes the body's operations; it does not remove an effect added to the function's declaration by the file. Main cannot declare an unhandled user effect, so even this complete handler is rejected:
+
+```benitoite error
+uses Hidden
+
+effect Hidden
+  function ask() -> Unit
+end effect
+
+function main() -> Unit
+  handle ask() with
+    case ask() -> resume(())
+  end handle
+end function
+```
+```diagnostic
+error[E0506]
+```
+
+Remove the file declaration and declare effects on individual functions, or put main in a file without that declaration and handle the imported helper's effects there. Shared IO.All produces W0501 for each function that performs fewer effects, with no automatic edit to the shared declaration. Review all affected functions before narrowing it.

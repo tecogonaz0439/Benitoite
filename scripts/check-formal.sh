@@ -149,6 +149,12 @@ for profile in b3 blocks g2 g3; do
 done
 printf 'batch3/batch4 Rust exchange: %ss\n' "$((SECONDS - batch3_start))"
 
+batch5_start=$SECONDS
+# --rust-dir の呼び出しは独立入力の単体テストも行うため、両方をここで一度ずつ検査する。
+printf '%s\n' '== formal: batch5 independent/Rust exchange'
+python3 -B formal/tests/test_batch5_exchange.py --rust-dir "$output_dir/batch5"
+printf 'batch5 independent/Rust exchange: %ss\n' "$((SECONDS - batch5_start))"
+
 diff_start=$SECONDS
 printf '%s\n' '== formal: desugarDiff'
 status=$coverage_status

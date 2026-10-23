@@ -187,7 +187,13 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
         Expr::Try(_) | Expr::Lazy(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) => {
             super::effects::expr(ctx, e)
         }
-        Expr::Error(_) => ITy::Error,
+        Expr::Error(e) => {
+            // 構文解析・位置の事前展開が診断済みの原因を、束縛を越えて残す
+            // （設計書 02-05「誤りの報告と検査の継続」）。
+            let ty = ctx.fresh_ty();
+            ctx.solver.diagnose_result(&ty, e.span);
+            ty
+        }
     };
     if ctx
         .decls
@@ -1146,14 +1152,41 @@ fn reach_expr(ctx: &mut Body<'_, '_>, e: &Expr) {
 fn interp(ctx: &mut Body<'_, '_>, e: &InterpExpr) -> ITy {
     for s in &e.segments {
         let t = ctx.expr(&s.expr);
+        let (set, r) = if let Some(format) = &s.format {
+            let mut r = reason(s.expr.span(), ReasonKind::InterpFormat);
+            r.related = Some(format.span);
+            (format_set(format), r)
+        } else {
+            (TySet::INTERP, reason(s.expr.span(), ReasonKind::Interp))
+        };
         ctx.interp_types.insert(s.expr.id(), t.clone());
         ctx.add(Constraint::OneOf {
             ty: t,
-            set: TySet::INTERP,
-            reason: reason(s.expr.span(), ReasonKind::Interp),
+            set,
+            reason: r,
         });
     }
     basic(B::STRING)
+}
+
+/// 構文の妥当性は解析器が検査済み。型に依存する条件だけを閉じた集合にする
+/// （設計書 01-06「演算子の型付け」、01-12「文字列補間」）。
+fn format_set(format: &FormatSpec) -> TySet {
+    match format.kind {
+        FormatKind::D | FormatKind::B | FormatKind::O | FormatKind::X | FormatKind::UpperX => {
+            TySet::FORMAT_INT
+        }
+        FormatKind::F => TySet::FORMAT_FIXED,
+        FormatKind::S | FormatKind::C if format.sign == FormatSign::Plus || format.zero => {
+            TySet(&[])
+        }
+        FormatKind::S => TySet(&[B::STRING]),
+        FormatKind::C => TySet(&[B::CHARACTER]),
+        FormatKind::Default if format.sign == FormatSign::Plus || format.zero => {
+            TySet::FORMAT_NUMBER
+        }
+        FormatKind::Default => TySet::INTERP,
+    }
 }
 
 #[inline(never)]
@@ -1164,6 +1197,7 @@ fn list(ctx: &mut Body<'_, '_>, e: &ListExpr) -> ITy {
         match item {
             ListElem::Expr(e) => {
                 let ty = ctx.expr(e);
+                ctx.solver.record_value(&elem, &ty);
                 flow(
                     ctx,
                     ty,
@@ -1275,6 +1309,7 @@ fn match_expr(ctx: &mut Body<'_, '_>, e: &MatchExpr) -> ITy {
     for arm in &e.arms {
         for p in &arm.patterns {
             let t = ctx.pattern(p);
+            ctx.solver.record_value(&t, &scrutinee);
             equal(ctx, scrutinee.clone(), t, p.span(), ReasonKind::Pattern);
         }
         if arm.patterns.len() > 1 {
@@ -1311,6 +1346,9 @@ fn match_expr(ctx: &mut Body<'_, '_>, e: &MatchExpr) -> ITy {
 fn return_expr(ctx: &mut Body<'_, '_>, e: &ReturnExpr) -> ITy {
     let t = ctx.expr(&e.value);
     if let Some(ret) = ctx.ret.clone() {
+        if ctx.return_annotation.is_none() {
+            ctx.solver.record_value(&ret, &t);
+        }
         flow(
             ctx,
             t,
@@ -1338,6 +1376,7 @@ fn ctor_pattern(ctx: &mut Body<'_, '_>, p: &CtorPat) -> ITy {
     }
     for (arg, t) in p.args.iter().zip(params) {
         let a = ctx.pattern(arg);
+        ctx.solver.record_value(&a, &t);
         equal(ctx, t, a, arg.span(), ReasonKind::Pattern);
     }
     ret
@@ -1419,6 +1458,8 @@ fn bind_stmt(ctx: &mut Body<'_, '_>, bind: &BindStmt) {
         t.clone()
     };
     let p = ctx.pattern(&bind.pattern);
+    ctx.solver
+        .record_binding(&p, &t, bind.ty.as_ref().map(|_| &target));
     equal(
         ctx,
         target.clone(),

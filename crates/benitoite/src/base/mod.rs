@@ -1,10 +1,13 @@
 //! 処理系の全段が共有する基本の型: 意味の違う整数の専用型、span、ソースの表、ノード番号を鍵とする表、値の表記、
-//! `Decimal` の値の表現。
+//! `Decimal` の値の表現、表示の幅と空白の個数の計算。
 //! 設計書: 02-02 ソース管理と位置情報、01-04「Decimal（初回リリース版）」、
 //! 02-01「段と段の間のデータ」「コンパイル済みプログラムと実行ごとの状態」。
+//! 表示の幅は 03-06「String」に対応する。
 
 pub mod decimal;
+pub mod display_width;
 pub(crate) mod file_read;
+pub mod format;
 pub(crate) mod literal;
 pub(crate) mod parameter_names;
 pub mod prim;

@@ -1,6 +1,6 @@
 [package]
 name = "benitoite"
-version = "0.0.10"
+version = "0.0.11"
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
@@ -34,6 +34,7 @@ serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
 sha2 = { version = "=0.11.0", default-features = false, features = ["alloc"] }
 signal-hook = "=0.4.5"
 signal-hook-mio = { version = "=0.3.0", features = ["support-v1_0"] }
+unicode-width = { version = "=0.2.2", default-features = false, features = ["cjk"] }
 ureq = { version = "=3.4.2", default-features = false, features = ["rustls-no-provider", "platform-verifier"] }
 ureq-proto = { version = "=0.6.4", default-features = false, features = ["client"] }
 rustls = { version = "=0.23.45", default-features = false, features = ["std", "tls12"] }

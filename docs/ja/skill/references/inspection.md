@@ -1,6 +1,6 @@
 # 実行前の検査
 
-> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 修正中は通常の `benitoite check main.bnt` または非実行の `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に JSON 報告を一度取得する。その報告を確認し、Skill の確認の規則に従って宣言したエフェクトを利用者に説明してから、了承済みの集合を実行へ渡す。
 
@@ -41,6 +41,10 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 Effects オブジェクトは `basis: "declaredUpperBound"` と `expanded` を持つ。`expanded` は、原子的な正規名を辞書順に並べた重複なしの配列である。本体の実行で到達するエフェクトだけでなく、使わない宣言も含む。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` に展開する。HTTP のエフェクトと `Assert.Check` は `IO.All` に含まれない。テストの契約・その和・許す集合には `Assert.Check` を残す。`main` では禁じる（E0415）。処理されない `or die` には `Process.Exit` が必要であり、完全に処理して宣言上限から取り除いた終了は含まれない。裸の `try` と `or return` は終了のエフェクトを加えない。
 
 純粋な成功は `expanded: []`、不明なエフェクトは `[]` ではなく `null` である。検査したテストなしのファイルは `tests: []`、不明なテストの一覧は `null` となる。空ディレクトリは、対象がなく集計が空である完全な成功となる。失敗したファイルがあっても、ほかの成功した契約は残すが、全体の `complete` は false、集計は null となる。探索に失敗したらどの入口も検査せずに止まり、探索済みの入口は不完全な参考情報として残る。使い方の誤りには検査した対象もソースもない。その中の診断だけは、`kind: "check"` と `code: null` を使う。この組み合わせは、通常の診断の JSON Lines を拡張しない。テストの説明を省略した場合は `null`、明示的に空の説明を書いた場合は `""` となる。
+
+ファイル単位の uses は検査済み Scheme で個別の宣言と合併する。前述の規則で報告全体を受理した後、main では targets[0].main.effects.expanded、テストでは各契約と集計を宣言上限として示す。空の本体にも共有の Console.Write や Log は残る。main の行だけを読むと上限を見落としうる。報告を自動の許可に変えない。通常の check は標準出力に何も書かない。報告規則の正は [v0.0.11 の CLI 仕様](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/design/06-tooling/06-01-cli.md#main-の非実行の検査報告)であり、checkReport 1・testCheckReport 1/2 を使う。
+
+未承認のエフェクトがファイルの宣言から加わった場合、E0512 はその位置も副ラベルに含める。共有の IO.All の W0501 は各関数と共有の由来を示し、ファイルの宣言への自動編集は付けない。個別の IO.All の編集はファイルが供給するエフェクトも考慮する。doc の例は独自の取り込みと契約を持ち、外側の宣言は適用しない。
 
 `processShellReference` は `present`、`absent`、`unknown` のいずれかであり、`shellReferenceScope: "checkedProgram"` を伴う。main の契約内、またはテストの対象上に置き、個々のテスト関数には置かない。検査したプログラム全体にある標準の shell 関数の式の参照を対象とし、使わない関数、関数値、依存も含む。取り込み、コメント、文字列、ハンドラの操作名だけ、無関係な shell という名前の利用者の関数は数えない。到達性の解析ではない。`present` は呼び出しの証明ではなく、`absent` でも外部コマンドからシェルを起動できる。
 

@@ -1,6 +1,7 @@
 import Benitoite.Release.BuiltinTable
 import Benitoite.Surface.BuilderSyntax
 import Benitoite.Release.Coverage
+import Benitoite.Surface.FormatSpec
 
 /-!
 # 型の情報を付けた表層の構文（C1・C2・C4・C5a-1・C6a-1・C6a-2・C6a-3・C7b-2）
@@ -223,17 +224,19 @@ mutual
 end
 
 /-- 補間の並行したリストの案内。子の式を含まないため、入れ子の帰納型にならない。
-text の空文字列は脱糖で省く。converted は String 以外の式と変換関数を一つずつ使う。 -/
+text の空文字列は脱糖で省く。converted は String 以外の式と変換関数を一つずつ使い、
+formatted は String を含む式と七定数を受ける書式化の関数を一つずつ使う。 -/
 inductive InterpPart where
   | text (s : String)
   | stringExpr
   | converted (ty : Ty)
+  | formatted (ty : Ty) (spec : FormatSpec)
 
 def InterpPart.exprTypes : List InterpPart → List Ty
   | [] => []
   | .text _ :: ps => exprTypes ps
   | .stringExpr :: ps => .base .string :: exprTypes ps
-  | .converted t :: ps => t :: exprTypes ps
+  | .converted t :: ps | .formatted t _ :: ps => t :: exprTypes ps
 
 /-- 公開の変換関数は宣言の実名を保ち、内部の Boolean の変換には value を使う。 -/
 def InterpPart.converterName : Ty → String
@@ -248,6 +251,7 @@ def InterpPart.converterName : Ty → String
 def InterpPart.converterTypes : List InterpPart → List Ty
   | [] => []
   | .converted t :: ps => .fn [converterName t] [t] (.base .string) Eff.empty :: converterTypes ps
+  | .formatted t _ :: ps => FormatSpec.converterType t :: converterTypes ps
   | _ :: ps => converterTypes ps
 
 /-- 01-06「演算子の型付け」の補間に許す型。補間の制約を持つ型変数は型パラメータと等しくなれず、
@@ -260,6 +264,7 @@ def InterpPart.Allowed : List InterpPart → Prop
         t = .base .integer8 ∨ t = .base .integer16 ∨ t = .base .integer32 ∨
         t = .base .unsignedInteger16 ∨ t = .base .unsignedInteger32 ∨
         t = .base .unsignedInteger64 ∨ t = .base .float32) ∧ Allowed ps
+  | .formatted t s :: ps => s.Valid t ∧ Allowed ps
   | _ :: ps => Allowed ps
 
 def InterpPart.count : List InterpPart → Nat
@@ -355,7 +360,7 @@ mutual
     | list (elemTy : Ty) (elems : Exprs)
     /-- concat は型検査が決めた直接の呼ぶ値。展開は一つだけである。 -/
     | listSpread (elemTy : Ty) (concat : Expr) (before : Exprs) (spread : Expr) (after : Exprs)
-    /-- parts の式の部分と es、converted の部分と converters がそれぞれ対応する。 -/
+    /-- parts の式の部分と es、converted・formatted の部分と converters がそれぞれ対応する。 -/
     | interpolation (parts : List InterpPart) (es converters : Exprs)
     | lam (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (body : Block)
     | ite (cond : Expr) (yes no : Block)

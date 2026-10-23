@@ -1,0 +1,19 @@
+// spec: 01-08 評価順序
+// spec: 01-12 文字列補間
+import Benitoite.Unofficial.IO.Console
+function text(label: String) -> String uses Console.Write
+  Console.writeLine(text: label)
+  return String.repeat(s: "猫", n: 2)
+end function
+function number() -> Integer uses Console.Write
+  Console.writeLine(text: "number")
+  return -42
+end function
+function flag() -> Boolean uses Console.Write
+  Console.writeLine(text: "flag")
+  return true
+end function
+function main() -> Unit uses Console.Write
+  bind result <- "[${text(label: "first"):>6s}][${number():#08x}][${flag():^7}][${text(label: "last")}]"
+  Console.writeLine(text: result)
+end function

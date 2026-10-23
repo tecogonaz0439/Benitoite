@@ -280,6 +280,7 @@ impl Solver {
         self.zonk_checked(t).unwrap_or(ITy::Error)
     }
     pub fn zonk_checked(&self, t: &ITy) -> Result<ITy, TypeLimit> {
+        let tracking = !self.provenance.diagnosed_roots.is_empty();
         let mut budget = TypeBudget::default();
         let mut pending = vec![ZonkStep::Visit(t, 1)];
         let mut result = ITy::Error;
@@ -288,8 +289,22 @@ impl Solver {
                 ZonkStep::Visit(mut t, depth) => {
                     // 共有する変数の連鎖自体はノードに数えず、展開した出現ごとに
                     // 予算を消費する。子を作る前に拒否する意味は変えない（02-03「入れ子の深さ」）。
+                    let mut links = 0usize;
                     while let ITy::Var(v) = t {
-                        match self.node(*v).and_then(|n| n.binding.as_ref()) {
+                        if tracking {
+                            links = links.saturating_add(1);
+                        }
+                        if tracking && links > self.vars.len().saturating_add(1) {
+                            return Err(TypeLimit::Depth);
+                        }
+                        if tracking && self.diagnosed_whole(*v) {
+                            t = &ITy::Error;
+                            break;
+                        }
+                        match self
+                            .provenance_shape(*v, tracking)
+                            .or_else(|| self.node(*v).and_then(|n| n.binding.as_ref()))
+                        {
                             Some(bound) => t = bound,
                             None => break,
                         }
@@ -331,8 +346,22 @@ impl Solver {
                     }
                 }
                 ZonkStep::Count(mut t, depth) => {
+                    let mut links = 0usize;
                     while let ITy::Var(v) = t {
-                        match self.node(*v).and_then(|n| n.binding.as_ref()) {
+                        if tracking {
+                            links = links.saturating_add(1);
+                        }
+                        if tracking && links > self.vars.len().saturating_add(1) {
+                            return Err(TypeLimit::Depth);
+                        }
+                        if tracking && self.diagnosed_whole(*v) {
+                            t = &ITy::Error;
+                            break;
+                        }
+                        match self
+                            .provenance_shape(*v, tracking)
+                            .or_else(|| self.node(*v).and_then(|n| n.binding.as_ref()))
+                        {
                             Some(bound) => t = bound,
                             None => break,
                         }
@@ -661,8 +690,16 @@ impl Solver {
     ) -> Result<(), DiagCode> {
         let a = self.zonk_checked(a).map_err(|_| DiagCode::E0208)?;
         let b = self.zonk_checked(b).map_err(|_| DiagCode::E0208)?;
-        if has_error(&a) || has_error(&b) {
-            self.poison(&[a, b]);
+        if matches!(a, ITy::Error) || matches!(b, ITy::Error) {
+            // 未知なのはこの部分だけであり、相手の複合型の別の部分を無効にしない。
+            self.build_values();
+            for ty in [&a, &b] {
+                if let ITy::Var(v) = ty
+                    && !self.known_value_part(v.0, &[])
+                {
+                    self.bind(*v, &ITy::Error)?;
+                }
+            }
             return Ok(());
         }
         match (&a, &b) {
@@ -774,8 +811,16 @@ impl Solver {
         self.clear_escape();
         let a = self.zonk_checked(a).map_err(|_| DiagCode::E0208)?;
         let b = self.zonk_checked(b).map_err(|_| DiagCode::E0208)?;
-        if has_error(&a) || has_error(&b) {
-            self.poison(&[a, b]);
+        if matches!(a, ITy::Error) || matches!(b, ITy::Error) {
+            // 未知なのはこの部分だけであり、相手の複合型の別の部分を無効にしない。
+            self.build_values();
+            for ty in [&a, &b] {
+                if let ITy::Var(v) = ty
+                    && !self.known_value_part(v.0, &[])
+                {
+                    self.bind(*v, &ITy::Error)?;
+                }
+            }
             return Ok(true);
         }
         match (&a, &b) {
@@ -869,7 +914,7 @@ impl Solver {
         }
         true
     }
-    fn poison(&mut self, types: &[ITy]) {
+    pub(in crate::typeck) fn poison(&mut self, types: &[ITy]) {
         let mut todo = types.to_vec();
         let mut seen = BTreeSet::new();
         while let Some(t) = todo.pop() {
@@ -974,6 +1019,20 @@ impl Solver {
         r: &Reason,
         escaped: Option<Escape>,
     ) {
+        self.render_failure(ctx, code, (expected, found), r, escaped, false);
+    }
+    #[cold]
+    #[inline(never)]
+    fn render_failure(
+        &mut self,
+        ctx: &mut Body<'_, '_>,
+        code: DiagCode,
+        types: (&ITy, &ITy),
+        r: &Reason,
+        escaped: Option<Escape>,
+        effect_mismatch: bool,
+    ) {
+        let (expected, found) = types;
         if r.kind == ReasonKind::LambdaReturn
             && ctx
                 .lambda_body_ends
@@ -994,7 +1053,11 @@ impl Solver {
             self.poison(&[expected.clone(), found.clone()]);
             return;
         }
-        if self.contains_error(expected) || self.contains_error(found) {
+        if !effect_mismatch
+            && escaped.is_none()
+            && (self.contains_error(expected) || self.contains_error(found))
+            && !self.known_mismatch(expected, found)
+        {
             return;
         }
         let mut code = code;
@@ -1122,6 +1185,7 @@ impl Solver {
                 | ReasonKind::FnUses
                 | ReasonKind::ExprStmt
                 | ReasonKind::Interp
+                | ReasonKind::InterpFormat
                 | ReasonKind::CallEffect
                 | ReasonKind::BuiltinParam { .. }
                 | ReasonKind::ParamBound { .. }
@@ -1252,9 +1316,12 @@ impl Solver {
         let mut diagnostic = d.build();
         ctx.type_declaration_notes(&mut diagnostic, &qualified);
         ctx.diagnostic(diagnostic);
-        self.poison(&[expected.clone(), found.clone()]);
+        if !self.contains_error(expected) && !self.contains_error(found) {
+            self.poison(&[expected.clone(), found.clone()]);
+        }
     }
     pub fn solve(&mut self, ctx: &mut Body<'_, '_>, constraints: Vec<Constraint>) {
+        self.refresh_diagnosed();
         let mut declared = vec![];
         let mut normal = vec![];
         let mut bounds = vec![];
@@ -1406,6 +1473,21 @@ impl Solver {
         for (code, expected, found, reason, escaped) in std::mem::take(&mut self.late) {
             self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
         }
+        let diagnosed_uses = self.diagnosed_uses();
+        if !diagnosed_uses.is_empty() {
+            let mut reported: HashSet<_> = ctx
+                .diagnostics
+                .iter()
+                .filter(|d| d.code == Some(DiagCode::E0401))
+                .filter_map(|d| d.primary.as_ref().map(|p| p.span))
+                .collect();
+            for (a, b, reason) in diagnosed_uses {
+                // 宣言へ移した失敗と、同じ要求の再確認を二重に報告しない。
+                if reported.insert(reason.span) {
+                    self.failure(ctx, DiagCode::E0401, &a, &b, &reason);
+                }
+            }
+        }
         let recovered_uses = self.recovered_uses();
         let dependent = std::mem::take(&mut self.dependent_late)
             .into_iter()
@@ -1423,10 +1505,17 @@ impl Solver {
         }
         for ((code, expected, found, reason, escaped), corrected) in dependent {
             if let Some((a, b)) = corrected {
-                if a != b && !has_error(&a) && !has_error(&b) {
+                if escaped.is_some()
+                    || (a != b && (!has_error(&a) && !has_error(&b) || self.known_mismatch(&a, &b)))
+                {
                     self.failure_with_escape(ctx, code, &a, &b, &reason, escaped);
                 }
-            } else {
+            } else if code != DiagCode::E0401
+                || escaped.is_some()
+                || (self.zonk(&expected) != self.zonk(&found)
+                    && (!(self.contains_error(&expected) || self.contains_error(&found))
+                        || self.known_mismatch(&expected, &found)))
+            {
                 self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
             }
         }
@@ -1518,6 +1607,28 @@ impl Solver {
         found: &ITy,
         reason: &Reason,
     ) {
+        if code == DiagCode::E0401
+            && (self.depends_on_pending_result(expected) || self.depends_on_pending_result(found))
+        {
+            // 束縛を定める比較は、保留する前に宣言側の要求へ位置を移す。
+            // 原因が即時か遅延かで、同じ独立した誤りの一次位置を変えない。
+            if matches!(reason.kind, ReasonKind::Pattern | ReasonKind::Try)
+                && self.escaped.is_none()
+                && self.provenance_failure(ctx, expected, found, reason)
+            {
+                return;
+            }
+            // 呼び出しを解いてから原因の有無を判定する。ここで根を無効にすると、
+            // 呼び出し自体の E0403 まで失う（設計書 02-05「誤りの報告と検査の継続」）。
+            self.dependent_late.push((
+                code,
+                expected.clone(),
+                found.clone(),
+                reason.clone(),
+                self.escaped.take(),
+            ));
+            return;
+        }
         if code == DiagCode::E0401 && self.provenance_failure(ctx, expected, found, reason) {
             return;
         }
@@ -1614,7 +1725,11 @@ impl Solver {
                 | Constraint::EffSub { .. } => continue,
             };
             let t = self.zonk(&ty);
-            if has_error(&t) {
+            // 空集合の書式は値の型に依存せず不適合なので、回復中も報告する
+            // （設計書 02-05「制約の解決」）。
+            let independent_format =
+                r.kind == ReasonKind::InterpFormat && set.is_some_and(|s| s.0.is_empty());
+            if matches!(t, ITy::Error) && !independent_format {
                 continue;
             }
             if !final_pass && !self.has_recovery(&ty) && self.provisional_dependency(&ty, &r) {
@@ -1625,7 +1740,9 @@ impl Solver {
                 && self.has_recovery(&ty)
             {
                 let actual = self.recovered_type(&ty);
-                if !has_error(&actual)
+                if (independent_format
+                    || !has_error(&actual)
+                    || r.kind == ReasonKind::InterpFormat && !matches!(&actual, ITy::Error))
                     && !matches!(&actual, ITy::Con(TyCon::Builtin(b), args) if args.is_empty() && set.contains(*b))
                 {
                     self.bound_failure(ctx, &actual, outer.as_ref(), &r, mode, Some(set));
@@ -1790,6 +1907,13 @@ impl Solver {
         mode: Bound,
         set: Option<TySet>,
     ) {
+        if r.kind == ReasonKind::InterpFormat {
+            ctx.diagnostic(self.format_diagnostic(ctx, ty, r, set));
+            if !self.contains_error(ty) {
+                self.poison(std::slice::from_ref(ty));
+            }
+            return;
+        }
         let code = if mode == Bound::Key {
             DiagCode::E0423
         } else if mode == Bound::Equality {
@@ -1837,7 +1961,41 @@ impl Solver {
             );
         }
         ctx.diagnostic(d.build());
-        self.poison(std::slice::from_ref(ty));
+        if !self.contains_error(ty) {
+            self.poison(std::slice::from_ref(ty));
+        }
+    }
+
+    /// 書式の位置を主位置、値の元位置を関連位置にする。変換を自動挿入しない。
+    pub(super) fn format_diagnostic(
+        &self,
+        ctx: &Body<'_, '_>,
+        ty: &ITy,
+        r: &Reason,
+        set: Option<TySet>,
+    ) -> crate::diag::Diagnostic {
+        let allowed = set.map_or_else(String::new, |set| {
+            if set.0.is_empty() {
+                super::text::FORMAT_EMPTY_TYPES.into()
+            } else {
+                crate::diag::code_list(set.0.iter().filter_map(|b| b.def()).map(|d| d.name))
+            }
+        });
+        let help = if set == Some(TySet::FORMAT_FIXED)
+            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _) if TySet::FORMAT_INT.contains(b))
+        {
+            "integer_fixed"
+        } else {
+            "change"
+        };
+        DiagBuilder::new(DiagCode::E0468)
+            .primary(r.related.unwrap_or(r.span))
+            .secondary(r.span, "value")
+            .arg("ty", self.show(ctx, ty))
+            .arg("allowed", allowed)
+            .note("allowed")
+            .help(help)
+            .build()
     }
 
     /// `Show` の実装とこのモジュールの import に合う、文字列への変換の案内を作る。
@@ -1906,10 +2064,9 @@ impl Solver {
                 let Some((sub, sup, r, pair)) = self.effects.get(index).cloned() else {
                     continue;
                 };
-                if pair
-                    .as_ref()
-                    .is_some_and(|(a, b)| self.contains_error(a) || self.contains_error(b))
-                {
+                if pair.as_ref().is_some_and(|(a, b)| {
+                    matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
+                }) {
                     continue;
                 }
                 let source = self.failure_types(&sub);
@@ -1992,10 +2149,9 @@ impl Solver {
                 }
             }
             for (sub, sup, r, pair) in &self.effects {
-                if pair
-                    .as_ref()
-                    .is_some_and(|(a, b)| self.contains_error(a) || self.contains_error(b))
-                {
+                if pair.as_ref().is_some_and(|(a, b)| {
+                    matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
+                }) {
                     continue;
                 }
                 let Some(v) = sup.var else {
@@ -2048,10 +2204,9 @@ impl Solver {
         self.effect_index.clear();
         let items = std::mem::take(&mut self.effects);
         for (sub, sup, r, pair) in items {
-            if pair
-                .as_ref()
-                .is_some_and(|(a, b)| self.contains_error(a) || self.contains_error(b))
-            {
+            if pair.as_ref().is_some_and(|(a, b)| {
+                matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
+            }) {
                 continue;
             }
             if sup.var.is_some() {
@@ -2063,17 +2218,17 @@ impl Solver {
                 }
                 if let Some((a, b)) = &pair {
                     if reported.insert((r.span.file.0, r.span.start.0, r.span.end.0)) {
-                        self.failure_with_escape(
+                        self.render_failure(
                             ctx,
                             if r.kind == ReasonKind::FailureType {
                                 DiagCode::E0514
                             } else {
                                 DiagCode::E0401
                             },
-                            b,
-                            a,
+                            (b, a),
                             &r,
                             None,
+                            true,
                         );
                     }
                     break;
@@ -2148,6 +2303,7 @@ fn missing_effect(ctx: &mut Body<'_, '_>, r: &Reason, name: &str, origin: Span) 
         | ReasonKind::Logic { .. }
         | ReasonKind::Operator { .. }
         | ReasonKind::Interp
+        | ReasonKind::InterpFormat
         | ReasonKind::CallEffect
         | ReasonKind::BuiltinParam { .. }
         | ReasonKind::ParamBound { .. }
@@ -2274,6 +2430,7 @@ fn op_text(r: &ReasonKind) -> String {
         | ReasonKind::FnUses
         | ReasonKind::ExprStmt
         | ReasonKind::Interp
+        | ReasonKind::InterpFormat
         | ReasonKind::CallEffect
         | ReasonKind::RecordField { .. }
         | ReasonKind::RecordBase

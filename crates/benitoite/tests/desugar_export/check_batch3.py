@@ -94,7 +94,7 @@ def check(directory, report_path):
     data, expected = BATCH3["rust_inputs"](directory)
     check_builder_sources(data)
     for name, doc in data.items():
-        require(doc["version"] == (13 if name == "corpus" else 5), f"{name}: exchange version")
+        require(doc["version"] == (14 if name == "corpus" else 6), f"{name}: exchange version")
     inputs = data["corpus"]["inputs"]
     require(inputs, "empty Rust corpus")
     names = [item["name"] for item in inputs]

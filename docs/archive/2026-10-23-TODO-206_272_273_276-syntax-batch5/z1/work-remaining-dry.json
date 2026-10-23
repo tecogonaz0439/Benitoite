@@ -1,0 +1,32 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+    "--only",
+    "tests_related,source_rules,skill_generated,spec_tally,licenses",
+    "--test",
+    "golden",
+    "--test",
+    "package_command",
+    "--test",
+    "reference_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "skill_examples",
+    "--test",
+    "spec_examples",
+    "--test",
+    "stdlib_doc_examples",
+    "--test",
+    "test_command",
+    "--dry-run"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.01,
+  "log": "target/z1-work/work-remaining-dry.log",
+  "logSha256": "779925e524aaaf4ba445f5f62861c9a7125fa16f93fa624e2e0e90622301be69"
+}

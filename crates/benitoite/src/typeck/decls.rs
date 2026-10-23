@@ -265,6 +265,16 @@ impl Decls<'_> {
         }
     }
     pub fn uses(&mut self, uses: Option<&UsesList>, scope: &Scope) -> (EffectSet, bool) {
+        let declared = self.declared_uses(uses, scope, false);
+        (declared.effects, declared.wrote_io_all)
+    }
+    fn declared_uses(
+        &mut self,
+        uses: Option<&UsesList>,
+        scope: &Scope,
+        file: bool,
+    ) -> EffectiveEffects {
+        let mut declared = EffectiveEffects::default();
         let mut result = EffectSet::empty();
         let mut all = false;
         let mut variables = 0_u32;
@@ -293,17 +303,18 @@ impl Decls<'_> {
                     );
                     continue;
                 }
+                let mut atom = EffectSet::empty();
                 if failure {
                     if let Some(ty) = e.args.as_ref().and_then(|a| a.first()) {
                         let ty = self.ty(ty, scope);
                         if result.failures.contains(&ty) {
                             super::effects::duplicate_use(self, uses, i);
                         }
-                        result.insert_failure(ty);
+                        atom.insert_failure(ty);
                     }
                 } else if let Some(index) = scope.effects.get(id) {
                     variables = variables.saturating_add(1);
-                    result.insert_var(EffVar(*index));
+                    atom.insert_var(EffVar(*index));
                 } else if let Some(name) = self.effect_name(id) {
                     if name == EffectName::Builtin(BuiltinEffectId::IO_ALL) {
                         all = true;
@@ -311,21 +322,45 @@ impl Decls<'_> {
                             if e.in_io_all
                                 && let Ok(i) = u16::try_from(i)
                             {
-                                result.insert_name(EffectName::Builtin(BuiltinEffectId(i)));
+                                atom.insert_name(EffectName::Builtin(BuiltinEffectId(i)));
                             }
                         }
                     } else {
-                        result.insert_name(name);
+                        atom.insert_name(name);
                     }
                 }
+                result = result.union(&atom);
+                declared.origins.push(EffectOrigin {
+                    effects: atom,
+                    name: e
+                        .path
+                        .iter()
+                        .map(|n| n.text.as_str())
+                        .collect::<Vec<_>>()
+                        .join("."),
+                    span: e.span,
+                    file,
+                });
             }
             if variables > 1 {
                 self.diagnostic(DiagCode::E0417, uses.span);
             }
         }
-        if result.failures.len() > 1
-            && let Some(uses) = uses
-        {
+        if let Some(uses) = uses {
+            self.check_failure_types(&result, scope, uses.span, None);
+        }
+        declared.effects = result;
+        declared.wrote_io_all = all;
+        declared
+    }
+    fn check_failure_types(
+        &mut self,
+        result: &EffectSet,
+        scope: &Scope,
+        span: Span,
+        individual: Option<Span>,
+    ) {
+        if result.failures.len() > 1 {
             let mut type_names = vec![String::new(); scope.params.iter().count()];
             for (id, (index, _)) in scope.params.iter() {
                 if let Some(name) = self.resolved.bindings.get(id)
@@ -353,16 +388,16 @@ impl Decls<'_> {
                 .get(1)
                 .map(|t| t.show(&names))
                 .unwrap_or_default();
-            self.diagnostics.push(
-                DiagBuilder::new(DiagCode::E0514)
-                    .primary(uses.span)
-                    .arg("expected", expected)
-                    .arg("found", found)
-                    .help("convert")
-                    .build(),
-            );
+            let mut diagnostic = DiagBuilder::new(DiagCode::E0514)
+                .primary(span)
+                .arg("expected", expected)
+                .arg("found", found)
+                .help("convert");
+            if let Some(span) = individual {
+                diagnostic = diagnostic.secondary(span, "individual");
+            }
+            self.diagnostics.push(diagnostic.build());
         }
-        (result, all)
     }
     pub fn ty(&mut self, expr: &TypeExpr, scope: &Scope) -> Ty {
         if self.type_limit {
@@ -586,6 +621,15 @@ impl Decls<'_> {
         false
     }
     pub fn signature(&mut self, f: &FnDecl, scope: Scope, s: Scheme) -> Scheme {
+        self.signature_with_file(f, scope, s, None)
+    }
+    fn signature_with_file(
+        &mut self,
+        f: &FnDecl,
+        scope: Scope,
+        s: Scheme,
+        file: Option<&EffectiveEffects>,
+    ) -> Scheme {
         let before_aliases = self.invalid_alias_uses;
         let (scope, mut s) = self.parameters(&f.type_params, scope, s, true);
         let mut budget = TypeBudget::default();
@@ -609,15 +653,38 @@ impl Decls<'_> {
         if !self.type_child(&mut budget, &s.ret, f.ret.span()) {
             return s;
         }
-        let (effects, all) = self.uses(f.uses.as_ref(), &scope);
-        for error in &effects.failures {
+        let mut effective = self.declared_uses(f.uses.as_ref(), &scope, false);
+        if let Some(file) = file {
+            let individual_valid = effective.effects.failures.len() <= 1;
+            effective.effects = effective.effects.union(&file.effects);
+            effective.wrote_io_all |= file.wrote_io_all;
+            effective.origins.extend(file.origins.iter().cloned());
+            if individual_valid
+                && file.effects.failures.len() <= 1
+                && let Some(origin) = file.origins.iter().find(|o| !o.effects.failures.is_empty())
+            {
+                self.check_failure_types(
+                    &effective.effects,
+                    &scope,
+                    origin.span,
+                    f.uses.as_ref().map(|u| u.span),
+                );
+            }
+        }
+        for error in &effective.effects.failures {
             if !self.type_child(&mut budget, error, f.name.span) {
                 return s;
             }
         }
-        s.effects = effects;
-        s.wrote_io_all = all;
+        s.effects = effective.effects.clone();
+        s.wrote_io_all = effective.wrote_io_all;
+        // NoFail と本体の行は、ファイル追加後の契約から作る（設計書 02-05「宣言の検査」）。
         s.no_fail = s.signature_no_fail();
+        if file.is_some()
+            && let Some(id) = self.binding(f.id)
+        {
+            self.out.effective_effects.insert(id, effective);
+        }
         for (i, name) in s.effect_params.iter().enumerate() {
             if !s
                 .params
@@ -899,6 +966,13 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
         return;
     }
     for ast in d.asts {
+        // 具体型もファイルの空の型パラメータ環境で一度だけ検査する。
+        // 各リストの重複はここで検査し、リスト間では集合として合併する（設計書 02-05「宣言の検査」）。
+        let before_file = d.diagnostics.len();
+        let before_file_aliases = d.invalid_alias_uses;
+        let file = d.declared_uses(ast.file_uses.as_ref(), &Scope::default(), true);
+        let invalid_file =
+            d.diagnostics.len() != before_file || d.invalid_alias_uses != before_file_aliases;
         for top in &ast.decls {
             let Some(binding) = d.binding(top.item.id()) else {
                 continue;
@@ -907,8 +981,16 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
             let before_aliases = d.invalid_alias_uses;
             match &top.item {
                 Item::Fn(f) => {
-                    let s = d.signature(f, Scope::default(), scheme(vec![], unit()));
+                    let s = d.signature_with_file(
+                        f,
+                        Scope::default(),
+                        scheme(vec![], unit()),
+                        Some(&file),
+                    );
                     d.out.decl_types.insert(binding, s);
+                    if invalid_file {
+                        d.invalid.insert(binding);
+                    }
                 }
                 Item::Const(c) => {
                     let ty = d.ty(&c.ty, &Scope::default());

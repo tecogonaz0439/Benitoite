@@ -131,6 +131,8 @@ pub enum ReasonKind {
     },
     /// 文字列補間の集まりの制約
     Interp,
+    /// 書式付き補間。span は値、related は書式の元位置。
+    InterpFormat,
     /// 呼び出しのエフェクトが本体のエフェクトに含まれること
     CallEffect,
     /// 標準ライブラリの関数の型パラメータの組み込みの制約（`equality`・`key`・`ordered`）。

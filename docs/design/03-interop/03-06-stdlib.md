@@ -288,6 +288,18 @@ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のSho
 
 丸め・平方根は binary32 の値に対して行い、倍精度の計算結果の縮小で代用しない。
 
+### 書式付き補間の内部書式化
+
+【決定】値の書式化（formatting）を行う内部の `%Format.<基本型名>` は14基本型の値と検査済みの七定数を受け、String を返す。シグネチャと符号化は [書式化の内部頭](../02-impl/02-06-ir-and-lowering.md#書式化の内部頭) に定める。標準ソースから呼ぶ公開関数ではない。型検査で適合した書式付き補間から型別の頭を呼び、定数評価も同じ書式化本体を使う。
+
+【決定】整数は符号なしの大きさから各基数の数字列を作り、負号はその前に置く。最小値を符号付きのまま反転しない。基数接頭辞は零にも付け、X の接頭辞は `0X` とする。符号・接頭辞の後へ零を補い、その後に共通の表示の幅と寄せを適用する。幅は最小値であり、内容を切らない。
+
+【決定】Float・Float32 の f は、各 binary64・binary32 の値を直接固定小数に書式化し、最近接偶数丸めを使う。最短表記を十進数として再解釈してから丸めない。精度省略時は6桁とする。実装は Rust の固定小数の書式化を上限付きの領域へ書く（出典: [std::fmt の精度と丸めの規則](https://doc.rust-lang.org/std/fmt/index.html#precision)、2026-10-23確認）。これは中間を零から遠い側へ丸める `Float.round`・`Float32.round` と異なる。例えば2.5の精度0は `2`、3.5は `4`、負値はそれぞれ `-2`・`-4` になる。
+
+【決定】Decimal の f は係数と scale から数字列を作り、減らす桁を最近接偶数丸めし、増やす桁は表示用の零として補う。精度省略時は元の scale を保つ。書式化のために有界な Decimal を作り直さないので、最大値にも `.00` を補える。丸めて零になった Decimal の負号は消し、Float系の負の零と負値から丸めた零の負号は保つ。NaN に符号は付けず、+ は正の Infinity にも適用する。非有限値のゼロ埋めは空白の右寄せにする。
+
+【決定】種類の省略は既存の型別の表記を保つ。寄せの省略は数が右、それ以外が左であり、中央の余りが奇数なら右へ一つ多く空白を置く。幅は String の既定の表示の幅と同じ算法で、一つの書式化した値について数える。ASCII の数字・小数点 `.`・固定の符号と接頭辞を使い、地域設定を参照しない。理由: 型別の数の意味と表示を保ち、端末や地域によって結果を変えないためである。
+
 ### Character
 
 | 関数 | 型 | 値 | 実行時エラー | 実装 |
@@ -314,8 +326,16 @@ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のSho
 
 位置と長さを扱う関数（`byteLength`・`byteSlice`・`characterCount`・`characterAt`・`characterSlice`）は[基本型の意味論](../01-spec/01-04-types-basic.md)で定め、すべて組み込みで実装する。
 
+【決定】`String.displayWidth`・`String.displayWidthCJK` は表示の幅を返す純粋な関数である。共通の本体 `base::display_width` は、表示の幅と、目標の幅に不足する U+0020 の個数を計算する。U+0000〜001F、U+007F〜009F、U+2028、U+2029 を幅 0 の境界とし、境界を除いた最大の連続部分ごとに `unicode-width` 0.2.2 の文字列の算法を適用して合計する。既定のモードと CJK のモードは、それぞれ同クレートの `width` と `width_cjk` に従い、文字列全体の例外を含む（出典: [0.2.2 の幅の規則](https://docs.rs/unicode-width/0.2.2/unicode_width/#rules-for-determining-width)）。ANSI 列の解釈や除去は行わず、幅はカーソルの移動量や行の最大幅を表さない。列を揃える用途は、制御文字のない一行を前提とする。理由: 任意の String に幅を定義し、値に依存する失敗や端末の状態への依存を加えないためである。
+
+【決定】U+0020 を前に n 個、後ろに m 個加えた幅は、両モードとも `n + 元の幅 + m` とする。一般の文字列の連結にはこの加法性を要求しない。理由: 固定版の `width_in_str`・`width_in_str_cjk` は U+0020 で幅 1 を加え、状態を `DEFAULT` に戻す。両集計関数は右から文字を走査し、U+0020 は絵文字の表示列を始めないためである（出典: [0.2.2 の生成済みソース](https://github.com/unicode-rs/unicode-width/blob/v0.2.2/src/tables.rs)）。空白の個数は目標が 0 以下、または元の幅以下なら 0 とし、それ以外は目標から元の幅を引く。幅の合計、空白の個数、元の UTF-8 バイト数に空白を加えた必要サイズは、検査付きの整数演算で求める。本体は確保を行わず、必要サイズを `u64` で返す。
+
 | 関数 | 型 | 値 | 実装 |
 |---|---|---|---|
+| `String.displayWidth(s)` | `function(s: String) -> Integer` | 上述の既定の表示の幅 | 組み込み |
+| `String.displayWidthCJK(s)` | `function(s: String) -> Integer` | 上述の CJK の表示の幅 | 組み込み |
+| `String.displayWidthPadStart(s, width)`・`String.displayWidthPadEnd(s, width)` | `function(s: String, width: Integer) -> String` | 既定の表示の幅が `width` に足りない個数の U+0020 を、それぞれ先頭・末尾へ補う | 組み込み |
+| `String.displayWidthPadStartCJK(s, width)`・`String.displayWidthPadEndCJK(s, width)` | `function(s: String, width: Integer) -> String` | CJK の表示の幅で同じ処理を行う | 組み込み |
 | `String.isEmpty(s)` | `function(s: String) -> Boolean` | `s` が空文字列か | 組み込み |
 | `String.contains(s, part)` | `function(s: String, part: String) -> Boolean` | `s` が `part` を部分文字列として含むか。`part` が空なら `true` | 組み込み |
 | `String.startsWith(s, prefix)` | `function(s: String, prefix: String) -> Boolean` | `s` が `prefix` で始まるか | 組み込み |
@@ -331,6 +351,8 @@ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のSho
 | `String.fromCharacters(cs)` | `function(cs: List[Character]) -> String` | `cs` の文字を順に連結した文字列 | 組み込み |
 | `String.toUppercase(s)` | `function(s: String) -> String` | `s` の各文字を `Character.toUppercase` で変換して連結した文字列 | 組み込み |
 | `String.toLowercase(s)` | `function(s: String) -> String` | `s` を小文字にした文字列。ギリシャ文字のシグマは、語の終わりでは `ς` にする | 組み込み |
+
+【決定】表示の幅で埋める四関数は純粋であり、`width` が 0 以下、または元の幅以下なら元の値を返す。それ以外は U+0020 だけを補い、内容を切らない。確保に成功した結果の幅は、対応するモードで `max(元の幅, width)` となる。表示の幅は Unicode 17.0.0 に固定し、Character の分類・変換の Unicode の版とは区別する。端末や地域からモードを自動選択しない。必要な UTF-8 バイト数を論理上限で検査してから、`usize` への検査付きの変換と共通のヒープの計上・確保を行う。空白を一時文字列として確保しない。動的な `width` が巨大な場合まで成功する保証はない。理由: 元の内容の切断と、幅 0 の埋め文字の繰り返しを避けるためである。
 
 【方針】`String.split(s: s, separator: sep)` は次の値を返す。
 
@@ -703,11 +725,11 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 
 ### 外部生成の宣言情報
 
-【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 2 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。対象レコードの型パラメータを一律には拒否せず、再帰・型引数の対応範囲は機能ごとに生成道具が判定する。
+【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 3 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。対象レコードの型パラメータを一律には拒否せず、再帰・型引数の対応範囲は機能ごとに生成道具が判定する。
 
 【決定】可視性はprivate・package・publicへ正規化し、互換のpublic/package欄との不一致を拒否する。opaqueと生成先からのcanConstruct/canInspectを明示する。生成先は型の宣言元のモジュールであり、宣言情報に表現を保持していても、不透明型自身のJSON復号・Property生成器・縮小器の自動生成を認めない。通常のレコードの不透明型の欄には、欄全体を扱う手書きのカスタム関数を要求する。理由: 宣言元での構築可否だけでは、検査を伴う作成経路の不変条件を守れないためである。
 
-JSON 変換を要求する target では Json.Codec、Property を要求する target では Test.Property を仮想の入口に加え、依存先も含めて生成後に必要となる標準ソースを全入力へ含める。JSON にはモジュールの説明と先頭の宣言の終了バイト位置、既存の import の別名と解決先、生成名の衝突を調べるための宣言一覧も含める。詳しい欄と設定は [example の契約](../../../crates/benitoite/examples/derive_inventory/README.md)で定める。正常時は終了0、宣言・入力・対象の誤りは1、引数と設定の書式の誤りは2とし、失敗時には JSON を出さず標準エラー出力に説明を書く。この入口は宣言の情報を読むものであり、ソースの生成・編集は行わない。
+JSON 変換を要求する target では Json.Codec、Property を要求する target では Test.Property を仮想の入口に加え、依存先も含めて生成後に必要となる標準ソースを全入力へ含める。JSON にはモジュールの説明と先頭の宣言の終了バイト位置、既存の import の別名と解決先、生成名の衝突を調べるための宣言一覧も含める。ファイル単位の宣言の元の文字列とspanを`fileUses`、その開始バイト位置を`importInsertLimit`として必須で渡し、宣言がない場合は両方をnullにする。`preambleEnd`は説明とメタデータの末尾という意味を保つ。関数の署名は宣言収集で合併済みの最外側の効果行を使い、実装メソッドと入れ子の関数型には追加しない。詳しい欄と設定は [example の契約](../../../crates/benitoite/examples/derive_inventory/README.md)で定める。正常時は終了0、宣言・入力・対象の誤りは1、引数と設定の書式の誤りは2とし、失敗時には JSON を出さず標準エラー出力に説明を書く。この入口は宣言の情報を読むものであり、ソースの生成・編集は行わない。
 
 【決定】targetの`show`・`order`は独立した真偽値とし、trueの場合だけTraitを仮想の入口へ加える。省略とfalseは生成を要求しない。JSON・Propertyを指定せず、Show・Orderだけを要求してもよい。未知・重複のキーと真偽値以外は設定の誤りとして終了2にする。
 
@@ -725,11 +747,15 @@ JSON 変換を要求する target では Json.Codec、Property を要求する t
 
 【決定】新たな import が必要な初回の領域は、モジュールの説明と先頭の宣言・既存の import の後、最初の通常の宣言の前へ置く。同じソースの新たな import は、この領域へ集める。既存領域がすべて宣言の後にあり、新規領域もない場合は import の追加を拒否し、利用者が宣言の前へ import を書いて再度 preview する。理由: 本番の parser は宣言の後の import を拒否するため、末尾への生成だけでは通常の検査を通らないからである。
 
-【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版3・inventoryVersion 2・hashVersion 3・道具の版3.0.0-syntax-batch4、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。宣言名順のグラフ・型引数付きの辺・強連結成分・有限基底の最小量・予算規則・生成する署名と制約・依存先の設定と指定関数・選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
+【決定】ファイル単位のエフェクトの宣言がある場合、新しいimportは既存のimportの後、その宣言の前に限る。領域はimportと通常宣言を一緒に持つため、必要なimportを含む新領域をファイルの宣言の前へ置けない場合は、必要なimportを示してpreviewを拒否する。利用者はそのimportをファイルの宣言の前へ書き、再度previewする。ファイルの宣言の後の既存領域へimportを足さず、前の既存領域へ通常宣言を生成することも拒否する。理由: ファイルの宣言の後にimportを置くことも、その前に通常宣言を置くことも、宣言順の規則に反するためである。
+
+【決定】カスタムのJSON変換・Property関数の純粋さは、合併済みの有効な署名で照合する。生成した直下の通常関数もファイルの追加を受けるため、純粋な関数を要求する箇所で拒否され得る。deriveのcheckとは別に、ハーネスから通常のcheck/testで生成後の本体も検査する。
+
+【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版3・inventoryVersion 3・hashVersion 3・道具の版3.1.0-syntax-batch5、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。宣言名順のグラフ・型引数付きの辺・強連結成分・有限基底の最小量・予算規則・生成する署名と制約・依存先の設定と指定関数・選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
 
 【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用後にreceiptへ版3・生成規則の版・新記録のSHA-256を保存してから生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
 
-【決定】旧記録のcheckは変更せずderive.migration_requiredを返し、旧manifestの新版applyはderive.incompatible_manifestで拒否する。未完の旧applyは旧道具で復旧してから、新previewで旧記録の出力ハッシュと現在の本文を照合する。不一致はderive.modified_regionで拒否する。一致した本文から新記録と差分を提案し、確認済みの新manifestを適用する。旧意味ハッシュを新版の承認として読み替えない。理由: 手書きの差分と確認した生成規則の対応を保つためである。
+【決定】旧inventoryは拒否する。生成器版3.0.0-syntax-batch4を含む旧記録のcheckは変更せずderive.migration_requiredを返し、旧manifestの新版applyはderive.incompatible_manifestで拒否する。未完の旧applyは旧道具で復旧してから、新previewで旧記録の出力ハッシュと現在の本文を照合する。不一致はderive.modified_regionで拒否する。一致した本文から新記録と差分を提案し、確認済みの新manifestを適用する。旧意味ハッシュを新版の承認として読み替えない。理由: 手書きの差分と確認した生成規則の対応を保つためである。
 
 管理の解除は本文を残し、印・設定の当該 target・記録の当該 target を手で除く。残る target の生成の `check` と通常の `check`・`test` を行う。上書きを強制する入口と専用の管理解除コマンドは設けない。
 

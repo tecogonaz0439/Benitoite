@@ -86,6 +86,17 @@ def uniqueKeys (xs : List (String × α)) : Bool :=
   let names := xs.map Prod.fst
   names.eraseDups.length == names.length
 
+/-- 書式化の頭は入力と同じ組み込み宣言表に存在しなければならない。 -/
+partial def validateFormatHeads (b : BuiltinInput) : Json → Except String Unit
+  | .arr xs => xs.toList.forM (validateFormatHeads b)
+  | j@(.obj xs) => do
+      if let .ok head := j.getObjVal? "primName" then
+        let name ← head.getObjValAs? String "name"
+        if name.startsWith "%Format." && !b.prims.any (·.name == name) then
+          throw s!"missing format builtin: {name}"
+      xs.toArray.toList.forM (fun (_, v) => validateFormatHeads b v)
+  | _ => pure ()
+
 /-- 変換は入口で一度だけ行う。証明が使う Materials の構築は全域である。 -/
 def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
     (operators : List OperatorEntry) : Except String Prepared := do
@@ -97,6 +108,7 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
   let operations ← input.operationProgram
   -- 型付けへ変換すると使わなくなる交換専用の注釈も、境界で検査する。
   validateClauses operations input.primOps (toJson input)
+  validateFormatHeads b (toJson input)
   let atoms := atomsFor input b s operators
   let cache ← input.constantCache
   let ordinary := input.definitions.filterMap fun d => match d.scope with

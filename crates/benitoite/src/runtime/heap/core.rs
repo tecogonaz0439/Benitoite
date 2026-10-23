@@ -405,11 +405,43 @@ impl HeapCore {
         self.allocate(epoch, layout, 0, |payload| {
             let mut dst = payload.as_ptr();
             for part in parts {
-                // SAFETY: O2・O3。合計は size と等しく、各部分は確保済みの未公開領域に収まる。入力と重ならない。
+                // SAFETY: O2・O3。検査と書き込みは同じ不変スライスを辿るため合計は size と等しい。
+                // 各部分は確保済みの未公開領域に収まり、入力と重ならない。
                 unsafe { std::ptr::copy_nonoverlapping(part.as_ptr(), dst, part.len()) };
                 // SAFETY: O2。写した部分の直後は確保した領域の中か終端であり、次の部分も合計長の中に収まる。
                 dst = unsafe { dst.add(part.len()) };
             }
+        })
+    }
+    pub(super) fn alloc_str_space_padded<'e>(
+        &'e self,
+        epoch: Epoch<'e>,
+        len: u32,
+        before: usize,
+        s: &str,
+        after: usize,
+    ) -> Result<Value<'e>, Stop> {
+        let layout = ObjectLayout::new(ObjKind::Str, len, 0)?;
+        let size = usize::try_from(len).map_err(|_| size_overflow())?;
+        let text_end = before.checked_add(s.len()).ok_or_else(size_overflow)?;
+        if text_end.checked_add(after) != Some(size) {
+            return Err(Stop::Internal("padded string length mismatch".into()));
+        }
+        // &str と前後の個数は不変であり、検査した長さどおりに全体を初期化する。
+        // U+0020 と正しい UTF-8 の連結なので H12 も保つ（設計書 02-09「メモリの管理」）。
+        self.allocate(epoch, layout, 0, |payload| {
+            let dst = payload.as_ptr();
+            // SAFETY: O2・O3。before は size 以下であり、確保済みの未公開領域の先頭に収まる。
+            unsafe { std::ptr::write_bytes(dst, b' ', before) };
+            // SAFETY: O2。before は size 以下なので、文字列の開始は領域の中か終端である。
+            let text_dst = unsafe { dst.add(before) };
+            // SAFETY: O2・O3。before + s.len() == text_end は size 以下であり、写す範囲は
+            // 確保済みの未公開領域に収まる。既存の入力の領域には書かず、入力と重ならない。
+            unsafe { std::ptr::copy_nonoverlapping(s.as_ptr(), text_dst, s.len()) };
+            // SAFETY: O2。text_end は size 以下なので、後ろの空白の開始は領域の中か終端である。
+            let after_dst = unsafe { dst.add(text_end) };
+            // SAFETY: O2・O3。text_end + after == size を検査済みであり、残りの未公開領域を埋める。
+            unsafe { std::ptr::write_bytes(after_dst, b' ', after) };
         })
     }
     pub(super) fn alloc_bytes_with<'e>(

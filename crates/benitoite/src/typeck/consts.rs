@@ -9,6 +9,7 @@ use super::{
     infer::{Constraint, ReasonKind},
 };
 use crate::base::decimal::DecimalError;
+use crate::base::format::{FormatSpec as RuntimeFormatSpec, FormatValue};
 use crate::base::prim::numeric::{self, ArithmeticError, ArithmeticOp};
 use crate::base::prim::{KeyAtom, cmp_key_atom, float_to_text};
 use crate::base::{BindingId, Span};
@@ -1411,12 +1412,18 @@ fn eval_name(d: &Decls<'_>, n: &NameExpr, budget: &mut EvalBudget) -> EvalResult
 #[inline(never)]
 fn eval_interp(d: &Decls<'_>, i: &InterpExpr, budget: &mut EvalBudget) -> EvalResult {
     // 各段の値は通常どおり予算に数え、出力の全長を求めてから一度だけ確保する。
+    budget.slots(i.segments.len(), i.span)?;
+    let mut evaluated = Vec::with_capacity(i.segments.len());
+    for s in &i.segments {
+        evaluated.push(eval(d, &s.expr, budget)?);
+    }
     budget.charge(i.segments.len().saturating_mul(size_of::<String>()), i.span)?;
     let mut fragments = Vec::with_capacity(i.segments.len());
     let mut len = i.head.len();
-    for s in &i.segments {
-        let value = eval(d, &s.expr, budget)?;
-        let fragment = if let V::String(text) = value {
+    for (s, value) in i.segments.iter().zip(evaluated) {
+        let fragment = if let Some(format) = &s.format {
+            format_value(&value, format, budget)?
+        } else if let V::String(text) = value {
             text
         } else {
             // 基本型の書式化は最大でも 128 バイト未満。文字列の値は移動し、複製しない。
@@ -1436,6 +1443,51 @@ fn eval_interp(d: &Decls<'_>, i: &InterpExpr, budget: &mut EvalBudget) -> EvalRe
         text.push_str(&segment.tail);
     }
     Ok(V::String(text))
+}
+
+// 実行時と同じ本体で全長を算定し、予算を検査してから確保する
+// （設計書 02-05「定数の検査と評価」）。
+// 型検査を通った書式では、decode・prepare・parts の失敗と未対応の値の分岐には
+// 到達しない。EvalError に内部の誤りを表す手段がないため、Unavailable へまとめる。
+fn format_value(
+    value: &V,
+    format: &FormatSpec,
+    budget: &mut EvalBudget,
+) -> Result<String, EvalError> {
+    let (kind, align, sign, alternate, zero, width, precision) = format.constants();
+    let spec = RuntimeFormatSpec::decode(kind, align, sign, alternate, zero, width, precision)
+        .map_err(|_| EvalError::Unavailable)?;
+    let value = match value {
+        V::Integer(n) => FormatValue::Signed(*n),
+        V::Integer8(n) => FormatValue::Signed(i64::from(*n)),
+        V::Integer16(n) => FormatValue::Signed(i64::from(*n)),
+        V::Integer32(n) => FormatValue::Signed(i64::from(*n)),
+        V::Byte(n) => FormatValue::Unsigned(u64::from(*n)),
+        V::UnsignedInteger16(n) => FormatValue::Unsigned(u64::from(*n)),
+        V::UnsignedInteger32(n) => FormatValue::Unsigned(u64::from(*n)),
+        V::UnsignedInteger64(n) => FormatValue::Unsigned(*n),
+        V::Float(n) => FormatValue::Float(*n),
+        V::Float32(n) => FormatValue::Float32(*n),
+        V::Decimal(n) => FormatValue::Decimal(*n),
+        V::String(s) => FormatValue::String(s),
+        V::Character(c) => FormatValue::Character(*c),
+        V::Boolean(b) => FormatValue::Boolean(*b),
+        V::Unit | V::Ctor { .. } | V::List(_) | V::Map(_) | V::Set(_) => {
+            return Err(EvalError::Unavailable);
+        }
+    };
+    let result = spec.prepare(value).map_err(|_| EvalError::Unavailable)?;
+    if result.byte_len() > budget.limits.string_bytes {
+        return Err(EvalError::Limit(format.span, EvalLimit::String));
+    }
+    let len = usize::try_from(result.byte_len())
+        .map_err(|_| EvalError::Limit(format.span, EvalLimit::String))?;
+    budget.string(len, format.span)?;
+    let mut text = String::with_capacity(len);
+    for part in result.parts().map_err(|_| EvalError::Unavailable)? {
+        text.push_str(part);
+    }
+    Ok(text)
 }
 
 #[inline(never)]
@@ -1794,6 +1846,38 @@ mod tests {
                     assert!(
                         matches!(result, Err(EvalError::Limit(span, EvalLimit::List)) if span == e.span())
                     );
+                }
+            }
+        });
+    }
+
+    #[test]
+    fn formatted_interpolation_uses_display_width_and_checks_limits() {
+        // 関門: 書式化した全バイト数で上限と共有予算を検査する。
+        // 128バイトの見込みの流用と表示幅をバイト数にする退行を捕まえる。
+        // 既存の上限テストは書式付き補間を通らない。既存の局所予算を使う。
+        // 確保前の検査順序は、この結果では区別できないため読解で確認する。
+        with_const_expr("const text: String = \"${\"猫\":>1024s}\"\n", |d, e| {
+            for (string_bytes, available, limit) in [
+                (1025, 4096, None),
+                (1024, 4096, Some(EvalLimit::String)),
+                (1025, 1024, Some(EvalLimit::Budget)),
+            ] {
+                let mut budget = EvalBudget {
+                    limits: EvalLimits {
+                        string_bytes,
+                        budget: available,
+                        ..EvalLimits::default()
+                    },
+                    ..EvalBudget::default()
+                };
+                let result = eval(d, e, &mut budget);
+                if let Some(expected) = limit {
+                    assert!(
+                        matches!(result, Err(EvalError::Limit(_, actual)) if actual == expected)
+                    );
+                } else {
+                    assert!(matches!(result, Ok(V::String(s)) if s == " ".repeat(1022) + "猫"));
                 }
             }
         });

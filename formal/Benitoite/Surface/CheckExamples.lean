@@ -623,6 +623,181 @@ example : got (checkExpr collectionInput .strict [] [] none .other []
     (.interpolation [.text "n=", .converted intTy] (.cons (eInt ⟨7, by decide⟩) .nil)
       (.cons (.primName "toString" [] []) .nil))) (.base .string) = true := by decide
 
+namespace FormattedInterpolation
+
+private def spec : FormatSpec := { kind := .s, align := .right, width := some 8 }
+private def formatSig : PrimSig :=
+  Release.Examples.sig [] ["value", "kind", "align", "sign", "alternate", "zero", "width", "precision"]
+    [.base .string, intTy, intTy, intTy, .base .boolean, .base .boolean, intTy, intTy]
+    (.base .string) Eff.empty .pure
+private def formatInput : Input :=
+  { collectionInput with B := { collectionBuiltins with
+      sig := fun b => if b == "%Format.String" then some formatSig else collectionBuiltins.sig b } }
+private def value : Expr := .literal (.string "x")
+private def formatted : Expr := .interpolation [.formatted (.base .string) spec]
+  (.cons value .nil) (.cons (.primName "%Format.String" [] []) .nil)
+
+-- Stringも固定シグネチャの整形を通り、型判断と検査器がともに受理する。
+example : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
+    formatted (.base .string) Eff.empty := by
+  have hempty : Eff.substAt 0 [] [] Eff.empty = Eff.empty := Eff.substAt_ofAtoms 0 [] _
+  apply HasType.E_Interpolation
+  · exact ⟨⟨by decide, by decide⟩, trivial⟩
+  · exact .cons .E_Literal .nil
+  · apply HasTypes.cons (ε := Eff.empty) (εs := Eff.empty) ?_ .nil
+    have hhead : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
+        (.primName "%Format.String" [] [])
+        (fnTy formatSig.names formatSig.params formatSig.ret formatSig.eff [] []) Eff.empty := by
+      apply HasType.E_Prim (s := formatSig) rfl
+      · simp [NamesWF, formatSig, Release.Examples.sig]
+      · rfl
+      · rfl
+      · rfl
+      · apply PrimitiveAdmissible.of_noRows (by
+          simp [PrimSig.Scoped, NamesWF, formatSig, Release.Examples.sig, Ty.VarsInList,
+            Ty.VarsIn, Eff.VarsIn, Eff.empty, PrimSig.ntys, intTy]) rfl rfl rfl
+        simp
+      · rw [fnTy_eq, show formatSig.eff = Eff.empty from rfl, hempty]
+        simp [formatSig, Release.Examples.sig, Ty.subst, Ty.substAt,
+          Eff.empty, Eff.fails, SingleTy, SingleTys, SingleEff, SingleFail, intTy]
+    rw [fnTy_eq, show formatSig.eff = Eff.empty from rfl, hempty] at hhead
+    simpa [formatSig, Release.Examples.sig, Ty.subst, Ty.substAt,
+      Eff.empty, FormatSpec.converterType, FormatSpec.parameterNames, FormatSpec.constantTypes, intTy]
+      using hhead
+  · exact ⟨⟨_, rfl⟩, trivial⟩
+  · intro h; simp [InterpPart.count] at h
+
+example : checkExpr formatInput .strict [] [] none .other [] formatted =
+    .ok (.base .string, emptyEff) := by rfl
+
+-- 脱糖の期待値は符号化の関数を使わずに記す。省略精度は-1のままである。
+example : desugarExpr formatInput.opPrim .other formatted =
+    .letIn (.ret (.const (.string "x")))
+      (.letIn (.app (.prim "%Format.String" [] [])
+        [.var 0, .const (.integer ⟨7, by decide⟩), .const (.integer ⟨2, by decide⟩),
+         .const (.integer ⟨0, by decide⟩), .const (.boolean false), .const (.boolean false),
+         .const (.integer ⟨8, by decide⟩), .const (.integer ⟨-1, by decide⟩)])
+        (.ret (.var 0))) := by rfl
+
+-- 全式の評価、書式付きと書式なしの変換、連結の順序と、各束縛下の番号を確認する。
+example : desugarExpr formatInput.opPrim .other
+    (.interpolation [.formatted (.base .string) spec, .converted intTy, .stringExpr]
+      (.cons (.local 0) (.cons (.local 1) (.cons (.local 2) .nil)))
+      (.cons (.primName "%Format.String" [] []) (.cons (.primName "toString" [] []) .nil))) =
+    .letIn (.ret (.var 0))
+      (.letIn (.ret (.var 2))
+        (.letIn (.ret (.var 4))
+          (.letIn (.app (.prim "%Format.String" [] [])
+            [.var 2, .const (.integer ⟨7, by decide⟩), .const (.integer ⟨2, by decide⟩),
+             .const (.integer ⟨0, by decide⟩), .const (.boolean false), .const (.boolean false),
+             .const (.integer ⟨8, by decide⟩), .const (.integer ⟨-1, by decide⟩)])
+            (.letIn (.app (.prim "toString" [] []) [.var 2])
+              (.letIn (.app (.prim "addString" [] []) [.var 1, .var 0])
+                (.app (.prim "addString" [] []) [.var 0, .var 3])))))) := by rfl
+
+-- 型別の値は局所変数から読み、判定器へ実際の固定シグネチャを渡す。
+-- 期待する受理集合をSupportedTypeやconverterTypeから生成しない。
+-- 名前の照合は交換の境界が担う。この小例では同じ名前に型別の署名を与え、表層検査だけを確かめる。
+private def typedInput (t : Ty) (s : PrimSig := formatSig) : Input :=
+  let sg : PrimSig := { s with params := t :: s.params.tail }
+  { formatInput with B := { formatInput.B with sig := fun b =>
+      if b == "%Format.String" then Option.some sg else formatInput.B.sig b } }
+private def single (t : Ty) (s : FormatSpec) (head : Expr := .primName "%Format.String" [] []) : Expr :=
+  .interpolation [.formatted t s] (.cons (.local 0) .nil) (.cons head .nil)
+private def accepted : List (Ty × FormatSpec) :=
+  [(.base .integer, { kind := .d }), (.base .integer8, { kind := .b, alternate := true }),
+   (.base .integer16, { kind := .o }), (.base .integer32, { kind := .x }),
+   (.base .byte, { kind := .upperX, zero := true, width := some 8 }),
+   (.base .unsignedInteger16, { kind := .d }), (.base .unsignedInteger32, { kind := .b }),
+   (.base .unsignedInteger64, { kind := .x, sign := .plus }),
+   (.base .float, { kind := .f, precision := some 0 }),
+   (.base .float32, { kind := .f, precision := some 28 }),
+   (.base .decimal, { kind := .f }), (.base .string, { kind := .s }),
+   (.base .character, { kind := .c }), (.base .boolean, { width := some 1 })]
+example : [ResumeMode.strict, .relaxed].all (fun mode => accepted.all (fun (t, s) =>
+    got (checkExpr (typedInput t) mode [] [some t] none .other [] (single t s))
+      (.base .string))) = true := by decide
+
+-- 型不適合と不正指定は、頭や式の検査より前に同じ公開境界で拒否する。
+private def rejected : List (Ty × FormatSpec) :=
+  [(intTy, {}), (intTy, { kind := .f }), (.base .float, { kind := .d }),
+   (.base .character, { kind := .s }), (.base .string, { kind := .c }),
+   (.base .boolean, { sign := .plus }), (.base .string, { zero := true, width := some 8 }),
+   (.list intTy, { width := some 8 }),
+   (intTy, { width := some 0 }), (intTy, { width := some 65536 }),
+   (.base .float, { kind := .f, precision := some 29 }),
+   (intTy, { kind := .d, precision := some 0 }),
+   (intTy, { align := .right }), (intTy, { zero := true }),
+   (intTy, { zero := true, align := .right, width := some 8 }),
+   (intTy, { kind := .d, alternate := true })]
+example : rejected.all (fun (t, s) =>
+    match checkExpr (typedInput t) .strict [] [some t] none .other [] (single t s) with
+    | .error ⟨[], "interpolation type is not allowed"⟩ => true
+    | _ => false) = true := by decide
+
+-- 型が合っても局所変数経由の頭は直接の頭ではない。
+example : checkExpr formatInput .strict [] [some (.base .string),
+    some (.fn ["value", "kind", "align", "sign", "alternate", "zero", "width", "precision"]
+      [.base .string, intTy, intTy, intTy, .base .boolean, .base .boolean, intTy, intTy]
+      (.base .string) emptyEff)] none .other []
+    (single (.base .string) spec (.local 1)) =
+    .error ⟨[1], "interpolation converter is not a direct callee"⟩ := by rfl
+
+-- 直接の頭でも呼び出しの契約が非純粋なら拒否する。
+example : checkExpr (typedInput (.base .string) { formatSig with eff := Eff.single "A" })
+    .strict [] [some (.base .string)] none .other [] (single (.base .string) spec) =
+    .error ⟨[1, 0], "type is not included in the expected type"⟩ := by rfl
+
+-- 頭を得る式の効果も空でなければならないが、補間される値の効果は残す。
+private def printed : Expr := .call (.primName "print" [] []) [none] [0]
+  (.cons (eInt ⟨1, by decide⟩) .nil)
+example : checkExpr formatInput .strict [] [some (.base .string)] none .other []
+    (single (.base .string) spec
+      (.block (.seq printed (.last (.primName "%Format.String" [] []))))) =
+    .error ⟨[1], "effect exceeds the allowed effect"⟩ := by rfl
+example : got (checkExpr formatInput .strict [] [] none .other []
+    (.interpolation [.formatted (.base .string) spec]
+      (.cons (.block (.seq printed (.last value))) .nil)
+      (.cons (.primName "%Format.String" [] []) .nil)))
+    (.base .string) (Eff.single "Console.Write") = true := by decide
+
+-- 引数名・七定数型・結果型も固定シグネチャの一部である。
+example : [ { formatSig with names := ["v", "kind", "align", "sign", "alternate", "zero", "width", "precision"] },
+    { formatSig with params := [.base .string, .base .boolean, intTy, intTy,
+        .base .boolean, .base .boolean, intTy, intTy] },
+    { formatSig with ret := intTy } ].all (fun s =>
+      match checkExpr (typedInput (.base .string) s) .strict [] [some (.base .string)]
+          none .other [] (single (.base .string) spec) with
+      | .error ⟨[1, 0], "type is not included in the expected type"⟩ => true
+      | _ => false) = true := by decide
+
+-- 式と頭は各一つ必要で、余分なものも受理しない。
+example : [(.nil, .cons (.primName "%Format.String" [] []) .nil),
+    (.cons value (.cons value .nil), .cons (.primName "%Format.String" [] []) .nil)].all
+    (fun (es, fs) => match checkExpr formatInput .strict [] [] none .other []
+        (.interpolation [.formatted (.base .string) spec] es fs) with
+      | .error ⟨[0], "argument count mismatch"⟩ => true
+      | _ => false) = true := by decide
+example : [Exprs.nil, .cons (.primName "%Format.String" [] [])
+    (.cons (.primName "%Format.String" [] []) .nil)].all (fun fs =>
+      match checkExpr formatInput .strict [] [] none .other []
+          (.interpolation [.formatted (.base .string) spec] (.cons value .nil) fs) with
+      | .error ⟨[1], "argument count mismatch"⟩ => true
+      | _ => false) = true := by decide
+
+-- 書式付きと書式なしを混ぜても、連結には純粋なString加算を要求する。
+private def mixed : Expr := .interpolation
+  [.text "[", .formatted (.base .string) spec, .converted intTy, .stringExpr]
+  (.cons value (.cons (eInt ⟨7, by decide⟩) (.cons value .nil)))
+  (.cons (.primName "%Format.String" [] []) (.cons (.primName "toString" [] []) .nil))
+example : got (checkExpr formatInput .strict [] [] none .other [] mixed) (.base .string) =
+    true := by decide
+example : checkExpr { formatInput with opPrim := fun _ _ => none }
+    .strict [] [] none .other [] mixed =
+    .error ⟨[], "interpolation string addition is invalid"⟩ := by rfl
+
+end FormattedInterpolation
+
 -- 実名を保持したクラス・上位辞書・実装と、全プログラムの検査。
 private def methodSig : MethSig :=
   { tparams := [], neffs := 0, names := ["left", "right"], params := [intTy, intTy],

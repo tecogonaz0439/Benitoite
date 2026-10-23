@@ -461,6 +461,28 @@ impl<'e> ValueCtx<'e> {
         let len = checked_parts_len(parts.iter().map(|s| s.len()), function)?;
         self.core.alloc_str_parts(self.epoch, len.get(), parts)
     }
+    /// 長さを検査し、文字列の片側へ U+0020 を加える。一時文字列を確保しない。
+    pub(crate) fn alloc_str_space_padded(
+        &self,
+        s: &str,
+        spaces: u64,
+        at_start: bool,
+        function: &'static str,
+    ) -> Result<Value<'e>, Stop> {
+        let size = u64::try_from(s.len())
+            .ok()
+            .and_then(|len| len.checked_add(spaces))
+            .unwrap_or(u64::MAX);
+        let len = CheckedLen::bytes(size, function)?;
+        let spaces = usize::try_from(spaces)
+            .map_err(|_| Stop::Internal("validated space count does not fit usize".into()))?;
+        let before = if at_start { spaces } else { 0 };
+        let after = if at_start { 0 } else { spaces };
+        // 全長を検査し、共通の確保器が計上を済ませてから各部分を直接写す
+        // （設計書 02-09「一つの操作で作る値の大きさの上限」）。
+        self.core
+            .alloc_str_space_padded(self.epoch, len.get(), before, s, after)
+    }
     /// 外部から受け取ったバイト列を文字列の値にする。上限を超えれば `Err(Stop)`、
     /// 正しい UTF-8 でなければ `Ok(None)`（呼び出し側が `IOErrorKind.InvalidUTF8` にする。設計書 01-09「IO の失敗の種類」）。
     pub fn alloc_str_utf8(
@@ -945,6 +967,56 @@ mod tests {
                 assert!(ctx.field(v, 0).is_none());
             }
         });
+        assert!(heap.take_fault().is_none());
+    }
+
+    // 関門: 空白を直接書く確保経路の初期化・UTF-8 と、確保前の論理上限の検査を守る。
+    // 統合テストは Miri の対象でなく、既存の文字列片のテストはこの専用経路を通らない。
+    // 公開の層の入口で独立したバイト列と照合し、テスト専用の本番 API は加えない。
+    #[test]
+    fn space_padded_strings_preserve_bytes_and_reject_oversize_before_allocation() {
+        use crate::runtime::{MAX_STRING_BYTES, ResourceError, SizeUnit};
+
+        let mut heap = Heap::new(HeapConfig::default());
+        heap.epoch(|ctx| {
+            for (s, spaces, at_start, expected) in [
+                ("a", 2, true, "  a"),
+                ("a", 3, false, "a   "),
+                ("", 2, true, "  "),
+                ("", 3, false, "   "),
+                ("", 0, true, ""),
+                ("", 0, false, ""),
+                ("猫e\u{301}🐈", 2, true, "  猫e\u{301}🐈"),
+                ("猫e\u{301}🐈", 3, false, "猫e\u{301}🐈   "),
+                ("猫", 0, true, "猫"),
+                ("猫", 0, false, "猫"),
+            ] {
+                let original = ctx.alloc_str(s, "test").unwrap();
+                let padded = ctx
+                    .alloc_str_space_padded(ctx.str(original).unwrap(), spaces, at_start, "pad")
+                    .unwrap();
+                assert_eq!(ctx.str(padded).unwrap().as_bytes(), expected.as_bytes());
+                assert_eq!(ctx.str(original).unwrap().as_bytes(), s.as_bytes());
+            }
+        });
+        let allocations = heap.stats().allocations;
+        heap.epoch(|ctx| {
+            for at_start in [true, false] {
+                for (s, spaces) in [("", MAX_STRING_BYTES + 1), ("猫", MAX_STRING_BYTES - 2)] {
+                    assert_eq!(
+                        ctx.alloc_str_space_padded(s, spaces, at_start, "pad")
+                            .unwrap_err(),
+                        Stop::Resource(ResourceError::ValueTooLarge {
+                            function: "pad",
+                            size: MAX_STRING_BYTES + 1,
+                            unit: SizeUnit::Bytes,
+                            limit: MAX_STRING_BYTES,
+                        })
+                    );
+                }
+            }
+        });
+        assert_eq!(heap.stats().allocations, allocations);
         assert!(heap.take_fault().is_none());
     }
 

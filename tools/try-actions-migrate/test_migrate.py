@@ -244,6 +244,106 @@ end function
         self.assertIn('applied receipt mismatch', self.cli('apply', '--manifest', path,
                       '--reviewed-sha256', digest, success=False).stderr)
 
+    # 関門: 元の個別契約と合併した上限、ホスト位置、共通宣言の編集禁止を実CLIで守る。
+    def test_file_contracts_map_host_spans_and_preserve_shared_declaration(self):
+        declaration = 'uses Log, Console.Write'
+        source = ('// 日本語の説明\nimport Benitoite.Unofficial.IO.Console\n' + declaration + '\n' +
+                  SOURCE.replace('String]\n', 'String] uses State\n', 1) + SOURCE.replace('read(', 'other('))
+        hosts = {
+            'effects.bnt': source,
+            'guide.md': '説明\r\n```bnt\r\n' + source.replace('\n', '\r\n') + '```\r\n',
+            'crates/benitoite/examples/escaped.rs': 'const S: &str = ' + json.dumps(source, ensure_ascii=False) + ';\n',
+        }
+        for name, host in hosts.items():
+            self.put(name, host)
+        manifest = self.scan(*hosts)
+        self.assertEqual(manifest['version'], 2)
+        for row in manifest['candidates']:
+            owner = row['owner']
+            self.assertEqual(row['classification'], 'change', row)
+            self.assertEqual(owner['uses'], 'uses State' if owner['name'] == 'read' else '')
+            self.assertEqual(owner['effective_effects'], ['Console.Write', 'Log', 'State'] if owner['name'] == 'read'
+                             else ['Console.Write', 'Log'])
+            self.assertEqual(owner['file_uses']['text'], declaration)
+            span = owner['file_uses']['span']
+            host = hosts[row['path']].encode()
+            self.assertEqual(span, {'path': row['path'], 'start': host.index(declaration.encode()),
+                                    'end': host.index(declaration.encode()) + len(declaration)})
+            row['confirmation'] = 'approved'
+        invalid = copy.deepcopy(manifest)
+        row = invalid['candidates'][0]
+        span = row['owner']['file_uses']['span']
+        row['edits'].append({'start': span['start'], 'end': span['end'],
+                             'before': declaration, 'after': 'uses Log'})
+        path, digest = self.save(invalid)
+        self.assertIn('shared file uses cannot be edited', self.cli('apply', '--manifest', path,
+                      '--reviewed-sha256', digest, success=False).stderr)
+        path, digest = self.save(manifest)
+        self.cli('apply', '--manifest', path, '--reviewed-sha256', digest)
+        for name, host in hosts.items():
+            self.assertEqual((self.root / name).read_bytes(), host.replace('try r', 'try r or return').encode())
+
+    def test_file_effects_do_not_enter_implementation_or_callback_contracts(self):
+        source = ("uses Log\ntrait Echo[T]\n  function echo(r: Result[T, String]) -> Result[T, String]\nend trait\n"
+                  "implement Echo[Integer]\n"
+                  "  function echo(r: Result[Integer, String]) -> Result[Integer, String]\n"
+                  "    return Result.Ok(try r)\n  end function\nend implement\n" +
+                  SOURCE.replace('  bind value <- try r',
+                                 '  bind f <- lambda() -> Result[Integer, String] return Result.Ok(try r)\n  bind value <- 1'))
+        self.put('contracts.bnt', source)
+        manifest = self.scan('contracts.bnt')
+        self.assertEqual(len(manifest['candidates']), 2)
+        for row in manifest['candidates']:
+            self.assertEqual(row['classification'], 'change', row)
+            self.assertIn(row['owner']['kind'], ('implementation', 'callback'))
+            self.assertEqual(row['owner']['file_uses']['text'], 'uses Log')
+            self.assertEqual(row['owner']['effective_effects'], [])
+
+    def test_unknown_and_old_contracts_are_not_applicable(self):
+        self.put('fragment.md', '```bnt\nbind value <- try r\n```\n')
+        self.put('bad.bnt', 'uses Missing\n' + SOURCE)
+        for row in self.scan('fragment.md', 'bad.bnt')['candidates']:
+            self.assertIsNone(row['owner']['effective_effects'])
+            self.assertIn('unknown_effective_contract', row['holds'])
+            self.assertEqual(row['edits'], [])
+        self.put('example.bnt', SOURCE)
+        manifest = self.scan('example.bnt')
+        manifest['candidates'][0]['confirmation'] = 'approved'
+        old = copy.deepcopy(manifest)
+        old['version'] = 1
+        path, digest = self.save(old)
+        self.assertIn('unsupported manifest version', self.cli('apply', '--manifest', path,
+                      '--reviewed-sha256', digest, success=False).stderr)
+        missing = copy.deepcopy(manifest)
+        del missing['candidates'][0]['owner']['file_uses']
+        path, digest = self.save(missing)
+        self.assertIn('missing owner contract fields', self.cli('apply', '--manifest', path,
+                      '--reviewed-sha256', digest, success=False).stderr)
+        manifest['candidates'][0]['owner']['effective_effects'] = None
+        path, digest = self.save(manifest)
+        self.assertIn('held candidate cannot be applied', self.cli('apply', '--manifest', path,
+                      '--reviewed-sha256', digest, success=False).stderr)
+
+    # 関門: --helper のプロセス境界で旧出力を拒否し、空の候補として成功させない。
+    def test_old_inventory_response_is_rejected(self):
+        self.put('example.bnt', SOURCE)
+        helper = self.root / 'old_inventory.py'
+        for version in [None, 1]:
+            with self.subTest(version=version):
+                answer = {'tries': [], 'typed': True, 'parse_errors': [],
+                          'check_codes': [], 'fragment': False}
+                if version is not None:
+                    answer['version'] = version
+                helper.write_text(f'#!{sys.executable}\nimport json, sys\n'
+                                  f'for request in json.load(sys.stdin):\n'
+                                  f'    print({json.dumps(json.dumps(answer))})\n')
+                helper.chmod(0o755)
+                result = self.cli('--helper', helper, 'inventory', '--out', self.out,
+                                  'example.bnt', success=False)
+                self.assertIn('unsupported inventory version', result.stderr)
+                self.assertFalse((self.out / 'manifest.json').exists())
+                self.assertEqual((self.root / 'example.bnt').read_text(), SOURCE)
+
     def test_held_and_protected_approval_is_rejected(self):
         for name, source in [('negative.bnt', SOURCE.replace('try r', 'try absent')),
                              ('crates/benitoite/testdata/check/input.bnt', SOURCE)]:

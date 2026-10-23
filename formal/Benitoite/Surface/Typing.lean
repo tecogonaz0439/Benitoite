@@ -329,7 +329,7 @@ mutual
         HasTypeQ D B opPrim Q Δ C Γ R p (.listSpread a f before spread after) (.list a)
           (Eff.union εb (Eff.union εs εa))
     -- 01-06「演算子の型付け」: 幅付きの七種を含む基本型を補間し、結果は String。
-    -- 01-12「文字列補間」: String の式の変換関数は持たず、str_T は純粋な直接の頭。
+    -- 01-12「文字列補間」: 書式なしのStringは変換せず、変換・整形は純粋な直接の頭。
     | E_Interpolation {Δ C Γ R p parts es fs ε} :
         InterpPart.Allowed parts → HasTypesQ D B opPrim Q Δ C Γ R es (InterpPart.exprTypes parts) ε →
         HasTypesQ D B opPrim Q Δ C Γ R fs (InterpPart.converterTypes parts) Eff.empty → fs.AllDirect →

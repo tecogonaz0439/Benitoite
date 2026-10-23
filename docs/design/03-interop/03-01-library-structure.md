@@ -61,7 +61,9 @@
 | SHA-256 | `sha2` | https://github.com/RustCrypto/hashes | MIT OR Apache-2.0 |
 | OS の乱数（乱数の種） | `getrandom` | https://github.com/rust-random/getrandom | MIT OR Apache-2.0 |
 | ディレクトリの木の操作（`File.walk`・`File.removeTree`） | `rustix` | https://github.com/bytecodealliance/rustix | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT |
+| 表示の幅の計算 | `unicode-width` | https://github.com/unicode-rs/unicode-width/tree/v0.2.2 | MIT OR Apache-2.0 |
 
+- `unicode-width` は、通常の直接依存として `version = "=0.2.2"`・`default-features = false`・`features = ["cjk"]` を指定する。表示の幅の Unicode の版は 17.0.0 に固定し、Character の分類の版と区別する。通常構成で必須の依存を持たず、`no_std` で使える（出典: [0.2.2 の Cargo.toml](https://github.com/unicode-rs/unicode-width/blob/v0.2.2/Cargo.toml)、[API 文書](https://docs.rs/unicode-width/0.2.2/unicode_width/)、[生成済み表の UNICODE_VERSION](https://github.com/unicode-rs/unicode-width/blob/v0.2.2/src/tables.rs)）。共通の本体は `base::display_width` に置き、VM・言語の値・Host・Wasmtime に依存させない。依存の更新による幅の変更は互換性の変更として記録する。理由: OS や構成によらず同じ幅を計算し、文字列全体の例外を含む算法を基盤の OSS に委ねるためである。String の純粋な関数の集合を構成によって変えないため、組込み向けの構成でもこの依存を共通に含め、Cargo の機能では外さない。
 - `jiff` は、タイムゾーンのデータを同梱する機能を切って使う。jiff 0.2.37 は、プロセスで一つ持つ二つの内部の大域の状態を使う。システムのタイムゾーンを 5 分保持するキャッシュ（出典: jiff 0.2.37 の `src/tz/system/mod.rs` の `TTL`・`CACHE`）と、プロセスで一つだけ作る zoneinfo のデータベース（出典: 同 `src/tz/db/mod.rs` の `DB`）である。データベースは、読んだゾーンのデータと名前の一覧を 5 分ごとに読み直す（出典: 同 `src/tz/db/zoneinfo/enabled.rs` の `DEFAULT_TTL`）。処理系は `crates/benitoite/src/runtime/sched/parts.rs` の `TimeZone::try_system()` でこれらを使う。同じプロセスの中では、システムのタイムゾーンの変更が最大 5 分遅れて `Clock.localOffsetMinutes` に現れ、テストの実行器の複数の実行もこのキャッシュを共有する。
 - `serde_json` は、機能 `float_roundtrip` を付け、機能 `arbitrary_precision` を付けずに使う。JSON の値は、`serde_core` の読み手の trait を実装して直接組み立て、数が整数か浮動小数点数かは元の字面で決める（[テキストとデータの処理](03-08-text-and-data.md)の「Json」）。理由: `arbitrary_precision` は数を特別な鍵のオブジェクトとして渡すので、同じ鍵を持つ入力のオブジェクトを数と取り違えるからである。
 - 16 進数の変換と乱数の生成器は自作する。乱数の生成器は、アルゴリズムを仕様で定め、同じ種から同じ列を作る（[IO のモジュール](03-07-io-modules.md)の「Random」）。

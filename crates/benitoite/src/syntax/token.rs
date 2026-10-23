@@ -182,6 +182,27 @@ pub struct Token {
     pub value: TokenValue,
 }
 
+/// 外側の先読みでは文字列全体を飛ばし、現在の補間の閉じで止まる。
+/// 字句列を一度辿り、補間の入れ子の中の記号を外側へ見せない（02-03「補間の入れ子」）。
+pub(crate) fn outside_strings(tokens: &[Token]) -> impl Iterator<Item = &Token> {
+    let mut nesting = 0_usize;
+    tokens
+        .iter()
+        .scan((), move |(), token| {
+            if token.kind == TokenKind::StrStart {
+                nesting = nesting.saturating_add(1);
+            } else if matches!(token.kind, TokenKind::StrMid | TokenKind::StrEnd) && nesting == 0 {
+                return None;
+            } else if token.kind == TokenKind::StrEnd {
+                nesting = nesting.saturating_sub(1);
+            } else if nesting == 0 {
+                return Some(Some(token));
+            }
+            Some(None)
+        })
+        .flatten()
+}
+
 /// コメントの種類（02-03「コメントとドキュメントコメント」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum CommentKind {

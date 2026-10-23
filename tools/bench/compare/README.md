@@ -57,6 +57,19 @@ python3 tools/bench/compare/run.py --tier full --confirm-full \
 
 段別時間は公開 API だけを使う `timing_probe.rs` の別バイナリで取る。公開 API の変化でコンパイルできない場合は未取得を記録し、CLI の比較を続ける。load_parse は公開 loader の区間、resolve/typeck はその後の区間、reparse は同じバイト列を再解析する別の区間であり、load_parse と加減しない。RSS は親の `rss.py`、alloc は別構成の別実行で取得する。Fail 正規化の内部訪問節数と縮小内部の生成/比較回数は未取得。CPU プロファイルは出力の `profile.sh` で別に取得し、取得していない原因分析を実測とは扱わない。
 
+`build.py` は各状態の archive の `parse` 宣言を調べ、保留診断の引数を持つ版だけに
+`--cfg benitoite_parser_pending` を渡す。呼び出し側の作業ツリーの API で版を判定しない。
+判定と宣言元のハッシュは `builds` の `probe_api` に残し、probe のキャッシュの鍵にも含める。
+最終的な利用可否はその版に対するコンパイルの結果で決め、`capabilities` の
+`timing_probe` に結果と失敗理由を記録する。
+
+`bridge`・`irenv` など `command=probe` の点は、`timing_probe` を持つ状態だけを測る。
+持たない状態は `manifest.json` の `skipped` に理由を残す。両側で使えなくても節の記録を
+空の測定として保存し、残りの CLI の比較を続ける。片側の欠測をゼロや成功へ置き換えず、
+その値を必要とする目標は判定不能とする。CLI の点は段別時間を取れなくても測る。
+既定の probe が使えて alloc-stats の probe だけが使えない場合は、CLI と通常の probe の
+測定を続け、確保量の未取得を `skipped` の `scope=alloc` に記録する。
+
 ## 見込みと記録
 
 ```sh
@@ -162,6 +175,10 @@ after は経路別の実行用キー数とコンパイル数の一致を両方�
 
 `test_compare.py` は共通 build を通して開始版と現在の HEAD の probe をコンパイルし、
 short の quick に含まれる独立 IR・グラフの全点を、対象状態ごとに一度実行して検査する。
+これにより、保留診断の引数を持たない旧 API と現在の API の両方の呼び出しを確かめる。
 縮小器の段別出力も各版で利用可能な API の専用 validator で検査し、誤出力を拒否する。
+外部コンパイラの失敗を与える自己検査では、片側・両側の probe が使えない場合も CLI の
+標本と全節の記録が残り、欠測の目標が判定不能になることを確かめる。alloc-stats の
+probe だけが使えない場合も同じ検査に含める。
 標本採取と性能の合否判定は行わない。ビルド済みの archive/cache がなければ数分を要する。
 正式な after の完全 ID は版と同梱物をそろえた後に固定し直す。

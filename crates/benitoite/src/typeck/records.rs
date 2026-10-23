@@ -95,6 +95,7 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &RecordExpr) -> ITy {
                     .find(|f| ctx.decls.binding(f.id) == Some(field.binding))
                     .map(|f| f.ty.span())
             });
+            ctx.solver.record_value(p, &t);
             flow(
                 ctx,
                 t,
@@ -154,6 +155,7 @@ pub(super) fn pattern(ctx: &mut Body<'_, '_>, p: &RecordPat) -> ITy {
         if let Some(i) = check_field(ctx, &f.name.text, &name, f.name.span, &fields, &mut seen)
             && let Some(expected) = params.get(i)
         {
+            ctx.solver.record_value(&t, expected);
             equal(
                 ctx,
                 expected.clone(),

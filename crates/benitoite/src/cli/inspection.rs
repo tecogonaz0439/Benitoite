@@ -15,6 +15,7 @@ pub(super) struct FunctionContract {
     pub name: String,
     pub location: Span,
     pub effects: Vec<BuiltinEffectId>,
+    pub file_origins: Vec<(BuiltinEffectId, Span)>,
 }
 
 /// AST と型表を破棄した後も報告に使う所有データ。
@@ -81,6 +82,23 @@ pub(super) fn function_contract(
         name: name.into(),
         location,
         effects: effects.into_iter().map(|(_, id)| id).collect(),
+        file_origins: checked
+            .types
+            .effective_effects
+            .get(binding)
+            .into_iter()
+            .flat_map(|effective| &effective.origins)
+            .filter(|origin| origin.file)
+            .flat_map(|origin| {
+                origin.effects.names.iter().filter_map(|effect| {
+                    if let EffectName::Builtin(id) = effect {
+                        Some((*id, origin.span))
+                    } else {
+                        None
+                    }
+                })
+            })
+            .collect(),
     })
 }
 

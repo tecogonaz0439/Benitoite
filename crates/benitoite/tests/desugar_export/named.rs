@@ -27,10 +27,10 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":5,"inputs":[table]})).unwrap(),
+        exchange::to_vec(&json!({"version":6,"inputs":[table]})).unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":5,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    let stdlib = json!({"version":6,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
         exchange::to_vec(&stdlib).unwrap(),
@@ -55,13 +55,13 @@ fn write_named(
     }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":13,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(&json!({"version":14,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":5,"inputs":tables})).unwrap(),
+        exchange::to_vec(&json!({"version":6,"inputs":tables})).unwrap(),
     )
     .unwrap();
     let stdlib = inputs
@@ -70,12 +70,12 @@ fn write_named(
         .collect::<Vec<_>>();
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&json!({"version":5,"inputs":stdlib})).unwrap(),
+        exchange::to_vec(&json!({"version":6,"inputs":stdlib})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-coverage.json")),
-        exchange::to_vec(&json!({"version":5,"inputs":coverage})).unwrap(),
+        exchange::to_vec(&json!({"version":6,"inputs":coverage})).unwrap(),
     )
     .unwrap();
 }
@@ -420,7 +420,7 @@ impl Export {
         write_named(output, stem, self.inputs, self.tables, self.coverage);
         fs::write(
             output.join(format!("{stem}-stdlib.json")),
-            exchange::to_vec(&json!({"version":5,"inputs":self.declarations})).unwrap(),
+            exchange::to_vec(&json!({"version":6,"inputs":self.declarations})).unwrap(),
         )
         .unwrap();
     }
@@ -638,12 +638,12 @@ fn export_extensible_package() {
     fs::create_dir_all(root.join("dep")).unwrap();
     fs::write(
         root.join("package.bnt"),
-        "language \"0.0.10\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+        "language \"0.0.11\"\ndependency Dep\n path \"dep\"\nend dependency\n",
     )
     .unwrap();
     fs::write(
         root.join("dep/package.bnt"),
-        "language \"0.0.10\"\npackage Dep\nend package\n",
+        "language \"0.0.11\"\npackage Dep\nend package\n",
     )
     .unwrap();
     fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();

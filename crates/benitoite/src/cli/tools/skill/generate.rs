@@ -352,6 +352,7 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
         source,
         resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut IdGen::new(),
     );
     if !lexed.diagnostics.is_empty() || !parsed.diagnostics.is_empty() {

@@ -115,6 +115,10 @@ def joinStringParts (op : OpPrim) : List Val → Comp
   | [] => .ret (.const (.string ""))
   | v :: rest => joinStringFrom op 0 v rest
 
+/-- 妥当な解析済み書式を七つの定数値へ写す。不正な注記の空列は型判断から到達しない。 -/
+def FormatSpec.arguments (s : FormatSpec) : List Val :=
+  if h : s.SyntaxValid then (s.constants h).map Val.const else []
+
 /-- 式の評価は sequence で完了済み。変換を断片の順に束縛し、その後で連結する。
 新しい変換結果の下へ、残る式の値・呼ぶ値・既に集めた部分を一つずらす。 -/
 def interpolate (op : OpPrim) : List InterpPart → List Val → List CallHead → List Val → Comp
@@ -123,6 +127,9 @@ def interpolate (op : OpPrim) : List InterpPart → List Val → List CallHead �
       interpolate op ps vs hs (if s = "" then acc else acc ++ [.const (.string s)])
   | .stringExpr :: ps, v :: vs, hs, acc => interpolate op ps vs hs (acc ++ [v])
   | .converted _ :: ps, v :: vs, h :: hs, acc => .letIn (h.apply [v])
+      (interpolate op ps (Val.renameList (· + 1) vs) (hs.map (CallHead.rename (· + 1)))
+        (Val.renameList (· + 1) acc ++ [.var 0]))
+  | .formatted _ s :: ps, v :: vs, h :: hs, acc => .letIn (h.apply (v :: s.arguments))
       (interpolate op ps (Val.renameList (· + 1) vs) (hs.map (CallHead.rename (· + 1)))
         (Val.renameList (· + 1) acc ++ [.var 0]))
   | _, _, _, _ => .ret (.const .unit)
@@ -318,7 +325,7 @@ mutual
           | some h => spreadValues (h.rename (· + ms.length)) before.length vs
           | none => .ret (.const .unit))
     -- 01-12「文字列補間」: "s0${e1}s1…${en}sn"
-    -- | let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in、String でない式についてだけ書いた順に
+    -- | let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in、書式付きまたはString以外の式について書いた順に
     --   let yi ⇐ str_Ti(xi) in、部分 u1,…,um（空でない断片と式の値）を左から +_String で連結する。
     -- 同節: 最後の連結だけを束縛しない。m = 0 なら return ""、m = 1 なら return u1。
     | .interpolation parts es fs =>

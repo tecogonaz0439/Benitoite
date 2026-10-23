@@ -216,6 +216,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             table::EntryKind::Operator { .. }
             | table::EntryKind::Equality { .. }
             | table::EntryKind::ListPattern(_)
+            | table::EntryKind::Format { .. }
             | table::EntryKind::Interpolation { .. } => table::builtin_scheme(id).unwrap(),
         };
         // operation_tables と同じ番号順。prim の tys の番号を入れ替えない。

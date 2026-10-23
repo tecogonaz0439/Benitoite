@@ -65,6 +65,15 @@ def build_key(commit, mode, compiler, cargo, lock_hash):
     return dict(commit=commit, mode=mode, rustc=compiler, cargo=cargo, cargo_lock_sha256=lock_hash)
 
 
+def probe_api(archive):
+    """Select public call adapters from this revision's archive, never the worktree."""
+    path = archive/'crates/benitoite/src/syntax/parser/mod.rs'
+    source = path.read_text() if path.exists() else ''
+    signature = re.search(r'\bpub\s+fn\s+parse\s*\((.*?)\)\s*->', source, re.S)
+    pending = bool(signature and re.search(r'\bpending\s*:', signature.group(1)))
+    return dict(parser_pending=pending, parser_sha256=sha(source.encode()))
+
+
 def build_all(commits, alloc=False, cache=CACHE, imports=()):
     from bridge_probe import prepare
     records = {}
@@ -128,7 +137,9 @@ def build_all(commits, alloc=False, cache=CACHE, imports=()):
         source = Path(__file__).with_name('timing_probe.rs')
         probe = target/'timing-probe'
         bridge_source, bridge_hashes = prepare(archive, target)
-        probe_key = sha(source.read_bytes()) + sha(json.dumps([key, bridge_hashes], sort_keys=True).encode())
+        api = probe_api(archive)
+        record['probe_api'] = api
+        probe_key = sha(source.read_bytes()) + sha(json.dumps([key, bridge_hashes, api], sort_keys=True).encode())
         if reuse and cached.get('probe_key') == probe_key:
             if cached.get('probe') and probe.exists() and sha(probe.read_bytes()) == cached.get('probe_sha256'):
                 record.update({k: cached[k] for k in ('probe', 'probe_sha256', 'probe_key', 'probe_command', 'bridge_sources')})
@@ -143,6 +154,8 @@ def build_all(commits, alloc=False, cache=CACHE, imports=()):
                 probe_command += ['--extern', f'serde_json={json_libs[0]}']
             if alloc:
                 probe_command += ['--cfg', 'feature="alloc-stats"']
+            if api['parser_pending']:
+                probe_command += ['--cfg', 'benitoite_parser_pending']
             env = clean_env()
             env['BENITOITE_COMPARE_BRIDGE'] = str(bridge_source.resolve())
             with log.open('a') as stream:

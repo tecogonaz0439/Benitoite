@@ -8,6 +8,8 @@ pub(super) const DIVISION_BY_ZERO: &str = "division by zero";
 pub(super) const INTEGER_TO_STRING: &str = "Integer.toString";
 pub(super) const FLOAT_TO_STRING: &str = "Float.toString";
 pub(super) const CHARACTER_TO_STRING: &str = "Character.toString";
+pub(super) const FORMAT_EMPTY_TYPES: &str =
+    "no types (sign and zero padding require a numeric type)";
 pub(super) const COVERAGE_MATCH: &str = "this `match` covers every value";
 pub(super) const COVERAGE_PATTERN: &str = "this pattern matches every value";
 pub(super) fn type_declaration(name: &str, file: &str, line: u32, column: u32) -> String {

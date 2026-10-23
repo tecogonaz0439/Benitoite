@@ -683,6 +683,57 @@ fn io_all_warning_edits_and_full_effect_body() {
     );
 }
 
+// 関門: 共通IO.Allは関数ごとに警告し、ほかの関数を壊す共通宣言の編集を出さない。
+// 個別IO.Allの編集は実際に適用して再検査し、ファイル効果との重複を作らないことも守る。
+// 従来の個別usesだけの例では追加元と編集範囲の取り違えを捕まえない。
+#[test]
+fn io_all_warnings_preserve_shared_file_contracts() {
+    for individual in ["", " uses IO.All"] {
+        let source = format!(
+            "import Benitoite.Unofficial.IO.Console\nuses IO.All\nfunction first() -> Unit{individual}\n Console.writeLine(\"a\")\nend function\nfunction second() -> Unit\nend function\n"
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(diagnostics.len(), 2, "{diagnostics:#?}");
+        for (diagnostic, function) in diagnostics.iter().zip(["first", "second"]) {
+            assert_eq!(diagnostic.code, Some(C::W0501));
+            let span = diagnostic.primary.as_ref().unwrap().span;
+            assert_eq!(
+                &source[span.start.0 as usize..span.end.0 as usize],
+                function
+            );
+            assert_eq!(diagnostic.secondary.len(), 1);
+            let span = diagnostic.secondary[0].span;
+            assert_eq!(
+                &source[span.start.0 as usize..span.end.0 as usize],
+                "IO.All"
+            );
+            assert!(diagnostic.helps.iter().all(|help| help.edits.is_empty()));
+        }
+    }
+    for source in [
+        "import Benitoite.Unofficial.IO.Console\nuses Console.Write\nfunction f() -> Unit uses IO.All\n Console.writeLine(\"a\")\nend function\n",
+        "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit uses IO.All, Console.Write\n Console.writeLine(\"a\")\nend function\n",
+    ] {
+        let (_, _, _, diagnostics) = check(source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+        assert_eq!(
+            diagnostics[0].helps[0].message,
+            "remove this `IO.All`; the remaining declarations cover this function's effects"
+        );
+        let edit = &diagnostics[0].helps[0].edits[0];
+        assert_eq!(edit.replacement, "");
+        let mut edited = source.to_owned();
+        edited.replace_range(
+            edit.span.start.0 as usize..edit.span.end.0 as usize,
+            &edit.replacement,
+        );
+        clean(&edited);
+    }
+    clean(
+        "uses IO.All\nfunction full(action: function() -> Unit uses IO.All) -> Unit\n action()\nend function\n",
+    );
+}
+
 #[test]
 fn tail_resumption_checks_every_path_and_excludes_inner_lambda_escapes() {
     for (body, expected, ret, uses) in [

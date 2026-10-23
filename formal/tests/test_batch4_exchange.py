@@ -236,7 +236,7 @@ class Batch4ExchangeTests(unittest.TestCase):
             self.assertIn(f'new exchange version: {field}', result.stderr)
 
     def test_integer_readers_and_aliases(self):
-        for version in range(8, 14):
+        for version in range(8, 15):
             # 8〜10の閉じた互換は既存の正例から作り、範囲外だけを変異させる。
             directory = 'named-exchange' if version < 11 else 'batch2-exchange'
             base = {f: json.loads((FIXTURES.parent / directory / f'{f}.json').read_text()) for f in FILES}
@@ -245,7 +245,7 @@ class Batch4ExchangeTests(unittest.TestCase):
                 base = legacy(base)
             base['corpus']['version'] = version
             for f in FILES[1:]:
-                base[f]['version'] = 2 if version == 8 else 3 if version < 11 else 5 if version == 13 else 4
+                base[f]['version'] = 2 if version == 8 else 3 if version < 11 else 6 if version >= 14 else 5 if version == 13 else 4
             for value in (-9223372036854775809, 9223372036854775808):
                 data = copy.deepcopy(base)
                 data['corpus']['inputs'][0]['constants'] = [dict(name='oversized', package='author',

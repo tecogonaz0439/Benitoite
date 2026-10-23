@@ -21,6 +21,7 @@ struct Frame {
     part: usize,
     mark: usize,
     diag_mark: usize,
+    pending_mark: usize,
     raw: bool,
     layout: Option<Layout>,
     interpolated: bool,
@@ -80,7 +81,12 @@ impl Lexer<'_> {
                             stack.push(frame);
                         }
                         Some(_) => {
+                            self.interpolation = Some(InterpolationId {
+                                file: self.file,
+                                start: byte_pos(expr),
+                            });
                             i = self.step(i);
+                            self.interpolation = None;
                             stack.push(frame);
                         }
                         None => {}
@@ -278,6 +284,7 @@ impl Lexer<'_> {
                 part: start,
                 mark: self.tokens.len(),
                 diag_mark,
+                pending_mark: self.pending.len(),
                 raw,
                 layout,
                 interpolated: false,
@@ -291,6 +298,14 @@ impl Lexer<'_> {
 
     fn finish_string(&mut self, frame: Frame, end: usize) {
         if !frame.ok {
+            // 消した記号の字句は parser に届かない。数の診断は、文字列全体が
+            // 不正でも元の誤りなので保つ（設計書 02-03「字句の誤り」）。
+            let removed = self.pending.split_off(frame.pending_mark);
+            self.pending.extend(
+                removed
+                    .into_iter()
+                    .filter(|pending| matches!(pending.kind, PendingKind::Number(_))),
+            );
             self.tokens.truncate(frame.mark);
             self.push(TokenKind::Error, frame.start, end, TokenValue::None);
         } else {

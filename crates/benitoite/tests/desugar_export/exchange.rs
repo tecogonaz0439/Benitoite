@@ -1285,7 +1285,39 @@ impl Surface<'_> {
                         panic!("non-basic interpolation type: {ty:?}")
                     };
                     assert!(args.is_empty());
-                    if *b == BuiltinTypeId::STRING {
+                    if let Some(spec) = &s.format {
+                        use a::{FormatAlign as A, FormatKind as K, FormatSign as S};
+                        let kind = match spec.kind {
+                            K::Default => "default",
+                            K::D => "d",
+                            K::B => "b",
+                            K::O => "o",
+                            K::X => "x",
+                            K::UpperX => "X",
+                            K::F => "f",
+                            K::S => "s",
+                            K::C => "c",
+                        };
+                        let align = match spec.align {
+                            A::Default => "default",
+                            A::Left => "left",
+                            A::Right => "right",
+                            A::Center => "center",
+                        };
+                        let sign = match spec.sign {
+                            S::Default => "default",
+                            S::Plus => "plus",
+                        };
+                        let (_, name) = table::FORMAT.iter().find(|(t, _)| t == b).unwrap();
+                        parts.push(tagged(
+                            "formatted",
+                            json!({"ty":self.ty(ty),"spec":{
+                            "kind":kind,"align":align,"sign":sign,"alternate":spec.alternate,
+                            "zero":spec.zero,"width":spec.width,"precision":spec.precision}}),
+                        ));
+                        converters
+                            .push(tagged("primName", json!({"name":name,"tys":[],"effs":[]})));
+                    } else if *b == BuiltinTypeId::STRING {
                         parts.push(json!("stringExpr"));
                     } else {
                         let id = table::interpolation_builtin(*b).unwrap();

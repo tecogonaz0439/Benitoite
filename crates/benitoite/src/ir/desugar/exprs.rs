@@ -1190,7 +1190,46 @@ impl State<'_> {
                 .ok_or_else(|| {
                     error(format!("missing interp_types for {:?}", segment.expr.id()))
                 })?;
-            let v = if *ty == basic(BuiltinTypeId::STRING) {
+            let v = if let Some(format) = &segment.format {
+                let operand = basic_id(ty)?;
+                let name = table::FORMAT
+                    .iter()
+                    .find_map(|(ty, name)| (*ty == operand).then_some(*name))
+                    .ok_or_else(|| error("missing format builtin type"))?;
+                let id = builtins::lookup_builtin(name)
+                    .ok_or_else(|| error("missing format builtin"))?;
+                let (kind, align, sign, alternate, zero, width, precision) = format.constants();
+                let integer = |n| {
+                    value(
+                        ValKind::Const(Const::Int(n)),
+                        basic(BuiltinTypeId::INTEGER),
+                        format.span,
+                    )
+                };
+                let flag = |b| {
+                    value(
+                        ValKind::Const(Const::Bool(b)),
+                        basic(BuiltinTypeId::BOOLEAN),
+                        format.span,
+                    )
+                };
+                let c = app(
+                    self.table_builtin(id, vec![], segment.span)?,
+                    vec![],
+                    vec![
+                        v,
+                        integer(kind),
+                        integer(align),
+                        integer(sign),
+                        flag(alternate),
+                        flag(zero),
+                        integer(width),
+                        integer(precision),
+                    ],
+                    segment.span,
+                )?;
+                bind(self, c, &mut pending)?
+            } else if *ty == basic(BuiltinTypeId::STRING) {
                 v
             } else {
                 let id = table::interpolation_builtin(basic_id(ty)?).ok_or_else(|| {

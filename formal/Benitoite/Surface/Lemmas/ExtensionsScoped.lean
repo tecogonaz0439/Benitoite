@@ -71,6 +71,12 @@ theorem joinStringParts_scoped {nt pe op vs}
       have := List.length_pos_iff.mpr hn
       simp only [List.length_cons]; omega
 
+/-- 書式の追加引数は定数だけであり、型・エフェクト変数を含まない。 -/
+theorem FormatSpec.arguments_scoped (s : FormatSpec) (nt : Nat) (pe : Nat → Prop) :
+    Val.VarsInList nt pe s.arguments := by
+  unfold FormatSpec.arguments
+  split <;> simp [FormatSpec.constants, Val.VarsInList, Val.VarsIn]
+
 theorem interpolate_scoped {nt pe op parts vs hs acc}
     (hv : Val.VarsInList nt pe vs) (hh : ∀ h ∈ hs, h.Scoped nt pe)
     (hc : Val.VarsInList nt pe acc)
@@ -102,6 +108,20 @@ theorem interpolate_scoped {nt pe op parts vs hs acc}
               | nil => trivial
               | cons h hs =>
                   exact ⟨(hh h (by simp)).apply ⟨hv.1, trivial⟩,
+                    Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (by omega) _
+                      (ih (Val.VarsInList.renameScoped _ _ hv.2)
+                      (heads_scoped_rename (fun h hm => hh h (by simp [hm])) _)
+                      (Val.VarsInList.append (Val.VarsInList.renameScoped _ _ hc) ⟨trivial, trivial⟩)
+                      (by simpa [InterpPart.count, List.length_append, Val.renameList_length,
+                        Nat.add_assoc] using ha))⟩
+      | formatted t s =>
+          cases vs with
+          | nil => trivial
+          | cons v vs =>
+              cases hs with
+              | nil => trivial
+              | cons h hs =>
+                  exact ⟨(hh h (by simp)).apply ⟨hv.1, s.arguments_scoped nt pe⟩,
                     Benitoite.Release.Comp.VarsIn.widen (depth := 0) (Nat.le_refl _) (by omega) _
                       (ih (Val.VarsInList.renameScoped _ _ hv.2)
                       (heads_scoped_rename (fun h hm => hh h (by simp [hm])) _)

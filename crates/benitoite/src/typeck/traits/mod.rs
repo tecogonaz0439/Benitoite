@@ -145,6 +145,10 @@ fn check_parameter_bound(
     r: &Reason,
     ty: ITy,
 ) {
+    if mode == Bound::Set && r.kind == ReasonKind::InterpFormat {
+        ctx.diagnostic(ctx.solver.format_diagnostic(ctx, &ty, r, set));
+        return;
+    }
     let valid = match mode {
         Bound::Equality => matches!(
             p.builtin,

@@ -17,6 +17,7 @@ use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId as B};
 use crate::types::{ConstValue as V, EffectName, Ty, TyCon, TypeArg};
 
 mod diagnostics_batch4;
+mod interpolation_formats;
 
 fn check(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) {
     check_files(&[("main.bnt", s)], false)

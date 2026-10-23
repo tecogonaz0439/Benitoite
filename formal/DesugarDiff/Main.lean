@@ -144,13 +144,14 @@ partial def extensionFeatures : Json → List String
               if !s.isEmpty then
                 count := count + 1
                 previousExpr := false
-          | .stringExpr | .converted _ =>
+          | .stringExpr | .converted _ | .formatted _ _ =>
               count := count + 1
               if previousExpr then own := own ++ ["interpolation: consecutive expressions"]
               previousExpr := true
               own := own ++ [match p with
                 | .stringExpr => "interpolation: String"
                 | .converted (.base n) => "interpolation: " ++ n
+                | .formatted (.base n) _ => "interpolation: formatted " ++ n
                 | _ => "interpolation: invalid type"]
         own := own ++ [if count == 0 then "interpolation: parts 0"
           else if count == 1 then "interpolation: parts 1" else "interpolation: parts 2+"]

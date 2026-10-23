@@ -95,6 +95,30 @@ fn stderr(output: &Output) -> String {
 }
 
 #[test]
+fn preserves_static_interpolation_formats() {
+    let dir = TestDirectory::new("static_interpolation_formats");
+    let input = "function main()->Unit\r\n bind n<-42\r\n bind s<-\"${n :#08x}|${n:^8}|${1.5:+08.2f}|${f(value:n):>8}|${lambda(x) x:>8}|${\"${n:08d}\":s}\"\r\n ()\r\nend function\r\n";
+    let expected = "function main() -> Unit\n  bind n <- 42\n  bind s <- \"${n:#08x}|${n:^8}|${1.5:+08.2f}|${f(value: n):>8}|${lambda(x) x:>8}|${\"${n:08d}\":s}\"\n  ()\nend function\n";
+    dir.write("format.bnt", input);
+    let output = fmt(&dir, &["format.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(dir.read("format.bnt"), expected);
+    let output = fmt(&dir, &["--check", "format.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    dir.write(
+        "invalid.bnt",
+        "function f() -> String\n\"${n:8.2q}\"\nend function\n",
+    );
+    let output = fmt(&dir, &["invalid.bnt"]);
+    assert_eq!(code(&output), 2, "{}", stderr(&output));
+    assert!(stderr(&output).contains("E0262"));
+    assert_eq!(
+        dir.read("invalid.bnt"),
+        "function f() -> String\n\"${n:8.2q}\"\nend function\n"
+    );
+}
+
+#[test]
 fn rewrites_changed_files_and_leaves_canonical_files_untouched() {
     let dir = TestDirectory::new("rewrites_changed_files_and_leaves_canonical_files_untouched");
     dir.write("a.bnt", UNFORMATTED);
@@ -568,4 +592,31 @@ fn block_expressions_format_nested_statements_and_keep_values() {
         .output()
         .unwrap();
     assert_eq!(code(&output), 0, "{}", stderr(&output));
+}
+
+// 関門: 型検査を通らない入力でも元の共通宣言・コメント・効果順を保持し、二度目の整形で変わらない。
+#[test]
+fn file_effect_declarations_keep_source_contracts() {
+    let dir = TestDirectory::new("file_effect_declarations_keep_source_contracts");
+    for (input, expected) in [
+        (
+            "language \"0.0.10\"\r\nimport Benitoite.Unofficial.IO.Console\r\n  uses Log , // first\r\n    Console . Write, Failure . Fail [\r\n String\r\n ] // last\r\nfunction main()->Unit\r\n bind x:Integer<-\"wrong\"\r\nend function",
+            "language \"0.0.10\"\n\nimport Benitoite.Unofficial.IO.Console\n\nuses Log, // first\n  Console.Write, Failure.Fail[\n    String\n  ] // last\n\nfunction main() -> Unit\n  bind x: Integer <- \"wrong\"\nend function\n",
+        ),
+        (
+            " // leading\n uses IO . All\n// function\nfunction f()->Unit uses State\n  ()\nend function\n",
+            "// leading\nuses IO.All\n\n// function\nfunction f() -> Unit uses State\n  ()\nend function\n",
+        ),
+        ("uses Log", "uses Log\n"),
+    ] {
+        dir.write("effects.bnt", input);
+        let output = fmt(&dir, &["effects.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty(), "{}", stderr(&output));
+        assert_eq!(dir.read("effects.bnt"), expected);
+        let output = fmt(&dir, &["--check", "effects.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert_eq!(dir.read("effects.bnt"), expected);
+    }
 }

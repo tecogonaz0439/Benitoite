@@ -18,6 +18,32 @@ pub struct LexOutput {
     /// ドキュメントコメントを含むすべてのコメント。ソースの順
     pub comments: Vec<Comment>,
     pub diagnostics: Vec<Diagnostic>,
+    /// 補間の所有者と元の範囲を保ち、構文解析の入口へ必ず渡す診断。
+    pub pending: Vec<PendingDiagnostic>,
+}
+
+/// 一つの `${` の識別子。元のバイト位置は改行判定でも変わらない（02-03「補間の入れ子」）。
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct InterpolationId {
+    pub file: FileId,
+    pub start: BytePos,
+}
+
+/// 補間に属する診断。記号の文脈付きの文言は構文解析器が選ぶ。
+#[derive(Clone, Debug)]
+pub enum PendingKind {
+    /// 数リテラルを読む分岐が作った元の診断。
+    Number(Box<Diagnostic>),
+    /// 元の範囲にある `BadSymbol`。文脈付きの報告と重複させない。
+    BadSymbol,
+}
+
+/// 書式の範囲の確定まで保留する診断（02-03「補間の入れ子」）。
+#[derive(Clone, Debug)]
+pub struct PendingDiagnostic {
+    pub interpolation: InterpolationId,
+    pub span: Span,
+    pub kind: PendingKind,
 }
 
 /// ソースのバイト列（`Source::text()`）を先頭から読み、字句と改行の印の列を作る（02-03「処理の流れ」の 1）。
@@ -31,6 +57,8 @@ pub fn lex(file: FileId, text: &[u8]) -> LexOutput {
         tokens: Vec::new(),
         comments: Vec::new(),
         diagnostics: Vec::new(),
+        pending: Vec::new(),
+        interpolation: None,
         line_limit: None,
         line_starts: std::iter::once(0)
             .chain(
@@ -49,6 +77,7 @@ pub fn lex(file: FileId, text: &[u8]) -> LexOutput {
         tokens: lexer.tokens,
         comments: lexer.comments,
         diagnostics: lexer.diagnostics,
+        pending: lexer.pending,
     }
 }
 
@@ -81,6 +110,8 @@ struct Lexer<'a> {
     tokens: Vec<Token>,
     comments: Vec<Comment>,
     diagnostics: Vec<Diagnostic>,
+    pending: Vec<PendingDiagnostic>,
+    interpolation: Option<InterpolationId>,
     line_limit: Option<(usize, usize)>,
     /// 文字列の切り出しが改行を字句にしない場合も、物理行を保持するための表
     /// （設計書 02-03「字句」）。LF の直後を行の先頭とし、CRLF は一改行とする。
@@ -171,6 +202,15 @@ impl Lexer<'_> {
             end_line: self.line_at(end),
             value,
         });
+        if kind == TokenKind::BadSymbol
+            && let Some(interpolation) = self.interpolation
+        {
+            self.pending.push(PendingDiagnostic {
+                interpolation,
+                span,
+                kind: PendingKind::BadSymbol,
+            });
+        }
     }
 
     fn line_at(&self, pos: usize) -> u32 {
@@ -371,7 +411,15 @@ impl Lexer<'_> {
                         }],
                     );
                 }
-                self.report(builder);
+                if let Some(interpolation) = self.interpolation {
+                    self.pending.push(PendingDiagnostic {
+                        interpolation,
+                        span,
+                        kind: PendingKind::Number(Box::new(builder.build())),
+                    });
+                } else {
+                    self.report(builder);
+                }
                 self.push(TokenKind::Error, start, end, TokenValue::None);
             }
         }

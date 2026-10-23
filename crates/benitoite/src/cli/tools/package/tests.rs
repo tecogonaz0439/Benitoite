@@ -19,6 +19,7 @@ fn module(source: &str) -> Module {
         source.as_bytes(),
         resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut IdGen::new(),
     );
     assert!(lexed.diagnostics.is_empty());
@@ -116,6 +117,7 @@ fn update_replaces_quoted_values_and_adds_missing_fields_without_changing_the_bo
             source.as_bytes(),
             resolve_newlines(lexed.tokens),
             lexed.comments,
+            lexed.pending,
             &mut IdGen::new(),
         );
         let HeaderItem::Dependency(block) = &parsed.module.header[0] else {

@@ -274,6 +274,7 @@ impl Context<'_> {
             &bytes,
             resolve_newlines(lexed.tokens),
             lexed.comments,
+            lexed.pending,
             &mut IdGen::new(),
         );
         let diagnostics: Vec<_> = lexed

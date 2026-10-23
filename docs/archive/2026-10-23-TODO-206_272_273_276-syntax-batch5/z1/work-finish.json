@@ -1,0 +1,29 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+    "--only",
+    "fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally,licenses",
+    "--test",
+    "package_command",
+    "--test",
+    "reference_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "skill_examples",
+    "--test",
+    "spec_examples",
+    "--test",
+    "stdlib_doc_examples",
+    "--test",
+    "test_command"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 34.851,
+  "log": "target/z1-work/work-finish.log",
+  "logSha256": "1d2c5f78c874bf6a342ebe337a9448f3b521e6e3a389d278d00f487a250abb65"
+}

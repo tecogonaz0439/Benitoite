@@ -175,6 +175,8 @@ pub enum EntryKind {
     ListPattern(ListPatternOp),
     /// ソースに名前を持たない文字列補間の `str_T`
     Interpolation { operand: BuiltinTypeId },
+    /// 書式付き補間の固定引数の書式化の内部頭。
+    Format { operand: BuiltinTypeId },
 }
 
 /// リストのパターンの内部の項目（設計書 02-06「下位 IR からコード生成へ渡すもの」）。
@@ -643,6 +645,33 @@ pub const INTRINSIC_FUNCTIONS: &[(&str, Intrinsic)] = &[
     ("Reference.update", Intrinsic::Update),
 ];
 
+/// 書式付き補間の14基本型と書式化の内部頭（設計書 02-06「書式化の内部頭」）。
+pub const FORMAT: &[(BuiltinTypeId, &str)] = &[
+    (BuiltinTypeId::INTEGER, "%Format.Integer"),
+    (BuiltinTypeId::INTEGER8, "%Format.Integer8"),
+    (BuiltinTypeId::INTEGER16, "%Format.Integer16"),
+    (BuiltinTypeId::INTEGER32, "%Format.Integer32"),
+    (BuiltinTypeId::BYTE, "%Format.Byte"),
+    (
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%Format.UnsignedInteger16",
+    ),
+    (
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%Format.UnsignedInteger32",
+    ),
+    (
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%Format.UnsignedInteger64",
+    ),
+    (BuiltinTypeId::FLOAT, "%Format.Float"),
+    (BuiltinTypeId::FLOAT32, "%Format.Float32"),
+    (BuiltinTypeId::DECIMAL, "%Format.Decimal"),
+    (BuiltinTypeId::STRING, "%Format.String"),
+    (BuiltinTypeId::CHARACTER, "%Format.Character"),
+    (BuiltinTypeId::BOOLEAN, "%Format.Boolean"),
+];
+
 /// 項目の種類。名前が `%` から始まる項目は上の定数の表から、`Benitoite.` から始まる項目は `EffectOp`、
 /// ほかは `Declared` とする。
 pub fn builtin_kind(id: BuiltinId) -> Option<EntryKind> {
@@ -666,6 +695,9 @@ pub fn builtin_kind(id: BuiltinId) -> Option<EntryKind> {
     }
     if let Some(&(op, _)) = LIST_PATTERN.iter().find(|(_, name)| *name == decl.name) {
         return Some(EntryKind::ListPattern(op));
+    }
+    if let Some(&(operand, _)) = FORMAT.iter().find(|(_, name)| *name == decl.name) {
+        return Some(EntryKind::Format { operand });
     }
     INTERPOLATION.iter().find_map(|&(operand, name)| {
         (name == decl.name).then_some(EntryKind::Interpolation { operand })
@@ -694,7 +726,8 @@ pub fn builtin_intrinsic(id: BuiltinId) -> Option<Intrinsic> {
         EntryKind::Declared
         | EntryKind::EffectOp
         | EntryKind::ListPattern(_)
-        | EntryKind::Interpolation { .. } => {
+        | EntryKind::Interpolation { .. }
+        | EntryKind::Format { .. } => {
             let name = builtin_decl(id)?.name;
             INTRINSIC_FUNCTIONS
                 .iter()
@@ -728,7 +761,7 @@ pub fn list_pattern_builtin(op: ListPatternOp) -> Option<BuiltinId> {
     lookup_builtin(name)
 }
 
-/// ソースに宣言のない項目（`Operator`・`Equality`・`ListPattern`・`Interpolation`）の宣言の型。
+/// ソースに宣言のない項目（`Operator`・`Equality`・`ListPattern`・`Interpolation`・`Format`）の宣言の型。
 /// `Declared` と `EffectOp` の項目には `None` を返す（型はソースの宣言が与える）。
 /// 型パラメータは `T` 一つ（`Equality` は組み込みの制約 `equality` を持つ）か、ない。エフェクトは空集合である。
 pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
@@ -780,10 +813,24 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
                 EntryKind::Declared
                 | EntryKind::EffectOp
                 | EntryKind::Operator { .. }
-                | EntryKind::Interpolation { .. } => return None,
+                | EntryKind::Interpolation { .. }
+                | EntryKind::Format { .. } => return None,
             }
         }
         EntryKind::Interpolation { operand } => (vec![basic(operand)], string),
+        EntryKind::Format { operand } => (
+            vec![
+                basic(operand),
+                integer.clone(),
+                integer.clone(),
+                integer.clone(),
+                boolean.clone(),
+                boolean,
+                integer.clone(),
+                integer,
+            ],
+            string,
+        ),
     };
     let param_names = match builtin_kind(id)? {
         EntryKind::Operator {
@@ -802,6 +849,16 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
             parameter_names::XS,
             parameter_names::FRONT,
             parameter_names::BACK,
+        ],
+        EntryKind::Format { .. } => vec![
+            "value",
+            "kind",
+            "align",
+            "sign",
+            "alternate",
+            "zero",
+            "width",
+            "precision",
         ],
         EntryKind::Declared | EntryKind::EffectOp => return None,
     };
@@ -843,7 +900,7 @@ mod tests {
         let lengths = [
             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
             16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
-            11, 39, 3, 4,
+            11, 39, 3, 4, 6, 14,
         ];
         assert_eq!(
             super::super::funcs::PARTS
@@ -877,10 +934,11 @@ mod tests {
                     .all(|s| !s.is_empty() && s.bytes().all(|b| b.is_ascii_alphanumeric()))
             );
             assert!(
-                segments
-                    .last()
-                    .unwrap()
-                    .starts_with(|c: char| c.is_ascii_lowercase())
+                matches!(kind, EntryKind::Format { .. })
+                    || segments
+                        .last()
+                        .unwrap()
+                        .starts_with(|c: char| c.is_ascii_lowercase())
             );
             if !decl.name.starts_with('%') {
                 assert!(segments.len() >= 2);
@@ -906,6 +964,16 @@ mod tests {
                     EntryKind::ListPattern(ListPatternOp::Length) => vec!["xs"],
                     EntryKind::ListPattern(ListPatternOp::Get(_)) => vec!["xs", "index"],
                     EntryKind::ListPattern(ListPatternOp::Slice) => vec!["xs", "front", "back"],
+                    EntryKind::Format { .. } => vec![
+                        "value",
+                        "kind",
+                        "align",
+                        "sign",
+                        "alternate",
+                        "zero",
+                        "width",
+                        "precision",
+                    ],
                     EntryKind::Declared | EntryKind::EffectOp => panic!("source declaration"),
                 };
                 assert_eq!(scheme.param_names, expected_names);
@@ -920,9 +988,9 @@ mod tests {
                 !decl.name.starts_with('%') && !decl.name.starts_with("Benitoite.")
             );
         }
-        assert_eq!(lengths.len(), 56);
-        assert_eq!(names.len(), 490);
-        assert_eq!(capabilities, [415, 16, 59]);
+        assert_eq!(lengths.len(), 58);
+        assert_eq!(names.len(), 510);
+        assert_eq!(capabilities, [435, 16, 59]);
         assert!(lookup_builtin("missing.name").is_none());
         let invalid = BuiltinId(u16::MAX);
         assert!(builtin_decl(invalid).is_none());

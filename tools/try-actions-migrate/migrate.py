@@ -15,10 +15,44 @@ sys.path.insert(0, str(REPO / 'tools/source-migrate'))
 from source_extract import Snippet, snippets
 import source_migrate as shared
 
-VERSION = 1
+VERSION = 2
 WORD = re.compile(rb'\btry\b')
 HANDWRITTEN = {'idioms.md', 'common-mistakes.md', 'language-comparison.md', 'testing.md'}
 CLASSES = {'change', 'already_explicit', 'notation', 'pre_migration', 'keep_test', 'history', 'hold'}
+
+
+def validate_owner(owner, path, size):
+    """新版の必須欄と位置を検証し、欠けた契約を空集合に補わない。"""
+    if owner is None:
+        return
+    if not isinstance(owner, dict) or not {'uses', 'file_uses', 'effective_effects'} <= owner.keys():
+        raise ValueError('missing owner contract fields')
+    effects = owner['effective_effects']
+    if effects is not None and (not isinstance(effects, list) or
+                               any(not isinstance(e, str) or not e for e in effects) or
+                               effects != sorted(set(effects))):
+        raise ValueError('invalid effective effects')
+    file_uses = owner['file_uses']
+    if file_uses is not None:
+        if not isinstance(file_uses, dict) or not isinstance(file_uses.get('text'), str):
+            raise ValueError('invalid file uses owner')
+        span = file_uses.get('span', {})
+        if (span.get('path') != path or type(span.get('start')) is not int or
+                type(span.get('end')) is not int or not 0 <= span['start'] < span['end'] <= size):
+            raise ValueError('invalid file uses span')
+
+
+def host_owner(owner, unit):
+    """復号した断片の位置を、編集対象のホストの位置へ対応付ける。"""
+    validate_owner(owner, unit['path'], len(unit['source'].encode()))
+    if owner is not None and owner['file_uses'] is not None:
+        declaration = owner['file_uses']
+        span = declaration['span']
+        start, end = (unit['boundaries'][span[key]] for key in ('start', 'end'))
+        if start < 0 or end < 0:
+            return owner, False
+        owner = dict(owner, file_uses=dict(declaration, span=dict(span, start=start, end=end)))
+    return owner, True
 
 
 def role(path):
@@ -150,7 +184,9 @@ def inventory(root, paths, helper):
     rows = []
     for unit in units:
         inv = answers[unit['request']] if unit['request'] is not None else {
-            'tries': [], 'typed': False, 'parse_errors': [], 'check_codes': [], 'fragment': False}
+            'version': VERSION, 'tries': [], 'typed': False, 'parse_errors': [], 'check_codes': [], 'fragment': False}
+        if inv.get('version') != VERSION:
+            raise ValueError('unsupported inventory version')
         ast = {t['start']: t for t in inv['tries']}
         data = shared.safe_path(root, unit['path']).read_bytes()
         for match in WORD.finditer(unit['source'].encode()):
@@ -158,7 +194,7 @@ def inventory(root, paths, helper):
             start = unit['boundaries'][match.start()]
             end_in_source = t['end'] if t else match.end()
             end = unit['boundaries'][end_in_source]
-            owner = t['owner'] if t else None
+            owner, mapped_contract = host_owner(t['owner'] if t else None, unit)
             current = t['action'] if t else None
             chosen, reason = proposal(unit['role'], owner)
             holds = []
@@ -172,6 +208,10 @@ def inventory(root, paths, helper):
                 holds.append('untyped_fragment' if inv['fragment'] else 'parse_or_type_errors')
             if start < 0 or end < 0:
                 holds.append('unmapped_host_boundary')
+            if not mapped_contract:
+                holds.append('unmapped_contract_boundary')
+            if t and (owner is None or owner['effective_effects'] is None):
+                holds.append('unknown_effective_contract')
             if owner and owner['kind'] in ('handler', 'constant'):
                 holds.append('unsupported_enclosing_contract')
             before = data[start:end].decode() if start >= 0 and end >= 0 else ''
@@ -241,6 +281,8 @@ def selected(manifest, *, approved):
         raise ValueError('duplicate candidate id')
     rows = []
     for row in manifest['candidates']:
+        # 保存済みmanifestでも必須欄を検査し、旧版相当への書き換えを適用しない。
+        validate_owner(row['owner'], row['path'], sys.maxsize)
         if row['classification'] not in CLASSES:
             raise ValueError('unknown classification: ' + row['id'])
         if approved and row['confirmation'] != 'approved':
@@ -250,7 +292,8 @@ def selected(manifest, *, approved):
         if approved and row['proposed_action'] == 'die' and (not row['contract_reviewed'] or
                 any(not v or v.startswith('review ') for v in row['contract_changes'].values())):
             raise ValueError('die contract review required: ' + row['id'])
-        if row['classification'] != 'change' or row['holds'] or not row['typed']:
+        if (row['classification'] != 'change' or row['holds'] or not row['typed'] or
+                row['owner'] is None or row['owner']['effective_effects'] is None):
             raise ValueError('held candidate cannot be applied: ' + row['id'])
         if row['action'] != 'implicit_return' or row['proposed_action'] not in ('return', 'die'):
             raise ValueError('invalid action: ' + row['id'])
@@ -258,6 +301,13 @@ def selected(manifest, *, approved):
                         and e['before'] == '' and e['after'] == ' or ' + row['proposed_action']]
         if len(action_edits) != 1:
             raise ValueError('action edit mismatch: ' + row['id'])
+        declaration = row['owner']['file_uses']
+        if declaration is not None:
+            span = declaration['span']
+            for edit in row['edits']:
+                if (edit['start'] < span['end'] and span['start'] < edit['end'] or
+                        edit['start'] == edit['end'] and span['start'] <= edit['start'] <= span['end']):
+                    raise ValueError('shared file uses cannot be edited by one candidate: ' + row['id'])
         rows.append(row)
     selected_ids = {r['id'] for r in rows}
     shared_ends = {}

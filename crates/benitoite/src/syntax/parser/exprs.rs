@@ -667,6 +667,7 @@ fn parse_block_expr(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
 #[derive(Clone, Copy)]
 pub(super) enum BlockEnd {
     End,
+    Lambda,
     Else,
     Arm,
     WithCase,
@@ -677,6 +678,7 @@ fn block_end(p: &Parser, end: BlockEnd) -> bool {
     }
     match end {
         BlockEnd::End => false,
+        BlockEnd::Lambda => p.interpolation.is_some() && p.at(TokenKind::Colon),
         BlockEnd::Else => p.at(TokenKind::KwElse),
         BlockEnd::Arm => {
             p.at(TokenKind::KwCase)
@@ -701,7 +703,9 @@ fn legacy_clause_after_with(p: &Parser) -> bool {
         return false;
     }
     let mut nesting = 0_u32;
-    for token in p.tokens.get(p.pos.saturating_add(2)..).unwrap_or_default() {
+    for token in crate::syntax::token::outside_strings(
+        p.tokens.get(p.pos.saturating_add(2)..).unwrap_or_default(),
+    ) {
         if nesting == 0 && token.kind == TokenKind::Colon {
             return true;
         }
@@ -1070,7 +1074,7 @@ fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     }
     let diagnostics_before_body = p.diagnostics.len();
     let body = if explicit {
-        parse_block(p, child(depth), BlockEnd::End)
+        parse_block(p, child(depth), BlockEnd::Lambda)
     } else {
         parse_short_body(p, child(depth))
     };
@@ -1078,7 +1082,16 @@ fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let Ok(body) = body else {
         return Err(Fail);
     };
-    let ending = if explicit {
+    // 先読みが書式内の `end lambda` を候補にしても、通常の本体を読み終えた
+    // 位置のコロンを優先する（設計書 01-02「文字列補間（初回リリース版）」）。
+    let format_boundary = p.interpolation.is_some() && p.at(TokenKind::Colon);
+    if explicit && format_boundary {
+        p.blocks.pop();
+        if body.stmts.len() != 1 {
+            p.unexpected(text::NEWLINE_OR_END);
+        }
+    }
+    let ending = if explicit && !format_boundary {
         let end_start = p.peek().span;
         LambdaEnding::Explicit {
             end_span: end_start.to(p.close_block(TokenKind::KwLambda)),
@@ -1133,6 +1146,7 @@ fn parse_short_body(p: &mut Parser, depth: u32) -> PResult<Box<Block>> {
         .is_some_and(|t| t.end_line == p.peek().start_line);
     if same_line
         && !block_end(p, BlockEnd::WithCase)
+        && !(p.interpolation.is_some() && p.at(TokenKind::Colon))
         && !matches!(
             p.peek_kind(),
             TokenKind::Newline

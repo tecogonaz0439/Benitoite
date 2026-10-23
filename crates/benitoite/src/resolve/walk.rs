@@ -130,8 +130,41 @@ impl Resolver<'_> {
             let Some(ast) = self.ast(module.id) else {
                 continue;
             };
+            // ファイル位置の参照は関数の型パラメータを含まない文脈で一度だけ解決する
+            // （設計書 02-04「解決の手順」）。公開契約には同じ解決済み参照を加える。
+            let file_used = if let Some(uses) = &ast.file_uses
+                && let Some(first) = uses.effects.first()
+            {
+                let mut ctx = Ctx::new(module.id, first.id);
+                self.uses(&mut ctx, uses, None);
+                ctx.used
+            } else {
+                vec![]
+            };
             for top in &ast.decls {
                 self.decl_signature(module.id, top);
+            }
+            // 共通宣言は最も広い公開範囲で一度検査し、同じ修正の重複を防ぐ
+            // （設計書 02-04「解決の手順」）。個別の契約は各関数で検査する。
+            let owner = ast
+                .decls
+                .iter()
+                .filter(|top| top.public.is_some() && matches!(top.item, Item::Fn(_)))
+                .filter_map(|top| self.out.decls.get(top.item.id()).copied())
+                .filter_map(|id| {
+                    self.out
+                        .bindings
+                        .get(id)
+                        .map(|b| (id, Level::of(b.public, b.package)))
+                })
+                .max_by_key(|(_, level)| *level)
+                .map(|(id, _)| id);
+            if let Some(owner) = owner {
+                self.contracts.extend(
+                    file_used
+                        .iter()
+                        .map(|(used, span)| (owner, *used, *span, true)),
+                );
             }
         }
     }
@@ -140,8 +173,11 @@ impl Resolver<'_> {
         if top.public.is_some()
             && let Some(owner) = self.out.decls.get(top.item.id()).copied()
         {
-            self.contracts
-                .extend(ctx.used.iter().map(|(used, span)| (owner, *used, *span)));
+            self.contracts.extend(
+                ctx.used
+                    .iter()
+                    .map(|(used, span)| (owner, *used, *span, false)),
+            );
         }
     }
 

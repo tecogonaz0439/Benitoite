@@ -470,12 +470,15 @@ pub fn execute(command: Command, env: CliEnv) -> u8 {
         }
         Command::VersionJson => {
             let (major, minor, update) = char::UNICODE_VERSION;
+            let (width_major, width_minor, width_update) =
+                crate::base::display_width::UNICODE_VERSION;
             let value = serde_json::json!({
                 "schemaVersion": 1,
                 "kind": "version",
                 "name": "benitoite",
                 "version": env!("CARGO_PKG_VERSION"),
                 "unicodeVersion": format!("{major}.{minor}.{update}"),
+                "displayWidthUnicodeVersion": format!("{width_major}.{width_minor}.{width_update}"),
                 "build": build_info::value(),
                 "formats": {
                     "version": [1],

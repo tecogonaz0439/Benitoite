@@ -31,17 +31,18 @@ functions; the [runnable example](examples/People.bnt) and its
 There is no new public `benitoite` subcommand. A relative `--config` is relative
 to the current working directory, and `source` paths are relative to `--root`.
 
-## Generation rules 3 transition
+## Generation rules 3.1 transition
 
-The recursive and polymorphic templates use generation rules 3. Interpreter
+Generation rules 3.1 add the file-level effect and import-boundary contract to
+the recursive and polymorphic templates from generation rules 3. Interpreter
 versioning is updated separately at release. These versions identify different contracts:
 
 | Contract | Current version |
 |---|---|
 | Derive configuration | `1` |
-| Declaration inventory | `2` |
+| Declaration inventory | `3` |
 | Manifest / receipt / persistent generation record / semantic hash | `3` |
-| GENERATOR_VERSION | `3.0.0-syntax-batch4` |
+| GENERATOR_VERSION | `3.1.0-syntax-batch5` |
 | Property.libraryVersion | `2.0.0` |
 | Property template revision | `3` |
 | Show / Order template revisions | `2` / `2` |
@@ -146,7 +147,7 @@ custom functions, higher-kinded targets, cross-module cycles, and nonregular
 recursion are refused. Recursive edges must pass the same type parameters in the
 same declaration order. JSON retains its monomorphic, noncyclic scope.
 
-The inventory remains version 2. The tool collects declaration identities and
+The inventory is version 3. The tool collects declaration identities and
 edges with resolved type arguments, computes strongly connected components, and
 finds a minimum finite base before generating source. Required record fields add
 their minima; None and empty List/Map need no children. A required-field cycle
@@ -272,15 +273,37 @@ and existing imports, and before the first ordinary declaration; it contains all
 newly required imports for that source. This placement follows the parser's requirement that imports precede declarations.
 If every existing region follows declarations and no new region is being added,
 new imports are refused: add an appropriate handwritten import before declarations
-and preview again. Existing regions are edited only between the marker lines. Original
+and preview again.
+
+With file-level `uses`, required imports must precede that declaration. Inventory
+3 supplies the original `fileUses` and `importInsertLimit`; `preambleEnd` still
+ends at documentation/header metadata. The current region format holds imports
+and generated declarations together. Such a region cannot be inserted before
+`uses`, because ordinary declarations must follow it. If new imports are needed,
+preview refuses with the required import lines: add them by hand after existing
+imports and before `uses`, then preview again. Existing regions after `uses`
+cannot receive new imports, even before the first ordinary declaration. A region
+before `uses` cannot be rewritten with generated declarations; move the whole
+managed region after `uses`, preserve its body, and preview again after providing
+any needed handwritten imports. With the needed handwritten imports in place, new regions and regions after
+`uses` can be generated normally.
+
+Generated top-level functions receive the file's effects like handwritten ones.
+Custom JSON/Property functions are validated using their merged signatures.
+Generation and derive `check` do not check bodies: the harness must also run
+normal `benitoite check`/`test`. For example, Property helpers generated in a file
+with `uses Log` can fail the normal pure-function check even when derive `check`
+passes. Put pure helpers in a source without the file declaration.
+
+Existing regions are edited only between the marker lines. Original
 UTF-8 byte offsets are used; handwritten bytes, CRLF line endings, and marker
 lines outside that body are preserved. Duplicate, nested, unmatched, or malformed
 markers are rejected. An existing region without its generation record is treated
 as handwritten code. A changed body is rejected rather than overwritten.
 
 The persistent record is `<config-stem>.generated.json` beside the config. It
-contains `version: 3`, `inventoryVersion: 2`, `hashVersion: 3`,
-`generatorVersion: "3.0.0-syntax-batch4"`, and ordered `targets`. Each target
+contains `version: 3`, `inventoryVersion: 3`, `hashVersion: 3`,
+`generatorVersion: "3.1.0-syntax-batch5"`, and ordered `targets`. Each target
 contains `source`, `region`, the resolved `type`, and these SHA-256 hashes:
 
 | Key | Input |
@@ -318,7 +341,8 @@ hashes all this semantic metadata. `outputSha256` separately authenticates the
 formatted body bytes. Changing a dependency therefore requires review of every
 reachable managed region even when some body bytes stay identical.
 
-Version 1 and 2 records require migration: `check` returns `derive.migration_required`
+Version 1 and 2 records, and version 3 records from older inventory or generator
+rules (including `3.0.0-syntax-batch4`), require migration: `check` returns `derive.migration_required`
 without writing. Finish any pending old apply/recovery with the saved old tool
 and its manifest/receipt first. New `preview` includes the previous record in `manifest.migration` and marks its
 semantic hashes incomparable, so old input/record hashes remain visible for
@@ -359,7 +383,7 @@ the receipt:
 
 | Artifact | Content |
 | --- | --- |
-| `manifest.json` | Version 3 plan (inventory 2 / hash 3): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
+| `manifest.json` | Version 3 plan (inventory 3 / hash 3): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
 | `changes.diff` | Unified source diff from source-migrate; empty for a record-only change. |
 | `generated.json` | Proposed new generation record for review. |
 | `manifest.json.receipt.json` | After apply: reviewed manifest hash and post-apply hashes for all filesystem inputs. |
@@ -442,7 +466,8 @@ replay, empty second diff, structural changes, handwritten protection, collision
 CRLF/UTF-8 offsets, all-input verification, unsupported settings, and record-write
 recovery. JSON cases also cover nested records/containers, missing/null Option,
 field and key order, renamed/literal keys, custom conversions, lossy types,
-signature rejection, and stale generation records. Property cases check field-order
+signature rejection, file-level effects on custom and generated functions,
+import boundaries and stale generation records. Property cases check field-order
 random state and size, one-field shrinking, custom functions, nested Option,
 replay, unsupported types, and the combined JSON roundtrip example. The suite
 does not invoke an LLM or modify repository fixtures.

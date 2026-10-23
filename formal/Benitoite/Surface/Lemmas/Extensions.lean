@@ -67,9 +67,9 @@ theorem spreadValues_typed {R h vs a n k}
 inductive StrHeadsTyped (P : Release.Program) (B : Builtins) (Q : NoFailCtx) (C : List TParam)
     (Γ : List (Option Ty)) : List CallHead → List Ty → Prop
   | nil : StrHeadsTyped P B Q C Γ [] []
-  | cons {h hs name t ts} : CallHead.HasTypeQ P B Q C Γ h [name] [t] (.base .string) Eff.empty →
+  | cons {h hs names args ts} : CallHead.HasTypeQ P B Q C Γ h names args (.base .string) Eff.empty →
       StrHeadsTyped P B Q C Γ hs ts →
-      StrHeadsTyped P B Q C Γ (h :: hs) (.fn [name] [t] (.base .string) Eff.empty :: ts)
+      StrHeadsTyped P B Q C Γ (h :: hs) (.fn names args (.base .string) Eff.empty :: ts)
 
 theorem StrHeadsTyped.rename {hs ts Δ ξ} (h : StrHeadsTyped P B Q C Γ hs ts)
     (hr : RenOk Γ Δ ξ) : StrHeadsTyped P B Q C Δ (hs.map (CallHead.rename ξ)) ts := by
@@ -82,21 +82,21 @@ theorem directHeads_typed {Δb : BuilderCtx} {p : Program} {op C Γ Γc R fs ts 
     (h : HasTypesQ (p.declarationsFor view) B op Q Δb C Γ R fs ts ε)
     (hm : CompTypesQ (desugarProgram op p) B Q C Γc R δ (desugarExprs op fs) ts Δl)
     (hd : fs.AllDirect)
-    (ht : ∀ t ∈ ts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty) :
+    (ht : ∀ t ∈ ts, ∃ names args, t = .fn names args (.base .string) Eff.empty) :
     StrHeadsTyped (desugarProgram op p) B Q C Γc (directHeads fs) ts := by
   match h with
   | .nil => exact .nil
   | .cons (a := t) hf hfs =>
       cases hm with
       | cons hm hms =>
-          obtain ⟨a, rfl⟩ := ht t (by simp)
+          obtain ⟨names, args, rfl⟩ := ht t (by simp)
           obtain ⟨head, hh⟩ := hd.1
           simp only [directHeads, hh, Option.getD_some]
           exact .cons (directCallee_typed hh hf hm hΓc)
             (directHeads_typed hΓc hfs hms hd.2 (fun t hm => ht t (by simp [hm])))
 
 theorem converterTypes_fn (parts : List InterpPart) :
-    ∀ t ∈ InterpPart.converterTypes parts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty := by
+    ∀ t ∈ InterpPart.converterTypes parts, ∃ names args, t = .fn names args (.base .string) Eff.empty := by
   induction parts with
   | nil => simp [InterpPart.converterTypes]
   | cons p ps ih =>
@@ -104,8 +104,18 @@ theorem converterTypes_fn (parts : List InterpPart) :
       · exact ih
       · exact ih
       · intro t ht; rcases List.mem_cons.mp ht with rfl | ht
-        · exact ⟨_, rfl⟩
+        · exact ⟨_, _, rfl⟩
         · exact ih t ht
+      · intro t ht; rcases List.mem_cons.mp ht with rfl | ht
+        · exact ⟨_, _, rfl⟩
+        · exact ih t ht
+
+/-- 七定数の型付け。省略の符号化を変換の前に具体値へ置き換えない。 -/
+theorem FormatSpec.arguments_typed (s : FormatSpec) (h : s.SyntaxValid) :
+    HasTypeVsQ P B StoreTy.empty Q C Γ s.arguments FormatSpec.constantTypes := by
+  simp only [FormatSpec.arguments, dite_eq_left h, FormatSpec.constants, FormatSpec.constantTypes, List.map]
+  exact .cons .V_Const (.cons .V_Const (.cons .V_Const (.cons .V_Const
+    (.cons .V_Const (.cons .V_Const (.cons .V_Const .nil))))))
 
 theorem stringAdd_typed {op R v w} (hsig : ∀ b s, B.sig b = some s → s.Scoped) (h : StringAddOk B op C)
     (hv : HasTypeVQ P B StoreTy.empty Q C Γ v (.base .string))
@@ -174,6 +184,7 @@ theorem HasTypeEachQ.append {vs ws a}
   | .cons h hs => exact .cons h (HasTypeEachQ.append hs hw)
 
 theorem interpolate_typed {op R parts vs hs acc} (hsig : ∀ b s, B.sig b = some s → s.Scoped)
+    (hp : InterpPart.Allowed parts)
     (hv : HasTypeVsQ P B StoreTy.empty Q C Γ vs (InterpPart.exprTypes parts))
     (hh : StrHeadsTyped P B Q C Γ hs (InterpPart.converterTypes parts))
     (hc : HasTypeEachQ P B StoreTy.empty Q C Γ acc (.base .string))
@@ -186,14 +197,14 @@ theorem interpolate_typed {op R parts vs hs acc} (hsig : ∀ b s, B.sig b = some
       | text s =>
           simp only [interpolate]
           split
-          · rename_i he; exact ih hv hh hc (by simpa [InterpPart.count, he] using ha)
+          · rename_i he; exact ih hp hv hh hc (by simpa [InterpPart.count, he] using ha)
           · rename_i he
-            apply ih hv hh (HasTypeEachQ.append hc (.cons .V_Const .nil))
+            apply ih hp hv hh (HasTypeEachQ.append hc (.cons .V_Const .nil))
             simpa [InterpPart.count, he, List.length_append, Nat.add_assoc] using ha
       | stringExpr =>
           cases hv with
           | cons hv hvs =>
-              exact ih hvs hh (HasTypeEachQ.append hc (.cons hv .nil))
+              exact ih hp hvs hh (HasTypeEachQ.append hc (.cons hv .nil))
                 (by simpa [InterpPart.count, List.length_append, Nat.add_assoc] using ha)
       | converted t =>
           cases hv with
@@ -201,7 +212,19 @@ theorem interpolate_typed {op R parts vs hs acc} (hsig : ∀ b s, B.sig b = some
               cases hh with
               | cons hh hhs =>
                   apply HasTypeCQ.C_Let (hh.apply (.cons hv .nil))
-                  apply ih (hvs.rename (RenOk.shift [some (.base .string)] Γ))
+                  apply ih hp.2 (hvs.rename (RenOk.shift [some (.base .string)] Γ))
+                    (hhs.rename (RenOk.shift [some (.base .string)] Γ))
+                    (HasTypeEachQ.append (hc.rename (RenOk.shift [some (.base .string)] Γ))
+                      (.cons (.V_Var rfl (by intro _ _ _ he; cases he)) .nil))
+                  simpa [InterpPart.count, List.length_append, Val.renameList_length,
+                    Nat.add_assoc] using ha
+      | formatted t s =>
+          cases hv with
+          | cons hv hvs =>
+              cases hh with
+              | cons hh hhs =>
+                  apply HasTypeCQ.C_Let (hh.apply (.cons hv (s.arguments_typed hp.1.1)))
+                  apply ih hp.2 (hvs.rename (RenOk.shift [some (.base .string)] Γ))
                     (hhs.rename (RenOk.shift [some (.base .string)] Γ))
                     (HasTypeEachQ.append (hc.rename (RenOk.shift [some (.base .string)] Γ))
                       (.cons (.V_Var rfl (by intro _ _ _ he; cases he)) .nil))

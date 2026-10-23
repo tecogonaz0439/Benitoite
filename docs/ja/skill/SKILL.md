@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
@@ -65,7 +65,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 スクリプトを初めて実行する前と、`main` のエフェクトが前回利用者に示したものより増えたときには、次のことを行う。
 
-1. 成功した検査報告の宣言上限（`main.effects` または選択された各テストの `effects`、および `aggregateEffects`）を読み、後掲の表の言葉で、プログラムが宣言する操作の種類を利用者に伝える。コードを説明するときは `uses` のシグネチャと照合する。宣言して使わないエフェクトも数える。
+1. 単一の JSON オブジェクト全体、既知の schemaVersion と kind、status: "ok"、complete: true、終了状態 0 を確認した場合だけ検査報告を受理する。宣言上限（スクリプトでは `targets[0].main.effects.expanded`、テストでは選択された各テストの effects と aggregateEffects）を読み、後掲の表の言葉で操作の種類を利用者へ伝える。コードの説明では関数の個別の uses とファイル単位の uses の両方と照合する。使わない宣言とファイル由来の追加も数える。失敗や不明を空集合とせず、上限自体を許可としない。報告の欄と受理条件の正は処理系の[版を固定した CLI 仕様（v0.0.11、checkReport 1・testCheckReport 1/2）](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/design/06-tooling/06-01-cli.md#main-の非実行の検査報告)である。[実行前の検査](references/inspection.md)も参照する。
 2. 並びに `File.Write`、`Process.Run`、`Http.Connect`、`Http.Listen` のどれかがあるときは、実行する前に利用者に確認を求める。`Process.Run` については、スクリプトが起動するコマンドの名前も挙げる。それらのコマンドが何をするかは、`benitoite` の検査の範囲の外にある。
 3. `IO.All` は `File.Write` と `Process.Run` を含むものとして扱う。`uses` には、`IO.All` の代わりに個別のエフェクトを書く。
 
@@ -121,6 +121,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 型の引数には角括弧を使う: `List[Integer]`、`Map[String, Integer]`、`Result[Unit, String]`。`List<Integer>` は正しくない。
 - `with r = acquire() do ... end with` は、ブロックが終わるときに、そのリソースを逆の順に解放する。`TaskGroup.spawn(group: group, action: lambda() ... end lambda)` は、`TaskGroup.open()` で開いたタスクの集まりの中でタスクを起動し、`Task.await(task)` はその結果を待つ。タスクの集まりを解放すると、そのすべてのタスクを待つ。
 - 利用者が定義する操作の値型のパラメータには、`function render[T: Trait.Show](value: T) -> String` のように制約を付けられる。呼び出し側が実装を選び、節は呼び出し側のどの型にもそのメソッドを使える。制約によって公開の引数が増えることはない。関数値、`_` の穴、`|>` も、直接の呼び出しと同じ公開のパラメータ名と評価順を使う。節内のラムダは制約を捕捉でき、入れ子の節はそれぞれの制約を保つ。操作は型構築子パラメータ、エフェクト変数、独自の uses を宣言できない。
+- 取り込みの後、宣言の前に一回だけ置くファイル単位の uses は、main と @test を含む全トップレベル関数に加わる。有効契約は個別の uses との和であり、使わない追加にも実行の許可が必要である。関数型、ラムダ、trait/implement のメソッドには加わらない。純粋なコールバックと Property の補助は宣言のない別ファイルへ置く。main 内のハンドラではファイルが加えた契約を取り除けないため、禁止された追加は宣言を外すか入口を別ファイルへ移す。doc の例は独立したモジュールであり外側の宣言を継承しない。[ファイル単位の例](references/idioms.md#ファイル単位のエフェクトと純粋な補助)を参照する。
 - エフェクトの操作の一部だけを処理するハンドラは、型からそのエフェクトを取り除かない。型に `State` を持つ関数（`Reference`、`TaskGroup`、`Task.await`、`close...`）はハンドラで処理できない。
 - マップと集合は、挿入の順ではなくキーの順に並ぶ。
 - 数値のビット幅ごとに型が異なり、暗黙の変換はない。接尾辞のない `1` は常に `Integer` である。`Integer32` には `1s32`、`Float32` には `1.0f32` を使う。接尾辞（`s8`–`s64`、`u8`–`u64`、`f32`/`f64`）は暫定であり、構文の見直しで変わることがある。`Integer64` = `Integer`、`Float64` = `Float`、`UnsignedInteger8` = `Byte`、`UnsignedInteger` = `UnsignedInteger64` である。通常の名前には `Integer`、`Float`、`Byte` を使う。`Byte` に算術演算はなく、符号なしの型に単項の負号はない。

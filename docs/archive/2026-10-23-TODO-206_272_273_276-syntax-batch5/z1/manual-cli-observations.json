@@ -1,0 +1,688 @@
+[
+  {
+    "command": [
+      "target/release/benitoite",
+      "--version"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "benitoite 0.0.11\nUnicode 17.0.0\n",
+    "stderr": "",
+    "elapsedSeconds": 0.004
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "--version=json"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "{\"build\":{\"commit\":\"e0ed5eb2888349dbb0d251843627c527d7ffc0b0\",\"dirty\":null,\"provenance\":{\"commit\":\"git\",\"dirty\":\"notCollected\"},\"target\":\"aarch64-apple-darwin\"},\"displayWidthUnicodeVersion\":\"17.0.0\",\"formats\":{\"checkReport\":[1],\"diagnostics\":[1],\"effectLimit\":[1],\"loaderEnvironment\":[1],\"skillDocument\":[1],\"skillList\":[1],\"testCheckReport\":[1,2],\"testResults\":[1,2],\"version\":[1]},\"kind\":\"version\",\"loaderEnvironment\":{\"deniedPrefixes\":[\"DYLD_\",\"LD_\"],\"errorKind\":\"InvalidInput\",\"inherited\":\"unchanged\",\"mode\":\"always\",\"nameComparison\":\"asciiCaseInsensitive\",\"schemaVersion\":1},\"name\":\"benitoite\",\"schemaVersion\":1,\"unicodeVersion\":\"17.0.0\",\"version\":\"0.0.11\"}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.003
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "--licenses"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "benitoite is licensed under either of the MIT License or the Apache License, Version 2.0, at your option.\nThis build does not include the list of third-party licenses.\n",
+    "stderr": "",
+    "elapsedSeconds": 0.003
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/d.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/d.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "42\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/b.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/b.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "0b101\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/o.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/o.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "0o11\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/x.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/x.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "0x2a\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/X.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/X.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "0X2A\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/f.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/f.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "2.68\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/s.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/s.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "   猫\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/c.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/c.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "A\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/sign.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/sign.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "+42\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/zero.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/zero.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "-0x0002a\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/center.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.014
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/center.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": " x  \n",
+    "stderr": "",
+    "elapsedSeconds": 0.016
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "<repo>/target/z1-cli/formats/width.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/formats/width.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "  42\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--report=json",
+      "<repo>/target/z1-cli/effects/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "{\"aggregateEffects\":{\"basis\":\"declaredUpperBound\",\"expanded\":[\"Console.Write\",\"Log\"]},\"complete\":true,\"diagnosticTargets\":[],\"diagnostics\":[],\"executed\":false,\"kind\":\"checkReport\",\"producer\":{\"build\":{\"commit\":\"e0ed5eb2888349dbb0d251843627c527d7ffc0b0\",\"dirty\":null,\"provenance\":{\"commit\":\"git\",\"dirty\":\"notCollected\"},\"target\":\"aarch64-apple-darwin\"},\"name\":\"benitoite\",\"version\":\"0.0.11\"},\"requestedTargets\":[{\"path\":\"<repo>/target/z1-cli/effects/main.bnt\",\"requestIndex\":0}],\"schemaVersion\":1,\"sourceSets\":[{\"sourceIds\":[\"t0:s0\",\"t0:s1\",\"t0:s2\",\"t0:s3\",\"t0:s4\",\"t0:s5\",\"t0:s6\",\"t0:s7\",\"t0:s8\",\"t0:s9\",\"t0:s10\",\"t0:s11\",\"t0:s12\",\"t0:s13\",\"t0:s14\",\"t0:s15\",\"t0:s16\",\"t0:s17\",\"t0:s18\",\"t0:s19\",\"t0:s20\",\"t0:s21\",\"t0:s22\",\"t0:s23\",\"t0:s24\",\"t0:s25\",\"t0:s26\",\"t0:s27\",\"t0:s28\",\"t0:s29\",\"t0:s30\",\"t0:s31\",\"t0:s32\",\"t0:s33\",\"t0:s34\",\"t0:s35\",\"t0:s36\",\"t0:s37\",\"t0:s38\",\"t0:s39\",\"t0:s40\",\"t0:s41\",\"t0:s42\",\"t0:s43\"],\"targetId\":\"t0\"}],\"sources\":[{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"2ab2532a26fec98310ca951f22ab0df14a3510701b66006f8a079fdf6ba2f8b9\"},\"displayPath\":\"<repo>/target/z1-cli/effects/main.bnt\",\"kind\":\"user\",\"sourceId\":\"t0:s0\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"c7a8af88769d038125c705f4f0f900722722cce859b6b04a44731268c20371a0\"},\"displayPath\":\"<benitoite>/Integer.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s1\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6\"},\"displayPath\":\"<benitoite>/Float.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s2\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839\"},\"displayPath\":\"<benitoite>/Decimal.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s3\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950\"},\"displayPath\":\"<benitoite>/RoundingMode.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s4\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"5781e4240ead4d6e9d71fb51b4f4d8f78aec1e22b3fcca2b046095f4c60bc62a\"},\"displayPath\":\"<benitoite>/Byte.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s5\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb\"},\"displayPath\":\"<benitoite>/Character.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s6\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0\"},\"displayPath\":\"<benitoite>/String.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s7\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3\"},\"displayPath\":\"<benitoite>/Boolean.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s8\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df\"},\"displayPath\":\"<benitoite>/List.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s9\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788\"},\"displayPath\":\"<benitoite>/Map.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s10\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7\"},\"displayPath\":\"<benitoite>/Set.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s11\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374\"},\"displayPath\":\"<benitoite>/Option.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s12\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4\"},\"displayPath\":\"<benitoite>/Result.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s13\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7\"},\"displayPath\":\"<benitoite>/Pair.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s14\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454\"},\"displayPath\":\"<benitoite>/Triple.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s15\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317\"},\"displayPath\":\"<benitoite>/IOError.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s16\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489\"},\"displayPath\":\"<benitoite>/IOErrorKind.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s17\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86\"},\"displayPath\":\"<benitoite>/Reference.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s18\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d\"},\"displayPath\":\"<benitoite>/Lazy.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s19\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c\"},\"displayPath\":\"<benitoite>/Task.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s20\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b\"},\"displayPath\":\"<benitoite>/TaskGroup.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s21\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389\"},\"displayPath\":\"<benitoite>/IO.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s22\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4\"},\"displayPath\":\"<benitoite>/Assert.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s23\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee\"},\"displayPath\":\"<benitoite>/Bytes.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s24\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3\"},\"displayPath\":\"<benitoite>/ByteOrder.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s25\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3\"},\"displayPath\":\"<benitoite>/NetworkError.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s26\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1\"},\"displayPath\":\"<benitoite>/NetworkErrorKind.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s27\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cb7f94bd3976e18de88f19b1abfb27101ec543504dc27e7380f68c15f1894ff4\"},\"displayPath\":\"<benitoite>/Integer8.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s28\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"16190b89cd49cd3db4c1b1b60b8d1bb65b9e0e71a98998c8592dcec4e2666ec5\"},\"displayPath\":\"<benitoite>/Integer16.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s29\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"4c96b4a2378c53a2b6f041d4ba0842bd49df2932c3f623a1423532ac36508fe6\"},\"displayPath\":\"<benitoite>/Integer32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s30\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"73abb213d7aba1bb9439bbf58c3915c040ea2b5e7f61220e7863199239cbc2b9\"},\"displayPath\":\"<benitoite>/Integer64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s31\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6e5ac185ad04fa0c22e1cab6382c21ad63ea733d273c13b49188c4b711233573\"},\"displayPath\":\"<benitoite>/UnsignedInteger8.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s32\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7a0b40d115a75030bdf1c29270d0e8df587e0dd77000a81fec53d7a0fe2324dc\"},\"displayPath\":\"<benitoite>/UnsignedInteger16.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s33\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"30614988c2a6f70dbfe97dc494903443854b53405f39c8dcacf62d98af5e6e89\"},\"displayPath\":\"<benitoite>/UnsignedInteger32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s34\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e5a02c71c35c7d57c965f326aa2d31338f731612791f41f22d6116d7935980de\"},\"displayPath\":\"<benitoite>/UnsignedInteger64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s35\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"55c95dc4f5a4c6a16b2d072e21fc706d78bf202fd05a9e38bc40c54cba9c619a\"},\"displayPath\":\"<benitoite>/UnsignedInteger.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s36\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70\"},\"displayPath\":\"<benitoite>/Float32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s37\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e\"},\"displayPath\":\"<benitoite>/Float64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s38\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b\"},\"displayPath\":\"<benitoite>/SourceLocation.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s39\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cab695be534778d8f1ae241811475762826b1241c0ec64a99546d5ec2c20aebe\"},\"displayPath\":\"<benitoite>/Log.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s40\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d\"},\"displayPath\":\"<benitoite>/IO/Console.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s41\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8\"},\"displayPath\":\"<benitoite>/IO/Clock.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s42\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c\"},\"displayPath\":\"<benitoite>/Time.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s43\"}],\"status\":\"ok\",\"targets\":[{\"complete\":true,\"entry\":\"<repo>/target/z1-cli/effects/main.bnt\",\"kind\":\"main\",\"main\":{\"effects\":{\"basis\":\"declaredUpperBound\",\"expanded\":[\"Console.Write\",\"Log\"]},\"location\":{\"end\":{\"column\":14,\"line\":5,\"offset\":78},\"file\":\"<repo>/target/z1-cli/effects/main.bnt\",\"label\":\"\",\"start\":{\"column\":10,\"line\":5,\"offset\":74}},\"processShellReference\":\"absent\",\"shellReferenceScope\":\"checkedProgram\",\"symbol\":\"main\"},\"requestIndex\":0,\"root\":\"<repo>/target/z1-cli/effects\",\"sourceId\":\"t0:s0\",\"status\":\"ok\",\"targetId\":\"t0\"}],\"targetsComplete\":true}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--allow-effects=Console.Write,Log",
+      "<repo>/target/z1-cli/effects/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "ok\n",
+    "stderr": "",
+    "elapsedSeconds": 0.015
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "run",
+      "--diagnostics=json",
+      "--allow-effects=Console.Write",
+      "<repo>/target/z1-cli/effects/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0512\",\"message\":\"effects of `main` exceed `--allow-effects`\",\"primary\":{\"file\":\"<repo>/target/z1-cli/effects/main.bnt\",\"start\":{\"line\":5,\"column\":10,\"offset\":74},\"end\":{\"line\":5,\"column\":14,\"offset\":78},\"label\":\"effect limit checked for this function\"},\"secondary\":[{\"file\":\"<repo>/target/z1-cli/effects/main.bnt\",\"start\":{\"line\":3,\"column\":21,\"offset\":60},\"end\":{\"line\":3,\"column\":24,\"offset\":63},\"label\":\"added to this function by the file-level uses declaration\"}],\"notes\":[\"effects not allowed: Log\",\"allowed effects: Console.Write\"],\"helps\":[{\"message\":\"review the required effects before changing --allow-effects\",\"edits\":[]}]}\n",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/errors/syntax.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0262\",\"message\":\"invalid interpolation format\",\"primary\":{\"file\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"start\":{\"line\":2,\"column\":22,\"offset\":45},\"end\":{\"line\":2,\"column\":23,\"offset\":46},\"label\":\"invalid format here\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"omit the colon for an interpolation without a format\",\"edits\":[{\"file\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"start\":{\"line\":2,\"column\":22,\"offset\":45},\"end\":{\"line\":2,\"column\":23,\"offset\":46},\"replacement\":\"\"}]}]}\n",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--report=json",
+      "<repo>/target/z1-cli/errors/syntax.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "{\"aggregateEffects\":null,\"complete\":false,\"diagnosticTargets\":[{\"diagnosticIndex\":0,\"targetId\":\"t0\"}],\"diagnostics\":[{\"code\":\"E0262\",\"helps\":[{\"edits\":[{\"end\":{\"column\":23,\"line\":2,\"offset\":46},\"file\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"replacement\":\"\",\"start\":{\"column\":22,\"line\":2,\"offset\":45}}],\"message\":\"omit the colon for an interpolation without a format\"}],\"kind\":\"check\",\"message\":\"invalid interpolation format\",\"notes\":[],\"primary\":{\"end\":{\"column\":23,\"line\":2,\"offset\":46},\"file\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"label\":\"invalid format here\",\"start\":{\"column\":22,\"line\":2,\"offset\":45}},\"secondary\":[],\"severity\":\"error\"}],\"executed\":false,\"kind\":\"checkReport\",\"producer\":{\"build\":{\"commit\":\"e0ed5eb2888349dbb0d251843627c527d7ffc0b0\",\"dirty\":null,\"provenance\":{\"commit\":\"git\",\"dirty\":\"notCollected\"},\"target\":\"aarch64-apple-darwin\"},\"name\":\"benitoite\",\"version\":\"0.0.11\"},\"requestedTargets\":[{\"path\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"requestIndex\":0}],\"schemaVersion\":1,\"sourceSets\":[{\"sourceIds\":[\"t0:s0\",\"t0:s1\",\"t0:s2\",\"t0:s3\",\"t0:s4\",\"t0:s5\",\"t0:s6\",\"t0:s7\",\"t0:s8\",\"t0:s9\",\"t0:s10\",\"t0:s11\",\"t0:s12\",\"t0:s13\",\"t0:s14\",\"t0:s15\",\"t0:s16\",\"t0:s17\",\"t0:s18\",\"t0:s19\",\"t0:s20\",\"t0:s21\",\"t0:s22\",\"t0:s23\",\"t0:s24\",\"t0:s25\",\"t0:s26\",\"t0:s27\",\"t0:s28\",\"t0:s29\",\"t0:s30\",\"t0:s31\",\"t0:s32\",\"t0:s33\",\"t0:s34\",\"t0:s35\",\"t0:s36\",\"t0:s37\",\"t0:s38\",\"t0:s39\",\"t0:s40\",\"t0:s41\",\"t0:s42\",\"t0:s43\"],\"targetId\":\"t0\"}],\"sources\":[{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7d13e5db4fd88c6805b02e8147639f607cd95e9754bd9fe75686da4eb94d07ed\"},\"displayPath\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"kind\":\"user\",\"sourceId\":\"t0:s0\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"c7a8af88769d038125c705f4f0f900722722cce859b6b04a44731268c20371a0\"},\"displayPath\":\"<benitoite>/Integer.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s1\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6\"},\"displayPath\":\"<benitoite>/Float.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s2\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839\"},\"displayPath\":\"<benitoite>/Decimal.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s3\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950\"},\"displayPath\":\"<benitoite>/RoundingMode.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s4\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"5781e4240ead4d6e9d71fb51b4f4d8f78aec1e22b3fcca2b046095f4c60bc62a\"},\"displayPath\":\"<benitoite>/Byte.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s5\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb\"},\"displayPath\":\"<benitoite>/Character.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s6\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0\"},\"displayPath\":\"<benitoite>/String.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s7\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3\"},\"displayPath\":\"<benitoite>/Boolean.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s8\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df\"},\"displayPath\":\"<benitoite>/List.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s9\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788\"},\"displayPath\":\"<benitoite>/Map.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s10\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7\"},\"displayPath\":\"<benitoite>/Set.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s11\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374\"},\"displayPath\":\"<benitoite>/Option.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s12\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4\"},\"displayPath\":\"<benitoite>/Result.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s13\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7\"},\"displayPath\":\"<benitoite>/Pair.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s14\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454\"},\"displayPath\":\"<benitoite>/Triple.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s15\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317\"},\"displayPath\":\"<benitoite>/IOError.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s16\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489\"},\"displayPath\":\"<benitoite>/IOErrorKind.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s17\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86\"},\"displayPath\":\"<benitoite>/Reference.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s18\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d\"},\"displayPath\":\"<benitoite>/Lazy.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s19\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c\"},\"displayPath\":\"<benitoite>/Task.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s20\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b\"},\"displayPath\":\"<benitoite>/TaskGroup.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s21\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389\"},\"displayPath\":\"<benitoite>/IO.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s22\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4\"},\"displayPath\":\"<benitoite>/Assert.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s23\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee\"},\"displayPath\":\"<benitoite>/Bytes.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s24\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3\"},\"displayPath\":\"<benitoite>/ByteOrder.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s25\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3\"},\"displayPath\":\"<benitoite>/NetworkError.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s26\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1\"},\"displayPath\":\"<benitoite>/NetworkErrorKind.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s27\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cb7f94bd3976e18de88f19b1abfb27101ec543504dc27e7380f68c15f1894ff4\"},\"displayPath\":\"<benitoite>/Integer8.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s28\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"16190b89cd49cd3db4c1b1b60b8d1bb65b9e0e71a98998c8592dcec4e2666ec5\"},\"displayPath\":\"<benitoite>/Integer16.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s29\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"4c96b4a2378c53a2b6f041d4ba0842bd49df2932c3f623a1423532ac36508fe6\"},\"displayPath\":\"<benitoite>/Integer32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s30\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"73abb213d7aba1bb9439bbf58c3915c040ea2b5e7f61220e7863199239cbc2b9\"},\"displayPath\":\"<benitoite>/Integer64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s31\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6e5ac185ad04fa0c22e1cab6382c21ad63ea733d273c13b49188c4b711233573\"},\"displayPath\":\"<benitoite>/UnsignedInteger8.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s32\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7a0b40d115a75030bdf1c29270d0e8df587e0dd77000a81fec53d7a0fe2324dc\"},\"displayPath\":\"<benitoite>/UnsignedInteger16.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s33\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"30614988c2a6f70dbfe97dc494903443854b53405f39c8dcacf62d98af5e6e89\"},\"displayPath\":\"<benitoite>/UnsignedInteger32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s34\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e5a02c71c35c7d57c965f326aa2d31338f731612791f41f22d6116d7935980de\"},\"displayPath\":\"<benitoite>/UnsignedInteger64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s35\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"55c95dc4f5a4c6a16b2d072e21fc706d78bf202fd05a9e38bc40c54cba9c619a\"},\"displayPath\":\"<benitoite>/UnsignedInteger.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s36\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70\"},\"displayPath\":\"<benitoite>/Float32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s37\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e\"},\"displayPath\":\"<benitoite>/Float64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s38\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b\"},\"displayPath\":\"<benitoite>/SourceLocation.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s39\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cab695be534778d8f1ae241811475762826b1241c0ec64a99546d5ec2c20aebe\"},\"displayPath\":\"<benitoite>/Log.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s40\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8\"},\"displayPath\":\"<benitoite>/IO/Clock.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s41\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d\"},\"displayPath\":\"<benitoite>/IO/Console.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s42\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c\"},\"displayPath\":\"<benitoite>/Time.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s43\"}],\"status\":\"checkError\",\"targets\":[{\"complete\":false,\"entry\":\"<repo>/target/z1-cli/errors/syntax.bnt\",\"kind\":\"main\",\"main\":null,\"requestIndex\":0,\"root\":\"<repo>/target/z1-cli/errors\",\"sourceId\":\"t0:s0\",\"status\":\"checkError\",\"targetId\":\"t0\"}],\"targetsComplete\":true}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/errors/type.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0468\",\"message\":\"a value of type `String` is incompatible with this interpolation format\",\"primary\":{\"file\":\"<repo>/target/z1-cli/errors/type.bnt\",\"start\":{\"line\":2,\"column\":23,\"offset\":46},\"end\":{\"line\":2,\"column\":25,\"offset\":48},\"label\":\"incompatible format\"},\"secondary\":[{\"file\":\"<repo>/target/z1-cli/errors/type.bnt\",\"start\":{\"line\":2,\"column\":20,\"offset\":43},\"end\":{\"line\":2,\"column\":23,\"offset\":46},\"label\":\"value has type `String`\"}],\"notes\":[\"this format accepts `Integer`, `Integer8`, `Integer16`, `Integer32`, `Byte`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`\"],\"helps\":[{\"message\":\"choose a format compatible with the value's type; numeric formatting requires an explicitly numeric value\",\"edits\":[]}]}\n",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--report=json",
+      "<repo>/target/z1-cli/errors/type.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "{\"aggregateEffects\":null,\"complete\":false,\"diagnosticTargets\":[{\"diagnosticIndex\":0,\"targetId\":\"t0\"}],\"diagnostics\":[{\"code\":\"E0468\",\"helps\":[{\"edits\":[],\"message\":\"choose a format compatible with the value's type; numeric formatting requires an explicitly numeric value\"}],\"kind\":\"check\",\"message\":\"a value of type `String` is incompatible with this interpolation format\",\"notes\":[\"this format accepts `Integer`, `Integer8`, `Integer16`, `Integer32`, `Byte`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`\"],\"primary\":{\"end\":{\"column\":25,\"line\":2,\"offset\":48},\"file\":\"<repo>/target/z1-cli/errors/type.bnt\",\"label\":\"incompatible format\",\"start\":{\"column\":23,\"line\":2,\"offset\":46}},\"secondary\":[{\"end\":{\"column\":23,\"line\":2,\"offset\":46},\"file\":\"<repo>/target/z1-cli/errors/type.bnt\",\"label\":\"value has type `String`\",\"start\":{\"column\":20,\"line\":2,\"offset\":43}}],\"severity\":\"error\"}],\"executed\":false,\"kind\":\"checkReport\",\"producer\":{\"build\":{\"commit\":\"e0ed5eb2888349dbb0d251843627c527d7ffc0b0\",\"dirty\":null,\"provenance\":{\"commit\":\"git\",\"dirty\":\"notCollected\"},\"target\":\"aarch64-apple-darwin\"},\"name\":\"benitoite\",\"version\":\"0.0.11\"},\"requestedTargets\":[{\"path\":\"<repo>/target/z1-cli/errors/type.bnt\",\"requestIndex\":0}],\"schemaVersion\":1,\"sourceSets\":[{\"sourceIds\":[\"t0:s0\",\"t0:s1\",\"t0:s2\",\"t0:s3\",\"t0:s4\",\"t0:s5\",\"t0:s6\",\"t0:s7\",\"t0:s8\",\"t0:s9\",\"t0:s10\",\"t0:s11\",\"t0:s12\",\"t0:s13\",\"t0:s14\",\"t0:s15\",\"t0:s16\",\"t0:s17\",\"t0:s18\",\"t0:s19\",\"t0:s20\",\"t0:s21\",\"t0:s22\",\"t0:s23\",\"t0:s24\",\"t0:s25\",\"t0:s26\",\"t0:s27\",\"t0:s28\",\"t0:s29\",\"t0:s30\",\"t0:s31\",\"t0:s32\",\"t0:s33\",\"t0:s34\",\"t0:s35\",\"t0:s36\",\"t0:s37\",\"t0:s38\",\"t0:s39\",\"t0:s40\",\"t0:s41\",\"t0:s42\",\"t0:s43\"],\"targetId\":\"t0\"}],\"sources\":[{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cbe56eb6237b14a8b15a30ff1160e19240c0bfc5ceb345bfe50f21f21713c780\"},\"displayPath\":\"<repo>/target/z1-cli/errors/type.bnt\",\"kind\":\"user\",\"sourceId\":\"t0:s0\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"c7a8af88769d038125c705f4f0f900722722cce859b6b04a44731268c20371a0\"},\"displayPath\":\"<benitoite>/Integer.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s1\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6\"},\"displayPath\":\"<benitoite>/Float.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s2\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839\"},\"displayPath\":\"<benitoite>/Decimal.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s3\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950\"},\"displayPath\":\"<benitoite>/RoundingMode.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s4\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"5781e4240ead4d6e9d71fb51b4f4d8f78aec1e22b3fcca2b046095f4c60bc62a\"},\"displayPath\":\"<benitoite>/Byte.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s5\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb\"},\"displayPath\":\"<benitoite>/Character.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s6\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0\"},\"displayPath\":\"<benitoite>/String.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s7\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3\"},\"displayPath\":\"<benitoite>/Boolean.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s8\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df\"},\"displayPath\":\"<benitoite>/List.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s9\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788\"},\"displayPath\":\"<benitoite>/Map.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s10\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7\"},\"displayPath\":\"<benitoite>/Set.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s11\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374\"},\"displayPath\":\"<benitoite>/Option.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s12\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4\"},\"displayPath\":\"<benitoite>/Result.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s13\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7\"},\"displayPath\":\"<benitoite>/Pair.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s14\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454\"},\"displayPath\":\"<benitoite>/Triple.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s15\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317\"},\"displayPath\":\"<benitoite>/IOError.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s16\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489\"},\"displayPath\":\"<benitoite>/IOErrorKind.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s17\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86\"},\"displayPath\":\"<benitoite>/Reference.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s18\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d\"},\"displayPath\":\"<benitoite>/Lazy.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s19\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c\"},\"displayPath\":\"<benitoite>/Task.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s20\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b\"},\"displayPath\":\"<benitoite>/TaskGroup.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s21\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389\"},\"displayPath\":\"<benitoite>/IO.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s22\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4\"},\"displayPath\":\"<benitoite>/Assert.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s23\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee\"},\"displayPath\":\"<benitoite>/Bytes.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s24\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3\"},\"displayPath\":\"<benitoite>/ByteOrder.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s25\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3\"},\"displayPath\":\"<benitoite>/NetworkError.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s26\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1\"},\"displayPath\":\"<benitoite>/NetworkErrorKind.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s27\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cb7f94bd3976e18de88f19b1abfb27101ec543504dc27e7380f68c15f1894ff4\"},\"displayPath\":\"<benitoite>/Integer8.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s28\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"16190b89cd49cd3db4c1b1b60b8d1bb65b9e0e71a98998c8592dcec4e2666ec5\"},\"displayPath\":\"<benitoite>/Integer16.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s29\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"4c96b4a2378c53a2b6f041d4ba0842bd49df2932c3f623a1423532ac36508fe6\"},\"displayPath\":\"<benitoite>/Integer32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s30\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"73abb213d7aba1bb9439bbf58c3915c040ea2b5e7f61220e7863199239cbc2b9\"},\"displayPath\":\"<benitoite>/Integer64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s31\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6e5ac185ad04fa0c22e1cab6382c21ad63ea733d273c13b49188c4b711233573\"},\"displayPath\":\"<benitoite>/UnsignedInteger8.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s32\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7a0b40d115a75030bdf1c29270d0e8df587e0dd77000a81fec53d7a0fe2324dc\"},\"displayPath\":\"<benitoite>/UnsignedInteger16.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s33\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"30614988c2a6f70dbfe97dc494903443854b53405f39c8dcacf62d98af5e6e89\"},\"displayPath\":\"<benitoite>/UnsignedInteger32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s34\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e5a02c71c35c7d57c965f326aa2d31338f731612791f41f22d6116d7935980de\"},\"displayPath\":\"<benitoite>/UnsignedInteger64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s35\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"55c95dc4f5a4c6a16b2d072e21fc706d78bf202fd05a9e38bc40c54cba9c619a\"},\"displayPath\":\"<benitoite>/UnsignedInteger.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s36\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70\"},\"displayPath\":\"<benitoite>/Float32.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s37\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e\"},\"displayPath\":\"<benitoite>/Float64.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s38\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b\"},\"displayPath\":\"<benitoite>/SourceLocation.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s39\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cab695be534778d8f1ae241811475762826b1241c0ec64a99546d5ec2c20aebe\"},\"displayPath\":\"<benitoite>/Log.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s40\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8\"},\"displayPath\":\"<benitoite>/IO/Clock.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s41\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d\"},\"displayPath\":\"<benitoite>/IO/Console.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s42\"},{\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c\"},\"displayPath\":\"<benitoite>/Time.bnt\",\"kind\":\"prelude\",\"sourceId\":\"t0:s43\"}],\"status\":\"checkError\",\"targets\":[{\"complete\":false,\"entry\":\"<repo>/target/z1-cli/errors/type.bnt\",\"kind\":\"main\",\"main\":null,\"requestIndex\":0,\"root\":\"<repo>/target/z1-cli/errors\",\"sourceId\":\"t0:s0\",\"status\":\"checkError\",\"targetId\":\"t0\"}],\"targetsComplete\":true}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/versions/v0.0.9.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0908\",\"message\":\"this file was written for Benitoite 0.0.9, and the language changed incompatibly in 0.0.10\",\"primary\":{\"file\":\"<repo>/target/z1-cli/versions/v0.0.9.bnt\",\"start\":{\"line\":1,\"column\":10,\"offset\":9},\"end\":{\"line\":1,\"column\":17,\"offset\":16},\"label\":\"\"},\"secondary\":[],\"notes\":[\"0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable\",\"0.0.11: derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations\"],\"helps\":[{\"message\":\"rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md\",\"edits\":[]},{\"message\":\"recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md\",\"edits\":[]}]}\n",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/versions/v0.0.10.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0908\",\"message\":\"this file was written for Benitoite 0.0.10, and the language changed incompatibly in 0.0.11\",\"primary\":{\"file\":\"<repo>/target/z1-cli/versions/v0.0.10.bnt\",\"start\":{\"line\":1,\"column\":10,\"offset\":9},\"end\":{\"line\":1,\"column\":18,\"offset\":17},\"label\":\"\"},\"secondary\":[],\"notes\":[\"0.0.11: derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations\"],\"helps\":[{\"message\":\"recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md\",\"edits\":[]}]}\n",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/versions/v0.0.11.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/versions/v0.0.12.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0907\",\"message\":\"this file needs Benitoite 0.0.12 or later, but this is Benitoite 0.0.11\",\"primary\":{\"file\":\"<repo>/target/z1-cli/versions/v0.0.12.bnt\",\"start\":{\"line\":1,\"column\":10,\"offset\":9},\"end\":{\"line\":1,\"column\":18,\"offset\":17},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "<repo>/target/z1-cli/forbidden/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0912\",\"message\":\"`package.bnt` can contain only `language`, `dependency`, and `package`\",\"primary\":{\"file\":\"<repo>/target/z1-cli/forbidden/package.bnt\",\"start\":{\"line\":1,\"column\":1,\"offset\":0},\"end\":{\"line\":1,\"column\":9,\"offset\":8},\"label\":\"not allowed in `package.bnt`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "fmt",
+      "<repo>/target/z1-cli/fmt/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.009
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "fmt",
+      "--check",
+      "<repo>/target/z1-cli/fmt/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.004
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "fmt",
+      "<repo>/target/z1-cli/fmt/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsedSeconds": 0.004
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "skill",
+      "list",
+      "--format=json"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "{\"documents\":[{\"byteLength\":9723,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a\"},\"name\":\"LICENSE-APACHE\"},{\"byteLength\":1093,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"210f96e8b67c1949d65d644ee088e26e619ff4c83c2aaf67e598670b15cfee25\"},\"name\":\"LICENSE-MIT\"},{\"byteLength\":37658,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6a495c2cef8587c752f7fa5580383fb8dc7f9a8140f8135bd878d8d191a278db\"},\"name\":\"SKILL.md\"},{\"byteLength\":22589,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"2c1cb69c1fdb1fa24fe738a2f7d2601a0db29daf122c75e6653aafab318a8fc6\"},\"name\":\"references/common-mistakes.md\"},{\"byteLength\":105595,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bcf246a9e6ec3d4365608783f7b727ccfe0924231250b57874a45b1ec8018c24\"},\"name\":\"references/diagnostics.md\"},{\"byteLength\":14912,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"275930394a172f59fd8a8ae1e2c92bba61121ad037b194527e67663f2c6cba0a\"},\"name\":\"references/grammar.md\"},{\"byteLength\":50272,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7b7ecd9e66d6c3e5314d7259ef1e1b7836ec9efc45d95cef1a50ae3da4a31499\"},\"name\":\"references/idioms.md\"},{\"byteLength\":15731,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"10081b584508a2105e69f80afd43f7bd4675de0c47ddeff3b745d4764be319d1\"},\"name\":\"references/inspection.md\"},{\"byteLength\":14462,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"07a75cea6107f35430d5805162c0325605462b9d8a5592d940431f2792bccd18\"},\"name\":\"references/language-comparison.md\"},{\"byteLength\":813,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"5468c14307aef4ca5019fae92f39b1aa45b9d5cd6b16a4b0bd8207ca79e0fef1\"},\"name\":\"references/stdlib/Assert.md\"},{\"byteLength\":214,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"10c1cafca2b48135dd58961eda57b9416cc2410191f47a98e2001658caf31aff\"},\"name\":\"references/stdlib/Boolean.md\"},{\"byteLength\":1526,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3446f2d7c8e8ccecb48ea35e46fddf81caf8b9647bdf6721ae088a58a75cb8ac\"},\"name\":\"references/stdlib/Byte.md\"},{\"byteLength\":427,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7bc07d964cec806702a816a063f7381f60e2fc805e796093327b47005eeb4b35\"},\"name\":\"references/stdlib/ByteOrder.md\"},{\"byteLength\":2625,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3bd793933531a0706ff6ae64a9bc6e8c87cfddb524d789c53ce54140f28c889b\"},\"name\":\"references/stdlib/Bytes.md\"},{\"byteLength\":1184,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"af3a524f089fae71b11b2bd22285a1da10b34c2d4b618533e4281e7db53efab5\"},\"name\":\"references/stdlib/BytesBuilder.md\"},{\"byteLength\":1818,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"faeef16299566864ad70cc29ce90c0a18ef50a8cda06bc2b58bf33f22f17e5aa\"},\"name\":\"references/stdlib/Character.md\"},{\"byteLength\":1475,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"693ca628e557c630a7922a02f53fb4fcc4f4ecb963db05f261a1140a1d0abbad\"},\"name\":\"references/stdlib/Csv.md\"},{\"byteLength\":1378,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"2217dfd0f9b49179e9f43c4f64363ba7fe7c3e9a590417dfebfbabe1144ff9e2\"},\"name\":\"references/stdlib/Decimal.md\"},{\"byteLength\":875,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"9d078b0762b5e98f94e2d1d6c044044e047b6f2ef54df84b2e681d9b5118c8b1\"},\"name\":\"references/stdlib/Encoding.md\"},{\"byteLength\":2491,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1c1a0c460ab825392d3d510a221b9c3fe79ec8ec7e7ffd7d6db43bd931021f04\"},\"name\":\"references/stdlib/Failure.md\"},{\"byteLength\":1582,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"0ef9de5c9270c233fcd8384efc8216bb33cd079171b635680aedee50919cf6ea\"},\"name\":\"references/stdlib/Float.md\"},{\"byteLength\":2237,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"4f369c46ba97fd471931ba9af1bbfe446da18f7c22aa27d4c5055e47b57d9e16\"},\"name\":\"references/stdlib/Float32.md\"},{\"byteLength\":1753,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"a16ee47274a2768a91fe9a1df8a72a4cb6057f86942fabfae3409daecee04ecd\"},\"name\":\"references/stdlib/Float64.md\"},{\"byteLength\":375,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"5bbe080f3444a5149f4c31eb79d668b06a47be334c67f8495b3b119c9991a370\"},\"name\":\"references/stdlib/Hash.md\"},{\"byteLength\":910,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1b3c0a57aec24265d7fcd9d121a1d2ccf46f0a39e90ab147becd6cb2d04e6ae4\"},\"name\":\"references/stdlib/IO.Clock.md\"},{\"byteLength\":1282,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"f722003034ffbce26210f15078bb021c5247dc70987694ec8b317fb6ff436790\"},\"name\":\"references/stdlib/IO.Console.md\"},{\"byteLength\":4959,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"77d03cb131b783bbae2d4d959327e09b449e8e2e48f0c4e5896f23f063613353\"},\"name\":\"references/stdlib/IO.File.md\"},{\"byteLength\":3934,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"4488e6411ebbdb18964862a6ff552c399e302e85eef0172c1313d76070e23372\"},\"name\":\"references/stdlib/IO.Process.md\"},{\"byteLength\":1752,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"f39ae350df497047e86ca8bfdbcc566c1ed983a890290b421a608dd187b7af84\"},\"name\":\"references/stdlib/IO.Random.md\"},{\"byteLength\":1212,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"2dec8b55dbcf55e59e3c80a09e07a1310e0020ea696ca537385ca7674d5a35f5\"},\"name\":\"references/stdlib/IO.md\"},{\"byteLength\":486,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b5a7ffc14835a88ad6afcf926eca46f9c9ae7511f4965c8d524411f0cc5ccb04\"},\"name\":\"references/stdlib/IOError.md\"},{\"byteLength\":952,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1a2dbfc47078aa2ecd1a8ea2d2d18f2ff9cf38c854af10e680e3db0e1d9a55b8\"},\"name\":\"references/stdlib/IOErrorKind.md\"},{\"byteLength\":2473,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"8cfbb32f0f0af43f760a9a3095d4bd62bb5f4cc05444ee100d4935e4f4208ee7\"},\"name\":\"references/stdlib/Integer.md\"},{\"byteLength\":3054,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b42079686df37e09f7d1d5053bfb3e279472cd1715334f48f5c5007ab28d9a4e\"},\"name\":\"references/stdlib/Integer16.md\"},{\"byteLength\":3064,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"26f33f348e55850b8ac269abc385c1eaf308d242b458dedd5ff48f3fcc1382dd\"},\"name\":\"references/stdlib/Integer32.md\"},{\"byteLength\":2873,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"7014a704f84f5db745bef376a38a8c3c9403cbfc8ee3edfeef5c7411e7282e3f\"},\"name\":\"references/stdlib/Integer64.md\"},{\"byteLength\":3004,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"13a7ed10d046726e3bf4bd654819adddc1a7d4f14b341e9573e5ec406895254a\"},\"name\":\"references/stdlib/Integer8.md\"},{\"byteLength\":4817,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"dc8c734a94dcca1aa0f794cf482397ad07ce4d4510499921a2b861de729cdf24\"},\"name\":\"references/stdlib/Json.Codec.md\"},{\"byteLength\":2313,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"cc61489a3205afc7503bca7e5671ffb114cb89534e16ffe59d00845560e08e71\"},\"name\":\"references/stdlib/Json.md\"},{\"byteLength\":399,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"38e10aa8f36e84e566ff439400579ea40291997da1b6393f2ead872eae99340e\"},\"name\":\"references/stdlib/Lazy.md\"},{\"byteLength\":3704,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"2fceeac9d12e6aef7b5cc8fd9656a8dad7efaa571b3810ab89ae4644c6747701\"},\"name\":\"references/stdlib/List.md\"},{\"byteLength\":1187,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"4c61cd9016e58481f691907ff98eb31e242fba43fd143ef1d5bb8276bd3c2a62\"},\"name\":\"references/stdlib/ListBuilder.md\"},{\"byteLength\":3373,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"aa6888ff04299082ed7caa873119eb8cd05f6902d28d67ece33a30cfed4431c9\"},\"name\":\"references/stdlib/Log.md\"},{\"byteLength\":2394,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"64d92790aee9a7f65a33cb73b97398b9407efeb56bad1f6eccbf6b36211649f6\"},\"name\":\"references/stdlib/Map.md\"},{\"byteLength\":4539,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"83f51ebe6fa7b064c39bc8c5c73480a7a28b8c607ced1b103268416a5b9f8b3e\"},\"name\":\"references/stdlib/Network.Http.md\"},{\"byteLength\":523,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"208e5424859f0a707f5595a2f4834b41a44b07a5922b29a84de27f7e27b5ace4\"},\"name\":\"references/stdlib/NetworkError.md\"},{\"byteLength\":902,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"ce2b2897aa363b5e6b1d2443dc165ae1a695b63aa6cf6e39904fd2e9356b33b4\"},\"name\":\"references/stdlib/NetworkErrorKind.md\"},{\"byteLength\":2826,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"bfcd8d4a3f067897c050b3ec04f2ac3e54e9356515a99b72f674d482964032dd\"},\"name\":\"references/stdlib/NonEmptyList.md\"},{\"byteLength\":1547,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"0d956f93b38b786a518dd15002c103fdd62291d47803631d998dcf70e4e96a4c\"},\"name\":\"references/stdlib/Option.md\"},{\"byteLength\":471,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"f6762f8d30455603492cc296884ca8487fca035593ab629bc12d76fc9c49c7c6\"},\"name\":\"references/stdlib/Pair.md\"},{\"byteLength\":1788,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b20aa94be640b31fda2ae38a783723562634f4ed2e6b4829fed7f9b8409d1c8f\"},\"name\":\"references/stdlib/Path.md\"},{\"byteLength\":6897,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1c90717f9021584f160607e2867805c1f441e7a1911e292358b5e665a86c5713\"},\"name\":\"references/stdlib/Range.md\"},{\"byteLength\":804,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3e734933b9e8780792d61c05b89a8efa0dc711ca8553d5c5461ec7a7c7aed10a\"},\"name\":\"references/stdlib/Reference.md\"},{\"byteLength\":2598,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"04023a2a07622399210bb237e7c10b149a650d124dabc8d4788d148f08f53d4b\"},\"name\":\"references/stdlib/Regex.md\"},{\"byteLength\":1767,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b08c7a1407e5068d63ed3fab7794ad47f5cf1ef396f644ea41c1613097a4a605\"},\"name\":\"references/stdlib/Result.md\"},{\"byteLength\":625,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"feb898c94697b81ae9b146320909638c27def892020f7ac3ae988e186913f67b\"},\"name\":\"references/stdlib/RoundingMode.md\"},{\"byteLength\":4720,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e076a860b3883c5fdf3e520c203200c467c8e349a17a447b39295dcae9d04b66\"},\"name\":\"references/stdlib/Scope.md\"},{\"byteLength\":2251,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"3e1257d005a678db0b8d8bac41c6eff0975eb343119d26fefd16c7b4c85c213f\"},\"name\":\"references/stdlib/Set.md\"},{\"byteLength\":711,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"9a3c7e53f929d1dbeeffe4601dfb40467079ae5b05451a95b60c7dc205faf5b2\"},\"name\":\"references/stdlib/SourceLocation.md\"},{\"byteLength\":5177,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"1ce12b3c60607178c89f6ad73d572c38f5545f0277b450c9db40336974ecd7cb\"},\"name\":\"references/stdlib/String.md\"},{\"byteLength\":1214,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"24e682eb469d9ccf981f63a982fc25b946f81ad4502294a7e3681aac4d3d9f64\"},\"name\":\"references/stdlib/StringBuilder.md\"},{\"byteLength\":1348,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"b3cfd40c332bcb57c6efae3a8ecacffac10a3d12471d73cb1f454c7f3c84507b\"},\"name\":\"references/stdlib/Task.md\"},{\"byteLength\":602,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"87a6be5ce7d0ece4c6f57ab2be4892f4938fdbeb2e1dff530f49307ca2cd6c0c\"},\"name\":\"references/stdlib/TaskGroup.md\"},{\"byteLength\":6048,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"75313c8e2a52a207195c0d0682fb46485dbd3736bfee14991ac140528a58d8d8\"},\"name\":\"references/stdlib/Test.Property.md\"},{\"byteLength\":2594,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"d03c48332fbd330bbad6e5bd32642782bc7e1b5d89023d66e2c83838097dd6bc\"},\"name\":\"references/stdlib/Time.md\"},{\"byteLength\":3634,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"8838c9a75bde2ba1c448ca090fa3883f77bef0b8c2b11e8c574abf6abbc2becf\"},\"name\":\"references/stdlib/Trait.md\"},{\"byteLength\":618,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"562a3bc79b0314ab98f4ed3911494478134d180938e067fba84b4b6ffe6b94d4\"},\"name\":\"references/stdlib/Triple.md\"},{\"byteLength\":3571,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"f9dea60fed00e56155cf4986bcdd99d1e3c60a6e0dc4e53832ac95168881f5ff\"},\"name\":\"references/stdlib/UnsignedInteger.md\"},{\"byteLength\":3057,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"483dfffd4afcbaf61950845a43dffbf843c975cb87ec45f20f10078a7d473019\"},\"name\":\"references/stdlib/UnsignedInteger16.md\"},{\"byteLength\":3062,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"e1f0f97f8576a7678777afbc0abe035c6204b025c9b92a24855b31915e1fb9f2\"},\"name\":\"references/stdlib/UnsignedInteger32.md\"},{\"byteLength\":3567,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"af1b9a1401fe20589dc2deacf912c5cdd7e48472c32e28cc885bd049d69e31d7\"},\"name\":\"references/stdlib/UnsignedInteger64.md\"},{\"byteLength\":2079,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"aaac3799475c126dcf5578389c5f4e0f27c48069bae63cdef578720901866a5d\"},\"name\":\"references/stdlib/UnsignedInteger8.md\"},{\"byteLength\":9025,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"02df5c00c9779546b9de1e49f17c4c74ccd0851ee3ffa62a6104c0408711c7d1\"},\"name\":\"references/stdlib/index.md\"}],\"kind\":\"skillList\",\"producer\":{\"build\":{\"commit\":\"e0ed5eb2888349dbb0d251843627c527d7ffc0b0\",\"dirty\":null,\"provenance\":{\"commit\":\"git\",\"dirty\":\"notCollected\"},\"target\":\"aarch64-apple-darwin\"},\"name\":\"benitoite\",\"version\":\"0.0.11\"},\"schemaVersion\":1}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.004
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "skill",
+      "show",
+      "--format=json",
+      "SKILL.md"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "{\"byteLength\":37658,\"contentHash\":{\"algorithm\":\"sha256\",\"value\":\"6a495c2cef8587c752f7fa5580383fb8dc7f9a8140f8135bd878d8d191a278db\"},\"kind\":\"skillDocument\",\"name\":\"SKILL.md\",\"producer\":{\"build\":{\"commit\":\"e0ed5eb2888349dbb0d251843627c527d7ffc0b0\",\"dirty\":null,\"provenance\":{\"commit\":\"git\",\"dirty\":\"notCollected\"},\"target\":\"aarch64-apple-darwin\"},\"name\":\"benitoite\",\"version\":\"0.0.11\"},\"schemaVersion\":1,\"text\":\"---\\nname: benitoite\\ndescription: Write, check, and run Benitoite scripts (`.bnt`) with the `benitoite` command.\\nlicense: MIT OR Apache-2.0\\nmetadata:\\n  benitoite-version: \\\"0.0.11\\\"\\n---\\n\\n<!--\\nHow the code examples in this file are checked (tests/skill_examples.rs):\\n- A `benitoite` block is run, and its standard output is compared with the `output` block after it.\\n  A last line `exit N` in the `output` block is the expected exit code (0 when absent).\\n  A `stderr` block after the `output` block is the expected standard error (empty when absent).\\n- A `benitoite check` block is only checked; it must have no errors and no warnings.\\n- A `benitoite test` block is run with `benitoite test`; all its tests must pass.\\n- A `benitoite error` block must fail `benitoite check`, and every line of the `diagnostic` block after it must appear in the report.\\n- A `files` block before an example creates a file next to the script: the first line is `name: <file name>`, the rest is the content.\\n- Blocks with other info strings (such as `text` and `sh`) are not checked.\\n-->\\n\\n# Benitoite\\n\\nBenitoite is a statically typed functional scripting language. Scripts end in `.bnt` and are run with the `benitoite` command. The checker reports type errors and undeclared effects before anything runs; use it on every change.\\n\\n## Check the version first\\n\\nRun `benitoite --version` and compare the version on its first line (`benitoite X.Y.Z`) with `metadata.benitoite-version` at the top of this file. If they differ, tell the user to run `benitoite skill install` again, because this Skill describes another version of the language.\\n\\nFor machine-readable capabilities, run `benitoite --version=json` as the first and only argument. Require a known `schemaVersion` and the needed integer versions in `formats`; do not infer support from the release number. Unknown formats, statuses, and effect names are unsupported, not success or an empty set. Build information is a build-time self-report: `build.dirty: null` means unknown, not clean, and an omitted dirty input has provenance `notCollected`.\\n\\nTo read this executable's Skill without installing it, use `benitoite skill list` and `benitoite skill show references/idioms.md`. Names are case-sensitive logical names from the list, not OS paths. `--format=json` returns one `skillList` or `skillDocument` object; lengths and SHA-256 hashes describe the same rendered UTF-8 text that `install` writes, including version replacement in this file. These queries do not inspect `HOME` or installed copies. When integrating a harness or interpreting inspection JSON, read [Inspecting before execution](references/inspection.md).\\n\\n## Workflow for a script\\n\\n1. Before writing, read `references/idioms.md` and, for every module the script uses, its file `references/stdlib/<Module>.md` (the `references/` directory is next to this file). Do not guess function names, field names, or import names; look them up there. Then write the script, starting from an example in `references/idioms.md` when one fits.\\n2. Run `benitoite check script.bnt` to check without executing user functions.\\n3. Read the diagnostics on standard error and fix the script. A diagnostic gives a code such as `E0230`; when its meaning is unclear, look the code up in `references/diagnostics.md`.\\n4. Repeat 2 and 3 until the check succeeds with exit status 0. Fix warnings too; they usually point at a real mistake.\\n5. Immediately before the confirmation in [Before running](#before-running), run `benitoite check --report=json script.bnt` once to obtain the declared effects of `main`. Require a complete single JSON object, a known `schemaVersion` and `kind: \\\"checkReport\\\"`, `status: \\\"ok\\\"`, `complete: true`, and exit status 0. Never treat a missing, partial, or failed report as an empty effect set. If it fails, return to ordinary checks while fixing the script, then obtain a fresh report before confirmation.\\n6. Do the confirmation in [Before running](#before-running), then run `benitoite run --allow-effects=<accepted names> script.bnt [arguments...]`, using the accepted atomic names from `aggregateEffects.expanded`. For a pure script, write `--allow-effects=`. If `E0512` reports an added effect, inspect and review it again before changing the allowed set.\\n\\nExit codes of `run`: 0 when `main` finishes, 1 when `main` returns `Result.Error`, an unhandled `or die` ends the run, or the program stops with a runtime error, 2 when the script does not pass the checks, exceeds the allowed effects, hits a compiler limit, or the command line is wrong, 3 for an internal error of `benitoite`. `Process.exit(n)` ends with `n`. `run` and executing `test` end with 130 when interrupted (`SIGINT` or `SIGTERM`). Output failures exit with 1.\\n\\n## Workflow for tests\\n\\n`benitoite check` reports an error for a file without `main`, so do not use `check` on test files.\\n\\n1. Write test functions (see [Tests](#tests)).\\n2. Run `benitoite test --check file.bnt` (or a directory). Fix diagnostics and repeat until the check succeeds with exit status 0; fix warnings too. This checks the same selected tests without running them and requires no `main`. Diagnostics go to standard error, with no output on standard output.\\n3. Immediately before confirmation, run `benitoite test --check --report=json file.bnt` once. Apply the same report acceptance rules as for scripts, with `kind: \\\"testCheckReport\\\"`. If it fails, return to ordinary `test --check` while fixing the files, then obtain a fresh report before confirmation. Do the confirmation in [Before running](#before-running), using the union of the test functions' declared effects in `aggregateEffects.expanded`. Keep `Assert.Check` in the accepted set; it is part of the test contract.\\n4. Run `benitoite test --allow-effects=<accepted names> file.bnt`. With this option, every entry must pass preparation and effect comparison before any test starts; a failure rejects the whole run. Fix it, inspect again, and show any added effects to the user before changing the allowed set. Without the option, a file with check errors is skipped while other files can run.\\n\\nTo include documentation examples, keep `--doc` on both the inspection and execution commands. Require version 2 of `testCheckReport` and `testResults`; review the aggregate of ordinary tests and executable doc examples. Check/error examples add no execution permissions. See [Inspecting before execution](references/inspection.md) for the four modes, public imports, partial results, and summary counts.\\n\\n`test --check` rejects `--allow-effects`, `--max-call-stack`, and every `--wasm-*` option. `test --report=json` without `--check` is a usage error. An inspection writes no `test` or `testSummary` lines. When handling partial results, exit statuses, or executing-test summaries, read [Inspecting before execution](references/inspection.md).\\n\\n## Before running\\n\\nBefore running a script for the first time, and whenever the effects of `main` grow beyond what you last showed the user:\\n\\n1. Accept an inspection only after checking the complete single JSON object, a known `schemaVersion` and `kind`, `status: \\\"ok\\\"`, `complete: true`, and exit status 0. Read its declared upper bound (`targets[0].main.effects.expanded` for scripts, or each selected test's `effects`, and `aggregateEffects`) and tell the user, in the words of the table below, what kinds of operations the program declares. Compare it with each function's `uses` and the file-level `uses` when explaining the code. Declared but unused effects and additions from the file still count. Unknown or failed results are not an empty set, and the bound does not authorize itself. The report fields and acceptance rules are defined by the processor's [version-pinned CLI specification (v0.0.11, checkReport 1 and testCheckReport 1/2)](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/design/06-tooling/06-01-cli.md#main-の非実行の検査報告); see also [inspection](references/inspection.md).\\n2. If the list contains `File.Write`, `Process.Run`, `Http.Connect`, or `Http.Listen`, ask the user to confirm before running. For `Process.Run`, also name the commands the script starts; what those commands do is outside the checks of `benitoite`.\\n3. Treat `IO.All` as including `File.Write` and `Process.Run`. Write the specific effects in `uses` instead of `IO.All`.\\n\\nA script that passes `check` performs no built-in operation outside the `uses` of `main`. `--allow-effects` checks that the newly checked declared bound is a subset of the accepted set and uses that same checked program for execution. It accepts canonical atomic names, not import aliases, `IO.All`, or `*`. Effects say only what kind of operation is allowed, not which file, command, or host. A change to the destination or contents of a write, or to a command within `Process.Run`, can fit the same set. Inspection hashes do not freeze a later run. Static checking does not guarantee the intended result, termination, or success of external operations. This version of `benitoite` does not restrict operations while running: run scripts inside the agent's sandbox.\\n\\n`processShellReference` describes expression references to the standard shell function anywhere in the checked program, including unused functions and dependencies. It is not a reachability analysis: `present` does not prove a shell will run, and `absent` does not make external commands safe. Review the actual commands when accepting `Process.Run`.\\n\\n`Process.run` and `Process.runAttached` reject explicit `Command.environment` names starting with `DYLD_` or `LD_` (ASCII case-insensitive), including `LD_RUN_PATH`, empty values, and same-value overwrites, with `IOErrorKind.InvalidInput` before starting a child. Inherited variables remain unchanged, including for `Process.shell`. Allowing `Process.Run` still permits `env` or a shell to set such variables itself; this input rule does not replace OS isolation. See [Running external commands](references/idioms.md#running-external-commands).\\n\\n| Effect | Tell the user |\\n|---|---|\\n| `Console.Write` | writes to standard output and standard error |\\n| `Console.Read` | reads standard input |\\n| `File.Read` | reads files and directories |\\n| `File.Write` | creates, changes, moves, or deletes files and directories |\\n| `Process.Run` | starts external commands (name them) |\\n| `Process.Exit` | ends the run with a chosen exit code; `or die` reports its cause and optional message to standard error and exits with status 1 |\\n| `Process.Environment` | reads command-line arguments, environment variables, the working directory, and the script directory |\\n| `Clock.Time` | reads the clock and waits for time to pass |\\n| `Random.Generate` | generates random numbers |\\n| `Http.Listen` | accepts network connections as an HTTP server |\\n| `Http.Connect` | connects to HTTP servers over the network |\\n| `Log` | structured log events; independent of Console.Write and IO.All |\\n| `State` | uses mutable cells and concurrent tasks inside the program (no outside effect) |\\n| `Assert.Check` | checks expectations in tests (no outside effect) |\\n| `IO.All` | all of `Console`, `File`, `Process`, `Clock`, `Random`, and `State` above |\\n\\n## Language rules that differ from other languages\\n\\n- There are 36 keywords; see [Keywords as names](references/common-mistakes.md#keywords-as-names). `block` is reserved, including argument labels, fields, import aliases, and names after a dot (E0216). `record` is also accepted where a lowercase name is required, including parameters, argument labels, bindings, and value references; it still starts a record declaration at declaration position. `die` is reserved and cannot be a name, including a label, field, import alias, or name after a dot. It is accepted only in `try value or die` and `try value or die(message)`, with a pure String message, a Show constraint for Result errors, and the Process.Exit effect. A standalone `die` is rejected. `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary names, not abbreviations for syntax. Write declarations with `function`, `public`, and `implement`, and anonymous functions with `lambda`. `as`, file-header words, and attribute names have special meanings only in their own contexts. `extensible` is an ordinary name. The argument-free `@extensible` attribute applies to data and record declarations. Outside their defining package, patterns must cover future shapes with an unguarded variable or `_`.\\n- Except for a short lambda, blocks end with `end` and the keyword: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end handle`, `end with`, `end block`. There are no braces and no indentation rules.\\n- Bind a local name with `bind x <- e`, not `let`. `shadow x <- e` can hide a local name that is already visible, but is discouraged. Prefer a new name describing the new value, even when the hiding is intentional. Names cannot be reassigned.\\n- A function is `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function`. The return type follows `->`, never `:`. Return values with `return`. Start the value on the same physical line as `return`; an immediate line break ends the statement even inside parentheses and is an error (E0201). After the value has started, ordinary multiline continuation is allowed (operators, parentheses, call arguments, and `then`). Short lambdas must still fit on one physical line.\\n- Prefer `match` for selecting a value or action. Use `if` without `else` for a conditional action or an early return. `else` and `else if` are valid but are discouraged; this advice adds no warning. Preserve condition evaluation count and order, evaluate only the selected branch, and keep `return` in the same function or lambda. For effectful conditions, nest matches on booleans instead of moving the conditions into guards.\\n- For a final catch-all branch, prefer a fresh name such as `case other ->` or `case otherCode ->`. It is an ordinary binding, not a keyword; avoid collisions with outer local names and put no unreachable branch after it. `case _ ->` is valid. This advice does not apply to `_` inside constructors, discarded bindings, or partial applications.\\n- Prefer a short lambda for one statement: `List.map(xs: xs, f: lambda(value) return value * 2)`. Its whole header and body must fit on one physical line; a non-`Unit` result still needs `return`. A body starting on the header's last line takes `end lambda` only immediately after its statement on that same physical line. A terminator on a later line closes the corresponding outer lambda; blank or comment lines do not change that correspondence. For a multiline body, start on the line after the header and add `end lambda`. Before adding a second statement, switch to the multiline form. The formatter preserves the chosen ending.\\n- Parenthesize the inner lambda in a directly nested pair if either omits its terminator: `lambda(x) return (lambda(y) return x + y)`. Call arguments and binding statements provide independent boundaries. A pipe in `lambda(x) return x + 1 |> increment` belongs to the body; `(lambda(x) return x + 1)(3)` calls the lambda itself.\\n- Match patterns with `match value with`, then one `case pattern -> body` per line, then `end match`. A handler is `handle body with` / `case Module.operation(arguments) -> clause` / `end handle`.\\n- Declare data types with `data Name` ... `end data` and records with `record Name` ... `end record`.\\n- `@extensible` marks `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, `Json.Codec.ConversionError`, and `Csv.ParseError`; it is also available on user data and records. Outside their defining package, cover future shapes with an unguarded variable or `_`, even after every known constructor (including `Other`). A record pattern's `..` only omits current fields: use getters or a `match` with a branch for future shapes instead of a destructuring `bind`. Construction, updates, and getters keep their contracts; record field additions have no compatibility guarantee. `Result` and `Option` remain closed. See [Records and data types](references/idioms.md#records-and-data-types).\\n- Constructors are written with their type name, in expressions and in patterns: `Option.Some(x)`, `Option.None`, `Result.Ok(x)`, `Result.Error(e)`, `Shape.Circle(r)`.\\n- Operators: `=` and `<>` compare; `and`, `or`, `not` are logical; `div` and `mod` divide integers; `+` also joins strings. `==`, `!=`, `&&`, `||`, `!` do not exist.\\n- Use `try e or return` in reusable functions, libraries, and callbacks. It returns the failure from the innermost function or lambda, whose return type must be a matching Result or Option. Convert different error types with `Result.mapError` first. Bare `try e` is permanently fixed to the same returning meaning and adds no Show requirement. The input includes pipes up to the action: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return`.\\n- Prefer `try e or die` or `try e or die(message)` in an entry point that should end on failure. It allows any enclosing return type and adds Process.Exit; import `Benitoite.Unofficial.IO.Process` for `uses Process.Exit`. Result errors require Trait.Show; Option does not. The standard Show for IOError, NetworkError, Json.ParseError, and Csv.ParseError returns their message unchanged. Success evaluates neither the pure String message nor Show; failure evaluates message, then Show, then exit. No Console.Write is needed for the host report. See [Program shape and error handling](references/idioms.md#program-shape-and-error-handling) for boundaries, handlers, and stopping rules. A main that returns Result.Error or cannot use Process.Exit can use `or return`.\\n- For an ordinary call with two or more parameters, label every argument: `List.map(xs: xs, f: action)`. Do not mix named and positional arguments. A one-parameter function accepts `f(value)` or `f(name: value)`; use `f()` for zero parameters. Labels can be written in any order, but evaluation is the callee first, then argument expressions once each in source order. Labels refer to parameters, not local values. These rules also apply to built-ins, function values, methods, effect operations, and external functions. Direct data constructors and patterns, attributes, handler bindings, and `resume` keep their own syntax.\\n- Function types include names: `function(value: T) -> U`. Names and their order must match every callback contract, even for a single parameter. `List.map` takes `value`, `List.fold` takes `acc, value`, `Map.map` takes `key, value`, and `Result.mapError` takes `error`. Keep expected names even for unused parameters; use a local `bind` for a descriptive alias. Wrap a function with another contract: `lambda(value) return Integer.toString(value)`. Do not invent a contract from call-label order; add a named function-type annotation when E0455 says the contract is unknown.\\n- Without direct holes, `xs |> List.map(f: action)` supplies the first declared parameter. Label the remaining arguments and do not supply the first parameter twice. Evaluation is the left side once, then the right callee, then explicit arguments in source order. With direct holes, or a parenthesized right side, the pipe calls the resulting function with one argument; two holes do not trigger automatic partial application.\\n- `_` makes a partial application only as a direct argument of a call: `Result.mapError(r: _, f: lambda(error) return IOError.message(error))`. Holes inherit target parameter names in source order: `f(b: _, a: _)` takes `b, a`. The callee and fixed expressions run when that generated function is called. Positional constructor values and direct constructor holes use original position names `arg1`, `arg2`, etc.; record constructor values use field names, and record accessors take `value`. See `references/idioms.md` for examples of adapting contracts.\\n- `return` is used in function and lambda bodies. The value of an `if`, a `match` arm, or a handler clause is its last expression; a `return` inside a `case` body returns from the whole function. A function or lambda that produces a value must end with `return`, also when its last expression is a `match` or an `if`: `lambda(acc, value) return acc + value`. A `lazy` body and a `match` guard cannot contain `return` or `try`, except inside a lambda written there (not inside a call with `_`).\\n- The value of type `Unit` is written `()`: `Result.Ok(())`.\\n- Records are built with named arguments and read with the type name: `bind item <- Item(name: \\\"pen\\\", price: 120)`, `Item.price(item)`, and copied with changes as `Item(..item, price: 100)`. `item.price`, `Item { ... }`, and `Item(price = 100)` are errors.\\n- Calls take no type arguments: write `Map.empty()`, not `Map.empty[String, Integer]()`. Add an entry to a map with `Map.set(m: m, k: key, value: value)`; there is no `Map.insert`. Parsing functions such as `Integer.parse` return `Option`.\\n- Type arguments use brackets: `List[Integer]`, `Map[String, Integer]`, `Result[Unit, String]`. `List<Integer>` is not valid.\\n- `with r = acquire() do ... end with` releases its resources in reverse order when the block ends. `TaskGroup.spawn(group: group, action: lambda() ... end lambda)` starts a task in a group opened with `TaskGroup.open()`, and `Task.await(task)` waits for its result; releasing the group waits for all its tasks.\\n- User-defined operations can constrain value type parameters, for example `function render[T: Trait.Show](value: T) -> String`. The caller selects the implementation, and the clause can use those methods for any caller type. Constraints add no public arguments. Function values, `_` holes, and `|>` use the same public parameter names and evaluation order as direct calls. Clause lambdas can capture the constraints; nested clauses keep their own constraints. Operations cannot declare type constructor parameters, effect variables, or their own `uses`.\\n- A handler that handles only some operations of an effect does not remove the effect from the type. Functions whose type has `State` (`Reference`, `TaskGroup`, `Task.await`, `close...`) cannot be handled.\\n- Maps and sets are ordered by key, not by insertion.\\n- Numeric widths are distinct types with no implicit conversion. Unsuffixed `1` is always `Integer`; use `1s32` for `Integer32` and `1.0f32` for `Float32`. Suffixes (`s8`–`s64`, `u8`–`u64`, `f32`/`f64`) are provisional and may change as the syntax is revised. `Integer64` = `Integer`, `Float64` = `Float`, `UnsignedInteger8` = `Byte`, and `UnsignedInteger` = `UnsignedInteger64`. Keep `Integer`, `Float`, and `Byte` as the usual names. `Byte` has no arithmetic, and unsigned types have no unary minus.\\n- Integer arithmetic stops on overflow (including unsigned subtraction below zero) or division by zero. Failed numeric conversions return `Option.None`; check the per-module signatures. `Float32` rounds after each operation. See the numeric conversion examples in `references/idioms.md`.\\n- Experimental `@external(\\\"wasm\\\", \\\"path.wasm\\\", \\\"export\\\")` functions use a binary import-free Component Model component and have no body or `end function`. Concrete records/data, flags as `Set` of argument-free constructors, and `Map` with WIT-compatible keys can cross the boundary. External resource types require `uses State`; other external calls are pure. The generated adapter counts packed bytes and separately limits logical value construction with the same `--wasm-transfer` value. See the WIT examples and limits in `references/idioms.md`.\\n- Strings interpolate with `\\\"${expression}\\\"`. Comments start with `//`.\\n- There is no `null`, no exception, and no loop statement. Use `Option`, `Result` with `try`, and `List.map`, `List.fold`, `List.forEach`, or recursion.\\n- Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Json.Codec`, `Failure`, `Test.Property`, `Csv`, `Regex`, `Scope`, `Range`, `NonEmptyList`, `Log`, `SourceLocation`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, `Log`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.\\n- Every function that performs an effect, directly or through a call, lists it after `uses`. Network effects (`Http.Connect`, `Http.Listen`) are not part of `IO.All`.\\n- A single file-level `uses`, after imports and before declarations, adds its effects to every top-level function, including `main` and `@test`. The effective contract is the union with each function's own `uses`; unused additions still need accepted effects. Function types, lambdas, trait and implement methods do not receive these additions. Put pure callbacks and Property helpers in a file without the shared declaration. A handler inside `main` cannot cancel the file's added contract: remove the shared declaration or move the entry to another file when its added effects are forbidden. Documentation examples are independent modules and do not inherit the outer file's declaration. See the checked [file-level examples](references/idioms.md#file-level-effects-and-pure-helpers).\\n- A statement whose value is not `Unit` is an error: handle each `Result` with `try`, `match`, or `bind _ <-`.\\n- `Process.shell` runs its string with `/bin/sh -c`. Write only POSIX sh: no bash arrays, no `[[ ]]`, no `{a,b}` expansion, no `$'...'`. Prefer `Process.run` with an argument list when no shell feature is needed.\\n\\nA complete script:\\n\\n```files\\nname: input.txt\\none\\ntwo\\nthree\\n```\\n\\n```benitoite\\nimport Benitoite.Unofficial.IO.Console\\nimport Benitoite.Unofficial.IO.File\\n\\nfunction main() -> Result[Unit, String] uses File.Read, Console.Write\\n  bind lines <- try File.readLines(\\\"input.txt\\\") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return\\n  List.forEach(xs: lines, f: lambda(value) Console.writeLine(\\\"${String.characterCount(value)} ${value}\\\"))\\n  return match List.head(lines) with\\n    case Option.Some(first) -> Result.Ok(Console.writeLine(\\\"first: ${first}\\\"))\\n    case Option.None -> Result.Error(\\\"input.txt is empty\\\")\\n  end match\\nend function\\n```\\n\\n```output\\n3 one\\n3 two\\n5 three\\nfirst: one\\n```\\n\\n## Checked values and local builders\\n\\nUse public construction and inspection functions for opaque types; constructors, updates, patterns and automatic accessors are private to the owner module (E0340). Direct Regex/Scope calls reject known invalid inputs even in tests; pass invalid inputs through an ordinary function parameter to test runtime Error. Range retains runtime Result.Error for constants too. Scope proves spelling membership, not permission, DNS/filesystem identity or IO success. See `references/common-mistakes.md` and `references/stdlib/Scope.md` / `references/stdlib/Range.md`.\\n\\nImport `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. Declarations and dedicated operations add no State; ordinary argument effects remain. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies allocate immutable snapshots; referenced element cells remain shared. Repeated intermediate copies have proportional cost. There is no clear/reserve/finish operation; ordinary Reference/task/resource effects remain. See the corresponding generated builder module reference for signatures.\\n\\nUse `block ... end block` to keep builder declarations and work inside one expression; its last expression is its value, and a final bind/empty block is Unit. It introduces local scope but no return boundary. Do not return the builder itself. Integer ranges covering the complete signed 64-bit domain are exhaustive: omit a following catch-all (E0602), while guarded ranges and gaps still need coverage.\\n\\nLog and SourceLocation are prelude modules. Call `SourceLocation.here()` directly where the desired position is written; wrappers should take an explicit Location. Function values/holes/pipes are E0467. `Log.info(message: ..., attributes: [Log.attribute(key: ..., value: ...)], location: SourceLocation.here())` needs uses Log and, when declared, accepted effect Log. IO.All and Console.Write do not include Log. Arguments are eager even if disabled; guard expensive formatting with Log.enabled(Log.Level.Debug). Default stderr output accepts Info and above. Log.error does not terminate. Handle emit and enabled together; withTextLogger requires Console.Write, withSinks preserves sink effects, and withAttributes forwards Log. Log cannot be renamed with as. Checked list APIs are in Range and NonEmptyList; get takes only the checked index, which retains its original list. See references/idioms.md.\\n\\n## Choosing collection and sequencing functions\\n\\nWhen the container is known, use `List.map/fold`, `Option.map/andThen`, or `Result.map/andThen/mapError`. Use the smallest class constraint needed only when one function must work with several containers: `Trait.Functor`, `Trait.Applicative`, or `Trait.Monad` for one type parameter; `Trait.Functor2`, `Trait.Applicative2`, or `Trait.Monad2` for two. Import `Benitoite.Trait` explicitly. The two-parameter classes transform `F[A, X]` while keeping `X`; their standard implementation is `Result`. They do not make `Result` usable with the one-parameter `Monad` or `Traversable`.\\n\\nUse `andThen/flatMap` to continue with a successful value, keeping the same error type (use `Result.mapError` to align different error types). Use `try … or return` to return a failure to the caller, `or die` to report it and end the run, and `Failure.toResult` to turn a typed `Failure.Fail[E]` into a `Result` and remove the handled Fail from the enclosing effect bound. These serve different purposes. For E0506 on the standard Fail, import `Benitoite.Unofficial.Failure`, call `Failure.toResult` inside `main` or the `@test` function, and remove the handled Fail from that entry's `uses` while keeping other effects. A user-defined effect named Fail or Log still needs its own handler. For display, comparison, and combination, choose concrete functions or `Show`/`Order`/other classes by their meaning: do not mechanically replace numeric `toString` with `Show`, or built-in Float comparisons with `Order[Float]`. See [Concrete and generic containers](references/idioms.md#concrete-and-generic-containers) for checked examples.\\n\\n## Tests\\n\\nA test is a function with `@test(\\\"description\\\")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try e or return`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.\\n\\n```benitoite test\\nimport Benitoite.Unofficial.IO.File\\n\\nfunction firstLine(path: String) -> Result[String, String] uses File.Read\\n  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return\\n  return Option.okOr(o: List.head(String.lines(text)), error: \\\"empty file\\\")\\nend function\\n\\n@test(\\\"firstLine returns the first line\\\")\\nfunction firstLineWorks() -> Unit uses Assert.Check, File.Read\\n  bind result <- handle\\n    firstLine(\\\"data.txt\\\")\\n  with\\n    case File.readText(_) -> resume(Result.Ok(\\\"alpha\\\\nbeta\\\\n\\\"))\\n  end handle\\n  Assert.equal(actual: result, expected: Result.Ok(\\\"alpha\\\"))\\nend function\\n```\\n\\n## Reference documents\\n\\nRead these when you need them:\\n\\n| Document | When to read it |\\n|---|---|\\n| `references/idioms.md` | Writing a common task: files, JSON, CSV, external commands, arguments, HTTP, collections, records, tests, numeric conversions, and WASM/WIT declarations. |\\n| `references/inspection.md` | Integrating a harness or interpreting inspection reports, build information, effect limits, test summaries, and embedded Skill queries. |\\n| `references/common-mistakes.md` | A diagnostic comes from a habit of another language (`let`, braces, `==`, missing imports). |\\n| `references/language-comparison.md` | You know how to write something in Python, JavaScript, or Rust and need the Benitoite form. |\\n| `references/diagnostics.md` | A diagnostic code (`E0201`, `W0501`, ...) is unclear. |\\n| `references/grammar.md` | You need the exact syntax of a construct. |\\n| `references/stdlib/index.md` | You need a standard library module: it lists every module with its import name. |\\n\\nEach module has its own file named `references/stdlib/<Module>.md`, such as `references/stdlib/List.md` or `references/stdlib/IO.Console.md`; follow the links from `references/stdlib/index.md`.\\n\\nFor pure JSON conversions, import `Benitoite.Unofficial.Json.Codec`. Its basic and\\ncontainer functions return `Result[..., Codec.ConversionError]`; Integer/Float\\nkinds are strict and non-finite Float is rejected. List/Map stop at the first\\nindex/key failure. ConversionError has an outer-to-inner Field/Index/Key path;\\nits Show reports the path and kinds without automatically printing input values.\\nThe codec requires no Fail; choose `Failure.fromResult` explicitly at an application boundary.\\n\\nFor pure property trials, import `Benitoite.Unofficial.Test.Property` and call\\n`Property.check(config: ..., gen: ..., shrinker: ..., property: ...)` from one\\nordinary `@test`. The property returns `Result[Unit, String]` and all\\ncallbacks are pure; runtime stops and interruptions propagate normally. Match\\nan Error and return `Property.formatFailure(failure: ..., show: ...)` as the\\ntest's String error; show has type `function(value: T) -> String`. `test --check` executes no\\ncallbacks. Config uses an explicit seed and inclusive budgets: trials 1..10000,\\nsize 0..10000, maxShrinks 0..100000, maxShrinkWork 0..1000000. Supply\\nall five Config fields; start with maxShrinkWork: 10000 for small examples\\n(the recommendation remains subject to performance measurement). Invalid settings\\ncall no callbacks. Shrinker.candidates returns ShrinkStep (Done/Yield/Skip),\\nnot List; write deferred continuations rather than collecting a whole list.\\nThe initial candidates call and each continuation cost one work unit; each\\ncandidate property call costs one work unit and one shrink. Either zero budget\\nskips the shrinker, and both counters accumulate after failing candidates restart.\\nAn exhausted budget never calls a continuation just to discover Done. These\\nbudgets do not bound time or allocation within a callback.\\nInteger generators include both endpoints, Float generators are finite, and\\nnested container sizes are not total resource bounds. Shrinking counts all\\ncandidate trials, even cycles; the reduced input is not promised minimal.\\nKeep the config, libraryVersion (2.0.0), GENERATOR_VERSION for generated code,\\nhandwritten sources, original/reduced input and messages for replay. The same\\nseed alone does not reproduce counterexamples across library versions.\\nSee `references/stdlib/Test.Property.md` for Gen/Shrinker fields and each API.\\nThe source repository includes a development derive tool for record codecs,\\nGen/Shrinker functions, and explicitly requested Show/Order implementations\\n(see `tools/derive/README.md`). Show/Order target flags are independent booleans;\\nProperty and Show/Order support value type parameters and regular recursive\\nrecords within one module; JSON retains its monomorphic, noncyclic scope. Pass\\nGen/Shrinker arguments only for used type parameters, in declaration order.\\nGenerated Show/Order implementations carry the required parameter constraints;\\nevery field needs the corresponding dictionary. Recursive shrinkers defer their\\nwork, deleting recursive containers before shrinking one field at a time.\\nShow uses field order and each field's quoting;\\nOrder stops at the first non-Equal field. Neither supplies builtin equality,\\nkey constraints, or a serialization format. Existing handwritten implementations\\nare protected. An opaque record may explicitly request Show/Order in its owner\\nmodule; review the proposed opaque display before applying it. Its declaration inventory\\nuses version 2; manifests, receipts, generation records and semantic hashes use\\nversion 3 with generator rules `3.0.0-syntax-batch4`; settings remain version 1.\\nAuthenticate old body hashes, then review a fresh preview to migrate records; old\\nmanifests cannot authorize the new apply. The same seed alone does not reproduce\\nan old generation distribution. Use handwritten checked construction for\\nopaque types (including custom codecs/generators for opaque fields). In an environment with\\nonly the distributed executable and Skill, write these functions directly using\\nCodec and Property APIs.\\n\"}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.004
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "skill",
+      "install",
+      "--project",
+      "--agent",
+      "codex"
+    ],
+    "cwd": "<repo>/target/z1-cli/skill-install",
+    "exitCode": 0,
+    "stdout": "installed <repo>/target/z1-cli/skill-install/.agents/skills/benitoite\n",
+    "stderr": "",
+    "elapsedSeconds": 0.008
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "skill",
+      "uninstall",
+      "--project",
+      "--agent",
+      "codex"
+    ],
+    "cwd": "<repo>/target/z1-cli/skill-install",
+    "exitCode": 0,
+    "stdout": "removed <repo>/target/z1-cli/skill-install/.agents/skills/benitoite\n",
+    "stderr": "",
+    "elapsedSeconds": 0.006
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "package",
+      "add",
+      "Kit",
+      "--path",
+      "deps/kit",
+      "<repo>/target/z1-cli/package/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "added dependency Kit (package Kit) to <repo>/target/z1-cli/package/main.bnt\n  hash: sha256:f2bd067f1a9eb472bb8a739d106d2ccb3891f3b9b6284eba89bc82bdd38e8fa3\n  effects: Log\n  components: (none)\n",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "package",
+      "update",
+      "Kit",
+      "<repo>/target/z1-cli/package/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "updated dependency Kit (package Kit) in <repo>/target/z1-cli/package/main.bnt\n  hash: sha256:f2bd067f1a9eb472bb8a739d106d2ccb3891f3b9b6284eba89bc82bdd38e8fa3\n  effects: + Log\n  components: (none)\n",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "package",
+      "update",
+      "Kit",
+      "<repo>/target/z1-cli/package/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "updated dependency Kit (package Kit) in <repo>/target/z1-cli/package/main.bnt\n  hash: sha256:f2bd067f1a9eb472bb8a739d106d2ccb3891f3b9b6284eba89bc82bdd38e8fa3 -> sha256:0b0a015af107be1edade36ef0db167ad8e2c4791003d1c17493cafc28d38f2ca\n  effects: + State\n           - Log\n  components: (none)\n",
+    "stderr": "",
+    "elapsedSeconds": 0.012
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "package",
+      "update",
+      "Kit",
+      "<repo>/target/z1-cli/package/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "updated dependency Kit (package Kit) in <repo>/target/z1-cli/package/main.bnt\n  hash: sha256:0b0a015af107be1edade36ef0db167ad8e2c4791003d1c17493cafc28d38f2ca -> sha256:0702786de3a364d62d353843d62b6e85dc6c06e4862e56fc237bb1f71e08d2ee\n  effects: + Log\n           - State\n  components: (none)\n",
+    "stderr": "",
+    "elapsedSeconds": 0.013
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "package",
+      "update",
+      "Kit",
+      "<repo>/target/z1-cli/package/main.bnt"
+    ],
+    "cwd": "<repo>",
+    "exitCode": 0,
+    "stdout": "unchanged dependency Kit (package Kit) in <repo>/target/z1-cli/package/main.bnt\n",
+    "stderr": "",
+    "elapsedSeconds": 0.009
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "skill",
+      "install",
+      "--project",
+      "--agent",
+      "codex"
+    ],
+    "cwd": "<repo>/target/z1-skill-complete",
+    "exitCode": 0,
+    "stdout": "installed <repo>/target/z1-skill-complete/.agents/skills/benitoite\n",
+    "stderr": "",
+    "elapsedSeconds": 0.192
+  },
+  {
+    "command": [
+      "target/release/benitoite",
+      "skill",
+      "uninstall",
+      "--project",
+      "--agent",
+      "codex"
+    ],
+    "cwd": "<repo>/target/z1-skill-complete",
+    "exitCode": 0,
+    "stdout": "removed <repo>/target/z1-skill-complete/.agents/skills/benitoite\n",
+    "stderr": "",
+    "elapsedSeconds": 0.007
+  }
+]

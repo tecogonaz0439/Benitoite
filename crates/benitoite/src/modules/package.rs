@@ -191,6 +191,11 @@ const BREAKING_CHANGES: &[BreakingChange] = &[
         summary: text::SYNTAX_BATCH4_CHANGE,
         help: text::SYNTAX_BATCH4_MIGRATION,
     },
+    BreakingChange {
+        version: Version(0, 0, 11),
+        summary: text::SYNTAX_BATCH5_CHANGE,
+        help: text::SYNTAX_BATCH5_MIGRATION,
+    },
 ];
 
 pub(crate) use crate::syntax::header::keyword;
@@ -237,6 +242,7 @@ pub(crate) fn check_header(module: &Module, kind: ModuleKind) -> Vec<Diagnostic>
             .iter()
             .map(|item| item.span)
             .chain(module.decls.iter().map(|decl| decl.span))
+            .chain(module.file_uses.iter().map(|uses| uses.span))
             .min_by_key(|span| span.start)
         {
             diagnostics.push(DiagBuilder::new(DiagCode::E0912).primary(span).build());
@@ -505,6 +511,7 @@ mod tests {
             "0.0.8: Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable",
             "0.0.9: direct Regex.compile calls reject invalid constant sources with E0457 or E0458; direct Scope checks reject invalid known arguments with E0459 through E0462",
             "0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable",
+            "0.0.11: derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations",
         ];
         let helps = [
             helps[0],
@@ -513,14 +520,18 @@ mod tests {
             "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md",
             "to test Result.Error, pass the pattern to a normal function whose parameters are used by Regex.compile or Scope checks; review constant patterns, language declarations and dependency hashes; see the 0.0.9 section of CHANGELOG.md",
             "rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md",
+            "recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md",
         ];
-        let change_versions = ["0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.0.10"];
+        let change_versions = [
+            "0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.0.10", "0.0.11",
+        ];
         for (current_text, current, end) in [
             ("0.0.6", Version(0, 0, 6), 2),
             ("0.0.7", Version(0, 0, 7), 3),
             ("0.0.8", Version(0, 0, 8), 4),
             ("0.0.9", Version(0, 0, 9), 5),
             ("0.0.10", Version(0, 0, 10), 6),
+            ("0.0.11", Version(0, 0, 11), 7),
         ] {
             for (version, first) in [
                 ("0.0.0", 0),
@@ -532,6 +543,7 @@ mod tests {
                 ("0.0.8", 4),
                 ("0.0.9", 5),
                 ("0.0.10", 6),
+                ("0.0.11", 7),
             ] {
                 let (out, _) = parse_source(&format!("language \"{version}\""), SourceKind::User);
                 let HeaderItem::Language(decl) = &out.module.header[0] else {

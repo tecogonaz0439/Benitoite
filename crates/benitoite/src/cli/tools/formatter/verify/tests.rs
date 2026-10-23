@@ -147,6 +147,7 @@ fn die_formatting_preserves_actions_messages_and_short_lambda_layout() {
                 text,
                 resolve_newlines(lexed.tokens.clone()),
                 lexed.comments,
+                lexed.pending,
                 &mut IdGen::new(),
             );
             if parsed.diagnostics.iter().any(|d| d.is_error()) {
@@ -168,6 +169,7 @@ fn die_formatting_preserves_actions_messages_and_short_lambda_layout() {
             text,
             resolve_newlines(lexed.tokens.clone()),
             lexed.comments.clone(),
+            lexed.pending.clone(),
             &mut IdGen::new(),
         );
         assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);

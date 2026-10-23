@@ -474,7 +474,7 @@ end function
 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
 
 ```text
-language "0.0.10"
+language "0.0.11"
 
 dependency Textkit
   path "../packages/textkit"
@@ -500,6 +500,12 @@ end function
 【決定】`effects` は空の文字列か、カンマで区切ったエフェクトの名前の並びとする。各名前の前後の空白を除き、ドットで区切った各段は ASCII の大文字で始まり、ASCII の英数字と `_` だけを含む。形が合わなければ誤りとする（診断は[字句解析器と構文解析器](../02-impl/02-03-frontend.md)）。これはパッケージの命令が最後に報告した組み込みのエフェクトの記録であり、読み込み時にパッケージの中身と照合しない。理由: 更新前のエフェクトを記録に残し、変更の差を示せるようにするためである。
 
 【決定】最初の import か宣言の後で、`language` の次が文字列、または `dependency`・`package` の次が大文字の名前である行は、先頭に書くべき項目として誤りにする。構文の形の検査と、ファイルの種類に応じた置き場所の検査を区別する。置き場所と版の意味は、[名前・スコープ・モジュール](01-03-names-modules.md)の「依存の記述と `package.bnt`」で定める。
+
+【決定】ファイル単位のエフェクトの宣言は、先頭のメタデータと import 群の後、通常の宣言の前に `uses` と空でないエフェクト参照の並びを一回だけ書く。省略で空集合を表し、`uses` だけ、`uses []`、二度目の宣言、通常の宣言の後の宣言は誤りとする。宣言の後には import やメタデータを置けない。理由: 宣言の位置と回数を固定し、効力が途中で変わると解釈される形を避けるためである。
+
+【決定】ファイルの宣言は NEWLINE かファイルの末尾で終わる。コンマ後の改行は通常の継続規則に従い、末尾のコンマも許す。個別の関数型の `uses` と異なり、二番目以降にも `Fail[MyError]` のような型引数付きの参照を書ける。関数のシグネチャに属する `uses` は、戻り値の型と同じ物理行で書き始める。本体なしの `@builtin`・`@external` の次行の `uses` も、遅いファイルの宣言として報告する。
+
+現在の処理系はファイルの宣言の構文と元位置を保持し、検査と実行には合併後の契約を使う。package の集計・整形器・derive と try-actions の inventory は元の宣言を読む（[パッケージ](../06-tooling/06-09-packages.md)、[フォーマッタ](../06-tooling/06-03-formatter.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md)、[try-actions の移行器](../../../tools/try-actions-migrate/README.md)）。`package.bnt` にはファイルの宣言を書けない。
 
 ### レコード（初回リリース版）
 
@@ -577,8 +583,22 @@ BindStmt    = ( "bind" | "shadow" ) Pattern [ ":" Type ] "<-" Expr .
 
 ```text
 Primary     = ... | InterpString .
-InterpString = StrStart Expr { StrMid Expr } StrEnd .
+InterpString = StrStart Expr [ ":" FormatSpec ] { StrMid Expr [ ":" FormatSpec ] } StrEnd .
+FormatSpec  = [ Align ] [ Sign ] [ "#" ] [ "0" ] [ Width ] [ Precision ] [ Kind ] .
+Align       = "<" | ">" | "^" .
+Sign        = "+" .
+Width       = NonZeroDigit { Digit } .
+Precision   = "." Digit { Digit } .
+Kind        = "d" | "b" | "o" | "x" | "X" | "f" | "s" | "c" .
+NonZeroDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" .
+Digit       = "0" | NonZeroDigit .
 ```
+
+【決定】`${e:spec}` は書式付きの補間である。通常の完全な式 `e` を一度解析し、その直後に残るコロンから、同じ補間の `}` の直前までを元のソースの書式として読む。名前付き引数、レコードとパターンの欄、ブロック内の型注釈のコロンは式の一部である。短いラムダの本体の式に続くコロンは、ラムダ全体の後の書式の区切りとする。式の末尾とコロンの間には通常の空白を置ける。理由: 式の文法を重ねずに、式内のコロンと書式の区切りを区別するためである。
+
+【決定】書式内の数字は ASCII とする。幅は1〜65535、精度は0〜28とし、省略と明示した精度0を区別する。空書式、書式内の空白、符号の `-`、未知の種類、順序の違反を拒否する。精度には種類 `f`、寄せとゼロ埋めには幅が必要であり、ゼロ埋めと明示の寄せは併用できない。`#` は `b`・`o`・`x`・`X` に限る。型との適合は構文の検査と区別する。
+
+【決定】書式の構文・範囲・指定の組み合わせと型の適合を実行前に検査する。適合した書式は定数式と実行時の補間で使え、書式なしの型と実行の規則も保つ。`fmt` は有効な書式を保持する。
 
 パターンには `StringLit` だけを書けるので、文字列補間は書けない。
 
@@ -877,7 +897,7 @@ end record
 ```
 
 - 連続する `///` の行を一つの説明とし、その直後の宣言に結び付ける。説明と宣言の間には、空の行と普通のコメントの行を置けない。属性を付けた宣言では、説明、属性、宣言の順に書く。
-- `///` を付けられる宣言は、トップレベルの宣言（関数、定数、型、型の別名、レコード、型クラス、エフェクト）と、型の構成子、レコードのフィールド、型クラスのメソッド、エフェクトの操作である。`implement` の中の関数にも付けられる。
+- `///` を付けられる宣言は、トップレベルの宣言（関数、定数、型、型の別名、レコード、型クラス、エフェクト）と、型の構成子、レコードのフィールド、型クラスのメソッド、エフェクトの操作である。`implement` の中の関数にも付けられる。ファイル単位の `uses` には付けられず、その前の説明を後の関数へ引き継がない。
 - `//!` は、ファイルの 1 行目から書き始める。ファイルの先頭の U+FEFF とシェバンの行（[字句構造](01-01-lexical.md)の「シェバンの行（初回リリース版）」）があるときは、その次の行から書き始める。`//!` の前には空白とタブだけを置ける。空の行や普通のコメントを前に置くと、import の宣言より前でも、上の位置以外の `//!` として扱う。空の行を挟まずに続く `//!` の行を、一つの説明とする。空の行を挟んだ後の `//!` は、上の位置以外の `//!` として扱う。
 - ファイルが `//!` の説明だけからなり、import の宣言もほかの宣言も持たないときは、誤りとせず、宣言のない空のモジュールとする。
 - 上の位置以外（関数の本体の中、ファイルの最後の `///`、ファイルの先頭の外の `//!` など）にドキュメントコメントを書くと、構文エラーとする。診断は、普通のコメント `//` に書き換えることを修正案として示す。
@@ -889,7 +909,7 @@ end record
 
 ### 初回リリース版の文法の全体
 
-【方針】次の文法は、前述の「文法」に、見出しに「（初回リリース版）」を付けた各節で加えた規則と置き換えた規則を反映したものに、初回リリース版の後に加えた「ファイルの先頭の部分」と「外部の関数の宣言」の規則を加えたものである。各規則の意味と、決定の確度は各節に従う。トップレベルの宣言の順序（先頭の部分、import の宣言、ほかの宣言の順）も、この文法で表す。
+【方針】次の文法は、前述の「文法」に、見出しに「（初回リリース版）」を付けた各節で加えた規則と置き換えた規則を反映したものに、初回リリース版の後に加えた「ファイルの先頭の部分」と「外部の関数の宣言」の規則を加えたものである。各規則の意味と、決定の確度は各節に従う。トップレベルの宣言の順序（先頭のメタデータ、import の宣言、ファイル単位のエフェクトの宣言、ほかの宣言の順）も、この文法で表す。
 
 `@external` を付けた宣言は、関数なら `FnDecl` の代わりに `ExternalFnDecl`、外部の型なら `ExternalTypeDecl` で書く。`Uses` の条件は「外部の関数の宣言」に従う。
 
@@ -904,7 +924,9 @@ HeaderItem  = "language" StringLit
             | "package" UpperIdent NL { HeaderField NL } "end" "package" .
 HeaderField = LowerIdent StringLit .
 Items       = ImportDecl [ NL Items ]
+            | FileUses [ NL Decls ]
             | Decls .
+FileUses    = "uses" EffectRef { "," EffectRef } [ "," ] .
 Decls       = AttrDecl { NL AttrDecl } .
 AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
@@ -998,7 +1020,15 @@ Primary     = Literal
             | HandleExpr
             | "resume" "(" Expr ")" .
 Literal     = IntLit | FloatLit | DecimalLit | StringLit | CharLit | "true" | "false" .
-InterpString = StrStart Expr { StrMid Expr } StrEnd .
+InterpString = StrStart Expr [ ":" FormatSpec ] { StrMid Expr [ ":" FormatSpec ] } StrEnd .
+FormatSpec  = [ Align ] [ Sign ] [ "#" ] [ "0" ] [ Width ] [ Precision ] [ Kind ] .
+Align       = "<" | ">" | "^" .
+Sign        = "+" .
+Width       = NonZeroDigit { Digit } .
+Precision   = "." Digit { Digit } .
+Kind        = "d" | "b" | "o" | "x" | "X" | "f" | "s" | "c" .
+NonZeroDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" .
+Digit       = "0" | NonZeroDigit .
 ListElem    = Expr | ".." Expr .
 Name        = { UpperIdent "." } ( LowerIdent | UpperIdent ) .
 RecordExpr  = QualUpper "(" [ ".." Expr "," ] FieldArg { "," FieldArg } [ "," ] ")" .

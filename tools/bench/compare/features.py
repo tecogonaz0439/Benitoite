@@ -47,11 +47,12 @@ def probe_features(binary, root, timeout, execute=None):
 def configure(cases, features):
     skipped = []
     for case in cases:
+        required = (*case.requires, *(('timing_probe',) if case.command == 'probe' else ()))
         case.states = tuple(state for state, caps in features.items()
                             if (not case.state_requires or state in case.state_requires) and
-                            all(caps.get(f, False) for f in case.requires))
+                            all(caps.get(f, False) for f in required))
         for state, caps in features.items():
-            missing = [f for f in case.requires if not caps.get(f, False)]
+            missing = [f for f in required if not caps.get(f, False)]
             if missing:
                 skipped.append(dict(case=case.id, state=state, reason='missing features: '+', '.join(missing)))
             elif case.state_requires and state not in case.state_requires:

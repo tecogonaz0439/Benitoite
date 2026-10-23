@@ -146,6 +146,7 @@ pub struct TypeckOutput {
     pub expr_types: NodeMap<Ty>,
     pub type_args: NodeMap<TypeArgs>,
     pub operand_types: NodeMap<Ty>,
+    /// 書式の有無によらず、補間の各値の具体化した型。書式と元位置はASTに残す。
     pub interp_types: NodeMap<Ty>,
     pub lambda_effects: NodeMap<EffectSet>,
     pub dicts: NodeMap<Vec<DictExpr>>,
@@ -154,6 +155,8 @@ pub struct TypeckOutput {
     pub lit_values: NodeMap<ConstValue>,
     pub range_bounds: NodeMap<(ConstValue, ConstValue)>,
     pub decl_types: BindingMap<Scheme>,
+    /// トップレベル関数の合併済みの効果と元位置。元の AST の編集範囲とは別に保持する。
+    pub effective_effects: BindingMap<crate::types::EffectiveEffects>,
     pub consts: BindingMap<ConstValue>,
     pub adts: AdtTable,
     pub traits: BindingMap<TraitDef>,

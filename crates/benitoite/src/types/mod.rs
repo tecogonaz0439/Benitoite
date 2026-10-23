@@ -13,7 +13,7 @@ mod text {
     pub const EXCLUDES_FAILURE: &str = "excludes Failure.Fail";
 }
 
-use crate::base::{BindingId, BindingMap, Decimal, ModuleId, NodeId};
+use crate::base::{BindingId, BindingMap, Decimal, ModuleId, NodeId, Span};
 pub use crate::syntax::ast::BuiltinConstraint;
 use builtin::{BuiltinEffectId, BuiltinTypeId};
 
@@ -56,6 +56,27 @@ pub struct EffectSet {
     pub failures: Vec<Ty>,
     pub names: Vec<EffectName>,
     pub vars: Vec<EffVar>,
+}
+
+/// 一つの元宣言が加えた効果と、そのソース上の位置（設計書 02-05「出力」）。
+#[derive(Clone, Debug)]
+pub struct EffectOrigin {
+    /// IO.All は展開済み、Fail の別名は展開済みである。
+    pub effects: EffectSet,
+    /// 診断で使う元の修飾名。
+    pub name: String,
+    pub span: Span,
+    /// ファイル単位の宣言なら真。共通宣言を一関数の編集範囲に使わない。
+    pub file: bool,
+}
+
+/// 関数の最外側の有効な効果行と個別・ファイルの追加元。
+#[derive(Clone, Debug, Default)]
+pub struct EffectiveEffects {
+    pub effects: EffectSet,
+    /// 同じ効果を両リストに書いた場合も、それぞれの元位置を残す。
+    pub origins: Vec<EffectOrigin>,
+    pub wrote_io_all: bool,
 }
 
 impl EffectSet {
@@ -503,6 +524,34 @@ impl TySet {
         BuiltinTypeId::UNSIGNED_INTEGER32,
         BuiltinTypeId::UNSIGNED_INTEGER64,
         BuiltinTypeId::FLOAT32,
+    ]);
+
+    /// 整数の書式 d/b/o/x/X。算術と異なり Byte も受理する。
+    pub const FORMAT_INT: TySet = TySet(&[
+        BuiltinTypeId::INTEGER,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::BYTE,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+    ]);
+    /// f の三型。精度の省略でも集合は変わらない。
+    pub const FORMAT_FIXED: TySet = Self::DIV;
+    /// 種類省略で符号かゼロ埋めを指定した場合の数の集合。
+    pub const FORMAT_NUMBER: TySet = TySet(&[
+        BuiltinTypeId::INTEGER,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::BYTE,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        BuiltinTypeId::FLOAT,
+        BuiltinTypeId::FLOAT32,
+        BuiltinTypeId::DECIMAL,
     ]);
 
     pub fn contains(self, t: BuiltinTypeId) -> bool {

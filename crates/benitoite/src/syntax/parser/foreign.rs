@@ -216,7 +216,9 @@ pub(super) fn when_ahead(p: &Parser) -> bool {
         return false;
     }
     let mut nesting = 0_u32;
-    for token in p.tokens.get(p.pos.saturating_add(1)..).unwrap_or_default() {
+    for token in crate::syntax::token::outside_strings(
+        p.tokens.get(p.pos.saturating_add(1)..).unwrap_or_default(),
+    ) {
         if nesting == 0 && token.kind == TokenKind::Colon {
             return true;
         }

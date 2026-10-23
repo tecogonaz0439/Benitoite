@@ -15,7 +15,7 @@ fn level(binding: &Binding) -> Level {
 
 impl Resolver<'_> {
     pub(super) fn check_declarations(&mut self) {
-        for (owner, used, span) in self.contracts.clone() {
+        for (owner, used, span, file) in self.contracts.clone() {
             let (Some(binding), Some(exposed)) =
                 (self.out.bindings.get(owner), self.out.bindings.get(used))
             else {
@@ -86,7 +86,11 @@ impl Resolver<'_> {
             } else {
                 d = d.help("make_public");
             }
-            if matches!(
+            if file {
+                // 本体で処理してもファイルから加わる契約は消えない
+                // （設計書 02-10「ファイル単位のエフェクトの宣言の診断」）。
+                d = d.note("file_contract").help("file");
+            } else if matches!(
                 exposed.kind,
                 BindingKind::Effect | BindingKind::BuiltinEffect(_)
             ) {

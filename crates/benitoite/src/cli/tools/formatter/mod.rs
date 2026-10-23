@@ -76,6 +76,7 @@ pub fn format_source(
         text,
         resolve_newlines(lexed.tokens.clone()),
         lexed.comments.clone(),
+        lexed.pending.clone(),
         &mut IdGen::new(),
     );
     // 断るのは字句か構文の誤り（E01nn・E02nn）があるときだけで、そのほかの構文解析の診断は捨てる

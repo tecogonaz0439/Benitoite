@@ -2,7 +2,8 @@
 //! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
 //! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
-use crate::builtins::iface::{BuiltinDecl, builtin};
+use crate::base::display_width::{self as width_algorithm, WidthMode};
+use crate::builtins::iface::{BuiltinDecl, PureCtx, builtin};
 use crate::runtime::MAX_STRING_BYTES;
 use crate::runtime::ResourceError;
 use crate::runtime::SizeUnit;
@@ -492,3 +493,90 @@ mod tests {
         });
     }
 }
+
+// 幅の算法は値と実行器を知らず、組み込みの境界だけが資源の不足へ変換する
+// （設計書 03-06「String」）。
+fn measured_width(s: &str, mode: WidthMode) -> Result<i64, Stop> {
+    width_algorithm::width(s, mode)
+        .and_then(|width| i64::try_from(width).ok())
+        .ok_or_else(|| Stop::Internal("display width does not fit Integer".into()))
+}
+
+fn pad_display_width<'e>(
+    ctx: PureCtx<'_, 'e>,
+    s: Value<'e>,
+    width: i64,
+    mode: WidthMode,
+    at_start: bool,
+    function: &'static str,
+) -> Result<Value<'e>, Stop> {
+    let text = ctx
+        .str(s)
+        .ok_or_else(|| Stop::Internal("display width padding expected String".into()))?;
+    let padding =
+        width_algorithm::space_padding(text, width, mode).ok_or_else(|| too_large(function))?;
+    if padding.spaces == 0 {
+        return Ok(s);
+    }
+    ctx.alloc_str_space_padded(text, padding.spaces, at_start, function)
+}
+
+builtin! {
+    /// `String.displayWidth` の本体。
+    name = "String.displayWidth",
+    pure fn display_width(ctx, s: &'c str) -> i64 {
+        let _ = ctx;
+        measured_width(s, WidthMode::Default)
+    }
+}
+
+builtin! {
+    /// `String.displayWidthCJK` の本体。
+    name = "String.displayWidthCJK",
+    pure fn display_width_cjk(ctx, s: &'c str) -> i64 {
+        let _ = ctx;
+        measured_width(s, WidthMode::Cjk)
+    }
+}
+
+builtin! {
+    /// `String.displayWidthPadStart` の本体。
+    name = "String.displayWidthPadStart",
+    pure fn display_width_pad_start(ctx, s: Value<'e>, width: i64) -> Value<'e> {
+        pad_display_width(ctx, s, width, WidthMode::Default, true, "String.displayWidthPadStart")
+    }
+}
+
+builtin! {
+    /// `String.displayWidthPadEnd` の本体。
+    name = "String.displayWidthPadEnd",
+    pure fn display_width_pad_end(ctx, s: Value<'e>, width: i64) -> Value<'e> {
+        pad_display_width(ctx, s, width, WidthMode::Default, false, "String.displayWidthPadEnd")
+    }
+}
+
+builtin! {
+    /// `String.displayWidthPadStartCJK` の本体。
+    name = "String.displayWidthPadStartCJK",
+    pure fn display_width_pad_start_cjk(ctx, s: Value<'e>, width: i64) -> Value<'e> {
+        pad_display_width(ctx, s, width, WidthMode::Cjk, true, "String.displayWidthPadStartCJK")
+    }
+}
+
+builtin! {
+    /// `String.displayWidthPadEndCJK` の本体。
+    name = "String.displayWidthPadEndCJK",
+    pure fn display_width_pad_end_cjk(ctx, s: Value<'e>, width: i64) -> Value<'e> {
+        pad_display_width(ctx, s, width, WidthMode::Cjk, false, "String.displayWidthPadEndCJK")
+    }
+}
+
+/// 表示の幅の項目。既存の番号を保つため表の末尾へ接続する。
+pub const DISPLAY_WIDTH_DECLS: &[BuiltinDecl] = &[
+    display_width::DECL,
+    display_width_cjk::DECL,
+    display_width_pad_start::DECL,
+    display_width_pad_end::DECL,
+    display_width_pad_start_cjk::DECL,
+    display_width_pad_end_cjk::DECL,
+];

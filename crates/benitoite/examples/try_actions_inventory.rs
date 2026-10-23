@@ -2,8 +2,9 @@
 //! AST と物理位置は設計書 02-03「AST」、01-02 の try の規則に従う。
 use benitoite::{
     base::{FileId, IdGen, SourceKind, Span},
-    pipeline::{self, CheckOptions},
+    pipeline::{self, CheckOptions, CheckedProgram},
     syntax::{ast::*, lexer, newline, parser},
+    types::{EffectName, EffectSet, Ty, TyNames},
 };
 use serde_json::{Value, json};
 use std::io::{self, Read};
@@ -15,10 +16,66 @@ fn text(source: &str, span: Span) -> &str {
         .unwrap_or_default()
 }
 
-fn function_owner(f: &FnDecl, source: &str, public: bool) -> Value {
+// 型検査と同じASTのIDだけを参照する。別の解析で得たNodeIdを型表へ渡さない。
+fn effect_names(
+    effects: &EffectSet,
+    checked: &CheckedProgram,
+    type_params: &[String],
+    effect_params: &[String],
+) -> Option<Vec<String>> {
+    let names = TyNames {
+        bindings: &checked.resolved.bindings,
+        adts: &checked.types.adts,
+        effects: &checked.types.effects,
+        type_params,
+        effect_params,
+    };
+    let mut out = Vec::new();
+    for effect in &effects.names {
+        out.push(match effect {
+            EffectName::Builtin(id) => benitoite::types::builtin::effect_name(*id)?,
+            EffectName::User(id) => checked.types.effects.get(*id)?.display_name.clone(),
+        });
+    }
+    for failure in &effects.failures {
+        out.push(format!("Failure.Fail[{}]", failure.show(&names)));
+    }
+    for var in &effects.vars {
+        out.push(effect_params.get(usize::try_from(var.0).ok()?)?.clone());
+    }
+    out.sort();
+    out.dedup();
+    Some(out)
+}
+
+fn function_owner(
+    f: &FnDecl,
+    source: &str,
+    public: bool,
+    file_uses: Option<&UsesList>,
+    path: &str,
+    checked: Option<&CheckedProgram>,
+) -> Value {
+    let effective = checked.and_then(|c| {
+        let binding = *c.resolved.decls.get(f.id)?;
+        let scheme = c.types.decl_types.get(binding)?;
+        effect_names(
+            &scheme.effects,
+            c,
+            &scheme
+                .type_params
+                .iter()
+                .map(|p| p.name.clone())
+                .collect::<Vec<_>>(),
+            &scheme.effect_params,
+        )
+    });
     json!({"kind":"function", "name":f.name.text, "public":public,
         "return_type":text(source, f.ret.span()),
-        "uses":f.uses.as_ref().map(|u| text(source, u.span)).unwrap_or_default()})
+        "uses":f.uses.as_ref().map(|u| text(source, u.span)).unwrap_or_default(),
+        "file_uses":file_uses.map(|u|json!({"text":text(source, u.span),
+            "span":{"path":path,"start":u.span.start.0,"end":u.span.end.0}})),
+        "effective_effects":effective})
 }
 
 enum Work<'a> {
@@ -47,6 +104,7 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
             s.as_bytes(),
             newline::resolve_newlines(lx.tokens),
             lx.comments,
+            lx.pending,
             &mut IdGen::new(),
         );
         let errors: Vec<_> = lx
@@ -120,19 +178,38 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
                 .collect()
         })
         .unwrap_or_default();
+    // 元のソースと一致する検査済みモジュールへ切り替え、宣言と式の型表のIDをそろえる。
+    let program = checked.as_ref().and_then(|c| c.program.as_ref());
+    let checked_module = program.and_then(|c| {
+        c.asts.iter().find(|m| {
+            if stdlib_path.is_none() && checked.as_ref().and_then(|r| r.entry) != Some(m.file) {
+                return false;
+            }
+            checked
+                .as_ref()
+                .and_then(|r| r.sources.get(m.file))
+                .is_some_and(|s| s.text() == source.as_bytes())
+        })
+    });
+    let module = checked_module.unwrap_or(&module);
+    let program = checked_module.and(program);
+    let file_uses = module.file_uses.as_ref().map(|u| {
+        json!({"text":text(parsed_source,u.span),
+        "span":{"path":path,"start":u.span.start.0,"end":u.span.end.0}})
+    });
     let mut work = vec![];
     for decl in &module.decls {
         let public = decl.public.is_some() || decl.package.is_some();
         match &decl.item {
             Item::Fn(f) => {
                 if let Some(body) = &f.body {
-                    work.push(Work::Block(body, function_owner(f, parsed_source, public)));
+                    work.push(Work::Block(body, function_owner(f, parsed_source, public, module.file_uses.as_ref(), path, program)));
                 }
             }
             Item::Impl(i) => {
                 for f in &i.fns {
                     if let Some(body) = &f.decl.body {
-                        let mut owner = function_owner(&f.decl, parsed_source, public);
+                        let mut owner = function_owner(&f.decl, parsed_source, public, module.file_uses.as_ref(), path, program);
                         if let Some(kind) = owner.get_mut("kind") {
                             *kind = json!("implementation");
                         }
@@ -142,7 +219,7 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
             }
             Item::Const(c) => work.push(Work::Expr(
                 &c.value,
-                json!({"kind":"constant", "name":c.name.text}),
+                json!({"kind":"constant", "name":c.name.text, "uses":null, "file_uses":file_uses, "effective_effects":null}),
             )),
             Item::Data(_)
             | Item::Record(_)
@@ -212,7 +289,12 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
                 json!({"kind":"callback",
                 "name":format!("lambda@{}",l.span.start.0.saturating_sub(offset)),
                 "return_type":l.ret.as_ref().map(|r|text(parsed_source,r.span())),
-                "uses":l.uses.as_ref().map(|u|text(parsed_source,u.span))}),
+                "uses":l.uses.as_ref().map(|u|text(parsed_source,u.span)),
+                "file_uses":file_uses,
+                "effective_effects":program.and_then(|c| match c.types.expr_types.get(l.id)? {
+                    Ty::Fn(f) if f.effects.failures.is_empty() => effect_names(&f.effects,c,&[],&[]),
+                    Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => None,
+                })}),
             )),
             Expr::If(i) => work.push(Work::If(i, owner)),
             Expr::Match(m) => {
@@ -287,7 +369,7 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
                 for c in &h.clauses {
                     work.push(Work::Block(
                         &c.body,
-                        json!({"kind":"handler", "name":"handler"}),
+                        json!({"kind":"handler", "name":"handler", "uses":null, "file_uses":file_uses, "effective_effects":null}),
                     ));
                 }
             }
@@ -295,8 +377,10 @@ fn inventory(request: &Value) -> Result<Value, Box<dyn std::error::Error + Send 
         }
     }
     rows.sort_by_key(|r| r.get("start").and_then(Value::as_u64));
-    Ok(json!({"tries":rows,"typed":typed,"fragment":fragment,
-        "parse_errors":parse_errors,"check_codes":check_codes}))
+    Ok(
+        json!({"version":2,"tries":rows,"typed":typed,"fragment":fragment,
+        "parse_errors":parse_errors,"check_codes":check_codes}),
+    )
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {

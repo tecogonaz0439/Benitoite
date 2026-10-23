@@ -340,6 +340,7 @@ impl<'a> State<'a> {
             }
             EntryKind::Operator { .. }
             | EntryKind::Equality { .. }
+            | EntryKind::Format { .. }
             | EntryKind::Interpolation { .. }
             | EntryKind::ListPattern(_) => None,
             EntryKind::EffectOp => return Err(error("effect operation requested without binding")),

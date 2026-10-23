@@ -1,0 +1,80 @@
+{
+  "command": [
+    "target/release/benitoite",
+    "--licenses"
+  ],
+  "configuration": "release; default gc-mark-sweep plus bundled-licenses",
+  "exitCode": 0,
+  "input": "target/z1-work/THIRD_PARTY_LICENSES",
+  "embeddedInput": "crates/benitoite/licenses/THIRD_PARTY_LICENSES",
+  "bodyByteLength": 113432,
+  "prefixByteLength": 130,
+  "inputSha256": "7ee565ad75d2a3040e54f9b3dbede205662911723e81f4057916179ba5957752",
+  "outputBodySha256": "7ee565ad75d2a3040e54f9b3dbede205662911723e81f4057916179ba5957752",
+  "completeOutputSha256": "fb13639bb99e6a91958e16b6ec524e4c11d6ae6c5be8be2b0196b3c1f1337b9e",
+  "equal": true,
+  "unicodeWidthIncluded": true,
+  "version": {
+    "build": {
+      "commit": "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+      "dirty": null,
+      "provenance": {
+        "commit": "git",
+        "dirty": "notCollected"
+      },
+      "target": "aarch64-apple-darwin"
+    },
+    "displayWidthUnicodeVersion": "17.0.0",
+    "formats": {
+      "checkReport": [
+        1
+      ],
+      "diagnostics": [
+        1
+      ],
+      "effectLimit": [
+        1
+      ],
+      "loaderEnvironment": [
+        1
+      ],
+      "skillDocument": [
+        1
+      ],
+      "skillList": [
+        1
+      ],
+      "testCheckReport": [
+        1,
+        2
+      ],
+      "testResults": [
+        1,
+        2
+      ],
+      "version": [
+        1
+      ]
+    },
+    "kind": "version",
+    "loaderEnvironment": {
+      "deniedPrefixes": [
+        "DYLD_",
+        "LD_"
+      ],
+      "errorKind": "InvalidInput",
+      "inherited": "unchanged",
+      "mode": "always",
+      "nameComparison": "asciiCaseInsensitive",
+      "schemaVersion": 1
+    },
+    "name": "benitoite",
+    "schemaVersion": 1,
+    "unicodeVersion": "17.0.0",
+    "version": "0.0.11"
+  },
+  "bundledExecutableSha256": "277829ccb6da7d591fe0c3d3cf398d719d39a0914837f6dcedcaaf05e9287372",
+  "elapsedSeconds": 0.022,
+  "initialComparison": "An initial whole-output comparison failed because the CLI prefixes its own license and the Third-party licenses heading; comparing the expected prefix plus the generated body succeeded.",
+  "restoredDefaultExecutableSha256": "877b4e6edb9d9a60ab843e04bd1518956386dffa437afe68967a89f28461e1ff"
+}

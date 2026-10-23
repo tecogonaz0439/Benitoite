@@ -1,0 +1,85 @@
+{
+  "command": [
+    "python3",
+    "-"
+  ],
+  "description": "本文復元・対訳・リンク・編集範囲・診断記録の読み取り専用照合",
+  "checks": [
+    {
+      "kind": "編集した文書の相対リンク・アンカー・フェンス・末尾空白・絶対パス",
+      "files": [
+        "CHANGELOG.md",
+        "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/results.md",
+        "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/manual-cli-table.md",
+        "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/results.md",
+        "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1r/results.md",
+        "docs/design/01-spec/01-03-names-modules.md",
+        "docs/design/06-tooling/06-09-packages.md",
+        "docs/ja/reference/benitoite.md",
+        "docs/reference/benitoite.md"
+      ],
+      "relativeLinksChecked": 345
+    },
+    {
+      "kind": "0.0.10 の本文を e0ed5eb2 とバイト単位で照合、0.0.11/0.0.9 の本文維持",
+      "file": "docs/reference/benitoite.md",
+      "restoredSectionSha256": "e5e5ec01a8a1825f7145ccdacd3401c601627624387d02900061020412541745"
+    },
+    {
+      "kind": "0.0.10 の本文を e0ed5eb2 とバイト単位で照合、0.0.11/0.0.9 の本文維持",
+      "file": "docs/ja/reference/benitoite.md",
+      "restoredSectionSha256": "bc7835d736a1e9a70bf66e59e4c31a90cd44a25e33e9cbfd3b13d586c516c0fb"
+    },
+    {
+      "kind": "英語・日本語のコードブロック一致",
+      "files": [
+        "docs/reference/benitoite.md",
+        "docs/ja/reference/benitoite.md"
+      ],
+      "blocks": 100
+    },
+    {
+      "kind": "英語・日本語のコードブロック一致",
+      "files": [
+        "docs/reference/install.md",
+        "docs/ja/reference/install.md"
+      ],
+      "blocks": 11
+    },
+    {
+      "kind": "install の 0.0.9→0.0.10 の移行事項・参照先の対応、本文変更なし",
+      "file": "docs/reference/install.md"
+    },
+    {
+      "kind": "install の 0.0.9→0.0.10 の移行事項・参照先の対応、本文変更なし",
+      "file": "docs/ja/reference/install.md"
+    },
+    {
+      "kind": "33番の E0468 の副位置・注記と要約を照合"
+    }
+  ],
+  "errors": [
+    "docs/design/01-spec/01-03-names-modules.md リンク切れ ...",
+    "docs/ja/reference/benitoite.md リンク切れ xs: List[T]",
+    "docs/ja/reference/benitoite.md リンク切れ value: T",
+    "docs/ja/reference/benitoite.md リンク切れ x: F[A, X], f: function(value: A",
+    "docs/ja/reference/benitoite.md リンク切れ x: A",
+    "docs/ja/reference/benitoite.md リンク切れ fs: F[(function(value: A",
+    "docs/ja/reference/benitoite.md リンク切れ x: F[A, X], f: function(value: A",
+    "docs/ja/reference/benitoite.md リンク切れ steps: ShrinkStep[A], f: function(value: A",
+    "docs/ja/reference/benitoite.md リンク切れ left: ShrinkStep[T], right: function(",
+    "docs/reference/benitoite.md リンク切れ xs: List[T]",
+    "docs/reference/benitoite.md リンク切れ value: T",
+    "docs/reference/benitoite.md リンク切れ x: F[A, X], f: function(value: A",
+    "docs/reference/benitoite.md リンク切れ x: A",
+    "docs/reference/benitoite.md リンク切れ fs: F[(function(value: A",
+    "docs/reference/benitoite.md リンク切れ x: F[A, X], f: function(value: A",
+    "docs/reference/benitoite.md リンク切れ steps: ShrinkStep[A],\nf: function(value: A",
+    "docs/reference/benitoite.md リンク切れ left: ShrinkStep[T],\nright: function(",
+    "docs/reference/install.md 移行項目なし State",
+    "docs/reference/install.md 移行項目なし inventory",
+    "docs/ja/reference/install.md 移行項目なし State"
+  ],
+  "exitCode": 1,
+  "elapsedSeconds": 0.216
+}

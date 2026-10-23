@@ -1,0 +1,28 @@
+{
+  "command": "python3 -（K2 の開始版の全 blob に記録済み changedFiles を重ね、現行の全入力と SHA-256 を照合）",
+  "base": "1d64e44c7f91c18d5dc3c3b9554ba22547b8a431",
+  "head": "1d64e44c7f91c18d5dc3c3b9554ba22547b8a431",
+  "originalRecord": "../z1/input-state-final.json",
+  "scopes": [
+    ".cargo/config.toml",
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
+    "crates/benitoite",
+    "formal",
+    "scripts/check-formal.sh",
+    "tools/bench/programs"
+  ],
+  "originalK2Base": "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+  "inputFileCount": 4449,
+  "allFileHashesMatchK2": true,
+  "k2DiffSha256": "8ca62ce9b1d5fdd34bbd70e6f9615b3d09b6c3144b6e195e7c637efa9203948c",
+  "diffMatchesK2": true,
+  "recordedK2InputContentSha256": "7da0ff460e10379663510d4908e02d8d010831c529a1b10c016d98796de1c866",
+  "canonicalCurrentInputMapSha256": "cd57f55f9378c869d82e9542346bf897e4119be816b88661ce88eb655a0fb964",
+  "canonicalInputMapEncoding": "全入力の相対パスと SHA-256 の辞書を sort_keys=True, ensure_ascii=False, separators=(comma,colon) の UTF-8 JSON として計算",
+  "untrackedInputs": {},
+  "changedK2InputsSinceBWork": [],
+  "elapsedSeconds": 0.265,
+  "exitCode": 0
+}

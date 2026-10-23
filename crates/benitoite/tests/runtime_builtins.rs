@@ -6,6 +6,9 @@
     clippy::panic,
     clippy::arithmetic_side_effects
 )]
+#[path = "golden/differential.rs"]
+mod differential;
+
 use benitoite::pipeline::{self, CheckOptions};
 use benitoite::runtime::heap::HeapConfig;
 use benitoite::runtime::io::event::Wakeup;
@@ -17,6 +20,625 @@ use benitoite::runtime::sched::testing::ScheduleHandle;
 use benitoite::vm::{ExecMode, VmConfig};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, mpsc};
+
+// 関門: 書式本体だけでは検出できない14頭の登録漏れ・引数順・権限・宣言型を、
+// 本番の表から raw の包みを呼ぶ境界で守る。表層の型選択と定数評価は
+// formatted_interpolation_connects_constants_and_both_evaluators が確かめる。
+type FormatCodes = (i64, i64, i64, bool, bool, i64, i64);
+
+fn call_format<'e>(
+    ctx: &mut benitoite::runtime::heap::NoGcCtx<'e>,
+    name: &str,
+    value: benitoite::runtime::heap::Value<'e>,
+    codes: FormatCodes,
+) -> Result<benitoite::runtime::heap::Value<'e>, benitoite::runtime::Stop> {
+    use benitoite::builtins::iface::{CallCtx, Reply};
+    use benitoite::builtins::{builtin_decl, lookup_builtin};
+    use benitoite::runtime::heap::Value as V;
+    let (kind, align, sign, alternate, zero, width, precision) = codes;
+    let decl = builtin_decl(lookup_builtin(name).unwrap()).unwrap();
+    let args = [
+        value,
+        V::Int(kind),
+        V::Int(align),
+        V::Int(sign),
+        V::Bool(alternate),
+        V::Bool(zero),
+        V::Int(width),
+        V::Int(precision),
+    ];
+    match (decl.raw)(&mut CallCtx::new(ctx, None, None, None), &args)? {
+        Reply::Done(value) => Ok(value),
+        other @ (Reply::Wait(_) | Reply::SpawnTasks(_) | Reply::Exit(_)) => {
+            panic!("pure formatter returned {other:?}")
+        }
+    }
+}
+
+fn check_format<'e>(
+    ctx: &mut benitoite::runtime::heap::NoGcCtx<'e>,
+    name: &str,
+    value: benitoite::runtime::heap::Value<'e>,
+    codes: FormatCodes,
+    expected: &str,
+) {
+    let result = call_format(ctx, name, value, codes).unwrap();
+    assert_eq!(ctx.str(result), Some(expected), "{name} {codes:?}");
+}
+
+#[test]
+fn format_all_fourteen_heads_have_fixed_contracts_and_execute() {
+    use benitoite::builtins::iface::Capability;
+    use benitoite::builtins::{
+        builtin_decl, lookup_builtin,
+        table::{EntryKind, builtin_kind, builtin_scheme},
+    };
+    use benitoite::runtime::heap::{Heap, Value as V};
+    use benitoite::types::{Ty, TyCon, builtin::BuiltinTypeId as B};
+    let basic = |id| Ty::Con(TyCon::Builtin(id), vec![]);
+    let mut heap = Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        let text = ctx.alloc_str("猫", "format test").unwrap();
+        let decimal = ctx.alloc_decimal(benitoite::base::Decimal::parse_literal("1.50").unwrap());
+        // この一覧は独立した契約であり、FORMAT 表から作らない
+        // （設計書 02-06「書式化の内部頭」、03-06「書式付き補間の内部書式化」）。
+        let cases = [
+            (
+                "Integer",
+                B::INTEGER,
+                V::Int(i64::MIN),
+                "-9223372036854775808",
+            ),
+            ("Integer8", B::INTEGER8, V::Int8(i8::MIN), "-128"),
+            ("Integer16", B::INTEGER16, V::Int16(i16::MIN), "-32768"),
+            ("Integer32", B::INTEGER32, V::Int32(i32::MIN), "-2147483648"),
+            ("Byte", B::BYTE, V::Byte(u8::MAX), "255"),
+            (
+                "UnsignedInteger16",
+                B::UNSIGNED_INTEGER16,
+                V::UInt16(u16::MAX),
+                "65535",
+            ),
+            (
+                "UnsignedInteger32",
+                B::UNSIGNED_INTEGER32,
+                V::UInt32(u32::MAX),
+                "4294967295",
+            ),
+            (
+                "UnsignedInteger64",
+                B::UNSIGNED_INTEGER64,
+                V::UInt64(u64::MAX),
+                "18446744073709551615",
+            ),
+            ("Float", B::FLOAT, V::Float(-0.0), "-0.0"),
+            ("Float32", B::FLOAT32, V::Float32(0.1), "0.1"),
+            ("Decimal", B::DECIMAL, decimal, "1.50"),
+            ("String", B::STRING, text, "猫"),
+            ("Character", B::CHARACTER, V::Char('é'), "é"),
+            ("Boolean", B::BOOLEAN, V::Bool(true), "true"),
+        ];
+        for (ty, operand, value, expected) in cases {
+            let name = format!("%Format.{ty}");
+            let id = lookup_builtin(&name).unwrap();
+            let decl = builtin_decl(id).unwrap();
+            assert_eq!((decl.arity, decl.capability), (8, Capability::Pure));
+            assert_eq!(builtin_kind(id), Some(EntryKind::Format { operand }));
+            let scheme = builtin_scheme(id).unwrap();
+            assert_eq!(
+                scheme.params,
+                vec![
+                    basic(operand),
+                    basic(B::INTEGER),
+                    basic(B::INTEGER),
+                    basic(B::INTEGER),
+                    basic(B::BOOLEAN),
+                    basic(B::BOOLEAN),
+                    basic(B::INTEGER),
+                    basic(B::INTEGER)
+                ]
+            );
+            assert_eq!(
+                scheme.param_names,
+                [
+                    "value",
+                    "kind",
+                    "align",
+                    "sign",
+                    "alternate",
+                    "zero",
+                    "width",
+                    "precision"
+                ]
+            );
+            assert_eq!(scheme.ret, basic(B::STRING));
+            assert!(
+                scheme.effects.is_empty()
+                    && scheme.type_params.is_empty()
+                    && scheme.effect_params.is_empty()
+                    && scheme.class_constraints.is_empty()
+                    && scheme.no_fail.is_empty()
+            );
+            // 幅1は空書式ではなく、有効な指定。長い内容を切断しない。
+            check_format(ctx, &name, value, (0, 0, 0, false, false, 1, -1), expected);
+        }
+    });
+}
+
+#[test]
+fn format_integer_radices_signs_and_zero_padding() {
+    use benitoite::runtime::heap::{Heap, Value as V};
+    let mut heap = Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        for (kind, alternate, zero, width, n, expected) in [
+            (1, false, false, 0, -42, "-42"),
+            (2, true, false, 0, -42, "-0b101010"),
+            (3, true, false, 0, -42, "-0o52"),
+            (4, true, true, 8, -42, "-0x0002a"),
+            (5, true, true, 8, -42, "-0X0002A"),
+            (2, true, false, 0, 0, "0b0"),
+            (3, true, false, 0, 0, "0o0"),
+            (4, true, false, 0, 0, "0x0"),
+            (5, true, false, 0, 0, "0X0"),
+            (4, true, false, 0, i64::MIN, "-0x8000000000000000"),
+        ] {
+            check_format(
+                ctx,
+                "%Format.Integer",
+                V::Int(n),
+                (kind, 0, 0, alternate, zero, width, -1),
+                expected,
+            );
+        }
+        for (name, value, expected) in [
+            ("Integer8", V::Int8(i8::MIN), "-0x80"),
+            ("Integer16", V::Int16(i16::MIN), "-0x8000"),
+            ("Integer32", V::Int32(i32::MIN), "-0x80000000"),
+            ("Byte", V::Byte(255), "0xff"),
+            ("UnsignedInteger16", V::UInt16(u16::MAX), "0xffff"),
+            ("UnsignedInteger32", V::UInt32(u32::MAX), "0xffffffff"),
+            (
+                "UnsignedInteger64",
+                V::UInt64(u64::MAX),
+                "0xffffffffffffffff",
+            ),
+        ] {
+            check_format(
+                ctx,
+                &format!("%Format.{name}"),
+                value,
+                (4, 0, 0, true, false, 0, -1),
+                expected,
+            );
+        }
+        check_format(
+            ctx,
+            "%Format.Integer",
+            V::Int(42),
+            (1, 0, 1, false, true, 6, -1),
+            "+00042",
+        );
+        check_format(
+            ctx,
+            "%Format.UnsignedInteger64",
+            V::UInt64(0),
+            (1, 0, 1, false, true, 4, -1),
+            "+000",
+        );
+    });
+}
+
+#[test]
+fn format_fractional_rounding_uses_each_values_exact_representation() {
+    use benitoite::base::Decimal;
+    use benitoite::runtime::heap::{Heap, Value as V};
+    let mut heap = Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        for (n, expected) in [
+            (2.5, "2"),
+            (3.5, "4"),
+            (-2.5, "-2"),
+            (-3.5, "-4"),
+            (-0.25, "-0"),
+            (-0.0, "-0"),
+        ] {
+            check_format(
+                ctx,
+                "%Format.Float",
+                V::Float(n),
+                (6, 0, 0, false, false, 0, 0),
+                expected,
+            );
+            check_format(
+                ctx,
+                "%Format.Float32",
+                V::Float32(n as f32),
+                (6, 0, 0, false, false, 0, 0),
+                expected,
+            );
+        }
+        for (n, expected) in [(25, "2"), (35, "4"), (-25, "-2"), (-35, "-4"), (-2, "0")] {
+            let value = ctx.alloc_decimal(Decimal::new(n, 1).unwrap());
+            check_format(
+                ctx,
+                "%Format.Decimal",
+                value,
+                (6, 0, 0, false, false, 0, 0),
+                expected,
+            );
+        }
+        for (name, value, precision, expected) in [
+            ("Float", V::Float(0.125), 2, "0.12"),
+            ("Float", V::Float(0.375), 2, "0.38"),
+            ("Float32", V::Float32(0.0625), 3, "0.062"),
+            ("Float", V::Float(2.675), 2, "2.67"),
+            ("Float", V::Float(2.685), 2, "2.69"),
+            ("Float32", V::Float32(2.685), 2, "2.68"),
+            ("Float", V::Float(0.1), 28, "0.1000000000000000055511151231"),
+            (
+                "Float32",
+                V::Float32(0.1),
+                28,
+                "0.1000000014901161193847656250",
+            ),
+            (
+                "Float",
+                V::Float(f64::from_bits(1)),
+                28,
+                "0.0000000000000000000000000000",
+            ),
+            (
+                "Float32",
+                V::Float32(f32::from_bits(1)),
+                28,
+                "0.0000000000000000000000000000",
+            ),
+            ("Float", V::Float(1.5), -1, "1.500000"),
+            ("Float32", V::Float32(1.5), -1, "1.500000"),
+            (
+                "Float32",
+                V::Float32(f32::MAX),
+                0,
+                "340282346638528859811704183484516925440",
+            ),
+        ] {
+            check_format(
+                ctx,
+                &format!("%Format.{name}"),
+                value,
+                (6, 0, 0, false, false, 0, precision),
+                expected,
+            );
+        }
+        // binary64 最大値は (2^53 - 1) * 2^971。独立に整数へ展開した数字列を固定する。
+        check_format(ctx, "%Format.Float", V::Float(f64::MAX), (6, 0, 0, false, false, 0, 28), concat!(
+            "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368",
+            ".0000000000000000000000000000"));
+        for (n, scale, precision, expected) in [
+            (2675, 3, 2, "2.68"),
+            (2685, 3, 2, "2.68"),
+            (9995, 3, 2, "10.00"),
+            (-1, 28, 2, "0.00"),
+            (1, 28, 28, "0.0000000000000000000000000001"),
+            (150, 2, -1, "1.50"),
+            (15, 1, -1, "1.5"),
+            (0, 0, 2, "0.00"),
+            (
+                benitoite::base::decimal::MAX_MANTISSA,
+                0,
+                2,
+                "79228162514264337593543950335.00",
+            ),
+            (
+                -benitoite::base::decimal::MAX_MANTISSA,
+                0,
+                2,
+                "-79228162514264337593543950335.00",
+            ),
+        ] {
+            let value = ctx.alloc_decimal(Decimal::new(n, scale).unwrap());
+            check_format(
+                ctx,
+                "%Format.Decimal",
+                value,
+                (6, 0, 0, false, false, 0, precision),
+                expected,
+            );
+        }
+        let decimal = ctx.alloc_decimal(Decimal::new(-1, 3).unwrap());
+        check_format(
+            ctx,
+            "%Format.Decimal",
+            decimal,
+            (6, 0, 1, false, true, 8, 2),
+            "+0000.00",
+        );
+        let decimal = ctx.alloc_decimal(Decimal::new(15, 1).unwrap());
+        check_format(
+            ctx,
+            "%Format.Decimal",
+            decimal,
+            (6, 0, 1, false, true, 8, 2),
+            "+0001.50",
+        );
+    });
+}
+
+#[test]
+fn format_special_values_and_display_width_alignment() {
+    use benitoite::runtime::heap::{Heap, Value as V};
+    let mut heap = Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        for (n, expected) in [
+            (f64::NAN, "         NaN"),
+            (-f64::NAN, "         NaN"),
+            (f64::INFINITY, "   +Infinity"),
+            (f64::NEG_INFINITY, "   -Infinity"),
+        ] {
+            check_format(
+                ctx,
+                "%Format.Float",
+                V::Float(n),
+                (6, 0, 1, false, true, 12, 2),
+                expected,
+            );
+            check_format(
+                ctx,
+                "%Format.Float32",
+                V::Float32(n as f32),
+                (6, 0, 1, false, true, 12, 2),
+                expected,
+            );
+        }
+        check_format(
+            ctx,
+            "%Format.Float",
+            V::Float(-0.0),
+            (6, 0, 1, false, true, 8, 2),
+            "-0000.00",
+        );
+        for (s, kind, align, width, expected) in [
+            ("猫", 7, 2, 4, "  猫"),
+            ("猫", 7, 0, 4, "猫  "),
+            ("猫", 7, 3, 5, " 猫  "),
+            ("猫", 7, 3, 1, "猫"),
+            ("·", 7, 2, 2, " ·"),
+            ("e\u{301}", 7, 2, 3, "  e\u{301}"),
+            ("\u{301}", 7, 1, 2, "\u{301}  "),
+            ("👩‍👩‍👧‍👦", 7, 2, 4, "  👩‍👩‍👧‍👦"),
+            ("ل\0ا", 7, 2, 4, "  ل\0ا"),
+            ("لا", 7, 2, 3, "  لا"),
+        ] {
+            let value = ctx.alloc_str(s, "format test").unwrap();
+            check_format(
+                ctx,
+                "%Format.String",
+                value,
+                (kind, align, 0, false, false, width, -1),
+                expected,
+            );
+        }
+        check_format(
+            ctx,
+            "%Format.Character",
+            V::Char('猫'),
+            (8, 3, 0, false, false, 5, -1),
+            " 猫  ",
+        );
+        check_format(
+            ctx,
+            "%Format.Boolean",
+            V::Bool(false),
+            (0, 0, 0, false, false, 7, -1),
+            "false  ",
+        );
+        check_format(
+            ctx,
+            "%Format.Integer",
+            V::Int(42),
+            (1, 1, 0, false, false, 5, -1),
+            "42   ",
+        );
+        check_format(
+            ctx,
+            "%Format.Integer",
+            V::Int(42),
+            (1, 3, 0, false, false, 5, -1),
+            " 42  ",
+        );
+        // 最大幅は一度だけ確かめ、stress 構成でも反復や深い入力と組み合わせない。
+        let result = call_format(
+            ctx,
+            "%Format.Integer",
+            V::Int(-42),
+            (4, 0, 0, true, true, 65535, -1),
+        )
+        .unwrap();
+        let text = ctx.str(result).unwrap();
+        assert_eq!(text.len(), 65535);
+        assert!(text.starts_with("-0x") && text.ends_with("2a"));
+        assert!(text.get(3..65533).unwrap().bytes().all(|b| b == b'0'));
+    });
+}
+
+#[test]
+fn format_invalid_internal_arguments_are_internal_errors() {
+    use benitoite::runtime::{
+        Stop,
+        heap::{Heap, Value as V},
+    };
+    let mut heap = Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        for codes in [
+            (0, 0, 0, false, false, 0, -1),
+            (9, 0, 0, false, false, 0, -1),
+            (-1, 0, 0, false, false, 0, -1),
+            (1, 4, 0, false, false, 1, -1),
+            (1, 0, 2, false, false, 0, -1),
+            (1, 0, 0, false, false, -1, -1),
+            (1, 0, 0, false, false, 65536, -1),
+            (6, 0, 0, false, false, 0, -2),
+            (6, 0, 0, false, false, 0, 29),
+            (1, 0, 0, false, false, 0, 0),
+            (1, 1, 0, false, false, 0, -1),
+            (1, 0, 0, false, true, 0, -1),
+            (1, 1, 0, false, true, 8, -1),
+            (1, 0, 0, true, false, 0, -1),
+        ] {
+            assert!(
+                matches!(
+                    call_format(ctx, "%Format.Integer", V::Int(1), codes),
+                    Err(Stop::Internal(_))
+                ),
+                "{codes:?}"
+            );
+        }
+        for (name, value, codes) in [
+            ("Integer", V::Int(1), (6, 0, 0, false, false, 0, -1)),
+            ("Float", V::Float(1.0), (1, 0, 0, false, false, 0, -1)),
+            ("Boolean", V::Bool(true), (2, 0, 0, false, false, 0, -1)),
+            ("Character", V::Char('a'), (0, 0, 1, false, false, 0, -1)),
+            ("Boolean", V::Bool(true), (0, 0, 0, false, true, 8, -1)),
+            ("Character", V::Char('a'), (7, 0, 0, false, false, 0, -1)),
+        ] {
+            assert!(matches!(
+                call_format(ctx, &format!("%Format.{name}"), value, codes),
+                Err(Stop::Internal(_))
+            ));
+        }
+        // 型付きタプルの Rust 本体にも、言語側は8引数のまま渡す。
+        use benitoite::builtins::iface::CallCtx;
+        use benitoite::builtins::{builtin_decl, lookup_builtin};
+        let decl = builtin_decl(lookup_builtin("%Format.Integer").unwrap()).unwrap();
+        let args = [
+            V::Int(1),
+            V::Int(1),
+            V::Int(0),
+            V::Int(0),
+            V::Bool(false),
+            V::Bool(false),
+            V::Int(0),
+            V::Int(-1),
+            V::Int(0),
+        ];
+        for len in [7, 9] {
+            assert!(matches!(
+                (decl.raw)(
+                    &mut CallCtx::new(ctx, None, None, None),
+                    args.get(..len).unwrap()
+                ),
+                Err(Stop::Internal(_))
+            ));
+        }
+        let mut wrong_type = args.get(..8).unwrap().to_vec();
+        *wrong_type.get_mut(1).unwrap() = V::Bool(true);
+        assert!(matches!(
+            (decl.raw)(&mut CallCtx::new(ctx, None, None, None), &wrong_type),
+            Err(Stop::Internal(_))
+        ));
+        // 固定引数の型の取り出しにも本番の包みを通す。
+        assert!(matches!(
+            call_format(
+                ctx,
+                "%Format.Integer8",
+                V::Int(1),
+                (1, 0, 0, false, false, 0, -1)
+            ),
+            Err(Stop::Internal(_))
+        ));
+    });
+}
+
+// 関門: 表層から型別の内部頭へ渡す型・七定数・省略の保持と、定数との一致を守る。
+// rawの頭のテストは、表層の型選択・引数列・定数評価を通らない。
+// 同じ独立期待値を両実行器に要求し、書式を無視する共通の退行も捕まえる。
+#[test]
+fn formatted_interpolation_connects_constants_and_both_evaluators() {
+    let cases = [
+        ("Integer", "-42", "+#08x", "-0x0002a"),
+        ("Integer8", "-128s8", "d", "-128"),
+        ("Integer16", "-32768s16", "#b", "-0b1000000000000000"),
+        ("Integer32", "-2147483648s32", "#o", "-0o20000000000"),
+        ("Byte", "255u8", "#X", "0XFF"),
+        ("UnsignedInteger16", "65535u16", "#x", "0xffff"),
+        ("UnsignedInteger32", "4294967295u32", "d", "4294967295"),
+        (
+            "UnsignedInteger64",
+            "18446744073709551615u64",
+            "d",
+            "18446744073709551615",
+        ),
+        ("Float", "2.5", "+08.0f", "+0000002"),
+        ("Float32", "2.675f32", ".2f", "2.67"),
+        ("Decimal", "2.675m", ".2f", "2.68"),
+        ("String", r#""猫""#, ">5s", "   猫"),
+        ("Character", "'猫'", "^5c", " 猫  "),
+        ("Boolean", "true", "6", "true  "),
+        ("Float", "1.5", "f", "1.500000"),
+        ("Float32", "1.5f32", "f", "1.500000"),
+        ("Decimal", "1.50m", "f", "1.50"),
+        ("Float", "-0.0", ".0f", "-0"),
+        ("Decimal", "-0.1m", ".0f", "0"),
+        ("String", r#""e\u{301}""#, "^4", " é  "),
+        ("String", r#""猫犬""#, "2s", "猫犬"),
+        ("String", r#""""#, "3s", "   "),
+    ];
+    let mut source = String::new();
+    for (i, (ty, value, spec, _)) in cases.iter().enumerate() {
+        source.push_str(&format!(
+            "const text{i}: String = \"${{{value}:{spec}}}\"\nfunction render{i}(value: {ty}) -> String\n return \"${{value:{spec}}}\"\nend function\n"
+        ));
+    }
+    source.push_str("function main() -> Result[Unit, String]\n");
+    for (i, (_, value, _, expected)) in cases.iter().enumerate() {
+        source.push_str(&format!(
+            " if text{i} <> \"{expected}\" or render{i}({value}) <> \"{expected}\" then return Result.Error(\"format case {i}\") end if\n"
+        ));
+    }
+    // 連続・入れ子・書式なしとの混在。Stringも書式化する必要がある。
+    source.push_str(
+        r#"
+ bind plain <- "猫"
+ bind mixed <- "${"${42:#x}":>6s}${plain}${true:>6}"
+ if mixed <> "  0x2a猫  true" then return Result.Error("nested interpolation") end if
+ return Result.Ok(())
+end function
+"#,
+    );
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let checked = pipeline::check_text(
+            "formatted-interpolation.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count(),
+            0,
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        let result = differential::compare(
+            checked.program.unwrap(),
+            checked.sources,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))).input,
+            VmConfig::default(),
+            mode,
+            differential::CompareOptions {
+                require_returned: true,
+                ..Default::default()
+            },
+            Box::new(|| Ok(())),
+        );
+        match result {
+            differential::Comparison::Matched => {}
+            differential::Comparison::Failed(reason)
+            | differential::Comparison::Excluded(reason) => panic!("{mode:?}: {reason}"),
+        }
+    }
+}
 
 fn compile(source: &str) -> benitoite::bytecode::program::CompiledProgram {
     let checked = pipeline::check_text(
@@ -1092,6 +1714,130 @@ fn log_output_failure_uses_the_console_stop_and_exit_status() {
                 "{operation}: {end:?}"
             );
             assert!(output.lock().unwrap().is_empty());
+        }
+    }
+}
+
+// 関門: 幅本体の単体検査では通らない標準宣言・名前付き引数・純粋性と
+// VM/参照評価の値の橋渡しを、独立した期待内容と幅で確かめる。
+#[test]
+fn display_width_functions_preserve_content_and_pad_in_both_modes() {
+    let cases = [
+        (r#""""#, 0, 0),
+        (r#""猫""#, 2, 2),
+        (r#""·""#, 1, 2),
+        (r#""=\u{338}""#, 1, 2),
+        (r#""\u{301}""#, 0, 0),
+        (r#""e\u{301}""#, 1, 1),
+        (r#""👩‍👩‍👧‍👦""#, 2, 2),
+        (r#""\u{1faea}""#, 2, 2),
+        (r#""a\u{200d}""#, 1, 1),
+        (r#""❤\u{fe0f}""#, 2, 2),
+        (r#""لا""#, 1, 1),
+        (r#""ل\u{0}ا""#, 2, 2),
+        (r#""a\nb\tc\u{7f}\u{85}\u{2028}\u{2029}""#, 3, 3),
+        (r#""\u{1b}[31m""#, 4, 4),
+    ];
+    let mut source = String::new();
+    for suffix in ["", "CJK"] {
+        source.push_str(&format!(r#"
+function verify{suffix}(s: String, width: Integer, original: Integer, expected: Integer, spaces: String) -> Boolean
+ bind start <- String.displayWidthPadStart{suffix}(s: s, width: width)
+ bind finish <- String.displayWidthPadEnd{suffix}(s: s, width: width)
+ return String.displayWidth{suffix}(s) = original and start = spaces + s and finish = s + spaces and String.displayWidth{suffix}(start) = expected and String.displayWidth{suffix}(finish) = expected
+end function
+"#));
+    }
+    source.push_str("function main() -> Result[Unit,String]\n");
+    for (i, (text, default, cjk)) in cases.into_iter().enumerate() {
+        for (suffix, measured) in [("", default), ("CJK", cjk)] {
+            for target in [i64::MIN, -1, 0, measured, measured + 3] {
+                let spaces = " "
+                    .repeat(usize::try_from(target.saturating_sub(measured).max(0)).unwrap_or(0));
+                source.push_str(&format!(
+                    " if not verify{suffix}(s: {text}, width: {target}, original: {measured}, expected: {}, spaces: \"{spaces}\") then return Result.Error(\"display width case {i} {suffix} {target}\") end if\n",
+                    measured.max(target)
+                ));
+            }
+        }
+    }
+    // 論理上限内の動的な幅を使い、安全点の後で元の文字列と結果を読み直す。
+    // gc-stress の構成では各安全点で回収する。
+    source.push_str(r#"
+ bind original <- String.repeat(s: "猫", n: 1000)
+ bind padded <- String.displayWidthPadEnd(s: original, width: 4096)
+ bind unused <- String.repeat(s: "x", n: 8192)
+ return if String.byteLength(original) = 3000 and String.displayWidth(padded) = 4096 and String.byteLength(padded) = 5096 and String.endsWith(s: padded, suffix: "   ") and String.byteLength(unused) = 8192 then Result.Ok(()) else Result.Error("padding after GC") end if
+end function
+"#);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let checked = pipeline::check_text(
+            "display-width.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        let result = differential::compare(
+            checked.program.unwrap(),
+            checked.sources,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))).input,
+            VmConfig::default(),
+            mode,
+            differential::CompareOptions {
+                require_returned: true,
+                ..Default::default()
+            },
+            Box::new(|| Ok(())),
+        );
+        match result {
+            differential::Comparison::Matched => {}
+            differential::Comparison::Failed(reason)
+            | differential::Comparison::Excluded(reason) => panic!("{mode:?}: {reason}"),
+        }
+    }
+}
+
+// 関門: 極端な動的 Integer を usize へ切り詰めず、UTF-8 バイト数も含む
+// 論理上限で確保前に拒否する。幅算法だけのテストにはこの接続がない。
+#[test]
+fn display_width_padding_rejects_oversized_dynamic_targets() {
+    for function in [
+        "displayWidthPadStart",
+        "displayWidthPadEnd",
+        "displayWidthPadStartCJK",
+        "displayWidthPadEndCJK",
+    ] {
+        for (text, target, size) in [
+            (r#""""#, 1_073_741_825_i64, 1_073_741_825_u64),
+            (r#""""#, 4_294_967_296, 4_294_967_296),
+            (r#""""#, i64::MAX, u64::try_from(i64::MAX).unwrap()),
+            (r#""\u{301}""#, 1_073_741_824, 1_073_741_826),
+        ] {
+            let source = format!(
+                "function pad(s: String, width: Integer) -> String\n return String.{function}(s: s, width: width)\nend function\nfunction main() -> Unit\n bind result <- pad(s: {text}, width: {target})\nend function\n"
+            );
+            let program = compile(&source);
+            for mode in [ExecMode::Direct, ExecMode::Request] {
+                let end = run::run_program(
+                    &program,
+                    environment(mode, Arc::new(Mutex::new(Vec::new()))),
+                );
+                assert_eq!(
+                    end.end,
+                    EndKind::Stopped,
+                    "{function} {target} {mode:?}: {end:?}"
+                );
+                assert_eq!(end.exit_code, 1);
+                assert_eq!(end.reports.len(), 1);
+                let report = end.reports.first().unwrap();
+                assert_eq!(report.code, Some(benitoite::diag::codes::DiagCode::R0902));
+                let report = format!("{report:?}");
+                assert!(report.contains(&size.to_string()), "{report}");
+                assert!(report.contains(&format!("String.{function}")), "{report}");
+            }
         }
     }
 }

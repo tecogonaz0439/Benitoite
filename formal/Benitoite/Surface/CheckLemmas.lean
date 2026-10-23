@@ -595,13 +595,21 @@ theorem interpolation_types_atoms {atoms parts} (h : InterpParts.AtomsIn atoms p
   induction parts with
   | nil => exact ⟨trivial, trivial⟩
   | cons part parts ih =>
-      have tail := ih (fun t ht => h t (List.mem_cons_of_mem _ ht))
+      have tail := ih (fun t ht => h t (by
+        rcases ht with ht | ⟨s, ht⟩
+        · exact Or.inl (List.mem_cons_of_mem _ ht)
+        · exact Or.inr ⟨s, List.mem_cons_of_mem _ ht⟩))
       cases part with
       | text s => exact tail
       | stringExpr => exact ⟨⟨trivial, tail.1⟩, tail.2⟩
       | converted t =>
-          have ht := h t (List.mem_cons_self ..)
+          have ht := h t (Or.inl (List.mem_cons_self ..))
           exact ⟨⟨ht, tail.1⟩, ⟨⟨⟨ht, trivial⟩, trivial, emptyEff_atoms _⟩, tail.2⟩⟩
+      | formatted t s =>
+          have ht := h t (Or.inr ⟨s, List.mem_cons_self ..⟩)
+          exact ⟨⟨ht, tail.1⟩,
+            ⟨⟨⟨ht, trivial, trivial, trivial, trivial, trivial, trivial, trivial, trivial⟩,
+              trivial, emptyEff_atoms _⟩, tail.2⟩⟩
 
 theorem eff_eq_empty_of_sub {ε : Eff} (h : Eff.Sub ε Eff.empty) : ε = Eff.empty := by
   apply Eff.ext_test

@@ -52,6 +52,106 @@ fn shared_decisions_are_accepted_by_all_cli_modes() {
     }
 }
 
+// 関門: 合併済みのmain契約を報告と実行前の照合へ渡し、不足分のファイル位置だけを示す。
+// 型検査の入口だけでは、所有データへの抽出時に由来が失われる退行を捕まえない。
+#[test]
+fn file_effects_reach_main_reports_and_limit_origins() {
+    use serde_json::{Value, json};
+    let directory = TestDirectory::new();
+    let source = "import Benitoite.Unofficial.IO.Console\nuses Console.Write, Log\nfunction main() -> Unit uses Log\nend function\n";
+    let script = directory.write("file-effects.bnt", source);
+    let plain = command().arg("check").arg(&script).output().unwrap();
+    assert_eq!(exit_code(&plain), 0, "{plain:?}");
+    assert!(plain.stdout.is_empty());
+    assert!(plain.stderr.is_empty());
+    let output = command()
+        .args(["check", "--report=json"])
+        .arg(&script)
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&output), 0, "{output:?}");
+    assert!(output.stderr.is_empty());
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(report["status"], "ok");
+    assert_eq!(report["complete"], true);
+    assert_eq!(
+        report["targets"][0]["main"]["effects"],
+        json!({"basis":"declaredUpperBound", "expanded":["Console.Write","Log"]})
+    );
+    assert_eq!(
+        report["aggregateEffects"]["expanded"],
+        json!(["Console.Write", "Log"])
+    );
+    for (allowed, missing, origins) in [
+        ("", "Console.Write, Log", vec!["Console.Write", "Log"]),
+        ("Log", "Console.Write", vec!["Console.Write"]),
+        ("Console.Write", "Log", vec!["Log"]),
+        ("Console.Write,Log", "", vec![]),
+    ] {
+        let output = command()
+            .args([
+                "run",
+                "--diagnostics=json",
+                &format!("--allow-effects={allowed}"),
+            ])
+            .arg(&script)
+            .output()
+            .unwrap();
+        assert_eq!(
+            exit_code(&output),
+            if missing.is_empty() { 0 } else { 2 },
+            "{output:?}"
+        );
+        assert!(output.stdout.is_empty());
+        if missing.is_empty() {
+            assert!(output.stderr.is_empty());
+            continue;
+        }
+        let diagnostic: Value = serde_json::from_slice(&output.stderr).unwrap();
+        assert_eq!(diagnostic["code"], "E0512");
+        assert_eq!(
+            diagnostic["notes"][0],
+            format!("effects not allowed: {missing}")
+        );
+        assert_eq!(
+            diagnostic["primary"]["start"]["offset"],
+            source.find("main").unwrap()
+        );
+        let secondary = diagnostic["secondary"].as_array().unwrap();
+        assert_eq!(secondary.len(), origins.len(), "{diagnostic}");
+        for (position, origin) in secondary.iter().zip(origins) {
+            let start = position["start"]["offset"].as_u64().unwrap() as usize;
+            let end = position["end"]["offset"].as_u64().unwrap() as usize;
+            assert_eq!(&source[start..end], origin);
+            assert!(start < source.find("function").unwrap());
+        }
+    }
+    let source = "uses IO.All\nfunction main() -> Unit\nend function\n";
+    let script = directory.write("shared-all.bnt", source);
+    let output = command()
+        .args(["run", "--diagnostics=json", "--allow-effects="])
+        .arg(&script)
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&output), 2, "{output:?}");
+    let diagnostics: Vec<Value> = String::from_utf8(output.stderr)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(
+        diagnostics
+            .iter()
+            .map(|d| d["code"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        ["W0501", "E0512"]
+    );
+    let origins = diagnostics[1]["secondary"].as_array().unwrap();
+    assert_eq!(origins.len(), 1);
+    assert_eq!(origins[0]["start"]["offset"], 5);
+    assert_eq!(origins[0]["end"]["offset"], 11);
+}
+
 // 作成時の関門: 宣言上限の包含と拒否時の非実行を、本物の CLI・ファイル・出力で守る。
 // 既存の検査報告は実行を始めないため、照合とコンパイルの接続の退行を捕まえない。
 // 診断の集合表示と入力の両構文も同じ表で確かめ、テスト専用の本番 API は加えない。
@@ -677,7 +777,7 @@ fn main_check_reports_sources_without_execution() {
         ("bom", Some(b"\xef\xbb\xbf// source\nfunction main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("dependency-package", Some(b"import Tk.Helper\nfunction main() -> Unit\nend function\n"), Some(&[]), "present", None, true, &[
             ("package.bnt", b"// root config\ndependency Tk\n    path \"deps/kit\"\nend dependency\n"),
-            ("deps/kit/package.bnt", b"language \"0.0.10\"\npackage Kit\nend package\n"),
+            ("deps/kit/package.bnt", b"language \"0.0.11\"\npackage Kit\nend package\n"),
             ("deps/kit/Helper.bnt", b"import Benitoite.Unofficial.IO.Process\npublic function unused() -> Unit\n    bind action <- Process.shell\nend function\n"),
         ]),
     ]);
@@ -1496,6 +1596,7 @@ fn cli_process_contracts() {
             "name": "benitoite",
             "version": env!("CARGO_PKG_VERSION"),
             "unicodeVersion": format!("{major}.{minor}.{patch}"),
+            "displayWidthUnicodeVersion": "17.0.0",
             "build": {
                 "commit": if commit.is_empty() { None } else { Some(commit) },
                 "dirty": dirty,

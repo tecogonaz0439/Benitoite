@@ -23,6 +23,7 @@ pub(super) struct PendingCall {
     callee_span: Span,
     declaration_span: Option<Span>,
     callee: ITy,
+    value_signature: Option<Box<IFnTy>>,
     ret: ITy,
     effect: IEffect,
     args: Vec<CallArgument>,
@@ -57,7 +58,7 @@ impl PendingCall {
 /// 引数の並びをまだ対応させず、戻り値・個数・エフェクトだけを接続する。
 /// 呼び出しのラベルから契約順を作らない（設計書 02-05「制約の生成」）。
 pub(super) fn prepare(solver: &mut Solver, call: &PendingCall) -> Option<Vec<Constraint>> {
-    if call.direct_ctor || solver.contains_error(&call.callee) {
+    if call.direct_ctor || matches!(solver.zonk(&call.callee), ITy::Error) {
         return None;
     }
     let (contract, params) = match solver.zonk(&call.callee) {
@@ -113,7 +114,7 @@ pub(super) fn prepare(solver: &mut Solver, call: &PendingCall) -> Option<Vec<Con
 }
 
 pub(super) fn ready(solver: &Solver, call: &PendingCall) -> bool {
-    if call.direct_ctor || solver.contains_error(&call.callee) {
+    if call.direct_ctor || matches!(solver.zonk(&call.callee), ITy::Error) {
         return true;
     }
     match solver.zonk(&call.callee) {
@@ -125,7 +126,7 @@ pub(super) fn ready(solver: &Solver, call: &PendingCall) -> bool {
 
 /// 子の独立した誤りに推論失敗を重ねず、未確定の関数型は誤りとして回復する。
 pub(super) fn unresolved(ctx: &mut Body<'_, '_>, solver: &mut Solver, call: PendingCall) {
-    if !solver.contains_error(&call.callee)
+    if !matches!(solver.zonk(&call.callee), ITy::Error)
         && !call.args.iter().any(|a| solver.contains_error(&a.ty))
         && !has_child_error(ctx, call.span)
     {
@@ -136,12 +137,10 @@ pub(super) fn unresolved(ctx: &mut Body<'_, '_>, solver: &mut Solver, call: Pend
                 .build(),
         );
     }
-    let _recovered = solver.equal(
-        &call.callee,
-        &ITy::Error,
-        &reason(call.span, ReasonKind::Call),
-    );
-    let _recovered = solver.equal(&call.ret, &ITy::Error, &reason(call.span, ReasonKind::Call));
+    // 契約を決められない関数全体を無効にする。部分の Error との単一化は
+    // 正常な部分を保つため、この報告済みの関数を無効にする代わりにはならない。
+    solver.poison(&[call.callee, call.ret.clone()]);
+    solver.resolved_result(&call.ret);
 }
 
 /// 型が既知でも辞書の失敗などで子が不正な場合は、派生する推論診断を抑える。
@@ -251,6 +250,19 @@ pub(super) fn generate(
         span: e.span,
         callee_span: e.callee.span(),
         declaration_span,
+        value_signature: match &callee {
+            ITy::Fn(_) => None,
+            ITy::Var(_) => match ctx.solver.value_shape(&callee) {
+                ITy::Fn(f) => Some(f),
+                ITy::Var(_)
+                | ITy::Con(..)
+                | ITy::Param(_)
+                | ITy::App(..)
+                | ITy::Rigid { .. }
+                | ITy::Error => None,
+            },
+            ITy::Con(..) | ITy::Param(_) | ITy::App(..) | ITy::Rigid { .. } | ITy::Error => None,
+        },
         callee,
         ret,
         effect,
@@ -286,6 +298,7 @@ pub(super) fn generate(
             ctx.add(constraint);
         }
     } else {
+        ctx.solver.pending_result(&call.ret);
         ctx.named_calls.push(call);
     }
     output
@@ -304,13 +317,34 @@ pub(super) fn resolve(
         .map(|f| f.params.clone())
         .unwrap_or_default();
     let span = call.span;
+    let inherited_cause = solver.diagnosed_cause(&call.callee);
     let constraints = resolve_arguments(ctx, solver, call);
     if constraints.is_empty() {
+        // 呼び出しの範囲に一次位置が収まる最後の誤りを原因にする。
+        // 引数内の誤りも含むが、回復させるのは未確定な結果と穴の型だけである。
+        let cause = inherited_cause.or_else(|| {
+            ctx.diagnostics
+                .iter()
+                .rev()
+                .filter(|d| d.is_error())
+                .find_map(|d| {
+                    let primary = d.primary.as_ref()?.span;
+                    (primary.file == span.file
+                        && primary.start >= span.start
+                        && primary.end <= span.end)
+                        .then_some(primary)
+                })
+        });
         // 対応の誤りから型の曖昧さを派生させない（設計書 02-05「誤りの報告と検査の継続」）。
         for ty in std::iter::once(&ret).chain(&slots) {
+            if let Some(cause) = cause {
+                solver.diagnose_result(ty, cause);
+            }
             let _recovered = solver.equal(ty, &ITy::Error, &reason(span, ReasonKind::Call));
         }
     }
+    solver.resolved_result(&ret);
+    solver.refresh_diagnosed();
     constraints
 }
 
@@ -319,7 +353,7 @@ fn resolve_arguments(
     solver: &mut Solver,
     call: PendingCall,
 ) -> Vec<Constraint> {
-    if solver.contains_error(&call.callee) {
+    if matches!(solver.zonk(&call.callee), ITy::Error) {
         return vec![];
     }
     if call.direct_ctor
@@ -524,6 +558,26 @@ fn resolve_arguments(
     );
     // 型変数は呼び出し位置の節の範囲で作ったものを使い、遅延中に範囲を失わない
     // （設計書 02-05「型とエフェクトの表現」）。
+    // 正常な宣言の結果は引数の誤りに依存しない。汎用の型変数だけは
+    // 構成子の型引数として値から結果へ伝わる（02-05「誤りの報告と検査の継続」）。
+    let value_signature = match &call.callee {
+        ITy::Fn(original) => original.as_ref(),
+        ITy::Var(_)
+        | ITy::Con(..)
+        | ITy::Param(_)
+        | ITy::App(..)
+        | ITy::Rigid { .. }
+        | ITy::Error => call.value_signature.as_deref().unwrap_or(&f),
+    };
+    solver.record_value(&call.ret, &value_signature.ret);
+    for (arg, position) in call.args.iter().zip(&positions) {
+        if let Some(param) = usize::try_from(*position)
+            .ok()
+            .and_then(|i| value_signature.params.get(i))
+        {
+            solver.record_value(param, &arg.ty);
+        }
+    }
     let params = call.positional_params.unwrap_or_else(|| f.params.clone());
     let mut call_reason = reason(call.span, ReasonKind::Call);
     call_reason.related = call.declaration_span;
@@ -659,6 +713,19 @@ pub(super) fn builder(
         span: e.span,
         callee_span: e.callee.span(),
         declaration_span: None,
+        value_signature: match &callee {
+            ITy::Fn(_) => None,
+            ITy::Var(_) => match ctx.solver.value_shape(&callee) {
+                ITy::Fn(f) => Some(f),
+                ITy::Var(_)
+                | ITy::Con(..)
+                | ITy::Param(_)
+                | ITy::App(..)
+                | ITy::Rigid { .. }
+                | ITy::Error => None,
+            },
+            ITy::Con(..) | ITy::Param(_) | ITy::App(..) | ITy::Rigid { .. } | ITy::Error => None,
+        },
         callee,
         ret,
         effect: effect.clone(),

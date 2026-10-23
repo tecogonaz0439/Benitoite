@@ -335,6 +335,87 @@ pub(super) fn parse_uses(
     }))
 }
 
+// ファイル位置には外側の型引数リストがないため、入れ子の uses の
+// E0209 の回復を使わない（設計書 02-03「型の解析」）。
+pub(super) fn parse_file_uses(p: &mut Parser) -> Option<UsesList> {
+    let start = p.pos;
+    p.bump();
+    let mut effects = Vec::new();
+    loop {
+        if !p.at(TokenKind::UpperIdent) {
+            if effects.is_empty() {
+                p.report(
+                    DiagBuilder::new(DiagCode::E0261)
+                        .primary(p.span_from(start))
+                        .note("empty")
+                        .build(),
+                );
+            } else {
+                p.unexpected(text::UPPER_NAME);
+            }
+            recover_file_uses(p);
+            return None;
+        }
+        let from = p.pos;
+        let parsed = (|| {
+            p.enter(1)?;
+            let path = p.qual_name(true)?;
+            let args = if p.eat(TokenKind::LBracket) {
+                Some(comma_list(
+                    p,
+                    1,
+                    CommaList {
+                        close: TokenKind::RBracket,
+                        element: text::TYPE,
+                        separator: text::COMMA_OR_RBRACKET,
+                        allow_empty: true,
+                        indexed: false,
+                    },
+                    push_type,
+                    |out, error| out.push(TypeExpr::Error(error)),
+                )?)
+            } else {
+                None
+            };
+            Ok::<_, Fail>(EffectRef {
+                id: p.node_id(),
+                span: p.span_from(from),
+                path,
+                args,
+            })
+        })();
+        match parsed {
+            Ok(effect) => effects.push(effect),
+            Err(_) => {
+                recover_file_uses(p);
+                return None;
+            }
+        }
+        if !p.eat(TokenKind::Comma) {
+            break;
+        }
+        // コンマ直後の改行は字句段で継続済み。次の宣言・EOFなら末尾コンマである。
+        if p.at(TokenKind::Eof) || p.after_physical_newline() && !p.at(TokenKind::UpperIdent) {
+            break;
+        }
+    }
+    Some(UsesList {
+        span: p.span_from(start),
+        effects,
+    })
+}
+
+fn recover_file_uses(p: &mut Parser) {
+    while !p.at(TokenKind::Eof) && !p.at(TokenKind::Newline) && !p.aborted {
+        if p.after_physical_newline()
+            && (super::is_decl_start(p.peek_kind()) || p.at(TokenKind::KwUses))
+        {
+            break;
+        }
+        p.advance();
+    }
+}
+
 // 回復で字句を読み飛ばす前に、入れ子の型引数も含めた位置を求める。
 // 閉じ括弧がなければ、誤りが消えると決められないので置き換えは付けない（設計書 02-03「型の解析」）。
 fn matching_bracket(p: &Parser) -> Option<Span> {

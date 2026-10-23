@@ -683,7 +683,7 @@ mutual
         apply spreadValues_typed _ hv hw
         simpa only [binds_length, hms.length] using
           (directCallee_typed hd hf hf' (RenOk.identity Γ)).rename (RenOk.shift (binds _) Γ)
-    | .E_Interpolation _ he hf hd hop =>
+    | .E_Interpolation hp he hf hd hop =>
         obtain ⟨hms, hc⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig he sc.2.1 hΓ hR
         obtain ⟨hfs, _⟩ := HasTypesQ.desugar hAlign hΔ hwf hsig hf sc.2.2 hΓ hR
         have hh := directHeads_typed (RenOk.identity Γ) hf hfs hd (converterTypes_fn _)
@@ -691,7 +691,7 @@ mutual
         apply sequence_typed hms hc
         intro vs hv
         apply HasTypeCQ.weakenEff (δ := ε) _ (Eff.empty_sub _)
-        apply interpolate_typed hsig hv
+        apply interpolate_typed hsig hp hv
           (by simpa only [binds_length, hms.length] using hh.rename (RenOk.shift (binds _) Γ))
           .nil
         simpa using hop

@@ -29,6 +29,7 @@ pub(super) fn prepare_examples(
         source.text(),
         newline::resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut IdGen::default(),
     )
     .module;

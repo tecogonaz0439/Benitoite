@@ -1,0 +1,15 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "679711262d85a78bd3cef73bff6899179a91fc71",
+    "--only",
+    "reference_examples,skill_docs",
+    "--dry-run"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.009,
+  "output": "== plan: level work against 679711262d85a78bd3cef73bff6899179a91fc71 (changed files not classified) (partial selection: --only reference_examples,skill_docs)\n   [reference_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test reference_examples\n   [skill_docs] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test skill_docs\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+}

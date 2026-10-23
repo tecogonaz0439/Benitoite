@@ -1,0 +1,110 @@
+{
+  "base": "baca0076e5f08abace9cc22136ed2f690f208684",
+  "head": "baca0076e5f08abace9cc22136ed2f690f208684",
+  "changeBase": "a9c4132e6451904698cf344db1794c4d03affcd6",
+  "trackedChangedInputs": [
+    "crates/benitoite/examples/try_actions_inventory.rs",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/tests/test_batch5_exchange.py",
+    "scripts/check-formal.sh"
+  ],
+  "inputPatchSha256": "cddae71f98dfb21d682d05f2449ef84ebc3f6822c9bcfb506592e9c74bc181a6",
+  "inputSha256": {
+    "crates/benitoite/examples/try_actions_inventory.rs": "a853f53b87165472bd3bd4023b9a88b40a814ec44de4404e302b51b91a332ff7",
+    "docs/design/07-quality/07-04-formal-semantics.md": "a12ff81f9397caaac0ef8f1daa9b43f87f2799e8ddc346a348a2fb64134a942b",
+    "formal/tests/test_batch5_exchange.py": "2168408a53995304d40eb69a624aa5a16634e21ad7d8c2475d9840d9a1ef577d",
+    "scripts/check-formal.sh": "cb041355cdda7733f913aac0cfea45e84e56018fd7f1fdaf9ab36762754b97b2"
+  },
+  "untrackedInputs": [],
+  "ignoredLocalExchangeInputs": {
+    "target/formal-batch5/corpus.json": "70598975892287383ee7dd689e782cef877b73340dd13a40a4a6d99d4b7f3ec6",
+    "target/formal-batch5/builtins.json": "2ea461c68c7d74ffb11a14723a9b1b56385d00b38373361881e669d19fa66723",
+    "target/formal-batch5/stdlib.json": "f81f86bec263310a447f84b0ff3d87c52b7e85af8ebdfb46a1ba2cd1fee4bf5b",
+    "target/formal-batch5/coverage.json": "85ad908a217046d0c3c12f078e125efdafe4f4d42b1473476f4f84a66bae5441",
+    "target/formal-batch5/coverage-program.json": "f5907b16ce0219a66c2862f5d41caaa8e223a9087d94eae81ba0f4592c6a788e"
+  },
+  "toolchains": {
+    "rustc": {
+      "command": [
+        "rustc",
+        "-vV"
+      ],
+      "exitStatus": 0,
+      "output": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n"
+    },
+    "cargo": {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exitStatus": 0,
+      "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n"
+    },
+    "python": {
+      "command": [
+        "python3",
+        "--version"
+      ],
+      "exitStatus": 0,
+      "output": "Python 3.9.6\n"
+    },
+    "nightly": {
+      "command": [
+        "rustc",
+        "+nightly",
+        "-vV"
+      ],
+      "exitStatus": 0,
+      "output": "rustc 1.101.0-nightly (75a75c3e0 2026-09-26)\nbinary: rustc\ncommit-hash: 75a75c3e0a67d3fa3d03982775f5bb0356e7b510\ncommit-date: 2026-09-26\nhost: aarch64-apple-darwin\nrelease: 1.101.0-nightly\nLLVM version: 23.1.1\n"
+    },
+    "miri": {
+      "command": [
+        "cargo",
+        "+nightly",
+        "miri",
+        "--version"
+      ],
+      "exitStatus": 0,
+      "output": "miri 0.1.0 (75a75c3e0a 2026-09-26)\n"
+    },
+    "lean": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "exitStatus": 0,
+      "output": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)\n"
+    }
+  },
+  "observer": "G1実装担当Codex",
+  "date": "2026-10-23",
+  "note": "改造の文書と結果記録を除くG1差分の検査入力。元のファイルはHEADで固定する。G1の文書は実行の後にも集約のため更新する。局所の交換入力はF5Rのworkで書き出された既存の32定義であり、全比較の証拠にはしない。",
+  "verifiedAtUtc": "2026-10-23T15:19:21.752463+00:00",
+  "trackedChangedFilesAtCompletion": [
+    "crates/benitoite/examples/try_actions_inventory.rs",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/plan.md",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/results.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/tests/test_batch5_exchange.py",
+    "scripts/check-formal.sh"
+  ],
+  "untrackedRecordsAtVerification": [
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/batch5.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/bench-selftest.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/change-resume.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/change.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/check-summary.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/derive-build.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/derive-selftest.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/document-check.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/input-state.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/results.md",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/short-audit.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/work-audit.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/work-rust.json",
+    "docs/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/work.json"
+  ],
+  "verificationObserver": "G1実装担当Codex（2026-10-24 JST）"
+}

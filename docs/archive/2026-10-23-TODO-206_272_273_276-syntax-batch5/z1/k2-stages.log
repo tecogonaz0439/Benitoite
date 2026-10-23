@@ -1,0 +1,28 @@
+== formal: lake build
+== formal: lake build desugarDiff
+== formal: lake build builtinCheck
+== formal: lake build coverageDiff
+== formal: Rust coverage export
+== formal: coverageDiff
+== formal: coverageDiff with views
+== formal: lake build coverageProgramDiff
+== formal: lake build surfaceCheck
+== formal: lake build surfaceCheckAll
+== formal: width exchange
+== formal: named exchange
+== formal: extensible exchange
+== formal: try exchange
+== formal: batch2 independent exchange
+== formal: batch3 independent exchange
+== formal: batch4 independent exchange
+== formal: Rust export
+== formal: batch3/batch4 Rust exchange
+== formal: batch5 independent/Rust exchange
+batch5: 32 definitions, 28 formatted, 3 formatted String, 0 fallback; six entries agree: <repo>/target/z1-k2/desugar/batch5/exchange-results.json
+== formal: desugarDiff
+== formal: builtinCheck
+== formal: coverageProgramDiff
+== formal: surfaceCheckAll
+== formal: per-program final Rust exports
+final input routing: 1790 inputs, identifiers, exclusions, scopes and coverage agree
+named export: manifest agrees; corpus 14, tables/program coverage 6 and independent coverage 4 match all six entries

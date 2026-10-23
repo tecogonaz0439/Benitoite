@@ -179,6 +179,96 @@ class PersistentCacheTests(unittest.TestCase):
             self.assertGreater(calls.call_count,count)
 
 
+class UnavailableProbeTests(unittest.TestCase):
+    def test_failed_compiler_keeps_cli_and_marks_missing_probe_metrics(self):
+        # 守る契約はランナーの記録と終了。外部のgit/compiler/processだけを代用し、
+        # build・機能判定・入力選択・照合・標本採取・reportは本物を接続する。
+        import io
+        import subprocess
+        import tarfile
+        from functools import partial
+        from build import ROOT, build_all
+        from run import main
+        real_check_output, real_run = subprocess.check_output, subprocess.run
+        commits = dict(before='a'*40, after='b'*40)
+        lock = b'lock bytes'
+        archive = io.BytesIO()
+        fixtures = ['tools/bench/programs/'+n+'.bnt' for n in ('fib', 'loop', 'string')]
+        fixtures += ['crates/benitoite/testdata/handlers/'+n+'.bnt' for n in ('f1-nofail-call', 'f1-join-effects')]
+        fixtures += ['crates/benitoite/testdata/external/'+n for n in
+                     ('adapter-route/x.wasm', 'resource/x.wasm', 'resource/Lib/Cell.bnt')]
+        with tarfile.open(fileobj=archive, mode='w') as tf:
+            for name, data in [('Cargo.lock', lock), ('Cargo.toml', b'package'),
+                               *((name, (ROOT/name).read_bytes()) for name in fixtures)]:
+                info = tarfile.TarInfo(name); info.size = len(data)
+                tf.addfile(info, io.BytesIO(data))
+        def git(*args):
+            if args[0] == 'archive': return archive.getvalue()
+            if args[0] == 'rev-parse': return args[-1].split('^')[0].encode()+b'\n'
+            return lock
+        def check_output(cmd, **kwargs):
+            if cmd[0] == 'git': return commits['after'] if cmd[1] == 'rev-parse' else ''
+            if cmd[0] in ('rustc', 'cargo'): return cmd[0]+' example'
+            return real_check_output(cmd, **kwargs)
+        for missing in (('before',), ('before', 'after')):
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                def process(cmd, **kwargs):
+                    stdout, stderr, status = '', '', 0
+                    if cmd[0] == 'cargo':
+                        release = Path(cmd[cmd.index('--target-dir')+1])/'release'
+                        release.mkdir(exist_ok=True)
+                        (release/'benitoite').write_bytes(b'cli')
+                    elif cmd[0] == 'rustc':
+                        output = Path(cmd[cmd.index('-o')+1])
+                        # alloc helper は両版で利用不能。default は片側／両側の二通り。
+                        if '-alloc-stats' in str(output) or any(commits[s] in str(output) for s in missing):
+                            status = 1
+                        else:
+                            output.write_bytes(b'probe')
+                    elif Path(cmd[0]).name == 'timing-probe':
+                        if cmd[2] == 'bridge':
+                            stdout = json.dumps(dict(bridge_to_heap=.01, bridge_from_heap=.02,
+                                bridge_time=.03, unique_nodes=9, heap_nodes=9, edges=16, observation=7))
+                        else:
+                            stdout = json.dumps(dict(errors=0, load_parse=.01, reparse=.01, resolve=.01, typeck=.01))
+                    elif len(cmd) > 1 and cmd[1].endswith('rss.py'):
+                        if Path(cmd[2]).name == 'timing-probe':
+                            stdout = process(cmd[2:]).stdout
+                        stderr = 'bench-rss: 1\n'
+                    elif Path(cmd[0]).name == 'benitoite':
+                        if kwargs.get('env', {}).get('BENITOITE_DEV_ALLOC_STATS'):
+                            stderr = 'alloc-stats: allocated_bytes=1 peak_heap_bytes=1 allocations=1\n'
+                    else:
+                        return real_run(cmd, **kwargs)
+                    return subprocess.CompletedProcess(cmd, status, stdout=stdout, stderr=stderr)
+                target = root/'targets.json'
+                target.write_text(json.dumps(dict(cases=['functions-main-0-0', 'bridge-shared-8'],
+                    min_samples=1, targets=[dict(label='missing bridge', kind='ratio', limit=1,
+                        expression=dict(op='ratio', left=median('bridge-shared-8', 'after'),
+                                        right=median('bridge-shared-8', 'before')))])))
+                argv = ['run.py', '--tier', 'targets', '--targets', str(target), '--samples', '1',
+                        '--alloc', '--work', str(root/'work'), '--out', str(root/'out'),
+                        *(arg for s, c in commits.items() for arg in ('--state', f'{s}={c}'))]
+                with patch('build.git', git), patch('build.subprocess.check_output', check_output), \
+                     patch('build.subprocess.run', process), patch('sys.argv', argv), \
+                     patch('run.build_all', partial(build_all, cache=root/'builds')):
+                    main()
+                manifest = json.loads((root/'out/manifest.json').read_text())
+                cli = json.loads((root/'out/section-16.2.json').read_text())['measurements']['functions-main-0-0']
+                bridge = json.loads((root/'out/section-16.8.json').read_text())['measurements']['bridge-shared-8']
+                self.assertTrue(all(len(cli[s]['cli']) == 1 for s in commits))
+                self.assertEqual(set(bridge), set(commits)-set(missing))
+                self.assertTrue(all(not m.get('allocated_bytes') for m in bridge.values()))
+                self.assertEqual({r['state'] for r in manifest['skipped'] if 'timing_probe' in r['reason']}, set(missing))
+                self.assertEqual({r['state'] for r in manifest['skipped'] if r.get('scope') == 'alloc'}, set(bridge))
+                self.assertTrue(all(not manifest['capabilities'][s]['timing_probe']['supported'] for s in missing))
+                verdict = json.loads((root/'out/result-manifest.json').read_text())['goals'][0]
+                self.assertEqual(verdict['status'], '判定不能')
+                self.assertTrue((root/'out/results.md').is_file())
+                self.assertTrue((root/'out/results.html').is_file())
+
+
 class TierTests(unittest.TestCase):
     def test_full_confirmation_is_required_before_build(self):
         import subprocess
@@ -352,7 +442,7 @@ class CommonProbeCompilationTests(unittest.TestCase):
             self.assertTrue(Path(record['probe']).is_file())
             self.assertIn('conversion_unit', record['bridge_sources'])
         cases = [c for c in select_tier(corpus(True), 'short', quick=True) if c.command == 'probe']
-        configure(cases, {s: {} for s in records})
+        configure(cases, {s: dict(timing_probe=bool(b.get('probe'))) for s, b in records.items()})
         with tempfile.TemporaryDirectory() as tmp:
             _, entries = materialize(Path(tmp), cases)
             for case in cases:

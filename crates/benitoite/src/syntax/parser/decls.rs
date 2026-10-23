@@ -11,6 +11,8 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
     let start = p.pos;
     let mut imports = Vec::new();
     let mut decls = Vec::new();
+    let mut file_uses = None;
+    let mut first_file_uses = None;
     let mut first_decl = None;
     let doc = p.docs.module_doc(&mut p.diagnostics);
     p.skip_newlines();
@@ -18,6 +20,7 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
     let mut first_item = None;
     while !p.at(TokenKind::Eof) && !p.aborted {
         let from = p.pos;
+        let mut read_file_uses = false;
         let saved = p.ctx;
         let open = p.blocks.len();
         if header::header_ahead(p) {
@@ -25,8 +28,28 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
             header::parse_one_recover(p);
         } else if p.at(TokenKind::KwImport) {
             first_item.get_or_insert(p.peek().span);
-            if let Ok(import) = items::parse_import(p, first_decl, 1) {
+            if let Ok(import) = items::parse_import(p, first_decl.or(first_file_uses), 1) {
                 imports.push(import);
+            }
+        } else if p.at(TokenKind::KwUses) {
+            read_file_uses = true;
+            first_item.get_or_insert(p.peek().span);
+            let misplaced = first_file_uses.is_some() || first_decl.is_some();
+            if misplaced {
+                let mut diagnostic = DiagBuilder::new(DiagCode::E0261)
+                    .primary(p.peek().span)
+                    .note("position");
+                if decls.last().is_some_and(
+                    |decl: &TopDecl| matches!(&decl.item, Item::Fn(f) if f.body.is_none()),
+                ) {
+                    diagnostic = diagnostic.note("function_line");
+                }
+                p.report(diagnostic.build());
+            }
+            first_file_uses.get_or_insert(p.peek().span);
+            let uses = types::parse_file_uses(p);
+            if !misplaced {
+                file_uses = uses;
             }
         } else {
             first_item.get_or_insert(p.peek().span);
@@ -65,6 +88,7 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
             && !p.symbol(";")
             && !p.at(TokenKind::Eof)
             && !p.at_line_start()
+            && !(read_file_uses && p.after_physical_newline())
         {
             p.unexpected(text::NEWLINE_OR_END);
             p.recover(p.pos, Recovery::TopLevel);
@@ -78,6 +102,7 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
         doc,
         header,
         imports,
+        file_uses,
         decls,
     }
 }
@@ -331,7 +356,7 @@ pub(super) fn parse_function(
         }
         if attrs.iter().any(|attr| attr.name.text == "external") {
             p.skip_newlines();
-            if !is_decl_start(p.peek_kind()) && !p.at(TokenKind::Eof) {
+            if !is_decl_start(p.peek_kind()) && !p.at(TokenKind::KwUses) && !p.at(TokenKind::Eof) {
                 p.open_block(TokenKind::KwFunction, opened);
                 let block = exprs::parse_block(p, child(depth), exprs::BlockEnd::End)?;
                 p.close_block(TokenKind::KwFunction);

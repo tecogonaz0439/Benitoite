@@ -1,0 +1,19 @@
+{
+  "name": "bench-selftest",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "startedUtc": "2026-10-23T14:05:05.371903+00:00",
+  "elapsedSeconds": 104.663,
+  "exitStatus": 0,
+  "log": "target/g1/bench-selftest.log",
+  "logSha256": "b9359eec1f70e6e7795334d776e242e5f1f64c62aaaaa481ca7ff90a0fb92d8c"
+}

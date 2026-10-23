@@ -152,3 +152,5 @@ import Benitoite.Release.LocalScope
 import Benitoite.Release.BuilderExamples
 
 import Benitoite.Exchange.BuilderExamples
+
+import Benitoite.Exchange.FormatExamples

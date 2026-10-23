@@ -560,4 +560,128 @@ mod tests {
             }
         }
     }
+
+    use crate::syntax::ast::{Item, TypeExpr};
+
+    // 関門: 元宣言とバイト位置の保存、個別契約の非変更は AST の公開契約である。
+    // 従来の uses テストはファイル位置・二番目の型引数・CRLF を一緒に通さない。
+    #[test]
+    fn file_uses_preserves_source_and_individual_contracts() {
+        for nl in ["\n", "\r\n"] {
+            for list in ["Log, Fail[MyError]", "Log, // 日本語\n Fail[MyError],"] {
+                let source = format!("//! 日本語\nlanguage \"0.0.10\"\nimport Benitoite.String\nuses {list} // end\nfunction f() -> Unit uses Log\n()\nend function\n").replace('\n', nl);
+                let (out, lex) = parse_source(&source, SourceKind::User);
+                assert!(lex.is_empty());
+                assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+                let uses = out.module.file_uses.as_ref().unwrap();
+                assert_eq!(uses.effects.len(), 2);
+                assert_eq!(uses.effects[0].path[0].text, "Log");
+                assert_eq!(uses.effects[1].path[0].text, "Fail");
+                assert!(
+                    matches!(&uses.effects[1].args.as_ref().unwrap()[0], TypeExpr::Named(t) if t.path[0].text == "MyError")
+                );
+                let start = uses.span.start.0 as usize;
+                let end = uses.span.end.0 as usize;
+                assert_eq!(
+                    &source[start..end],
+                    format!("uses {list}").replace('\n', nl)
+                );
+                let Item::Fn(f) = &out.module.decls[0].item else {
+                    panic!()
+                };
+                assert_eq!(f.uses.as_ref().unwrap().effects.len(), 1);
+                assert_ne!(f.uses.as_ref().unwrap().span, uses.span);
+            }
+        }
+        for source in [
+            "uses Log",
+            "uses Log,",
+            "uses Log,\r\n",
+            "uses Log, // end\n",
+        ] {
+            let (out, lex) = parse_source(source, SourceKind::User);
+            assert!(lex.is_empty());
+            assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+            assert_eq!(out.module.file_uses.unwrap().effects.len(), 1);
+        }
+        let (out, _) = parse_source(
+            "function f() -> Unit uses Log\n()\nend function",
+            SourceKind::User,
+        );
+        assert!(out.diagnostics.is_empty());
+        assert!(out.module.file_uses.is_none());
+    }
+
+    // 関門: ファイルの uses は関数の文書の結び付けを越えさせない。
+    // 直後の宣言にだけ文書を付ける既存規則を、ファイル宣言が間にある場合にも守る。
+    #[test]
+    fn file_uses_does_not_forward_a_doc_comment_to_a_function() {
+        let source = "/// file effects\nuses Log\n/// function docs\nfunction f() -> Unit\n()\nend function\n";
+        let (out, lex) = parse_source(source, SourceKind::User);
+        assert!(lex.is_empty());
+        assert_eq!(codes(&out), [DiagCode::E0228]);
+        assert_eq!(out.diagnostics[0].primary.as_ref().unwrap().span.start.0, 0);
+        assert_eq!(
+            out.module.decls[0].doc.as_ref().unwrap().text.trim(),
+            "function docs"
+        );
+    }
+
+    // 関門: 誤りの宣言を採用せず、回復で後の関数を消さない規則を守る。
+    #[test]
+    fn file_uses_rejects_empty_duplicate_and_misplaced_declarations() {
+        for (prefix, expected) in [
+            ("uses", vec![DiagCode::E0261]),
+            ("uses []", vec![DiagCode::E0261]),
+            ("uses Log\nuses Log", vec![DiagCode::E0261]),
+            ("uses Log\nimport Benitoite.String", vec![DiagCode::E0219]),
+            (
+                "function before() -> Unit\n()\nend function\nuses Log",
+                vec![DiagCode::E0261],
+            ),
+            ("uses Log\nlanguage \"0.0.10\"", vec![DiagCode::E0252]),
+        ] {
+            let source = format!("{prefix}\nfunction after() -> Unit\n()\nend function\n");
+            let (out, lex) = parse_source(&source, SourceKind::User);
+            assert!(lex.is_empty());
+            assert_eq!(codes(&out), expected, "{prefix}: {:?}", out.diagnostics);
+            if let Some(diagnostic) = out
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(DiagCode::E0261))
+            {
+                let span = diagnostic.primary.as_ref().unwrap().span;
+                assert_eq!(&source[span.start.0 as usize..span.end.0 as usize], "uses");
+            }
+            assert!(
+                matches!(&out.module.decls.last().unwrap().item, Item::Fn(f) if f.name.text == "after")
+            );
+        }
+    }
+
+    // 関門: 本体なしの関数の次行を関数契約へ吸収せず、後の宣言も残す。
+    // 既存の先頭の項目のテストは uses の境界を通らない。公開の parse だけを使う。
+    #[test]
+    fn file_uses_after_bodyless_function_is_late() {
+        for (prefix, kind) in [
+            ("@builtin(\"test\")", SourceKind::Prelude),
+            (
+                "@external(\"wasm\", \"test.wasm\", \"test\")",
+                SourceKind::User,
+            ),
+        ] {
+            let source = format!(
+                "{prefix}\nfunction before() -> Unit\nuses Log\nfunction after() -> Unit\n()\nend function\n"
+            );
+            let (out, lex) = parse_source(&source, kind);
+            assert!(lex.is_empty());
+            assert_eq!(
+                codes(&out).iter().map(|c| c.info().id).collect::<Vec<_>>(),
+                ["E0261"],
+                "{:?}",
+                out.diagnostics
+            );
+            assert_eq!(out.module.decls.len(), 2);
+        }
+    }
 }

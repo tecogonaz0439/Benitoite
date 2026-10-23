@@ -25,6 +25,7 @@ fn parsed(text: &str) -> Module {
         text.as_bytes(),
         resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut IdGen::new(),
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);

@@ -84,7 +84,7 @@ pub(super) fn resolve(
 ) -> Result<Resolution, Failure> {
     let normalized = match arg {
         IClassArg::Ty(t) => {
-            if solver.contains_error(t) {
+            if matches!(solver.zonk(t), ITy::Error) {
                 return Err(Failure::Suppressed);
             }
             IClassArg::Ty(solver.zonk(t))
@@ -122,6 +122,9 @@ fn resolve_normalized(
     // 子と同じ数えを使うことで、指数的に増える子も一つの辞書の予算に含める
     // （設計書 02-05「型クラスの制約の解決」）。
     charge(parts, 1)?;
+    if matches!(normalized, IClassArg::Ty(ITy::Error)) {
+        return Err(Failure::Suppressed);
+    }
     let parameter = match normalized {
         IClassArg::Ty(ITy::Param(i)) | IClassArg::Head(IHead::Param(i)) => Some(*i),
         IClassArg::Ty(_) | IClassArg::Con(_) | IClassArg::Head(IHead::Var(_)) => None,

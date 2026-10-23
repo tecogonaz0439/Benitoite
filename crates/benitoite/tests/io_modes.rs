@@ -173,16 +173,36 @@ impl Drop for Directory {
 }
 
 fn observe(source: &str, mode: ExecMode, order: Order, stdin: &[u8], timed: bool) -> Observation {
+    observe_files(source, &[], mode, order, stdin, timed)
+}
+
+fn observe_files(
+    source: &str,
+    modules: &[(&str, &str)],
+    mode: ExecMode,
+    order: Order,
+    stdin: &[u8],
+    timed: bool,
+) -> Observation {
     let source = format!("{IMPORTS}{source}");
+    let modules: Vec<_> = modules
+        .iter()
+        .map(|(name, text)| (name.to_string(), text.to_string()))
+        .collect();
     let stdin = stdin.to_vec();
     let (send, receive) = mpsc::channel();
     // 筋書きの Rc は実行のスレッド内で作る。受信側の上限は停止したテストの検出にだけ使う。
     let worker = std::thread::spawn(move || {
         let directory = Directory::new();
         fs::write(directory.0.join("input.txt"), b"first\nsecond\n").unwrap();
-        let checked = pipeline::check_text(
-            "io-modes.bnt",
-            source.as_bytes(),
+        let mut files = vec![("io-modes.bnt", source.as_bytes())];
+        files.extend(
+            modules
+                .iter()
+                .map(|(name, text)| (name.as_str(), text.as_bytes())),
+        );
+        let checked = pipeline::check_files(
+            &files,
             CheckOptions {
                 require_main: true,
                 deny_warnings: false,
@@ -674,5 +694,44 @@ end function
         assert_eq!(actual.stdout, b"first\nsink failed\n");
         assert!(actual.stderr.is_empty(), "{actual:?}");
         assert!(actual.reports.is_empty(), "{actual:?}");
+    }
+}
+
+// 関門: 別ファイルの追加Failを実IOとNoFailの具体化へ接続し、両実行方式と完了順を照合する。
+#[test]
+fn file_uses_failure_contract_connects_to_io_handlers() {
+    let library = "import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\npublic function load[effect E](body: function() -> Result[String, String] uses E) -> String uses E\n return Failure.fromResult(body())\nend function\n";
+    let source = r#"
+import Load
+import Benitoite.Unofficial.Failure
+uses File.Read, Console.Write
+function main() -> Unit
+ bind values <- Task.all([lambda()
+  return Failure.toResult(body: lambda()
+   return Load.load(body: lambda()
+    return File.readText("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   end lambda)
+  end lambda)
+ end lambda, lambda()
+  return Failure.toResult(body: lambda() return Load.load(body: lambda() return Result.Error("failed") end lambda) end lambda)
+ end lambda])
+ Console.writeLine(if values = [Result.Ok("first\nsecond\n"), Result.Error("failed")] then "ok" else "wrong" end if)
+end function
+"#;
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        for order in [Order::Forward, Order::Reverse, Order::Real] {
+            let result = observe_files(source, &[("Load.bnt", library)], mode, order, b"", false);
+            assert_eq!(
+                result.end,
+                EndKind::Returned,
+                "{mode:?}/{order:?}: {result:?}"
+            );
+            assert_eq!(result.exit_code, 0, "{result:?}");
+            assert_eq!(result.stdout, b"ok\n");
+            assert!(
+                result.stderr.is_empty() && result.reports.is_empty(),
+                "{result:?}"
+            );
+        }
     }
 }

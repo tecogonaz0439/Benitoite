@@ -25,10 +25,44 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
     let mut previous_ends_die = false;
     let mut previous_is_end_word = false;
     let mut depth = 0usize;
+    let mut strings = Vec::new();
     let mut input = tokens.iter().peekable();
     while let Some(token) = input.next() {
         let mut token = token.clone();
         let kind = token.kind;
+        // 補間内の未対応の括弧・ブロックを外側へ漏らさない。
+        // 文字列全体は外側では一つの値になる（02-03「補間の入れ子」）。
+        if kind == K::StrStart {
+            strings.push((
+                std::mem::take(&mut stack),
+                depth,
+                std::mem::take(&mut die_message_depths),
+            ));
+            depth = 0;
+            previous = None;
+            previous_ends_die = false;
+            previous_is_end_word = false;
+            output.push(token);
+            continue;
+        }
+        if matches!(kind, K::StrMid | K::StrEnd) {
+            stack.clear();
+            depth = 0;
+            die_message_depths.clear();
+            previous = None;
+            previous_ends_die = false;
+            previous_is_end_word = false;
+            if kind == K::StrEnd {
+                if let Some((saved, saved_depth, saved_die)) = strings.pop() {
+                    stack = saved;
+                    depth = saved_depth;
+                    die_message_depths = saved_die;
+                }
+                previous = Some(K::StringLit);
+            }
+            output.push(token);
+            continue;
+        }
         if let Some(i) = stack.iter().position(|o| {
             o.short_line.is_some_and(|(line, boundary)| {
                 token.span.start >= boundary
@@ -291,6 +325,33 @@ mod tests {
     use crate::base::FileId;
     use crate::syntax::lexer::lex;
     use TokenKind as K;
+
+    // 補間内の未対応の括弧やブロックで外側の文の改行を消さない契約を守る。
+    // 既存の平坦な補間の例では、入れ子から外側への状態の漏れを検出できない。
+    #[test]
+    fn interpolation_state_does_not_change_surrounding_newlines() {
+        for inner in [
+            "(",
+            "[",
+            "if",
+            "lambda() x",
+            "die(",
+            "end block",
+            "<-8",
+            "#^",
+        ] {
+            for expression in [
+                format!("\"${{n:{inner}}}\""),
+                format!("\"${{\"${{n:{inner}}}\"}}\""),
+            ] {
+                for newline in ["\n", "\r\n"] {
+                    let src = format!("function f() -> Unit\n{expression}\n()\nend function\n")
+                        .replace('\n', newline);
+                    assert_newlines(&src, &[1, 2, 3, 4]);
+                }
+            }
+        }
+    }
 
     /// 物理的な行の番号で残す改行を指定し、公開の二つの工程をつないで確かめる。
     fn assert_newlines(src: &str, lines: &[usize]) -> Vec<Token> {

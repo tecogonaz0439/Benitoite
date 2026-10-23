@@ -149,7 +149,15 @@ pub(super) fn load_with_limits(
         };
         let lexed = lexer::lex(file, source.text());
         let tokens = newline::resolve_newlines(lexed.tokens);
-        let parsed = parser::parse(file, kind, source.text(), tokens, lexed.comments, ids);
+        let parsed = parser::parse(
+            file,
+            kind,
+            source.text(),
+            tokens,
+            lexed.comments,
+            lexed.pending,
+            ids,
+        );
         let mut diagnostics = lexed.diagnostics;
         diagnostics.extend(parsed.diagnostics);
         diagnostics.extend(package::check_header(&parsed.module, pending.kind));
@@ -496,6 +504,7 @@ fn read_config(
         source.text(),
         newline::resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         ids,
     );
     let mut diagnostics = lexed.diagnostics;
@@ -509,6 +518,7 @@ fn read_config(
         },
     ));
     // 設定ファイルは宣言を持たない。誤りは上で報告したので、後の段へは先頭の部分だけを渡す。
+    parsed.module.file_uses = None;
     parsed.module.imports.clear();
     parsed.module.decls.clear();
     output.modules.modules.push(ModuleInfo {

@@ -11,6 +11,8 @@ Functions on `String`, a sequence of Unicode scalar values.
 function stringExample() -> Unit uses Assert.Check
   Assert.equal(actual: String.characterCount("猫🐈"), expected: 2)
   Assert.equal(actual: String.byteLength("猫🐈"), expected: 7)
+  Assert.equal(actual: String.displayWidth("猫🐈"), expected: 4)
+  Assert.equal(actual: String.displayWidthPadStartCJK(s: "·", width: 4), expected: "  ·")
 end function
 ```
 
@@ -145,3 +147,42 @@ public function fromUTF8(b: Bytes) -> Option[String]
 ```
 
 Reads `b` as UTF-8. Returns `Option.None` when `b` is not valid UTF-8. A leading BOM is kept.
+
+```benitoite
+public function displayWidth(s: String) -> Integer
+```
+
+Returns the display width using Unicode 17.0.0 (unicode-width 0.2.2).
+C0, DEL, C1, U+2028 and U+2029 are zero-width boundaries; sums the widths between them.
+Does not interpret ANSI sequences, cursor movement or maximum line width.
+
+```benitoite
+public function displayWidthCJK(s: String) -> Integer
+```
+
+Returns the display width in CJK mode, including the string sequence rules of unicode-width 0.2.2.
+Uses the same zero-width boundaries as displayWidth; does not inspect the terminal or locale.
+
+```benitoite
+public function displayWidthPadStart(s: String, width: Integer) -> String
+```
+
+Prepends U+0020 spaces to reach width in displayWidth units. Returns s when already wide enough or width <= 0.
+
+```benitoite
+public function displayWidthPadEnd(s: String, width: Integer) -> String
+```
+
+Appends U+0020 spaces to reach width in displayWidth units. Returns s when already wide enough or width <= 0.
+
+```benitoite
+public function displayWidthPadStartCJK(s: String, width: Integer) -> String
+```
+
+Prepends U+0020 spaces to reach width in displayWidthCJK units. Returns s when already wide enough or width <= 0.
+
+```benitoite
+public function displayWidthPadEndCJK(s: String, width: Integer) -> String
+```
+
+Appends U+0020 spaces to reach width in displayWidthCJK units. Returns s when already wide enough or width <= 0.

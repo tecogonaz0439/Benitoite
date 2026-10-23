@@ -76,6 +76,7 @@ impl ReasonKey {
             | ReasonKind::FnUses
             | ReasonKind::ExprStmt
             | ReasonKind::Interp
+            | ReasonKind::InterpFormat
             | ReasonKind::CallEffect
             | ReasonKind::RecordBase
             | ReasonKind::Try

@@ -1,8 +1,8 @@
 # Installing Benitoite
 
-This page explains how to install `benitoite` `0.0.10`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+This page explains how to install `benitoite` `0.0.11`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
 
-Version 0.0.10 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.10 executable archive or SHA256SUMS is provided.
+Version 0.0.11 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.11 executable archive or SHA256SUMS is provided.
 
 ## Supported systems
 
@@ -146,6 +146,12 @@ benitoite skill install
 The Skill describes only the version of `benitoite` it comes with. When the versions differ, the Skill tells the agent to ask you to run `benitoite skill install` again. Read the [CHANGELOG](../../CHANGELOG.md) before updating to a new minor version (for example, from `0.1.x` to `0.2.0`): minor versions may contain incompatible changes.
 
 See [Functions and lambdas](benitoite.md#6-functions-and-lambdas) for calling rules and function contracts. Use the Skill installed from the same executable to look up parameter names and callback contracts.
+
+### Updating from 0.0.10 to 0.0.11
+
+Build the release source and reinstall the embedded Skill from that executable. Have the harness review the [migration guide](../../CHANGELOG.md#0011-san-benito), merged file-level effect bounds, and package update's effect additions/removals. `language "0.0.10"` now reports E0908; review source before changing it to `0.0.11`. New display-width functions and static interpolation formats are in [Strings](benitoite.md#strings).
+
+Finish pending derive recovery with the saved old tool. Use inventory 3 and generator 3.1.0 with matching Rust/Python readers; records, manifest/receipt and semantic-hash algorithm remain 3. Verify original bodies and hashes, make and review a fresh preview, apply its exact reviewed manifest SHA-256, then run normal check/test and derive check. Imports must precede file-level uses. try-actions requires inventory/manifest 2: regenerate and review old candidates, preserving holds for unknown effective contracts or unmapped contract boundaries. Never turn null into an empty effect set or change old version fields to force apply. Package Log records may change even without file-level uses. Update language and dependency hashes only after reviewing these changes. Reinstalling the Skill alone does not migrate source or authorize operations.
 
 ### Updating from 0.0.9 to 0.0.10
 

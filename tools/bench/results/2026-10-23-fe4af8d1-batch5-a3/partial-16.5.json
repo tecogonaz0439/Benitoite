@@ -1,0 +1,1221 @@
+{
+  "section": "16.5",
+  "phase_seconds": {
+    "verify": 0.36035141700000395,
+    "cli": 3.498362833000016
+  },
+  "measurements": {
+    "build-string-builder-8-0": {
+      "before": {
+        "verify": [
+          0.016378875000000903
+        ],
+        "warmup": [
+          0.015930792000006022
+        ],
+        "cli": [
+          0.015858250000007956,
+          0.017347749999998996,
+          0.015896874999995703,
+          0.015939666999997826,
+          0.015864957999994544
+        ],
+        "control_cli": [
+          0.015561625000003687,
+          0.01610841700001231,
+          0.0157399579999975,
+          0.015483708999994406,
+          0.015221834000001877
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016431166999993252
+        ],
+        "warmup": [
+          0.01606129200000339
+        ],
+        "cli": [
+          0.01638470800000391,
+          0.01777895800000806,
+          0.016353500000008125,
+          0.015635000000003174,
+          0.015816999999998416
+        ],
+        "control_cli": [
+          0.01570949999999982,
+          0.018125749999995833,
+          0.015727791999992746,
+          0.015366374999999266,
+          0.015612250000003769
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-string-builder-all-8-0": {
+      "before": {
+        "verify": [
+          0.016217249999996852
+        ],
+        "warmup": [
+          0.0160321250000095
+        ],
+        "cli": [
+          0.016002583000002346,
+          0.016297874999992246,
+          0.015992915999987645,
+          0.01586512500000481,
+          0.015865666999999917
+        ],
+        "control_cli": [
+          0.015741792000000032,
+          0.015861916999995174,
+          0.01523729100000537,
+          0.015508666000002336,
+          0.015686416999997732
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.0159962500000006
+        ],
+        "warmup": [
+          0.01605525000000796
+        ],
+        "cli": [
+          0.01593912500000272,
+          0.01611937500000238,
+          0.01603441700000019,
+          0.01583154200000081,
+          0.01578866699999537
+        ],
+        "control_cli": [
+          0.015797457999994435,
+          0.017603750000006357,
+          0.015720874999999523,
+          0.015486916000000406,
+          0.01593662500000903
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-string-concatenate-8-0": {
+      "before": {
+        "verify": [
+          0.016285167000006595
+        ],
+        "warmup": [
+          0.015821750000000634
+        ],
+        "cli": [
+          0.015880959000000416,
+          0.01644145800000274,
+          0.015364125000004947,
+          0.015705124999996656,
+          0.015804666999997607
+        ],
+        "control_cli": [
+          0.01571804199998894,
+          0.015102625000011471,
+          0.01518970899999772,
+          0.015362792000004788,
+          0.015553459000003045
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016299584000009304
+        ],
+        "warmup": [
+          0.016142333000004783
+        ],
+        "cli": [
+          0.015534540999993851,
+          0.015808915999997453,
+          0.015931917000003182,
+          0.015763332999995328,
+          0.015989583000006746
+        ],
+        "control_cli": [
+          0.01565408300000115,
+          0.01719270799999606,
+          0.01560237500000028,
+          0.015556166999999732,
+          0.01560745799999097
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-string-join-8-0": {
+      "before": {
+        "verify": [
+          0.016072874999991882
+        ],
+        "warmup": [
+          0.015871249999989345
+        ],
+        "cli": [
+          0.015458708000011256,
+          0.017086083000009467,
+          0.01581391599999904,
+          0.015789415999989842,
+          0.016025999999996543
+        ],
+        "control_cli": [
+          0.015874124999996297,
+          0.0157468340000122,
+          0.015270333000003689,
+          0.015483125000002929,
+          0.015163291999996886
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016854582999997092
+        ],
+        "warmup": [
+          0.016049541000001
+        ],
+        "cli": [
+          0.015882582999992678,
+          0.015898332999995546,
+          0.01571716700000536,
+          0.015586166000005619,
+          0.015787709000008476
+        ],
+        "control_cli": [
+          0.015497249999995688,
+          0.01630895799999621,
+          0.015949291000012522,
+          0.015442458000009651,
+          0.015491084000004207
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-list-builder-8-0": {
+      "before": {
+        "verify": [
+          0.01654800000000023
+        ],
+        "warmup": [
+          0.01623887500001331
+        ],
+        "cli": [
+          0.015591416000006575,
+          0.016623582999997666,
+          0.01600404100000219,
+          0.01598304199998779,
+          0.0160787080000091
+        ],
+        "control_cli": [
+          0.015462584000005108,
+          0.015456125000000043,
+          0.015714708000004407,
+          0.01545154200000809,
+          0.01554058400000713
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016272709000006103
+        ],
+        "warmup": [
+          0.01605837499998586
+        ],
+        "cli": [
+          0.015699749999996016,
+          0.016113875000002054,
+          0.0160426249999972,
+          0.01572783299999969,
+          0.016146542000001318
+        ],
+        "control_cli": [
+          0.01553495899999291,
+          0.016752749999994876,
+          0.015576709000001188,
+          0.015431667000001426,
+          0.015934541999996554
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-list-builder-all-8-0": {
+      "before": {
+        "verify": [
+          0.016170999999999935
+        ],
+        "warmup": [
+          0.015958208000000695
+        ],
+        "cli": [
+          0.015585166999997568,
+          0.016091375000002017,
+          0.015743833000001928,
+          0.015939958999993564,
+          0.015664791999995487
+        ],
+        "control_cli": [
+          0.015626540999988947,
+          0.015618790999994303,
+          0.01562304200000142,
+          0.01530999999999949,
+          0.015462290999991524
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016255083000004333
+        ],
+        "warmup": [
+          0.01627200000000073
+        ],
+        "cli": [
+          0.015806666999992558,
+          0.015925791999990224,
+          0.01562529200000995,
+          0.015723125000008054,
+          0.015695249999993166
+        ],
+        "control_cli": [
+          0.01565941599999121,
+          0.017424207999994223,
+          0.01532416700000283,
+          0.015528083999996056,
+          0.015834999999995603
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-list-concatenate-8-0": {
+      "before": {
+        "verify": [
+          0.01627533299999584
+        ],
+        "warmup": [
+          0.016135374999990404
+        ],
+        "cli": [
+          0.015875541999989196,
+          0.01664974999999913,
+          0.015647375000000352,
+          0.016157667000001652,
+          0.015643500000010135
+        ],
+        "control_cli": [
+          0.015632542000005856,
+          0.01573883300000034,
+          0.015574583000002917,
+          0.015559000000010315,
+          0.015506750000000125
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016728083000003835
+        ],
+        "warmup": [
+          0.016015875000007895
+        ],
+        "cli": [
+          0.01596399999999676,
+          0.016041000000001304,
+          0.016299084000010566,
+          0.016309750000004897,
+          0.016047041999996736
+        ],
+        "control_cli": [
+          0.015740791999988346,
+          0.016609583999994015,
+          0.01545233299999893,
+          0.015508417000006602,
+          0.015708750000001714
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-list-fold-8-0": {
+      "before": {
+        "verify": [
+          0.016143417000009208
+        ],
+        "warmup": [
+          0.015718541000012465
+        ],
+        "cli": [
+          0.015778832999998826,
+          0.016452999999998497,
+          0.01580495800000392,
+          0.016308166000001734,
+          0.01587045799999487
+        ],
+        "control_cli": [
+          0.015723125000008054,
+          0.015463707999998633,
+          0.015423792000007097,
+          0.01542104199999983,
+          0.015249667000006184
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.01634395799999311
+        ],
+        "warmup": [
+          0.015914292000005048
+        ],
+        "cli": [
+          0.016073915999996302,
+          0.01560766600000818,
+          0.015985166999996636,
+          0.015998916000000918,
+          0.01603995799999325
+        ],
+        "control_cli": [
+          0.015633334000000332,
+          0.01668166700000029,
+          0.01568883299999868,
+          0.01590754199999367,
+          0.015827290999993693
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-bytes-builder-8-0": {
+      "before": {
+        "verify": [
+          0.01634487500000148
+        ],
+        "warmup": [
+          0.015985833000002003
+        ],
+        "cli": [
+          0.015793916999996327,
+          0.01632337499999892,
+          0.015662792000000536,
+          0.016050124999992477,
+          0.015712458000010088
+        ],
+        "control_cli": [
+          0.015705917000005343,
+          0.015434500000012008,
+          0.015232667000006472,
+          0.015553582999999094,
+          0.015471499999989646
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016224291000000335
+        ],
+        "warmup": [
+          0.016082625000009898
+        ],
+        "cli": [
+          0.015944208999997045,
+          0.015893292000001225,
+          0.01618704199999854,
+          0.016128124999994498,
+          0.016413791000005062
+        ],
+        "control_cli": [
+          0.015666666999990753,
+          0.0172907500000008,
+          0.015611292000002663,
+          0.015410082999991914,
+          0.015936457999998765
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-bytes-builder-all-8-0": {
+      "before": {
+        "verify": [
+          0.016407833999991794
+        ],
+        "warmup": [
+          0.016122749999993857
+        ],
+        "cli": [
+          0.016040334000010148,
+          0.016373041999997895,
+          0.016225832999992917,
+          0.016124332999993385,
+          0.015847792000002414
+        ],
+        "control_cli": [
+          0.01548279099999661,
+          0.015292999999999779,
+          0.015351832999996873,
+          0.015570624999995175,
+          0.015266040999989627
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016158292000000074
+        ],
+        "warmup": [
+          0.01622091699999828
+        ],
+        "cli": [
+          0.01603204100000255,
+          0.017015708000002405,
+          0.01612791700000571,
+          0.01591916700000695,
+          0.016610249999999382
+        ],
+        "control_cli": [
+          0.015466625000001955,
+          0.016960874999995212,
+          0.015396250000009104,
+          0.01557304199999976,
+          0.016287833999996337
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "build-bytes-concatenate-8-0": {
+      "before": {
+        "verify": [
+          0.016302332999998725
+        ],
+        "warmup": [
+          0.01627295899999126
+        ],
+        "cli": [
+          0.016170999999999935,
+          0.01666050000000041,
+          0.016028374999990547,
+          0.016155375000010963,
+          0.015975666000002775
+        ],
+        "control_cli": [
+          0.015230041000009464,
+          0.015289917000004039,
+          0.015185209000009081,
+          0.015398250000004055,
+          0.015401541999992219
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.016187959000006913
+        ],
+        "warmup": [
+          0.016437499999994998
+        ],
+        "cli": [
+          0.016235957999995776,
+          0.01608008299999142,
+          0.016322125000002075,
+          0.016031707999999867,
+          0.01640683400000853
+        ],
+        "control_cli": [
+          0.016011374999990835,
+          0.01691029200000571,
+          0.01577929199999062,
+          0.01563366600001359,
+          0.015883082999991416
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    }
+  },
+  "outputs": {
+    "build-string-builder-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-builder-8-0/shared-aedc574c623fd305/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-builder-8-0/shared-aedc574c623fd305/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016378875000000903,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016431166999993252,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-string-builder-all-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-builder-all-8-0/shared-db7ab45f9c12a070/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-builder-all-8-0/shared-db7ab45f9c12a070/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016217249999996852,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.0159962500000006,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-string-concatenate-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-concatenate-8-0/shared-18417871e5179779/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-concatenate-8-0/shared-18417871e5179779/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016285167000006595,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016299584000009304,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-string-join-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-join-8-0/shared-38036235b4287bd3/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-string-join-8-0/shared-38036235b4287bd3/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016072874999991882,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016854582999997092,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-list-builder-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-builder-8-0/shared-827f5946b590049b/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-builder-8-0/shared-827f5946b590049b/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.01654800000000023,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016272709000006103,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-list-builder-all-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-builder-all-8-0/shared-72d8cdf451b1f65d/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-builder-all-8-0/shared-72d8cdf451b1f65d/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016170999999999935,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016255083000004333,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-list-concatenate-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-concatenate-8-0/shared-9fa05c4c609e39f2/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-concatenate-8-0/shared-9fa05c4c609e39f2/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.01627533299999584,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016728083000003835,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-list-fold-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-fold-8-0/shared-0ffd6b07a29089f9/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-list-fold-8-0/shared-0ffd6b07a29089f9/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016143417000009208,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.01634395799999311,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-bytes-builder-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-bytes-builder-8-0/shared-91eb43b922a3d3e9/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-bytes-builder-8-0/shared-91eb43b922a3d3e9/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.01634487500000148,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016224291000000335,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-bytes-builder-all-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-bytes-builder-all-8-0/shared-9abbbf1dc5da2622/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-bytes-builder-all-8-0/shared-9abbbf1dc5da2622/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016407833999991794,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016158292000000074,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "build-bytes-concatenate-8-0": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-bytes-concatenate-8-0/shared-79cbeddd0bf316ac/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/build-bytes-concatenate-8-0/shared-79cbeddd0bf316ac/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/fe4af8d1f5ba1b2ed9cb6650b601f80393959c68-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.016302332999998725,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.016187959000006913,
+          "status": 0,
+          "stdout": "16\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    }
+  }
+}

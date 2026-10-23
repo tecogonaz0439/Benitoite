@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.10 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -33,6 +33,7 @@
 - [具体的なコンテナと汎用のコンテナ](#具体的なコンテナと汎用のコンテナ)
 - [レコードとデータ型](#レコードとデータ型)
 - [テストの書き方](#テストの書き方)
+- [補間の静的な書式](#補間の静的な書式)
 - [数値のビット幅と変換](#数値のビット幅と変換)
 - [WASM の外部の関数と WIT の型](#wasm-の外部の関数と-wit-の型)
 
@@ -732,6 +733,25 @@ function gitBranchRunsGit() -> Unit uses Assert.Check, Process.Run
 end function
 ```
 
+## 補間の静的な書式
+
+出力の列や小数点以下の桁数には静的な `${expression:spec}` を使う。benitoite check は実行前に書式の構文エラーを E0262、型の不適合を E0468 として報告する。幅には表示の幅を使い、長い内容を保ち、既定では空白を足す。CJK の幅が必要なら String.displayWidthPadStartCJK または String.displayWidthPadEndCJK を明示的に使う。整数の基数指定は整数型、f は Float/Float32/Decimal、s は String、c は Character に適用する。精度には f、ゼロ埋めには数値と幅が必要である。すべての式を左から右に一度ずつ評価した後、整形して連結する。定数も同じ規則に従う。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind amount <- 2.675m
+  bind number <- -42
+  bind label <- "猫"
+  Console.writeLine("${amount:.2f}|${number:#08x}|${label:>5s}")
+end function
+```
+
+```output
+2.68|-0x0002a|   猫
+```
+
 ## 数値のビット幅と変換
 
 通常の名前には、別名の `Integer`、`Float`、`Byte` を使う。それぞれの正式な名前は `Integer64`、`Float64`、`UnsignedInteger8` であり、`UnsignedInteger` は `UnsignedInteger64` の別名である。別名は同じ型を表す。七つの型（`Integer8`、`Integer16`、`Integer32`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64`、`Float32`）は、それぞれ異なる型である。数値の型とモジュールはすべて prelude にあり、取り込みは要らない。
@@ -845,3 +865,51 @@ hello world
 ```
 
 Log と SourceLocation は prelude から使う。message、attributes、location を明示し、IO.All に Log が含まれないことに注意する。完全なハンドラで処理するか、宣言上限に残る Log を許可集合へ加える。検査済みの長さ・添字・非空リストは Range と NonEmptyList の参照文書を使う。
+
+## ファイル単位のエフェクトと純粋な補助
+
+共通のログやコンソール出力には、取り込みの後、宣言の前のファイル単位の宣言を使う。main とテストを含むすべてのトップレベル関数に、個別の uses との和を加える。使わない Log も実行前の許可が必要である。Property の生成器・縮小器・性質を含む純粋なコールバックは、その宣言のない別ファイルに置ける。
+
+```files
+name: Pure.bnt
+public function double(value: Integer) -> Integer
+  return value * 2
+end function
+```
+
+```benitoite
+import Pure
+import Benitoite.Unofficial.IO.Console
+uses Console.Write, Log
+
+function main() -> Unit
+  bind values <- List.map(xs: [3], f: Pure.double)
+  Console.writeLine(Integer.toString(List.fold(xs: values, initial: 0, f: lambda(acc, value) return acc + value)))
+end function
+```
+```output
+6
+```
+
+この main の報告は Console.Write と Log を宣言する。上限を確認し、ログを出さない例でも --allow-effects=Console.Write,Log として了承済み集合を渡す。double をこのファイルへ移せば、その関数型にも効果が加わる。純粋な補助を別ファイルへ移すと純粋な契約を保てる。ラムダ、関数型、trait/implement のメソッドには共有の追加はない。doc の例も独立した仮想モジュールであり、自分の取り込みとエフェクトを宣言する。
+
+ハンドラは本体の操作を処理するが、ファイルの宣言が加えた契約を取り除かない。main は未処理の利用者エフェクトを宣言できないため、次の完全なハンドラでも拒否される。
+
+```benitoite error
+uses Hidden
+
+effect Hidden
+  function ask() -> Unit
+end effect
+
+function main() -> Unit
+  handle ask() with
+    case ask() -> resume(())
+  end handle
+end function
+```
+```diagnostic
+error[E0506]
+```
+
+ファイルの宣言を取り除いて個別の関数へ宣言するか、その宣言のない別ファイルへ main を置き、取り込んだ補助の効果をそこで処理する。共有の IO.All は効果が少ない関数ごとに W0501 を出し、共有宣言への自動編集は付けない。上限を縮める前に全対象関数を確認する。

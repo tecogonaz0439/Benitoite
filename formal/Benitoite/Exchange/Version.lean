@@ -137,11 +137,15 @@ partial def validateIntegerConstants : Json → Except String Unit
 def exchangeJson (kind : String) (j : Json) : Except String Json := do
   let version ← j.getObjValAs? Nat "version"
   let corpus := kind == "corpus"
-  if !(if corpus then [8, 9, 10, 11, 12, 13] else [2, 3, 4, 5]).contains version then
+  if !(if corpus then [8, 9, 10, 11, 12, 13, 14] else [2, 3, 4, 5, 6]).contains version then
     -- 契約名導入前の入力にも、既存の具体的な拒否理由を保つ。
     if version == (if corpus then 7 else 1) then
       rejectFields ["names", "labels", "positions", "fields"] j
     throw s!"unsupported {kind} exchange version: {version}"
+  if version < (if corpus then 14 else 6) then
+    match rejectFields ["formatted"] j with
+    | .error _ => throw "formatted interpolation requires corpus 14/sidecar 6; regenerate with new version"
+    | .ok _ => pure ()
   if !corpus || version < 13 then
     rejectFields ["block"] j
   if corpus && version == 12 then
@@ -168,9 +172,9 @@ def exchangeJson (kind : String) (j : Json) : Except String Json := do
     return j
   return batch2Defaults j
 
-/-- corpus 13 は sidecar 5、11 と 12 は sidecar 4 を使う。 -/
+/-- corpus 14はsidecar 6、13は5、11と12は4を使う。 -/
 def sidecarVersion (corpusVersion : Nat) : Nat :=
-  if corpusVersion >= 13 then 5 else if corpusVersion >= 11 then 4 else if corpusVersion >= 9 then 3 else 2
+  if corpusVersion >= 14 then 6 else if corpusVersion >= 13 then 5 else if corpusVersion >= 11 then 4 else if corpusVersion >= 9 then 3 else 2
 
 def validateDataTypes (ds : List DataTypeInfo) : Except String Unit := do
   if (ds.map (·.name)).eraseDups.length != ds.length then throw "duplicate data type metadata"

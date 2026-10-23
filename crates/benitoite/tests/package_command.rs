@@ -15,7 +15,7 @@ use std::{
     process::{Command, Output},
     time::{SystemTime, UNIX_EPOCH},
 };
-const CONFIG: &str = "language \"0.0.10\"\n\npackage Words\nend package\n";
+const CONFIG: &str = "language \"0.0.11\"\n\npackage Words\nend package\n";
 const MAIN: &str = "function main() -> Unit\n  ()\nend function\n";
 const READ: &str = "import Benitoite.Unofficial.IO.File\n\npublic function read() -> Unit uses File.Read\n  ()\nend function\n";
 struct Directory(PathBuf);
@@ -111,7 +111,7 @@ fn add_and_update_record_hashes_effect_deltas_and_unchanged_state() {
     dir.fixture();
     let add = dir.package(&["add", "Text", "--path", "deps/words"]);
     success(&add);
-    let hash = "sha256:947df56834e56bd98e9320905dc1e57aece4b7736aaf4d5c85c47da58018b520";
+    let hash = "sha256:765d2da3499124120b80d2e162d3ec767a0080bcb7077419335a9b6ee418a2f8";
     assert!(stdout(&add).starts_with("added dependency Text (package Words) to "));
     assert!(stdout(&add).ends_with(&format!(
         "  hash: {hash}\n  effects: File.Read\n  components: (none)\n"
@@ -189,7 +189,7 @@ fn move_preserves_check_results_and_rolls_back_when_entry_is_read_only() {
     let dir = Directory::new();
     dir.fixture();
     let source = format!(
-        "//! main\n\n// version\nlanguage \"0.0.10\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
+        "//! main\n\n// version\nlanguage \"0.0.11\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
     );
     dir.write("main.bnt", &source);
     success(&dir.command(&["check", "main.bnt"]));
@@ -216,7 +216,7 @@ fn move_preserves_check_results_and_rolls_back_when_entry_is_read_only() {
     assert_eq!(dir.read("main.bnt"), format!("//! main\n\n{MAIN}"));
     assert_eq!(
         dir.read("package.bnt"),
-        "// version\nlanguage \"0.0.10\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n"
+        "// version\nlanguage \"0.0.11\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n"
     );
     success(&dir.command(&["check", "main.bnt"]));
     for existing in [false, true] {
@@ -271,8 +271,8 @@ fn rejected_commands_do_not_write_files_and_support_json_diagnostics() {
         (vec!["move", "main.bnt"], MAIN.into(), None, "E0925"),
         (
             vec!["move", "main.bnt"],
-            format!("language \"0.0.10\"\n{MAIN}"),
-            Some("language \"0.0.10\"\n"),
+            format!("language \"0.0.11\"\n{MAIN}"),
+            Some("language \"0.0.11\"\n"),
             "E0926",
         ),
     ] {
@@ -397,14 +397,14 @@ fn command_preconditions_reject_unwritable_or_missing_destinations_and_package_d
     dir.write(
         "main.bnt",
         &format!(
-            "language \"0.0.10\"\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
+            "language \"0.0.11\"\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
         ),
     );
     error(&dir.package(&["move", "main.bnt"]), "E0915");
     assert_eq!(dir.read("package.bnt"), "package Words\nend package\n");
-    dir.write("main.bnt", &format!("language \"0.0.10\"\n\n{MAIN}"));
+    dir.write("main.bnt", &format!("language \"0.0.11\"\n\n{MAIN}"));
     success(&dir.package(&["move", "main.bnt"]));
-    assert!(dir.read("package.bnt").contains("language \"0.0.10\""));
+    assert!(dir.read("package.bnt").contains("language \"0.0.11\""));
 }
 
 // spec: 06-01 `package` のコマンドライン
@@ -449,7 +449,7 @@ fn move_appends_to_comment_only_config_without_reformatting_comments() {
     ] {
         let dir = Directory::new();
         dir.fixture();
-        dir.write("main.bnt", &format!("language \"0.0.10\"\n\n{MAIN}"));
+        dir.write("main.bnt", &format!("language \"0.0.11\"\n\n{MAIN}"));
         dir.write("package.bnt", comments);
         success(&dir.package(&["move", "main.bnt"]));
         let nl = if comments.contains("\r\n") {
@@ -460,7 +460,7 @@ fn move_appends_to_comment_only_config_without_reformatting_comments() {
         assert_eq!(
             dir.read("package.bnt"),
             format!(
-                "{}{nl}{nl}language \"0.0.10\"{nl}",
+                "{}{nl}{nl}language \"0.0.11\"{nl}",
                 comments.trim_end_matches(['\r', '\n'])
             )
         );
@@ -539,4 +539,171 @@ fn explicit_missing_config_and_directory_move_do_not_edit_the_entry() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("a file, not a directory"));
     assert_eq!(dir.read("main.bnt"), MAIN);
     assert!(!dir.0.join("package.bnt").exists());
+}
+
+// 関門: 型検査済み契約を読まない package の入口で、ファイル宣言の追加と削除を記録・増減へ接続する。
+// 既存の個別 uses の更新テストでは、ファイル宣言の拒否や合併漏れを捕まえられない。
+// spec: 06-09 `benitoite package`
+#[test]
+fn file_uses_package_records_deltas_without_type_checking() {
+    let dir = Directory::new();
+    dir.fixture();
+    let body = "public function first() -> Unit uses File.Read\n  42\nend function\npublic function second() -> Unit\n  ()\nend function\n";
+    let source = format!("import Benitoite.Unofficial.IO.File\nuses Log, File.Read\n{body}");
+    dir.write("deps/words/Value.bnt", &source);
+    let add = dir.package(&["add", "Text", "--path", "deps/words"]);
+    success(&add);
+    assert!(stdout(&add).contains("  effects: File.Read, Log\n"));
+    assert!(dir.read("main.bnt").contains("effects \"File.Read, Log\""));
+
+    // 本体も個別の uses も変えず、ファイル宣言だけを替える。
+    dir.write(
+        "deps/words/Value.bnt",
+        &source.replace("uses Log, File.Read\n", "uses File.Write\n"),
+    );
+    let update = dir.package(&["update", "Text"]);
+    success(&update);
+    assert!(stdout(&update).contains("  effects: + File.Write\n           - Log\n"));
+    assert!(
+        dir.read("main.bnt")
+            .contains("effects \"File.Read, File.Write\"")
+    );
+
+    dir.write(
+        "deps/words/Value.bnt",
+        &source.replace("uses Log, File.Read\n", ""),
+    );
+    let remove = dir.package(&["update", "Text"]);
+    success(&remove);
+    assert!(stdout(&remove).contains("  effects: - File.Write\n"));
+    assert!(dir.read("main.bnt").contains("effects \"File.Read\""));
+
+    let before = dir.read("main.bnt");
+    for broken in [
+        "uses\n",
+        "uses Log\npublic function broken( -> Unit\nend function\n",
+        "uses Log\n\"unterminated",
+    ] {
+        dir.write("deps/words/Value.bnt", broken);
+        let output = dir.package(&["update", "Text"]);
+        assert_eq!(output.status.code(), Some(2));
+        assert!(!output.stderr.is_empty());
+        assert!(output.stdout.is_empty());
+        assert_eq!(dir.read("main.bnt"), before);
+    }
+}
+
+// 関門: ファイル宣言を加える条件と、既存の入れ子の明示契約の集計を同じ CLI 境界で対照する。
+// spec: 06-09 `benitoite package`
+#[test]
+fn file_uses_package_counts_only_files_with_public_top_level_functions() {
+    for (declarations, expected) in [
+        (
+            "public function value() -> Unit\n()\nend function\n",
+            "IO.All, Log",
+        ),
+        (
+            "public(package) function value() -> Unit\n()\nend function\n",
+            "",
+        ),
+        ("function value() -> Unit\n()\nend function\n", ""),
+        (
+            "public trait Worker[T]\nfunction work(value: T) -> Unit uses State\nend trait\n",
+            "State",
+        ),
+        (
+            "public type Callback = function() -> Unit uses State\n",
+            "State",
+        ),
+        (
+            "public record Callback\ncall: function() -> Unit uses State\nend record\n",
+            "State",
+        ),
+        (
+            "public data Callback\nCall(function() -> Unit uses State)\nend data\n",
+            "State",
+        ),
+        (
+            "public function factory() -> (function() -> Unit uses State)\n42\nend function\npublic trait Worker[T]\nfunction work(value: T) -> Unit uses State\nend trait\n",
+            "IO.All, Log, State",
+        ),
+    ] {
+        let dir = Directory::new();
+        dir.fixture();
+        // 別ファイルに公開関数があっても、このファイルの宣言を加える条件にはならない。
+        dir.write(
+            "deps/words/Other.bnt",
+            "public function other() -> Unit\n()\nend function\n",
+        );
+        dir.write(
+            "deps/words/Value.bnt",
+            &format!("uses Log, IO.All\n{declarations}"),
+        );
+        let output = dir.package(&["add", "Text", "--path", "deps/words"]);
+        success(&output);
+        assert!(
+            dir.read("main.bnt")
+                .contains(&format!("effects \"{expected}\"")),
+            "{declarations}: {}",
+            stdout(&output)
+        );
+    }
+}
+
+// 関門: prelude の Log とその隠蔽を実際の保存結果で確かめる。既存の IO import の検査にはない境界である。
+// spec: 06-09 `benitoite package`
+#[test]
+fn package_identifies_log_consistently_in_individual_and_file_uses() {
+    for (prefix, effects, expected) in [
+        ("", "Log", "Log"),
+        ("", "Benitoite.Log", "Log"),
+        ("import Benitoite.Unofficial.Log\n", "Log", "Log"),
+        (
+            "import Benitoite.Unofficial.Log as Events\n",
+            "Events.Log",
+            "Log",
+        ),
+        ("import Other as Log\n", "Log", ""),
+        ("import Other.Log\n", "Log", ""),
+        ("import Other as Events\n", "Events.Log", ""),
+        ("import Other as Log\n", "Benitoite.Log", "Log"),
+        ("type Log = Unit\n", "Log", ""),
+        (
+            "effect Log\nfunction emit() -> Unit\nend effect\n",
+            "Log",
+            "",
+        ),
+        ("type Log = Unit\n", "Benitoite.Log", "Log"),
+        ("import Other as Benitoite\n", "Benitoite.Log", ""),
+        ("type Benitoite = Unit\n", "Benitoite.Log", ""),
+    ] {
+        for file_uses in [false, true] {
+            let dir = Directory::new();
+            dir.fixture();
+            let (imports, declarations) = if prefix.starts_with("import ") {
+                (prefix, "")
+            } else {
+                ("", prefix)
+            };
+            let common = if file_uses {
+                format!("uses {effects}\n")
+            } else {
+                String::new()
+            };
+            let own = if file_uses {
+                String::new()
+            } else {
+                format!(" uses {effects}")
+            };
+            dir.write("deps/words/Value.bnt", &format!("{imports}{common}{declarations}public function value() -> Unit{own}\n()\nend function\n"));
+            let output = dir.package(&["add", "Text", "--path", "deps/words"]);
+            success(&output);
+            assert!(
+                dir.read("main.bnt")
+                    .contains(&format!("effects \"{expected}\"")),
+                "{prefix} / {effects} / file={file_uses}: {}",
+                stdout(&output)
+            );
+        }
+    }
 }

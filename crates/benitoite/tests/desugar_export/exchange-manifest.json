@@ -92,9 +92,9 @@
     }
   ],
   "namedVersions": {
-    "corpus": 13,
-    "table": 5,
-    "coverage": 5
+    "corpus": 14,
+    "table": 6,
+    "coverage": 6
   },
   "namedCoverageCases": 10,
   "namedExcluded": [],
@@ -417,6 +417,21 @@
       "coverage": null,
       "implementations": 0,
       "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/eval/formatted_interpolation_order.bnt",
+      "excluded": [],
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
     },
     {
       "group": "golden",
@@ -2778,7 +2793,8 @@
       "group": "golden",
       "name": "testdata/patterns/match_on_error_type.bnt",
       "excluded": [
-        "Some(E0401)"
+        "Some(E0401)",
+        "Some(E0601)"
       ],
       "definitions": 0,
       "scopes": {},
@@ -25873,7 +25889,7 @@
     "desugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
-      "matched": 1058,
+      "matched": 1062,
       "excluded": 0
     },
     "surfaceCounts": {
@@ -25881,7 +25897,7 @@
       "preparationFailure": 0,
       "outOfScope": 19,
       "mismatched": 0,
-      "matched": 51725,
+      "matched": 51729,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
@@ -27139,8 +27155,8 @@
       "outOfScope": 0,
       "fuelExhausted": 0
     },
-    "definitions": 73836,
-    "surfaceChecks": 51745,
+    "definitions": 73840,
+    "surfaceChecks": 51749,
     "coverageEntries": 22482,
     "randomDesugarDefinitions": {
       "outside": 0,
@@ -27150,7 +27166,7 @@
     },
     "desugarPrograms": {
       "golden": {
-        "matched": 370,
+        "matched": 371,
         "excluded": 419,
         "outside": 0,
         "mismatched": 0

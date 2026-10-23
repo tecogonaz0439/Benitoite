@@ -23,8 +23,8 @@ import source_migrate as migrate
 INVENTORY = REPO / 'target/debug/examples/derive_inventory'
 BENITOITE = REPO / 'target/debug/benitoite'
 # Includes the management protocol and template revision. Bump when rules change.
-GENERATOR_VERSION = '3.0.0-syntax-batch4'
-INVENTORY_VERSION = 2
+GENERATOR_VERSION = '3.1.0-syntax-batch5'
+INVENTORY_VERSION = 3
 HASH_VERSION = 3
 MARKER = re.compile(rb'// benitoite-derive:(begin|end) ([A-Za-z0-9_-]+)')
 
@@ -126,7 +126,7 @@ def collect(root, config):
         invalid('derive.invalid_inventory: inventory version or config hash mismatch')
     if inventory['targets'] and [t['config'] for t in inventory['targets']] != value['targets']:
         invalid('inventory targets differ from config')
-    validate_inventory(inventory)
+    validate_inventory(inventory, root)
     return inventory
 
 
@@ -266,14 +266,14 @@ def resolved_type(ty):
 
 
 
-def validate_inventory(inv):
+def validate_inventory(inv, root):
     try:
-        _validate_inventory(inv)
+        _validate_inventory(inv, root)
     except (KeyError, TypeError, IndexError, AttributeError) as error:
         raise DeriveError('derive.invalid_inventory: malformed declaration tree') from error
 
 
-def _validate_inventory(inv):
+def _validate_inventory(inv, root):
     """未知のJSON、参照先の欠落、種類に合わない番号を拒否する。"""
     def require(ok, message='invalid inventory schema'):
         if not ok:
@@ -317,6 +317,30 @@ def _validate_inventory(inv):
     obj(inv, ('version', 'configSha256', 'targets', 'records', 'functions', 'types', 'classes',
               'implementations', 'modules', 'declarations', 'inputs'))
     require(type(inv['version']) is int and inv['version'] == INVENTORY_VERSION)
+    for m in inv['modules']:
+        obj(m, ('name', 'importPath', 'path', 'imports', 'preambleEnd', 'fileUses', 'importInsertLimit'))
+        number(m['preambleEnd'])
+        use, limit = m['fileUses'], m['importInsertLimit']
+        if use is None:
+            require(limit is None, 'import limit without file uses')
+            continue
+        obj(use, ('text', 'span'))
+        obj(use['span'], ('path', 'start', 'end'))
+        number(limit)
+        number(use['span']['start'])
+        number(use['span']['end'])
+        require(use['span']['path'] == m['path'], 'file uses source mismatch')
+        require(isinstance(use['text'], str), 'invalid file uses text')
+        data = input_path(Path(root), m['path']).read_bytes()
+        require(m['preambleEnd'] <= limit == use['span']['start'] < use['span']['end'] <= len(data),
+                'invalid file uses/import boundary')
+        require(data[limit:use['span']['end']] == use['text'].encode('utf-8'), 'file uses text mismatch')
+        for i in m['imports']:
+            require(i['span']['path'] == m['path'], 'import source mismatch')
+            number(i['span']['start'])
+            number(i['span']['end'])
+            require(m['preambleEnd'] <= i['span']['start'] < i['span']['end'] <= limit,
+                    'import follows file uses')
     types, classes = inv['types'], inv['classes']
     require(isinstance(types, dict) and isinstance(classes, dict))
     for name, t in types.items():
@@ -1045,7 +1069,8 @@ class Manager:
                              and d['kind'] not in ('module', 'stringBuilder', 'listBuilder', 'bytesBuilder')]
                 sources[name] = {'data': data, 'regions': found, 'edits': [],
                                  'imports': Imports(existing, declared, inventory['modules']), 'outputs': [],
-                                 'import_end': import_end, 'declaration_positions': positions}
+                                 'import_end': import_end, 'import_limit': module['importInsertLimit'],
+                                 'declaration_positions': positions}
         record_rows = {}
         replaceable = set()
         for target in inventory['targets']:
@@ -1103,6 +1128,15 @@ class Manager:
             data = source['data']
             pending = ''.join(source['imports'].pending)
             header = None
+            limit = source['import_limit']
+            # 領域はimportと通常宣言を一緒に持つので、usesの前へ新設すると
+            # 宣言順を壊す。手書き部分を移動せず、必要なimportを明示してもらう。
+            if pending and limit is not None:
+                invalid(name + ': required imports cannot share a declaration region across file uses; '
+                        'add handwritten imports before file uses and preview again: ' + pending.strip())
+            if limit is not None and any(r.start < limit for r in source['regions'].values()):
+                invalid(name + ': generated declarations cannot precede file uses; '
+                        'move the managed region after file uses and preview again')
             if pending:
                 for target, _, _ in source['outputs']:
                     found = source['regions'].get(target['region'])

@@ -1076,7 +1076,8 @@ function main() -> Unit uses Console.Write
   end match
 end function
 "#,
-                vec![C::E0467, C::E0401],
+                // 後の注釈で決まった仮の型を根拠に、パターンの不一致を重ねない。
+                vec![C::E0467],
             ),
         ] {
             let result = check_text("main.bnt", source.as_bytes(), opts(false));

@@ -26,7 +26,9 @@ HeaderItem  = "language" StringLit
             | "package" UpperIdent NL { HeaderField NL } "end" "package" .
 HeaderField = LowerIdent StringLit .
 Items       = ImportDecl [ NL Items ]
+            | FileUses [ NL Decls ]
             | Decls .
+FileUses    = "uses" EffectRef { "," EffectRef } [ "," ] .
 Decls       = AttrDecl { NL AttrDecl } .
 AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
@@ -113,7 +115,15 @@ Primary     = Literal
             | HandleExpr
             | "resume" "(" Expr ")" .
 Literal     = IntLit | FloatLit | DecimalLit | StringLit | CharLit | "true" | "false" .
-InterpString = StrStart Expr { StrMid Expr } StrEnd .
+InterpString = StrStart Expr [ ":" FormatSpec ] { StrMid Expr [ ":" FormatSpec ] } StrEnd .
+FormatSpec  = [ Align ] [ Sign ] [ "#" ] [ "0" ] [ Width ] [ Precision ] [ Kind ] .
+Align       = "<" | ">" | "^" .
+Sign        = "+" .
+Width       = NonZeroDigit { Digit } .
+Precision   = "." Digit { Digit } .
+Kind        = "d" | "b" | "o" | "x" | "X" | "f" | "s" | "c" .
+NonZeroDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" .
+Digit       = "0" | NonZeroDigit .
 ListElem    = Expr | ".." Expr .
 Name        = { UpperIdent "." } ( LowerIdent | UpperIdent ) .
 RecordExpr  = QualUpper "(" [ ".." Expr "," ] FieldArg { "," FieldArg } [ "," ] ")" .

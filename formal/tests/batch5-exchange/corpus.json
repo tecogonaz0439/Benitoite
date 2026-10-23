@@ -1,0 +1,6425 @@
+{
+ "version": 14,
+ "operators": [
+  {
+   "op": "add",
+   "operand": {
+    "base": {
+     "name": "String"
+    }
+   },
+   "name": "String.add"
+  }
+ ],
+ "inputs": [
+  {
+   "group": "golden",
+   "name": "independent-batch5",
+   "excluded": [],
+   "definitions": [
+    {
+     "name": "format-0 (fn:500)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-1 (fn:501)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer8"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer8"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer8",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer8"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer8",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-2 (fn:502)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer16"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer16"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer16",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer16"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer16",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-3 (fn:503)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer32"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer32",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer32",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-4 (fn:504)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Byte"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Byte"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Byte",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Byte"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Byte",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-5 (fn:505)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "UnsignedInteger16"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "UnsignedInteger16"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.UnsignedInteger16",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "UnsignedInteger16"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.UnsignedInteger16",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-6 (fn:506)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "UnsignedInteger32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "UnsignedInteger32"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.UnsignedInteger32",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "UnsignedInteger32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.UnsignedInteger32",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-7 (fn:507)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "UnsignedInteger64"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "UnsignedInteger64"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.UnsignedInteger64",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "UnsignedInteger64"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.UnsignedInteger64",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-8 (fn:508)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Float"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Float",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Float",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-9 (fn:509)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Float32"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Float32",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Float32",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-10 (fn:510)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Decimal"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Decimal"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Decimal",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Decimal"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Decimal",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-11 (fn:511)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "String"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.String",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.String",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-12 (fn:512)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Character"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Character"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Character",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Character"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Character",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-13 (fn:513)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Boolean"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Boolean"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Boolean",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Boolean"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Boolean",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-14 (fn:514)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 },
+                 "spec": {
+                  "kind": "d",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 65535,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 1
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 65535
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-15 (fn:515)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 },
+                 "spec": {
+                  "kind": "b",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": true,
+                  "zero": false,
+                  "width": 65535,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 2
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": true
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 65535
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-16 (fn:516)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 },
+                 "spec": {
+                  "kind": "o",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": true,
+                  "zero": false,
+                  "width": 65535,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 3
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": true
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 65535
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-17 (fn:517)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 },
+                 "spec": {
+                  "kind": "x",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": true,
+                  "zero": false,
+                  "width": 65535,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 4
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": true
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 65535
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-18 (fn:518)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 },
+                 "spec": {
+                  "kind": "X",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": true,
+                  "zero": false,
+                  "width": 65535,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Integer",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Integer",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 5
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": true
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 65535
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-19 (fn:519)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Float"
+                  }
+                 },
+                 "spec": {
+                  "kind": "f",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": null,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Float",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Float",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 6
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-20 (fn:520)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Float32"
+                  }
+                 },
+                 "spec": {
+                  "kind": "f",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": null,
+                  "precision": 0
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Float32",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Float32"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Float32",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 6
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-21 (fn:521)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Decimal"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Decimal"
+                  }
+                 },
+                 "spec": {
+                  "kind": "f",
+                  "align": "default",
+                  "sign": "plus",
+                  "alternate": false,
+                  "zero": true,
+                  "width": 8,
+                  "precision": 28
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Decimal",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Decimal"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Decimal",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 6
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 1
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": true
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 28
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-22 (fn:522)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "String"
+                  }
+                 },
+                 "spec": {
+                  "kind": "s",
+                  "align": "left",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 1,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.String",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.String",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 7
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 1
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 1
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-23 (fn:523)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Character"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Character"
+                  }
+                 },
+                 "spec": {
+                  "kind": "c",
+                  "align": "right",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Character",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Character"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Character",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 2
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "format-24 (fn:524)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Boolean"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               },
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "Boolean"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "center",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.Boolean",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Boolean"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "%Format.Boolean",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 3
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 0
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "boolean": {
+                   "value": false
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": 8
+                  }
+                 }
+                }
+               },
+               {
+                "const": {
+                 "value": {
+                  "integer": {
+                   "value": -1
+                  }
+                 }
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "plain-string (fn:525)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               "stringExpr"
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": []
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "mixed-string (fn:526)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "formatted": {
+                 "ty": {
+                  "base": {
+                   "name": "String"
+                  }
+                 },
+                 "spec": {
+                  "kind": "default",
+                  "align": "default",
+                  "sign": "default",
+                  "alternate": false,
+                  "zero": false,
+                  "width": 8,
+                  "precision": null
+                 }
+                }
+               },
+               "stringExpr"
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               },
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "%Format.String",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "String"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 1
+               }
+              }
+             }
+            },
+            "body": {
+             "letIn": {
+              "bound": {
+               "app": {
+                "callee": {
+                 "prim": {
+                  "name": "%Format.String",
+                  "tys": [],
+                  "effs": []
+                 }
+                },
+                "args": [
+                 {
+                  "var": {
+                   "index": 1
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "integer": {
+                     "value": 0
+                    }
+                   }
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "integer": {
+                     "value": 0
+                    }
+                   }
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "integer": {
+                     "value": 0
+                    }
+                   }
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "boolean": {
+                     "value": false
+                    }
+                   }
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "boolean": {
+                     "value": false
+                    }
+                   }
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "integer": {
+                     "value": 8
+                    }
+                   }
+                  }
+                 },
+                 {
+                  "const": {
+                   "value": {
+                    "integer": {
+                     "value": -1
+                    }
+                   }
+                  }
+                 }
+                ]
+               }
+              },
+              "body": {
+               "app": {
+                "callee": {
+                 "prim": {
+                  "name": "String.add",
+                  "tys": [],
+                  "effs": []
+                 }
+                },
+                "args": [
+                 {
+                  "var": {
+                   "index": 0
+                  }
+                 },
+                 {
+                  "var": {
+                   "index": 1
+                  }
+                 }
+                ]
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "plain-converted (fn:527)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "converted": {
+                 "ty": {
+                  "base": {
+                   "name": "Integer"
+                  }
+                 }
+                }
+               }
+              ],
+              "es": [
+               {
+                "local": {
+                 "index": 0
+                }
+               }
+              ],
+              "converters": [
+               {
+                "primName": {
+                 "name": "Integer.toString",
+                 "tys": [],
+                 "effs": []
+                }
+               }
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "letIn": {
+          "bound": {
+           "ret": {
+            "value": {
+             "var": {
+              "index": 0
+             }
+            }
+           }
+          },
+          "body": {
+           "letIn": {
+            "bound": {
+             "app": {
+              "callee": {
+               "prim": {
+                "name": "Integer.toString",
+                "tys": [],
+                "effs": []
+               }
+              },
+              "args": [
+               {
+                "var": {
+                 "index": 0
+                }
+               }
+              ]
+             }
+            },
+            "body": {
+             "ret": {
+              "value": {
+               "var": {
+                "index": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    },
+    {
+     "name": "empty-interpolation (fn:528)",
+     "scope": {
+      "inScope": {
+       "surface": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "dictParams": [],
+        "implementation": null,
+        "method": null,
+        "supers": [],
+        "coverageView": [],
+        "package": "author",
+        "body": {
+         "last": {
+          "expr": {
+           "returnE": {
+            "ret": {
+             "base": {
+              "name": "String"
+             }
+            },
+            "inner": {
+             "interpolation": {
+              "parts": [
+               {
+                "text": {
+                 "value": ""
+                }
+               }
+              ],
+              "es": [],
+              "converters": []
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "core": {
+        "header": {
+         "tparams": [],
+         "neffs": 0,
+         "effParams": [],
+         "names": [
+          "value"
+         ],
+         "params": [
+          {
+           "base": {
+            "name": "Integer"
+           }
+          }
+         ],
+         "ret": {
+          "base": {
+           "name": "String"
+          }
+         },
+         "eff": []
+        },
+        "body": {
+         "ret": {
+          "value": {
+           "const": {
+            "value": {
+             "string": {
+              "value": ""
+             }
+            }
+           }
+          }
+         }
+        },
+        "lambdaEffects": [],
+        "supers": []
+       }
+      }
+     }
+    }
+   ],
+   "constants": [],
+   "ops": [],
+   "effects": [],
+   "primOps": [],
+   "classes": [],
+   "impls": [],
+   "dataTypes": []
+  }
+ ],
+ "annotations": {
+  "tailMatch": [
+   0,
+   0
+  ]
+ }
+}

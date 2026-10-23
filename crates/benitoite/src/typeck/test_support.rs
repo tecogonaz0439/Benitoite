@@ -165,6 +165,7 @@ pub(crate) fn check_die_source(
         source.as_bytes(),
         newline::resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut ids,
     );
     let mut diagnostics = lexed.diagnostics;

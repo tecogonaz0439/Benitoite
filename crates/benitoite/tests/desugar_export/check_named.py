@@ -175,7 +175,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 13, "width corpus version")
+    require(corpus["version"] == 14, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -496,7 +496,7 @@ def main():
                for entry in manifest["named"]}
     coverage = coverage_dir / "named-corpus.json"
     data = read(coverage)
-    # 独立Coverageの版4と、corpus13に付くプログラムsidecarの版5は別契約。
+    # 独立Coverageの版4と、corpus14に付くプログラムsidecarの版6は別契約。
     require(data["version"] == manifest["coverageExports"]["named-"]["version"], "coverage version")
     require(len(data["cases"]) == manifest["namedCoverageCases"], "coverage cases")
     report = run("coverageDiff", [coverage], coverage_dir / "named-report.json")
@@ -513,7 +513,7 @@ def main():
     future = read(coverage_dir / "future-report.json")
     require({k: future[k] for k in manifest["futureCoverageReport"]} == manifest["futureCoverageReport"],
             "all independent coverage with views")
-    print("named export: manifest agrees; corpus 13, tables/program coverage 5 and independent coverage 4 match all six entries")
+    print("named export: manifest agrees; corpus 14, tables/program coverage 6 and independent coverage 4 match all six entries")
 
 
 if __name__ == "__main__":

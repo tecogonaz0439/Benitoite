@@ -423,6 +423,27 @@ diag_codes! {
         [syntax: "use `benitoite test`, `benitoite check`, `benitoite error` followed by `diagnostic`, or `benitoite` followed by `output`"]
         "Documentation examples use fenced blocks. Error examples require a real E-code on its own diagnostic line; run examples require output. Files and nonzero exit expectations are not supported in comments.";
 
+    E0261 Check "invalid file-level `uses` declaration" "file-level effects declared here"
+        [position: "write one file-level `uses` after all imports and before ordinary declarations",
+         empty: "a file-level `uses` requires at least one effect; omit the declaration for an empty set",
+         function_line: "write a function's `uses` on the same physical line as its return type"]
+        "A file-level `uses` is a single nonempty declaration after imports. Its original location is retained separately from each function's contract.";
+
+    E0262 Check "invalid interpolation format" "invalid format here"
+        [empty: "omit the colon for an interpolation without a format",
+         whitespace: "remove whitespace from the format",
+         minus: "omit `-`; only `+` can be written as a sign flag",
+         kind: "use one of `d`, `b`, `o`, `x`, `X`, `f`, `s`, or `c` in this order: align, sign, #, zero, width, precision, kind",
+         width: "write an ASCII width from 1 to 65535",
+         precision: "write an ASCII precision from 0 to 28 after `.`",
+         fixed: "precision requires the kind `f`; append `f` if that is intended",
+         align_width: "alignment requires a width",
+         zero_width: "zero padding requires a width",
+         zero_align: "zero padding cannot be combined with explicit alignment",
+         alternate: "`#` requires `b`, `o`, `x`, or `X`"]
+        fix [empty, whitespace, minus, fixed]
+        "After a complete expression, the colon starts a static format. Its syntax, bounds, and flag combinations are checked separately from compatibility with the expression's type.";
+
     // ---- E03: 名前、import、公開 ----
     E0301 Check "cannot find `{name}` in this scope" "not found"
         [similar: "a similar name exists: {candidates}",
@@ -543,7 +564,9 @@ diag_codes! {
     E0329 Check "the {level} {what} `{name}` uses the {used_level} {used_kind} `{used}`" "`{used}` is not public"
         [declared: "`{used}` is declared here",
          make_public: "mark `{used}` as `{target}`",
-         handle: "handle the effect inside the function before returning"]
+         handle: "handle the effect inside the function before returning",
+         file_contract: "the file-level uses adds this effect to every public top-level function in the file",
+         file: "remove the effect from the file-level uses or move the public functions to a file without that declaration"]
         fix [make_public]
         "Everything a declaration exposes, including types, traits, and effects, must be at least as visible as the declaration.";
     E0330 Check "`{name}` is not public in `{module}`" "not public"
@@ -850,6 +873,11 @@ diag_codes! {
     E0467 Check "SourceLocation.here requires a direct call" ""
         [direct: "write `SourceLocation.here()` and pass the resulting location explicitly"]
         "The standard here expression cannot be used as a function value, partially applied, or piped.";
+    E0468 Check "a value of type `{ty}` is incompatible with this interpolation format" "incompatible format"
+        [value: "value has type `{ty}`", allowed: "this format accepts {allowed}",
+         change: "choose a format compatible with the value's type; numeric formatting requires an explicitly numeric value",
+         integer_fixed: "use `d` for integer output, or explicitly convert the value to Float, Float32, or Decimal if fractional output is intended"]
+        "Static interpolation formats restrict the value to a closed set of basic types. No implicit conversion or user-defined Show implementation changes this set.";
     E0462 Check "constant target is outside the supplied scope" "outside scope"
         [constant: "constant declared here", origins_omitted: "{omitted} other constant declarations omitted", condition: "scope condition supplied here"]
         "The known target does not satisfy the supplied host/path pattern or inclusive port range.";
@@ -887,7 +915,8 @@ diag_codes! {
         "A task group must be released when its block ends, so it is opened only by `with`.";
     E0506 Check "`{function}` does not handle the effect `{effect}`" "`{effect}` is not handled"
         [handle: "handle `{effect}` with `handle ... with` inside `{function}`",
-         to_result: "or convert the failure with Failure.toResult inside `{function}`"]
+         to_result: "or convert the failure with Failure.toResult inside `{function}`",
+         file: "remove the effect from the file-level uses or move `{function}` to a file without that declaration; handling it in the body does not remove the declared effect"]
         "Effects declared by the program must be handled inside `main` and inside test functions. For the standard Failure.Fail, import Benitoite.Unofficial.Failure, catch it with Failure.toResult, and remove the handled Fail from the entry function's uses. Result.andThen/flatMap chains Result values; it does not handle Fail.";
     E0507 Check "`{name}` is not an operation of an effect" ""
         [state: "`State` has no operations and cannot be handled"]
@@ -915,6 +944,7 @@ diag_codes! {
     E0512 Check "effects of `{function}` exceed `--allow-effects`" "effect limit checked for this function"
         [missing: "effects not allowed: {missing}",
          allowed: "allowed effects: {allowed}",
+         file: "added to this function by the file-level uses declaration",
          review: "review the required effects before changing --allow-effects"]
         "The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.";
 
@@ -922,7 +952,8 @@ diag_codes! {
         []
         "Only the standard Failure.Fail takes exactly one value type argument.";
     E0514 Check "incompatible failure types `{expected}` and `{found}` in one effect set" ""
-        [convert: "convert errors explicitly in a failure clause before joining effects"]
+        [convert: "convert errors explicitly in a failure clause before joining effects",
+         individual: "the function's uses is declared here"]
         "A source computation can have at most one invariant failure type.";
     E0515 Check "cannot establish that the remaining effects exclude Failure.Fail" ""
         [signature: "declare Failure.Fail in the callback signature, handle failures inside the callback, or move the handle boundary"]
@@ -1072,7 +1103,8 @@ diag_codes! {
     E0812 Check "an external function can declare only `uses State`, and only when its type contains an external type" "not allowed here"
         [pure: "external functions that pass external types declare `uses State`; all other external functions are pure",
          remove: "remove `uses`",
-         state: "replace `uses` with `uses State`"] fix [remove, state]
+         state: "replace `uses` with `uses State`",
+         file: "remove the incompatible effect from the file-level uses or move the external function to a file without that declaration"] fix [remove, state]
         "External functions declare State exactly when passing external types.";
     E0813 Check "`@external` cannot be combined with `@{other}`" "" []
         "An external function cannot also be a test or a built-in function.";
@@ -1272,8 +1304,11 @@ diag_codes! {
     // ---- W05: エフェクトの警告 ----
     W0501 Check "`uses IO.All` allows more effects than this function performs" ""
         [narrow: "write `uses {effects}`",
-         remove: "remove `uses IO.All`; this function performs no effects"]
-        fix [narrow, remove]
+         remove: "remove `uses IO.All`; this function performs no effects",
+         covered: "remove this `IO.All`; the remaining declarations cover this function's effects",
+         shared: "review the file-level IO.All declaration for all functions; no automatic edit is offered",
+         file: "IO.All added by this file-level uses declaration"]
+        fix [narrow, remove, covered]
         "Listing only the effects a function performs shows which operations it needs.";
 
     // ---- R01: 基本型の演算 ----

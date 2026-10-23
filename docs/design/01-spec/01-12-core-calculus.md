@@ -520,8 +520,9 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 - `Decimal` のリテラルと、単項の `-` を直接適用した `Decimal` のリテラルは、型 `Decimal` を持ち、エフェクトは空である。
 - 幅付きのリテラルは、`Literal.toConst` が返す定数の型を持ち、エフェクトは空である。幅付きの符号付き整数と `Float32` の直接の負号も、対応する基本型と空のエフェクトを持つ。正の大きさからの変換で幅を保ち、整数の値域の検査を型付けの前提にはしない。符号なしの負号は零を含めて拒否する。
 - 展開を含むリストは、展開の前と後の要素を型 T で、展開の式を型 `List[T]` で検査し、型 `List[T]` を持つ。呼ぶ値は、直接の呼び出しの頭になる名前（トップレベルの関数・prelude の関数・制約を持つ関数・メソッド・利用者の操作の名前）で、型 `(List[T], List[T]) → List[T]` と空のエフェクトを持つことを求める。
-- 文字列補間は、`String` の式を型 `String` で、`String` 以外の型 T の式を型 T で検査する。T は `Integer`・`Float`・`Character`・`Boolean`・`Byte`・`Decimal` と、形式化に加えた幅付きの七種のどれかでなければならない。変換の呼ぶ値は、直接の呼び出しの頭になる名前で、型 `(T) → String` と空のエフェクトを持つことを求める。部分（空の断片を数えない）が二つ以上のときだけ、`+_String` に当たる組み込みの関数が `opPrim` の表にあり、型 `(String, String) → String` と空のエフェクトを持つことを、演算子と同じ条件で求める。補間の式は型 `String` を持ち、エフェクトは式の並びのエフェクトの和である。補間の制約を持つ型変数は型パラメータと等しくなれず、本体の検査を終えた時点で具体的な型に決まるので、型の情報を付けた入力では、補間する式の型をこの基本型の集合に限る。
-- 展開と補間の呼ぶ値は型だけを検査し、`List.concatenate` と型ごとの `toString` に限らないので、表層の型付けは本章の「リストの展開」「文字列補間」の規則より広い。性質 1 は広い側で証明したので、呼ぶ値がそれらの関数であるプログラムについても成り立つ。
+- 書式なしの文字列補間は、`String` の式を型 `String` で、`String` 以外の型 T の式を型 T で検査する。T は `Integer`・`Float`・`Character`・`Boolean`・`Byte`・`Decimal` と、形式化に加えた幅付きの七種のどれかでなければならない。変換の呼ぶ値は、直接の呼び出しの頭になる名前で、型 `(T) → String` と空のエフェクトを持つことを求める。部分（空の断片を数えない）が二つ以上のときだけ、`+_String` に当たる組み込みの関数が `opPrim` の表にあり、型 `(String, String) → String` と空のエフェクトを持つことを、演算子と同じ条件で求める。補間の式は型 `String` を持ち、エフェクトは式の並びのエフェクトの和である。補間の制約を持つ型変数は型パラメータと等しくなれず、本体の検査を終えた時点で具体的な型に決まるので、型の情報を付けた入力では、補間する式の型をこの基本型の集合に限る。
+- 書式付きの部分は `InterpPart.formatted T spec` で表し、`FormatSpec.Valid T spec` を求める。式は型Tで検査し、値を書式化（formatting）する頭はvalueと七定数を受ける `FormatSpec.converterType T`（後述の「文字列補間」）と空のエフェクトを持つ直接の頭として検査する。`String`にも書式化の頭を一つ使う。書式なしの部分と混在でき、部分の個数・連結の条件・補間全体の型とエフェクトは書式なしと同じである。
+- 展開と補間の呼ぶ値は型だけを検査し、`List.concatenate` と型ごとの `toString`・書式化の内部頭の実名に限らないので、表層の型付けは本章の「リストの展開」「文字列補間」の規則より広い。性質 1 は広い側で証明したので、呼ぶ値がそれらの関数であるプログラムについても成り立つ。
 - レコードの構築は、構成子の宣言があり、型引数の個数が宣言と合い、位置の並びがフィールドの位置 0, …, n−1 の並べ替えであることを求める。書いた順の各式は、その位置のフィールドの型を型引数で具体化した型で検査する。構築の型は `R[T̄]`、エフェクトは各式のエフェクトの和である。
 - レコードの更新は、型引数の個数とフィールドの総数が宣言と合い、書き換える位置の並びが空でなく、重複せず、どの位置も総数より小さいことを求める。元の式 e は型 `R[T̄]`（T̄ は更新が持つ型引数）で、末尾位置にないものとして検査し、書いた順の各式は、その位置のフィールドの型を T̄ で具体化した型で検査する。前提に、脱糖が作る一つの分岐のパターン（書き換える位置を `_` にしたもの）の網羅性を置く（`try` と同じ）。更新の型は `R[T̄]`、エフェクトは e と各式のエフェクトの和である。
 - レコードのパターンには独立した型付けの規則を置かず、宣言の順に並べたコアのパターンを、本章の「パターン」の型付け規則で検査する。位置の条件のうち、空でないこと・重複しないこと・範囲内であることを個別に検査するのは更新だけである。構築は位置の並びが並べ替えであることだけを求め、パターンは位置を検査しない。
@@ -644,6 +645,61 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 | `"s0${e1}s1…${en}sn"` | `let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in` に続けて、型 Ti が `String` でない式 ei についてだけ、書いた順に `let yi ⇐ str_Ti(xi) in` を束縛し、部分 u1, …, um を左から順に `+_String` で連結する計算 |
 
 部分 u1, …, um は、空でない断片 sj と、各式の値（`String` の式は xi、そのほかは yi）を書いた順に並べたものである。m ≥ 2 なら、`let w1 ⇐ +_String(u1, u2) in let w2 ⇐ +_String(w1, u3) in … +_String(wm−2, um)` のように連結し、最後の連結だけを束縛しない（末尾の計算にする。m = 2 なら `+_String(u1, u2)` だけになる）。m = 0 なら `return ""`、m = 1 なら `return u1` とする。理由: `String` の値は文字列にしても元の値のままであり、空の文字列との連結は元の文字列を返すので、これらを省いても観測できる振る舞いは変わらない。省いた形は処理系の脱糖と同じであり、差分テストで正規化を足さずに比べられる。
+
+書式の区切りを示す表層の構文例は次のとおりである。型検査で適合した書式は、定数式と実行時の補間で使える。構文として解析できても、ラムダのように補間の受理型に属さない式は型検査で拒否する。
+
+```text
+"${amount:.2f} ${number:#08x} ${label:>8s}"
+"${f(value: number):d}"
+"${block bind n: Integer <- number end block:8}"
+"${lambda(x) x:>8}"
+"${"${number:08d}":s}"
+```
+
+##### 解析済みの書式と内部の書式化契約
+
+【決定】`Surface.FormatSpec` は、解析済みの書式の補助定義である。種類 `FormatKind` は省略・d・b・o・x・X・f・s・c、寄せ `FormatAlign` は省略・左・右・中央、符号 `FormatSign` は省略・+ を表す。`FormatSpec` は `kind`・`align`・`sign`、真偽値の `alternate`・`zero`、`Option Nat` の `width`・`precision` を持つ。`none` は省略を表し、明示した精度0と区別する。元の字面と位置は持たない。`InterpPart` は書式なしの三構成 `text`・`stringExpr`・`converted T` に、`formatted T spec` を加える。`exprTypes` は書式付きの部分ごとにTを、`converterTypes` は `converterType T` を一つ加え、`Allowed` は書式の妥当性 `Valid T spec` と残りの部分の条件を要求する。`count` は書式付きの部分を一つと数える。
+
+`SyntaxValid(spec)` は次の条件の積である。
+
+- 全欄が省略・falseである空の指定ではない。
+- 幅を明示した場合は1以上65535以下である。
+- 精度を明示した場合は0以上28以下であり、種類がfである。
+- 寄せを明示した場合は幅がある。
+- `zero` がtrueなら幅があり、寄せは省略されている。
+- `alternate` がtrueなら種類がb・o・x・Xのいずれかである。
+
+`Compatible(T, spec)` は、Tが次の14基本型のいずれかであり、種類と数の指定が型に適合する条件である。種類の省略と幅・寄せは14型すべてに許す。d・b・o・x・Xは八つの整数型（`Integer8`・`Integer16`・`Integer32`・`Integer`・`Byte`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`）、fは`Float`・`Float32`・`Decimal`に限る。sは`String`、cは`Character`に限る。符号+とゼロ埋めは八つの整数型とfが使える三型に限る。`Boolean`にも幅・寄せを許すが、bは許さない。`Unit`、型パラメータ、コレクション、利用者の型は受理しない。`Valid(T, spec)` は `SyntaxValid(spec) ∧ Compatible(T, spec)` である。`Surface.CheckTools` の `formatSyntaxValid`・`formatCompatible`・`formatValid` はこれらをBoolで判定し、それぞれの `_spec` 定理が判定の成功と命題の同値を示す。
+
+書式化の内部頭の補助定義 `FormatSpec.headName(T)` は、14型にそれぞれ `%Format.<基本型名>` を一つ割り当て、そのほかの型には頭を割り当てない。`String`にも `%Format.String` を割り当てる。固定シグネチャ `converterType(T)` は、次の契約名・引数型と、結果型`String`・空エフェクトを持つ。
+
+| 契約名 | value | kind | align | sign | alternate | zero | width | precision |
+|---|---|---|---|---|---|---|---|---|
+| 型 | T | Integer | Integer | Integer | Boolean | Boolean | Integer | Integer |
+
+`constants(spec, h)` は `h : SyntaxValid(spec)` を受け取り、valueの後へ渡す七定数をこの順で作る。kindは省略0・d=1・b=2・o=3・x=4・X=5・f=6・s=7・c=8、alignは省略0・左1・右2・中央3、signは省略0・+=1である。幅は省略を0、精度は省略を−1とし、明示した値は保つ。幅・精度の上限から、各定数が`Integer`の範囲内にあることを導く。`constants_types` は七定数の型の一致を、`parameterNames_wf` は八引数の契約名の整形式を示す。`headName_supported` は頭があることと14型の条件の同値を示す。
+
+書式付きの脱糖も、先にすべての式を左から一度ずつ評価する。その後、書いた順に、書式付きの部分には評価済みの値と七定数を渡して書式化し、書式なしの部分には従来の変換を行い、最後に文字列の部分を左から連結する。`FormatSpec.arguments spec` は妥当な書式の七定数をコアの値へ写す。不正な書式には空列を返して関数を全域に定義するが、`Allowed` によってその場合には型が付かない。`interpolate` の書式付きの場合は次の形である。`rename` は新しい書式化結果の束縛の下へ残る値・頭・蓄積した文字列の変数番号を一つずらす。
+
+```lean
+interpolate op (.formatted T spec :: ps) (v :: vs) (h :: hs) acc =
+  .letIn (h.apply (v :: spec.arguments))
+    (interpolate op ps (Val.renameList (· + 1) vs)
+      (hs.map (CallHead.rename (· + 1)))
+      (Val.renameList (· + 1) acc ++ [.var 0]))
+```
+
+`arguments_typed` は妥当性から七引数の型を示し、`interpolate_typed` は `Allowed` と式・直接の頭の型から、この脱糖の型を保存する。`arguments_scoped`・`arguments_captures` と補間の対応する補題は、追加の定数が型・エフェクト変数や専用セルの捕捉を加えないことを示す。`InterpParts.AtomsIn` は書式付きのTも対象とし、`interpolation_types_atoms` は式列と頭の期待型が同じ原子集合に入ることを示す。`BuilderFree` は従来どおり子の式と頭の列を検査し、書式の注記は子の式を持たない。
+
+実行可能な表層検査の `interpAllowed` は、書式付きの部分について `formatValid T spec` と残りの部分の判定をともに要求する。`interpAllowed_spec` は、書式なしを含む任意の部分列について、判定の成功と `Allowed` の同値を示す。補間の検査はさらに、式と頭の型・個数、頭を得る式の空のエフェクト、頭の直接性、二部分以上の場合の純粋なString加算を検査する。頭の型には、valueと七定数の契約名・引数型・Stringの結果型・空のエフェクトを要求する。補間全体のエフェクトには、値の式のエフェクトだけを集計する。
+
+`interpolation_case` は判定の成功から `E_Interpolation` を導く。`computes_interpolation` はstrict・relaxedの両モードについて、式列と頭の列の計算可能性・有限支持を補間へ接続する。`interpolation_types_atoms` が書式付きの型と固定シグネチャの支持を与えるため、書式の数値や指定を新しい原子として加えずに既存の証明を適用できる。`CheckExamples` は全14型の受理、型との不適合と不正指定、個数・固定シグネチャ・頭の純粋さと直接性・String加算の各条件、および値の式のエフェクトの保存を公開の検査入口で確認する。
+
+交換用の表層はcorpus 14とsidecar 6で `formatted: {ty, spec}` を持つ。specの七欄 `kind`・`align`・`sign`・`alternate`・`zero`・`width`・`precision` はすべて必須であり、幅と精度のnullが省略を表す。種類の文字列はdefault/d/b/o/x/X/f/s/c、寄せはdefault/left/right/center、符号はdefault/plusである。読み込みでは妥当性と型との適合、式と変換頭の個数、頭の直接性を検査し、頭の型と純粋性は既存の表層検査で検査する。書式なしの `stringExpr`・`converted` は従来の形を保つ。旧版の深い位置へ新構成を混ぜた場合も再生成を求めて拒否する。JSONの変換と内部頭の宣言照合は、主定理の対象に含めない。
+
+精度の省略の意味は符号化と分ける。`fixedPrecision(spec, T, decimalScale)` はfと`Float`・`Float32`の組では省略を6、fと`Decimal`の組では入力値のscaleと解釈し、精度を明示した場合はその値を使う。そのほかの組には精度を割り当てない。文字列の解析、数の書式化、表示の幅の算法と、内部頭の実際の宣言の照合は、これらの補助定義と同値証明の対象に含めない。
+
+理由: 書式の範囲・型の適合・定数引数の契約を、型やエフェクトの新しい構成を加えずに定められる。省略を保持することで、型別の既定値と明示した精度0を区別できる。
 
 #### 型クラス
 

@@ -1,0 +1,75 @@
+{
+  "commands": [
+    [
+      "target/release/benitoite",
+      "--version=json"
+    ],
+    [
+      "target/release/benitoite",
+      "--licenses"
+    ]
+  ],
+  "executableSha256": "877b4e6edb9d9a60ab843e04bd1518956386dffa437afe68967a89f28461e1ff",
+  "matchesManuallyCheckedCandidate": true,
+  "version": {
+    "build": {
+      "commit": "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+      "dirty": null,
+      "provenance": {
+        "commit": "git",
+        "dirty": "notCollected"
+      },
+      "target": "aarch64-apple-darwin"
+    },
+    "displayWidthUnicodeVersion": "17.0.0",
+    "formats": {
+      "checkReport": [
+        1
+      ],
+      "diagnostics": [
+        1
+      ],
+      "effectLimit": [
+        1
+      ],
+      "loaderEnvironment": [
+        1
+      ],
+      "skillDocument": [
+        1
+      ],
+      "skillList": [
+        1
+      ],
+      "testCheckReport": [
+        1,
+        2
+      ],
+      "testResults": [
+        1,
+        2
+      ],
+      "version": [
+        1
+      ]
+    },
+    "kind": "version",
+    "loaderEnvironment": {
+      "deniedPrefixes": [
+        "DYLD_",
+        "LD_"
+      ],
+      "errorKind": "InvalidInput",
+      "inherited": "unchanged",
+      "mode": "always",
+      "nameComparison": "asciiCaseInsensitive",
+      "schemaVersion": 1
+    },
+    "name": "benitoite",
+    "schemaVersion": 1,
+    "unicodeVersion": "17.0.0",
+    "version": "0.0.11"
+  },
+  "licensesOutput": "benitoite is licensed under either of the MIT License or the Apache License, Version 2.0, at your option.\nThis build does not include the list of third-party licenses.\n",
+  "exitCode": 0
+}

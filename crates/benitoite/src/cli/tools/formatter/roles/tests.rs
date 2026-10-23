@@ -39,6 +39,7 @@ pub(in crate::cli::tools::formatter) fn pipeline(src: &str) -> Pipeline {
         src.as_bytes(),
         resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut IdGen::new(),
     );
     assert!(

@@ -1392,14 +1392,14 @@ fn check_does_not_run_user_code_or_write_result_lines() {
 fn check_report_and_execution_select_the_same_entries_and_functions() {
     use serde_json::{Value, json};
     let dir = Directory::new("selection-parity");
-    dir.write("suite/package.bnt", "language \"0.0.10\"\n");
+    dir.write("suite/package.bnt", "language \"0.0.11\"\n");
     dir.write("suite/Lib/Text.bnt", "public function message() -> String\n  return \"hello\"\nend function\n@test\nfunction libTest() -> Unit\nend function\n");
     dir.write("suite/tests.bnt", "import Lib.Text\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n");
     dir.write(
         "suite/none.bnt",
         "function helper() -> Unit\nend function\n",
     );
-    dir.write("suite/deps/package.bnt", "language \"0.0.10\"\n");
+    dir.write("suite/deps/package.bnt", "language \"0.0.11\"\n");
     dir.write(
         "suite/deps/tests.bnt",
         "@test\nfunction packageTest() -> Unit\nend function\n",
@@ -1902,7 +1902,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.10\"\n");
+    dir.write("package.bnt", "language \"0.0.11\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -1913,7 +1913,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.10\"\npackage Textkit\nend package\n",
+        "language \"0.0.11\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -2810,7 +2810,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     let dir = Directory::new("doc-environment");
     dir.write(
         "deps/words/package.bnt",
-        "language \"0.0.10\"\npackage Words\nend package\n",
+        "language \"0.0.11\"\npackage Words\nend package\n",
     );
     let imported_doc = documentation(
         " test",
@@ -2825,7 +2825,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
         " test",
         "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n",
         None,
-    ) + "language \"0.0.10\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
+    ) + "language \"0.0.11\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
     let file = dir.write("Docs.bnt", &source);
     let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
     assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
@@ -2834,7 +2834,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     // ディレクトリ選択の共通の根とpackage.bntの依存も引き継ぐ。
     dir.write(
         "package.bnt",
-        "language \"0.0.10\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
+        "language \"0.0.11\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
     );
     fs::remove_file(&file).unwrap();
     dir.write("nested/Docs.bnt", &documentation(" test", "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n", None));
@@ -3084,6 +3084,82 @@ fn log_test_report_and_effect_limits_use_the_canonical_name() {
     assert_eq!(denied.exit, 2, "{} {}", denied.stdout, denied.stderr);
     assert!(denied.stderr.contains("E0512"), "{}", denied.stderr);
     assert!(denied.stderr.contains("Log"), "{}", denied.stderr);
+}
+
+// 関門: testの選択・docの仮想モジュール・許可照合で、共通宣言を適用する範囲を守る。
+// mainのCLI試験では通常testとdocの集約の取り違えを検出できない。差し込み口は増やさない。
+#[test]
+fn file_effects_reach_test_contracts_but_not_outer_doc_examples() {
+    use serde_json::{Value, json};
+    let dir = Directory::new("file-effects");
+    let doc = documentation(
+        " test",
+        "@test\nfunction pure() -> Unit\nend function\n",
+        None,
+    );
+    let source = format!(
+        "{doc}\nimport Benitoite.Unofficial.IO.Console\nuses Console.Write, Log\n@test\nfunction upper() -> Unit\nend function\n"
+    );
+    let file = dir.write("shared.bnt", &source);
+    let out = run(&dir, &["--check", "--doc", "--report=json", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    let report: Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["status"], "ok");
+    assert_eq!(report["complete"], true);
+    assert_eq!(
+        report["targets"][0]["tests"][0]["effects"]["expanded"],
+        json!(["Console.Write", "Log"])
+    );
+    assert_eq!(
+        report["targets"][0]["docExamples"][0]["effects"]["expanded"],
+        json!([])
+    );
+    assert_eq!(
+        report["aggregateEffects"]["expanded"],
+        json!(["Console.Write", "Log"])
+    );
+    let denied = run(&dir, &["--diagnostics=json", "--allow-effects=Log", &file]);
+    assert_eq!(denied.exit, 2, "{} {}", denied.stdout, denied.stderr);
+    let diagnostic: Value = serde_json::from_str(denied.stderr.lines().next().unwrap()).unwrap();
+    assert_eq!(diagnostic["code"], "E0512");
+    assert_eq!(diagnostic["secondary"].as_array().unwrap().len(), 1);
+    let start = diagnostic["secondary"][0]["start"]["offset"]
+        .as_u64()
+        .unwrap() as usize;
+    let end = diagnostic["secondary"][0]["end"]["offset"]
+        .as_u64()
+        .unwrap() as usize;
+    assert_eq!(&source[start..end], "Console.Write");
+    let allowed = run(&dir, &["--doc", "--allow-effects=Console.Write,Log", &file]);
+    assert_eq!(allowed.exit, 0, "{} {}", allowed.stdout, allowed.stderr);
+
+    // 外側からの継承とは別に、仮想モジュール自身の宣言を先頭で読み取れることを確かめる。
+    let doc = documentation(
+        " test",
+        "uses Log\n@test\nfunction logged() -> Unit\nend function\n",
+        None,
+    );
+    let file = dir.write(
+        "doc-effects.bnt",
+        &format!("{doc}\nfunction helper() -> Unit\nend function\n"),
+    );
+    let out = run(&dir, &["--check", "--doc", "--report=json", &file]);
+    assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
+    let report: Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["status"], "ok");
+    assert_eq!(report["complete"], true);
+    assert_eq!(
+        report["targets"][0]["docExamples"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    assert_eq!(
+        report["targets"][0]["docExamples"][0]["effects"]["expanded"],
+        json!(["Log"])
+    );
+    assert_eq!(report["aggregateEffects"]["expanded"], json!(["Log"]));
 }
 
 // 関門: hereの展開済みレコードと標準のLog操作を実ハンドラへ渡し、既定処理を起動せず観測する。

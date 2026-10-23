@@ -1,6 +1,6 @@
 //! run と test の宣言上限と許す原子的エフェクトを照合する（設計書 06-01「実行前のエフェクト上限の照合」）。
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 use crate::diag::{DiagBuilder, Diagnostic, codes::DiagCode};
 use crate::types::builtin::{BUILTIN_EFFECTS, BuiltinEffectId, effect_name};
@@ -46,17 +46,23 @@ pub(super) fn check(contract: &FunctionContract, allowed: &EffectLimit) -> Optio
     if missing.is_empty() {
         return None;
     }
-    Some(
-        DiagBuilder::new(DiagCode::E0512)
-            .arg("function", contract.name.clone())
-            .arg("missing", display(missing))
-            .arg("allowed", display(allowed.0.iter().copied()))
-            .primary(contract.location)
-            .note("missing")
-            .note("allowed")
-            .help("review")
-            .build(),
-    )
+    let mut diagnostic = DiagBuilder::new(DiagCode::E0512)
+        .arg("function", contract.name.clone())
+        .arg("missing", display(missing.iter().copied()))
+        .arg("allowed", display(allowed.0.iter().copied()))
+        .primary(contract.location)
+        .note("missing")
+        .note("allowed")
+        .help("review");
+    // IO.Allの展開先が複数不足しても、同じ追加元は一度だけ示す
+    // （設計書 06-01「実行前のエフェクト上限の照合」）。
+    let mut seen = HashSet::new();
+    for (effect, span) in &contract.file_origins {
+        if missing.contains(effect) && seen.insert(*span) {
+            diagnostic = diagnostic.secondary(*span, "file");
+        }
+    }
+    Some(diagnostic.build())
 }
 
 fn display(effects: impl IntoIterator<Item = BuiltinEffectId>) -> String {

@@ -111,6 +111,7 @@ fn standard_doc_examples_behave_as_written() {
                 module.text.as_bytes(),
                 newline::resolve_newlines(lexed.tokens),
                 lexed.comments,
+                lexed.pending,
                 &mut IdGen::default(),
             );
             assert!(

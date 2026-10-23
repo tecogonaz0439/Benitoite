@@ -62,6 +62,7 @@ pub(super) struct Walker<'a> {
     direct_blank: Vec<bool>,
     top: Vec<TopRange>,
     lambdas: Vec<LambdaSpans>,
+    formats: Vec<Span>,
 }
 
 impl<'a> Walker<'a> {
@@ -113,6 +114,7 @@ impl<'a> Walker<'a> {
             direct_blank: vec![false; len],
             top: Vec::new(),
             lambdas: Vec::new(),
+            formats: Vec::new(),
         }
     }
 
@@ -309,6 +311,11 @@ impl<'a> Walker<'a> {
         for import in &module.imports {
             self.element(import.span, Place::Top);
             self.top_range(import.span, TopKind::Import);
+        }
+        if let Some(uses) = &module.file_uses {
+            self.element(uses.span, Place::Top);
+            self.top_range(uses.span, TopKind::Other);
+            self.uses(Some(uses));
         }
         for decl in &module.decls {
             self.top_decl(decl);
@@ -684,6 +691,9 @@ impl<'a> Walker<'a> {
             Expr::Interp(e) => {
                 for segment in &e.segments {
                     self.expr(&segment.expr);
+                    if let Some(format) = &segment.format {
+                        self.formats.push(format.span);
+                    }
                 }
             }
             Expr::Unit(e) => {
@@ -1190,6 +1200,15 @@ impl<'a> Walker<'a> {
             let inner = level_of_line(&levels, open).saturating_add(1);
             if let Some(role) = roles.get_mut(close) {
                 role.inner_level = Some(inner);
+            }
+        }
+        // 書式の数字や +・#・^ は式の字句ではない。コロンと閉じの前も密着させる。
+        // 有効な書式内には空白がないので、字面を写して空白を補わなければ全体を保持できる。
+        for span in &self.formats {
+            let start = self.tokens.partition_point(|t| t.span.start < span.start);
+            let end = self.tokens.partition_point(|t| t.span.start <= span.end);
+            for role in roles.iter_mut().take(end).skip(start) {
+                role.space_before = false;
             }
         }
         RoleTable {

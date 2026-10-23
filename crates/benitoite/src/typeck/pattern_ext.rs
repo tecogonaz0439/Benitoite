@@ -201,10 +201,13 @@ fn lower(ctx: &Body<'_, '_>, p: &Pattern) -> Option<Pat> {
     }) {
         return None;
     }
+    if matches!(p, Pattern::Wildcard(_) | Pattern::Var(_)) {
+        return Some(Pat::Wild);
+    }
     if ctx
         .expr_types
         .get(p.id())
-        .is_some_and(|ty| ctx.solver.contains_error(ty))
+        .is_some_and(|ty| matches!(ctx.solver.zonk(ty), ITy::Error))
     {
         return None;
     }
@@ -301,9 +304,11 @@ fn lower_ctor(ctx: &Body<'_, '_>, p: &crate::syntax::ast::CtorPat) -> Option<Pat
 pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
     let view = patterns::coverage_view(ctx.decls.modules, &ctx.decls.out.adts, ctx.module);
     for (m, ty) in std::mem::take(&mut ctx.matches) {
-        if ctx.solver.contains_error(&ty) {
+        let zonked = ctx.solver.zonk(&ty);
+        if matches!(zonked, ITy::Error) {
             continue;
         }
+        let partial = super::solve::has_error(&zonked);
         let Some(arms) = m
             .arms
             .iter()
@@ -321,7 +326,14 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
         else {
             continue;
         };
-        let ty = ctx.solver.finalize(&ty, ctx.decls.resolved);
+        if partial && !arms.iter().flat_map(|a| &a.alts).all(outer_pattern_only) {
+            continue;
+        }
+        let ty = if partial {
+            ctx.solver.diagnostic_type(&ty)
+        } else {
+            ctx.solver.finalize(&ty, ctx.decls.resolved)
+        };
         let Ok(checked) = patterns::check_match_diagnostic(&ty, &arms, &ctx.decls.out.adts, &view)
         else {
             ctx.diagnostic(coverage_stopped(
@@ -397,15 +409,25 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
         }
     }
     for (pattern, ty) in std::mem::take(&mut ctx.bindings) {
-        if matches!(pattern, Pattern::Var(_) | Pattern::Wildcard(_))
-            || ctx.solver.contains_error(&ty)
-        {
+        if matches!(pattern, Pattern::Var(_) | Pattern::Wildcard(_)) {
+            continue;
+        }
+        let zonked = ctx.solver.zonk(&ty);
+        if matches!(zonked, ITy::Error) {
             continue;
         }
         let Some(pat) = lower(ctx, &pattern) else {
             continue;
         };
-        let finalized = ctx.solver.finalize(&ty, ctx.decls.resolved);
+        let partial = super::solve::has_error(&zonked);
+        if partial && !outer_pattern_only(&pat) {
+            continue;
+        }
+        let finalized = if partial {
+            ctx.solver.diagnostic_type(&ty)
+        } else {
+            ctx.solver.finalize(&ty, ctx.decls.resolved)
+        };
         let Ok(checked) = patterns::check_binding(&finalized, &pat, &ctx.decls.out.adts, &view)
         else {
             ctx.diagnostic(coverage_stopped(
@@ -478,6 +500,25 @@ pub(super) fn effect_failure(
         .primary(origin)
         .help("body")
         .build()
+}
+
+// 部分が未知の場合は、その部分を判定しないパターンだけで外側を検査する。
+// 内側の真偽値等を仮の型で有限と見なし、網羅性を誤判定することを避ける。
+fn outer_pattern_only(pat: &Pat) -> bool {
+    match pat {
+        Pat::Wild => true,
+        Pat::Ctor { args, .. } => args.iter().all(|p| matches!(p, Pat::Wild)),
+        Pat::List { before, after, .. } => {
+            before.iter().chain(after).all(|p| matches!(p, Pat::Wild))
+        }
+        Pat::Integer(_)
+        | Pat::Character(_)
+        | Pat::String(_)
+        | Pat::Boolean(_)
+        | Pat::Unit
+        | Pat::IntegerRange(..)
+        | Pat::CharacterRange(..) => false,
+    }
 }
 
 #[cfg(test)]
@@ -871,7 +912,7 @@ mod tests {
                     files.extend([
                         (
                             "package.bnt",
-                            "language \"0.0.10\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                            "language \"0.0.11\"\ndependency Dep\n path \"dep\"\nend dependency\n",
                         ),
                         (
                             "dep/package.bnt",

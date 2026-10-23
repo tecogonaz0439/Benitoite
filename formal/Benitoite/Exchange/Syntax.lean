@@ -140,11 +140,40 @@ inductive DictEv where
   | super (dict : DictEv) (cls : String)
   deriving ToJson, FromJson, Repr
 
+/-- 書式の七指定を省略も含めて交換する。幅と精度は必須のnullable欄である。 -/
+structure FormatSpec where
+  kind : String
+  align : String
+  sign : String
+  alternate : Bool
+  zero : Bool
+  width : Option Nat
+  precision : Option Nat
+  deriving ToJson, FromJson, Repr
+
 inductive InterpPart where
   | text (value : String)
   | stringExpr
   | converted (ty : Ty)
-  deriving ToJson, FromJson, Repr
+  | formatted (ty : Ty) (spec : FormatSpec)
+  deriving ToJson, Repr
+
+/-- 新構成の欠落・余剰欄は、指定の省略として読み替えない。 -/
+instance : FromJson InterpPart := ⟨fun j => do
+  if let .ok o := j.getObjVal? "formatted" then
+    if (← j.getObj?).toArray.size != 1 || (← o.getObj?).toArray.size != 2 then
+      throw "invalid formatted interpolation fields"
+    let raw ← o.getObjVal? "spec"
+    let keys := ["kind", "align", "sign", "alternate", "zero", "width", "precision"]
+    let obj ← raw.getObj?
+    if obj.toArray.size != keys.length then throw "invalid format spec fields"
+    for k in keys do
+      if !obj.contains k then throw s!"missing format spec field: {k}"
+    return .formatted (← o.getObjValAs? Ty "ty") (← fromJson? raw)
+  if let .ok o := j.getObjVal? "text" then return .text (← o.getObjValAs? String "value")
+  if j == toJson "stringExpr" then return .stringExpr
+  if let .ok o := j.getObjVal? "converted" then return .converted (← o.getObjValAs? Ty "ty")
+  throw "unknown interpolation part"⟩
 
 /-- corpus 13 の専用分類。通常の Ty へ混ぜない。 -/
 inductive BuilderKind where

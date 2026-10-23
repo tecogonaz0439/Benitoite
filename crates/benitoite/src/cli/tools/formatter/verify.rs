@@ -92,6 +92,7 @@ fn check_syntax(
         text,
         tokens,
         lexed.comments,
+        lexed.pending,
         &mut IdGen::new(),
     );
     if let Some(d) = parsed.diagnostics.iter().find(|d| is_syntax_error(d)) {

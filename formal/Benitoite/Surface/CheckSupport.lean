@@ -120,7 +120,7 @@ mutual
 end
 
 def InterpParts.AtomsIn (atoms : List Atom) (parts : List InterpPart) : Prop :=
-  ∀ t, .converted t ∈ parts → Ty.AtomsIn atoms t
+  ∀ t, (.converted t ∈ parts ∨ ∃ s, .formatted t s ∈ parts) → Ty.AtomsIn atoms t
 
 mutual
   def Expr.AtomsIn (atoms : List Atom) : Expr → Prop

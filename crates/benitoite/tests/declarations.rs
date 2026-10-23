@@ -11,6 +11,83 @@ use benitoite::{
 use serde_json::{Value, json};
 use std::path::PathBuf;
 
+// 関門: 書式の後検査が回復の未知だけを抑え、既知の構造・自身の契約・正常な結果と、
+// どの型にも適合しない書式の診断を残す。
+// zonk後の型だけを見る退行、部分の誤りで全体を抑える退行を捕まえる。
+// C2の書式なしの例はE0468を通らない。公開入口を使い差し込み口は増やさない。
+#[test]
+fn interpolation_formats_preserve_recovery() {
+    use benitoite::diag::DiagCode as C;
+    for cause in ["SourceLocation.here", "1(2)", "1(value: 2)"] {
+        for (body, incompatible) in [
+            (
+                "bind value <- ERROR\n bind n: Integer <- value\n bind s: String <- value\n return \"${value:.2f}\"",
+                false,
+            ),
+            ("bind value <- [ERROR]\n return \"${value:.2f}\"", true),
+            (
+                "bind value: String <- ERROR\n return \"${value:.2f}\"",
+                true,
+            ),
+            ("bind value <- known(ERROR)\n return \"${value:.2f}\"", true),
+            (
+                "bind value <- Box(value: ERROR)\n return \"${value:.2f}\"",
+                true,
+            ),
+            (
+                "bind value <- Box(value: ERROR)\n bind item <- Box.value(value)\n return \"${item:.2f}\"",
+                false,
+            ),
+            ("bind value <- ERROR\n return \"${value:+s}\"", true),
+        ] {
+            let body = body.replace("ERROR", cause);
+            let source = format!(
+                "record Box[T]\n value: T\nend record\nfunction known[T](value: T) -> String\n return \"ok\"\nend function\nfunction sample() -> String\n {body}\nend function\n"
+            );
+            let checked = pipeline::check_text(
+                "format-recovery.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+            );
+            let errors: Vec<_> = checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .collect();
+            assert_eq!(
+                errors.len(),
+                if incompatible { 2 } else { 1 },
+                "{source}: {errors:#?}"
+            );
+            assert!(
+                errors.iter().any(|d| d.code
+                    == Some(if cause == "SourceLocation.here" {
+                        C::E0467
+                    } else {
+                        C::E0403
+                    })),
+                "{source}: {errors:#?}"
+            );
+            let formats: Vec<_> = errors.iter().filter(|d| d.code == Some(C::E0468)).collect();
+            assert_eq!(
+                formats.len(),
+                usize::from(incompatible),
+                "{source}: {errors:#?}"
+            );
+            if let Some(diag) = formats.first() {
+                assert_eq!(
+                    diag.primary.as_ref().unwrap().span.start.0 as usize,
+                    source.rfind(':').unwrap()
+                );
+            }
+            assert!(checked.program.is_none());
+        }
+    }
+}
+
 struct Project(PathBuf);
 impl Project {
     fn new() -> Self {
@@ -172,6 +249,11 @@ fn declarations_do_not_resolve_check_or_evaluate_bodies() {
 fn declaration_errors_are_rejected_at_the_same_stage_as_check() {
     use benitoite::diag::DiagCode as C;
     for (source, expected) in [
+        // 関門: 宣言だけの入口でも、ファイルの効果の型引数の誤りを通常の検査と同じ位置で拒否する。
+        (
+            "uses Log[Integer]\nfunction f() -> Unit\n()\nend function\n",
+            C::E0513,
+        ),
         ("record Bad\n field: Missing\nend record\n", C::E0301),
         (
             "record Bad\n field: List[String, Integer]\nend record\n",
@@ -246,7 +328,7 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     c["targets"][0]["fields"] = json!({"name":{"encode":"Helpers.text","decode":"Helpers.text"},"opaque":{"encode":"Benitoite.Unofficial.Failure.toResult","decode":"Benitoite.Unofficial.Failure.toResult"}});
     let bytes = serde_json::to_vec(&c).unwrap();
     let first = derive_inventory::inventory(&p.0, &c, &bytes).unwrap();
-    assert_eq!(first["version"], 2);
+    assert_eq!(first["version"], 3);
     let target = &first["targets"][0];
     let failure = &target["customFunctions"]["Benitoite.Unofficial.Failure.toResult"];
     assert_eq!(failure["name"], "Benitoite.Failure.toResult");
@@ -633,4 +715,981 @@ fn log_standard_handlers_keep_the_outer_effect_contract() {
             );
         }
     }
+}
+
+// 関門: 通常のファイルの合併の成功と package.bnt の拒否は読み込みの公開境界に固有である。
+#[test]
+fn file_uses_loading_merges_functions_and_rejects_config_declarations() {
+    use benitoite::diag::DiagCode as C;
+    for (path, body, expected) in [
+        (
+            "main.bnt",
+            "uses Log\nfunction main() -> Unit\n()\nend function\n",
+            None,
+        ),
+        (
+            "Helper.bnt",
+            "uses Log\npublic function help() -> Unit\n()\nend function\n",
+            None,
+        ),
+        ("package.bnt", "uses Log\n", Some(C::E0912)),
+    ] {
+        let mut files: Vec<(&str, &[u8])> = vec![
+            (
+                "main.bnt",
+                b"import Helper\nfunction main() -> Unit\n()\nend function\n",
+            ),
+            (
+                "Helper.bnt",
+                b"public function help() -> Unit\n()\nend function\n",
+            ),
+        ];
+        files.retain(|(name, _)| *name != path);
+        files.push((path, body.as_bytes()));
+        // 最初の要素を入口にする公開 API の規則を保つ。
+        files.sort_by_key(|(name, _)| *name != "main.bnt");
+        let result = pipeline::check_files(
+            &files,
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).collect();
+        assert_eq!(
+            errors.iter().filter_map(|d| d.code).collect::<Vec<_>>(),
+            expected.into_iter().collect::<Vec<_>>(),
+            "{path}: {errors:?}"
+        );
+        assert_eq!(result.program.is_some(), expected.is_none());
+        if let Some(error) = errors.first() {
+            let span = error.primary.as_ref().unwrap().span;
+            assert_eq!(span.start.0, 0);
+            assert!(span.end.0 >= 4);
+        }
+    }
+    let result = pipeline::check_text(
+        "main.bnt",
+        b"function main() -> Unit\n()\nend function\n",
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert!(result.program.is_some(), "{:?}", result.diagnostics);
+}
+
+// 関門: 公開の宣言収集を境界に、元AST・合併後の型・NoFail・元位置の独立した契約を照合する。
+// 個別usesだけの既存検査では、ファイル追加を後回しにする退行と入れ子への誤追加を捕まえない。
+#[test]
+fn file_uses_inventory_keeps_original_ast_and_effect_origins() {
+    use benitoite::syntax::ast::Item;
+    use benitoite::types::{EffVar, Ty};
+    let p = Project::new();
+    p.write("main.bnt", "import Benitoite.Unofficial.Failure\nuses Failure.Fail[Alias]\ntype Alias = String\nfunction forward[effect E](body: function() -> Integer uses E) -> Integer uses E, Failure.Fail[String]\n return body()\nend function\ntrait Value[T]\n function value(x: T) -> T\nend trait\nimplement Value[Integer]\n function value(x: Integer) -> Integer\n return x\n end function\nend implement\nconst answer: Integer = 42\neffect Ask\n function ask() -> Integer\nend effect\n");
+    let result = collect_declarations(&p.entry(), &RealFs);
+    assert!(result.inventory.is_some(), "{:?}", result.diagnostics);
+    let inv = result.inventory.unwrap();
+    let ast = inv
+        .asts
+        .iter()
+        .find(|a| a.file == inv.modules.modules[0].id.file())
+        .unwrap();
+    let file = ast.file_uses.as_ref().unwrap();
+    let f = ast
+        .decls
+        .iter()
+        .find_map(|d| match &d.item {
+            Item::Fn(f) => Some(f),
+            Item::Const(_)
+            | Item::Data(_)
+            | Item::Alias(_)
+            | Item::ExternalType(_)
+            | Item::Record(_)
+            | Item::Trait(_)
+            | Item::Effect(_)
+            | Item::Impl(_)
+            | Item::Error(_) => None,
+        })
+        .unwrap();
+    assert_eq!(f.uses.as_ref().unwrap().effects.len(), 2);
+    let binding = *inv.resolved.decls.get(f.id).unwrap();
+    let scheme = inv.types.decl_types.get(binding).unwrap();
+    assert_eq!(scheme.effects.failures.len(), 1);
+    assert_eq!(scheme.no_fail, [EffVar(0)]);
+    let Ty::Fn(callback) = &scheme.params[0] else {
+        panic!("callback type")
+    };
+    assert!(callback.effects.failures.is_empty());
+    assert_eq!(callback.effects.vars, [EffVar(0)]);
+    let effective = inv.types.effective_effects.get(binding).unwrap();
+    assert_eq!(effective.effects, scheme.effects);
+    assert_eq!(effective.origins.len(), 3);
+    let origin = effective.origins.iter().find(|o| o.file).unwrap();
+    assert_eq!(origin.span, file.effects[0].span);
+    assert_eq!(origin.effects.failures, scheme.effects.failures);
+    for name in ["value", "ask", "answer"] {
+        let bindings: Vec<_> = inv
+            .resolved
+            .bindings
+            .iter()
+            .filter(|(_, b)| b.module == inv.modules.modules[0].id && b.name == name)
+            .collect();
+        assert_eq!(bindings.len(), if name == "value" { 2 } else { 1 });
+        for (id, b) in bindings {
+            use benitoite::resolve::BindingKind;
+            assert!(matches!(
+                (name, b.kind),
+                (
+                    "value",
+                    BindingKind::Method { .. } | BindingKind::ImplFn { .. }
+                ) | ("ask", BindingKind::Op { .. })
+                    | ("answer", BindingKind::Const)
+            ));
+            let scheme = inv.types.decl_types.get(id);
+            assert!(scheme.is_some(), "missing scheme: {name} {:?}", b.kind);
+            assert!(scheme.unwrap().effects.failures.is_empty());
+        }
+    }
+}
+
+// 関門: 共通宣言の公開性は最も広い公開範囲で一度だけ診断し、修正を一括適用できる。
+// 公開関数一つの既存対照では、同じ挿入の重複と公開範囲の取り違えを捕まえない。
+#[test]
+fn file_uses_visibility_reports_once_and_repairs_all_public_functions() {
+    use benitoite::diag::DiagCode as C;
+    for (effect_visibility, first, second, expected) in [
+        ("", "public", "public", true),
+        ("", "public(package)", "public", true),
+        ("", "public", "public(package)", true),
+        ("", "public(package)", "public(package)", true),
+        ("public(package) ", "public(package)", "public", true),
+        (
+            "public(package) ",
+            "public(package)",
+            "public(package)",
+            false,
+        ),
+    ] {
+        let source = format!(
+            "uses Hidden\n{effect_visibility}effect Hidden\n function ask() -> Unit\nend effect\n{first} function f() -> Unit\n()\nend function\n{second} function g() -> Unit\n()\nend function\n"
+        );
+        let options = CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        };
+        let checked = pipeline::check_text("visibility.bnt", source.as_bytes(), options);
+        let errors: Vec<_> = checked
+            .diagnostics
+            .iter()
+            .filter(|d| d.is_error())
+            .collect();
+        assert!(
+            errors.iter().all(|d| d.code == Some(C::E0329)),
+            "{errors:?}"
+        );
+        let mut edits: Vec<_> = errors
+            .iter()
+            .flat_map(|d| &d.helps)
+            .flat_map(|h| &h.edits)
+            .collect();
+        edits.sort_by_key(|e| std::cmp::Reverse(e.span.start));
+        let mut repaired = source.clone();
+        for edit in &edits {
+            repaired.replace_range(
+                edit.span.start.0 as usize..edit.span.end.0 as usize,
+                &edit.replacement,
+            );
+        }
+        let fixed = pipeline::check_text("visibility.bnt", repaired.as_bytes(), options);
+        assert!(
+            fixed.program.is_some(),
+            "{repaired}: {:?}",
+            fixed.diagnostics
+        );
+        assert_eq!(errors.len(), usize::from(expected), "{source}: {errors:?}");
+        assert_eq!(edits.len(), usize::from(expected));
+        for error in errors {
+            assert!(error.helps.iter().all(|h| !h.message.contains("handle")));
+            assert!(error.helps.iter().any(|h| h.message == "remove the effect from the file-level uses or move the public functions to a file without that declaration"));
+            assert!(error.notes.iter().any(|n| n == "the file-level uses adds this effect to every public top-level function in the file"));
+            let span = error.primary.as_ref().unwrap().span;
+            assert_eq!(
+                &source[span.start.0 as usize..span.end.0 as usize],
+                "Hidden"
+            );
+        }
+    }
+}
+
+// 関門: リスト内部の重複とリスト間の合併、入口・外部・公開性を本物の検査で区別する。
+#[test]
+fn file_uses_contracts_preserve_existing_restrictions() {
+    use benitoite::diag::DiagCode as C;
+    let cases = [
+        (
+            "uses Log\nfunction f() -> Unit uses Log\n()\nend function\n",
+            vec![],
+        ),
+        (
+            "uses Log, Log\nfunction f() -> Unit\n()\nend function\nfunction g() -> Unit\n()\nend function\n",
+            vec![C::E0419],
+        ),
+        (
+            "uses Log\nfunction f() -> Unit uses Log, Log\n()\nend function\n",
+            vec![C::E0419],
+        ),
+        (
+            "uses Unknown\nfunction f() -> Unit\n()\nend function\nfunction g() -> Unit\n()\nend function\n",
+            vec![C::E0301],
+        ),
+        (
+            "uses E\nfunction f[effect E](body: function() -> Unit uses E) -> Unit uses E\nbody()\nend function\n",
+            vec![C::E0301],
+        ),
+        (
+            "import Benitoite.Unofficial.Failure\nuses Failure.Fail[T]\nfunction f[T](x: T) -> T\nreturn x\nend function\n",
+            vec![C::E0301],
+        ),
+        (
+            "import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\nfunction f() -> Unit uses Failure.Fail[Integer]\n()\nend function\n",
+            vec![C::E0514],
+        ),
+        (
+            "uses Hidden\neffect Hidden\nfunction ask() -> Unit\nend effect\npublic function f() -> Unit\n()\nend function\n",
+            vec![C::E0329],
+        ),
+        (
+            "uses Hidden\neffect Hidden\nfunction ask() -> Unit\nend effect\nfunction main() -> Unit\nhandle ask() with case ask() -> resume(()) end handle\nend function\n",
+            vec![C::E0506],
+        ),
+        (
+            "uses Hidden\neffect Hidden\nfunction ask() -> Unit\nend effect\nfunction main() -> Unit uses Hidden\nhandle ask() with case ask() -> resume(()) end handle\nend function\n",
+            vec![C::E0506],
+        ),
+        (
+            "import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\n@test\nfunction sample() -> Unit\n()\nend function\n",
+            vec![C::E0506],
+        ),
+        (
+            "import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\nfunction main() -> Unit uses Failure.Fail[String]\n()\nend function\n",
+            vec![C::E0506],
+        ),
+        (
+            "import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\n@test\nfunction sample() -> Unit uses Failure.Fail[String]\n()\nend function\n",
+            vec![C::E0506],
+        ),
+        (
+            "import Benitoite.Assert\nuses Assert.Check\nfunction main() -> Unit\n()\nend function\n",
+            vec![C::E0415],
+        ),
+        (
+            "import Benitoite.Assert\nuses Assert.Check\nfunction main() -> Unit uses Assert.Check\n()\nend function\n",
+            vec![C::E0415],
+        ),
+        (
+            "uses Log\nfunction f() -> (function() -> Unit)\nreturn lambda() return () end lambda\nend function\nfunction g() -> Unit\nbind local: function() -> Unit <- lambda() return () end lambda\nlocal()\nend function\n",
+            vec![],
+        ),
+        (
+            "uses State\nfunction main() -> Unit\n()\nend function\n",
+            vec![],
+        ),
+        (
+            "import Benitoite.Unofficial.IO.Console\nuses IO.All, Log\nfunction f() -> Unit uses Console.Write, Log\nConsole.writeLine(\"ok\")\nend function\n",
+            vec![],
+        ),
+        (
+            "import Benitoite.StringBuilder\nuses State\nfunction f() -> String\nbind b: StringBuilder <- StringBuilder.new()\nStringBuilder.append(builder: b, text: \"value\")\nreturn StringBuilder.copy(b)\nend function\nfunction g() -> Unit\nbind pure: function() -> String <- f\nbind _ <- pure()\nend function\n",
+            vec![C::E0401],
+        ),
+    ];
+    for (source, expected) in cases {
+        let checked = pipeline::check_text(
+            "file-contract.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        assert_eq!(checked.program.is_some(), expected.is_empty(), "{source}");
+        for diagnostic in checked.diagnostics.iter().filter(|d| d.is_error()) {
+            if diagnostic.code == Some(C::E0506) {
+                assert!(
+                    diagnostic
+                        .helps
+                        .iter()
+                        .any(|h| h.message.contains("file-level uses")),
+                    "{diagnostic:?}"
+                );
+                assert!(
+                    diagnostic
+                        .helps
+                        .iter()
+                        .all(|h| !h.message.contains("Failure.toResult")),
+                    "{diagnostic:?}"
+                );
+                let span = diagnostic.primary.as_ref().unwrap().span;
+                assert!(
+                    (span.start.0 as usize) < source.find("function").unwrap(),
+                    "{diagnostic:?}"
+                );
+            }
+            if diagnostic.code == Some(C::E0415) {
+                let span = diagnostic.primary.as_ref().unwrap().span;
+                assert_eq!(
+                    span.start.0 as usize,
+                    source.find("uses Assert.Check").unwrap() + 5
+                );
+            }
+            if diagnostic.code == Some(C::E0514) {
+                let label = diagnostic
+                    .secondary
+                    .iter()
+                    .find(|label| label.text == "the function's uses is declared here")
+                    .unwrap();
+                assert_eq!(
+                    &source[label.span.start.0 as usize..label.span.end.0 as usize],
+                    "uses Failure.Fail[Integer]"
+                );
+            }
+        }
+        if source.contains("uses Hidden")
+            || source.contains("@test")
+            || source.contains("Fail[Integer]")
+        {
+            let error = checked.diagnostics.iter().find(|d| d.is_error()).unwrap();
+            let span = error.primary.as_ref().unwrap().span;
+            assert!(
+                span.start.0 < u32::try_from(source.find("function").unwrap()).unwrap(),
+                "{error:?}"
+            );
+        }
+    }
+}
+
+// 関門: import先の追加はその関数の契約だけに残り、呼び出し元全体へ再適用しない。
+#[test]
+fn file_uses_imports_and_higher_order_values_use_merged_contracts() {
+    use benitoite::diag::DiagCode as C;
+    for (body, effects, expected) in [
+        ("()", "", vec![]),
+        ("Helper.f()", "", vec![C::E0501]),
+        ("Helper.f()", "uses Log", vec![]),
+        (
+            "bind f: function() -> Unit <- Helper.f\nf()",
+            "",
+            vec![C::E0401],
+        ),
+    ] {
+        let source =
+            format!("import Helper\nfunction main() -> Unit {effects}\n{body}\nend function\n");
+        let result = pipeline::check_files(
+            &[
+                ("main.bnt", source.as_bytes()),
+                (
+                    "Helper.bnt",
+                    b"uses Log\npublic function f() -> Unit\n()\nend function\n",
+                ),
+            ],
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{source}: {:?}",
+            result.diagnostics
+        );
+    }
+}
+
+// 関門: 外部の実体を読まない宣言収集でも、合併後のStateちょうど一つという契約を守る。
+#[test]
+fn file_uses_external_declarations_check_the_effective_contract() {
+    use benitoite::diag::DiagCode as C;
+    for (file, individual, resource, expected) in [
+        ("", "", false, None),
+        ("uses Log\n", "", false, Some(C::E0812)),
+        ("uses Log\n", "uses Log", false, Some(C::E0812)),
+        ("uses State\n", "", true, None),
+        ("uses State\n", "uses State", true, None),
+        ("uses Log\n", "uses State", true, Some(C::E0812)),
+        ("uses State, Log\n", "", true, Some(C::E0812)),
+    ] {
+        let p = Project::new();
+        let (decl, ret) = if resource {
+            (
+                "@external(\"wasm\", \"x.wasm\", \"bnt:test/counter#cell\")\ntype Cell\n",
+                "Cell",
+            )
+        } else {
+            ("", "Integer")
+        };
+        let source = format!(
+            "{file}{decl}@external(\"wasm\", \"x.wasm\", \"make\")\nfunction make() -> {ret} {individual}\n"
+        );
+        p.write("main.bnt", &source);
+        let result = collect_declarations(&p.entry(), &RealFs);
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected.into_iter().collect::<Vec<_>>(),
+            "{source}: {:?}",
+            result.diagnostics
+        );
+        if expected.is_some() {
+            let error = result.diagnostics.iter().find(|d| d.is_error()).unwrap();
+            assert!(
+                error.primary.as_ref().unwrap().span.start.0 < u32::try_from(file.len()).unwrap()
+            );
+            assert!(error.helps.iter().all(|h| h.edits.is_empty()), "{error:?}");
+        }
+    }
+}
+
+// 関門: 合併したFailと行変数から得たNoFailを、別モジュールでの具体化にも引き継ぐ。
+#[test]
+fn file_uses_failure_no_fail_is_enforced_at_calls() {
+    use benitoite::diag::DiagCode as C;
+    let library = "import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\npublic function load[effect E](body: function() -> Result[String, String] uses E) -> String uses E\n return Failure.fromResult(body())\nend function\n";
+    for (file, expected) in [
+        ("", vec![C::E0501, C::E0515]),
+        ("uses Failure.Fail[String]\n", vec![]),
+    ] {
+        let source = format!(
+            "import Load\nimport Benitoite.Unofficial.Failure\n{file}function use[effect E](body: function() -> Result[String, String] uses E) -> String uses E\n return Load.load(body)\nend function\n"
+        );
+        let result = pipeline::check_files(
+            &[
+                ("main.bnt", source.as_bytes()),
+                ("Load.bnt", library.as_bytes()),
+            ],
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            result
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{source}: {:?}",
+            result.diagnostics
+        );
+    }
+}
+
+// 関門: 診断済みの未確定値だけを抑え、束縛自身の契約と独立した誤りを残す。
+// 既存の宣言由来の検査には、位置の事前展開と呼び出し失敗からの束縛がない。
+// 公開の検査入口で診断の位置まで確かめ、内部のグラフの形には依存しない。
+#[test]
+fn diagnosed_binding_recovery_preserves_own_contracts() {
+    use benitoite::diag::DiagCode as C;
+    for (error, cause) in [
+        ("SourceLocation.here", C::E0467),
+        ("1(2)", C::E0403),
+        ("1(value: 2)", C::E0403),
+    ] {
+        for (binding, subject, own_contract) in [
+            ("bind f <- ERROR\n bind n: Integer <- f", "f", false),
+            (
+                "bind f <- ERROR\n bind alias <- f\n bind n: Integer <- alias",
+                "alias",
+                false,
+            ),
+            ("bind f <- ERROR\n bind _ <- idInt(f)", "f", false),
+            ("bind f: Integer <- ERROR", "f", true),
+            ("bind f <- ERROR\n bind n: Integer <- f", "n", true),
+        ] {
+            let binding = binding.replace("ERROR", error);
+            let usage = if own_contract {
+                format!("bind wrong: String <- {subject}")
+            } else {
+                format!(
+                    "match {subject} with\n case Option.Some(v) -> ()\n case Option.None -> ()\n end match"
+                )
+            };
+            let source = format!(
+                "function idInt(value: Integer) -> Integer\n return value\nend function\nfunction main() -> Unit\n {binding}\n {usage}\n bind independent: Integer <- \"wrong\"\nend function\nfunction other() -> Unit\n bind independent: Integer <- \"wrong\"\nend function\n"
+            );
+            let checked = pipeline::check_text(
+                "main.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: true,
+                    deny_warnings: false,
+                },
+            );
+            assert!(checked.program.is_none(), "{source}");
+            let errors: Vec<_> = checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .collect();
+            assert_eq!(
+                errors.iter().filter(|d| d.code == Some(cause)).count(),
+                1,
+                "{source}: {errors:#?}"
+            );
+            assert!(
+                errors.iter().any(|d| d.code == Some(cause)
+                    && d.primary
+                        .as_ref()
+                        .is_some_and(|p| p.span.start.0 as usize == source.find(error).unwrap())),
+                "{source}: {errors:#?}"
+            );
+            let mismatches: Vec<_> = errors.iter().filter(|d| d.code == Some(C::E0401)).collect();
+            assert_eq!(
+                mismatches.len(),
+                if own_contract { 3 } else { 2 },
+                "{source}: {errors:#?}"
+            );
+            for position in source.match_indices("\"wrong\"").map(|(i, _)| i) {
+                assert!(
+                    mismatches.iter().any(|d| d
+                        .primary
+                        .as_ref()
+                        .is_some_and(|p| p.span.start.0 as usize == position)),
+                    "{source}: {errors:#?}"
+                );
+            }
+            if own_contract {
+                assert!(
+                    mismatches.iter().any(|d| d
+                        .primary
+                        .as_ref()
+                        .is_some_and(|p| p.span.start.0 as usize
+                            == source.find("bind wrong: String <- ").unwrap()
+                                + "bind wrong: String <- ".len())),
+                    "{source}: {errors:#?}"
+                );
+            }
+            assert_eq!(errors.len(), mismatches.len() + 1, "{source}: {errors:#?}");
+        }
+    }
+    // 原因を直した入力では、実際の型に基づく不一致を再び報告する。
+    let source = "function main() -> Unit\n bind f <- 1\n bind n: Integer <- f\n match f with\n case Option.Some(v) -> ()\n case Option.None -> ()\n end match\nend function\n";
+    let checked = pipeline::check_text(
+        "main.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 1, "{:#?}", checked.diagnostics);
+    assert_eq!(checked.diagnostics[0].code, Some(C::E0401));
+    assert_eq!(
+        checked.diagnostics[0]
+            .primary
+            .as_ref()
+            .unwrap()
+            .span
+            .start
+            .0 as usize,
+        source.find("Option.Some(v)").unwrap()
+    );
+}
+
+// 関門: 複合型の未知の部分と、既知の外側・別の欄・宣言した結果の誤りを区別する。
+// C1の単純な束縛では、要素や関数の部分がzonkで失われる退行を捕まえられない。
+// 公開の検査入口を使い、原因の位置と独立した誤りの位置を固定する。
+#[test]
+fn diagnosed_recovery_preserves_partial_structure() {
+    use benitoite::diag::DiagCode as C;
+    let preamble = "import Benitoite.Unofficial.Failure\nrecord Box[T]\n value: T\nend record\nfunction idInt(value: Integer) -> Integer\n return value\nend function\nfunction failing[E](value: E) -> function() -> Unit uses Failure.Fail[E]\n return lambda() -> Unit uses Failure.Fail[E] return Failure.raise(value) end lambda\nend function\nfunction wrap[T](seed: T) -> function(value: T) -> Unit\n return lambda(value: T) () end lambda\nend function\n";
+    for error in ["SourceLocation.here", "1(2)", "1(value: 2)"] {
+        for (body, independent) in [
+            (
+                "bind xs <- [ERROR]\n bind ints: List[Integer] <- xs\n bind strings: List[String] <- xs",
+                None,
+            ),
+            (
+                "bind xs <- [ERROR]\n bind wrong: Integer <- xs",
+                Some("xs\nend function"),
+            ),
+            (
+                "bind xs <- [[ERROR]]\n bind wrong: List[Integer] <- xs",
+                Some("xs\nend function"),
+            ),
+            (
+                "bind xs <- [ERROR]\n bind wrong: List[String] <- [xs]",
+                Some("[xs]"),
+            ),
+            (
+                "bind pair <- Pair(ERROR, 1)\n bind ints: Pair[Integer, Integer] <- pair\n bind wrong: Pair[String, String] <- pair",
+                Some("pair\nend function"),
+            ),
+            (
+                "bind box <- Box(value: ERROR)\n bind ints: Box[Integer] <- box\n bind strings: Box[String] <- box",
+                None,
+            ),
+            (
+                "bind box <- Box(value: ERROR)\n bind wrong: Integer <- box",
+                Some("box\nend function"),
+            ),
+            (
+                "bind f <- lambda() return ERROR end lambda\n bind ints: function() -> Integer <- f\n bind strings: function() -> String <- f",
+                None,
+            ),
+            (
+                "bind f <- lambda() return ERROR end lambda\n bind wrong: Integer <- f",
+                Some("f\nend function"),
+            ),
+            ("bind wrong: String <- idInt(ERROR)", Some("idInt(")),
+            (
+                "bind xs <- [ERROR, 1]\n bind wrong: List[String] <- xs",
+                Some("xs\nend function"),
+            ),
+            (
+                "bind box <- Box(value: ERROR)\n bind v <- Box.value(box)\n bind n: Integer <- v\n bind s: String <- v",
+                None,
+            ),
+            (
+                "bind Box(value: v) <- Box(value: ERROR)\n bind n: Integer <- v\n bind s: String <- v",
+                None,
+            ),
+            (
+                "match Option.Some(ERROR) with\n case Option.Some(v) ->\n bind n: Integer <- v\n bind s: String <- v\n case Option.None -> ()\n end match",
+                None,
+            ),
+            (
+                "bind f <- wrap(ERROR)\n bind ints: function(value: Integer) -> Unit <- f\n bind strings: function(value: String) -> Unit <- f",
+                None,
+            ),
+            (
+                "bind f <- failing(ERROR)\n bind ints: function() -> Unit uses Failure.Fail[Integer] <- f\n bind strings: function() -> Unit uses Failure.Fail[String] <- f",
+                None,
+            ),
+            (
+                "bind f <- failing(ERROR)\n bind wrong: function() -> String uses Failure.Fail[String] <- f",
+                Some("f\nend function"),
+            ),
+        ] {
+            let source = format!(
+                "{preamble}function main() -> Unit\n {}\nend function\n",
+                body.replace("ERROR", error)
+            );
+            let checked = pipeline::check_text(
+                "main.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: true,
+                    deny_warnings: false,
+                },
+            );
+            assert!(checked.program.is_none(), "{source}");
+            let errors: Vec<_> = checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .collect();
+            let cause = if error == "SourceLocation.here" {
+                C::E0467
+            } else {
+                C::E0403
+            };
+            assert_eq!(
+                errors.iter().filter(|d| d.code == Some(cause)).count(),
+                1,
+                "{source}: {errors:#?}"
+            );
+            assert_eq!(
+                errors.len(),
+                1 + usize::from(independent.is_some()),
+                "{source}: {errors:#?}"
+            );
+            if let Some(needle) = independent {
+                let position = source.rfind(needle).unwrap();
+                assert!(
+                    errors.iter().any(|d| d.code == Some(C::E0401)
+                        && d.primary
+                            .as_ref()
+                            .is_some_and(|p| p.span.start.0 as usize == position)),
+                    "{source}: {errors:#?}"
+                );
+            }
+        }
+    }
+    for (tail, expected_errors) in [("bind strings: List[String] <- xs", 1), ("()", 0)] {
+        let source = format!(
+            "function main() -> Unit\n bind xs <- [1]\n bind ints: List[Integer] <- xs\n {tail}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            "main.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count(),
+            expected_errors,
+            "{source}: {:#?}",
+            checked.diagnostics
+        );
+        assert_eq!(checked.program.is_some(), expected_errors == 0);
+        if expected_errors != 0 {
+            assert_eq!(checked.diagnostics[0].code, Some(C::E0401));
+        }
+    }
+}
+
+// 関門: 原因と独立した後検査は、同じ式に未知の部分があっても残す。
+// 単純なE0401の対照では、集まり・型クラス・網羅性の一律抑制を検出できない。
+#[test]
+fn diagnosed_recovery_preserves_independent_later_checks() {
+    use benitoite::diag::DiagCode as C;
+    for (body, code) in [
+        ("bind f <- ERROR\n bind _ <- true - false", C::E0405),
+        ("bind _ <- \"${[ERROR]}\"", C::E0422),
+        (
+            "bind pair <- Pair(ERROR, lambda() () end lambda)\n bind _ <- pair = pair",
+            C::E0406,
+        ),
+        ("bind _ <- Trait.Show.show(Box(value: ERROR))", C::E0705),
+        ("match [ERROR] with\n case [] -> ()\n end match", C::E0601),
+        ("bind f <- effectful(ERROR)\n bind _ <- pure(f)", C::E0401),
+        ("bind f <- ERROR\n bind _ <- idInt()", C::E0402),
+        ("bind _ <- idInt(wrong: ERROR)", C::E0451),
+        ("bind f <- ERROR\n Console.writeLine(\"event\")", C::E0501),
+    ] {
+        for error in ["SourceLocation.here", "1(value: 2)"] {
+            let source = format!(
+                "import Benitoite.Trait\nimport Benitoite.Unofficial.IO.Console\nrecord Box[T]\n value: T\nend record\nfunction idInt(value: Integer) -> Integer\n return value\nend function\nfunction effectful[T](seed: T) -> function(value: T) -> Unit uses Console.Write\n return lambda(value: T) -> Unit uses Console.Write Console.writeLine(\"event\") end lambda\nend function\nfunction pure(body: function(value: Integer) -> Unit) -> Unit\n ()\nend function\nfunction main() -> Unit\n {}\nend function\n",
+                body.replace("ERROR", error)
+            );
+            let checked = pipeline::check_text(
+                "main.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: true,
+                    deny_warnings: false,
+                },
+            );
+            assert!(checked.program.is_none());
+            let codes: Vec<_> = checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect();
+            assert_eq!(codes.len(), 2, "{source}: {:#?}", checked.diagnostics);
+            assert!(
+                codes.contains(&if error == "SourceLocation.here" {
+                    C::E0467
+                } else {
+                    C::E0403
+                }),
+                "{source}: {codes:?}"
+            );
+            assert!(codes.contains(&code), "{source}: {codes:?}");
+        }
+    }
+}
+
+// 関門: 保留中の呼び出しへの依存は、独立した剛な型の脱出を消す根拠にならない。
+// 名前付き呼び出しからの値と節の型の関係が必要で、既存の脱出の例では保留へ到達しない。
+#[test]
+fn diagnosed_recovery_keeps_pending_call_escape() {
+    use benitoite::diag::DiagCode as C;
+    let source = r#"import Benitoite.Unofficial.Failure
+effect Swap
+ function store[T](x: T) -> T
+end effect
+function empty[A](seed: Unit) -> A uses Failure.Fail[String]
+ return Failure.raise("stop")
+end function
+function same[A](a: A, b: A) -> Unit
+ ()
+end function
+function run() -> Unit uses Failure.Fail[String]
+ bind v <- empty(seed: ())
+ handle
+  bind _ <- store(1)
+ with
+  case store(x) ->
+   same(a: v, b: x)
+   resume(x)
+ end handle
+end function
+"#;
+    let checked = pipeline::check_text(
+        "escape.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
+    );
+    let errors: Vec<_> = checked
+        .diagnostics
+        .iter()
+        .filter(|d| d.is_error())
+        .collect();
+    assert!(checked.program.is_none());
+    assert_eq!(errors.len(), 1, "{errors:#?}");
+    assert_eq!(errors[0].code, Some(C::E0401));
+    assert!(
+        errors[0]
+            .notes
+            .iter()
+            .any(|note| note.contains("cannot leave the clause")),
+        "{errors:#?}"
+    );
+    assert!(
+        errors[0]
+            .secondary
+            .iter()
+            .any(|label| label.span.start.0 as usize == source.find("store(x)").unwrap())
+    );
+}
+
+// 関門: コールバックの引数注釈から、誤りの値や汎用な結果を確定しない。
+// 同じ型変数が値と反変の引数の位置に現れる場合だけに起こる退行を公開入口で検査する。
+#[test]
+fn diagnosed_recovery_does_not_infer_values_from_callback_requirements() {
+    use benitoite::diag::DiagCode as C;
+    for value in ["SourceLocation.here", "1"] {
+        let source = format!(
+            "function pick[A](value: A, f: function(value: A) -> Unit) -> A\n return value\nend function\nfunction main() -> Unit\n bind result <- pick(value: {value}, f: lambda(value: Integer) () end lambda)\n bind n: Integer <- result\n bind wrong: String <- result\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            "callback.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        let codes: Vec<_> = checked
+            .diagnostics
+            .iter()
+            .filter(|d| d.is_error())
+            .filter_map(|d| d.code)
+            .collect();
+        assert_eq!(
+            codes,
+            if value == "1" {
+                vec![C::E0401]
+            } else {
+                vec![C::E0467]
+            },
+            "{:#?}",
+            checked.diagnostics
+        );
+        assert!(checked.program.is_none());
+    }
+}
+
+// 関門: 誤りの全体と部分を区別し、内側も照合する場合の網羅性の見送りを守る。
+// 外側だけを照合する既存の表では、この二つの抑制の条件を確認できない。
+#[test]
+fn diagnosed_recovery_skips_coverage_without_a_known_pattern_shape() {
+    use benitoite::diag::DiagCode as C;
+    for body in [
+        "match SourceLocation.here with case Option.Some(_) -> () end match",
+        "match Option.Some(SourceLocation.here) with case Option.Some(1) -> () end match",
+    ] {
+        let source = format!("function main() -> Unit\n {body}\nend function\n");
+        let checked = pipeline::check_text(
+            "coverage.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            vec![C::E0467],
+            "{:#?}",
+            checked.diagnostics
+        );
+        assert!(checked.program.is_none());
+    }
+}
+
+// 関門: 元の位置の誤りに続く束縛の連鎖で、長さの三乗の回復処理を再導入しない。
+// 大きさ自体を検査するのでlongに分け、stressでは小さくする。公開入口の診断も照合する。
+#[test]
+#[ignore = "long: checks near-linear recovery of a long chain of diagnosed bindings"]
+fn diagnosed_binding_chain_scales_with_input_length() {
+    use benitoite::diag::DiagCode as C;
+    use std::time::{Duration, Instant};
+    let small = if cfg!(feature = "gc-stress") { 64 } else { 128 };
+    let mut times = Vec::new();
+    for n in [small, small * 4] {
+        let mut source = String::from("function main() -> Unit\n bind x0 <- SourceLocation.here\n");
+        for i in 1..=n {
+            source.push_str(&format!(" bind x{i} <- x{}\n", i - 1));
+        }
+        source.push_str(" bind n: Integer <- x");
+        source.push_str(&n.to_string());
+        source.push_str("\n bind s: String <- x");
+        source.push_str(&n.to_string());
+        source.push_str("\nend function\n");
+        let start = Instant::now();
+        let checked = pipeline::check_text(
+            "chain.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        let elapsed = start.elapsed();
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            vec![C::E0467],
+            "{:#?}",
+            checked.diagnostics
+        );
+        assert!(checked.program.is_none());
+        times.push(elapsed);
+        eprintln!("diagnosed binding chain: N={n}, {elapsed:?}");
+    }
+    assert!(
+        times[1] < times[0] * 8 + Duration::from_millis(500),
+        "{times:?}"
+    );
 }

@@ -38,8 +38,27 @@ pub(super) fn check(d: &mut Decls<'_>) {
             let state = scheme.effects.failures.is_empty()
                 && scheme.effects.vars.is_empty()
                 && scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE)];
-            if external && !state || !external && f.uses.is_some() {
-                d.diagnostics.push(external_effect_error(f, external));
+            if external && !state || !external && (f.uses.is_some() || !scheme.effects.is_empty()) {
+                let file_origin = d.out.effective_effects.get(binding).and_then(|effective| {
+                    effective.origins.iter().find(|origin| {
+                        origin.file
+                            && (!external
+                                || !origin.effects.failures.is_empty()
+                                || origin.effects.names.iter().any(|name| {
+                                    *name != EffectName::Builtin(BuiltinEffectId::STATE)
+                                }))
+                    })
+                });
+                let diagnostic = if let Some(origin) = file_origin {
+                    DiagBuilder::new(DiagCode::E0812)
+                        .primary(origin.span)
+                        .note("pure")
+                        .help("file")
+                        .build()
+                } else {
+                    external_effect_error(f, external)
+                };
+                d.diagnostics.push(diagnostic);
             }
         }
     }

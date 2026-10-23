@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-24",
+  "base": "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+  "head": "e0ed5eb2888349dbb0d251843627c527d7ffc0b0",
+  "command": "scripts/check-formal.sh",
+  "environment": {
+    "BENITOITE_DESUGAR_DIFF_DIR": "target/z1-k2/desugar",
+    "BENITOITE_COVERAGE_DIFF_DIR": "target/z1-k2/coverage"
+  },
+  "configuration": "default gc-mark-sweep; formal/lean-toolchain",
+  "toolchains": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+    "python": "Python 3.9.6"
+  },
+  "inputState": "input-state.json",
+  "inputDiffSha256": "8ca62ce9b1d5fdd34bbd70e6f9615b3d09b6c3144b6e195e7c637efa9203948c",
+  "inputContentSha256": "7da0ff460e10379663510d4908e02d8d010831c529a1b10c016d98796de1c866",
+  "exitCode": 0,
+  "elapsedSeconds": 1012.736,
+  "logSha256": "94a686894bbeff9ee5d28033acb9c0543a630969c7cd3be484c09175ea8d166e",
+  "desugar": {
+    "golden": {
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 371,
+        "excluded": 419
+      },
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1062,
+        "excluded": 0
+      }
+    },
+    "random": {
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1000,
+        "excluded": 0
+      },
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 72778,
+        "excluded": 0
+      }
+    }
+  },
+  "routingInputs": 1790,
+  "definitions": 73840,
+  "builtins": {
+    "summaryMismatchCount": 0,
+    "summaryComparisons": 141998,
+    "errors": [],
+    "checkedInputs": 1371,
+    "missingPrims": [],
+    "missingConstructors": [],
+    "nonconvergedCount": 0
+  },
+  "surface": {
+    "counts": {
+      "q11": 1,
+      "preparationFailure": 0,
+      "outOfScope": 19,
+      "mismatched": 0,
+      "matched": 51729,
+      "lazyRestriction": 0
+    },
+    "inputs": 1371,
+    "definitions": 41732,
+    "fullyCheckedInputs": 1355,
+    "excludedInputs": 419,
+    "preparationErrors": [],
+    "q11Agrees": true,
+    "mismatchClasses": {
+      "requiresReview": 0,
+      "leanFalseRejection": 0,
+      "exporter": 0
+    }
+  },
+  "programCoverage": {
+    "matched": 22482,
+    "mismatched": 0,
+    "outOfScope": 0,
+    "fuelExhausted": 0,
+    "inputs": 1371,
+    "cases": 22482,
+    "matches": {
+      "outOfScope": 0,
+      "mismatched": 0,
+      "matched": 16443,
+      "fuelExhausted": 0,
+      "cases": 16443
+    },
+    "bindings": {
+      "outOfScope": 0,
+      "mismatched": 0,
+      "matched": 6039,
+      "fuelExhausted": 0,
+      "cases": 6039
+    }
+  },
+  "independentCoverage": {
+    "closed": {
+      "cases": 10020,
+      "matched": 10020,
+      "mismatched": 0,
+      "fuelExhausted": 0
+    },
+    "withViews": {
+      "cases": 10028,
+      "matched": 10028,
+      "mismatched": 0,
+      "fuelExhausted": 0
+    }
+  },
+  "batch5": {
+    "inputs": {
+      "formats": 28,
+      "file-uses": 2,
+      "individual-uses": 2
+    },
+    "formatted": 28,
+    "formattedString": 3,
+    "formattedStringFallback": 0,
+    "formatHeads": [
+      "%Format.Boolean",
+      "%Format.Byte",
+      "%Format.Character",
+      "%Format.Decimal",
+      "%Format.Float",
+      "%Format.Float32",
+      "%Format.Integer",
+      "%Format.Integer16",
+      "%Format.Integer32",
+      "%Format.Integer8",
+      "%Format.String",
+      "%Format.UnsignedInteger16",
+      "%Format.UnsignedInteger32",
+      "%Format.UnsignedInteger64"
+    ],
+    "actualDefinitions": 32,
+    "inputVersions": {
+      "corpus": 14,
+      "builtins": 6,
+      "stdlib": 6
+    }
+  },
+  "fileUsesAtomsAgree": true,
+  "manifestVerification": {
+    "final input routing:": "final input routing: 1790 inputs, identifiers, exclusions, scopes and coverage agree",
+    "named export: manifest agrees;": "named export: manifest agrees; corpus 14, tables/program coverage 6 and independent coverage 4 match all six entries",
+    "batch5 independent/Rust exchange:": "batch5 independent/Rust exchange: 3s"
+  },
+  "inputSha256": {
+    "target/z1-k2/desugar/named-programs-corpus.json": "3d39cae68559c5e7984dbf0279d447363c2e3e83c37cc6c02b74b9a6e5c100eb",
+    "target/z1-k2/desugar/named-programs-builtins.json": "bc9ae67727cca10c5b70d882ad4539894ea722ef6028150c6d50fa15196613c2",
+    "target/z1-k2/desugar/named-programs-stdlib.json": "4e8754f0b5977b7ff746251491f4d5d6e54130346d2f63766e01e7331c04cd39",
+    "target/z1-k2/desugar/named-programs-coverage.json": "d50857567bb81582e58903c0dfdf7af207100adc98891649196fd8d7ed1c88f0",
+    "target/z1-k2/coverage/named-all-corpus.json": "5d47da475cf47bdffcf0159a1e5a1b1301870489a928e3dc96bc2e04c82a8041",
+    "target/z1-k2/coverage/future-corpus.json": "4405111b9c24c4d3316e1e53cf13658bcb976cc73572406fb92cf4059b24c0fa",
+    "target/z1-k2/desugar/batch5/corpus.json": "70598975892287383ee7dd689e782cef877b73340dd13a40a4a6d99d4b7f3ec6",
+    "target/z1-k2/desugar/batch5/builtins.json": "2ea461c68c7d74ffb11a14723a9b1b56385d00b38373361881e669d19fa66723",
+    "target/z1-k2/desugar/batch5/stdlib.json": "f81f86bec263310a447f84b0ff3d87c52b7e85af8ebdfb46a1ba2cd1fee4bf5b",
+    "target/z1-k2/desugar/batch5/coverage.json": "85ad908a217046d0c3c12f078e125efdafe4f4d42b1473476f4f84a66bae5441",
+    "target/z1-k2/desugar/batch5/coverage-program.json": "f5907b16ce0219a66c2862f5d41caaa8e223a9087d94eae81ba0f4592c6a788e",
+    "crates/benitoite/tests/desugar_export/routing-manifest.json": "ef4295d95bd122f0749daa7189fb8a9ad723228e527c09d155ba64635352b729",
+    "crates/benitoite/tests/desugar_export/exchange-manifest.json": "300f44197d3038ff802928775388411d4cdfee2069bc89ce9ebc6ad225a3b0ed",
+    "formal/tests/batch5-exchange/rust-manifest.json": "0c9935a6e7555dd089a1a6773c48495cfbbb000ea444115f47aeb26f28c438aa"
+  },
+  "stages": [
+    "== formal: lake build",
+    "== formal: lake build desugarDiff",
+    "== formal: lake build builtinCheck",
+    "== formal: lake build coverageDiff",
+    "== formal: Rust coverage export",
+    "== formal: coverageDiff",
+    "== formal: coverageDiff with views",
+    "== formal: lake build coverageProgramDiff",
+    "== formal: lake build surfaceCheck",
+    "== formal: lake build surfaceCheckAll",
+    "== formal: width exchange",
+    "== formal: named exchange",
+    "== formal: extensible exchange",
+    "== formal: try exchange",
+    "== formal: batch2 independent exchange",
+    "== formal: batch3 independent exchange",
+    "== formal: batch4 independent exchange",
+    "== formal: Rust export",
+    "== formal: batch3/batch4 Rust exchange",
+    "== formal: batch5 independent/Rust exchange",
+    "batch5: 32 definitions, 28 formatted, 3 formatted String, 0 fallback; six entries agree: <repo>/target/z1-k2/desugar/batch5/exchange-results.json",
+    "== formal: desugarDiff",
+    "== formal: builtinCheck",
+    "== formal: coverageProgramDiff",
+    "== formal: surfaceCheckAll",
+    "== formal: per-program final Rust exports",
+    "final input routing: 1790 inputs, identifiers, exclusions, scopes and coverage agree",
+    "named export: manifest agrees; corpus 14, tables/program coverage 6 and independent coverage 4 match all six entries"
+  ],
+  "reportSha256": {
+    "target/z1-k2/desugar/report.json": "3881182a3b54306456f94cbd635ad25720ad878b7f90441206bd098286977cc3",
+    "target/z1-k2/desugar/builtin-report.json": "13e1276d44113bcd0548a68b3542d4a781e6353128e3b0b9db0ee04cbdea94b1",
+    "target/z1-k2/desugar/surface-check/report.json": "26d1795676f9c880783e08dd3bc0dadf001f39e61e9075f7e2d7270ca43f1cda",
+    "target/z1-k2/desugar/coverage/report.json": "f3ea4944dd05dc35be4bc1ec2550c7acb0df264052373c621ae7a9ef4bc7f766",
+    "target/z1-k2/coverage/report.json": "7b27add8efea79f9cbcc1f0fa29997fd18074483c7fbd197c9842e3ac70a5732",
+    "target/z1-k2/coverage/future-report.json": "2a572cdcc4081771e69a4f9f833c2318d72e3f1654c383cd1a2fa81f8430f88d",
+    "target/z1-k2/desugar/batch5/exchange-results.json": "b453c25ccf6805d628f738d92c78fcaee7e60c40ab6c9cec426bfe2e89eb8d2a"
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "section": "16.8",
+  "phase_seconds": {
+    "verify": 0.009067333000004396,
+    "cli": 0.21202400000001376
+  },
+  "measurements": {
+    "bridge-shared-8": {
+      "before": {
+        "verify": [
+          0.0047897080000041115
+        ],
+        "warmup": [
+          0.004606042000006028
+        ],
+        "cli": [
+          0.004909959000002573,
+          0.00483783399999993,
+          0.005928416999992692,
+          0.0049594580000018595,
+          0.004908582999988198
+        ],
+        "control_cli": [
+          0.015640875000002552,
+          0.016038167000004933,
+          0.016724500000009357,
+          0.015453084000000672,
+          0.016005540999998402
+        ],
+        "stages": [
+          0.0039017090000044163,
+          0.003985541999995235,
+          0.003926957999993874,
+          0.0037643339999959835,
+          0.003878249999999639
+        ],
+        "probe_warmup": [
+          0.0042909159999879876
+        ],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": [],
+        "probe_results": [
+          {
+            "seconds": 0.0039017090000044163,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":3.333e-6,\"bridge_time\":0.000019791,\"bridge_to_heap\":0.000016458,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.003985541999995235,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":2.959e-6,\"bridge_time\":0.000019793,\"bridge_to_heap\":0.000016834,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.003926957999993874,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":2.625e-6,\"bridge_time\":0.000017916999999999998,\"bridge_to_heap\":0.000015292,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.0037643339999959835,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":3.208e-6,\"bridge_time\":0.000019458,\"bridge_to_heap\":0.00001625,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.003878249999999639,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":3.417e-6,\"bridge_time\":0.000017833,\"bridge_to_heap\":0.000014416,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          }
+        ],
+        "bridge_from_heap": [
+          3.333e-06,
+          2.959e-06,
+          2.625e-06,
+          3.208e-06,
+          3.417e-06
+        ],
+        "bridge_time": [
+          1.9791e-05,
+          1.9793e-05,
+          1.7916999999999998e-05,
+          1.9458e-05,
+          1.7833e-05
+        ],
+        "bridge_to_heap": [
+          1.6458e-05,
+          1.6834e-05,
+          1.5292e-05,
+          1.625e-05,
+          1.4416e-05
+        ],
+        "edges": [
+          16,
+          16,
+          16,
+          16,
+          16
+        ],
+        "heap_nodes": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ],
+        "observation": [
+          7,
+          7,
+          7,
+          7,
+          7
+        ],
+        "unique_nodes": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      },
+      "after": {
+        "verify": [
+          0.0041204580000027136
+        ],
+        "warmup": [
+          0.004203083000007268
+        ],
+        "cli": [
+          0.005142125000006104,
+          0.004168082999996159,
+          0.0049094580000002,
+          0.00405512500000782,
+          0.00485187499999995
+        ],
+        "control_cli": [
+          0.016576958000001696,
+          0.016191999999989548,
+          0.0185127499999993,
+          0.015584042000000409,
+          0.01552416699999526
+        ],
+        "stages": [
+          0.004024292000011087,
+          0.0038438750000011623,
+          0.004028332999993722,
+          0.003946082999988221,
+          0.004063166000008778
+        ],
+        "probe_warmup": [
+          0.004089500000006296
+        ],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": [],
+        "probe_results": [
+          {
+            "seconds": 0.004024292000011087,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":2.708e-6,\"bridge_time\":0.0000155,\"bridge_to_heap\":0.000012792,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.0038438750000011623,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":3e-6,\"bridge_time\":0.000015292000000000002,\"bridge_to_heap\":0.000012292,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.004028332999993722,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":3.542e-6,\"bridge_time\":0.000017542,\"bridge_to_heap\":0.000014,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.003946082999988221,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":2.875e-6,\"bridge_time\":0.0000155,\"bridge_to_heap\":0.000012625,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          },
+          {
+            "seconds": 0.004063166000008778,
+            "status": 0,
+            "stdout": "{\"bridge_from_heap\":3.083e-6,\"bridge_time\":0.000016333,\"bridge_to_heap\":0.00001325,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+            "stderr": ""
+          }
+        ],
+        "bridge_from_heap": [
+          2.708e-06,
+          3e-06,
+          3.542e-06,
+          2.875e-06,
+          3.083e-06
+        ],
+        "bridge_time": [
+          1.55e-05,
+          1.5292000000000002e-05,
+          1.7542e-05,
+          1.55e-05,
+          1.6333e-05
+        ],
+        "bridge_to_heap": [
+          1.2792e-05,
+          1.2292e-05,
+          1.4e-05,
+          1.2625e-05,
+          1.325e-05
+        ],
+        "edges": [
+          16,
+          16,
+          16,
+          16,
+          16
+        ],
+        "heap_nodes": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ],
+        "observation": [
+          7,
+          7,
+          7,
+          7,
+          7
+        ],
+        "unique_nodes": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "bridge-shared-8": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/timing-probe",
+          "<repo>/target/bench/compare/inputs/bridge-shared-8/shared-951eb203fa390444/main.bnt",
+          "bridge",
+          "shared",
+          "8"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/4a4bb1ad86927dd8edd0e00dfe29c66b855554ef-default/timing-probe",
+          "<repo>/target/bench/compare/inputs/bridge-shared-8/shared-951eb203fa390444/main.bnt",
+          "bridge",
+          "shared",
+          "8"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/a1f4fb5f3e5c3619aad6ecb2b1f7c9d20586317a-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/4a4bb1ad86927dd8edd0e00dfe29c66b855554ef-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.0047897080000041115,
+          "status": 0,
+          "stdout": "{\"bridge_from_heap\":3.5e-6,\"bridge_time\":0.000061125,\"bridge_to_heap\":0.000057625,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.0041204580000027136,
+          "status": 0,
+          "stdout": "{\"bridge_from_heap\":3.25e-6,\"bridge_time\":0.000025125,\"bridge_to_heap\":0.000021875,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    }
+  }
+}

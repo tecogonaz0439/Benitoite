@@ -143,7 +143,31 @@ impl Bounds {
 fn delimiter_pairs(ts: &[&Token]) -> BTreeMap<usize, usize> {
     let mut pairs = BTreeMap::new();
     let mut stack: Vec<(K, usize, Option<usize>)> = Vec::new();
+    let mut strings = Vec::new();
     for (i, t) in ts.iter().enumerate() {
+        // 各文字列の対応だけを外側へ渡す。補間の未対応の括弧や end が
+        // 外側のラムダの対応を変えないようにする（02-03「補間の入れ子」）。
+        if t.kind == K::StrStart {
+            strings.push(std::mem::take(&mut stack));
+            stack.push((K::StrStart, i, None));
+            continue;
+        }
+        if t.kind == K::StrMid {
+            if let Some(open) = stack.first().copied().filter(|o| o.0 == K::StrStart) {
+                stack.clear();
+                stack.push(open);
+            }
+            continue;
+        }
+        if t.kind == K::StrEnd {
+            if let Some(open) = stack.first().filter(|o| o.0 == K::StrStart) {
+                pairs.insert(open.1, i.saturating_add(1));
+            }
+            if let Some(saved) = strings.pop() {
+                stack = saved;
+            }
+            continue;
+        }
         let previous = i.checked_sub(1).and_then(|j| ts.get(j)).map(|t| t.kind);
         if previous == Some(K::KwEnd) {
             close(&mut stack, &mut pairs, t.kind, i.saturating_add(1));

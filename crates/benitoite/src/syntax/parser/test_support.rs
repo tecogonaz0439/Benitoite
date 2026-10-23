@@ -14,6 +14,7 @@ pub(crate) fn parse_source(src: &str, kind: SourceKind) -> (ParseOutput, Vec<Dia
             src.as_bytes(),
             tokens,
             lexed.comments,
+            lexed.pending,
             &mut IdGen::new(),
         ),
         lexed.diagnostics,

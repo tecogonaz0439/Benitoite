@@ -375,6 +375,9 @@ def main():
                     'metric_units': METRIC_UNITS, 'working_diff': subprocess.check_output(['git','status','--porcelain'], cwd=ROOT, text=True)}
     if 'features' not in manifest:
         capabilities = {s: probe_features(b['binary'], root/'features'/s, args.timeout, execute) for s,b in builds.items()}
+        for state, build in builds.items():
+            capabilities[state]['timing_probe'] = dict(supported=bool(build.get('probe')),
+                command=build.get('probe_command'), reason=build.get('probe_unavailable'))
         manifest['capabilities'] = capabilities
         manifest['features'] = {s: {f:r['supported'] for f,r in caps.items()} for s,caps in capabilities.items()}
     features = manifest['features']
@@ -386,6 +389,17 @@ def main():
         if set(chosen_sections) - known: parser.error('unknown scenario section')
     if not cases: parser.error('empty scenario selection')
     manifest['skipped'] = configure(cases, features)
+    if args.alloc:
+        for case in cases:
+            if case.command != 'probe':
+                continue
+            if args.resources == 'main' and not resource_point(case):
+                continue
+            for state in case.states:
+                build = manifest['alloc_builds'][state]
+                if not build.get('probe'):
+                    manifest['skipped'].append(dict(case=case.id, state=state, scope='alloc',
+                        reason=build.get('probe_unavailable', 'alloc-stats probe unavailable')))
     variants = {c.id: {s:c.variant(features[s]) for s in c.states} for c in cases}
     inputs, entries = materialize(root, cases, features)
     if args.resume and manifest.get('cases') != inputs:
@@ -491,7 +505,7 @@ def main():
                     metrics[s]['rss_result'] = r
                 if verified[case.id][s]['validation'] != 'verified':
                     continue
-                if args.alloc and take_resources:
+                if args.alloc and take_resources and (case.command != 'probe' or manifest['alloc_builds'][s].get('probe')):
                     alloc_build = manifest['alloc_builds'][s]
                     command = case_command(case, alloc_build, entries[case.id, s])
                     metrics[s]['alloc_results'] = []

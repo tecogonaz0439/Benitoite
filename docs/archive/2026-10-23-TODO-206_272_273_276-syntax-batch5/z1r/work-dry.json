@@ -1,0 +1,13 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "1d64e44c",
+    "--dry-run"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.063,
+  "output": "== plan: level work against 1d64e44c (9 changed file(s))\n   [spec_tally] because of docs/design/01-spec/01-03-names-modules.md (estimate: seconds to a few min)\n      command: python3 tools/spec-coverage/spec_coverage.py --self-test\n      command: python3 tools/spec-coverage/spec_coverage.py\n   [spec_examples] because of docs/design/01-spec/01-03-names-modules.md (estimate: target dependent)\n      command: cargo test -q -p benitoite --test spec_examples\n   [reference_examples] because of docs/reference/benitoite.md (estimate: target dependent)\n      command: cargo test -q -p benitoite --test reference_examples\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+}

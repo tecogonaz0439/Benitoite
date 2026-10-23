@@ -928,6 +928,52 @@ pub fn arg_mismatch(name: &'static str) -> Stop {
 /// ```
 #[macro_export]
 macro_rules! builtin {
+    // 言語側の固定引数が多い頭は、Rust 側だけで型付きタプルにまとめる。
+    // raw の引数数・順・各型の検査は通常の pure 宣言と同じである。
+    (
+        $(#[$meta:meta])*
+        name = $qname:literal,
+        pure fn $name:ident ($ctx:ident, ($($arg:ident : $ty:ty),* $(,)?)) -> $ret:ty $body:block
+    ) => {
+        $(#[$meta])*
+        pub fn $name<'c, 'e>(
+            $ctx: $crate::builtins::iface::PureCtx<'c, 'e>,
+            ($($arg,)*): ($($ty,)*),
+        ) -> ::core::result::Result<$ret, $crate::runtime::Stop> $body
+
+        pub mod $name {
+            use super::*;
+
+            fn raw<'c, 'e>(
+                call: &'c mut $crate::builtins::iface::CallCtx<'c, 'e>,
+                args: &[$crate::runtime::heap::Value<'e>],
+            ) -> ::core::result::Result<$crate::builtins::iface::Reply<'e>, $crate::runtime::Stop> {
+                let ctx = call.pure_ctx();
+                let mismatch = || $crate::builtins::iface::arg_mismatch($qname);
+                let mut it = args.iter().copied();
+                $(
+                    let $arg = it
+                        .next()
+                        .and_then(|v| <$ty as $crate::builtins::iface::FromArg<'c, 'e>>::from_arg(ctx.values(), v))
+                        .ok_or_else(mismatch)?;
+                )*
+                if it.next().is_some() {
+                    return Err(mismatch());
+                }
+                let r = $name(ctx, ($($arg,)*))?;
+                Ok($crate::builtins::iface::Reply::Done(
+                    $crate::builtins::iface::IntoValue::into_value(r),
+                ))
+            }
+
+            pub const DECL: $crate::builtins::iface::BuiltinDecl = $crate::builtins::iface::BuiltinDecl {
+                name: $qname,
+                capability: $crate::builtins::iface::Capability::Pure,
+                arity: <[&str]>::len(&[$(stringify!($arg)),*]) as u16,
+                raw,
+            };
+        }
+    };
     (
         $(#[$meta:meta])*
         name = $qname:literal,

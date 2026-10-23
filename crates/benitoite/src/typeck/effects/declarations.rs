@@ -89,56 +89,69 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
             if !(main || test) {
                 continue;
             }
-            let Some(uses) = &f.uses else {
+            let Some(effective) = d.out.effective_effects.get(id) else {
                 continue;
             };
-            for effect in &uses.effects {
-                let Some(id) = d.reference(effect.id) else {
-                    continue;
-                };
-                let Some(name) = d.effect_name(id) else {
-                    continue;
-                };
-                match name {
-                    EffectName::User(id)
-                        if d.resolved.bindings.get(id).is_some_and(|b| {
-                            matches!(b.kind, crate::resolve::BindingKind::Effect)
-                        }) =>
-                    {
-                        let mut diagnostic = DiagBuilder::new(DiagCode::E0506)
-                            .arg("function", &f.name.text)
-                            .arg("effect", path(effect))
-                            .primary(effect.span)
-                            .help("handle");
-                        // 同名の利用者エフェクトをFailの捕捉へ案内しない
-                        // （設計書 02-10「修正案」）。
-                        if Some(id) == d.resolved.stdlib("Benitoite.Failure.Fail") {
-                            diagnostic = diagnostic.help("to_result");
-                        }
-                        d.diagnostics.push(diagnostic.build());
+            let mut seen = BTreeSet::new();
+            // 両方に書かれた効果も、個別の uses だけを直しても除けないことを先に示す
+            // （設計書 02-10「ファイル単位のエフェクトの宣言の診断」）。
+            for origin in effective
+                .origins
+                .iter()
+                .filter(|o| o.file)
+                .chain(effective.origins.iter().filter(|o| !o.file))
+            {
+                let failure = (!origin.effects.failures.is_empty())
+                    .then(|| d.resolved.stdlib("Benitoite.Failure.Fail"))
+                    .flatten()
+                    .map(EffectName::User);
+                for name in origin.effects.names.iter().copied().chain(failure) {
+                    if !seen.insert(name) {
+                        continue;
                     }
-                    EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {
-                        if b.def().is_some_and(|b| b.module == ["Assert"]) {
-                            d.diagnostics.push(
-                                DiagBuilder::new(DiagCode::E0415)
-                                    .primary(effect.span)
-                                    .note("assert")
-                                    .build(),
-                            );
-                        } else if !b.def().is_some_and(|b| {
-                            b.in_io_all
-                                || b.module.first() == Some(&"Network")
-                                || b.module == ["Log"] && b.name == "Log"
-                        }) {
-                            d.diagnostics.push(
-                                DiagBuilder::new(DiagCode::E0415)
-                                    .primary(effect.span)
-                                    .note("effects")
-                                    .build(),
-                            );
+                    match name {
+                        EffectName::User(id)
+                            if d.resolved.bindings.get(id).is_some_and(|b| {
+                                matches!(b.kind, crate::resolve::BindingKind::Effect)
+                            }) =>
+                        {
+                            let mut diagnostic = DiagBuilder::new(DiagCode::E0506)
+                                .arg("function", &f.name.text)
+                                .arg("effect", origin.name.clone())
+                                .primary(origin.span)
+                                .help(if origin.file { "file" } else { "handle" });
+                            // 同名の利用者エフェクトをFailの捕捉へ案内しない
+                            // （設計書 02-10「修正案」）。
+                            if !origin.file
+                                && Some(id) == d.resolved.stdlib("Benitoite.Failure.Fail")
+                            {
+                                diagnostic = diagnostic.help("to_result");
+                            }
+                            d.diagnostics.push(diagnostic.build());
                         }
+                        EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {
+                            if b.def().is_some_and(|b| b.module == ["Assert"]) {
+                                d.diagnostics.push(
+                                    DiagBuilder::new(DiagCode::E0415)
+                                        .primary(origin.span)
+                                        .note("assert")
+                                        .build(),
+                                );
+                            } else if !b.def().is_some_and(|b| {
+                                b.in_io_all
+                                    || b.module.first() == Some(&"Network")
+                                    || b.module == ["Log"] && b.name == "Log"
+                            }) {
+                                d.diagnostics.push(
+                                    DiagBuilder::new(DiagCode::E0415)
+                                        .primary(origin.span)
+                                        .note("effects")
+                                        .build(),
+                                );
+                            }
+                        }
+                        EffectName::Builtin(_) | EffectName::User(_) => {}
                     }
-                    EffectName::Builtin(_) | EffectName::User(_) => {}
                 }
             }
         }
@@ -175,8 +188,9 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             | Item::Error(_) => None,
         });
     let Some(FnDecl {
-        uses: Some(uses),
+        uses,
         body: Some(body),
+        name,
         ..
     }) = function
     else {
@@ -208,6 +222,36 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
     if all.iter().all(|e| actual.names.contains(e)) {
         return;
     }
+    let effective = ctx
+        .decls
+        .binding(owner)
+        .and_then(|id| ctx.decls.out.effective_effects.get(id));
+    // 共通IO.Allは関数ごとに知らせるが、一関数の実効果で全関数の契約を縮めない
+    // （設計書 02-05「警告」）。
+    if let Some(origin) = effective
+        .into_iter()
+        .flat_map(|e| &e.origins)
+        .find(|origin| origin.file && all.iter().all(|e| origin.effects.names.contains(e)))
+    {
+        ctx.diagnostic(
+            DiagBuilder::new(DiagCode::W0501)
+                .primary(name.span)
+                .secondary(origin.span, "file")
+                .help("shared")
+                .build(),
+        );
+        return;
+    }
+    let file_effects = effective
+        .into_iter()
+        .flat_map(|e| &e.origins)
+        .filter(|origin| origin.file)
+        .fold(EffectSet::empty(), |effects, origin| {
+            effects.union(&origin.effects)
+        });
+    let Some(uses) = uses else {
+        return;
+    };
     let Some(index) = uses.effects.iter().position(|e| {
         ctx.decls
             .reference(e.id)
@@ -228,6 +272,7 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
     let replacement = actual
         .names
         .iter()
+        .filter(|name| !file_effects.names.contains(name))
         .filter(|name| {
             !uses.effects.iter().any(|e| {
                 e.id != token.id
@@ -258,7 +303,14 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
         .collect::<Vec<_>>()
         .join(", ");
     let (span, key) = if replacement.is_empty() {
-        (removal(&uses, index), "remove")
+        (
+            removal(&uses, index),
+            if !actual.is_empty() {
+                "covered"
+            } else {
+                "remove"
+            },
+        )
     } else {
         (token.span, "narrow")
     };

@@ -1061,6 +1061,7 @@ fn export_batch4_integer() {
             source.as_bytes(),
             newline::resolve_newlines(lexed.tokens),
             lexed.comments,
+            lexed.pending,
             &mut IdGen::new(),
         );
         assert!(parsed.diagnostics.is_empty());

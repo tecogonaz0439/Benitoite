@@ -464,6 +464,7 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
                 ast::HeaderItem::Dependency(h) | ast::HeaderItem::Package(h) => h.span.end.0,
             }).chain(a.doc.iter().map(|d| d.span.end.0)).max().unwrap_or(0)
         }).unwrap_or(0);
+        let file_uses = ast.and_then(|a| a.file_uses.as_ref());
         let imports = ast.into_iter().flat_map(|a|&a.imports).map(|i| {
             let target = m.imports.iter().find(|link|link.decl==i.id)
                 .and_then(|link|link.target).and_then(|id|inv.modules.get(id));
@@ -475,7 +476,9 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
                     .map(|s|format!("Benitoite{}.{}",if s.unofficial {".Unofficial"} else {""},s.path.join(".")))
                     .unwrap_or_else(||m.name.dotted())
             } else {m.name.dotted()};
-            json!({"name":m.name.dotted(),"importPath":import_path,"path":inv.sources.get(m.id.file()).map(|s|out.path(s.name())),"imports":imports,"preambleEnd":preamble_end})
+            json!({"name":m.name.dotted(),"importPath":import_path,"path":inv.sources.get(m.id.file()).map(|s|out.path(s.name())),"imports":imports,"preambleEnd":preamble_end,
+                "fileUses":file_uses.map(|u|json!({"text":out.original(u.span),"span":out.span(u.span)})),
+                "importInsertLimit":file_uses.map(|u|u.span.start.0)})
     }).collect::<Vec<_>>();
     let top_level = inv
         .asts
@@ -492,7 +495,7 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
     }
     let declarations = inv.resolved.bindings.iter().filter(|(_,b)|matches!(b.decl,DeclSite::Node(_)) && !matches!(b.kind,BindingKind::Local(_) | BindingKind::TypeParam{..} | BindingKind::EffectVar{..})).map(|(id,b)|json!({"name":out.name(id),"module":inv.modules.get(b.module).map(|m|m.name.dotted()),"topLevel":matches!(b.decl,DeclSite::Node(node) if top_level.contains(&node)),"kind":out.declaration_kind(b.kind),"public":b.public,"package":b.package,"visibility":visibility(b).ok(),"span":b.span.map(|s|out.span(s))})).collect::<Vec<_>>();
     Ok(
-        json!({"version":2,"types":types,"classes":classes,"implementations":implementations,"configSha256":hash(config_bytes),"targets":rows,"records":records,"functions":functions,"declarations":declarations,"modules":modules,"inputs":inputs}),
+        json!({"version":3,"types":types,"classes":classes,"implementations":implementations,"configSha256":hash(config_bytes),"targets":rows,"records":records,"functions":functions,"declarations":declarations,"modules":modules,"inputs":inputs}),
     )
 }
 

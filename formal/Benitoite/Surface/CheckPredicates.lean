@@ -7,6 +7,26 @@ import Benitoite.Surface.FinitePredicates
 namespace Benitoite.Surface.CheckTools
 open Benitoite.Release
 
+/-- 解析済み書式の空指定・範囲・併用を、型の推論より前に検査する。 -/
+def formatSyntaxValid (s : FormatSpec) : Bool := decide s.SyntaxValid
+
+theorem formatSyntaxValid_spec (s : FormatSpec) :
+    formatSyntaxValid s = true ↔ s.SyntaxValid := by simp [formatSyntaxValid]
+
+/-- 書式の型集合は閉じており、型変数や利用者定義のShowを受理しない。 -/
+def formatCompatible (t : Ty) (s : FormatSpec) : Bool := decide (s.Compatible t)
+
+theorem formatCompatible_spec (t : Ty) (s : FormatSpec) :
+    formatCompatible t s = true ↔ s.Compatible t := by simp [formatCompatible]
+
+/-- 構文の妥当性と型の適合の両方を要求する。 -/
+def formatValid (t : Ty) (s : FormatSpec) : Bool :=
+  formatSyntaxValid s && formatCompatible t s
+
+theorem formatValid_spec (t : Ty) (s : FormatSpec) :
+    formatValid t s = true ↔ s.Valid t := by
+  simp [formatValid, FormatSpec.Valid, formatSyntaxValid_spec, formatCompatible_spec]
+
 /-- 型付けの名前の整形式と同じ条件を有限の一覧で検査する。 -/
 def namesWF (names : List String) (params : List Ty) : Bool :=
   decide (names.length = params.length) && decide names.Nodup
@@ -301,6 +321,7 @@ def convertedAllowed : Ty → Bool
 def interpAllowed : List InterpPart → Bool
   | [] => true
   | .converted t :: ps => convertedAllowed t && interpAllowed ps
+  | .formatted t s :: ps => formatValid t s && interpAllowed ps
   | _ :: ps => interpAllowed ps
 
 theorem convertedAllowed_spec (t : Ty) : convertedAllowed t = true ↔
@@ -312,11 +333,16 @@ theorem convertedAllowed_spec (t : Ty) : convertedAllowed t = true ↔
   cases t <;> simp [convertedAllowed]
   rename_i b; cases b <;> simp
 
-theorem interpAllowed_spec : (ps : List InterpPart) → (interpAllowed ps = true ↔ InterpPart.Allowed ps)
+/-- 書式なしの型集合と書式付きの妥当性を、型判断の条件と同じ範囲で判定する。 -/
+theorem interpAllowed_spec : (ps : List InterpPart) →
+    (interpAllowed ps = true ↔ InterpPart.Allowed ps)
   | [] => by simp [interpAllowed, InterpPart.Allowed]
-  | .converted t :: ps => by simp [interpAllowed, InterpPart.Allowed, convertedAllowed_spec, interpAllowed_spec ps]
-  | .text _ :: ps => by simpa [interpAllowed, InterpPart.Allowed] using interpAllowed_spec ps
-  | .stringExpr :: ps => by simpa [interpAllowed, InterpPart.Allowed] using interpAllowed_spec ps
+  | .converted t :: ps => by
+      simp [interpAllowed, InterpPart.Allowed, convertedAllowed_spec, interpAllowed_spec ps]
+  | .formatted t s :: ps => by
+      simp [interpAllowed, InterpPart.Allowed, formatValid_spec, interpAllowed_spec ps]
+  | .text _ :: ps => by simp [interpAllowed, InterpPart.Allowed, interpAllowed_spec ps]
+  | .stringExpr :: ps => by simp [interpAllowed, InterpPart.Allowed, interpAllowed_spec ps]
 
 def notCont : Ty → Bool
   | .cont _ _ _ => false
@@ -409,3 +435,91 @@ theorem stringAddOk_sound {atoms B op admitsDec C}
           exact ht
 
 end Benitoite.Surface.CheckTools
+
+namespace Benitoite.Surface.CheckTools.FormatExamples
+open Benitoite.Release
+
+-- 書式の境界で、閉じた型集合と仕様の受理表を検査する。
+-- 定数列や内部頭の表から期待値を作らず、型ごとの受理・拒否を指定する。
+example : ([.integer, .integer8, .integer16, .integer32, .byte, .unsignedInteger16,
+    .unsignedInteger32, .unsignedInteger64, .float, .float32, .decimal, .string,
+    .character, .boolean] : List BaseTy).all
+    (fun t => formatValid (.base t) { width := some 1 }) = true := by decide
+
+example : ([
+    (.integer, { kind := .d }, true),
+    (.integer8, { kind := .b, alternate := true }, true),
+    (.integer16, { kind := .o, alternate := true }, true),
+    (.integer32, { kind := .x, alternate := true }, true),
+    (.byte, { kind := .upperX, alternate := true }, true),
+    (.unsignedInteger16, { sign := .plus }, true),
+    (.unsignedInteger32, { zero := true, width := some 8 }, true),
+    (.unsignedInteger64, { kind := .d }, true),
+    (.float, { kind := .f, precision := some 0 }, true),
+    (.float32, { kind := .f, precision := some 28 }, true),
+    (.decimal, { kind := .f, sign := .plus, zero := true, width := some 8, precision := some 2 }, true),
+    (.string, { kind := .s, align := .right, width := some 4 }, true),
+    (.character, { kind := .c, align := .center, width := some 4 }, true),
+    (.boolean, { align := .left, width := some 4 }, true),
+    (.integer, { kind := .f }, false),
+    (.float, { kind := .d }, false),
+    (.float32, { kind := .x }, false),
+    (.decimal, { kind := .b }, false),
+    (.string, { kind := .c }, false),
+    (.character, { kind := .s }, false),
+    (.boolean, { kind := .b }, false),
+    (.string, { sign := .plus }, false),
+    (.character, { zero := true, width := some 8 }, false),
+    (.boolean, { sign := .plus }, false),
+    (.unit, { width := some 8 }, false)
+  ] : List (BaseTy × FormatSpec × Bool)).all
+    (fun (t, s, expected) => formatValid (.base t) s == expected) = true := by decide
+
+-- 他の条件は有効なまま、各境界と併用禁止を一つずつ越える。
+example : ([
+    ({}, false),
+    ({ width := some 0 }, false),
+    ({ width := some 1 }, true),
+    ({ width := some 65535 }, true),
+    ({ width := some 65536 }, false),
+    ({ kind := .f, precision := some 0 }, true),
+    ({ kind := .f, precision := some 28 }, true),
+    ({ kind := .f, precision := some 29 }, false),
+    ({ precision := some 2 }, false),
+    ({ kind := .d, precision := some 2 }, false),
+    ({ align := .right }, false),
+    ({ zero := true }, false),
+    ({ align := .right, zero := true, width := some 8 }, false),
+    ({ kind := .d, alternate := true }, false),
+    ({ kind := .f, alternate := true }, false)
+  ] : List (FormatSpec × Bool)).all
+    (fun (s, expected) => formatSyntaxValid s == expected) = true := by decide
+
+example : formatValid (.list (.base .integer)) { width := some 8 } = false ∧
+    formatValid (.data "User" []) { width := some 8 } = false ∧
+    formatValid (.tvar 0) { width := some 8 } = false := by decide
+
+-- 七定数の型だけでは見つからない、引数の順序・符号化・省略の退行を検査する。
+example : match ({ kind := .f, sign := .plus, zero := true, width := some 8, precision := some 2 } :
+      FormatSpec).constants (by decide) with
+    | [.integer k, .integer a, .integer s, .boolean alt, .boolean z, .integer w, .integer p] =>
+      (k.toInt, a.toInt, s.toInt, alt, z, w.toInt, p.toInt) = (6, 0, 1, false, true, 8, 2)
+    | _ => False := by dsimp [FormatSpec.constants]; decide
+
+example : match ({ kind := .s, align := .center, width := some 65535 } : FormatSpec).constants
+      (by decide) with
+    | [.integer k, .integer a, .integer s, .boolean alt, .boolean z, .integer w, .integer p] =>
+      (k.toInt, a.toInt, s.toInt, alt, z, w.toInt, p.toInt) = (7, 3, 0, false, false, 65535, -1)
+    | _ => False := by dsimp [FormatSpec.constants]; decide
+
+example : (({ kind := .f } : FormatSpec).widthCode (by decide)).toInt = 0 := by decide
+example : (({ kind := .f, precision := some 0 } : FormatSpec).precisionCode
+    (by decide)).toInt = 0 := by decide
+
+example : ({ kind := .f } : FormatSpec).fixedPrecision (.base .float) 2 = some 6 ∧
+    ({ kind := .f } : FormatSpec).fixedPrecision (.base .float32) 2 = some 6 ∧
+    ({ kind := .f } : FormatSpec).fixedPrecision (.base .decimal) 2 = some 2 ∧
+    ({ kind := .f, precision := some 0 } : FormatSpec).fixedPrecision (.base .decimal) 2 = some 0 :=
+  by decide
+
+end Benitoite.Surface.CheckTools.FormatExamples

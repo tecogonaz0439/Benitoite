@@ -228,6 +228,8 @@ fn stages(input: &str, mode: &str, args: Vec<String>) -> Result<serde_json::Valu
             source.text(),
             tokens,
             lexed.comments,
+            #[cfg(benitoite_parser_pending)]
+            lexed.pending,
             &mut parse_ids,
         );
         std::hint::black_box(parsed);

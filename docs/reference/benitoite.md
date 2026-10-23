@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.10`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.11`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.10`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.11`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
@@ -156,8 +156,9 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "unicodeVersion": "17.0.0",
+  "displayWidthUnicodeVersion": "17.0.0",
   "build": {
     "commit": null,
     "dirty": null,
@@ -186,6 +187,8 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
 }
 ```
 
+`unicodeVersion` describes character classification and conversion. The optional `displayWidthUnicodeVersion` describes display width separately: this build always emits `"17.0.0"`; older executables may omit it. The human-readable `--version` output keeps its two lines.
+
 `build.commit` is a full lowercase hexadecimal Git object ID or `null`. `build.dirty` is a boolean or `null`; `null` means unknown, not a clean tree. Dirty state is not collected automatically: an unspecified build input gives `provenance.dirty: "notCollected"`. An explicit build input, including an explicit unknown value, gives `"environment"`. Commit provenance is `"environment"`, `"git"`, or `"unknown"`. These are values embedded at build time, not observations of the runtime environment. See [Build information](install.md#build-information) for inputs, monitoring limits, and when to rebuild.
 
 `diagnostics: [1]` and version 1 of `testResults` refer to the existing JSON Lines formats, including `kind: "die"`, `code: null`, and test `failure.die`. Those lines have no added `schemaVersion` or initial version record. `checkReport` and `testCheckReport` describe the single-object reports below. `effectLimit` versions the option syntax, set comparison, and `E0512` contract; it is not an output object. `loaderEnvironment` describes the [explicit environment restriction](#io-and-network-behavior). `skillList` and `skillDocument` describe [embedded Skill queries](install.md#read-the-skill-without-installing-it).
@@ -193,6 +196,8 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
 Removing fields or changing their types, required presence, or meaning changes the corresponding format version, as does adding a classification that requires a new interpretation of success. An optional field that can be ignored without changing the meaning may be added within the same format version. Treat unknown formats, statuses, and effect names as unsupported, not as success or an empty effect set.
 
 ### Inspection reports
+
+Reported upper bounds include [file-level effect declarations](#file-level-effect-declarations).
 
 These commands check scripts without executing user functions:
 
@@ -256,6 +261,8 @@ Report assembly and serialization finish before output starts. A write or flush 
 
 ### Effect limits before execution
 
+The comparison includes effects added by [file-level effect declarations](#file-level-effect-declarations).
+
 After inspecting and reviewing a script, an agent or harness can pass the accepted atomic names to an executing command:
 
 ```sh
@@ -276,7 +283,7 @@ This is a static contract comparison. It neither fixes the source after inspecti
 
 A program starts at the function `main` in the script file. `main` takes no parameters and returns `Unit` or `Result[Unit, String]`. When it returns `Result.Error(message)`, the message is written to standard error and the exit status is 1.
 
-The top level of a file contains, in this order, `import` declarations and then declarations: functions, constants, data types, type aliases, records, type classes, implementations, and effects. Code that runs is written only inside functions.
+The top level of a file contains, in this order, `import` declarations, an optional single [file-level `uses` declaration](#file-level-effect-declarations), and then declarations: functions, constants, data types, type aliases, records, type classes, implementations, and effects. Code that runs is written only inside functions.
 
 Except for a short lambda (see [Functions and lambdas](#6-functions-and-lambdas)), blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`, `end block`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons. A physical line break immediately after `return` always ends the statement, even inside parentheses or before a continuation operator on the next line. Comments and blank lines do not change this rule.
 
@@ -456,6 +463,12 @@ A string literal fits on one line. The escapes are `\n`, `\r`, `\t`, `\\`, `\"`,
 
 A multi-line string starts with `"""` at the end of a line and ends with `"""` on a line of its own. The indentation before the closing `"""` is removed from every line. A raw string `r"…"` (or `r"""…"""`) processes neither escapes nor `${…}`, which is convenient for regular expressions.
 
+Write a static format after a complete expression, such as `${amount:.2f}`, `${number:#08x}`, or `${label:>8s}`. A colon inside a named argument, record field, pattern, or block annotation remains part of the expression. A colon after a short lambda applies to the whole lambda. Format items appear in this order: optional alignment (`<`, `>`, `^`), sign (`+`), `#`, zero padding (`0`), width, precision, and kind (`d`, `b`, `o`, `x`, `X`, `f`, `s`, `c`). Width is 1–65535 and precision is 0–28, using ASCII digits. Precision requires `f`; alignment and zero padding require width; zero padding cannot have explicit alignment; `#` requires `b`, `o`, `x`, or `X`. Empty formats, whitespace inside the format, and `-` are rejected with `E0262`. `fmt` preserves valid formats and removes whitespace before their colon.
+
+Integer formats accept the eight integer types, including Byte; `f` accepts Float, Float32, and Decimal; `s` requires String and `c` requires Character. Sign and zero padding require a numeric type. Width and alignment alone accept the same fourteen basic types as ordinary interpolation. Type incompatibility is reported as `E0468`, with the format and value locations. The harness can check and run scripts with formatted interpolation; constant expressions use the same formatting rules. All interpolation expressions are evaluated once, from left to right, before conversion and concatenation.
+
+Numbers align right by default; other values align left. Center alignment puts an extra space on the right when needed. Width uses the default display-width rules below, for each formatted value separately; long content is preserved. Zero padding follows the sign and base prefix. Negative integers use a minus sign and the digits of the absolute value. Fixed-point formatting rounds to nearest, ties to even, directly from the value. Without precision, `f` uses six decimal places for Float and Float32 and preserves Decimal's scale: `${1.5:f}` is `1.500000`, while `${1.50m:f}` is `1.50`. Precision zero omits the decimal point. Float types preserve negative zero, Decimal drops its sign when rounded to zero, NaN has no sign, and nonfinite values use spaces instead of zero padding. Formatting uses ASCII digits, `.` as the decimal point, and fixed signs and prefixes. Ordinary interpolation and raw strings retain their behavior.
+
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 
@@ -483,6 +496,31 @@ end function
 
 `String.length` does not exist: choose `String.characterCount` (Unicode scalar values) or `String.byteLength` (UTF-8 bytes). Comparison of strings is by Unicode scalar value and does not normalize text.
 
+`String.displayWidth(s)` returns a display width using Unicode 17.0.0 and [unicode-width 0.2.2](https://docs.rs/unicode-width/0.2.2/unicode_width/). `String.displayWidthCJK(s)` selects its CJK rules, including string sequence exceptions. Neither function inspects the terminal or locale. The default mode generally counts ambiguous-width characters as 1. For example, `"猫"` has width 2, `"e\u{301}"` has width 1, and `"·"` has width 1 by default and 2 in CJK mode. Display width differs from scalar count and UTF-8 byte length.
+
+U+0000–001F, U+007F–009F, U+2028 and U+2029 are zero-width boundaries. Each function adds the widths of the maximal parts between boundaries and returns an `Integer` for every string. Thus `"a\nb"` has width 2. ANSI sequences are not interpreted or removed: `"\u{1b}[31m"` has width 4. The result does not describe cursor movement or the maximum width of a line. Use a single line without control characters when aligning columns.
+
+| Function | Pure signature | Behavior |
+|---|---|---|
+| `String.displayWidth` / `String.displayWidthCJK` | `function(s: String) -> Integer` | Default / CJK display width |
+| `String.displayWidthPadStart` / `String.displayWidthPadEnd` | `function(s: String, width: Integer) -> String` | Add U+0020 spaces at the start / end to reach the default display width |
+| `String.displayWidthPadStartCJK` / `String.displayWidthPadEndCJK` | `function(s: String, width: Integer) -> String` | Add spaces using the CJK display width |
+
+The four padding functions preserve the content and return the original value if `width <= 0` or the string is already wide enough. When allocation succeeds, the result has width `max(original width, width)` in the corresponding mode. Large dynamic targets can exceed the string byte limit and stop with a resource report before allocation. Adding U+0020 spaces has this width contract; arbitrary concatenation need not have additive widths.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  Console.writeLine("[" + String.displayWidthPadStart(s: "猫", width: 4) + "]")
+  Console.writeLine("[" + String.displayWidthPadEndCJK(s: "·", width: 4) + "]")
+end function
+```
+
+```output
+[  猫]
+[·  ]
+```
+
 ## 5. Operators
 
 From lowest to highest precedence:
@@ -506,7 +544,7 @@ Operands are evaluated from left to right.
 
 ## 6. Functions and lambdas
 
-A function declares the types of its parameters and its return type after `->`. A function without `uses` is pure.
+A function declares the types of its parameters and its return type after `->`. It is pure when the union of its individual and applicable file-level `uses` declarations is empty.
 
 ```text
 function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2
@@ -1013,7 +1051,7 @@ ready
 
 ## 10. Effects
 
-An *effect* names a kind of operation that a function may perform outside pure computation. A function lists, after `uses`, every effect it performs directly or through the functions it calls. A function without `uses` is pure. Lambdas infer their effects from their bodies.
+An *effect* names a kind of operation that a function may perform outside pure computation. A function's effective `uses` lists every effect it performs directly or through the functions it calls. For a top-level function it is the union of the function's individual `uses` and the file-level declaration, if present. Lambdas infer their effects from their bodies.
 
 The built-in effects are:
 
@@ -1056,6 +1094,12 @@ error[E0501]
 Adding `uses Console.Write` to `greet` fixes the error.
 
 An effect is part of the type of a function value: `function(text: String) -> Unit uses Console.Write`.
+
+### File-level effect declarations
+
+A file can put one `uses Console.Write, Log` declaration after imports and before other declarations. It adds those effects to every top-level function, including `main`, `@test`, and generated top-level functions, even when a body performs no operations. It does not add effects to function types, lambdas, trait/implement methods, constants, or handler clauses. Keep pure callbacks and Property helpers in a separate file without the shared declaration. Documentation examples are independent modules and do not inherit the outer file's declaration.
+
+The harness should show `targets[0].main.effects.expanded` from a successful `check --report=json` as the merged declared upper bound. Require a complete single JSON object, understood `schemaVersion` and `kind`, `status: "ok"`, `complete: true`, and exit status 0 before using it. A failed or unknown report is not an empty set and does not authorize execution. Normal `check` keeps standard output empty. `run --allow-effects` and the test equivalent compare the merged upper bound; E0512 also labels the file declaration when it adds a missing effect. A handler in main cannot cancel the file declaration, so adding a user effect or Fail there still violates main's entry restrictions even when its body handles every operation. Remove the shared declaration or move main to another file. W0501 for shared IO.All is per function and offers no automatic edit to the common declaration; individual IO.All edits account for the file's effects.
 
 ### Structured logging and source locations
 
@@ -1791,6 +1835,12 @@ Operations require direct calls; function values, holes, and pipes are rejected 
 
 ## 20. Compatibility
 
+### Migrating to 0.0.11
+
+Read the [0.0.11 migration guide](../../CHANGELOG.md#0011-san-benito) before updating `language` and dependency hashes. Rebuild the executable and reinstall its embedded Skill together. Derive inventory 3 and generator 3.1.0 require a fresh preview with original body/hash verification and a newly reviewed apply hash. try-actions inventory/manifest 2 require regenerated, reviewed candidates; unknown effective contracts and unmapped file declarations remain held. Review package update's Log records and effect additions/removals, including unchanged sources with individual Log declarations. Only then update language declarations to 0.0.11 and dependency hashes.
+
+File-level `uses` adds to every top-level function's contract, even if unused. Inspect the merged bound through the harness before execution; move pure callbacks to a file without that declaration. New static interpolation formats and display-width functions are described in [Strings](#strings).
+
 ### Migrating to 0.0.10
 
 Read the [0.0.10 migration guide](../../CHANGELOG.md#0010-san-benito) before updating `language` and dependency hashes. Rename identifiers spelled block, review catch-alls after full-domain Integer ranges, and check new prelude names Log/SourceLocation. Local builders no longer add State; explicitly review any public effect contract you make pure, and account for the cost of physical copies. Declare Log independently of IO.All and include it in accepted effect sets when it remains in the declared bound. Width-specific numeric warnings can now fail --deny-warnings.
@@ -1810,7 +1860,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.10` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.11` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1822,7 +1872,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.10"
+language "0.0.11"
 
 package Textkit
   license "MIT"
@@ -1840,7 +1890,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.10"
+language "0.0.11"
 
 dependency Textkit
   path "packages/textkit"
@@ -1872,7 +1922,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.10"
+language "0.0.11"
 ```
 
 ```benitoite check
@@ -1883,7 +1933,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.10`, a declaration of `0.0.10` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.11`, a declaration of `0.0.11` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -1934,7 +1984,9 @@ added dependency Textkit (package Textkit) to main.bnt
   components: (none)
 ```
 
-The commands report built-in effects from all public function and public trait-method declarations, public type-alias right-hand sides, public record field types, and public `data` constructor field types, including effects in nested function types. Library modules are identified by their official import names, such as `Benitoite.Unofficial.IO.Console`; `State` and `IO.All` need no import. Effects reached through import names absent from the standard-library table are not counted. They do not type-check the package to make that report, include user-defined effects or effect variables, or expand `IO.All`. Component reports identify components with `(no imports)` or give a failure reason. A component failure alone does not prevent editing; `benitoite check` still checks the paths, exports, and types actually used by the script.
+The commands report built-in effects from all public function and public trait-method declarations, public type-alias right-hand sides, public record field types, and public `data` constructor field types, including effects in nested function types. Library modules are identified by their official import names, such as `Benitoite.Unofficial.IO.Console`; `State`, `IO.All`, and the prelude references `Log` and `Benitoite.Log` need no import. A top-level declaration or another import named `Log` hides the bare standard name; `Benitoite.Log` remains identifiable unless `Benitoite` itself is hidden. An official import of the standard Log module, including references through its alias, is recorded as `Log` too. Because this aggregation does not type-check the source, it also counts effect import aliases that checking rejects. Effects reached through import names absent from the standard-library table are not counted. They do not type-check the package to make that report, include user-defined effects or effect variables, or expand `IO.All`. Component reports identify components with `(no imports)` or give a failure reason. A component failure alone does not prevent editing; `benitoite check` still checks the paths, exports, and types actually used by the script.
+
+When a file contains at least one externally public top-level function, the commands also add its file-level `uses` to the reported set once, using the same built-in identification rules as individual `uses`. Files containing only `public(package)` functions, private functions, traits, or type declarations do not contribute file-level effects. Existing explicit effects in trait methods and nested function types are still counted. Changing only the file-level declaration changes the stored record and the `update` additions and removals. The improved recognition of bare `Log` can also add `Log` to records for existing sources that use only individual declarations. Review these changes with your harness when updating dependencies.
 
 `move` moves the starting file's header settings and associated comments into `package.bnt` next to it. It requires a file target; a directory is a usage error. It refuses an empty header or a destination that already contains `language` or dependencies. For example:
 

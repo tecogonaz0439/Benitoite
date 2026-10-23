@@ -52,6 +52,8 @@ pub struct Module {
     /// ソースの順に並べたファイルの先頭の部分。
     pub header: Vec<HeaderItem>,
     pub imports: Vec<ImportDecl>,
+    /// 元ソースのファイル単位のエフェクトの宣言。個別の関数の uses とは分けて保持する。
+    pub file_uses: Option<UsesList>,
     pub decls: Vec<TopDecl>,
 }
 
@@ -522,8 +524,109 @@ pub struct InterpSegment {
     /// `${` から `}` まで（02-02「合成ノードの由来位置」の文字列補間）
     pub span: Span,
     pub expr: Expr,
+    /// コロン以後の解析済み書式。省略時は従来の補間である。
+    pub format: Option<Box<FormatSpec>>,
     /// `}` の後、次の `${` か閉じの引用符までの部分の文字列
     pub tail: String,
+}
+
+/// 補間の書式の種類（01-02「文字列補間（初回リリース版）」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+pub enum FormatKind {
+    #[default]
+    Default,
+    D,
+    B,
+    O,
+    X,
+    UpperX,
+    F,
+    S,
+    C,
+}
+
+/// 補間の寄せ。省略時の解釈は値の型による。
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+pub enum FormatAlign {
+    #[default]
+    Default,
+    Left,
+    Right,
+    Center,
+}
+
+/// 明示できる符号指定は `+` だけである。
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+pub enum FormatSign {
+    #[default]
+    Default,
+    Plus,
+}
+
+/// 書式の各指定の元の位置。省略した指定の位置は持たない。
+#[derive(Clone, PartialEq, Eq, Debug, Default)]
+pub struct FormatSpans {
+    pub kind: Option<Span>,
+    pub align: Option<Span>,
+    pub sign: Option<Span>,
+    pub alternate: Option<Span>,
+    pub zero: Option<Span>,
+    pub width: Option<Span>,
+    /// 小数点を含む。
+    pub precision: Option<Span>,
+}
+
+/// 静的に解析した書式。幅・精度の省略を明示した値と区別する。
+/// 型検査が適合を確かめ、脱糖と定数評価が同じ固定定数を用いる（01-12「文字列補間」）。
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct FormatSpec {
+    /// 区切りのコロンから `}` の直前まで。
+    pub span: Span,
+    pub kind: FormatKind,
+    pub align: FormatAlign,
+    pub sign: FormatSign,
+    pub alternate: bool,
+    pub zero: bool,
+    pub width: Option<u16>,
+    pub precision: Option<u8>,
+    pub spans: FormatSpans,
+}
+
+impl FormatSpec {
+    /// 内部頭に渡す七定数。省略した幅は0、精度は-1とし、明示の精度0と区別する
+    /// （設計書 02-06「書式化の内部頭」）。
+    pub fn constants(&self) -> (i64, i64, i64, bool, bool, i64, i64) {
+        let kind = match self.kind {
+            FormatKind::Default => 0,
+            FormatKind::D => 1,
+            FormatKind::B => 2,
+            FormatKind::O => 3,
+            FormatKind::X => 4,
+            FormatKind::UpperX => 5,
+            FormatKind::F => 6,
+            FormatKind::S => 7,
+            FormatKind::C => 8,
+        };
+        let align = match self.align {
+            FormatAlign::Default => 0,
+            FormatAlign::Left => 1,
+            FormatAlign::Right => 2,
+            FormatAlign::Center => 3,
+        };
+        let sign = match self.sign {
+            FormatSign::Default => 0,
+            FormatSign::Plus => 1,
+        };
+        (
+            kind,
+            align,
+            sign,
+            self.alternate,
+            self.zero,
+            self.width.map_or(0, i64::from),
+            self.precision.map_or(-1, i64::from),
+        )
+    }
 }
 
 /// 式の中の名前（修飾を含む）。名前を使う箇所のノード。`path` は一つ以上の段。

@@ -1601,6 +1601,9 @@ mod tests {
             assert!(lex.is_empty(), "{name}: {lex:?}");
             assert!(out.diagnostics.is_empty(), "{name}: {:?}", out.diagnostics);
             assert!(out.module.doc.is_some(), "{name}");
+            // 署名を原文から切り出す生成器が効果を落とさないよう、標準ソースは個別宣言で契約を書く
+            // （設計書 06-06「同梱の Agent Skill の構成」）。
+            assert!(out.module.file_uses.is_none(), "{name}: file-level effects");
         }
     }
 }

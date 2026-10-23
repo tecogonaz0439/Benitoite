@@ -33,8 +33,9 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             ("0.0.7", Some(DiagCode::E0908)),
             ("0.0.8", Some(DiagCode::E0908)),
             ("0.0.9", Some(DiagCode::E0908)),
-            ("0.0.10", None),
-            ("0.0.11", Some(DiagCode::E0907)),
+            ("0.0.10", Some(DiagCode::E0908)),
+            ("0.0.11", None),
+            ("0.0.12", Some(DiagCode::E0907)),
         ] {
             let header = format!("language \"{version}\"\n");
             let entry_source = format!("{header}{MAIN}");
@@ -68,6 +69,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     format!(
                         "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
                         match version {
+                            "0.0.10" => "0.0.11",
                             "0.0.9" => "0.0.10",
                             "0.0.8" => "0.0.9",
                             "0.0.7" => "0.0.8",
@@ -78,6 +80,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     )
                 );
                 let first = match version {
+                    "0.0.10" => 6,
                     "0.0.9" => 5,
                     "0.0.8" => 4,
                     "0.0.7" => 3,
@@ -92,6 +95,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     "0.0.8: Character ranges covering all Unicode scalar values are exhaustive; a following catch-all is unreachable",
                     "0.0.9: direct Regex.compile calls reject invalid constant sources with E0457 or E0458; direct Scope checks reject invalid known arguments with E0459 through E0462",
                     "0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable",
+                    "0.0.11: derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations",
                 ];
                 let helps = [
                     "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types",
@@ -100,6 +104,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     "review full-domain Character matches and remove unreachable branches or move their work into reachable branches; keep catch-alls for guarded Character ranges and Integer ranges; update E0601 character witness snapshots, language declarations to the current version, and dependency hashes; see the 0.0.8 section of CHANGELOG.md",
                     "to test Result.Error, pass the pattern to a normal function whose parameters are used by Regex.compile or Scope checks; review constant patterns, language declarations and dependency hashes; see the 0.0.9 section of CHANGELOG.md",
                     "rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md",
+                    "recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md",
                 ];
                 assert_eq!(diagnostic.notes, notes[first..]);
                 assert_eq!(diagnostic.helps.len(), helps.len() - first);
@@ -110,7 +115,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             } else {
                 assert_eq!(
                     diagnostic.message,
-                    "this file needs Benitoite 0.0.11 or later, but this is Benitoite 0.0.10"
+                    "this file needs Benitoite 0.0.12 or later, but this is Benitoite 0.0.11"
                 );
                 assert!(diagnostic.notes.is_empty());
                 assert!(diagnostic.helps.is_empty());
@@ -906,7 +911,7 @@ fn root_settings_do_not_come_from_parent_directories() {
 #[test]
 fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
     for config_name in ["package.bnt", "Package.bnt"] {
-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.10\"\n")]);
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.11\"\n")]);
         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
         assert_aligned(&output);
         if config_name == "package.bnt" {
@@ -926,7 +931,7 @@ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
 
 #[test]
 fn config_cannot_be_a_starting_file() {
-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.10\"\n")]);
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.11\"\n")]);
     let entry = EntrySpec {
         path: "/root/package.bnt".into(),
         display_name: "package.bnt".into(),
@@ -950,19 +955,19 @@ fn dependency_configs_precede_prelude_and_imported_modules() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.10\"\npackage Textkit\nend package\n",
+            "language \"0.0.11\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", "import Internal.Helper\n"),
         ("/library/Internal/Helper.bnt", ""),
         (
             "/second/package.bnt",
-            "language \"0.0.10\"\npackage Textkit\nend package\n",
+            "language \"0.0.11\"\npackage Textkit\nend package\n",
         ),
         ("/second/Slug.bnt", "import Internal.Helper\n"),
         ("/second/Internal/Helper.bnt", ""),
         (
             "/unused/package.bnt",
-            "language \"0.0.10\"\npackage Unused\nend package\n",
+            "language \"0.0.11\"\npackage Unused\nend package\n",
         ),
         ("/unused/Unread.bnt", "this is deliberately not a module"),
     ]);
@@ -1035,7 +1040,7 @@ fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
             ("main.bnt", main),
             (
                 "deps/library/package.bnt",
-                "language \"0.0.10\"\npackage Library\nend package\n",
+                "language \"0.0.11\"\npackage Library\nend package\n",
             ),
             ("/outside/Target.bnt", ""),
         ]);
@@ -1070,7 +1075,7 @@ fn root_link_to_the_dependency_imports_the_package() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.10\"\npackage Textkit\nend package\n",
+            "language \"0.0.11\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", ""),
     ]);
@@ -1106,11 +1111,11 @@ fn overlapping_dependency_roots_are_rejected_before_imports() {
             ("main.bnt", &main),
             (
                 "/libs/package.bnt",
-                "language \"0.0.10\"\npackage Libs\nend package\n",
+                "language \"0.0.11\"\npackage Libs\nend package\n",
             ),
             (
                 "/libs/Nested/package.bnt",
-                "language \"0.0.10\"\npackage Nested\nend package\n",
+                "language \"0.0.11\"\npackage Nested\nend package\n",
             ),
             ("/libs/Value.bnt", ""),
             ("/libs/Nested/Value.bnt", ""),
@@ -1145,7 +1150,7 @@ fn dependency_import_edits_only_use_valid_module_names() {
             ),
             (
                 "/library/package.bnt",
-                "language \"0.0.10\"\npackage Library\nend package\n",
+                "language \"0.0.11\"\npackage Library\nend package\n",
             ),
         ]);
         fs.add_file(format!("/library/{tail}"), vec![]);
@@ -1181,7 +1186,7 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
         ),
         (
             "deps/lib/package.bnt",
-            "language \"0.0.10\"\npackage Library\nend package\n",
+            "language \"0.0.11\"\npackage Library\nend package\n",
         ),
         ("deps/lib/Value.bnt", ""),
     ]);
@@ -1214,6 +1219,7 @@ fn die_internal_dependencies_keep_source_spans_and_participate_in_cycles() {
         source.as_bytes(),
         newline::resolve_newlines(lexed.tokens),
         lexed.comments,
+        lexed.pending,
         &mut ids,
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);

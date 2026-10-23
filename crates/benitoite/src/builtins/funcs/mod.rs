@@ -80,6 +80,7 @@ pub mod file;
 pub(crate) mod fixed_io;
 pub mod float;
 pub(crate) mod float32;
+pub(crate) mod format;
 pub mod integer;
 pub mod io_error;
 pub mod lazy;
@@ -157,6 +158,8 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
     width_bits::DECLS,
     scope::DECLS,
     log::DECLS,
+    string::DISPLAY_WIDTH_DECLS,
+    format::DECLS,
 ];
 
 #[cfg(test)]

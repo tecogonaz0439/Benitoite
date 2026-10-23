@@ -70,6 +70,134 @@ class Project:
 
 
 
+class FileEffects(Project, unittest.TestCase):
+    # 作成時の関門: 実inventoryと編集・通常checkの境界で、元バイト位置、
+    # importの順序と合併後の純粋さを守る。既存例にはファイルusesがなく、
+    # 誤った挿入や個別usesだけの署名でも通る。専用APIや段の置換は要らない。
+    def test_inventory_file_uses_and_original_byte_boundary(self):
+        for ending in ('\n', '\r\n'):
+            with self.subTest(ending=ending):
+                source = ('//! 日本語の説明\n'
+                          '// import のない入力\nuses Log // 追加する契約\n'
+                          'public record Person\n name: String\nend record\n'
+                          'public function identity(value: String) -> String\n return value\nend function\n')
+                data = source.replace('\n', ending).encode()
+                self.source.write_bytes(data)
+                inv = derive.collect(self.root, self.config)
+                self.assertEqual(inv['version'], 3)
+                module = next(m for m in inv['modules'] if m['name'] == 'People')
+                use = module['fileUses']
+                self.assertEqual(use['text'], 'uses Log')
+                self.assertEqual(use['span'], {'path': 'People.bnt', 'start': data.index(b'uses Log'),
+                                              'end': data.index(b'uses Log') + len(b'uses Log')})
+                self.assertEqual(module['importInsertLimit'], use['span']['start'])
+                self.assertEqual(module['preambleEnd'], len('//! 日本語の説明'.encode()))
+                self.assertEqual(inv['functions']['People.identity']['signature']['effects'],
+                                 {'names': [{'tag': 'builtin', 'name': 'Log.Log'}], 'vars': [], 'failures': []})
+                for change in ('missing', 'missing-limit', 'old', 'null', 'bool', 'past-end', 'before-preamble', 'wrong-text', 'wrong-path'):
+                    with self.subTest(change=change):
+                        changed = copy.deepcopy(inv)
+                        row = next(m for m in changed['modules'] if m['name'] == 'People')
+                        if change == 'missing':
+                            del row['fileUses']
+                        elif change == 'missing-limit':
+                            del row['importInsertLimit']
+                        elif change == 'old':
+                            changed['version'] = 2
+                        elif change == 'null':
+                            row['importInsertLimit'] = None
+                        elif change == 'bool':
+                            row['importInsertLimit'] = True
+                        elif change == 'past-end':
+                            row['importInsertLimit'] = len(data) + 1
+                            row['fileUses']['span'].update(start=len(data) + 1, end=len(data) + 9)
+                        elif change == 'before-preamble':
+                            row['preambleEnd'] = row['importInsertLimit'] + 1
+                        elif change == 'wrong-text':
+                            row['fileUses']['text'] = 'uses IO.All'
+                        else:
+                            row['fileUses']['span']['path'] = 'Other.bnt'
+                        with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
+                            derive.validate_inventory(changed, self.root)
+
+    def test_pending_imports_with_file_uses_are_refused_without_writes(self):
+        helper = self.root / 'Helpers.bnt'
+        helper.write_text('public function encode(value: String) -> String\n return value\nend function\n'
+                          'public function decode(value: String) -> String\n return value\nend function\n')
+        self.config_value['targets'][0]['fields'] = {
+            'name': {'encode': 'Helpers.encode', 'decode': 'Helpers.decode'}}
+        self.save_config()
+
+        def with_import(target, inventory, imports):
+            imports.require('Helpers', 'Preferred')
+            return fixed_functions(target, inventory, imports)
+
+        self.manager = derive.Manager(self.root, self.config, with_import)
+        for ending in ('\n', '\r\n'):
+            for existing in (False, True):
+                with self.subTest(ending=ending, existing=existing):
+                    self.source.write_bytes(('//! 手書きの説明\n'
+                                             '// import を入れる位置\nuses Log\n'
+                                             'public record Person\n name: String\nend record\n').replace('\n', ending).encode())
+                    if existing:
+                        # 通常宣言より前でもusesより後の領域はimportの置き場にしない。
+                        fixed = derive.Manager(self.root, self.config, fixed_functions)
+                        manifest, checksum = fixed.preview(self.root / ('fixed-' + repr(ending)))
+                        fixed.apply(manifest, checksum)
+                        data = self.source.read_bytes()
+                        begin = data.index(b'// benitoite-derive:begin')
+                        body = data[begin:]
+                        self.source.write_bytes(data[:begin].replace(b'public record', body + b'public record', 1))
+                    before = self.files()
+                    with self.assertRaisesRegex(ValueError, 'required imports.*file.*uses'):
+                        self.preview('refused')
+                    self.assertEqual(self.files(), before)
+                    if self.manager.record.exists():
+                        self.manager.record.unlink()
+
+    def test_generated_property_functions_keep_file_effects(self):
+        self.config_value['targets'][0] = {
+            'source': 'People.bnt', 'type': 'People.Person', 'region': 'person',
+            'property': {'generator': 'genPerson', 'shrinker': 'shrinkPerson'}}
+        self.save_config()
+        self.source.write_text('import Benitoite.Unofficial.Test.Property as P\n'
+                               'import Benitoite.Unofficial.IO.Random\nuses Log\n'
+                               'public record Person\n name: String\nend record\n'
+                               'function main() -> Unit\n ()\nend function\n')
+        self.manager = derive.Manager(self.root, self.config)
+        self.install()
+        self.manager.check()
+        data = self.source.read_bytes()
+        self.assertLess(data.index(b'uses Log'), data.index(b'function genPerson'))
+        result = subprocess.run([derive.BENITOITE, 'check', self.source], capture_output=True)
+        self.assertEqual(result.returncode, 2, result.stderr.decode())
+        self.assertIn('E0401', result.stderr.decode())
+        self.assertIn('uses Log', result.stderr.decode())
+        self.assertNotIn('E0414', result.stderr.decode())
+        self.source.write_bytes(data.replace(b'uses Log\n', b''))
+        result = subprocess.run([derive.BENITOITE, 'check', self.source], capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+
+    def test_import_only_region_before_file_uses_cannot_gain_declarations(self):
+        self.config_value['targets'][0].pop('json')
+        self.config_value['targets'][0]['show'] = True
+        self.save_config()
+
+        def import_only(target, inventory, imports):
+            imports.require('Benitoite.Trait', 'T')
+            return derive.Generated('', ())
+
+        self.manager = derive.Manager(self.root, self.config, import_only)
+        self.install()
+        data = self.source.read_bytes()
+        self.source.write_bytes(data.replace(b'public record', b'uses Log\npublic record', 1))
+        self.manager = derive.Manager(self.root, self.config, fixed_functions)
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'generated declarations cannot precede file uses'):
+            self.preview('before-uses')
+        self.assertEqual(self.files(), before)
+
+
 class Management(Project, unittest.TestCase):
     def test_preview_apply_check_reapply_and_empty_second_diff(self):
         # UTF-8 before the declaration and both original line-ending styles.
@@ -391,8 +519,9 @@ class Management(Project, unittest.TestCase):
     # 四問: 実際の出力を使い、外部JSONの契約と意味ハッシュの境界を確かめる。
     # 未知のタグや番号を通す退行、表示を意味として読む退行で失敗する。
     # VMの既存例はJSONの読者を検査しない。テスト専用の本番APIは加えない。
-    def test_v2_reader_and_semantic_hash_contract(self):
+    def test_v3_reader_and_semantic_hash_contract(self):
         inv = derive.collect(self.root, self.config)
+        self.assertTrue(all(m['fileUses'] is None and m['importInsertLimit'] is None for m in inv['modules']))
         original = derive.structure(inv['targets'][0], inv)
         changed = copy.deepcopy(inv)
         field = changed['targets'][0]['fields'][0]
@@ -400,10 +529,10 @@ class Management(Project, unittest.TestCase):
         field['typeSpan']['start'] += 10
         field['metadata'] = {'resolved': 'unrelated display', 'original': 'Text', 'span': {}}
         changed['targets'][0]['package'] = False
-        derive.validate_inventory(changed)
+        derive.validate_inventory(changed, self.root)
         self.assertEqual(derive.structure(changed['targets'][0], changed), original)
         changed['targets'][0]['fields'][0]['type']['head']['name'] = 'Benitoite.Boolean.Boolean'
-        derive.validate_inventory(changed)
+        derive.validate_inventory(changed, self.root)
         self.assertNotEqual(derive.structure(changed['targets'][0], changed)['declarationSha256'], original['declarationSha256'])
         changed = copy.deepcopy(inv)
         changed['functions']['Unrelated.unchecked'] = copy.deepcopy(next(iter(inv['functions'].values())))
@@ -426,18 +555,18 @@ class Management(Project, unittest.TestCase):
                 changed = copy.deepcopy(inv)
                 changed['targets'][0]['fields'][0]['type'] = bad
                 with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
-                    derive.validate_inventory(changed)
+                    derive.validate_inventory(changed, self.root)
         for bad in ('Ctor { arity: 2 }', {'tag': 'constructor', 'arity': 0}, {'tag': 'mystery'}):
             with self.subTest(kind=bad):
                 changed = copy.deepcopy(inv)
                 c = next(iter(changed['classes'].values()))
                 c['paramKind'] = bad
                 with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
-                    derive.validate_inventory(changed)
+                    derive.validate_inventory(changed, self.root)
         changed = copy.deepcopy(inv)
         changed['targets'][0]['visibility'] = 'private'
         with self.assertRaisesRegex(ValueError, 'inconsistent inventory visibility'):
-            derive.validate_inventory(changed)
+            derive.validate_inventory(changed, self.root)
 
     def test_opaque_record_and_data_generation_refused_in_owner_module(self):
         for declaration in ('record Person\n  name: String\nend record\n',
@@ -534,7 +663,7 @@ end function
         path, checksum = self.preview('migration')
         plan = json.loads(path.read_bytes())
         self.assertEqual(plan['version'], 3)
-        self.assertEqual(plan['recordAfter']['inventoryVersion'], 2)
+        self.assertEqual(plan['recordAfter']['inventoryVersion'], 3)
         self.assertEqual(plan['recordAfter']['hashVersion'], 3)
         self.assertEqual(plan['migration']['previousRecord'], old)
         self.assertFalse(plan['migration']['semanticHashesComparable'])
@@ -577,13 +706,43 @@ end function
         receipt = manifest.with_name(manifest.name + '.receipt.json')
         proof = json.loads(receipt.read_bytes())
         self.assertEqual(proof['version'], 3)
-        self.assertEqual(proof['generatorVersion'], '3.0.0-syntax-batch4')
+        self.assertEqual(proof['generatorVersion'], '3.1.0-syntax-batch5')
         self.assertEqual(proof['recordSha256'], hashlib.sha256(self.manager.record.read_bytes()).hexdigest())
         self.manager.check()
         self.assertIsNone(self.manager.apply(manifest, checksum))
         proof['version'] = 2
         receipt.write_text(json.dumps(proof))
         self.reject_apply_unchanged(manifest, checksum, 'incompatible_receipt')
+
+    def test_batch4_record_requires_new_review_and_protects_old_body(self):
+        manifest, _ = self.install()
+        stale = json.loads(manifest.read_bytes())
+        stale.update(inventoryVersion=2, generatorVersion='3.0.0-syntax-batch4')
+        manifest = self.root / 'batch4-manifest.json'
+        manifest.write_text(json.dumps(stale))
+        self.reject_apply_unchanged(manifest, hashlib.sha256(manifest.read_bytes()).hexdigest(),
+                                    'derive.incompatible_manifest')
+        old = json.loads(self.manager.record.read_bytes())
+        old.update(inventoryVersion=2, generatorVersion='3.0.0-syntax-batch4')
+        self.manager.record.write_text(json.dumps(old))
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'derive.migration_required'):
+            self.manager.check()
+        self.assertEqual(self.files(), before)
+        manifest, checksum = self.preview('batch5')
+        plan = json.loads(manifest.read_bytes())
+        self.assertEqual(plan['migration']['previousRecord'], old)
+        self.assertFalse(plan['migration']['semanticHashesComparable'])
+        self.assertEqual((manifest.parent / 'changes.diff').read_bytes(), b'')
+        self.assertEqual(self.manager.apply(manifest, checksum), 0)
+        self.manager.check()
+        self.assertIsNone(self.manager.apply(manifest, checksum))
+        self.manager.record.write_text(json.dumps(old))
+        self.source.write_bytes(self.source.read_bytes().replace(b'return 1', b'return 2'))
+        before = self.files()
+        with self.assertRaisesRegex(ValueError, 'derive.modified_region'):
+            self.preview('modified-batch4')
+        self.assertEqual(self.files(), before)
 
 
     def test_public_cli_empty_workflow_and_argument_errors(self):
@@ -869,6 +1028,7 @@ end function
             ('-> Result[Json.Value, Codec.ConversionError]', '-> Result[String, Codec.ConversionError]'),
             ('-> Result[String, Codec.ConversionError]', '-> Result[String, Codec.ConversionError] uses IO.All'),
             ('enc(value: String)', 'enc[T](value: String)'),
+            ('public record Person', 'uses Log\npublic record Person'),
         ]:
             with self.subTest(change=change):
                 self.source.write_text(original.replace(*change))
@@ -1109,6 +1269,7 @@ end function
             ('-> Property.Shrinker[String]', '-> Property.Shrinker[Integer]'),
             ('-> Property.Gen[String]', '-> Property.Gen[String] uses IO.All'),
             ('customGen()', 'customGen[T]()'),
+            ('public record Person', 'uses Log\npublic record Person'),
         ]:
             with self.subTest(change=new):
                 self.source.write_text(original.replace(old, new))

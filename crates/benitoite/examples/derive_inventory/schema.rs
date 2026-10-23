@@ -139,6 +139,8 @@ impl Output<'_> {
         Ok(json!({"names":names,"vars":vars,"failures":failures}))
     }
     pub(super) fn signature(&self, s: &Scheme) -> Result<Value, Error> {
+        // 宣言収集の合併済みSchemeを渡し、元ASTの個別usesから作り直さない。
+        // 入れ子の関数型と実装メソッドは追加対象ではない（設計書 03-06「外部生成の宣言情報」）。
         let mut value = self.function_type(&s.param_names, &s.params, &s.ret, &s.effects, s)?;
         let obj = value.as_object_mut().ok_or(text::INVALID_SCHEMA)?;
         obj.remove("tag");

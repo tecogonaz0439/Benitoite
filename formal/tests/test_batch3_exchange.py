@@ -94,7 +94,7 @@ class Batch3ExchangeTests(unittest.TestCase):
             result, _ = self.run_tool('surfaceCheck', data)
             self.assertEqual(result.returncode, 2, result.stdout)
         for f in FILES:
-            for v in ((0, 1, 5, 6, 7, 14) if f == 'corpus' else (0, 1, 6, 7, 13)):
+            for v in ((0, 1, 5, 6, 7, 15) if f == 'corpus' else (0, 1, 7, 8, 13)):
                 data = copy.deepcopy(self.data)
                 data[f]['version'] = v
                 tool = next(t for t, fs in TOOLS.items() if f in fs)
@@ -160,10 +160,10 @@ def rust_inputs(directory, profile=None):
     """五形式と、実ソースごとの固定した期待件数を照合する。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
     version = data['corpus']['version']
-    if version not in (12, 13):
-        raise AssertionError('expected corpus12 or corpus13')
+    if version not in (12, 13, 14):
+        raise AssertionError('expected corpus12, corpus13 or corpus14')
     for f, doc in data.items():
-        if doc['version'] != (version if f == 'corpus' else (5 if version == 13 else 4)):
+        if doc['version'] != (version if f == 'corpus' else (6 if version == 14 else 5 if version == 13 else 4)):
             raise AssertionError(f'{f}: corpus/sidecar version mismatch')
     inputs = data['corpus']['inputs']
     if not inputs or not any(i['definitions'] for i in inputs):

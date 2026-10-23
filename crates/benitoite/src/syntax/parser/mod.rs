@@ -57,6 +57,7 @@ mod decls;
 mod effects;
 mod exprs;
 mod foreign;
+mod format;
 mod header;
 mod interp;
 mod items;
@@ -72,6 +73,7 @@ mod traits;
 mod types;
 
 use super::ast::Module;
+use super::lexer::{InterpolationId, PendingDiagnostic, PendingKind};
 use super::token::{Comment, Token};
 use crate::base::{FileId, IdGen, SourceKind};
 use crate::diag::Diagnostic;
@@ -85,12 +87,14 @@ pub struct ParseOutput {
     pub module: Module,
     /// 字句の切り出しの結果のコメントをそのまま入れる（ドキュメントコメントも含む）
     pub comments: Vec<Comment>,
-    /// 構文解析の誤り。字句の切り出しの誤りは含めない（呼び出し側の読み込みの段が先に並べる）
+    /// 構文解析の誤りと、書式の範囲として確定しなかった保留診断。
+    /// 保留していない字句の誤りは呼び出し側が先に並べる。
     pub diagnostics: Vec<Diagnostic>,
 }
 
 /// NEWLINE を含む字句の列（`resolve_newlines` の出力）から、ファイル一つのモジュールの AST を作る。
 /// `kind` が `SourceKind::Prelude`（標準ライブラリのソース。設計書 02-02「ソースとファイル ID」）のときだけ、`@builtin`・本体のない関数の宣言・制約 `ordered` を受け付ける。
+/// `pending` は同じ `lex` の結果を渡す。書式の範囲として確定しない診断は出力へ戻す。
 /// ノード番号は `ids` から振る。`ids` は検査ごとに一つで、すべてのファイルで共有する（02-03「AST」）。
 /// ドキュメントコメントは `comments` から宣言に結び付け、結び付かなかったものを構文エラーにする。
 /// `text` は `lex` に渡したのと同じソースのバイト列（`Source::text()`）である。ドキュメントコメントと宣言の間の
@@ -101,11 +105,13 @@ pub fn parse(
     text: &[u8],
     tokens: Vec<Token>,
     comments: Vec<Comment>,
+    pending: Vec<PendingDiagnostic>,
     ids: &mut IdGen,
 ) -> ParseOutput {
     let mut parser = Parser::new(file, kind, text, tokens, &comments, std::mem::take(ids));
     let module = decls::parse_module(&mut parser);
     parser.docs.finish(&mut parser.diagnostics);
+    restore_pending(&mut parser, pending);
     *ids = std::mem::take(&mut parser.ids);
     let diagnostics = std::mem::take(&mut parser.diagnostics);
     drop(parser);
@@ -116,11 +122,58 @@ pub fn parse(
     }
 }
 
+// 書式の範囲を確定しない経路では、中断後も元の診断をすべて戻す。
+// 記号は通常の advance が選んだ文脈付きの診断を優先する（02-03「補間の入れ子」）。
+fn restore_pending(parser: &mut Parser, pending: Vec<PendingDiagnostic>) {
+    if pending.is_empty() {
+        return;
+    }
+    let mut numbers = Vec::new();
+    let mut symbols = BTreeSet::new();
+    for pending in pending {
+        if parser
+            .formats
+            .get(&pending.interpolation)
+            .is_some_and(|span| {
+                span.file == pending.span.file
+                    && span.start <= pending.span.start
+                    && pending.span.end <= span.end
+            })
+        {
+            continue;
+        }
+        match pending.kind {
+            PendingKind::Number(diagnostic) => numbers.push(*diagnostic),
+            PendingKind::BadSymbol => {
+                symbols.insert(pending.span.start);
+            }
+        }
+    }
+    let saved_pos = parser.pos;
+    let saved_aborted = parser.aborted;
+    parser.aborted = false;
+    for index in 0..parser.tokens.len() {
+        if parser
+            .tokens
+            .get(index)
+            .is_some_and(|t| symbols.contains(&t.span.start))
+        {
+            parser.pos = index;
+            foreign::report_unclaimed(parser);
+        }
+    }
+    parser.pos = saved_pos;
+    parser.aborted = saved_aborted;
+    numbers.sort_by_key(|d| d.primary.as_ref().map(|label| label.span.start));
+    numbers.append(&mut parser.diagnostics);
+    parser.diagnostics = numbers;
+}
+
 use super::ast::{ErrorNode, Literal, Name};
 use super::token::{TokenKind, TokenValue};
 use crate::base::{BytePos, NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode};
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Debug)]
 pub(super) struct Fail;
@@ -168,6 +221,8 @@ pub(super) struct Parser<'a> {
     pub(super) reported_symbols: BTreeSet<usize>,
     pub(super) ctx: Context,
     pub(super) lambda_bounds: super::lambda_bounds::Bounds,
+    pub(super) interpolation: Option<InterpolationId>,
+    pub(super) formats: BTreeMap<InterpolationId, Span>,
     docs: items::DocStore<'a>,
 }
 
@@ -198,6 +253,8 @@ impl<'a> Parser<'a> {
         }
         let lambda_bounds = super::lambda_bounds::Bounds::new(&tokens);
         Self {
+            interpolation: None,
+            formats: BTreeMap::new(),
             lambda_bounds,
             file,
             kind,
@@ -566,6 +623,14 @@ impl<'a> Parser<'a> {
                 .get(prev)
                 .is_none_or(|t| t.kind == TokenKind::Newline),
         }
+    }
+
+    /// 継続規則で NEWLINE が消えた場合も、元の物理行の境界で行の先頭かを判定する。
+    pub(super) fn after_physical_newline(&self) -> bool {
+        self.pos
+            .checked_sub(1)
+            .and_then(|i| self.tokens.get(i))
+            .is_some_and(|previous| previous.end_line < self.peek().start_line)
     }
 }
 
@@ -1406,6 +1471,7 @@ mod tests {
                 source.as_bytes(),
                 tokens,
                 lexed.comments,
+                lexed.pending,
                 &mut IdGen::new(),
             );
             if source.starts_with("function") {
@@ -1904,6 +1970,7 @@ mod tests {
                 source.as_bytes(),
                 tokens.clone(),
                 lexed.comments.clone(),
+                lexed.pending.clone(),
                 &mut ids,
             );
             assert!(

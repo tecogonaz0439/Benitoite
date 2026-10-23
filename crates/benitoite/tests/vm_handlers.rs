@@ -378,3 +378,44 @@ end function
         std::fs::remove_dir(directory).unwrap();
     }
 }
+
+// 関門: ファイルから追加したFailを、通常の呼出し・脱糖・VMの非再開ハンドラまで通す。
+#[test]
+fn file_uses_failure_contract_connects_to_vm_handlers() {
+    use benitoite::pipeline::{self, CheckOptions};
+    use benitoite::runtime::run::{self, NoInterrupt, OutputTarget, RunEnv, StdinSource};
+    use std::sync::{Arc, Mutex};
+    let checked = pipeline::check_files(&[
+        ("main.bnt", b"import Load\nimport Benitoite.Unofficial.Failure\nfunction main() -> Result[Unit, String]\n bind result: Result[Integer, String] <- Failure.toResult(body: lambda() return Load.fail() end lambda)\n return if result = Result.Error(\"original\") then Result.Ok(()) else Result.Error(\"wrong\") end if\nend function\n"),
+        ("Load.bnt", b"import Benitoite.Unofficial.Failure\nuses Failure.Fail[String]\npublic function fail() -> Integer\n return Failure.raise(error: \"original\")\nend function\n"),
+    ], CheckOptions { require_main: true, deny_warnings: false });
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let core = pipeline::desugar_checked(checked.program.as_ref().unwrap()).unwrap();
+    let program = pipeline::compile(&core, checked.sources).unwrap();
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let result = run::run_program(
+            &program,
+            RunEnv {
+                input: RunInput {
+                    arguments: vec![],
+                    working_directory: "/".into(),
+                    script_directory: "/".into(),
+                },
+                stdin: StdinSource::Empty,
+                stdout: OutputTarget::Capture(Arc::new(Mutex::new(Vec::new()))),
+                stderr: OutputTarget::Capture(Arc::new(Mutex::new(Vec::new()))),
+                interrupt: Box::new(NoInterrupt),
+                parts: None,
+                mode,
+                vm: VmConfig::default(),
+                heap: HeapConfig::default(),
+                dev_panic_after_first_write: false,
+            },
+        );
+        assert_eq!(result.exit_code, 0, "{mode:?}: {result:?}");
+        assert!(
+            result.main_error.is_none() && result.reports.is_empty(),
+            "{result:?}"
+        );
+    }
+}

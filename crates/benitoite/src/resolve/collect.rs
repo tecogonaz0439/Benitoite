@@ -36,7 +36,8 @@ pub(super) struct Resolver<'a> {
     pub(super) alias_edges: BTreeMap<BindingId, Vec<BindingId>>,
     pub(super) trait_edges: BTreeMap<BindingId, Vec<BindingId>>,
     pub(super) const_edges: BTreeMap<BindingId, Vec<BindingId>>,
-    pub(super) contracts: Vec<(BindingId, BindingId, Span)>,
+    // 公開する宣言、参照先、元位置、ファイル単位の宣言からの参照かを保持する。
+    pub(super) contracts: Vec<(BindingId, BindingId, Span, bool)>,
 }
 
 impl<'a> Resolver<'a> {
