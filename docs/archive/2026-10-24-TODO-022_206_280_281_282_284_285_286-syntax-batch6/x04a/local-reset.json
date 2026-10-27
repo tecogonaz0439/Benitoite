@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "from pathlib import Path; import shutil; base=Path(\"target/interval-diff/x04a-local\"); shutil.move(base/\"comparison\",base.parent/\"x04a-attempt-2\"); (base/\"input-manifest.json\").unlink(); shutil.rmtree(base/\"programs\"); print(\"failed local comparison preserved separately; generated snapshot will be rebuilt\")"
+  ],
+  "exit": 0,
+  "seconds": 0.022,
+  "cargoHome": "<tmp>/benitoite-a01a-cargo"
+}

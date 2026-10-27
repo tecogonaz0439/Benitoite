@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1014, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1007, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir, args.vm_dir, args.cli)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 659, in exercise
+    interval_shift_vm.exercise(shift_runner, Path(vm_dir)/'shifts', cli)
+  File "<repo>/formal/tests/interval_shift_vm.py", line 103, in exercise
+    definition['expected'] = source.expectation(obs[name], entries[name], {})
+  File "<repo>/formal/tests/interval_source_compare.py", line 117, in expectation
+    result.update(warnings=[candidate(c, name, entries, sites) for c in row['candidates']],
+  File "<repo>/formal/tests/interval_source_compare.py", line 117, in <listcomp>
+    result.update(warnings=[candidate(c, name, entries, sites) for c in row['candidates']],
+  File "<repo>/formal/tests/interval_source_compare.py", line 85, in candidate
+    assert declaration in sites, ('standard missing', declaration)
+AssertionError: ('standard missing', 'Byte.shiftLeft')

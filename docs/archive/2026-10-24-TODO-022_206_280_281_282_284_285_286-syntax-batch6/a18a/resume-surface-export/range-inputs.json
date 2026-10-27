@@ -1,0 +1,5221 @@
+{
+  "version": 1,
+  "profile": "range",
+  "surfaceVersion": 14,
+  "traversalVersion": 1,
+  "status": "A18aの比較入力。X01のinterval-corpusへの接続・X02の全比較・X03bのVM比較は未実施",
+  "sourceHashes": {
+    "fake-range.bnt": "2096f1cf1052d69ebcbdc25a0b2d00a8b5e3d818919ffda7a64cc924edd8f4c4",
+    "range-existing.bnt": "734a5a1e7e97fab04fa06dcaa4e67cc76dab4c09db64611db2a3a3d624f47bfe",
+    "range.bnt": "e8ac99d288f0c2ee9cfe130c3929dfcec3ae1cff1d6337e8ef3e03cf161daa5b",
+    "rangeAllArms.bnt": "16fb59e023b0360b42a19a4872d5ab04c4cb4464186210f020f2de60aa33deb5",
+    "rangeCall.bnt": "fcf1feb12c89bc5d62a36ffc2073f2efb7766d322108a714b266441d174c7a78",
+    "rangeDynamic.bnt": "18b16a849bf3b96f533e81a2e645871d6386822066cbebf4d985ff34aa7f49f4",
+    "rangeFake.bnt": "dcf761c23961675f4ab5a7ec3936cb1ba0b0576e0a11bef8e2a7e335c317353c",
+    "rangeIncrement.bnt": "75a6f5c388c6fa940abdee2f1ae4e19223288619fd9368b0f2a688752d964236",
+    "rangeSaved.bnt": "b3d4efef47000237a9415cca64c759d9d52ba07167fe719812676349d61c370c",
+    "rangeUnrecognized.bnt": "654894fb1ebb55f2a49b7d95205fc459870e92eeb5be1dfce7d6a435c0e85e4d",
+    "rangeValue.bnt": "cfd53c3e612c1f14b0d22fad27ded19308283a54c7c1718ca27823d5786cc72e"
+  },
+  "definitions": [
+    {
+      "input": "range",
+      "name": "lower",
+      "exchangeName": "lower (fn:43)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "lowerValue",
+      "exchangeName": "lowerValue (fn:44)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "upper",
+      "exchangeName": "upper (fn:45)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "upperValue",
+      "exchangeName": "upperValue (fn:46)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "singleton",
+      "exchangeName": "singleton (fn:47)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "singletonValue",
+      "exchangeName": "singletonValue (fn:48)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "integerMin",
+      "exchangeName": "integerMin (fn:49)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "integerMinValue",
+      "exchangeName": "integerMinValue (fn:50)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "integerMax",
+      "exchangeName": "integerMax (fn:51)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "integerMaxValue",
+      "exchangeName": "integerMaxValue (fn:52)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "reversedBetween",
+      "exchangeName": "reversedBetween (fn:53)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "reversedBetweenValue",
+      "exchangeName": "reversedBetweenValue (fn:54)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "reversedOutside",
+      "exchangeName": "reversedOutside (fn:55)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "reversedOutsideValue",
+      "exchangeName": "reversedOutsideValue (fn:56)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "below",
+      "exchangeName": "below (fn:57)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "belowValue",
+      "exchangeName": "belowValue (fn:58)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "above",
+      "exchangeName": "above (fn:59)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:565"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "aboveValue",
+      "exchangeName": "aboveValue (fn:60)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "nestedInner",
+      "exchangeName": "nestedInner (fn:61)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "14",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:565"
+        ],
+        [
+          "14",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2",
+        "8"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "nestedOuter",
+      "exchangeName": "nestedOuter (fn:62)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "14",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:565"
+        ],
+        [
+          "14",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2",
+        "8"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "unrelated",
+      "exchangeName": "unrelated (fn:63)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "unrelatedCaller",
+      "exchangeName": "unrelatedCaller (fn:64)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:63",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "other"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "threeFields",
+      "exchangeName": "threeFields (fn:65)",
+      "expressionCount": "12",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:566",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "6",
+          "kind": "call",
+          "callee": "fn:567",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "9",
+          "fn:568"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range",
+      "name": "increment",
+      "exchangeName": "increment (fn:66)",
+      "expressionCount": "14",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "add"
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "incrementOverflow",
+      "exchangeName": "incrementOverflow (fn:67)",
+      "expressionCount": "14",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "add"
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "lowerOnlyOk",
+      "exchangeName": "lowerOnlyOk (fn:68)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "upperOnlyOk",
+      "exchangeName": "upperOnlyOk (fn:69)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "singletonOnlyOk",
+      "exchangeName": "singletonOnlyOk (fn:70)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "integerMinOnlyOk",
+      "exchangeName": "integerMinOnlyOk (fn:71)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "integerMaxOnlyOk",
+      "exchangeName": "integerMaxOnlyOk (fn:72)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "incrementOnlyOk",
+      "exchangeName": "incrementOnlyOk (fn:73)",
+      "expressionCount": "15",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "add"
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "incrementOverflowOnlyOk",
+      "exchangeName": "incrementOverflowOnlyOk (fn:74)",
+      "expressionCount": "15",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "add"
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "lowerFields",
+      "exchangeName": "lowerFields (fn:75)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:566",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "12",
+          "kind": "call",
+          "callee": "fn:567",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "15",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "15",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "upperFields",
+      "exchangeName": "upperFields (fn:76)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:566",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "12",
+          "kind": "call",
+          "callee": "fn:567",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "15",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "15",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "singletonFields",
+      "exchangeName": "singletonFields (fn:77)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:566",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "12",
+          "kind": "call",
+          "callee": "fn:567",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "15",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "15",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "integerMinFields",
+      "exchangeName": "integerMinFields (fn:78)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:566",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "12",
+          "kind": "call",
+          "callee": "fn:567",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "15",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "15",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "integerMaxFields",
+      "exchangeName": "integerMaxFields (fn:79)",
+      "expressionCount": "19",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:566",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "12",
+          "kind": "call",
+          "callee": "fn:567",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "15",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "15",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "nestedInnerOnlyOk",
+      "exchangeName": "nestedInnerOnlyOk (fn:80)",
+      "expressionCount": "21",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "14",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:565"
+        ],
+        [
+          "14",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2",
+        "8"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "nestedOuterOnlyOk",
+      "exchangeName": "nestedOuterOnlyOk (fn:81)",
+      "expressionCount": "21",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "14",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "9",
+          "fn:565"
+        ],
+        [
+          "14",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2",
+        "8"
+      ]
+    },
+    {
+      "input": "range",
+      "name": "unrelatedOnlyOk",
+      "exchangeName": "unrelatedOnlyOk (fn:82)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:565",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:568",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:558:0",
+        "err": "con:245:1",
+        "error": "data:562",
+        "invalidBounds": "con:562:0",
+        "ok": "con:245:0",
+        "outOfRange": "con:562:1",
+        "owner": "data:558",
+        "result": "data:245"
+      },
+      "standards": [
+        {
+          "declaration": "fn:565",
+          "rangeCheck": {
+            "checkedConstructor": "con:558:0",
+            "err": "con:245:1",
+            "error": "data:562",
+            "invalidBounds": "con:562:0",
+            "ok": "con:245:0",
+            "outOfRange": "con:562:1",
+            "owner": "data:558",
+            "result": "data:245"
+          }
+        },
+        {
+          "declaration": "fn:568",
+          "rangeValue": {
+            "owner": "data:558",
+            "constructor": "con:558:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:565"
+        ],
+        [
+          "8",
+          "fn:568"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "range-existing",
+      "name": "upperEndpoint",
+      "exchangeName": "upperEndpoint (fn:43)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:532",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "labels": [
+            "minimum",
+            "maximum",
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:532"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range-existing",
+      "name": "invalidBounds",
+      "exchangeName": "invalidBounds (fn:44)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:532",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "labels": [
+            "minimum",
+            "maximum",
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:532"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range-existing",
+      "name": "outsideRange",
+      "exchangeName": "outsideRange (fn:45)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:532",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "labels": [
+            "minimum",
+            "maximum",
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:532"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range-existing",
+      "name": "integerMinimum",
+      "exchangeName": "integerMinimum (fn:46)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:532",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "labels": [
+            "minimum",
+            "maximum",
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:532"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range-existing",
+      "name": "integerMaximum",
+      "exchangeName": "integerMaximum (fn:47)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:532",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "labels": [
+            "minimum",
+            "maximum",
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:532"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range-existing",
+      "name": "recheck",
+      "exchangeName": "recheck (fn:48)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:532",
+          "positions": [
+            0,
+            1,
+            2
+          ],
+          "labels": [
+            "minimum",
+            "maximum",
+            "value"
+          ]
+        },
+        {
+          "key": "4",
+          "kind": "call",
+          "callee": "fn:533",
+          "positions": [
+            0
+          ],
+          "labels": [
+            null
+          ]
+        },
+        {
+          "key": "7",
+          "kind": "call",
+          "callee": "fn:534",
+          "positions": [
+            0
+          ],
+          "labels": [
+            null
+          ]
+        },
+        {
+          "key": "10",
+          "kind": "call",
+          "callee": "fn:535",
+          "positions": [
+            0
+          ],
+          "labels": [
+            null
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:532"
+        ],
+        [
+          "10",
+          "fn:535"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "range-existing",
+      "name": "checkedValue",
+      "exchangeName": "checkedValue (fn:49)",
+      "expressionCount": "9",
+      "operationsInPreorder": [
+        {
+          "key": "5",
+          "kind": "call",
+          "callee": "fn:535",
+          "positions": [
+            0
+          ],
+          "labels": [
+            null
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:525:0",
+        "err": "con:212:1",
+        "error": "data:529",
+        "invalidBounds": "con:529:0",
+        "ok": "con:212:0",
+        "outOfRange": "con:529:1",
+        "owner": "data:525",
+        "result": "data:212"
+      },
+      "standards": [
+        {
+          "declaration": "fn:532",
+          "rangeCheck": {
+            "checkedConstructor": "con:525:0",
+            "err": "con:212:1",
+            "error": "data:529",
+            "invalidBounds": "con:529:0",
+            "ok": "con:212:0",
+            "outOfRange": "con:529:1",
+            "owner": "data:525",
+            "result": "data:212"
+          }
+        },
+        {
+          "declaration": "fn:535",
+          "rangeValue": {
+            "owner": "data:525",
+            "constructor": "con:525:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "5",
+          "fn:535"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "fake-range",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "fake-range",
+      "name": "fakeIdentity",
+      "exchangeName": "fakeIdentity (fn:44)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:43",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeCall",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeCall",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:527",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [
+        {
+          "declaration": "fn:527",
+          "rangeCheck": {
+            "checkedConstructor": "con:520:0",
+            "err": "con:207:1",
+            "error": "data:524",
+            "invalidBounds": "con:524:0",
+            "ok": "con:207:0",
+            "outOfRange": "con:524:1",
+            "owner": "data:520",
+            "result": "data:207"
+          }
+        },
+        {
+          "declaration": "fn:530",
+          "rangeValue": {
+            "owner": "data:520",
+            "constructor": "con:520:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:527"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "rangeSaved",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeSaved",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "14",
+      "operationsInPreorder": [
+        {
+          "key": "1",
+          "kind": "call",
+          "callee": "fn:527",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:530",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [
+        {
+          "declaration": "fn:527",
+          "rangeCheck": {
+            "checkedConstructor": "con:520:0",
+            "err": "con:207:1",
+            "error": "data:524",
+            "invalidBounds": "con:524:0",
+            "ok": "con:207:0",
+            "outOfRange": "con:524:1",
+            "owner": "data:520",
+            "result": "data:207"
+          }
+        },
+        {
+          "declaration": "fn:530",
+          "rangeValue": {
+            "owner": "data:520",
+            "constructor": "con:520:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "1",
+          "fn:527"
+        ],
+        [
+          "9",
+          "fn:530"
+        ]
+      ],
+      "matches": [
+        "7"
+      ]
+    },
+    {
+      "input": "rangeAllArms",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeAllArms",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "20",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:527",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "eq"
+        },
+        {
+          "key": "9",
+          "kind": "call",
+          "callee": "fn:530",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        },
+        {
+          "key": "13",
+          "kind": "intDiv"
+        },
+        {
+          "key": "16",
+          "kind": "intDiv"
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [
+        {
+          "declaration": "fn:527",
+          "rangeCheck": {
+            "checkedConstructor": "con:520:0",
+            "err": "con:207:1",
+            "error": "data:524",
+            "invalidBounds": "con:524:0",
+            "ok": "con:207:0",
+            "outOfRange": "con:524:1",
+            "owner": "data:520",
+            "result": "data:207"
+          }
+        },
+        {
+          "declaration": "fn:530",
+          "rangeValue": {
+            "owner": "data:520",
+            "constructor": "con:520:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:527"
+        ],
+        [
+          "9",
+          "fn:530"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "rangeValue",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeValue",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "5",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:530",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [
+        {
+          "declaration": "fn:527",
+          "rangeCheck": {
+            "checkedConstructor": "con:520:0",
+            "err": "con:207:1",
+            "error": "data:524",
+            "invalidBounds": "con:524:0",
+            "ok": "con:207:0",
+            "outOfRange": "con:524:1",
+            "owner": "data:520",
+            "result": "data:207"
+          }
+        },
+        {
+          "declaration": "fn:530",
+          "rangeValue": {
+            "owner": "data:520",
+            "constructor": "con:520:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "2",
+          "fn:530"
+        ]
+      ],
+      "matches": []
+    },
+    {
+      "input": "rangeFake",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeFake",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "7",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:43",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeDynamic",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeDynamic",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "13",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:527",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "call",
+          "callee": "fn:530",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [
+        {
+          "declaration": "fn:527",
+          "rangeCheck": {
+            "checkedConstructor": "con:520:0",
+            "err": "con:207:1",
+            "error": "data:524",
+            "invalidBounds": "con:524:0",
+            "ok": "con:207:0",
+            "outOfRange": "con:524:1",
+            "owner": "data:520",
+            "result": "data:207"
+          }
+        },
+        {
+          "declaration": "fn:530",
+          "rangeValue": {
+            "owner": "data:520",
+            "constructor": "con:520:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:527"
+        ],
+        [
+          "8",
+          "fn:530"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "rangeIncrement",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeIncrement",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "15",
+      "operationsInPreorder": [
+        {
+          "key": "3",
+          "kind": "call",
+          "callee": "fn:527",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "8",
+          "kind": "intDiv"
+        },
+        {
+          "key": "10",
+          "kind": "call",
+          "callee": "fn:530",
+          "positions": [
+            0
+          ],
+          "labels": [
+            "value"
+          ]
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [
+        {
+          "declaration": "fn:527",
+          "rangeCheck": {
+            "checkedConstructor": "con:520:0",
+            "err": "con:207:1",
+            "error": "data:524",
+            "invalidBounds": "con:524:0",
+            "ok": "con:207:0",
+            "outOfRange": "con:524:1",
+            "owner": "data:520",
+            "result": "data:207"
+          }
+        },
+        {
+          "declaration": "fn:530",
+          "rangeValue": {
+            "owner": "data:520",
+            "constructor": "con:520:0"
+          }
+        }
+      ],
+      "apiAt": [
+        [
+          "3",
+          "fn:527"
+        ],
+        [
+          "10",
+          "fn:530"
+        ]
+      ],
+      "matches": [
+        "2"
+      ]
+    },
+    {
+      "input": "rangeUnrecognized",
+      "name": "checkInteger",
+      "exchangeName": "checkInteger (fn:43)",
+      "expressionCount": "3",
+      "operationsInPreorder": [],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    },
+    {
+      "input": "rangeUnrecognized",
+      "name": "sample",
+      "exchangeName": "sample (fn:44)",
+      "expressionCount": "9",
+      "operationsInPreorder": [
+        {
+          "key": "2",
+          "kind": "call",
+          "callee": "fn:43",
+          "positions": [
+            2,
+            1,
+            0
+          ],
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ]
+        },
+        {
+          "key": "4",
+          "kind": "intDiv"
+        }
+      ],
+      "rangeNames": {
+        "checkedConstructor": "con:520:0",
+        "err": "con:207:1",
+        "error": "data:524",
+        "invalidBounds": "con:524:0",
+        "ok": "con:207:0",
+        "outOfRange": "con:524:1",
+        "owner": "data:520",
+        "result": "data:207"
+      },
+      "standards": [],
+      "apiAt": [],
+      "matches": []
+    }
+  ],
+  "cases": [
+    {
+      "id": "lower",
+      "input": "range",
+      "raw": "lower",
+      "projection": "lowerValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "0"
+      ],
+      "result": {
+        "Ok": [
+          "0",
+          "10",
+          "0"
+        ]
+      },
+      "value": "0",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "lowerOnlyOk",
+      "fields": "lowerFields",
+      "interval": [
+        "0",
+        "10"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "lower",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "lowerValue",
+          "expectedTrace": [
+            "3",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "lowerOnlyOk",
+          "expectedTrace": [
+            "3",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        },
+        "fields": {
+          "name": "lowerFields",
+          "expectedTrace": null
+        }
+      }
+    },
+    {
+      "id": "upper",
+      "input": "range",
+      "raw": "upper",
+      "projection": "upperValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "10"
+      ],
+      "result": {
+        "Ok": [
+          "0",
+          "10",
+          "10"
+        ]
+      },
+      "value": "10",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "upperOnlyOk",
+      "fields": "upperFields",
+      "interval": [
+        "0",
+        "10"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "upper",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "upperValue",
+          "expectedTrace": [
+            "3",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "upperOnlyOk",
+          "expectedTrace": [
+            "3",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        },
+        "fields": {
+          "name": "upperFields",
+          "expectedTrace": null
+        }
+      }
+    },
+    {
+      "id": "singleton",
+      "input": "range",
+      "raw": "singleton",
+      "projection": "singletonValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "7",
+        "7",
+        "7"
+      ],
+      "result": {
+        "Ok": [
+          "7",
+          "7",
+          "7"
+        ]
+      },
+      "value": "7",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "singletonOnlyOk",
+      "fields": "singletonFields",
+      "interval": [
+        "7",
+        "7"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "singleton",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "singletonValue",
+          "expectedTrace": [
+            "3",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "singletonOnlyOk",
+          "expectedTrace": [
+            "3",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        },
+        "fields": {
+          "name": "singletonFields",
+          "expectedTrace": null
+        }
+      }
+    },
+    {
+      "id": "integer-min",
+      "input": "range",
+      "raw": "integerMin",
+      "projection": "integerMinValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "-9223372036854775808",
+        "9223372036854775807",
+        "-9223372036854775808"
+      ],
+      "result": {
+        "Ok": [
+          "-9223372036854775808",
+          "9223372036854775807",
+          "-9223372036854775808"
+        ]
+      },
+      "value": "-9223372036854775808",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "integerMinOnlyOk",
+      "fields": "integerMinFields",
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "integerMin",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "integerMinValue",
+          "expectedTrace": [
+            "3",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "integerMinOnlyOk",
+          "expectedTrace": [
+            "3",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        },
+        "fields": {
+          "name": "integerMinFields",
+          "expectedTrace": null
+        }
+      }
+    },
+    {
+      "id": "integer-max",
+      "input": "range",
+      "raw": "integerMax",
+      "projection": "integerMaxValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "-9223372036854775808",
+        "9223372036854775807",
+        "9223372036854775807"
+      ],
+      "result": {
+        "Ok": [
+          "-9223372036854775808",
+          "9223372036854775807",
+          "9223372036854775807"
+        ]
+      },
+      "value": "9223372036854775807",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "integerMaxOnlyOk",
+      "fields": "integerMaxFields",
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "integerMax",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "integerMaxValue",
+          "expectedTrace": [
+            "3",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "integerMaxOnlyOk",
+          "expectedTrace": [
+            "3",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        },
+        "fields": {
+          "name": "integerMaxFields",
+          "expectedTrace": null
+        }
+      }
+    },
+    {
+      "id": "reversed-between",
+      "input": "range",
+      "raw": "reversedBetween",
+      "projection": "reversedBetweenValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "10",
+        "0",
+        "5"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "InvalidBounds",
+          "arguments": [
+            "10",
+            "0"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "reversedBetween",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "reversedBetweenValue",
+          "expectedTrace": [
+            "3"
+          ]
+        }
+      }
+    },
+    {
+      "id": "reversed-outside",
+      "input": "range",
+      "raw": "reversedOutside",
+      "projection": "reversedOutsideValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "10",
+        "0",
+        "15"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "InvalidBounds",
+          "arguments": [
+            "10",
+            "0"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "reversedOutside",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "reversedOutsideValue",
+          "expectedTrace": [
+            "3"
+          ]
+        }
+      }
+    },
+    {
+      "id": "below",
+      "input": "range",
+      "raw": "below",
+      "projection": "belowValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "-1"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "OutOfRange",
+          "arguments": [
+            "0",
+            "10",
+            "-1"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "below",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "belowValue",
+          "expectedTrace": [
+            "3"
+          ]
+        }
+      }
+    },
+    {
+      "id": "above",
+      "input": "range",
+      "raw": "above",
+      "projection": "aboveValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "11"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "OutOfRange",
+          "arguments": [
+            "0",
+            "10",
+            "11"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ],
+      "definitions": {
+        "raw": {
+          "name": "above",
+          "expectedTrace": [
+            "2"
+          ]
+        },
+        "projection": {
+          "name": "aboveValue",
+          "expectedTrace": [
+            "3"
+          ]
+        }
+      }
+    },
+    {
+      "id": "nested-inner",
+      "input": "range",
+      "projection": "nestedInner",
+      "onlyOk": "nestedInnerOnlyOk",
+      "value": "105",
+      "interval": [
+        "100",
+        "110"
+      ],
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "12"
+      ],
+      "definitions": {
+        "projection": {
+          "name": "nestedInner",
+          "expectedTrace": [
+            "3",
+            "9",
+            "14"
+          ]
+        },
+        "onlyOk": {
+          "name": "nestedInnerOnlyOk",
+          "expectedTrace": [
+            "3",
+            "9",
+            "14"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        }
+      }
+    },
+    {
+      "id": "nested-outer",
+      "input": "range",
+      "projection": "nestedOuter",
+      "onlyOk": "nestedOuterOnlyOk",
+      "value": "5",
+      "interval": [
+        "0",
+        "10"
+      ],
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "12"
+      ],
+      "definitions": {
+        "projection": {
+          "name": "nestedOuter",
+          "expectedTrace": [
+            "3",
+            "9",
+            "14"
+          ]
+        },
+        "onlyOk": {
+          "name": "nestedOuterOnlyOk",
+          "expectedTrace": [
+            "3",
+            "9",
+            "14"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        }
+      }
+    },
+    {
+      "id": "unrelated",
+      "input": "range",
+      "projection": "unrelated",
+      "onlyOk": "unrelatedOnlyOk",
+      "value": "105",
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ],
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "caller": "unrelatedCaller",
+      "initialChecked": [
+        "100",
+        "110",
+        "105"
+      ],
+      "l21ExternalOriginKey": "90",
+      "interproceduralAnalysis": false,
+      "definitions": {
+        "projection": {
+          "name": "unrelated",
+          "expectedTrace": [
+            "3",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "unrelatedOnlyOk",
+          "expectedTrace": [
+            "3",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        },
+        "caller": {
+          "name": "unrelatedCaller",
+          "expectedTrace": null
+        }
+      }
+    },
+    {
+      "id": "increment",
+      "input": "range",
+      "projection": "increment",
+      "onlyOk": "incrementOnlyOk",
+      "arguments": [
+        "0",
+        "9",
+        "9"
+      ],
+      "value": "10",
+      "interval": [
+        "1",
+        "10"
+      ],
+      "failure": null,
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "6"
+      ],
+      "definitions": {
+        "projection": {
+          "name": "increment",
+          "expectedTrace": [
+            "3",
+            "9",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "incrementOnlyOk",
+          "expectedTrace": [
+            "3",
+            "9",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        }
+      }
+    },
+    {
+      "id": "increment-overflow",
+      "input": "range",
+      "projection": "incrementOverflow",
+      "onlyOk": "incrementOverflowOnlyOk",
+      "arguments": [
+        "9223372036854775807",
+        "9223372036854775807",
+        "9223372036854775807"
+      ],
+      "value": null,
+      "interval": null,
+      "failure": "overflow",
+      "warnings": [
+        "overflow"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "6"
+      ],
+      "definitions": {
+        "projection": {
+          "name": "incrementOverflow",
+          "expectedTrace": [
+            "3",
+            "9",
+            "8"
+          ]
+        },
+        "onlyOk": {
+          "name": "incrementOverflowOnlyOk",
+          "expectedTrace": [
+            "3",
+            "9",
+            "8"
+          ],
+          "intervalObservation": {
+            "key": "2",
+            "component": "normal",
+            "excludeReturned": true
+          }
+        }
+      }
+    },
+    {
+      "id": "fake-identity",
+      "input": "fake-range",
+      "projection": "fakeIdentity",
+      "evalClosed": null,
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ],
+      "unsupported": true,
+      "warnings": [],
+      "vmComparison": false,
+      "definitions": {
+        "projection": {
+          "name": "fakeIdentity",
+          "expectedTrace": null
+        }
+      }
+    }
+  ]
+}

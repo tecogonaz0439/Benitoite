@@ -176,6 +176,7 @@ impl Collector {
                 ResourceError::ExternalMemory { .. }
                 | ResourceError::ExternalAdapterMemory { .. } => Some("memory"),
                 ResourceError::ExternalTransfer { .. } => Some("transfer"),
+                ResourceError::ExternalComponentHandles { .. } => Some("component_handles"),
                 ResourceError::ExternalObjects { resource, .. } => Some(match *resource {
                     text::CORE_INSTANCES => "core_instances",
                     text::CORE_MEMORIES => "core_memories",

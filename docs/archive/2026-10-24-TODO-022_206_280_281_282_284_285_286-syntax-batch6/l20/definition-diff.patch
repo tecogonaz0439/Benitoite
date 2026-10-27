@@ -1,0 +1,389 @@
+diff --git a/formal/Benitoite/Interval/Range.lean b/formal/Benitoite/Interval/Range.lean
+index a68bf3c1..2b69b32a 100644
+--- a/formal/Benitoite/Interval/Range.lean
++++ b/formal/Benitoite/Interval/Range.lean
+@@ -5,7 +5,8 @@ import Benitoite.Interval.Flow
+ 
+ 解決済みの標準束縛に付く規則を具体環境から選び、成功値の三欄・表現可能性・
+ 射影の所属を証明する。表層の呼び出しの評価や解析への接続とは区別する
+-（設計書 01-12「区間解析のRangeの評価規則と小モデル」）。
++（設計書 01-12「区間解析のRangeの評価規則と小モデル」
++「区間解析の同じ成功値の直接射影」）。
+ -/
+ namespace Benitoite.Interval
+ open Benitoite.Release Benitoite.Surface
+@@ -681,6 +682,305 @@ theorem range_save_result_valid {state : RangeState} (valid : state.Valid)
+     (env : AbstractEnv) (input : EvalInput) : (rangeSaveResult env state input).Valid :=
+   range_extend_valid valid _
+ 
++/-- 解決済みの直接 value(local) だけを認める。型引数・穴・関数値・pipe は含めない。 -/
++def rangeValueCall (env : AbstractEnv) (input : EvalInput) : Option (OpaqueName × Nat) := do
++  match input.type, input.source with
++  | .base .integer, .call (.funName declaration [] []) [_] [0] (.cons (.local index) .nil) =>
++    let binding ← env.standardAt input.key
++    if declaration ≠ binding.declaration then none else
++      match binding.rule with
++      | .rangeValue owner => some (owner, index)
++      | _ => none
++  | _, _ => none
++
++/-- 呼び出しの認定には、同じ出現の標準束縛表と射影規則が必要である。 -/
++theorem range_value_call_table {env : AbstractEnv} {input : EvalInput} {owner index}
++    (recognized : rangeValueCall env input = some (owner, index)) :
++    input.type = .base .integer ∧ ∃ binding, env.standardAt input.key = some binding ∧
++      binding.rule = .rangeValue owner := by
++  unfold rangeValueCall at recognized
++  split at recognized
++  next =>
++    change ((env.standardAt input.key).bind _) = some (owner, index) at recognized
++    obtain ⟨binding, found, recognized⟩ := Option.bind_eq_some_iff.mp recognized
++    split at recognized
++    · contradiction
++    · split at recognized
++      next actual rule =>
++        cases recognized
++        exact ⟨by assumption, binding, found, rule⟩
++      next => contradiction
++  next => contradiction
++
++/-- 認定から元の直接呼び出しと同じ局所位置を取り出す。
++ソースの見た目を、評価の呼び出し側で改めて仮定する必要をなくす。 -/
++theorem range_value_call_source {env : AbstractEnv} {input : EvalInput} {owner index}
++    (recognized : rangeValueCall env input = some (owner, index)) :
++    ∃ declaration label, input.source = .call (.funName declaration [] []) [label] [0]
++      (.cons (.local index) .nil) := by
++  unfold rangeValueCall at recognized
++  split at recognized
++  next =>
++    change ((env.standardAt input.key).bind _) = some (owner, index) at recognized
++    obtain ⟨binding, _, recognized⟩ := Option.bind_eq_some_iff.mp recognized
++    split at recognized
++    · contradiction
++    · split at recognized
++      next =>
++        cases recognized
++        exact ⟨_, _, by assumption⟩
++      next => contradiction
++  next => contradiction
++
++/-- value が読む位置と同じ番号の成功値だけを使い、不透明型の所有元も再照合する。 -/
++def rangeValueOrigin (env : AbstractEnv) (state : RangeState)
++    (input : EvalInput) : Option RangeOrigin := do
++  let (owner, index) ← rangeValueCall env input
++  let origin ← rangeCheckedOrigin state index
++  if origin.names.owner = owner then some origin else none
++
++/-- 認定した射影の由来は、同じ局所位置と同じ所有元の標準規則に対応する。 -/
++theorem range_value_origin_source {env : AbstractEnv} {state : RangeState}
++    {input : EvalInput} {origin : RangeOrigin}
++    (recognized : rangeValueOrigin env state input = some origin) :
++    ∃ index, rangeValueCall env input = some (origin.names.owner, index) ∧
++      rangeCheckedOrigin state index = some origin := by
++  unfold rangeValueOrigin at recognized
++  change ((rangeValueCall env input).bind _) = some origin at recognized
++  obtain ⟨⟨owner, index⟩, call, recognized⟩ := Option.bind_eq_some_iff.mp recognized
++  change ((rangeCheckedOrigin state index).bind _) = some origin at recognized
++  obtain ⟨actual, checked, recognized⟩ := Option.bind_eq_some_iff.mp recognized
++  split at recognized
++  next same =>
++    cases recognized
++    exact ⟨index, by simpa only [same] using call, checked⟩
++  next => contradiction
++
++/-- 認定できない射影は型内 Top に退く。失敗や Range.Error の候補は作らない。 -/
++def rangeValueInterval (env : AbstractEnv) (state : RangeState) (input : EvalInput) : Interval :=
++  match rangeValueOrigin env state input with
++  | some origin => normalize origin.minimum.toInt origin.maximum.toInt
++  | none => top
++
++/-- 実際の標準評価で正常に得た整数は、同じ成功値の保存端点に所属する。
++表層の call の評価や Result の腕を評価する規則は、この局所補題の前提から別に構成する。 -/
++theorem range_value_origin_mem {abstract : AbstractEnv} {state : RangeState}
++    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {index : Nat}
++    {payload : ConcreteValue} {number : Integer64Value}
++    (models : Models abstract env) (related : state.Models env)
++    (call : rangeValueCall abstract input = some (origin.names.owner, index))
++    (known : rangeCheckedOrigin state index = some origin)
++    (read : env.locals[index]? = some (some payload))
++    (evaluated : EvalStandardAt env input.key [payload] (.normal (.integer number))) :
++    Mem number.toInt (normalize origin.minimum.toInt origin.maximum.toInt) := by
++  obtain ⟨_, binding, found, rule⟩ := range_value_call_table call
++  have foundConcrete : env.standardAt input.key = some binding := by
++    rw [models_standardAt models]; exact found
++  have checked := range_checked_origin_models related known read
++  obtain ⟨value, same, minimum, maximum, representable⟩ := checked
++  have inside := (mem_normalize value.value origin.minimum.toInt origin.maximum.toInt).mpr
++    ⟨representable.1, representable.2, by
++      simpa only [Checked.Range.InRange, minimum, maximum] using value.bounded⟩
++  subst payload
++  generalize outcomeEq : EvalOutcome.normal (.integer number) = outcome at evaluated
++  cases evaluated with
++  | apply actual output identified standard =>
++    have sameBinding := Option.some.inj (identified.symm.trans foundConcrete)
++    subst actual
++    rw [rule] at standard
++    have exactValue := range_value_exact representable standard
++    rw [rule, exactValue] at outcomeEq
++    have numberEq : number = (⟨value.value, representable⟩ : Integer64Value) := by
++      exact ConcreteValue.integer.inj (EvalOutcome.normal.inj outcomeEq)
++    simpa only [numberEq, Integer64Value.toInt] using inside
++
++/-- 未認定の場合も含め、正常な射影値を失わない。記録のない位置は追加条件を要求しない。 -/
++theorem range_value_interval_mem {abstract : AbstractEnv} {state : RangeState}
++    {env : ConcreteEnv} {input : EvalInput} {number : Integer64Value}
++    (models : Models abstract env) (related : state.Models env)
++    (evaluated : ∀ origin, rangeValueOrigin abstract state input = some origin →
++      ∃ index payload, rangeValueCall abstract input = some (origin.names.owner, index) ∧
++        env.locals[index]? = some (some payload) ∧
++        EvalStandardAt env input.key [payload] (.normal (.integer number))) :
++    Mem number.toInt (rangeValueInterval abstract state input) := by
++  unfold rangeValueInterval
++  split
++  next origin recognized =>
++    obtain ⟨index, call, known⟩ := range_value_origin_source recognized
++    obtain ⟨actual, payload, actualCall, read, standard⟩ := evaluated origin recognized
++    have sameIndex : actual = index := (Prod.mk.inj (Option.some.inj (actualCall.symm.trans call))).2
++    subst actual
++    exact range_value_origin_mem models related call known read standard
++  next => exact (mem_top _).mpr number.toInt_bounds
++
++/-- 記録と具体環境が対応すれば、認定した射影には所属する正常値の導出がある。
++所属の補題を、実際の評価導出が一つもない場合だけの保証にしない。 -/
++theorem range_value_origin_total {abstract : AbstractEnv} {state : RangeState}
++    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin}
++    (models : Models abstract env) (related : state.Models env)
++    (recognized : rangeValueOrigin abstract state input = some origin) :
++    ∃ index payload number, rangeValueCall abstract input = some (origin.names.owner, index) ∧
++      env.locals[index]? = some (some payload) ∧
++      EvalStandardAt env input.key [payload] (.normal (.integer number)) ∧
++      Mem number.toInt (rangeValueInterval abstract state input) := by
++  obtain ⟨index, call, known⟩ := range_value_origin_source recognized
++  obtain ⟨_, binding, found, rule⟩ := range_value_call_table call
++  have atId : ∃ id, state.scope.idAt index = some id := by
++    unfold rangeCheckedOrigin at known
++    obtain ⟨id, found, _⟩ := Option.bind_eq_some_iff.mp known
++    exact ⟨id, found⟩
++  obtain ⟨id, atId⟩ := atId
++  obtain ⟨payload, read⟩ : ∃ payload, env.locals[index]? = some (some payload) := by
++    unfold rangeCheckedOrigin at known
++    simp only [atId] at known
++    split at known
++    next old successId atFact =>
++      obtain ⟨_, payload, _, read, _⟩ := related index (.checked old successId) atFact
++      exact ⟨payload, read⟩
++    next => contradiction
++  obtain ⟨checked, same, _, _, representable⟩ := range_checked_origin_models related known read
++  let number : Integer64Value := ⟨checked.value, representable⟩
++  have normal : EvalStandardAt env input.key [payload] (.normal (.integer number)) := by
++    have foundConcrete : env.standardAt input.key = some binding := by
++      rw [models_standardAt models]; exact found
++    have standard : EvalStandard binding.rule input.key [payload] (.normal (.integer number)) := by
++      rw [rule, same]
++      exact .rangeValue _ _ _ _ representable
++    have evaluated := EvalStandardAt.apply binding (.normal (.integer number)) foundConcrete standard
++    simpa only [rule, StandardRule.finish] using evaluated
++  refine ⟨index, payload, number, call, read, normal, ?_⟩
++  unfold rangeValueInterval
++  rw [recognized]
++  exact range_value_origin_mem models related call known read normal
++
++/-- 未知の不透明値も含め、value の標準規則が正常に返す値は Integer64 である。
++正常値の種類を呼び出し側の仮定にせず、実際の評価導出から得る。 -/
++theorem range_value_at_normal_integer {env : ConcreteEnv} {key owner binding arguments value}
++    (identified : env.standardAt key = some binding)
++    (rule : binding.rule = .rangeValue owner)
++    (evaluated : EvalStandardAt env key arguments (.normal value)) :
++    ∃ number : Integer64Value, value = .integer number := by
++  generalize outcomeEq : EvalOutcome.normal value = outcome at evaluated
++  cases evaluated with
++  | apply actual result found standard =>
++    have same := Option.some.inj (found.symm.trans identified)
++    subst actual
++    rw [rule] at standard
++    cases standard <;> simp only [rule, StandardRule.finish] at outcomeEq
++    all_goals first
++      | cases outcomeEq; exact ⟨_, rfl⟩
++      | contradiction
++
++/-- 直接 value(local) の正常結果から、整数であることと射影区間への所属を得る。
++記録のない値にも適用し、その場合は型内 Top を返す。 -/
++theorem range_value_call_normal_mem {abstract : AbstractEnv} {state : RangeState}
++    {env : ConcreteEnv} {input : EvalInput} {owner index payload value}
++    (models : Models abstract env) (related : state.Models env)
++    (call : rangeValueCall abstract input = some (owner, index))
++    (read : env.locals[index]? = some (some payload))
++    (evaluated : EvalStandardAt env input.key [payload] (.normal value)) :
++    ∃ number : Integer64Value, value = .integer number ∧
++      Mem number.toInt (rangeValueInterval abstract state input) := by
++  obtain ⟨_, binding, found, rule⟩ := range_value_call_table call
++  have foundConcrete : env.standardAt input.key = some binding := by
++    rw [models_standardAt models]; exact found
++  obtain ⟨number, rfl⟩ := range_value_at_normal_integer foundConcrete rule evaluated
++  refine ⟨number, rfl, range_value_interval_mem models related ?_⟩
++  intro origin recognized
++  obtain ⟨actual, actualCall, _⟩ := range_value_origin_source recognized
++  have same := Prod.mk.inj (Option.some.inj (actualCall.symm.trans call))
++  exact ⟨index, payload, by simpa only [same.1] using call, read, evaluated⟩
++
++/-- 記録に対応する成功値を射影した実際の結果は、失敗や return にならない。
++任意の outcome を受け取り、正常性と所属を評価規則から導く局所の補題である。 -/
++theorem range_value_origin_evaluated {abstract : AbstractEnv} {state : RangeState}
++    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {owner index payload outcome}
++    (models : Models abstract env) (related : state.Models env)
++    (recognized : rangeValueOrigin abstract state input = some origin)
++    (call : rangeValueCall abstract input = some (owner, index))
++    (read : env.locals[index]? = some (some payload))
++    (evaluated : EvalStandardAt env input.key [payload] outcome) :
++    ∃ number : Integer64Value, outcome = .normal (.integer number) ∧
++      Mem number.toInt (rangeValueInterval abstract state input) := by
++  obtain ⟨actualIndex, actualCall, known⟩ := range_value_origin_source recognized
++  have same := Prod.mk.inj (Option.some.inj (actualCall.symm.trans call))
++  cases same.1
++  cases same.2
++  obtain ⟨checked, payloadEq, _, _, representable⟩ :=
++    range_checked_origin_models related known read
++  obtain ⟨_, binding, found, rule⟩ := range_value_call_table call
++  have foundConcrete : env.standardAt input.key = some binding := by
++    rw [models_standardAt models]; exact found
++  have outcomeEq : outcome = .normal (.integer ⟨checked.value, representable⟩) := by
++    cases evaluated with
++    | apply actual result identified standard =>
++      have sameBinding := Option.some.inj (identified.symm.trans foundConcrete)
++      subst actual
++      rw [rule, payloadEq] at standard
++      rw [rule, range_value_exact representable standard]
++      rfl
++  rw [outcomeEq] at evaluated ⊢
++  obtain ⟨number, sameValue, inside⟩ := range_value_call_normal_mem models related call read evaluated
++  exact ⟨number, congrArg EvalOutcome.normal sameValue, inside⟩
++
++/-- 忘却した由来から狭い区間を復元しない。標準表の同定はそのまま残る。 -/
++theorem range_value_forget_top (env : AbstractEnv) (state : RangeState) (input : EvalInput) :
++    rangeValueInterval env state.forget input = top := by
++  unfold rangeValueInterval rangeValueOrigin
++  cases call : rangeValueCall env input with
++  | none => rfl
++  | some pair =>
++    obtain ⟨owner, index⟩ := pair
++    have missing : rangeCheckedOrigin state.forget index = none := by
++      unfold rangeCheckedOrigin RangeState.forget RangeState.empty
++      cases state.scope.idAt index with
++      | none => rfl
++      | some id =>
++        change (match (List.replicate state.scope.positions.length (none : Option RangeLocalFact))[index]? with
++          | some (some (.checked origin successId)) => if successId = id then some origin else none
++          | _ => none) = none
++        by_cases within : index < state.scope.positions.length
++        all_goals simp [List.getElem?_replicate, within]
++    simp [missing]
++
++-- 一つの成功値にだけ [0,10] を付ける。未知の位置・別名・間接呼び出し・
++-- 偽の宣言・別の所有元・合流の忘却は同じ表で型内 Top に退くことを確かめる。
++example :
++    let names : RangeNames := ⟨"Std.Range.CheckedInteger", "Std.Result.Result", "Std.Range.Error",
++      "Std.Result.Ok", "Std.Result.Error", "Std.Range.InvalidBounds", "Std.Range.OutOfRange"⟩
++    let key : OperationKey := ⟨"Example.project", 3⟩
++    let origin : RangeOrigin := ⟨names, ⟨"Example.project", 0⟩, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
++    let env : AbstractEnv := ⟨[], [⟨"Std.Range.value", .rangeValue names.owner⟩],
++      fun k => if k = key then some "Std.Range.value" else none⟩
++    let state := rangeBindOk (RangeState.empty ⟨[], 0⟩) origin
++    let call : EvalInput := ⟨.call (.funName "Std.Range.value" [] []) [some "checked"] [0]
++      (.cons (.local 0) .nil), .base .integer, key⟩
++    let otherOwner := { env with standards := [⟨"Std.Range.value", .rangeValue "User.CheckedInteger"⟩] }
++    let snapshot := fun (range : Interval) => match range with
++      | .bottom => none
++      | .closed lo hi _ => some (lo, hi)
++    (snapshot (rangeValueInterval env state call),
++      snapshot (rangeValueInterval env (state.extend none) {call with source :=
++        (.call (.funName "Std.Range.value" [] []) [none] [0] (.cons (.local 1) .nil))})) =
++        (some (0, 10), some (0, 10)) ∧
++    ([rangeValueInterval env state.forget call,
++      rangeValueInterval env (state.extend none) call,
++      rangeValueInterval otherOwner state call,
++      rangeValueInterval env state {call with key := ⟨"Example.project", 9⟩},
++      rangeValueInterval env state {call with source :=
++        (.call (.funName "User.value" [] []) [none] [0] (.cons (.local 0) .nil))},
++      rangeValueInterval env state {call with source :=
++        (.call (.local 0) [none] [0] (.cons (.local 0) .nil))},
++      rangeValueInterval env state {call with source :=
++        (.call (.funName "Std.Range.value" [] []) [none] [0] (.cons (.paren (.local 0)) .nil))},
++      rangeValueInterval env state {call with source :=
++        (.call (.funName "Std.Range.value" [] []) [none] [1] (.cons (.local 0) .nil))},
++      rangeValueInterval env state {call with source :=
++        (.call (.funName "Std.Range.value" [] []) [] [0] (.cons (.local 0) .nil))}].map snapshot) =
++      List.replicate 9 (some (-9223372036854775808, 9223372036854775807)) := by
++  dsimp only
++  constructor <;> decide +kernel
++
+ -- 固定端点を持つ標準呼び出しから、一度の保存と Ok の束縛を経て同じ成功値を読む。
+ -- source 順は value, maximum, minimum とし、契約の位置と取り違える退行も検出する。
+ example :
+@@ -756,7 +1056,8 @@ example (names : RangeNames) (key : OperationKey) (number : Integer64Value) :
+   exact ⟨.other _ _ _ _ rfl, range_other_possible names.owner key number,
+     fun origin => range_result_not_other origin _ _ _ _⟩
+ 
+--- 実際の成功値 5 と三欄を使い、保存後と Ok 束縛後の具体環境との対応を合成する。
++-- 実際の成功値 5 と三欄を使い、Result の保存・Ok の束縛・直接射影を合成する。
++-- 端点の記録だけでなく、同じ具体値の正常結果と全射影結果への所属を確かめる。
+ example (names : RangeNames) (key : OperationKey) :
+     let origin : RangeOrigin := ⟨names, key, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+     let checked : Checked.Range.CheckedInteger := ⟨0, 10, 5, by decide⟩
+@@ -765,10 +1066,20 @@ example (names : RangeNames) (key : OperationKey) :
+       names.ok [payload]
+     let empty : RangeState := .empty ⟨[], 0⟩
+     let saved := empty.extend (some (.result origin))
+-    let env : ConcreteEnv := ⟨[], [], fun _ => none⟩
++    let env : ConcreteEnv := ⟨[], [⟨"Std.Range.value", .rangeValue names.owner⟩],
++      fun _ => some "Std.Range.value"⟩
++    let concrete := {env with locals := [some payload, some result]}
++    let abstract : AbstractEnv := ⟨[.unknown (some (.opaque names.owner)),
++      .unknown (some (.data names.result [.opaque names.owner, .data names.error []]))],
++      env.standards, env.apiAt⟩
++    let projection : EvalInput := ⟨.call (.funName "Std.Range.value" [] []) [none] [0]
++      (.cons (.local 0) .nil), .base .integer, key⟩
+     saved.Models {env with locals := [some result]} ∧
+-      (rangeBindOk saved origin).Models {env with locals := [some payload, some result]} ∧
+-      origin.CheckedModels payload := by
++      (rangeBindOk saved origin).Models concrete ∧ origin.CheckedModels payload ∧
++      EvalStandardAt concrete key [payload] (.normal (.integer ⟨5, by decide⟩)) ∧
++      ∀ outcome, EvalStandardAt concrete key [payload] outcome →
++        ∃ number, outcome = .normal (.integer number) ∧
++          Mem number.toInt (rangeValueInterval abstract (rangeBindOk saved origin) projection) := by
+   dsimp only
+   let origin : RangeOrigin := ⟨names, key, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+   let checked : Checked.Range.CheckedInteger := ⟨0, 10, 5, by decide⟩
+@@ -784,11 +1095,31 @@ example (names : RangeNames) (key : OperationKey) :
+       (rangeCheck names key ⟨0, by decide⟩ ⟨10, by decide⟩ ⟨5, by decide⟩) = .normal result
+     rw [success]; rfl⟩
+   have known : names.IsOk result payload := .intro _ rfl
+-  have saved := range_extend_models (range_empty_models ⟨[], 0⟩ ⟨[], [], fun _ => none⟩)
++  let env : ConcreteEnv := ⟨[], [⟨"Std.Range.value", .rangeValue names.owner⟩],
++    fun _ => some "Std.Range.value"⟩
++  let concrete := {env with locals := [some payload, some result]}
++  let abstract : AbstractEnv := ⟨[.unknown (some (.opaque names.owner)),
++    .unknown (some (.data names.result [.opaque names.owner, .data names.error []]))],
++    env.standards, env.apiAt⟩
++  let projection : EvalInput := ⟨.call (.funName "Std.Range.value" [] []) [none] [0]
++    (.cons (.local 0) .nil), .base .integer, key⟩
++  have saved := range_extend_models (range_empty_models ⟨[], 0⟩ env)
+     (value := result) (fact := some (.result origin)) (by
+       intro fact same; cases same; exact fromCheck)
+-  exact ⟨saved, range_bind_ok_models saved fromCheck known,
+-    range_result_ok_models fromCheck known⟩
++  have bound := range_bind_ok_models saved fromCheck known
++  have models : Models abstract concrete := by
++    refine ⟨.cons ?_ (.cons ?_ .nil), rfl, rfl⟩
++    all_goals intro type same; cases same; rfl
++  have projected : EvalStandardAt concrete key [payload] (.normal (.integer ⟨5, by decide⟩)) := by
++    exact .apply ⟨"Std.Range.value", .rangeValue names.owner⟩ _ rfl
++      (.rangeValue names.owner key key checked (by decide))
++  refine ⟨saved, bound, range_result_ok_models fromCheck known, projected, ?_⟩
++  intro outcome evaluated
++  apply range_value_origin_evaluated (input := projection) (origin := origin) models bound
++    (by simp [rangeValueOrigin, rangeValueCall, abstract, env, projection,
++      AbstractEnv.standardAt, rangeCheckedOrigin, rangeBindOk, RangeState.extend,
++      RangeState.empty, BindingScope.fresh, BindingScope.idAt, origin])
++    (owner := names.owner) (index := 0) (by rfl) (by rfl) evaluated
+ 
+ -- 境界の early return は未知の失敗へ近似し、正常結果は型内の全値を許す。
+ -- returned の中身は NormalSoundness の量化対象ではない。

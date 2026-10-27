@@ -1,0 +1,15 @@
+batch3: 1 inputs, 11 definitions, six entries agree: <repo>/target/x05s-records/final/desugar/batch3/g2-exchange-results.json
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/final_probe.py", line 142, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/final_probe.py", line 93, in main
+    final.manifest(roots)
+  File "<repo>/scripts/check/formal_interval.py", line 214, in manifest
+    sources.append(dict(directory=name, **checks['check_source'](directory/name, output,
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 83, in check_source
+    with source_path.open() as stream:
+  File "<toolchain>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "<toolchain>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '<repo>/target/x05s-records/final/interval/programs/interval-manifest-corpus.json'

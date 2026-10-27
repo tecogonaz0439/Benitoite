@@ -1,0 +1,22 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+A11 before flow: .sample
+A11 after flow: .sample
+A11 before discovery: .sample
+A11 after discovery: .sample
+A11 unrelated probe: diagnostics=[], usage=BodyState { operations: 100000, temporary: 0, saved: 554, peak: 1988 }, coverage=Stopped(AnalysisBudget(Exceeded(LimitFailure { scope: Body, resource: Operations }))), whole=WholeState { operations: 100000, saved: 554, peak: 1988 }
+A11 before flow: .unrelated
+A11 after flow: .unrelated
+A11 before discovery: .unrelated
+A11 after discovery: .unrelated
+A11 before flow: .sample
+A11 after flow: .sample
+A11 before discovery: .sample
+A11 after discovery: .sample
+A11 unrelated probe: diagnostics=[Some(W0401)], usage=BodyState { operations: 100000, temporary: 0, saved: 555, peak: 1988 }, coverage=Prepared, whole=WholeState { operations: 100010, saved: 557, peak: 1990 }
+test typeck::interval::tests::a11_probe_unrelated_at_default_body_boundary ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1319 filtered out; finished in 0.16s
+

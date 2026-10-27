@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "formal/tests/test_interval_exchange.py",
+    "--vm-dir",
+    "target/interval-diff/x03b",
+    "--rust-dir",
+    "target/interval-diff/x03b/original",
+    "--rust-dir",
+    "target/interval-diff/x03b/instrumented",
+    "--rust-dir",
+    "target/interval-diff/x03b/range/original",
+    "--rust-dir",
+    "target/interval-diff/x03b/range/instrumented",
+    "--output",
+    "target/interval-diff/x03b/comparison-verified"
+  ],
+  "exit": 0,
+  "seconds": 15.646
+}

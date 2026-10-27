@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 980, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 973, in main
+    exercise(args.output.resolve(), executable, args.source_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 642, in exercise
+    exercise_source(runner, source_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 512, in exercise_source
+    runner.invoke('source-invalid-'+label, 'analyze', changed, 2, reason)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 399, in invoke
+    assert contains in json.dumps(value), (label, contains, value)
+AssertionError: ('source-invalid-api-missing', 'missing standard call occurrence', {'version': 1, 'mode': 'analyze', 'kind': 'interval-report', 'invalidInput': 'missing or invalid target correspondence', 'accepted': False})

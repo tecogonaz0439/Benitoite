@@ -1,0 +1,11 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+budget-reference.lean: exit=1, seconds=0.227
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/l16/reference-impact.py", line 20, in <module>
+    tables = module.generate(OUT / 'resume-reference')
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 36, in generate
+    for row in lean_rows("budget-reference.lean", (11, 14), log_dir):
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 29, in lean_rows
+    raise RuntimeError(result.stdout.replace(str(ROOT), "<repo>") + result.stderr)
+RuntimeError: <repo>/crates/benitoite/testdata/interval-budget/budget-reference.lean:1:0: error: object file '<repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetReach.olean' of module Benitoite.Interval.BudgetReach does not exist
+

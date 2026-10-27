@@ -1,0 +1,32 @@
+Benitoite/Interval/FixedDomain.lean:216:49: error: Application type mismatch: The argument
+  labels
+has type
+  List String
+but is expected to have type
+  List (Option String)
+in the application
+  callee.call labels
+Benitoite/Interval/FixedDomain.lean:223:2: error: too many variable names provided
+Benitoite/Interval/FixedDomain.lean:224:8: error(lean.unknownIdentifier): Unknown identifier `types`
+Benitoite/Interval/FixedDomain.lean:224:2: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.810
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case local
+declarations : List HttpRecordDecl
+type : Ty
+declaration : HttpRecordDecl
+sources : Nat
+identified : none = some declaration
+x✝ : ?m.810
+⊢ declaration ∈ declarations
+Benitoite/Interval/FixedDomain.lean:277:4: error: Tactic `subst` failed: did not find equation for eliminating 'range'
+
+case integerKind.integer8
+range : Interval
+value : ConcreteValue
+normal : Interval IntKind.integer8
+known : none = some range
+related : SlotModels (AbstractSlot.integerKind IntKind.integer8 normal) (some value)
+⊢ ∃ integer, value = ConcreteValue.integer integer ∧ Mem integer.toInt range

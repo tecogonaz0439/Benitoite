@@ -1,0 +1,301 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 1 test
+A02 allocation trace for 192 bytes:    0: std::backtrace_rs::backtrace::libunwind::trace
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/../../backtrace/src/backtrace/libunwind.rs:117:9
+   1: std::backtrace_rs::backtrace::trace_unsynchronized::<<std::backtrace::Backtrace>::create::{closure#0}>
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/../../backtrace/src/backtrace/mod.rs:66:14
+   2: <std::backtrace::Backtrace>::create
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/backtrace.rs:331:13
+   3: call_allocations::count
+             at ./tests/call_allocations.rs:43:69
+   4: <call_allocations::CountedSystem as core::alloc::global::GlobalAlloc>::alloc
+             at ./tests/call_allocations.rs:51:9
+   5: __rustc::__rust_alloc
+             at ./tests/call_allocations.rs:34:19
+   6: alloc::alloc::alloc
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:101:9
+   7: <alloc::alloc::Global>::alloc_impl_runtime
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:210:73
+   8: <alloc::alloc::Global>::alloc_impl
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:332:9
+   9: <alloc::alloc::Global as core::alloc::Allocator>::allocate
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:449:14
+  10: <alloc::boxed::Box<alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>>::try_new_uninit_in
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:614:19
+  11: <alloc::boxed::Box<alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>>::new_uninit_in
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:581:15
+  12: <alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::new::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:87:24
+  13: <alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Owned, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>>::new_leaf::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:225:29
+  14: <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert_entry
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:452:44
+  15: <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:426:14
+  16: <alloc::collections::btree::map::entry::Entry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::or_insert
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:147:36
+  17: benitoite::typeck::traits::solve::table
+             at ./src/typeck/traits/solve.rs:27:39
+  18: benitoite::typeck::traits::solve::solve_classes
+             at ./src/typeck/traits/solve.rs:411:17
+  19: benitoite::typeck::traits::solve_ready_classes
+             at ./src/typeck/traits/mod.rs:72:5
+  20: <benitoite::typeck::solve::Solver>::solve
+             at ./src/typeck/solve.rs:1527:9
+  21: <benitoite::typeck::context::Body>::solve
+             at ./src/typeck/context.rs:476:16
+  22: benitoite::typeck::consts::check
+             at ./src/typeck/consts.rs:79:17
+  23: benitoite::typeck::decls::check
+             at ./src/typeck/decls.rs:840:5
+  24: benitoite::typeck::typecheck
+             at ./src/typeck/mod.rs:188:5
+  25: benitoite::pipeline::check_stages_counted
+             at ./src/pipeline.rs:336:40
+  26: benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}
+             at ./src/pipeline.rs:152:13
+  27: <core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}> as core::ops::function::FnOnce<()>>::call_once
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panic/unwind_safe.rs:275:9
+  28: std::panicking::catch_unwind::do_call::<core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>, benitoite::pipeline::CheckResult>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:576:43
+  29: ___rust_try
+  30: std::panicking::catch_unwind::<benitoite::pipeline::CheckResult, core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:544:19
+  31: std::panic::catch_unwind::<core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>, benitoite::pipeline::CheckResult>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panic.rs:359:14
+  32: benitoite::runtime::panic::catch::<benitoite::pipeline::CheckResult, benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>
+             at ./src/runtime/panic.rs:77:5
+  33: benitoite::pipeline::check_with_source_origin::{closure#0}
+             at ./src/pipeline.rs:151:9
+  34: std::sys::backtrace::__rust_begin_short_backtrace::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs:166:18
+  35: std::thread::lifecycle::spawn_unchecked::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/thread/lifecycle.rs:70:13
+  36: <core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}> as core::ops::function::FnOnce<()>>::call_once
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panic/unwind_safe.rs:275:9
+  37: std::panicking::catch_unwind::do_call::<core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:576:43
+  38: ___rust_try
+  39: std::panicking::catch_unwind::<core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>, core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:544:19
+  40: std::panic::catch_unwind::<core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panic.rs:359:14
+  41: std::thread::lifecycle::spawn_unchecked::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/thread/lifecycle.rs:68:26
+  42: <std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
+  43: <alloc::boxed::Box<dyn core::ops::function::FnOnce<(), Output = ()> + core::marker::Send> as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/alloc/src/boxed.rs:2319:9
+  44: <std::sys::thread::unix::Thread>::new::thread_start
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/sys/thread/unix.rs:123:17
+  45: __pthread_exit
+
+A02 allocation trace for 192 bytes:    0: std::backtrace_rs::backtrace::libunwind::trace
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/../../backtrace/src/backtrace/libunwind.rs:117:9
+   1: std::backtrace_rs::backtrace::trace_unsynchronized::<<std::backtrace::Backtrace>::create::{closure#0}>
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/../../backtrace/src/backtrace/mod.rs:66:14
+   2: <std::backtrace::Backtrace>::create
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/backtrace.rs:331:13
+   3: call_allocations::count
+             at ./tests/call_allocations.rs:43:69
+   4: <call_allocations::CountedSystem as core::alloc::global::GlobalAlloc>::alloc
+             at ./tests/call_allocations.rs:51:9
+   5: __rustc::__rust_alloc
+             at ./tests/call_allocations.rs:34:19
+   6: alloc::alloc::alloc
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:101:9
+   7: <alloc::alloc::Global>::alloc_impl_runtime
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:210:73
+   8: <alloc::alloc::Global>::alloc_impl
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:332:9
+   9: <alloc::alloc::Global as core::alloc::Allocator>::allocate
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:449:14
+  10: <alloc::boxed::Box<alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>>::try_new_uninit_in
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:614:19
+  11: <alloc::boxed::Box<alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>>::new_uninit_in
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:581:15
+  12: <alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::new::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:87:24
+  13: <alloc::collections::btree::node::Handle<alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Mut, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>, alloc::collections::btree::node::marker::KV>>::split::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:1257:28
+  14: <alloc::collections::btree::node::Handle<alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Mut, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>, alloc::collections::btree::node::marker::Edge>>::insert::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:969:37
+  15: <alloc::collections::btree::node::Handle<alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Mut, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>, alloc::collections::btree::node::marker::Edge>>::insert_recursing::<alloc::alloc::Global, <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert_entry::{closure#0}>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:1065:46
+  16: <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert_entry
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:460:36
+  17: <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:426:14
+  18: <alloc::collections::btree::map::entry::Entry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::or_insert
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:147:36
+  19: benitoite::typeck::traits::solve::table
+             at ./src/typeck/traits/solve.rs:27:39
+  20: benitoite::typeck::traits::solve::solve_classes
+             at ./src/typeck/traits/solve.rs:411:17
+  21: benitoite::typeck::traits::solve_classes
+             at ./src/typeck/traits/mod.rs:68:5
+  22: <benitoite::typeck::solve::Solver>::solve
+             at ./src/typeck/solve.rs:1552:9
+  23: <benitoite::typeck::context::Body>::solve
+             at ./src/typeck/context.rs:476:16
+  24: benitoite::typeck::consts::check
+             at ./src/typeck/consts.rs:79:17
+  25: benitoite::typeck::decls::check
+             at ./src/typeck/decls.rs:840:5
+  26: benitoite::typeck::typecheck
+             at ./src/typeck/mod.rs:188:5
+  27: benitoite::pipeline::check_stages_counted
+             at ./src/pipeline.rs:336:40
+  28: benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}
+             at ./src/pipeline.rs:152:13
+  29: <core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}> as core::ops::function::FnOnce<()>>::call_once
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panic/unwind_safe.rs:275:9
+  30: std::panicking::catch_unwind::do_call::<core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>, benitoite::pipeline::CheckResult>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:576:43
+  31: ___rust_try
+  32: std::panicking::catch_unwind::<benitoite::pipeline::CheckResult, core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:544:19
+  33: std::panic::catch_unwind::<core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>, benitoite::pipeline::CheckResult>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panic.rs:359:14
+  34: benitoite::runtime::panic::catch::<benitoite::pipeline::CheckResult, benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>
+             at ./src/runtime/panic.rs:77:5
+  35: benitoite::pipeline::check_with_source_origin::{closure#0}
+             at ./src/pipeline.rs:151:9
+  36: std::sys::backtrace::__rust_begin_short_backtrace::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs:166:18
+  37: std::thread::lifecycle::spawn_unchecked::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/thread/lifecycle.rs:70:13
+  38: <core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}> as core::ops::function::FnOnce<()>>::call_once
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panic/unwind_safe.rs:275:9
+  39: std::panicking::catch_unwind::do_call::<core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:576:43
+  40: ___rust_try
+  41: std::panicking::catch_unwind::<core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>, core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:544:19
+  42: std::panic::catch_unwind::<core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panic.rs:359:14
+  43: std::thread::lifecycle::spawn_unchecked::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/thread/lifecycle.rs:68:26
+  44: <std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
+  45: <alloc::boxed::Box<dyn core::ops::function::FnOnce<(), Output = ()> + core::marker::Send> as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/alloc/src/boxed.rs:2319:9
+  46: <std::sys::thread::unix::Thread>::new::thread_start
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/sys/thread/unix.rs:123:17
+  47: __pthread_exit
+
+A02 allocation trace for 192 bytes:    0: std::backtrace_rs::backtrace::libunwind::trace
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/../../backtrace/src/backtrace/libunwind.rs:117:9
+   1: std::backtrace_rs::backtrace::trace_unsynchronized::<<std::backtrace::Backtrace>::create::{closure#0}>
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/../../backtrace/src/backtrace/mod.rs:66:14
+   2: <std::backtrace::Backtrace>::create
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/backtrace.rs:331:13
+   3: call_allocations::count
+             at ./tests/call_allocations.rs:43:69
+   4: <call_allocations::CountedSystem as core::alloc::global::GlobalAlloc>::alloc
+             at ./tests/call_allocations.rs:51:9
+   5: __rustc::__rust_alloc
+             at ./tests/call_allocations.rs:34:19
+   6: alloc::alloc::alloc
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:101:9
+   7: <alloc::alloc::Global>::alloc_impl_runtime
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:210:73
+   8: <alloc::alloc::Global>::alloc_impl
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:332:9
+   9: <alloc::alloc::Global as core::alloc::Allocator>::allocate
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/alloc.rs:449:14
+  10: <alloc::boxed::Box<alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>>::try_new_uninit_in
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:614:19
+  11: <alloc::boxed::Box<alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>>::new_uninit_in
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:581:15
+  12: <alloc::collections::btree::node::LeafNode<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::new::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:87:24
+  13: <alloc::collections::btree::node::Handle<alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Mut, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>, alloc::collections::btree::node::marker::KV>>::split::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:1257:28
+  14: <alloc::collections::btree::node::Handle<alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Mut, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>, alloc::collections::btree::node::marker::Edge>>::insert::<alloc::alloc::Global>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:969:37
+  15: <alloc::collections::btree::node::Handle<alloc::collections::btree::node::NodeRef<alloc::collections::btree::node::marker::Mut, (benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId, alloc::collections::btree::node::marker::Leaf>, alloc::collections::btree::node::marker::Edge>>::insert_recursing::<alloc::alloc::Global, <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert_entry::{closure#0}>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/node.rs:1065:46
+  16: <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert_entry
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:460:36
+  17: <alloc::collections::btree::map::entry::VacantEntry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::insert
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:426:14
+  18: <alloc::collections::btree::map::entry::Entry<(benitoite::base::BindingId, benitoite::types::TyCon), benitoite::base::NodeId>>::or_insert
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/map/entry.rs:147:36
+  19: benitoite::typeck::traits::solve::table
+             at ./src/typeck/traits/solve.rs:27:39
+  20: benitoite::typeck::traits::solve::solve_classes
+             at ./src/typeck/traits/solve.rs:411:17
+  21: benitoite::typeck::traits::solve_classes
+             at ./src/typeck/traits/mod.rs:68:5
+  22: <benitoite::typeck::solve::Solver>::solve
+             at ./src/typeck/solve.rs:1552:9
+  23: <benitoite::typeck::context::Body>::solve
+             at ./src/typeck/context.rs:476:16
+  24: benitoite::typeck::consts::check
+             at ./src/typeck/consts.rs:79:17
+  25: benitoite::typeck::decls::check
+             at ./src/typeck/decls.rs:840:5
+  26: benitoite::typeck::typecheck
+             at ./src/typeck/mod.rs:188:5
+  27: benitoite::pipeline::check_stages_counted
+             at ./src/pipeline.rs:336:40
+  28: benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}
+             at ./src/pipeline.rs:152:13
+  29: <core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}> as core::ops::function::FnOnce<()>>::call_once
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panic/unwind_safe.rs:275:9
+  30: std::panicking::catch_unwind::do_call::<core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>, benitoite::pipeline::CheckResult>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:576:43
+  31: ___rust_try
+  32: std::panicking::catch_unwind::<benitoite::pipeline::CheckResult, core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:544:19
+  33: std::panic::catch_unwind::<core::panic::unwind_safe::AssertUnwindSafe<benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>, benitoite::pipeline::CheckResult>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panic.rs:359:14
+  34: benitoite::runtime::panic::catch::<benitoite::pipeline::CheckResult, benitoite::pipeline::check_with_source_origin::{closure#0}::{closure#0}>
+             at ./src/runtime/panic.rs:77:5
+  35: benitoite::pipeline::check_with_source_origin::{closure#0}
+             at ./src/pipeline.rs:151:9
+  36: std::sys::backtrace::__rust_begin_short_backtrace::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs:166:18
+  37: std::thread::lifecycle::spawn_unchecked::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/thread/lifecycle.rs:70:13
+  38: <core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}> as core::ops::function::FnOnce<()>>::call_once
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/panic/unwind_safe.rs:275:9
+  39: std::panicking::catch_unwind::do_call::<core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:576:43
+  40: ___rust_try
+  41: std::panicking::catch_unwind::<core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>, core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panicking.rs:544:19
+  42: std::panic::catch_unwind::<core::panic::unwind_safe::AssertUnwindSafe<std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}::{closure#0}>, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/panic.rs:359:14
+  43: std::thread::lifecycle::spawn_unchecked::<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/thread/lifecycle.rs:68:26
+  44: <std::thread::lifecycle::spawn_unchecked<benitoite::pipeline::check_with_source_origin::{closure#0}, core::result::Result<benitoite::pipeline::CheckResult, benitoite::runtime::panic::PanicReport>>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}
+             at <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
+  45: <alloc::boxed::Box<dyn core::ops::function::FnOnce<(), Output = ()> + core::marker::Send> as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/alloc/src/boxed.rs:2319:9
+  46: <std::sys::thread::unix::Thread>::new::thread_start
+             at /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/sys/thread/unix.rs:123:17
+  47: __pthread_exit
+
+5000 constants, 1000 diagnostics: 6.361081167s, 327850390 allocated bytes
+A02 allocation sizes: [(107491580, 8192), (49582080, 3072), (32689152, 192), (21643200, 288), (21522560, 160), (14563200, 1184), (13216320, 72), (4480720, 80), (4115584, 1408), (3885504, 672), (3500160, 320), (3263392, 584), (3210112, 496), (3033536, 704), (2651040, 480), (2452400, 40), (2364768, 3312), (2323464, 104), (1871328, 48), (1766800, 56), (1667072, 352), (1523648, 304), (1467232, 416), (1237536, 144)]
+
+thread 'repeated_constant_diagnostics_share_bounded_origin_work' (1953684) panicked at crates/benitoite/tests/call_allocations.rs:257:5:
+repeated origin traversal regression: 327850390
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test repeated_constant_diagnostics_share_bounded_origin_work ... FAILED
+
+failures:
+
+failures:
+    repeated_constant_diagnostics_share_bounded_origin_work
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 6.37s
+
+error: test failed, to rerun pass `-p benitoite --test call_allocations`
+A02_OUTER_EXIT_STATUS=101
+A02_OUTER_ELAPSED_SECONDS=7.77

@@ -1,0 +1,14 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.34s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 6 tests
+test typeck::interval::tests::range_calls::range_projection_independent_child_forgets_outer_success_but_restores_parent ... ok
+test typeck::interval::tests::range_calls::range_projection_reaches_public_overflow_diagnostics_only_for_the_same_value ... ok
+test typeck::interval::tests::range_calls::range_projection_does_not_warn_on_error_reversed_or_out_of_range ... ok
+test typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins ... ok
+test typeck::interval::tests::range_calls::range_projection_matches_lean_bounds_and_following_arithmetic ... ok
+test typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 1.59s
+

@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.81s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 8 tests
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+test typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts ... ok
+test typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope ... ok
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... ok
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 1301 filtered out; finished in 0.30s
+
+A04_COMMAND_EXIT_STATUS=0
+        9.19 real        15.59 user         1.18 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A04_OUTER_EXIT_STATUS=1
+A04_WALL_SECONDS=9.196

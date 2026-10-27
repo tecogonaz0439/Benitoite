@@ -1,0 +1,36 @@
+warning[W0404]: argument `n` to `Integer.shiftLeft` is always out of range
+  --> docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/shift-cli.bnt:5:37
+   |
+ 5 |   return Integer.shiftLeft(a: 1, n: 64)
+   |                                     ^^ always out of range
+   |
+   = note: the inferred interval is [64,64]
+   = note: the allowed range is [0,63]
+   = note: this local analysis applies only if execution reaches this call and all arguments are evaluated successfully
+
+warning[W0404]: argument `n` to `Integer64.shiftLeft` is always out of range
+  --> docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/shift-cli.bnt:9:25
+   |
+ 9 |   return I.shiftLeft(n: amount, a: 1)
+   |                         ^^^^^^ always out of range
+   |
+  ::: docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/shift-cli.bnt:8:3
+   |
+ 8 |   bind amount <- if flag then 64 else 65 end if
+   |   --------------------------------------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred interval is [64,65]
+   = note: the allowed range is [0,63]
+   = note: this local analysis applies only if execution reaches this call and all arguments are evaluated successfully
+
+warning[W0404]: argument `n` to `Byte.shiftLeft` is always out of range
+  --> docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/shift-cli.bnt:12:36
+   |
+12 |   return Byte.shiftLeft(a: 1u8, n: 8)
+   |                                    ^ always out of range
+   |
+   = note: the inferred interval is [8,8]
+   = note: the allowed range is [0,7]
+   = note: this local analysis applies only if execution reaches this call and all arguments are evaluated successfully
+
+warning: 3 warnings emitted

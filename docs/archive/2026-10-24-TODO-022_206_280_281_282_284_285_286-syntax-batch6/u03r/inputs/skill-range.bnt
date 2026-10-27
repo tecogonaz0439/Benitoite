@@ -1,0 +1,17 @@
+import Benitoite.Unofficial.Range
+
+function checkedIncrement(value: Integer) -> Result[Integer, Range.RangeError]
+  bind result <- Range.checkInteger(minimum: 0, maximum: 10, value: value)
+  return match result with
+    case Result.Ok(checked) ->
+      bind incremented <- Range.value(checked) + 1
+      Result.Ok(incremented)
+    case Result.Error(error) -> Result.Error(error)
+  end match
+end function
+
+@test("checked increment handles both range outcomes")
+function checkedIncrementWorks() -> Unit uses Assert.Check
+  Assert.equal(actual: checkedIncrement(10), expected: Result.Ok(11))
+  Assert.equal(actual: checkedIncrement(11), expected: Result.Error(Range.RangeError.OutOfRange(0, 10, 11)))
+end function

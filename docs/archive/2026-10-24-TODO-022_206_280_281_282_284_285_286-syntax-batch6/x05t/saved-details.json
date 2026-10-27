@@ -1,0 +1,1127 @@
+{
+  "sources": [
+    {
+      "directory": "programs",
+      "inputs": 1403,
+      "totals": {
+        "legacyIdentities": 28,
+        "legacyDiagnostics": 28,
+        "nonBottomInformativeBodies": 4035,
+        "informativeBottomBodies": 74943,
+        "nonTopIndependentInputs": 102323,
+        "userWarnings": 38
+      },
+      "eligible": {
+        "context": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "number": 0
+        },
+        "next": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "number": 0
+        },
+        "integer": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "number": 0
+        },
+        "after": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "golden:testdata/eval/c12-lazy-deferred.bnt",
+          "number": 40
+        },
+        "independent": {
+          "input": "golden:testdata/eval/int_overflow_add.bnt",
+          "number": 71
+        },
+        "warnings": {
+          "input": "golden:testdata/eval/trace_truncated.bnt",
+          "number": 110
+        },
+        "externalType-independent": {
+          "input": "golden:testdata/external/resource",
+          "number": 164
+        },
+        "externalType-candidates": {
+          "input": "golden:testdata/external/resource",
+          "number": 164
+        },
+        "externalType-integer": {
+          "input": "golden:testdata/external/resource",
+          "number": 164
+        },
+        "externalType-width": {
+          "input": "golden:testdata/external/resource",
+          "number": 164
+        }
+      },
+      "absent": [
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next"
+          ]
+        },
+        {
+          "input": "golden:testdata/eval/c12-lazy-deferred.bnt",
+          "number": 40,
+          "reasons": [
+            "userWarnings"
+          ]
+        },
+        {
+          "input": "golden:testdata/eval/int_overflow_add.bnt",
+          "number": 71,
+          "reasons": [
+            "independent"
+          ]
+        },
+        {
+          "input": "golden:testdata/eval/trace_truncated.bnt",
+          "number": 110,
+          "reasons": [
+            "warnings"
+          ]
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "number": 164,
+          "reasons": [
+            "externalType-candidates",
+            "externalType-independent",
+            "externalType-integer",
+            "externalType-width"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "independent",
+        "userWarnings",
+        "externalType-candidates",
+        "externalType-integer",
+        "externalType-width",
+        "externalType-independent"
+      ],
+      "calls": 6,
+      "excluded": [
+        {
+          "input": "golden:testdata/external/resource",
+          "definition": ".createMany",
+          "bottom": true,
+          "independentInputs": 7,
+          "informativeIndependentInputs": 1,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "definition": ".main",
+          "bottom": false,
+          "independentInputs": 30,
+          "informativeIndependentInputs": 6,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/external/wit-docs-declarations",
+          "definition": ".main",
+          "bottom": false,
+          "independentInputs": 22,
+          "informativeIndependentInputs": 3,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".compare",
+          "bottom": true,
+          "independentInputs": 97,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".compare%body:59:0",
+          "bottom": true,
+          "independentInputs": 0,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".pointers",
+          "bottom": true,
+          "independentInputs": 116,
+          "informativeIndependentInputs": 4,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".pointers%body:14:0",
+          "bottom": true,
+          "independentInputs": 2,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".pointers%body:128:0",
+          "bottom": true,
+          "independentInputs": 54,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": ".compare",
+          "bottom": true,
+          "independentInputs": 6,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": ".compare%body:158:0",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.compile",
+          "bottom": true,
+          "independentInputs": 2,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.isMatch",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.find",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.findAll",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.replaceAll",
+          "bottom": true,
+          "independentInputs": 4,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.count",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        }
+      ]
+    },
+    {
+      "directory": "identity",
+      "inputs": 24,
+      "totals": {
+        "legacyIdentities": 9,
+        "legacyDiagnostics": 9,
+        "nonBottomInformativeBodies": 3,
+        "informativeBottomBodies": 192,
+        "nonTopIndependentInputs": 9,
+        "userWarnings": 68
+      },
+      "eligible": {
+        "context": {
+          "input": "interval:point",
+          "number": 0
+        },
+        "next": {
+          "input": "interval:point",
+          "number": 0
+        },
+        "integer": {
+          "input": "interval:point",
+          "number": 0
+        },
+        "after": {
+          "input": "interval:point",
+          "number": 0
+        },
+        "warnings": {
+          "input": "interval:division",
+          "number": 1
+        },
+        "userWarnings": {
+          "input": "interval:division",
+          "number": 1
+        },
+        "independent": {
+          "input": "interval:independent",
+          "number": 3
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "interval:point",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next"
+          ]
+        },
+        {
+          "input": "interval:division",
+          "number": 1,
+          "reasons": [
+            "userWarnings",
+            "warnings"
+          ]
+        },
+        {
+          "input": "interval:independent",
+          "number": 3,
+          "reasons": [
+            "independent"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "independent",
+        "userWarnings"
+      ],
+      "calls": 6,
+      "excluded": []
+    },
+    {
+      "directory": "manifest/manifest-interval",
+      "inputs": 15,
+      "totals": {
+        "legacyIdentities": 0,
+        "legacyDiagnostics": 0,
+        "nonBottomInformativeBodies": 11,
+        "informativeBottomBodies": 238,
+        "nonTopIndependentInputs": 3018,
+        "userWarnings": 8
+      },
+      "eligible": {
+        "context": {
+          "input": "manifest:top",
+          "number": 1
+        },
+        "next": {
+          "input": "manifest:top",
+          "number": 1
+        },
+        "integer": {
+          "input": "manifest:top",
+          "number": 1
+        },
+        "after": {
+          "input": "manifest:top",
+          "number": 1
+        },
+        "phasePosition": {
+          "input": "interval-budget:bodyBudget",
+          "number": 8
+        },
+        "externalType-independent": {
+          "input": "golden:testdata/external/resource",
+          "number": 10
+        },
+        "externalType-candidates": {
+          "input": "golden:testdata/external/resource",
+          "number": 10
+        },
+        "externalType-integer": {
+          "input": "golden:testdata/external/resource",
+          "number": 10
+        },
+        "externalType-width": {
+          "input": "golden:testdata/external/resource",
+          "number": 10
+        },
+        "warnings": {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "number": 14
+        },
+        "userWarnings": {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "number": 14
+        }
+      },
+      "absent": [
+        "independent"
+      ],
+      "selected": [
+        {
+          "input": "manifest:top",
+          "number": 1,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next"
+          ]
+        },
+        {
+          "input": "interval-budget:bodyBudget",
+          "number": 8,
+          "reasons": [
+            "phasePosition"
+          ]
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "number": 10,
+          "reasons": [
+            "externalType-candidates",
+            "externalType-independent",
+            "externalType-integer",
+            "externalType-width"
+          ]
+        },
+        {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "number": 14,
+          "reasons": [
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "phasePosition",
+        "userWarnings",
+        "externalType-candidates",
+        "externalType-integer",
+        "externalType-width",
+        "externalType-independent"
+      ],
+      "calls": 5,
+      "excluded": [
+        {
+          "input": "golden:testdata/external/resource",
+          "definition": ".createMany",
+          "bottom": true,
+          "independentInputs": 7,
+          "informativeIndependentInputs": 1,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "definition": ".main",
+          "bottom": false,
+          "independentInputs": 30,
+          "informativeIndependentInputs": 6,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/external/wit-docs-declarations",
+          "definition": ".main",
+          "bottom": false,
+          "independentInputs": 22,
+          "informativeIndependentInputs": 3,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".compare",
+          "bottom": true,
+          "independentInputs": 97,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".compare%body:59:0",
+          "bottom": true,
+          "independentInputs": 0,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".pointers",
+          "bottom": true,
+          "independentInputs": 116,
+          "informativeIndependentInputs": 4,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".pointers%body:14:0",
+          "bottom": true,
+          "independentInputs": 2,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "definition": ".pointers%body:128:0",
+          "bottom": true,
+          "independentInputs": 54,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": ".compare",
+          "bottom": true,
+          "independentInputs": 6,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": ".compare%body:158:0",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.compile",
+          "bottom": true,
+          "independentInputs": 2,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.isMatch",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.find",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.findAll",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.replaceAll",
+          "bottom": true,
+          "independentInputs": 4,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "definition": "WasmRegex.Pattern.count",
+          "bottom": true,
+          "independentInputs": 3,
+          "informativeIndependentInputs": 0,
+          "parentCandidates": 0,
+          "independentCandidates": 0
+        }
+      ]
+    },
+    {
+      "directory": "range/interval",
+      "inputs": 11,
+      "totals": {
+        "legacyIdentities": 3,
+        "legacyDiagnostics": 3,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 65,
+        "nonTopIndependentInputs": 7,
+        "userWarnings": 6
+      },
+      "eligible": {
+        "context": {
+          "input": "interval-range:range",
+          "number": 0
+        },
+        "after": {
+          "input": "interval-range:range",
+          "number": 0
+        },
+        "warnings": {
+          "input": "interval-range:range",
+          "number": 0
+        },
+        "next": {
+          "input": "interval-range:range",
+          "number": 0
+        },
+        "integer": {
+          "input": "interval-range:range",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "interval-range:range",
+          "number": 0
+        },
+        "independent": {
+          "input": "interval-range:rangeUnrecognized",
+          "number": 10
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "interval-range:range",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        },
+        {
+          "input": "interval-range:rangeUnrecognized",
+          "number": 10,
+          "reasons": [
+            "independent"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "independent",
+        "userWarnings"
+      ],
+      "calls": 6,
+      "excluded": []
+    },
+    {
+      "directory": "vm/original",
+      "inputs": 1,
+      "totals": {
+        "legacyIdentities": 18,
+        "legacyDiagnostics": 18,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 39,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 20
+      },
+      "eligible": {
+        "context": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "after": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "warnings": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "next": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "integer": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "vm:arithmetic",
+          "number": 0
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "independent",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "vm:arithmetic",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "calls": 5,
+      "excluded": []
+    },
+    {
+      "directory": "vm/instrumented",
+      "inputs": 1,
+      "totals": {
+        "legacyIdentities": 0,
+        "legacyDiagnostics": 0,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 39,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 14
+      },
+      "eligible": {
+        "context": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "after": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "warnings": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "next": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "integer": {
+          "input": "vm:arithmetic",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "vm:arithmetic",
+          "number": 0
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "independent",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "vm:arithmetic",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "calls": 5,
+      "excluded": []
+    },
+    {
+      "directory": "vm/range/original",
+      "inputs": 1,
+      "totals": {
+        "legacyIdentities": 2,
+        "legacyDiagnostics": 2,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 46,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 4
+      },
+      "eligible": {
+        "context": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "after": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "warnings": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "next": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "integer": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "vm:range",
+          "number": 0
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "independent",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "vm:range",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "calls": 5,
+      "excluded": []
+    },
+    {
+      "directory": "vm/range/instrumented",
+      "inputs": 1,
+      "totals": {
+        "legacyIdentities": 0,
+        "legacyDiagnostics": 0,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 46,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 2
+      },
+      "eligible": {
+        "context": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "after": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "warnings": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "next": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "integer": {
+          "input": "vm:range",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "vm:range",
+          "number": 0
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "independent",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "vm:range",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "calls": 5,
+      "excluded": []
+    },
+    {
+      "directory": "vm/shifts/original",
+      "inputs": 1,
+      "totals": {
+        "legacyIdentities": 0,
+        "legacyDiagnostics": 0,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 108,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 54
+      },
+      "eligible": {
+        "context": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "after": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "warnings": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "next": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "integer": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "vm:shifts",
+          "number": 0
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "independent",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "vm:shifts",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "calls": 5,
+      "excluded": []
+    },
+    {
+      "directory": "vm/shifts/instrumented",
+      "inputs": 1,
+      "totals": {
+        "legacyIdentities": 0,
+        "legacyDiagnostics": 0,
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 108,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 54
+      },
+      "eligible": {
+        "context": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "after": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "warnings": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "next": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "integer": {
+          "input": "vm:shifts",
+          "number": 0
+        },
+        "userWarnings": {
+          "input": "vm:shifts",
+          "number": 0
+        }
+      },
+      "absent": [
+        "externalType-candidates",
+        "externalType-independent",
+        "externalType-integer",
+        "externalType-width",
+        "independent",
+        "phasePosition"
+      ],
+      "selected": [
+        {
+          "input": "vm:shifts",
+          "number": 0,
+          "reasons": [
+            "after",
+            "context",
+            "integer",
+            "next",
+            "userWarnings",
+            "warnings"
+          ]
+        }
+      ],
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "calls": 5,
+      "excluded": []
+    }
+  ],
+  "legacyProbe": {
+    "input": "golden:testdata/stdlib/width-bits-s8-invalid.bnt",
+    "node": 6,
+    "cause": "outsideDomain",
+    "primary": [
+      0,
+      191,
+      193
+    ],
+    "before": "accepted",
+    "after": "legacy warning identity without diagnostic"
+  },
+  "originalArchiveSha256": "6986e19acfa40abad5507cca1583c7240f417ee96504b58b4ddd4da0e8e4aa9e"
+}

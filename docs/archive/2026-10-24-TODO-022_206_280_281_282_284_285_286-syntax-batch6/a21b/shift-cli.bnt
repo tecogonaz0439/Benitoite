@@ -1,0 +1,26 @@
+import Benitoite.Integer64 as I
+import Benitoite.Byte
+
+function primitive() -> Integer
+  return Integer.shiftLeft(a: 1, n: 64)
+end function
+function wrapper(flag: Boolean) -> Integer
+  bind amount <- if flag then 64 else 65 end if
+  return I.shiftLeft(n: amount, a: 1)
+end function
+function byte() -> Byte
+  return Byte.shiftLeft(a: 1u8, n: 8)
+end function
+function accepted(flag: Boolean, x: Integer) -> Unit
+  bind amount <- if flag then 63 else 64 end if
+  bind small <- if flag then 7 else 8 end if
+  bind _ <- Integer.shiftLeft(a: 1, n: 63)
+  bind _ <- I.shiftLeft(a: 1, n: 0)
+  bind _ <- Byte.shiftLeft(a: 1u8, n: 7)
+  bind _ <- Integer.shiftLeft(a: 1, n: amount)
+  bind _ <- I.shiftLeft(a: 1, n: amount)
+  bind _ <- Byte.shiftLeft(a: 1u8, n: small)
+  bind _ <- Integer.shiftLeft(a: 1, n: x)
+end function
+function main() -> Unit
+end function

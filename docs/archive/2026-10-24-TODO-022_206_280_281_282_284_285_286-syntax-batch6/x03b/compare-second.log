@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1008, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1001, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir, args.vm_dir, args.cli)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 653, in exercise
+    interval_range_vm.exercise(range_runner, Path(vm_dir)/'range', cli)
+  File "<repo>/formal/tests/interval_range_vm.py", line 151, in exercise
+    vm.require_closed(entries['.'+name], original['standards'], original['apiAt'])
+  File "<repo>/formal/tests/interval_vm_compare.py", line 163, in require_closed
+    assert expr['call']['callee'] == {'funName': dict(name=declaration, tys=[], effs=[])}
+AssertionError

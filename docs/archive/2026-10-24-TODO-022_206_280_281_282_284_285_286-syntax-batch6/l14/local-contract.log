@@ -1,0 +1,52 @@
+$ (cd formal && lake env lean -M 12288 <tmp>/benitoite-l14-contracts.lean)
+
+import Benitoite.Interval.Sound
+open Benitoite.Interval Benitoite.Release
+
+example (kind : IntKind) : kind.min < 0 ↔
+    kind = .integer8 ∨ kind = .integer16 ∨ kind = .integer32 ∨ kind = .integer64 := by
+  cases kind <;> decide +kernel
+
+#print axioms Benitoite.Interval.checkedSub_normal_iff
+#print axioms Benitoite.Interval.checkedSub_overflow_iff
+#print axioms Benitoite.Interval.sub_normal_sound
+#print axioms Benitoite.Interval.sub_may_overflow_sound
+#print axioms Benitoite.Interval.sub_always_overflows_sound
+#print axioms Benitoite.Interval.sub_approx_normal_sound
+#print axioms Benitoite.Interval.sub_approx_overflow_sound
+#print axioms Benitoite.Interval.sub_bottom_iff
+#print axioms Benitoite.Interval.sub_bottom_child
+#print axioms Benitoite.Interval.checkedNeg_normal_iff
+#print axioms Benitoite.Interval.checkedNeg_overflow_iff
+#print axioms Benitoite.Interval.neg_normal_sound
+#print axioms Benitoite.Interval.neg_may_overflow_sound
+#print axioms Benitoite.Interval.neg_always_overflows_sound
+#print axioms Benitoite.Interval.neg_approx_normal_sound
+#print axioms Benitoite.Interval.neg_approx_overflow_sound
+#print axioms Benitoite.Interval.neg_bottom_iff
+#print axioms Benitoite.Interval.neg_bottom_child
+#print axioms Benitoite.Interval.analyzeBase_normal_sound
+#print axioms Benitoite.Interval.analyzeBase_warning_sound
+
+'Benitoite.Interval.checkedSub_normal_iff' depends on axioms: [propext]
+'Benitoite.Interval.checkedSub_overflow_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_may_overflow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_always_overflows_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_approx_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_approx_overflow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_bottom_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.sub_bottom_child' depends on axioms: [propext]
+'Benitoite.Interval.checkedNeg_normal_iff' depends on axioms: [propext]
+'Benitoite.Interval.checkedNeg_overflow_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_may_overflow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_always_overflows_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_approx_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_approx_overflow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_bottom_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.neg_bottom_child' depends on axioms: [propext]
+'Benitoite.Interval.analyzeBase_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+exit=0, elapsed=0.334s

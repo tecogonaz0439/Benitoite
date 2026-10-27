@@ -1,0 +1,8154 @@
+{
+  "kind": "interval-range-vm-comparison",
+  "compared": 37,
+  "evaluationExcluded": 0,
+  "selectedOut": [
+    {
+      "definition": ".unrelated",
+      "reason": "parameterOrGeneralCall"
+    },
+    {
+      "definition": ".unrelatedCaller",
+      "reason": "parameterOrGeneralCall"
+    },
+    {
+      "definition": ".threeFields",
+      "reason": "observationOnly"
+    },
+    {
+      "definition": ".lowerFields",
+      "reason": "observationOnly"
+    },
+    {
+      "definition": ".upperFields",
+      "reason": "observationOnly"
+    },
+    {
+      "definition": ".singletonFields",
+      "reason": "observationOnly"
+    },
+    {
+      "definition": ".integerMinFields",
+      "reason": "observationOnly"
+    },
+    {
+      "definition": ".integerMaxFields",
+      "reason": "observationOnly"
+    },
+    {
+      "definition": ".unrelatedOnlyOk",
+      "reason": "parameterOrGeneralCall"
+    }
+  ],
+  "operations": 96,
+  "selectedOperations": 80,
+  "runs": [
+    {
+      "definition": ".lower",
+      "reached": [
+        "REACH:.lower:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".lowerValue",
+      "reached": [
+        "REACH:.lowerValue:3",
+        "REACH:.lowerValue:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".lowerOnlyOk",
+      "reached": [
+        "REACH:.lowerOnlyOk:3",
+        "REACH:.lowerOnlyOk:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".upper",
+      "reached": [
+        "REACH:.upper:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".upperValue",
+      "reached": [
+        "REACH:.upperValue:3",
+        "REACH:.upperValue:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".upperOnlyOk",
+      "reached": [
+        "REACH:.upperOnlyOk:3",
+        "REACH:.upperOnlyOk:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".singleton",
+      "reached": [
+        "REACH:.singleton:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".singletonValue",
+      "reached": [
+        "REACH:.singletonValue:3",
+        "REACH:.singletonValue:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".singletonOnlyOk",
+      "reached": [
+        "REACH:.singletonOnlyOk:3",
+        "REACH:.singletonOnlyOk:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".integerMin",
+      "reached": [
+        "REACH:.integerMin:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".integerMinValue",
+      "reached": [
+        "REACH:.integerMinValue:3",
+        "REACH:.integerMinValue:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".integerMinOnlyOk",
+      "reached": [
+        "REACH:.integerMinOnlyOk:3",
+        "REACH:.integerMinOnlyOk:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".integerMax",
+      "reached": [
+        "REACH:.integerMax:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".integerMaxValue",
+      "reached": [
+        "REACH:.integerMaxValue:3",
+        "REACH:.integerMaxValue:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".integerMaxOnlyOk",
+      "reached": [
+        "REACH:.integerMaxOnlyOk:3",
+        "REACH:.integerMaxOnlyOk:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".reversedBetween",
+      "reached": [
+        "REACH:.reversedBetween:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".reversedBetweenValue",
+      "reached": [
+        "REACH:.reversedBetweenValue:3"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".reversedOutside",
+      "reached": [
+        "REACH:.reversedOutside:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".reversedOutsideValue",
+      "reached": [
+        "REACH:.reversedOutsideValue:3"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".below",
+      "reached": [
+        "REACH:.below:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".belowValue",
+      "reached": [
+        "REACH:.belowValue:3"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".above",
+      "reached": [
+        "REACH:.above:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".aboveValue",
+      "reached": [
+        "REACH:.aboveValue:3"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".nestedInner",
+      "reached": [
+        "REACH:.nestedInner:3",
+        "REACH:.nestedInner:9",
+        "REACH:.nestedInner:14"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".nestedInnerOnlyOk",
+      "reached": [
+        "REACH:.nestedInnerOnlyOk:3",
+        "REACH:.nestedInnerOnlyOk:9",
+        "REACH:.nestedInnerOnlyOk:14"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".nestedOuter",
+      "reached": [
+        "REACH:.nestedOuter:3",
+        "REACH:.nestedOuter:9",
+        "REACH:.nestedOuter:14"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".nestedOuterOnlyOk",
+      "reached": [
+        "REACH:.nestedOuterOnlyOk:3",
+        "REACH:.nestedOuterOnlyOk:9",
+        "REACH:.nestedOuterOnlyOk:14"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".increment",
+      "reached": [
+        "REACH:.increment:3",
+        "REACH:.increment:9",
+        "REACH:.increment:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".incrementOnlyOk",
+      "reached": [
+        "REACH:.incrementOnlyOk:3",
+        "REACH:.incrementOnlyOk:9",
+        "REACH:.incrementOnlyOk:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".incrementOverflow",
+      "reached": [
+        "REACH:.incrementOverflow:3",
+        "REACH:.incrementOverflow:9",
+        "REACH:.incrementOverflow:8"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".incrementOverflowOnlyOk",
+      "reached": [
+        "REACH:.incrementOverflowOnlyOk:3",
+        "REACH:.incrementOverflowOnlyOk:9",
+        "REACH:.incrementOverflowOnlyOk:8"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".savedResult",
+      "reached": [
+        "REACH:.savedResult:1",
+        "REACH:.savedResult:9"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".importedAlias",
+      "reached": [
+        "REACH:.importedAlias:3",
+        "REACH:.importedAlias:8"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".argumentOrder",
+      "reached": [
+        "REACH:.argumentOrder:4",
+        "REACH:.argumentOrder:7",
+        "REACH:.argumentOrder:10",
+        "REACH:.argumentOrder:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".firstArgumentFailure",
+      "reached": [
+        "REACH:.firstArgumentFailure:4"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0101"
+      ]
+    },
+    {
+      "definition": ".secondArgumentFailure",
+      "reached": [
+        "REACH:.secondArgumentFailure:4",
+        "REACH:.secondArgumentFailure:7"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0101"
+      ]
+    },
+    {
+      "definition": ".argumentReturn",
+      "reached": [],
+      "exit": 0,
+      "errors": []
+    }
+  ],
+  "sites": [
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lower",
+        "2"
+      ],
+      "marker": "REACH:.lower:2",
+      "operands": [
+        [
+          0,
+          169,
+          170
+        ],
+        [
+          0,
+          181,
+          183
+        ],
+        [
+          0,
+          194,
+          195
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        147,
+        196
+      ],
+      "instrumentedKey": [
+        ".lower",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        297,
+        396
+      ],
+      "markerSpan": [
+        0,
+        261,
+        296
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lowerValue",
+        "3"
+      ],
+      "marker": "REACH:.lowerValue:3",
+      "operands": [
+        [
+          0,
+          281,
+          282
+        ],
+        [
+          0,
+          293,
+          295
+        ],
+        [
+          0,
+          306,
+          307
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        259,
+        308
+      ],
+      "instrumentedKey": [
+        ".lowerValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        625,
+        724
+      ],
+      "markerSpan": [
+        0,
+        584,
+        624
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lowerValue",
+        "8"
+      ],
+      "marker": "REACH:.lowerValue:8",
+      "operands": [
+        [
+          0,
+          360,
+          367
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        345,
+        368
+      ],
+      "instrumentedKey": [
+        ".lowerValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        855,
+        889
+      ],
+      "markerSpan": [
+        0,
+        814,
+        854
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upper",
+        "2"
+      ],
+      "marker": "REACH:.upper:2",
+      "operands": [
+        [
+          0,
+          517,
+          519
+        ],
+        [
+          0,
+          530,
+          532
+        ],
+        [
+          0,
+          543,
+          544
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        495,
+        545
+      ],
+      "instrumentedKey": [
+        ".upper",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        1178,
+        1277
+      ],
+      "markerSpan": [
+        0,
+        1142,
+        1177
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upperValue",
+        "3"
+      ],
+      "marker": "REACH:.upperValue:3",
+      "operands": [
+        [
+          0,
+          630,
+          632
+        ],
+        [
+          0,
+          643,
+          645
+        ],
+        [
+          0,
+          656,
+          657
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        608,
+        658
+      ],
+      "instrumentedKey": [
+        ".upperValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        1507,
+        1606
+      ],
+      "markerSpan": [
+        0,
+        1466,
+        1506
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upperValue",
+        "8"
+      ],
+      "marker": "REACH:.upperValue:8",
+      "operands": [
+        [
+          0,
+          710,
+          717
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        695,
+        718
+      ],
+      "instrumentedKey": [
+        ".upperValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        1737,
+        1771
+      ],
+      "markerSpan": [
+        0,
+        1696,
+        1736
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singleton",
+        "2"
+      ],
+      "marker": "REACH:.singleton:2",
+      "operands": [
+        [
+          0,
+          871,
+          872
+        ],
+        [
+          0,
+          883,
+          884
+        ],
+        [
+          0,
+          895,
+          896
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        849,
+        897
+      ],
+      "instrumentedKey": [
+        ".singleton",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        2066,
+        2165
+      ],
+      "markerSpan": [
+        0,
+        2026,
+        2065
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singletonValue",
+        "3"
+      ],
+      "marker": "REACH:.singletonValue:3",
+      "operands": [
+        [
+          0,
+          986,
+          987
+        ],
+        [
+          0,
+          998,
+          999
+        ],
+        [
+          0,
+          1010,
+          1011
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        964,
+        1012
+      ],
+      "instrumentedKey": [
+        ".singletonValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        2401,
+        2500
+      ],
+      "markerSpan": [
+        0,
+        2356,
+        2400
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singletonValue",
+        "8"
+      ],
+      "marker": "REACH:.singletonValue:8",
+      "operands": [
+        [
+          0,
+          1064,
+          1071
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        1049,
+        1072
+      ],
+      "instrumentedKey": [
+        ".singletonValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        2635,
+        2669
+      ],
+      "markerSpan": [
+        0,
+        2590,
+        2634
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMin",
+        "2"
+      ],
+      "marker": "REACH:.integerMin:2",
+      "operands": [
+        [
+          0,
+          1226,
+          1246
+        ],
+        [
+          0,
+          1257,
+          1276
+        ],
+        [
+          0,
+          1287,
+          1307
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        1204,
+        1308
+      ],
+      "instrumentedKey": [
+        ".integerMin",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        3022,
+        3121
+      ],
+      "markerSpan": [
+        0,
+        2981,
+        3021
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMinValue",
+        "3"
+      ],
+      "marker": "REACH:.integerMinValue:3",
+      "operands": [
+        [
+          0,
+          1398,
+          1418
+        ],
+        [
+          0,
+          1429,
+          1448
+        ],
+        [
+          0,
+          1459,
+          1479
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        1376,
+        1480
+      ],
+      "instrumentedKey": [
+        ".integerMinValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        3415,
+        3514
+      ],
+      "markerSpan": [
+        0,
+        3369,
+        3414
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMinValue",
+        "8"
+      ],
+      "marker": "REACH:.integerMinValue:8",
+      "operands": [
+        [
+          0,
+          1532,
+          1539
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        1517,
+        1540
+      ],
+      "instrumentedKey": [
+        ".integerMinValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        3650,
+        3684
+      ],
+      "markerSpan": [
+        0,
+        3604,
+        3649
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMax",
+        "2"
+      ],
+      "marker": "REACH:.integerMax:2",
+      "operands": [
+        [
+          0,
+          1694,
+          1713
+        ],
+        [
+          0,
+          1724,
+          1743
+        ],
+        [
+          0,
+          1754,
+          1774
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        1672,
+        1775
+      ],
+      "instrumentedKey": [
+        ".integerMax",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        4036,
+        4135
+      ],
+      "markerSpan": [
+        0,
+        3995,
+        4035
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMaxValue",
+        "3"
+      ],
+      "marker": "REACH:.integerMaxValue:3",
+      "operands": [
+        [
+          0,
+          1865,
+          1884
+        ],
+        [
+          0,
+          1895,
+          1914
+        ],
+        [
+          0,
+          1925,
+          1945
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        1843,
+        1946
+      ],
+      "instrumentedKey": [
+        ".integerMaxValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        4428,
+        4527
+      ],
+      "markerSpan": [
+        0,
+        4382,
+        4427
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMaxValue",
+        "8"
+      ],
+      "marker": "REACH:.integerMaxValue:8",
+      "operands": [
+        [
+          0,
+          1998,
+          2005
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        1983,
+        2006
+      ],
+      "instrumentedKey": [
+        ".integerMaxValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        4663,
+        4697
+      ],
+      "markerSpan": [
+        0,
+        4617,
+        4662
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".reversedBetween",
+        "2"
+      ],
+      "marker": "REACH:.reversedBetween:2",
+      "operands": [
+        [
+          0,
+          2165,
+          2166
+        ],
+        [
+          0,
+          2177,
+          2178
+        ],
+        [
+          0,
+          2189,
+          2191
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        2143,
+        2192
+      ],
+      "instrumentedKey": [
+        ".reversedBetween",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        5005,
+        5104
+      ],
+      "markerSpan": [
+        0,
+        4959,
+        5004
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".reversedBetweenValue",
+        "3"
+      ],
+      "marker": "REACH:.reversedBetweenValue:3",
+      "operands": [
+        [
+          0,
+          2287,
+          2288
+        ],
+        [
+          0,
+          2299,
+          2300
+        ],
+        [
+          0,
+          2311,
+          2313
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        2265,
+        2314
+      ],
+      "instrumentedKey": [
+        ".reversedBetweenValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        5353,
+        5452
+      ],
+      "markerSpan": [
+        0,
+        5302,
+        5352
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".reversedBetweenValue",
+        "8"
+      ],
+      "marker": "REACH:.reversedBetweenValue:8",
+      "operands": [
+        [
+          0,
+          2366,
+          2373
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        2351,
+        2374
+      ],
+      "instrumentedKey": [
+        ".reversedBetweenValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        5593,
+        5627
+      ],
+      "markerSpan": [
+        0,
+        5542,
+        5592
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 15
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".reversedOutside",
+        "2"
+      ],
+      "marker": "REACH:.reversedOutside:2",
+      "operands": [
+        [
+          0,
+          2533,
+          2535
+        ],
+        [
+          0,
+          2546,
+          2547
+        ],
+        [
+          0,
+          2558,
+          2560
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        2511,
+        2561
+      ],
+      "instrumentedKey": [
+        ".reversedOutside",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        5936,
+        6035
+      ],
+      "markerSpan": [
+        0,
+        5890,
+        5935
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 15
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".reversedOutsideValue",
+        "3"
+      ],
+      "marker": "REACH:.reversedOutsideValue:3",
+      "operands": [
+        [
+          0,
+          2656,
+          2658
+        ],
+        [
+          0,
+          2669,
+          2670
+        ],
+        [
+          0,
+          2681,
+          2683
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        2634,
+        2684
+      ],
+      "instrumentedKey": [
+        ".reversedOutsideValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        6285,
+        6384
+      ],
+      "markerSpan": [
+        0,
+        6234,
+        6284
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".reversedOutsideValue",
+        "8"
+      ],
+      "marker": "REACH:.reversedOutsideValue:8",
+      "operands": [
+        [
+          0,
+          2736,
+          2743
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        2721,
+        2744
+      ],
+      "instrumentedKey": [
+        ".reversedOutsideValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        6525,
+        6559
+      ],
+      "markerSpan": [
+        0,
+        6474,
+        6524
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -1
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".below",
+        "2"
+      ],
+      "marker": "REACH:.below:2",
+      "operands": [
+        [
+          0,
+          2893,
+          2895
+        ],
+        [
+          0,
+          2906,
+          2908
+        ],
+        [
+          0,
+          2919,
+          2920
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        2871,
+        2921
+      ],
+      "instrumentedKey": [
+        ".below",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        6848,
+        6947
+      ],
+      "markerSpan": [
+        0,
+        6812,
+        6847
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -1
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".belowValue",
+        "3"
+      ],
+      "marker": "REACH:.belowValue:3",
+      "operands": [
+        [
+          0,
+          3006,
+          3008
+        ],
+        [
+          0,
+          3019,
+          3021
+        ],
+        [
+          0,
+          3032,
+          3033
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        2984,
+        3034
+      ],
+      "instrumentedKey": [
+        ".belowValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        7177,
+        7276
+      ],
+      "markerSpan": [
+        0,
+        7136,
+        7176
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".belowValue",
+        "8"
+      ],
+      "marker": "REACH:.belowValue:8",
+      "operands": [
+        [
+          0,
+          3086,
+          3093
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        3071,
+        3094
+      ],
+      "instrumentedKey": [
+        ".belowValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        7407,
+        7441
+      ],
+      "markerSpan": [
+        0,
+        7366,
+        7406
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 11
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".above",
+        "2"
+      ],
+      "marker": "REACH:.above:2",
+      "operands": [
+        [
+          0,
+          3243,
+          3245
+        ],
+        [
+          0,
+          3256,
+          3258
+        ],
+        [
+          0,
+          3269,
+          3270
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        3221,
+        3271
+      ],
+      "instrumentedKey": [
+        ".above",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        7730,
+        7829
+      ],
+      "markerSpan": [
+        0,
+        7694,
+        7729
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 11
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".aboveValue",
+        "3"
+      ],
+      "marker": "REACH:.aboveValue:3",
+      "operands": [
+        [
+          0,
+          3356,
+          3358
+        ],
+        [
+          0,
+          3369,
+          3371
+        ],
+        [
+          0,
+          3382,
+          3383
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        3334,
+        3384
+      ],
+      "instrumentedKey": [
+        ".aboveValue",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        8059,
+        8158
+      ],
+      "markerSpan": [
+        0,
+        8018,
+        8058
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".aboveValue",
+        "8"
+      ],
+      "marker": "REACH:.aboveValue:8",
+      "operands": [
+        [
+          0,
+          3436,
+          3443
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        3421,
+        3444
+      ],
+      "instrumentedKey": [
+        ".aboveValue",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        8289,
+        8323
+      ],
+      "markerSpan": [
+        0,
+        8248,
+        8288
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedInner",
+        "3"
+      ],
+      "marker": "REACH:.nestedInner:3",
+      "operands": [
+        [
+          0,
+          3574,
+          3575
+        ],
+        [
+          0,
+          3586,
+          3588
+        ],
+        [
+          0,
+          3599,
+          3600
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        3552,
+        3601
+      ],
+      "instrumentedKey": [
+        ".nestedInner",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        8598,
+        8697
+      ],
+      "markerSpan": [
+        0,
+        8556,
+        8597
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 105
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 110
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 100
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedInner",
+        "9"
+      ],
+      "marker": "REACH:.nestedInner:9",
+      "operands": [
+        [
+          0,
+          3670,
+          3673
+        ],
+        [
+          0,
+          3684,
+          3687
+        ],
+        [
+          0,
+          3698,
+          3701
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand9x0, maximum: intervalOperand9x1, minimum: intervalOperand9x2)",
+      "span": [
+        0,
+        3648,
+        3702
+      ],
+      "instrumentedKey": [
+        ".nestedInner",
+        "25"
+      ],
+      "operationSpan": [
+        0,
+        8897,
+        8996
+      ],
+      "markerSpan": [
+        0,
+        8855,
+        8896
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedInner",
+        "14"
+      ],
+      "marker": "REACH:.nestedInner:14",
+      "operands": [
+        [
+          0,
+          3756,
+          3761
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand14x0)",
+      "span": [
+        0,
+        3741,
+        3762
+      ],
+      "instrumentedKey": [
+        ".nestedInner",
+        "36"
+      ],
+      "operationSpan": [
+        0,
+        9130,
+        9165
+      ],
+      "markerSpan": [
+        0,
+        9087,
+        9129
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedOuter",
+        "3"
+      ],
+      "marker": "REACH:.nestedOuter:3",
+      "operands": [
+        [
+          0,
+          3944,
+          3945
+        ],
+        [
+          0,
+          3956,
+          3958
+        ],
+        [
+          0,
+          3969,
+          3970
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        3922,
+        3971
+      ],
+      "instrumentedKey": [
+        ".nestedOuter",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        9492,
+        9591
+      ],
+      "markerSpan": [
+        0,
+        9450,
+        9491
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 105
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 110
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 100
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedOuter",
+        "9"
+      ],
+      "marker": "REACH:.nestedOuter:9",
+      "operands": [
+        [
+          0,
+          4040,
+          4043
+        ],
+        [
+          0,
+          4054,
+          4057
+        ],
+        [
+          0,
+          4068,
+          4071
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand9x0, maximum: intervalOperand9x1, minimum: intervalOperand9x2)",
+      "span": [
+        0,
+        4018,
+        4072
+      ],
+      "instrumentedKey": [
+        ".nestedOuter",
+        "25"
+      ],
+      "operationSpan": [
+        0,
+        9791,
+        9890
+      ],
+      "markerSpan": [
+        0,
+        9749,
+        9790
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 1
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedOuter",
+        "14"
+      ],
+      "marker": "REACH:.nestedOuter:14",
+      "operands": [
+        [
+          0,
+          4126,
+          4131
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand14x0)",
+      "span": [
+        0,
+        4111,
+        4132
+      ],
+      "instrumentedKey": [
+        ".nestedOuter",
+        "36"
+      ],
+      "operationSpan": [
+        0,
+        10024,
+        10059
+      ],
+      "markerSpan": [
+        0,
+        9981,
+        10023
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".unrelated",
+        "3"
+      ],
+      "marker": "REACH:.unrelated:3",
+      "operands": [
+        [
+          0,
+          4335,
+          4336
+        ],
+        [
+          0,
+          4347,
+          4349
+        ],
+        [
+          0,
+          4360,
+          4361
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        4313,
+        4362
+      ],
+      "instrumentedKey": [
+        ".unrelated",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        10405,
+        10504
+      ],
+      "markerSpan": [
+        0,
+        10365,
+        10404
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 1
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".unrelated",
+        "8"
+      ],
+      "marker": "REACH:.unrelated:8",
+      "operands": [
+        [
+          0,
+          4414,
+          4419
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        4399,
+        4420
+      ],
+      "instrumentedKey": [
+        ".unrelated",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        10632,
+        10666
+      ],
+      "markerSpan": [
+        0,
+        10592,
+        10631
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 105
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 110
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 100
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".unrelatedCaller",
+        "3"
+      ],
+      "marker": "REACH:.unrelatedCaller:3",
+      "operands": [
+        [
+          0,
+          4554,
+          4557
+        ],
+        [
+          0,
+          4568,
+          4571
+        ],
+        [
+          0,
+          4582,
+          4585
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        4532,
+        4586
+      ],
+      "instrumentedKey": [
+        ".unrelatedCaller",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        10954,
+        11053
+      ],
+      "markerSpan": [
+        0,
+        10908,
+        10953
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".threeFields",
+        "9"
+      ],
+      "marker": "REACH:.threeFields:9",
+      "operands": [
+        [
+          0,
+          4847,
+          4854
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand9x0)",
+      "span": [
+        0,
+        4832,
+        4855
+      ],
+      "instrumentedKey": [
+        ".threeFields",
+        "15"
+      ],
+      "operationSpan": [
+        0,
+        11413,
+        11447
+      ],
+      "markerSpan": [
+        0,
+        11371,
+        11412
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".increment",
+        "3"
+      ],
+      "marker": "REACH:.increment:3",
+      "operands": [
+        [
+          0,
+          4940,
+          4941
+        ],
+        [
+          0,
+          4952,
+          4953
+        ],
+        [
+          0,
+          4964,
+          4965
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        4918,
+        4966
+      ],
+      "instrumentedKey": [
+        ".increment",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        11674,
+        11773
+      ],
+      "markerSpan": [
+        0,
+        11634,
+        11673
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "call": {
+              "args": [
+                {
+                  "local": {
+                    "index": 0
+                  }
+                }
+              ],
+              "callee": {
+                "funName": {
+                  "effs": [],
+                  "name": "fn:584",
+                  "tys": []
+                }
+              },
+              "labels": [
+                "value"
+              ],
+              "positions": [
+                0
+              ]
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".increment",
+        "8"
+      ],
+      "marker": "REACH:.increment:8",
+      "operands": [
+        [
+          0,
+          5003,
+          5026
+        ],
+        [
+          0,
+          5029,
+          5030
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        5003,
+        5030
+      ],
+      "instrumentedKey": [
+        ".increment",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        12052,
+        12091
+      ],
+      "markerSpan": [
+        0,
+        12012,
+        12051
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".increment",
+        "9"
+      ],
+      "marker": "REACH:.increment:9",
+      "operands": [
+        [
+          0,
+          5018,
+          5025
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand9x0)",
+      "span": [
+        0,
+        5003,
+        5026
+      ],
+      "instrumentedKey": [
+        ".increment",
+        "24"
+      ],
+      "operationSpan": [
+        0,
+        11937,
+        11971
+      ],
+      "markerSpan": [
+        0,
+        11897,
+        11936
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".incrementOverflow",
+        "3"
+      ],
+      "marker": "REACH:.incrementOverflow:3",
+      "operands": [
+        [
+          0,
+          5166,
+          5185
+        ],
+        [
+          0,
+          5196,
+          5215
+        ],
+        [
+          0,
+          5226,
+          5245
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        5144,
+        5246
+      ],
+      "instrumentedKey": [
+        ".incrementOverflow",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        12431,
+        12530
+      ],
+      "markerSpan": [
+        0,
+        12383,
+        12430
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "call": {
+              "args": [
+                {
+                  "local": {
+                    "index": 0
+                  }
+                }
+              ],
+              "callee": {
+                "funName": {
+                  "effs": [],
+                  "name": "fn:584",
+                  "tys": []
+                }
+              },
+              "labels": [
+                "value"
+              ],
+              "positions": [
+                0
+              ]
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".incrementOverflow",
+        "8"
+      ],
+      "marker": "REACH:.incrementOverflow:8",
+      "operands": [
+        [
+          0,
+          5283,
+          5306
+        ],
+        [
+          0,
+          5309,
+          5310
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        5283,
+        5310
+      ],
+      "instrumentedKey": [
+        ".incrementOverflow",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        12825,
+        12864
+      ],
+      "markerSpan": [
+        0,
+        12777,
+        12824
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".incrementOverflow",
+        "9"
+      ],
+      "marker": "REACH:.incrementOverflow:9",
+      "operands": [
+        [
+          0,
+          5298,
+          5305
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand9x0)",
+      "span": [
+        0,
+        5283,
+        5306
+      ],
+      "instrumentedKey": [
+        ".incrementOverflow",
+        "24"
+      ],
+      "operationSpan": [
+        0,
+        12702,
+        12736
+      ],
+      "markerSpan": [
+        0,
+        12654,
+        12701
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lowerOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.lowerOnlyOk:3",
+      "operands": [
+        [
+          0,
+          5440,
+          5441
+        ],
+        [
+          0,
+          5452,
+          5454
+        ],
+        [
+          0,
+          5465,
+          5466
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        5418,
+        5467
+      ],
+      "instrumentedKey": [
+        ".lowerOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        13139,
+        13238
+      ],
+      "markerSpan": [
+        0,
+        13097,
+        13138
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lowerOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.lowerOnlyOk:8",
+      "operands": [
+        [
+          0,
+          5519,
+          5526
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        5504,
+        5527
+      ],
+      "instrumentedKey": [
+        ".lowerOnlyOk",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        13370,
+        13404
+      ],
+      "markerSpan": [
+        0,
+        13328,
+        13369
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upperOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.upperOnlyOk:3",
+      "operands": [
+        [
+          0,
+          5664,
+          5666
+        ],
+        [
+          0,
+          5677,
+          5679
+        ],
+        [
+          0,
+          5690,
+          5691
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        5642,
+        5692
+      ],
+      "instrumentedKey": [
+        ".upperOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        13687,
+        13786
+      ],
+      "markerSpan": [
+        0,
+        13645,
+        13686
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upperOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.upperOnlyOk:8",
+      "operands": [
+        [
+          0,
+          5744,
+          5751
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        5729,
+        5752
+      ],
+      "instrumentedKey": [
+        ".upperOnlyOk",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        13918,
+        13952
+      ],
+      "markerSpan": [
+        0,
+        13876,
+        13917
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singletonOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.singletonOnlyOk:3",
+      "operands": [
+        [
+          0,
+          5893,
+          5894
+        ],
+        [
+          0,
+          5905,
+          5906
+        ],
+        [
+          0,
+          5917,
+          5918
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        5871,
+        5919
+      ],
+      "instrumentedKey": [
+        ".singletonOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        14241,
+        14340
+      ],
+      "markerSpan": [
+        0,
+        14195,
+        14240
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singletonOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.singletonOnlyOk:8",
+      "operands": [
+        [
+          0,
+          5971,
+          5978
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        5956,
+        5979
+      ],
+      "instrumentedKey": [
+        ".singletonOnlyOk",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        14476,
+        14510
+      ],
+      "markerSpan": [
+        0,
+        14430,
+        14475
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMinOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.integerMinOnlyOk:3",
+      "operands": [
+        [
+          0,
+          6121,
+          6141
+        ],
+        [
+          0,
+          6152,
+          6171
+        ],
+        [
+          0,
+          6182,
+          6202
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        6099,
+        6203
+      ],
+      "instrumentedKey": [
+        ".integerMinOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        14857,
+        14956
+      ],
+      "markerSpan": [
+        0,
+        14810,
+        14856
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMinOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.integerMinOnlyOk:8",
+      "operands": [
+        [
+          0,
+          6255,
+          6262
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        6240,
+        6263
+      ],
+      "instrumentedKey": [
+        ".integerMinOnlyOk",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        15093,
+        15127
+      ],
+      "markerSpan": [
+        0,
+        15046,
+        15092
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMaxOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.integerMaxOnlyOk:3",
+      "operands": [
+        [
+          0,
+          6405,
+          6424
+        ],
+        [
+          0,
+          6435,
+          6454
+        ],
+        [
+          0,
+          6465,
+          6485
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        6383,
+        6486
+      ],
+      "instrumentedKey": [
+        ".integerMaxOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        15473,
+        15572
+      ],
+      "markerSpan": [
+        0,
+        15426,
+        15472
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMaxOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.integerMaxOnlyOk:8",
+      "operands": [
+        [
+          0,
+          6538,
+          6545
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        6523,
+        6546
+      ],
+      "instrumentedKey": [
+        ".integerMaxOnlyOk",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        15709,
+        15743
+      ],
+      "markerSpan": [
+        0,
+        15662,
+        15708
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".incrementOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.incrementOnlyOk:3",
+      "operands": [
+        [
+          0,
+          6687,
+          6688
+        ],
+        [
+          0,
+          6699,
+          6700
+        ],
+        [
+          0,
+          6711,
+          6712
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        6665,
+        6713
+      ],
+      "instrumentedKey": [
+        ".incrementOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        16032,
+        16131
+      ],
+      "markerSpan": [
+        0,
+        15986,
+        16031
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "call": {
+              "args": [
+                {
+                  "local": {
+                    "index": 0
+                  }
+                }
+              ],
+              "callee": {
+                "funName": {
+                  "effs": [],
+                  "name": "fn:584",
+                  "tys": []
+                }
+              },
+              "labels": [
+                "value"
+              ],
+              "positions": [
+                0
+              ]
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".incrementOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.incrementOnlyOk:8",
+      "operands": [
+        [
+          0,
+          6750,
+          6773
+        ],
+        [
+          0,
+          6776,
+          6777
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        6750,
+        6777
+      ],
+      "instrumentedKey": [
+        ".incrementOnlyOk",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        16422,
+        16461
+      ],
+      "markerSpan": [
+        0,
+        16376,
+        16421
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".incrementOnlyOk",
+        "9"
+      ],
+      "marker": "REACH:.incrementOnlyOk:9",
+      "operands": [
+        [
+          0,
+          6765,
+          6772
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand9x0)",
+      "span": [
+        0,
+        6750,
+        6773
+      ],
+      "instrumentedKey": [
+        ".incrementOnlyOk",
+        "24"
+      ],
+      "operationSpan": [
+        0,
+        16301,
+        16335
+      ],
+      "markerSpan": [
+        0,
+        16255,
+        16300
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".incrementOverflowOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.incrementOverflowOnlyOk:3",
+      "operands": [
+        [
+          0,
+          6926,
+          6945
+        ],
+        [
+          0,
+          6956,
+          6975
+        ],
+        [
+          0,
+          6986,
+          7005
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        6904,
+        7006
+      ],
+      "instrumentedKey": [
+        ".incrementOverflowOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        16820,
+        16919
+      ],
+      "markerSpan": [
+        0,
+        16766,
+        16819
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "call": {
+              "args": [
+                {
+                  "local": {
+                    "index": 0
+                  }
+                }
+              ],
+              "callee": {
+                "funName": {
+                  "effs": [],
+                  "name": "fn:584",
+                  "tys": []
+                }
+              },
+              "labels": [
+                "value"
+              ],
+              "positions": [
+                0
+              ]
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".incrementOverflowOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.incrementOverflowOnlyOk:8",
+      "operands": [
+        [
+          0,
+          7043,
+          7066
+        ],
+        [
+          0,
+          7069,
+          7070
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        7043,
+        7070
+      ],
+      "instrumentedKey": [
+        ".incrementOverflowOnlyOk",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        17226,
+        17265
+      ],
+      "markerSpan": [
+        0,
+        17172,
+        17225
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".incrementOverflowOnlyOk",
+        "9"
+      ],
+      "marker": "REACH:.incrementOverflowOnlyOk:9",
+      "operands": [
+        [
+          0,
+          7058,
+          7065
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand9x0)",
+      "span": [
+        0,
+        7043,
+        7066
+      ],
+      "instrumentedKey": [
+        ".incrementOverflowOnlyOk",
+        "24"
+      ],
+      "operationSpan": [
+        0,
+        17097,
+        17131
+      ],
+      "markerSpan": [
+        0,
+        17043,
+        17096
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lowerFields",
+        "3"
+      ],
+      "marker": "REACH:.lowerFields:3",
+      "operands": [
+        [
+          0,
+          7213,
+          7214
+        ],
+        [
+          0,
+          7225,
+          7227
+        ],
+        [
+          0,
+          7238,
+          7239
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        7191,
+        7240
+      ],
+      "instrumentedKey": [
+        ".lowerFields",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        17553,
+        17652
+      ],
+      "markerSpan": [
+        0,
+        17511,
+        17552
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".lowerFields",
+        "15"
+      ],
+      "marker": "REACH:.lowerFields:15",
+      "operands": [
+        [
+          0,
+          7347,
+          7354
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand15x0)",
+      "span": [
+        0,
+        7332,
+        7355
+      ],
+      "instrumentedKey": [
+        ".lowerFields",
+        "29"
+      ],
+      "operationSpan": [
+        0,
+        17841,
+        17876
+      ],
+      "markerSpan": [
+        0,
+        17798,
+        17840
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upperFields",
+        "3"
+      ],
+      "marker": "REACH:.upperFields:3",
+      "operands": [
+        [
+          0,
+          7491,
+          7493
+        ],
+        [
+          0,
+          7504,
+          7506
+        ],
+        [
+          0,
+          7517,
+          7518
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        7469,
+        7519
+      ],
+      "instrumentedKey": [
+        ".upperFields",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        18158,
+        18257
+      ],
+      "markerSpan": [
+        0,
+        18116,
+        18157
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".upperFields",
+        "15"
+      ],
+      "marker": "REACH:.upperFields:15",
+      "operands": [
+        [
+          0,
+          7626,
+          7633
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand15x0)",
+      "span": [
+        0,
+        7611,
+        7634
+      ],
+      "instrumentedKey": [
+        ".upperFields",
+        "29"
+      ],
+      "operationSpan": [
+        0,
+        18446,
+        18481
+      ],
+      "markerSpan": [
+        0,
+        18403,
+        18445
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 7
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singletonFields",
+        "3"
+      ],
+      "marker": "REACH:.singletonFields:3",
+      "operands": [
+        [
+          0,
+          7774,
+          7775
+        ],
+        [
+          0,
+          7786,
+          7787
+        ],
+        [
+          0,
+          7798,
+          7799
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        7752,
+        7800
+      ],
+      "instrumentedKey": [
+        ".singletonFields",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        18769,
+        18868
+      ],
+      "markerSpan": [
+        0,
+        18723,
+        18768
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".singletonFields",
+        "15"
+      ],
+      "marker": "REACH:.singletonFields:15",
+      "operands": [
+        [
+          0,
+          7907,
+          7914
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand15x0)",
+      "span": [
+        0,
+        7892,
+        7915
+      ],
+      "instrumentedKey": [
+        ".singletonFields",
+        "29"
+      ],
+      "operationSpan": [
+        0,
+        19061,
+        19096
+      ],
+      "markerSpan": [
+        0,
+        19014,
+        19060
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMinFields",
+        "3"
+      ],
+      "marker": "REACH:.integerMinFields:3",
+      "operands": [
+        [
+          0,
+          8056,
+          8076
+        ],
+        [
+          0,
+          8087,
+          8106
+        ],
+        [
+          0,
+          8117,
+          8137
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        8034,
+        8138
+      ],
+      "instrumentedKey": [
+        ".integerMinFields",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        19442,
+        19541
+      ],
+      "markerSpan": [
+        0,
+        19395,
+        19441
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMinFields",
+        "15"
+      ],
+      "marker": "REACH:.integerMinFields:15",
+      "operands": [
+        [
+          0,
+          8245,
+          8252
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand15x0)",
+      "span": [
+        0,
+        8230,
+        8253
+      ],
+      "instrumentedKey": [
+        ".integerMinFields",
+        "29"
+      ],
+      "operationSpan": [
+        0,
+        19735,
+        19770
+      ],
+      "markerSpan": [
+        0,
+        19687,
+        19734
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 9223372036854775807
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": -9223372036854775808
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMaxFields",
+        "3"
+      ],
+      "marker": "REACH:.integerMaxFields:3",
+      "operands": [
+        [
+          0,
+          8394,
+          8413
+        ],
+        [
+          0,
+          8424,
+          8443
+        ],
+        [
+          0,
+          8454,
+          8474
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        8372,
+        8475
+      ],
+      "instrumentedKey": [
+        ".integerMaxFields",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        20115,
+        20214
+      ],
+      "markerSpan": [
+        0,
+        20068,
+        20114
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".integerMaxFields",
+        "15"
+      ],
+      "marker": "REACH:.integerMaxFields:15",
+      "operands": [
+        [
+          0,
+          8582,
+          8589
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand15x0)",
+      "span": [
+        0,
+        8567,
+        8590
+      ],
+      "instrumentedKey": [
+        ".integerMaxFields",
+        "29"
+      ],
+      "operationSpan": [
+        0,
+        20408,
+        20443
+      ],
+      "markerSpan": [
+        0,
+        20360,
+        20407
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedInnerOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.nestedInnerOnlyOk:3",
+      "operands": [
+        [
+          0,
+          8726,
+          8727
+        ],
+        [
+          0,
+          8738,
+          8740
+        ],
+        [
+          0,
+          8751,
+          8752
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        8704,
+        8753
+      ],
+      "instrumentedKey": [
+        ".nestedInnerOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        20730,
+        20829
+      ],
+      "markerSpan": [
+        0,
+        20682,
+        20729
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 105
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 110
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 100
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedInnerOnlyOk",
+        "9"
+      ],
+      "marker": "REACH:.nestedInnerOnlyOk:9",
+      "operands": [
+        [
+          0,
+          8822,
+          8825
+        ],
+        [
+          0,
+          8836,
+          8839
+        ],
+        [
+          0,
+          8850,
+          8853
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand9x0, maximum: intervalOperand9x1, minimum: intervalOperand9x2)",
+      "span": [
+        0,
+        8800,
+        8854
+      ],
+      "instrumentedKey": [
+        ".nestedInnerOnlyOk",
+        "25"
+      ],
+      "operationSpan": [
+        0,
+        21035,
+        21134
+      ],
+      "markerSpan": [
+        0,
+        20987,
+        21034
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedInnerOnlyOk",
+        "14"
+      ],
+      "marker": "REACH:.nestedInnerOnlyOk:14",
+      "operands": [
+        [
+          0,
+          8908,
+          8913
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand14x0)",
+      "span": [
+        0,
+        8893,
+        8914
+      ],
+      "instrumentedKey": [
+        ".nestedInnerOnlyOk",
+        "36"
+      ],
+      "operationSpan": [
+        0,
+        21274,
+        21309
+      ],
+      "markerSpan": [
+        0,
+        21225,
+        21273
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedOuterOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.nestedOuterOnlyOk:3",
+      "operands": [
+        [
+          0,
+          9116,
+          9117
+        ],
+        [
+          0,
+          9128,
+          9130
+        ],
+        [
+          0,
+          9141,
+          9142
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        9094,
+        9143
+      ],
+      "instrumentedKey": [
+        ".nestedOuterOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        21662,
+        21761
+      ],
+      "markerSpan": [
+        0,
+        21614,
+        21661
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 105
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 110
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 100
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedOuterOnlyOk",
+        "9"
+      ],
+      "marker": "REACH:.nestedOuterOnlyOk:9",
+      "operands": [
+        [
+          0,
+          9212,
+          9215
+        ],
+        [
+          0,
+          9226,
+          9229
+        ],
+        [
+          0,
+          9240,
+          9243
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand9x0, maximum: intervalOperand9x1, minimum: intervalOperand9x2)",
+      "span": [
+        0,
+        9190,
+        9244
+      ],
+      "instrumentedKey": [
+        ".nestedOuterOnlyOk",
+        "25"
+      ],
+      "operationSpan": [
+        0,
+        21967,
+        22066
+      ],
+      "markerSpan": [
+        0,
+        21919,
+        21966
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 1
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".nestedOuterOnlyOk",
+        "14"
+      ],
+      "marker": "REACH:.nestedOuterOnlyOk:14",
+      "operands": [
+        [
+          0,
+          9298,
+          9303
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand14x0)",
+      "span": [
+        0,
+        9283,
+        9304
+      ],
+      "instrumentedKey": [
+        ".nestedOuterOnlyOk",
+        "36"
+      ],
+      "operationSpan": [
+        0,
+        22206,
+        22241
+      ],
+      "markerSpan": [
+        0,
+        22157,
+        22205
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".unrelatedOnlyOk",
+        "3"
+      ],
+      "marker": "REACH:.unrelatedOnlyOk:3",
+      "operands": [
+        [
+          0,
+          9527,
+          9528
+        ],
+        [
+          0,
+          9539,
+          9541
+        ],
+        [
+          0,
+          9552,
+          9553
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        9505,
+        9554
+      ],
+      "instrumentedKey": [
+        ".unrelatedOnlyOk",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        22613,
+        22712
+      ],
+      "markerSpan": [
+        0,
+        22567,
+        22612
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 1
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".unrelatedOnlyOk",
+        "8"
+      ],
+      "marker": "REACH:.unrelatedOnlyOk:8",
+      "operands": [
+        [
+          0,
+          9606,
+          9611
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        9591,
+        9612
+      ],
+      "instrumentedKey": [
+        ".unrelatedOnlyOk",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        22846,
+        22880
+      ],
+      "markerSpan": [
+        0,
+        22800,
+        22845
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".importedAlias",
+        "3"
+      ],
+      "marker": "REACH:.importedAlias:3",
+      "operands": [
+        [
+          0,
+          9752,
+          9753
+        ],
+        [
+          0,
+          9764,
+          9766
+        ],
+        [
+          0,
+          9777,
+          9778
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand3x0, maximum: intervalOperand3x1, minimum: intervalOperand3x2)",
+      "span": [
+        0,
+        9730,
+        9779
+      ],
+      "instrumentedKey": [
+        ".importedAlias",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        23167,
+        23266
+      ],
+      "markerSpan": [
+        0,
+        23123,
+        23166
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".importedAlias",
+        "8"
+      ],
+      "marker": "REACH:.importedAlias:8",
+      "operands": [
+        [
+          0,
+          9831,
+          9838
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand8x0)",
+      "span": [
+        0,
+        9816,
+        9839
+      ],
+      "instrumentedKey": [
+        ".importedAlias",
+        "22"
+      ],
+      "operationSpan": [
+        0,
+        23400,
+        23434
+      ],
+      "markerSpan": [
+        0,
+        23356,
+        23399
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".savedResult",
+        "1"
+      ],
+      "marker": "REACH:.savedResult:1",
+      "operands": [
+        [
+          0,
+          9971,
+          9972
+        ],
+        [
+          0,
+          9983,
+          9985
+        ],
+        [
+          0,
+          9996,
+          9997
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand1x0, maximum: intervalOperand1x1, minimum: intervalOperand1x2)",
+      "span": [
+        0,
+        9949,
+        9998
+      ],
+      "instrumentedKey": [
+        ".savedResult",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        23711,
+        23810
+      ],
+      "markerSpan": [
+        0,
+        23669,
+        23710
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "local": {
+                "index": 0
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:584",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value"
+          ],
+          "positions": [
+            0
+          ]
+        }
+      },
+      "key": [
+        ".savedResult",
+        "9"
+      ],
+      "marker": "REACH:.savedResult:9",
+      "operands": [
+        [
+          0,
+          10072,
+          10079
+        ]
+      ],
+      "operationText": "R.value(value: intervalOperand9x0)",
+      "span": [
+        0,
+        10057,
+        10080
+      ],
+      "instrumentedKey": [
+        ".savedResult",
+        "23"
+      ],
+      "operationSpan": [
+        0,
+        23964,
+        23998
+      ],
+      "markerSpan": [
+        0,
+        23922,
+        23963
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                "op": "add",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 3
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 9
+                      }
+                    }
+                  }
+                },
+                "op": "add",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                },
+                "op": "sub",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".argumentOrder",
+        "2"
+      ],
+      "marker": "REACH:.argumentOrder:2",
+      "operands": [
+        [
+          0,
+          10237,
+          10242
+        ],
+        [
+          0,
+          10253,
+          10258
+        ],
+        [
+          0,
+          10269,
+          10274
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        10215,
+        10275
+      ],
+      "instrumentedKey": [
+        ".argumentOrder",
+        "37"
+      ],
+      "operationSpan": [
+        0,
+        24780,
+        24879
+      ],
+      "markerSpan": [
+        0,
+        24736,
+        24779
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".argumentOrder",
+        "4"
+      ],
+      "marker": "REACH:.argumentOrder:4",
+      "operands": [
+        [
+          0,
+          10237,
+          10238
+        ],
+        [
+          0,
+          10241,
+          10242
+        ]
+      ],
+      "operationText": "intervalOperand4x0 + intervalOperand4x1",
+      "span": [
+        0,
+        10237,
+        10242
+      ],
+      "instrumentedKey": [
+        ".argumentOrder",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        24306,
+        24345
+      ],
+      "markerSpan": [
+        0,
+        24262,
+        24305
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 9
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".argumentOrder",
+        "7"
+      ],
+      "marker": "REACH:.argumentOrder:7",
+      "operands": [
+        [
+          0,
+          10253,
+          10254
+        ],
+        [
+          0,
+          10257,
+          10258
+        ]
+      ],
+      "operationText": "intervalOperand7x0 + intervalOperand7x1",
+      "span": [
+        0,
+        10253,
+        10258
+      ],
+      "instrumentedKey": [
+        ".argumentOrder",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        24493,
+        24532
+      ],
+      "markerSpan": [
+        0,
+        24449,
+        24492
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".argumentOrder",
+        "10"
+      ],
+      "marker": "REACH:.argumentOrder:10",
+      "operands": [
+        [
+          0,
+          10269,
+          10270
+        ],
+        [
+          0,
+          10273,
+          10274
+        ]
+      ],
+      "operationText": "intervalOperand10x0 - intervalOperand10x1",
+      "span": [
+        0,
+        10269,
+        10274
+      ],
+      "instrumentedKey": [
+        ".argumentOrder",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        24683,
+        24724
+      ],
+      "markerSpan": [
+        0,
+        24638,
+        24682
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 8
+                      }
+                    }
+                  }
+                },
+                "op": "intDiv",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 9
+                      }
+                    }
+                  }
+                },
+                "op": "add",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                },
+                "op": "sub",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".firstArgumentFailure",
+        "2"
+      ],
+      "marker": "REACH:.firstArgumentFailure:2",
+      "operands": [
+        [
+          0,
+          10395,
+          10402
+        ],
+        [
+          0,
+          10413,
+          10418
+        ],
+        [
+          0,
+          10429,
+          10434
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        10373,
+        10435
+      ],
+      "instrumentedKey": [
+        ".firstArgumentFailure",
+        "37"
+      ],
+      "operationSpan": [
+        0,
+        25654,
+        25753
+      ],
+      "markerSpan": [
+        0,
+        25603,
+        25653
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".firstArgumentFailure",
+        "4"
+      ],
+      "marker": "REACH:.firstArgumentFailure:4",
+      "operands": [
+        [
+          0,
+          10395,
+          10396
+        ],
+        [
+          0,
+          10401,
+          10402
+        ]
+      ],
+      "operationText": "intervalOperand4x0 div intervalOperand4x1",
+      "span": [
+        0,
+        10395,
+        10402
+      ],
+      "instrumentedKey": [
+        ".firstArgumentFailure",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        25157,
+        25198
+      ],
+      "markerSpan": [
+        0,
+        25106,
+        25156
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 9
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".firstArgumentFailure",
+        "7"
+      ],
+      "marker": "REACH:.firstArgumentFailure:7",
+      "operands": [
+        [
+          0,
+          10413,
+          10414
+        ],
+        [
+          0,
+          10417,
+          10418
+        ]
+      ],
+      "operationText": "intervalOperand7x0 + intervalOperand7x1",
+      "span": [
+        0,
+        10413,
+        10418
+      ],
+      "instrumentedKey": [
+        ".firstArgumentFailure",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        25353,
+        25392
+      ],
+      "markerSpan": [
+        0,
+        25302,
+        25352
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".firstArgumentFailure",
+        "10"
+      ],
+      "marker": "REACH:.firstArgumentFailure:10",
+      "operands": [
+        [
+          0,
+          10429,
+          10430
+        ],
+        [
+          0,
+          10433,
+          10434
+        ]
+      ],
+      "operationText": "intervalOperand10x0 - intervalOperand10x1",
+      "span": [
+        0,
+        10429,
+        10434
+      ],
+      "instrumentedKey": [
+        ".firstArgumentFailure",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        25550,
+        25591
+      ],
+      "markerSpan": [
+        0,
+        25498,
+        25549
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                "op": "add",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 3
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 8
+                      }
+                    }
+                  }
+                },
+                "op": "intDiv",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                },
+                "op": "sub",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".secondArgumentFailure",
+        "2"
+      ],
+      "marker": "REACH:.secondArgumentFailure:2",
+      "operands": [
+        [
+          0,
+          10556,
+          10561
+        ],
+        [
+          0,
+          10572,
+          10579
+        ],
+        [
+          0,
+          10590,
+          10595
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand2x0, maximum: intervalOperand2x1, minimum: intervalOperand2x2)",
+      "span": [
+        0,
+        10534,
+        10596
+      ],
+      "instrumentedKey": [
+        ".secondArgumentFailure",
+        "37"
+      ],
+      "operationSpan": [
+        0,
+        26533,
+        26632
+      ],
+      "markerSpan": [
+        0,
+        26481,
+        26532
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".secondArgumentFailure",
+        "4"
+      ],
+      "marker": "REACH:.secondArgumentFailure:4",
+      "operands": [
+        [
+          0,
+          10556,
+          10557
+        ],
+        [
+          0,
+          10560,
+          10561
+        ]
+      ],
+      "operationText": "intervalOperand4x0 + intervalOperand4x1",
+      "span": [
+        0,
+        10556,
+        10561
+      ],
+      "instrumentedKey": [
+        ".secondArgumentFailure",
+        "11"
+      ],
+      "operationSpan": [
+        0,
+        26033,
+        26072
+      ],
+      "markerSpan": [
+        0,
+        25981,
+        26032
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".secondArgumentFailure",
+        "7"
+      ],
+      "marker": "REACH:.secondArgumentFailure:7",
+      "operands": [
+        [
+          0,
+          10572,
+          10573
+        ],
+        [
+          0,
+          10578,
+          10579
+        ]
+      ],
+      "operationText": "intervalOperand7x0 div intervalOperand7x1",
+      "span": [
+        0,
+        10572,
+        10579
+      ],
+      "instrumentedKey": [
+        ".secondArgumentFailure",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        26228,
+        26269
+      ],
+      "markerSpan": [
+        0,
+        26176,
+        26227
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".secondArgumentFailure",
+        "10"
+      ],
+      "marker": "REACH:.secondArgumentFailure:10",
+      "operands": [
+        [
+          0,
+          10590,
+          10591
+        ],
+        [
+          0,
+          10594,
+          10595
+        ]
+      ],
+      "operationText": "intervalOperand10x0 - intervalOperand10x1",
+      "span": [
+        0,
+        10590,
+        10595
+      ],
+      "instrumentedKey": [
+        ".secondArgumentFailure",
+        "31"
+      ],
+      "operationSpan": [
+        0,
+        26428,
+        26469
+      ],
+      "markerSpan": [
+        0,
+        26375,
+        26427
+      ]
+    },
+    {
+      "expression": {
+        "call": {
+          "args": [
+            {
+              "paren": {
+                "inner": {
+                  "block": {
+                    "body": {
+                      "last": {
+                        "expr": {
+                          "returnE": {
+                            "inner": {
+                              "literal": {
+                                "value": {
+                                  "integer": {
+                                    "value": 42
+                                  }
+                                }
+                              }
+                            },
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 9
+                      }
+                    }
+                  }
+                },
+                "op": "add",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "binary": {
+                "lhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                },
+                "op": "sub",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "callee": {
+            "funName": {
+              "effs": [],
+              "name": "fn:581",
+              "tys": []
+            }
+          },
+          "labels": [
+            "value",
+            "maximum",
+            "minimum"
+          ],
+          "positions": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "key": [
+        ".argumentReturn",
+        "1"
+      ],
+      "marker": "REACH:.argumentReturn:1",
+      "operands": [
+        [
+          0,
+          10682,
+          10715
+        ],
+        [
+          0,
+          10726,
+          10731
+        ],
+        [
+          0,
+          10742,
+          10747
+        ]
+      ],
+      "operationText": "R.checkInteger(value: intervalOperand1x0, maximum: intervalOperand1x1, minimum: intervalOperand1x2)",
+      "span": [
+        0,
+        10660,
+        10748
+      ],
+      "instrumentedKey": [
+        ".argumentReturn",
+        "30"
+      ],
+      "operationSpan": [
+        0,
+        27220,
+        27319
+      ],
+      "markerSpan": [
+        0,
+        27175,
+        27219
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 9
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".argumentReturn",
+        "7"
+      ],
+      "marker": "REACH:.argumentReturn:7",
+      "operands": [
+        [
+          0,
+          10726,
+          10727
+        ],
+        [
+          0,
+          10730,
+          10731
+        ]
+      ],
+      "operationText": "intervalOperand7x0 + intervalOperand7x1",
+      "span": [
+        0,
+        10726,
+        10731
+      ],
+      "instrumentedKey": [
+        ".argumentReturn",
+        "14"
+      ],
+      "operationSpan": [
+        0,
+        26931,
+        26970
+      ],
+      "markerSpan": [
+        0,
+        26886,
+        26930
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".argumentReturn",
+        "10"
+      ],
+      "marker": "REACH:.argumentReturn:10",
+      "operands": [
+        [
+          0,
+          10742,
+          10743
+        ],
+        [
+          0,
+          10746,
+          10747
+        ]
+      ],
+      "operationText": "intervalOperand10x0 - intervalOperand10x1",
+      "span": [
+        0,
+        10742,
+        10747
+      ],
+      "instrumentedKey": [
+        ".argumentReturn",
+        "24"
+      ],
+      "operationSpan": [
+        0,
+        27122,
+        27163
+      ],
+      "markerSpan": [
+        0,
+        27076,
+        27121
+      ]
+    }
+  ],
+  "independentObservations": [
+    {
+      "definition": ".unrelatedCaller",
+      "value": "105"
+    }
+  ],
+  "negativeCases": [
+    "unidentifiedRangeCall",
+    "resultConstructor",
+    "minimum",
+    "maximum",
+    "value",
+    "reversedPriority"
+  ]
+}

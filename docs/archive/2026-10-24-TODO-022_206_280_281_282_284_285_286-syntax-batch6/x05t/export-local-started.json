@@ -1,0 +1,17 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=target/x05t-check/export",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_interval_manifest",
+    "--",
+    "--nocapture"
+  ],
+  "started": "2026-10-26T19:01:59.590907+00:00",
+  "environment": {
+    "CARGO_HOME": "<tmp>/benitoite-a01a-cargo"
+  }
+}

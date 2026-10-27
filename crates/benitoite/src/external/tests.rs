@@ -1610,7 +1610,7 @@ fn directories_lost_after_loading_are_component_read_errors() {
                 ),
                 (
                     "deps/lib/package.bnt",
-                    "language \"0.0.11\"\npackage Library\nend package\n",
+                    "language \"0.0.12\"\npackage Library\nend package\n",
                 ),
                 ("deps/lib/Calc.bnt", &declaration),
             ])
@@ -1752,7 +1752,7 @@ fn module_roots_and_package_wasm_boundaries() {
                 "Lib/Nested.bnt",
                 nested.replace("wasm/x.wasm", "x.wasm").as_bytes(),
             ),
-            ("package.bnt", b"language \"0.0.11\"\n"),
+            ("package.bnt", b"language \"0.0.12\"\n"),
             ("x.wasm", &bytes),
         ],
         options,
@@ -1776,7 +1776,7 @@ fn module_roots_and_package_wasm_boundaries() {
         ("x.wasm", Some(DiagCode::E1003)),
     ] {
         let main = "dependency Alias\npath \"deps/fuzzy\"\nend dependency\nimport Alias.Distance\nfunction main() -> Unit\n()\nend function\n";
-        let config = "language \"0.0.11\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
+        let config = "language \"0.0.12\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
         let module = nested.replace("wasm/x.wasm", path);
         let result = pipeline::check_files(
             &[
@@ -1811,22 +1811,62 @@ fn module_roots_and_package_wasm_boundaries() {
     }
 }
 
+// 関門: 例外・非同期の型・lift/lower の実際の検証拒否を守る。
+// 通常のゲストの照合では、依存更新で機能が有効になる退行を捕まえない。
 #[test]
-fn async_components_are_rejected_by_the_fixed_engine_features() {
-    let bytes = wat::parse_str(
-        r#"(component (core module $m (func (export "f")))
+fn component_proposals_follow_the_fixed_engine_features() {
+    let exception = r#"(component
+        (core module $m
+            (tag $e (param i64))
+            (func (export "f") (result i64)
+                (block $caught (result i64)
+                    (try_table (catch $e $caught)
+                        i64.const 42 throw $e)
+                    i64.const 0)))
         (core instance $i (instantiate $m))
-        (func (export "f") async (canon lift (core func $i "f") async)))"#,
-    )
-    .unwrap();
-    let result = check(&declaration("", "Unit", "f"), &bytes);
-    assert_eq!(
-        codes(&result),
-        vec![DiagCode::E1004],
-        "{:?}",
-        result.diagnostics
-    );
-    assert!(result.program.is_none());
+        (func (export "f") (result s64) (canon lift (core func $i "f"))))"#;
+    let async_lift = r#"(component (core module $m (func (export "f")))
+        (core instance $i (instantiate $m))
+        (func (export "f") async (canon lift (core func $i "f") async)))"#;
+    let async_lower = r#"(component (core module $m (func (export "f")))
+        (core instance $i (instantiate $m))
+        (func $f async (canon lift (core func $i "f") async))
+        (core func (canon lower (func $f) async)))"#;
+    for (wat, reason) in [
+        (exception, "exceptions proposal not enabled"),
+        (async_lift, "component model async feature"),
+        (
+            r#"(component (type (future u8)))"#,
+            "component model async feature",
+        ),
+        (
+            r#"(component (type (stream u8)))"#,
+            "component model async feature",
+        ),
+        (async_lower, "component model async feature"),
+    ] {
+        let bytes = wat::parse_str(wat).unwrap();
+        // 入力自体の不正で通る否定テストを避け、機能を許す検証器では有効と確かめる。
+        wasmparser::Validator::new_with_features(wasmparser::WasmFeatures::all())
+            .validate_all(&bytes)
+            .unwrap();
+        let result = check(&declaration("", "Unit", "f"), &bytes);
+        assert_eq!(
+            codes(&result),
+            [DiagCode::E1004],
+            "{wat}: {:?}",
+            result.diagnostics
+        );
+        assert!(result.program.is_none());
+        assert!(
+            result.diagnostics[0]
+                .notes
+                .iter()
+                .any(|note| note.contains(reason)),
+            "{wat}: {:?}",
+            result.diagnostics
+        );
+    }
 }
 
 #[test]

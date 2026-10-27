@@ -1,0 +1,20 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.02s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 12 tests
+test runtime::heap::builders::tests::capacity_arithmetic_rejects_overflow_and_clamps_growth ... ok
+test builtins::funcs::operators::float32::tests::arithmetic_rounds_each_result_and_preserves_ieee_values ... ok
+test builtins::funcs::time::tests::arithmetic_checks_final_sum_and_floors_wide_differences ... ok
+test vm::tests::arithmetic_stops_preserve_instruction_and_frames ... ok
+test vm::tests::arithmetic_and_comparisons_follow_language_rules ... ok
+test typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates ... ok
+test typeck::interval::tests::arithmetic_extensions::integer64_extensions_preserve_normal_ranges_and_failure_boundaries ... ok
+test typeck::interval::tests::arithmetic_candidates_survive_later_budget_stops ... ok
+test typeck::interval::tests::arithmetic_extensions::extension_warnings_keep_the_operation_range_and_source ... ok
+test typeck::consts::width_tests::width_arithmetic_failures_are_errors_in_consts_and_warnings_in_functions ... ok
+test typeck::interval::flow::widths::tests::arithmetic_keeps_each_width_and_intermediate_failure ... ok
+test typeck::interval::flow::widths::tests::arithmetic_warnings_keep_the_integer_kind_range_and_primary ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 1315 filtered out; finished in 3.27s
+

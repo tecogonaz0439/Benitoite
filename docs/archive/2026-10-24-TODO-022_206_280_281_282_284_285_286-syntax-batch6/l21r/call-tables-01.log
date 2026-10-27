@@ -1,0 +1,258 @@
+Benitoite/Interval/CallTables.lean:103:4: error: Type mismatch
+  tables_condition env source truth
+has type
+  SameOptionTables env (conditionEnv env source truth)
+but is expected to have type
+  SameOptionTables env (if normal.snd = true then conditionEnv env source truth else none)
+Benitoite/Interval/CallTables.lean:104:23: error: Tactic `contradiction` failed
+
+case isFalse
+env : AbstractEnv
+source : Expr
+normal : NormalRange (Ty.base BaseTy.boolean)
+truth : Bool
+h✝ : ¬truth = true
+inner : AbstractEnv
+found : (if normal.fst = true then conditionEnv env source truth else none) = some inner
+⊢ rangeTables inner = rangeTables env
+Benitoite/Interval/CallTables.lean:116:23: error: Tactic `contradiction` failed
+
+case h_1
+env : AbstractEnv
+source : Expr
+normal : Interval
+alt : Surface.Alternative
+type✝ : Ty
+inner : AbstractEnv
+found :
+  (have range := matchRange (Ty.base BaseTy.integer) normal alt.pat;
+    have extended :=
+      extendMatchSlots (matchScrutineeEnv env source (Ty.base BaseTy.integer) range)
+        (matchPatternSlots alt.pat (Ty.base BaseTy.integer) range) alt.slots;
+    if range = Interval.bottom then none else extended) =
+    some inner
+⊢ rangeTables inner = rangeTables env
+Benitoite/Interval/CallTables.lean:120:16: error: Tactic `rfl` failed: The left-hand side
+  rangeTables
+    (match localIndex source with
+    | some index => narrowAt env index (matchRange (Ty.base BaseTy.integer) normal alt.pat)
+    | none => env)
+is not definitionally equal to the right-hand side
+  rangeTables env
+
+case h_1
+env : AbstractEnv
+source : Expr
+normal : Interval
+alt : Surface.Alternative
+type✝¹ : Ty
+inner : AbstractEnv
+type✝ : Ty
+x✝ : Ty.base BaseTy.integer = Ty.base BaseTy.integer → False
+found :
+  (have range := matchRange (Ty.base BaseTy.integer) normal alt.pat;
+    have extended :=
+      extendMatchSlots (matchScrutineeEnv env source (Ty.base BaseTy.integer) range)
+        (matchPatternSlots alt.pat (Ty.base BaseTy.integer) range) alt.slots;
+    extended) =
+    some inner
+⊢ rangeTables
+      (match localIndex source with
+      | some index => narrowAt env index (matchRange (Ty.base BaseTy.integer) normal alt.pat)
+      | none => env) =
+    rangeTables env
+Benitoite/Interval/CallTables.lean:125:2: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+env : AbstractEnv
+source : Expr
+kind : IntKind
+normal : Interval kind
+alt : Surface.Alternative
+⊢ SameOptionTables env
+    (have range := meet normal (integerKindPatternRange kind alt.pat);
+    if range = Interval.bottom then none
+    else
+      extendMatchSlots (matchKindScrutineeEnv env source kind range) (matchKindPatternSlots alt.pat kind range)
+        alt.slots)
+Benitoite/Interval/CallTables.lean:157:4: error: Type mismatch
+  tables_alternatives ?m.96 ?m.96 ?m.98 ?m.99 ?m.100 ?m.101 rfl
+has type
+  SameOptionTables ?m.96 (matchAlternativesEnv ?m.96 ?m.96 ?m.98 ?m.99 ?m.100 ?m.101)
+but is expected to have type
+  SameOptionTables env (matchKindArmEnv env source IntKind.integer8 normal alts)
+Benitoite/Interval/CallTables.lean:158:12: error: Type mismatch
+  tables_kindAlternatives ?m.120 ?m.120 ?m.122 ?m.123 ?m.124 ?m.125 rfl
+has type
+  SameOptionTables ?m.120 (matchKindAlternativesEnv ?m.120 ?m.120 ?m.122 ?m.123 ?m.124 ?m.125)
+but is expected to have type
+  SameOptionTables env (matchKindArmEnv env source IntKind.integer64 normal alts)
+Benitoite/Interval/CallTables.lean:165:2: error: Case tag `neg` not found.
+
+Note: There are no cases to select.
+Benitoite/Interval/CallTables.lean:161:8: error: fail to show termination for
+  Benitoite.Interval.BudgetAnalysis.CallReach.expr_tables
+with errors
+failed to infer structural recursion:
+Not considering parameter left of Benitoite.Interval.BudgetAnalysis.CallReach.expr_tables:
+  it is unchanged in the recursive calls
+Not considering parameter right of Benitoite.Interval.BudgetAnalysis.CallReach.expr_tables:
+  it is unchanged in the recursive calls
+Not considering parameter same of Benitoite.Interval.BudgetAnalysis.CallReach.expr_tables:
+  it is unchanged in the recursive calls
+Cannot use parameter source:
+  failed to eliminate recursive application
+    expr_tables same (Expr.local i✝)
+
+
+failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+left right : AbstractEnv
+same : rangeTables left = rangeTables right
+source✝ : Expr
+a✝ : ∀ (y : Expr), (invImage (fun x => x) sizeOfWFRel).1 y source✝ → expr left y = expr right y
+i✝ : Nat
+x✝ : ∀ (y : Expr), (invImage (fun x => x) sizeOfWFRel).1 y (Expr.local i✝) → expr left y = expr right y
+h✝ : source✝ = Expr.local i✝
+source : Expr
+⊢ sizeOf source < 1 + i✝
+Benitoite/Interval/CallTables.lean:169:8: error: fail to show termination for
+  Benitoite.Interval.BudgetAnalysis.CallReach.exprs_tables
+with errors
+failed to infer structural recursion:
+Not considering parameter left of Benitoite.Interval.BudgetAnalysis.CallReach.exprs_tables:
+  it is unchanged in the recursive calls
+Not considering parameter right of Benitoite.Interval.BudgetAnalysis.CallReach.exprs_tables:
+  it is unchanged in the recursive calls
+Not considering parameter same of Benitoite.Interval.BudgetAnalysis.CallReach.exprs_tables:
+  it is unchanged in the recursive calls
+Cannot use parameter sources:
+  failed to eliminate recursive application
+    exprs_tables same Exprs.nil
+
+
+failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+sources : Exprs
+⊢ sizeOf sources = 0
+Benitoite/Interval/CallTables.lean:173:8: error: fail to show termination for
+  Benitoite.Interval.BudgetAnalysis.CallReach.block_tables
+with errors
+failed to infer structural recursion:
+Not considering parameter left of Benitoite.Interval.BudgetAnalysis.CallReach.block_tables:
+  it is unchanged in the recursive calls
+Not considering parameter right of Benitoite.Interval.BudgetAnalysis.CallReach.block_tables:
+  it is unchanged in the recursive calls
+Not considering parameter same of Benitoite.Interval.BudgetAnalysis.CallReach.block_tables:
+  it is unchanged in the recursive calls
+Cannot use parameter body:
+  failed to eliminate recursive application
+    block_tables same (Block.builderBind kind✝ rest✝)
+
+
+failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+left right : AbstractEnv
+same : rangeTables left = rangeTables right
+body✝ : Block
+a✝ : ∀ (y : Block), (invImage (fun x => x) sizeOfWFRel).1 y body✝ → block left y = block right y
+kind✝ : BuilderKind
+rest✝ : Block
+x✝ :
+  ∀ (y : Block), (invImage (fun x => x) sizeOfWFRel).1 y (Block.builderBind kind✝ rest✝) → block left y = block right y
+h✝ : body✝ = Block.builderBind kind✝ rest✝
+body : Block
+⊢ sizeOf body < 1 + sizeOf kind✝ + sizeOf rest✝
+Benitoite/Interval/CallTables.lean:177:8: error: fail to show termination for
+  Benitoite.Interval.BudgetAnalysis.CallReach.armList_tables
+with errors
+failed to infer structural recursion:
+Not considering parameter left of Benitoite.Interval.BudgetAnalysis.CallReach.armList_tables:
+  it is unchanged in the recursive calls
+Not considering parameter right of Benitoite.Interval.BudgetAnalysis.CallReach.armList_tables:
+  it is unchanged in the recursive calls
+Not considering parameter same of Benitoite.Interval.BudgetAnalysis.CallReach.armList_tables:
+  it is unchanged in the recursive calls
+Cannot use parameter arms:
+  failed to eliminate recursive application
+    armList_tables same (Arms.cons alts none body rest)
+
+
+failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+left right : AbstractEnv
+same : rangeTables left = rangeTables right
+arms✝ : Arms
+a✝ : ∀ (y : Arms), (invImage (fun x => x) sizeOfWFRel).1 y arms✝ → armList left y = armList right y
+alts : List Surface.Alternative
+guard : Option Expr
+body : Block
+rest : Arms
+x✝¹ :
+  ∀ (y : Arms),
+    (invImage (fun x => x) sizeOfWFRel).1 y (Arms.cons alts guard body rest) → armList left y = armList right y
+h✝¹ : arms✝ = Arms.cons alts guard body rest
+x✝ :
+  ∀ (y : Arms),
+    (invImage (fun x => x) sizeOfWFRel).1 y (Arms.cons alts none body rest) → armList left y = armList right y
+h✝ : guard = none
+arms : Arms
+⊢ sizeOf arms < 1 + sizeOf alts + 1 + sizeOf body + sizeOf rest
+Benitoite/Interval/CallTables.lean:163:64: warning: This simp argument is unused:
+  block_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [expr, children, expr_tables same, armList_tables same, exprs_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallTables.lean:164:4: warning: This simp argument is unused:
+  armList_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [expr, children, expr_tables same, block_tables same, exprs_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallTables.lean:164:25: warning: This simp argument is unused:
+  exprs_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [expr, children, expr_tables same, block_tables same, armList_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallTables.lean:171:38: warning: This simp argument is unused:
+  expr_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [exprs, exprs_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallTables.lean:175:35: warning: This simp argument is unused:
+  expr_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [block, block_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallTables.lean:182:40: warning: This simp argument is unused:
+  expr_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [armList, block_tables same, armList_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallTables.lean:182:58: warning: This simp argument is unused:
+  block_tables same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [armList, expr_tables same, armList_tables same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

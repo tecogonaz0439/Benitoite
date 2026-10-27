@@ -1,0 +1,86 @@
+[
+  {
+    "id": "dedicated:bodyBudget",
+    "group": "dedicated-budget",
+    "targets": [
+      {
+        "id": "dedicated:bodyBudget",
+        "target": "<repo>/work/m012/records/u01b/bodyBudget.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 1,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 1346,
+          "maxBodyOperations": 100000,
+          "operations": 100001,
+          "peakItems": 1346,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 2,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 695,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "dedicated:wholeBudget",
+    "group": "dedicated-budget",
+    "targets": [
+      {
+        "id": "dedicated:wholeBudget",
+        "target": "<repo>/work/m012/records/u01b/wholeBudget.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 9,
+          "coverage": "Some",
+          "inputDefinitions": 16,
+          "maxBodyItems": 1346,
+          "maxBodyOperations": 100000,
+          "operations": 1000000,
+          "peakItems": 7601,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 18,
+              "wholeItems": 0,
+              "wholeOperations": 2
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6950,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 7
+        },
+        "bodies": 10
+      }
+    ]
+  }
+]

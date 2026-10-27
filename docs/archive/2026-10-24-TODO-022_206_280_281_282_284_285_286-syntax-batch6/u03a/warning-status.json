@@ -1,0 +1,40 @@
+{
+  "command": [
+    "target/debug/benitoite",
+    "check",
+    "--report=json",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03a/warning-example.bnt"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 0.053071292000000006,
+  "status": "ok",
+  "complete": true,
+  "diagnostics": [
+    {
+      "code": "W0401",
+      "message": "this divides by zero",
+      "notes": [
+        "the inferred divisor interval is [0,0]",
+        "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+      ]
+    },
+    {
+      "code": "W0402",
+      "message": "this calculation overflows `Integer8`",
+      "notes": [
+        "the inferred result interval before the range check is [130,137]",
+        "the range of `Integer8` is [-128,127]",
+        "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+      ]
+    },
+    {
+      "code": "W0404",
+      "message": "argument `n` to `Integer.shiftLeft` is always out of range",
+      "notes": [
+        "the inferred interval is [64,9223372036854775807]",
+        "the allowed range is [0,63]",
+        "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully"
+      ]
+    }
+  ]
+}

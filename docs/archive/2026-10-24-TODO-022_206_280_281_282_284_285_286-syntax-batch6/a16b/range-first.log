@@ -1,0 +1,23 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 2 tests
+
+thread 'typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples' (5094786) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:10:88:
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown' (5094785) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:10:88:
+called `Option::unwrap()` on a `None` value
+test typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown ... FAILED
+test typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown
+    typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

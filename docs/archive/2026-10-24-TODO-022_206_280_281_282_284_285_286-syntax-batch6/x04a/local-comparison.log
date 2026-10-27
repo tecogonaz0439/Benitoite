@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "<repo>/scripts/check/formal_interval.py", line 235, in <module>
+    main()
+  File "<repo>/scripts/check/formal_interval.py", line 227, in main
+    globals()[args.action](directories(args))
+  File "<repo>/scripts/check/formal_interval.py", line 89, in collect
+    exported = [row for row in inventory(roots) if Path(row['path']).suffix in ('.json', '.bnt')
+  File "<repo>/scripts/check/formal_interval.py", line 184, in inventory
+    bytes=path.stat().st_size, sha256=digest(path))
+  File "<repo>/scripts/check/formal_interval.py", line 35, in digest
+    return hashlib.file_digest(stream, 'sha256').hexdigest()
+AttributeError: module 'hashlib' has no attribute 'file_digest'
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x04a/local_probe.py", line 71, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x04a/local_probe.py", line 39, in main
+    artifact('collect')
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x04a/local_probe.py", line 37, in artifact
+    subprocess.run([sys.executable, '-B', 'scripts/check/formal_interval.py', action, *args],
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/Library/Developer/CommandLineTools/usr/bin/python3', '-B', 'scripts/check/formal_interval.py', 'collect', '--interval-dir', 'target/interval-diff/x04a-local', '--desugar-dir', 'target/desugar-diff/x04a-local', '--coverage-dir', 'target/coverage-diff/x04a-local']' returned non-zero exit status 1.

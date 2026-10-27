@@ -1,0 +1,18 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [64/64] Built Benitoite.Interval.BudgetDiscover (478ms)
+Build completed successfully (64 jobs).

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "call_allocations",
+    "long_constant_chain_has_bounded_check_allocations",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "<repo>",
+  "exit_code": 0,
+  "time_exit_code": 1,
+  "elapsed_seconds": 13.837
+}

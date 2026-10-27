@@ -1,0 +1,12 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack' (3892627) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+error: test failed, to rerun pass `-p benitoite --lib`
+
+Caused by:
+  process didn't exit successfully: `<repo>/target/debug/deps/benitoite-c8302b65d3cacd4e 'typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack' --exact --nocapture` (signal: 6, SIGABRT: process abort signal)

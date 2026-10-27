@@ -339,7 +339,9 @@ impl Solver {
                         pending.push(ZonkStep::Args {
                             head,
                             remaining: args.iter(),
-                            built: Vec::new(),
+                            // 短い型引数列で Vec の最小伸長分を繰り返し確保しない。
+                            // 初期確保は四要素以下とし、型の予算より先に大きく確保しない。
+                            built: Vec::with_capacity(args.len().min(4)),
                             depth: depth.saturating_add(1),
                             has_child: false,
                         });
@@ -474,7 +476,17 @@ impl Solver {
         false
     }
     pub fn finalize(&self, t: &ITy, r: &ResolveOutput) -> Ty {
-        match self.zonk(t) {
+        self.finalize_zonked(self.zonk(t), r)
+    }
+
+    /// 回復用の誤りを断る読み取りでは、誤りの確認と具体化の展開を共有する。
+    pub fn finalize_valid(&self, t: &ITy, r: &ResolveOutput) -> Option<Ty> {
+        let normalized = self.zonk(t);
+        (!has_error(&normalized)).then(|| self.finalize_zonked(normalized, r))
+    }
+
+    fn finalize_zonked(&self, t: ITy, r: &ResolveOutput) -> Ty {
+        match t {
             ITy::Var(_) | ITy::Error => super::decls::unit(),
             ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.finalize(t, r)).collect()),
             ITy::Fn(f)

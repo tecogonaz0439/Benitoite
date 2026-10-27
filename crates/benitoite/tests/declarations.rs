@@ -4,6 +4,8 @@
 
 #[path = "../examples/derive_inventory/mod.rs"]
 mod derive_inventory;
+#[path = "declarations/interval_widths.rs"]
+mod interval_widths;
 use benitoite::{
     modules::{EntrySpec, RealFs},
     pipeline::{self, CheckOptions, declarations::collect_declarations},
@@ -1692,4 +1694,735 @@ fn diagnosed_binding_chain_scales_with_input_length() {
         times[1] < times[0] * 8 + Duration::from_millis(500),
         "{times:?}"
     );
+}
+
+// 関門: 定数の展開を値表で置き換える退行と、同じ元演算の警告の重複を公開checkで検出する。
+// 局所変数だけの表では、定数の真偽・未対応演算・宣言自身と複数展開を区別できない。
+#[test]
+fn constant_intervals_analyze_bodies_and_merge_original_warning_locations() {
+    use benitoite::diag::DiagCode as C;
+    let cases = [
+        (
+            "const debug: Boolean = false\nfunction sample() -> Integer\n bind z <- 0\n return if debug then 10 div z else 1 end if\nend function\n",
+            vec![],
+        ),
+        (
+            "const k: Integer = 0 div 1\nfunction sample() -> Integer\n bind z <- k\n return 10 div z\nend function\n",
+            vec![],
+        ),
+        // 減算は同じ対象構文で解析し、一点0を呼び出し元の局所束縛へ渡す。
+        (
+            "const k: Integer = 3 - 3\nfunction sample() -> Integer\n bind z <- k\n return 10 div z\nend function\n",
+            vec![C::W0401],
+        ),
+        // Lean はリテラル同士の整数比較の真偽を両方残すため、右辺の候補を作る。
+        (
+            "const c: Boolean = 1 > 2 and (10 div 0 = 1)\n",
+            vec![C::W0401],
+        ),
+        (
+            "const c: Boolean = 1 < 2 or (10 div 0 = 1)\n",
+            vec![C::W0401],
+        ),
+        // 具体評価では短絡するが、divの結果はTopなので解析では右辺へ到達しうる。
+        // 元の宣言だけでも解析し、参照回数を増やしても同じ元位置への警告は一件とする。
+        (
+            "const c: Boolean = 0 div 1 <> 0 and (10 div 0 = 1)\n",
+            vec![C::W0401],
+        ),
+        (
+            "const c: Boolean = 0 div 1 <> 0 and (10 div 0 = 1)\nconst alias: Boolean = c\nfunction sample() -> Boolean\n bind a <- c\n bind b <- alias\n return c or alias\nend function\n",
+            vec![C::W0401],
+        ),
+        // 定数評価の確実な失敗は従来の誤りであり、局所警告を重ねない。
+        (
+            "const c: Boolean = 1 < 2 and (10 div 0 = 1)\n",
+            vec![C::E0435],
+        ),
+        // 展開の後で呼び出し元の局所区間と由来を復元する。
+        (
+            "const debug: Boolean = false\nfunction sample() -> Integer\n bind z <- 0\n bind flag <- debug\n return 10 div z\nend function\n",
+            vec![C::W0401],
+        ),
+    ];
+    let mut mismatches = Vec::new();
+    for (source, expected) in cases {
+        let checked = pipeline::check_text(
+            "constant-intervals.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count() == 0,
+            !expected.contains(&C::E0435),
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        let found = checked
+            .diagnostics
+            .iter()
+            .filter_map(|d| d.code)
+            .collect::<Vec<_>>();
+        if found != expected {
+            mismatches.push(format!("{source}: expected {expected:?}, found {found:?}"));
+            continue;
+        }
+        for warning in checked
+            .diagnostics
+            .iter()
+            .filter(|d| d.code == Some(C::W0401))
+        {
+            let primary = warning.primary.as_ref().unwrap().span;
+            let text = &source[primary.start.0 as usize..primary.end.0 as usize];
+            assert!(
+                warning
+                    .notes
+                    .iter()
+                    .any(|n| n.starts_with("this local analysis"))
+            );
+            if source.contains("bind z <-") {
+                assert_eq!(text, "z");
+                assert_eq!(warning.secondary.len(), 1);
+                let span = warning.secondary[0].span;
+                assert_eq!(
+                    &source[span.start.0 as usize..span.end.0 as usize],
+                    if source.contains("bind z <- k") {
+                        "bind z <- k"
+                    } else {
+                        "bind z <- 0"
+                    }
+                );
+            } else {
+                assert_eq!(text, "0");
+                assert_eq!(
+                    primary.start.0 as usize,
+                    source.find("10 div 0").unwrap() + 7
+                );
+                assert!(warning.secondary.is_empty());
+            }
+        }
+    }
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
+
+// 関門: 従来の定数警告では検出できない束縛・比較からの算術警告を、
+// 公開の検査入口で確かめる。未到達・未知・別名の扱いと旧警告の優先も同じ表で守る。
+#[test]
+fn local_intervals_report_only_reached_arithmetic_failures() {
+    use benitoite::diag::DiagCode as C;
+    let cases = [
+        // 関門: 同じ公開境界で match の局所事実・選択肢の凸な合流・guard・
+        // 腕間の独立性と、整数だけでない照合値の境界を確かめる。
+        // 既存の if/短絡の行では腕への未接続や前腕の否定の持ち越しを捕まえられない。
+        (
+            "return match x with\n case 0 -> 10 div x\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return match ((x)) with\n case -1..1 if x = 0 -> 10 div x\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return match x with\n case -9223372036854775808..-9223372036854775808 -> x + -1\n case _ -> 1 end match",
+            vec![C::W0402],
+            true,
+        ),
+        (
+            "return match x with\n case 9223372036854775807 -> x + 1\n case _ -> 1 end match",
+            vec![C::W0402],
+            true,
+        ),
+        (
+            "bind z <- 0\n return match z with\n case 1..2 -> 10 div z\n case _ -> 1 end match",
+            vec![],
+            false,
+        ),
+        (
+            "return match x with\n case -1, 1 if x = 0 -> 10 div x\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind z <- 0\n return match z with\n case -1, 0..1 -> 10 div z\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return match x with\n case n if n = 0 and other = 1 -> 10 div n\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind z <- 0\n return match x with\n case n if false -> 10 div z\n case _ -> 1 end match",
+            vec![],
+            false,
+        ),
+        (
+            "return match x with\n case n if n <> 0 and (10 div n = 1) -> 1\n case _ -> 1 end match",
+            vec![],
+            false,
+        ),
+        (
+            "return match x with\n case n if n = 0 and (10 div n = 1) -> 1\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return match x with\n case 0 -> 1\n case _ if x = 0 -> 10 div x\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind copy <- x\n return match x with\n case 0 -> 10 div copy\n case _ -> 1 end match",
+            vec![],
+            false,
+        ),
+        (
+            "return match x with\n case n if n = 0 -> 10 div x\n case _ -> 1 end match",
+            vec![],
+            false,
+        ),
+        (
+            "bind n <- match x with\n case 0 -> 0\n case _ -> 0 end match\n return 10 div n",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "match x with\n case 0 -> ()\n case _ -> () end match\n return 10 div x",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n return match (lambda () -> Integer return 0 end lambda)() with\n case _ -> 10 div z end match",
+            vec![],
+            false,
+        ),
+        (
+            "bind Pair(v, _) <- Pair(0, true)\n bind z <- 0\n return match v with\n case _ -> 10 div z end match",
+            vec![],
+            false,
+        ),
+        (
+            "bind n <- 0s8\n bind z <- 0\n return match n with\n case v if v = 0s8 -> 10 div z\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return match x + 0 with\n case 0 -> 10 div x\n case _ -> 1 end match",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n return match (block return 1 end block) with\n case _ -> 10 div z end match",
+            vec![],
+            false,
+        ),
+        (
+            "bind Pair(v, _) <- Pair(0, true)\n bind z <- 0\n return if v = 0 then match v with\n case _ -> 10 div z end match else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return match x with\n case 0 if 10 div x = 1 -> 1\n case _ -> 1 end match",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return match x with\n case n if n = 0 -> 1\n case _ -> 10 div x end match",
+            vec![],
+            false,
+        ),
+        (
+            "bind n <- match x with\n case 0 -> 9223372036854775807\n case _ -> 9223372036854775807 end match\n return n + 1",
+            vec![C::W0402],
+            true,
+        ),
+        ("bind z <- 0\n return 10 div z", vec![C::W0401], true),
+        ("bind z <- 0\n return 10 mod z", vec![C::W0401], true),
+        (
+            "return if x = 0 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind n <- 9223372036854775807\n return n + 1",
+            vec![C::W0402],
+            true,
+        ),
+        (
+            "return if x >= 9223372036854775807 then x + 1 else 1 end if",
+            vec![C::W0402],
+            true,
+        ),
+        (
+            "bind n <- -9223372036854775808\n return n + -1",
+            vec![C::W0402],
+            true,
+        ),
+        (
+            "bind z <- 0\n return if false then 10 div z else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n return if z <> 0 then 10 div z else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if x = 0 then block if x <> 0 then bind n <- 10 div x end if\n 1 end block else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "bind copy <- x\n return if x = 0 then 10 div copy else 1 end if",
+            vec![],
+            false,
+        ),
+        ("return 10 div x", vec![], false),
+        (
+            "bind z <- 0s8\n bind n <- 10s8 div z\n return 1",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind n <- 9223372036854775807\n return (n + 1) + (10 div x)",
+            vec![C::W0402],
+            true,
+        ),
+        ("return 10 div 0", vec![C::W0401], false),
+        ("return 9223372036854775807 + 1", vec![C::W0402], false),
+        (
+            "bind n <- 10 div zero\n return 20 mod zero",
+            vec![C::W0401, C::W0401],
+            false,
+        ),
+        (
+            "bind z <- 0\n return if false then 10 div 0 else 1 end if",
+            vec![C::W0401],
+            false,
+        ),
+        // リテラル同士の比較は真偽を精密化しない。新候補と旧警告を一件にまとめ、旧警告を採る。
+        (
+            "bind hit <- 1 > 2 and (10 div 0 = 1)\n return 1",
+            vec![C::W0401],
+            false,
+        ),
+        (
+            "bind hit <- 1 < 2 or (10 div 0 = 1)\n return 1",
+            vec![C::W0401],
+            false,
+        ),
+        // 短絡と複合条件は、単一比較の表で未接続だった右辺の到達と環境の合流を守る。
+        // 同じ公開入口と診断を使い、非公開の分類を直接呼ぶ検査は重ねない。
+        (
+            "return if x < 0 and x >= 0 then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n return if x < 0 or x >= 0 then 1 else 10 div z end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if not (x = 0 and x = 1) then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "bind hit <- x = 0 and true\n return 10 div x",
+            vec![],
+            false,
+        ),
+        (
+            "bind hit <- x = 0 and (10 div x = 1)\n return 1",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind hit <- x <> 0 or (10 div x = 1)\n return 1",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind hit <- x <> 0 and (10 div x = 1)\n return 1",
+            vec![],
+            false,
+        ),
+        (
+            "bind hit <- x = 0 or (10 div x = 1)\n return 1",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n bind hit <- false and (10 div z = 1)\n return 1",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n bind hit <- true or (10 div z = 1)\n return 1",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n bind hit <- true and (10 mod z = 1)\n return 1",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind z <- 0\n bind hit <- false or (10 mod z = 1)\n return 1",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if x <= 0 and x >= 0 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if x < 0 or x > 0 then 1 else 10 div x end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if not (x <> 0) then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if not (not (x = 0)) then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if x = 0 or x = 1 then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if (x = 0 or x = 1) and x < 1 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if (x = 0 or x = 1) and x > 0 then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if x = 0 or x = 0 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if x = 0 or false then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if false or x = 0 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "return if x < 0 or x > 0 then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if not (x <> 0 and other <> 0) then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if x = 0 or other = 0 then 10 div x else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if x <= 0 and other = 1 and x >= 0 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind copy <- x\n return if x <= 0 and x >= 0 then 10 div copy else 1 end if",
+            vec![],
+            false,
+        ),
+        (
+            "return if (x = 0 or x = 1) and (other = 0 or other = 1) and x < 1 then 10 div x else 1 end if",
+            vec![C::W0401],
+            true,
+        ),
+        (
+            "bind z <- 0\n bind hit <- (if flag then true else true end if) or (10 div z = 1)\n return 1",
+            vec![],
+            false,
+        ),
+        (
+            "bind z <- 0\n bind hit <- (block bind n <- 9223372036854775807\n n + 1 end block) = 0 and (10 div z = 1)\n return 1",
+            vec![C::W0402],
+            true,
+        ),
+    ];
+    for (body, expected, local) in cases {
+        let source = format!(
+            "const zero: Integer = 0\nfunction sample(x: Integer, other: Integer, flag: Boolean) -> Integer\n {body}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            "intervals.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert!(
+            checked.program.is_some(),
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{source}"
+        );
+        for diagnostic in &checked.diagnostics {
+            assert_eq!(
+                diagnostic
+                    .notes
+                    .iter()
+                    .any(|n| n.starts_with("this local analysis")),
+                local,
+                "{source}: {diagnostic:?}"
+            );
+            assert!(diagnostic.helps.is_empty());
+            if local {
+                assert!(
+                    diagnostic
+                        .notes
+                        .iter()
+                        .any(|n| n.starts_with("the inferred"))
+                );
+                assert!(!diagnostic.secondary.is_empty());
+            }
+        }
+    }
+    // 由来は別名へコピーした時点に固定し、直後の無関係な束縛や外れた枝を含めない。
+    let source = "function sample(x: Integer) -> Integer\n return if x = 0 then block\n bind z <- x\n bind unrelated <- 7\n 10 div z\n end block else 1 end if\nend function\n";
+    let checked = pipeline::check_text(
+        "origins.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
+    );
+    assert!(checked.program.is_some());
+    assert_eq!(checked.diagnostics.len(), 1);
+    let diagnostic = &checked.diagnostics[0];
+    let primary = diagnostic.primary.as_ref().unwrap().span;
+    assert_eq!(
+        &source[primary.start.0 as usize..primary.end.0 as usize],
+        "z"
+    );
+    let origins: Vec<_> = diagnostic
+        .secondary
+        .iter()
+        .map(|l| &source[l.span.start.0 as usize..l.span.end.0 as usize])
+        .collect();
+    assert_eq!(origins, ["bind z <- x", "x = 0"]);
+    let mut source = String::from("function chain() -> Integer\n bind x0 <- 0\n");
+    for index in 1_usize..12 {
+        source.push_str(&format!(" bind x{index} <- x{}\n", index - 1));
+    }
+    source.push_str(" return 1 div x11\nend function\n");
+    let checked = pipeline::check_text(
+        "chain.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
+    );
+    assert!(checked.program.is_some());
+    assert_eq!(checked.diagnostics.len(), 1);
+    let selected: Vec<_> = checked.diagnostics[0]
+        .secondary
+        .iter()
+        .map(|label| &source[label.span.start.0 as usize..label.span.end.0 as usize])
+        .collect();
+    assert_eq!(
+        selected,
+        [
+            "bind x11 <- x10",
+            "bind x10 <- x9",
+            "bind x9 <- x8",
+            "bind x8 <- x7",
+            "bind x7 <- x6",
+            "bind x6 <- x5",
+            "bind x5 <- x4",
+            "bind x4 <- x3",
+        ]
+    );
+    // 関門: 公開診断で固定長の選択順・合成・重複を守る。件数だけでは、
+    // 直近の位置の脱落や同じ根拠の重複を検出できない。新しい差し込み口は不要。
+    for (body, expected) in [
+        (
+            "return match x with\n case n if n = 0 -> 1 div n\n case _ -> 1 end match",
+            vec!["n = 0", "n"],
+        ),
+        (
+            "bind root <- 0\n return match root with\n case n if n >= 0 -> 1 div n\n case _ -> 1 end match",
+            vec!["n >= 0", "n", "bind root <- 0"],
+        ),
+        (
+            "return match x with\n case 0 -> 1 div x\n case _ -> 1 end match",
+            vec!["0"],
+        ),
+        (
+            "bind root <- 0\n bind a <- root\n bind b <- root\n bind z <- a + b\n return 1 div z",
+            vec![
+                "bind z <- a + b",
+                "bind a <- root",
+                "bind root <- 0",
+                "bind b <- root",
+            ],
+        ),
+        (
+            "bind root <- 0\n bind z <- if flag then block bind a <- root\n a end block else block bind b <- root\n b end block end if\n return 1 div z",
+            vec![
+                "bind z <- if flag then block bind a <- root\n a end block else block bind b <- root\n b end block end if",
+                "bind a <- root",
+                "bind root <- 0",
+                "bind b <- root",
+            ],
+        ),
+        (
+            "bind a <- 9223372036854775807\n bind b <- 1\n return a + b",
+            vec!["bind a <- 9223372036854775807", "bind b <- 1"],
+        ),
+        (
+            "return if x >= 0 and x <= 0 then 1 div x else 1 end if",
+            vec!["x <= 0", "x >= 0"],
+        ),
+        (
+            "return if x = 0 then block bind copy <- x\n if copy >= 0 then 1 div copy else 1 end if end block else 1 end if",
+            vec!["copy >= 0", "bind copy <- x", "x = 0"],
+        ),
+    ] {
+        let source = format!(
+            "function origins(x: Integer, flag: Boolean) -> Integer\n {body}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            "selection.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert!(
+            checked.program.is_some(),
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        assert_eq!(
+            checked.diagnostics.len(),
+            1,
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        let selected: Vec<_> = checked.diagnostics[0]
+            .secondary
+            .iter()
+            .map(|label| &source[label.span.start.0 as usize..label.span.end.0 as usize])
+            .collect();
+        assert_eq!(selected, expected, "{source}");
+    }
+}
+
+// 関門: 未知の親へ子のフローを合成しないことと、独立入力・別本体の警告を
+// 公開の型検査境界で守る。既存表は捕捉・発見・特殊構文を通っていない。
+#[test]
+fn interval_boundaries_forget_outer_facts_and_keep_inner_warnings() {
+    use benitoite::diag::DiagCode as C;
+    let preamble = "import Benitoite.Unofficial.Failure\nimport Benitoite.Unofficial.IO.Process\nimport Benitoite.StringBuilder\neffect E\n function get() -> Integer\n function other() -> Integer\nend effect\nrecord Box\n value: Integer\nend record\nfunction id(value: Integer) -> Integer return value end function\nfunction pair(left: Integer, right: Integer) -> Integer return left end function\n";
+    let inner = "block bind z <- 0\n 10 div z end block";
+    let overflow = "block bind n <- 9223372036854775807\n n + 1 end block";
+    let inline = "if x = 0 then 10 div x else 1 end if";
+    let cases = [
+        ("bind z <- 0\n return id(10 div z)".into(), vec![]),
+        (format!("return id({inner})"), vec![C::W0401]),
+        (format!("return id(id({inner}))"), vec![C::W0401]),
+        (format!("return {inner} - {overflow}"), vec![C::W0401, C::W0402]),
+        (format!("return {inner} * 3"), vec![C::W0401]),
+        (format!("return -({inner})"), vec![C::W0401]),
+        ("bind z <- 0\n bind _ <- id(1)\n return 10 div z".into(), vec![C::W0401]),
+        ("return id(block if true then return 1 end if\n bind z <- 0\n 10 div z end block)".into(), vec![]),
+        ("if false then bind _ <- id(block bind z <- 0\n 10 div z end block) end if\n return 1".into(), vec![]),
+        ("if true then return 1 end if\n bind _ <- id(block bind z <- 0\n 10 div z end block)\n return 2".into(), vec![]),
+        (format!("bind _ <- [{inner}, {overflow}]\n return 1"), vec![C::W0401, C::W0402]),
+        (format!("bind _ <- [{inner}, ..[1], {overflow}]\n return 1"), vec![C::W0401, C::W0402]),
+        (format!("bind _ <- \"${{{inline}}}\"\n return 1"), vec![C::W0401]),
+        (format!("bind _ <- Box(value: {inner})\n return 1"), vec![C::W0401]),
+        (format!("bind original <- Box(value: 1)\n bind _ <- Box(..original, value: {inner})\n return 1"), vec![C::W0401]),
+        (format!("bind _ <- pair(left: _, right: {inner})\n return 1"), vec![C::W0401]),
+        (format!("bind _ <- Pair(_, {inner})\n return 1"), vec![C::W0401]),
+        (format!("return {inner} |> id"), vec![C::W0401]),
+        ("bind z <- 0\n bind _ <- lambda() -> Integer return 10 div z end lambda\n return 1".into(), vec![]),
+        ("bind _ <- lambda() -> Integer\n bind z <- 0\n return 10 div z end lambda\n return 1".into(), vec![C::W0401]),
+        ("bind _ <- lambda(z: Integer) -> Integer return if z = 0 then 10 div z else 1 end if end lambda\n return 1".into(), vec![C::W0401]),
+        ("bind z <- 0\n bind _ <- lazy 10 div z end lazy\n return 1".into(), vec![]),
+        ("bind _ <- lazy bind z <- 0\n 10 div z end lazy\n return 1".into(), vec![C::W0401]),
+        ("if false then bind _ <- lambda() -> Integer\n bind z <- 0\n return 10 div z end lambda end if\n return 1".into(), vec![C::W0401]),
+        ("if true then return 1 end if\n bind _ <- lazy bind z <- 0\n 10 div z end lazy\n return 2".into(), vec![C::W0401]),
+        ("bind z <- 0\n bind _ <- handle 10 div z with case get() -> 1 end handle\n return 1".into(), vec![]),
+        ("bind z <- 0\n bind _ <- handle get() with case get() -> 10 div z end handle\n return 1".into(), vec![]),
+        ("bind _ <- handle get() with case get() -> bind z <- 0\n 10 div z end handle\n return 1".into(), vec![C::W0401]),
+        ("bind _ <- handle block bind z <- 0\n 10 div z end block with case get() -> 1 end handle\n return 1".into(), vec![C::W0401]),
+        ("bind _ <- handle Failure.raise(\"bad\") with case Failure.raise(error) -> bind z <- 0\n 10 div z end handle\n return 1".into(), vec![C::W0401]),
+        (format!("bind _ <- try Option.Some({inner}) or die(\"bad\")\n return 1"), vec![C::W0401]),
+        (format!("bind _ <- try Option.Some(1) or die(\"${{{inline}}}\")\n return 1"), vec![C::W0401]),
+        ("bind z <- 0\n with first = TaskGroup.open(), second = TaskGroup.open() do\n bind _ <- 10 div z\n end with\n return 1".into(), vec![]),
+        ("with first = TaskGroup.open(), second = TaskGroup.open() do\n bind z <- 0\n bind _ <- 10 div z\n end with\n return 1".into(), vec![C::W0401]),
+        (format!("bind b: StringBuilder <- StringBuilder.new()\n StringBuilder.append(text: \"${{{inline}}}\", builder: b)\n return 1"), vec![C::W0401]),
+    ];
+    for (body, expected) in cases {
+        let source = format!(
+            "{preamble}function sample(x: Integer) -> Integer uses State, Process.Exit, E\n {body}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            "boundaries.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert!(
+            checked.program.is_some(),
+            "{source}: {:?}",
+            checked.diagnostics
+        );
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{source}"
+        );
+    }
 }

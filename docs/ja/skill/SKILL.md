@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
@@ -41,7 +41,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 1. 書く前に、`references/idioms.md` と、スクリプトが使うモジュールごとにそのファイル `references/stdlib/<Module>.md` を読む（`references/` のディレクトリは、このファイルと同じ場所にある）。関数の名前、欄の名前、取り込みの名前を推測せず、そこで調べる。それからスクリプトを書く。合う例があれば、`references/idioms.md` の例から始める。
 2. `benitoite check script.bnt` を実行し、利用者の関数を実行せずに検査する。
-3. 標準エラー出力の診断を読み、スクリプトを直す。診断は `E0230` のようなコードを示す。その意味がわからないときは、`references/diagnostics.md` でコードを引く。
+3. 標準エラー出力の診断を読み、スクリプトを直す。診断は `E0230` のようなコードを示す。その意味がわからないときは、`references/diagnostics.md` でコードを引く。局所の解析の注記を持つ W0401、W0402、W0404 では、[局所の区間解析の警告を説明する](references/idioms.md#局所の区間解析の警告を説明する)に従い、原因とその条件を説明してから修正を選ぶ。
 4. 検査が終了状態 0 で成功するまで、2 と 3 を繰り返す。警告も直す。警告はたいてい実際の誤りを指している。
 5. [実行の前に](#実行の前に)の確認の直前に、`benitoite check --report=json script.bnt` を一度実行し、`main` の宣言したエフェクトを得る。完全な単一の JSON オブジェクト、既知の `schemaVersion` と `kind: "checkReport"`、`status: "ok"`、`complete: true`、終了状態 0 を要求する。欠けた報告、部分的な報告、失敗した報告を空のエフェクト集合として扱わない。失敗した場合は通常の検査に戻ってスクリプトを直し、確認の前に新しい報告を得る。
 6. [実行の前に](#実行の前に)の確認を行い、`aggregateEffects.expanded` の了承済みの原子的な名前を使って、`benitoite run --allow-effects=<accepted names> script.bnt [arguments...]` を実行する。純粋なスクリプトには `--allow-effects=` と書く。`E0512` が追加のエフェクトを報告したら、許す集合を変える前に、もう一度検査して見直す。
@@ -63,9 +63,13 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 ## 実行の前に
 
+ハーネスは、検査報告と対象の `intervalAnalysis` を `complete` と別に読む。`basis: "localIntervals"` と `coverage: "all"`、`"some"`、`"none"` は局所の区間解析の範囲を表し、報告の受理条件には含めない。後述の受理条件を保つ。`all` で警告がなくても、安全とは限らない。件数、予算による停止、使用量、集計は、[局所の区間解析](references/inspection.md#局所の区間解析)を参照する。
+
+未知の値、未対応の形、解析予算の枯渇だけを理由に、コードを変えたり `uses` の上限を広げたりする必要はない。実行時の検査と失敗の処理を残す。局所の警告が示す失敗は、実行が報告した演算や呼び出しへ到達し、すべてのオペランドや引数の評価が成功した場合に限る。W0404 は標準関数の直接のシフト回数の引数を対象とし、エフェクトの操作と HTTP のレコードのフィールドは対象外である。警告がない場合を解釈する前に、[例と解析の境界](references/idioms.md#局所の区間解析の警告を説明する)を読む。
+
 スクリプトを初めて実行する前と、`main` のエフェクトが前回利用者に示したものより増えたときには、次のことを行う。
 
-1. 単一の JSON オブジェクト全体、既知の schemaVersion と kind、status: "ok"、complete: true、終了状態 0 を確認した場合だけ検査報告を受理する。宣言上限（スクリプトでは `targets[0].main.effects.expanded`、テストでは選択された各テストの effects と aggregateEffects）を読み、後掲の表の言葉で操作の種類を利用者へ伝える。コードの説明では関数の個別の uses とファイル単位の uses の両方と照合する。使わない宣言とファイル由来の追加も数える。失敗や不明を空集合とせず、上限自体を許可としない。報告の欄と受理条件の正は処理系の[版を固定した CLI 仕様（v0.0.11、checkReport 1・testCheckReport 1/2）](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/design/06-tooling/06-01-cli.md#main-の非実行の検査報告)である。[実行前の検査](references/inspection.md)も参照する。
+1. 単一の JSON オブジェクト全体、既知の schemaVersion と kind、status: "ok"、complete: true、終了状態 0 を確認した場合だけ検査報告を受理する。宣言上限（スクリプトでは `targets[0].main.effects.expanded`、テストでは選択された各テストの effects と aggregateEffects）を読み、後掲の表の言葉で操作の種類を利用者へ伝える。コードの説明では関数の個別の uses とファイル単位の uses の両方と照合する。使わない宣言とファイル由来の追加も数える。失敗や不明を空集合とせず、上限自体を許可としない。報告の欄と受理条件の正は処理系の[版を固定した英語リファレンス（v0.0.12、checkReport 1・testCheckReport 1/2）](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)である。追加の区間の集計は、[実行前の検査](references/inspection.md#局所の区間解析)を参照する。
 2. 並びに `File.Write`、`Process.Run`、`Http.Connect`、`Http.Listen` のどれかがあるときは、実行する前に利用者に確認を求める。`Process.Run` については、スクリプトが起動するコマンドの名前も挙げる。それらのコマンドが何をするかは、`benitoite` の検査の範囲の外にある。
 3. `IO.All` は `File.Write` と `Process.Run` を含むものとして扱う。`uses` には、`IO.All` の代わりに個別のエフェクトを書く。
 
@@ -174,6 +178,8 @@ block ... end block で構築器の宣言と操作を一つの式に閉じられ
 
 Log と SourceLocation は prelude に含む。位置を記録したい場所で SourceLocation.here() を直接呼び、ラッパーには Location を明示して渡す。関数値・穴・パイプは E0467 となる。Log.info(message: ..., attributes: [Log.attribute(key: ..., value: ...)], location: SourceLocation.here()) は uses Log と、宣言上限に残る場合の許可集合の Log を要する。IO.All と Console.Write は Log を含まない。無効なレベルも引数は先に評価するため、重い書式化は Log.enabled(Log.Level.Debug) で囲む。既定は Info 以上を stderr へ出力し、Log.error は終了しない。emit と enabled の両方を処理する。withTextLogger は Console.Write を要し、withSinks は sink のエフェクトを保ち、withAttributes は Log を送り直す。Log の as は使えない。Range と NonEmptyList の検査済み値を使い、get には元のリストを保持する検査済み添字だけを渡す。references/idioms.md を参照する。
 
+既に開いたファイルへの出力先では、Writer の `with` ブロック内で Writer を捕捉し、`Log.formatRecord(record: record)` を `File.writeLine` に渡す。JSON Lines には、アプリケーションのコードでレコードを変換する。実行可能な例、属性の重複、数値、flush/close の失敗は、[ファイルと JSON へのログの出力](references/idioms.md#ファイルと-json-へのログの出力)を参照する。実行前に、出力先に残るエフェクトの確認をハーネスに求める。
+
 ## コレクションと連結の関数を選ぶ
 
 コンテナが既知なら List.map/fold、Option.map/andThen、Result.map/andThen/mapError を使う。一つの関数を複数のコンテナで使う場合だけ、必要最小のクラス制約を要求する。一引数には Trait.Functor、Trait.Applicative、Trait.Monad、二引数には Trait.Functor2、Trait.Applicative2、Trait.Monad2 を使い、Benitoite.Trait を明示的に取り込む。二引数クラスは F[A, X] の X を保って写し、標準実装は Result である。一引数の Monad や Traversable に Result を渡せるようにはならない。
@@ -229,6 +235,8 @@ Config は明示した seed と、両端を含む予算 trials 1〜10000、size 
 
 Integer の生成は両端を含み、Float の生成は有限値に限る。入れ子のコンテナの size は資源全体の上限ではない。縮小は循環も含め、全候補の試行を数え、最小の反例を約束しない。再現には config、libraryVersion（2.0.0）、生成コードの GENERATOR_VERSION、手書きのソース、元と縮小後の入力と説明を残す。同じ seed だけではライブラリの版をまたいで反例を再現できない。Gen/Shrinker のフィールドと各 API は、references/stdlib/Test.Property.md を参照する。
 
-ソースのリポジトリには tools/derive/README.md に従う開発用 derive がある。Show/Order と Property は同じモジュール内の正則な自己・相互再帰と型パラメータを持つレコードに対応する。JSON は単相・非循環に限る。使用する型パラメータだけに宣言順の Gen/Shrinker 引数を渡し、phantom は省く。Show/Order の必要な制約を伝播し、全欄に辞書を要する。再帰する縮小器は要求まで遅延し、容器の削除を先行して一欄ずつ縮小する。制約のない T へ渡す独自 Shrinker は自己候補を除く。生成器は有限の基底とレコード節点数の総予算を要する。独自コールバックの停止・往復と反例の最小性は保証しない。
+ソースのリポジトリには、レコードの codec、Gen/Shrinker 関数、明示的に要求した Show/Order の実装を作る開発用 derive がある（`tools/derive/README.md` を参照する）。Show/Order の対象のフラグは独立した真偽値である。Property と Show/Order は、同じモジュール内の型パラメータを持つレコードと正則な再帰レコードに対応する。JSON は単相・非循環に限る。使用する型パラメータだけに、宣言順の Gen/Shrinker 引数を渡す。生成した Show/Order の実装は、必要なパラメータの制約を持ち、すべてのフィールドに対応する辞書を要する。再帰する縮小器は処理を遅延し、再帰するコンテナを削除してから、一度に一つのフィールドを縮小する。Show はフィールドの順序と各フィールドの引用の規則を使い、Order は最初の非 Equal のフィールドで止まる。どちらも組み込みの等値性、キーの制約、直列化の書式を提供しない。既存の手書きの実装は保護する。不透明なレコードは、所有モジュールで Show/Order を明示的に要求できる。適用前に提案された不透明型の表示を確認する。
 
-生成規則は 3.0.0-syntax-batch4、inventory は 2、manifest・receipt・生成記録・意味ハッシュは 3、設定は 1 である。旧道具で未完の復旧を終え、旧本文のハッシュを読み取り専用で照合してから、新しい preview/review/apply/check を行う。旧 manifest で新版を承認しない。同じ種だけでは版をまたぐ分布を再現できず、Property.libraryVersion は 2.0.0 を保つ。不透明型には公開の検査済み作成関数、欄には独自の codec/generator を使う。配布実行ファイルと Skill だけの環境では、Codec/Property API を使って直接関数を書く。
+JSON/Property の生成は、ファイル単位の `uses` を持つ対象モジュールを拒否する。Show/Order だけの対象は引き続き受理する。ファイルの宣言を、エフェクトが必要な関数それぞれの `uses` に置き換えるか、型の定義と derive の対象を純粋なモデルのモジュールへ移し、エフェクトを使うコードから取り込む。設定の `source` を変えるだけでは、生成先を型の宣言元から移せない。既存の領域には、新しい preview の前に `tools/derive/README.md` の対象の削除・移動の手順を適用する。
+
+derive の宣言の inventory は版 3、manifest・receipt・生成記録・意味ハッシュは版 3、生成規則は `3.1.0-syntax-batch5`、設定は版 1 である。道具を更新する前に、保存した旧道具で未完の apply と復旧を終える。旧本文のハッシュを検証してから新しい preview を確認し、その確認済み manifest の正確なハッシュで適用する。生成器の版が同じでも、道具の入力ハッシュによって以前の manifest が無効になりうる。同じ seed だけでは、古い生成分布を再現できない。不透明型には手書きの検査済み構築を使い、不透明なフィールドには独自の codec/generator を使う。配布した実行ファイルと Skill だけの環境では、Codec と Property の API でこれらの関数を直接書く。

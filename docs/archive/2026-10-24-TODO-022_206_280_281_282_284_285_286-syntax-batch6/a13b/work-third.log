@@ -1,0 +1,164 @@
+== plan: level work against 629a90e3525de313e91f1b807c642bd64ad32a67 (changed files not classified) (partial selection: --only fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally,formal_build)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+    Checking benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.39s
+== tests_related
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/build_info.rs (target/debug/deps/build_info-74284aae04ee09e8)
+
+running 5 tests
+test build_inputs_and_git_collection ... ignored, long: builds a temporary crate for the build input and Git acceptance table
+test git_failures ... ignored, long: builds temporary crates to check Git collection failures
+test git_states ... ignored, long: builds temporary crates to check Git state and recollection
+test loose_ref_refresh ... ignored, long: builds temporary crates to check Git state and recollection
+test packed_ref_refresh ... ignored, long: builds temporary crates to check Git state and recollection
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 3 tests
+test long_constant_chain_has_bounded_check_allocations ... ok
+test ordinary_calls_and_returns_allocate_only_for_capacity_growth ... ok
+test repeated_constant_diagnostics_share_bounded_origin_work ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.13s
+
+     Running tests/checked_args.rs (target/debug/deps/checked_args-be3cae742fe14985)
+
+running 10 tests
+test log_record_parameter_is_an_ordinary_contextual_name ... ok
+test constant_origins_follow_cached_transitive_values ... ok
+test constant_origin_labels_are_bounded_and_keep_chain_endpoints ... ok
+test range_checked_integer_hides_all_representation_operations ... ok
+test regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion ... ok
+test source_location_requires_the_standard_direct_zero_argument_call ... ok
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test regex_constants_reject_only_known_direct_standard_calls ... ok
+test additional_budgets_fall_back_to_runtime_and_do_not_reset_per_body ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.70s
+
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 33 tests
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test log_default_output_runs_through_the_real_cli_in_both_modes ... ok
+test log_main_report_and_effect_limits_keep_schema_one ... ok
+test file_effects_reach_main_reports_and_limit_origins ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test failure_entry_help_uses_resolved_standard_effect ... ok
+test main_check_reports_warnings_without_execution ... ok
+test cli_process_contracts ... ok
+test main_check_reports_sources_without_execution ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test main_check_reports_failures_without_execution ... ok
+test run_failure_contracts_are_checked_before_effect_limits ... ok
+test skill_document_output_failures_exit_one ... ok
+test main_check_reports_contracts_without_execution ... ok
+test shared_decisions_are_accepted_by_all_cli_modes ... ok
+test skill_documents_need_no_writable_directory ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test tool_panics_are_internal_reports ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test main_check_reports_shell_without_execution ... ok
+test test_doc_uses_version_two_and_keeps_check_nonexecuting ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_type_limits ... ok
+test interval_reports_keep_coverage_and_counts_independent_of_acceptance ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.83s
+
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-dfd1484753d40198)
+
+running 4 tests
+test export_coverage ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_named_coverage ... ok
+test export_batch4_integer ... ok
+test scalar_source_arms_preserve_selection ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.08s
+
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 28 tests
+test diagnosed_binding_chain_scales_with_input_length ... ignored, long: checks near-linear recovery of a long chain of diagnosed bindings
+test config_rejects_duplicate_unknown_and_incomplete_settings ... ok
+test declarations_do_not_resolve_check_or_evaluate_bodies ... ok
+test diagnosed_recovery_keeps_pending_call_escape ... ok
+test diagnosed_recovery_skips_coverage_without_a_known_pattern_shape ... ok
+test diagnosed_recovery_does_not_infer_values_from_callback_requirements ... ok
+test file_uses_external_declarations_check_the_effective_contract ... ok
+test file_uses_inventory_keeps_original_ast_and_effect_origins ... ok
+test file_uses_failure_no_fail_is_enforced_at_calls ... ok
+test file_uses_imports_and_higher_order_values_use_merged_contracts ... ok
+test file_uses_loading_merges_functions_and_rejects_config_declarations ... ok
+test declaration_errors_are_rejected_at_the_same_stage_as_check ... ok
+test constant_intervals_analyze_bodies_and_merge_original_warning_locations ... FAILED
+test inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries ... ok
+test inventory_json_preserves_resolved_types_order_spans_and_input_hashes ... ok
+test checked_lists_hide_representation_and_bind_indices_to_their_list ... ok
+test file_uses_visibility_reports_once_and_repairs_all_public_functions ... ok
+test opaque_declarations_keep_representation_and_owner_but_hide_its_contract ... ok
+test log_standard_declarations_and_effect_identity ... ok
+test diagnosed_binding_recovery_preserves_own_contracts ... ok
+test file_uses_contracts_preserve_existing_restrictions ... ok
+test opaque_types_keep_nominal_equality_and_nonempty_coverage ... ok
+test log_standard_handlers_keep_the_outer_effect_contract ... ok
+test diagnosed_recovery_preserves_independent_later_checks ... ok
+test interpolation_formats_preserve_recovery ... ok
+test interval_boundaries_forget_outer_facts_and_keep_inner_warnings ... ok
+test diagnosed_recovery_preserves_partial_structure ... ok
+test local_intervals_report_only_reached_arithmetic_failures ... ok
+
+failures:
+
+---- constant_intervals_analyze_bodies_and_merge_original_warning_locations stdout ----
+
+thread 'constant_intervals_analyze_bodies_and_merge_original_warning_locations' (3915562) panicked at crates/benitoite/tests/declarations.rs:1797:5:
+const k: Integer = 3 - 3
+function sample() -> Integer
+ bind z <- k
+ return 10 div z
+end function
+: expected [], found [W0401]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    constant_intervals_analyze_bodies_and_merge_original_warning_locations
+
+test result: FAILED. 26 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 5.50s
+
+error: test failed, to rerun pass `-p benitoite --test declarations`
+FAILED: tests_related
+       40.20 real        92.00 user         2.91 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.24s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 1 test
+VM interval export: 80 operations
+
+thread 'interval::vm::export_interval_vm' (8042229) panicked at crates/benitoite/tests/desugar_export/interval/vm.rs:14:5:
+assertion `left == right` failed: [Diagnostic { kind: Check, severity: Error, code: Some(E0201), message: "expected a newline or the end of the block, found `Range`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(10863), end: BytePos(10868) }, text: "unexpected `Range`" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test interval::vm::export_interval_vm ... FAILED
+
+failures:
+
+failures:
+    interval::vm::export_interval_vm
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.84s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

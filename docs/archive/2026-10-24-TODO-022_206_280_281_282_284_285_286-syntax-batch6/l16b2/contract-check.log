@@ -1,0 +1,183 @@
+B_WORK = 9d18f7d233dbea603fcb6f1ea3ebbcf1c45d0e66
+HEAD = 9d18f7d233dbea603fcb6f1ea3ebbcf1c45d0e66
+{
+  "formal/Benitoite/Interval/BudgetAnalyze.lean": {
+    "existing_public_unchanged": 5,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "binarySupported_iff",
+      "binarySupported_kind",
+      "negModeled_integer",
+      "negModeled_kind",
+      "negOwnTyped_integer"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetCause.lean": {
+    "existing_public_unchanged": 40,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "causal_negOwnTyped",
+      "negOwnTyped_cause_absent",
+      "negOwnTyped_width_cause",
+      "own_width_cause"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetEnvironment.lean": {
+    "existing_public_unchanged": 19,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "comparisonKindOperands_agrees",
+      "comparisons_agrees",
+      "constantKind_agrees",
+      "narrowKind_agrees",
+      "refineKind_agrees",
+      "updateKind_agrees"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetIndependent.lean": {
+    "existing_public_unchanged": 19,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "keepsInputs_negOwnTyped"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetIndependentPosition.lean": {
+    "existing_public_unchanged": 27,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "inputWalk_negOwnTyped"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetIndependentSound.lean": {
+    "existing_public_unchanged": 30,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "savesInputs_negOwnTyped"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetLocated.lean": {
+    "existing_public_unchanged": 36,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "located_negOwnTyped",
+      "negOwnTyped_warning_origin"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetNormal.lean": {
+    "existing_public_unchanged": 27,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "success_negOwnTyped",
+      "widthBinary_normal"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetReach.lean": {
+    "existing_public_unchanged": 29,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "within_negOwnTyped"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetSound.lean": {
+    "existing_public_unchanged": 33,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "binary_typed_causal"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetTraversal.lean": {
+    "existing_public_unchanged": 40,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "walk_negOwnTyped"
+    ]
+  },
+  "formal/Benitoite/Interval/Environment.lean": {
+    "existing_public_unchanged": 36,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "lookup_narrowKindAt_other",
+      "models_narrowKindAt",
+      "narrowKindSlot_models"
+    ]
+  },
+  "formal/Benitoite/Interval/Eval.lean": {
+    "existing_public_unchanged": 41,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "IntKind.ofType_integer64",
+      "IntKind.type_ne_integer",
+      "WidthBinary.modeled",
+      "WidthBinary.supported",
+      "widthNeg_known"
+    ]
+  },
+  "formal/Benitoite/Interval/EvalClosed.lean": {
+    "existing_public_unchanged": 8,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": []
+  },
+  "formal/Benitoite/Interval/Examples.lean": {
+    "existing_public_unchanged": 0,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": []
+  },
+  "formal/Benitoite/Interval/Flow.lean": {
+    "existing_public_unchanged": 32,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "excludeKindPoint_sound",
+      "integerKindConstant_sound",
+      "lookup_refineKindEnv_other",
+      "models_refineKindEnv",
+      "refineKindRange_sound",
+      "refineKindTrue_sound"
+    ]
+  },
+  "formal/Benitoite/Interval/Sound.lean": {
+    "existing_public_unchanged": 32,
+    "private_auxiliary_statements_changed": [
+      "neg_warning"
+    ],
+    "new_theorems": [
+      "Good.widthBinary",
+      "Good.widthNegating",
+      "baseBinary_atKind",
+      "baseNegOwnTyped_atKind",
+      "baseNeg_atKind",
+      "baseOwnKind_warning_origin",
+      "baseOwn_atKind",
+      "baseOwn_warning_origin",
+      "checkedWidthBinaryOwn_contains",
+      "checkedWidthBinary_contains",
+      "checkedWidthNegOwn_contains",
+      "checkedWidthNeg_contains",
+      "comparisonKindAt_sound",
+      "localIndex_kind_sound",
+      "negOwnTyped_warning",
+      "negOwnTyped_warning_located",
+      "neg_warning_located",
+      "widthNegOwn_warning_sound",
+      "widthOwn_warning_sound",
+      "width_neg_absent",
+      "width_neg_good",
+      "width_own_absent",
+      "width_own_good"
+    ]
+  },
+  "formal/Benitoite/Interval/SyntacticReach.lean": {
+    "existing_public_unchanged": 15,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": []
+  }
+}
+NormalSoundness/WarningSoundness: full definition bodies identical
+Existing public theorem statements: identical; no new axiom/sorry/admit
+Outside Interval: no Lean changes; lakefile -M 12288 and three fixed tables: identical
+Document headings/text fences: identical
+Fixed SHA-256: {
+  "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f",
+  "crates/benitoite/testdata/interval-budget/body.tsv": "e7643a1893f4a5a024b7a1b5eb845e4f213a14c9cdd992f02f9d5d416e0b56c1",
+  "crates/benitoite/testdata/interval-budget/whole.tsv": "01ac37e5e84f9645722a54388434304e6311aea898d7126568653b3c8de823c4",
+  "crates/benitoite/testdata/interval-budget/summary.tsv": "cfb261ab4fc794d8acdd3e089781e5e32b2b550bc4e45217fdc2865275c4a1bd"
+}

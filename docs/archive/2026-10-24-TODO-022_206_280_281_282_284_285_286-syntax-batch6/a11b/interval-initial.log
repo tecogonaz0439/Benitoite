@@ -1,0 +1,39 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 18 tests
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+test typeck::interval::tests::discovery_and_queue_keep_reference_costs_and_pending_entries ... ok
+test typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts ... ok
+test typeck::interval::tests::arithmetic_candidates_survive_later_budget_stops ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::tests::comparisons_refine_only_the_selected_branch_and_merge_normal_values ... ok
+test typeck::interval::tests::independent_inputs_keep_postorder_results_and_release_every_temporary_scope ... ok
+test typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates ... ok
+test typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope ... ok
+test typeck::interval::tests::local_environment_is_released_at_every_budget_stop ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+
+thread 'typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking' (3170302) panicked at crates/benitoite/src/typeck/interval/tests.rs:726:5:
+assertion `left == right` failed
+  left: 183
+ right: 181
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... FAILED
+test typeck::interval::tests::budget_reference::whole_budget_matches_lean_through_discovery_queue_and_embedded_bodies ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+test typeck::interval::tests::budget_reference::unrelated_function_preserves_diagnostics_below_whole_limits ... ok
+test typeck::interval::tests::branch_scopes_release_temporary_state_and_keep_candidates_on_budget_stop ... ok
+test typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking
+
+test result: FAILED. 17 passed; 1 failed; 0 ignored; 0 measured; 1301 filtered out; finished in 1.58s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+        1.70 real         4.50 user         0.09 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,539 @@
+diff --git a/crates/benitoite/src/typeck/interval/mod.rs b/crates/benitoite/src/typeck/interval/mod.rs
+index cf1083a3..a3dd5469 100644
+--- a/crates/benitoite/src/typeck/interval/mod.rs
++++ b/crates/benitoite/src/typeck/interval/mod.rs
+@@ -12,8 +12,12 @@ pub(super) mod flow;
+ pub(super) mod identity;
+ pub(super) mod input;
+ mod origins;
++mod observation;
+ mod summary;
+ 
++#[doc(hidden)]
++pub use observation::observe_intervals;
++
+ pub use summary::{
+     IntervalAnalysis, IntervalBudgetStops, IntervalCoverage, IntervalPhaseStops, IntervalUsage,
+ };
+@@ -310,6 +314,7 @@ impl<'ast> AnalysisState<'ast> {
+                     flow: analysis.flow.take(),
+                 };
+                 if let Some(identity) = &analysis.identity {
++                    observation::record(identity, &body_report);
+                     self.warnings.append(identity, &body_report, diagnostics);
+                 }
+                 if input.is_none() || body_report.flow.is_some() {
+@@ -399,6 +404,7 @@ impl<'ast> AnalysisState<'ast> {
+                             usage,
+                             flow,
+                         };
++                        observation::record(&identity, &body);
+                         self.warnings.append(&identity, &body, diagnostics);
+                         report.bodies.push(body);
+                         entries.next();
+diff --git a/crates/benitoite/src/typeck/mod.rs b/crates/benitoite/src/typeck/mod.rs
+index 8631aa6a..62a251ce 100644
+--- a/crates/benitoite/src/typeck/mod.rs
++++ b/crates/benitoite/src/typeck/mod.rs
+@@ -209,6 +209,7 @@ mod generate;
+ mod interval;
+ 
+ pub use interval::{
++    observe_intervals,
+     IntervalAnalysis, IntervalBudgetStops, IntervalCoverage, IntervalPhaseStops, IntervalUsage,
+ };
+ mod limits;
+diff --git a/crates/benitoite/tests/desugar_export/exchange.rs b/crates/benitoite/tests/desugar_export/exchange.rs
+index 97da1641..fce6035a 100644
+--- a/crates/benitoite/tests/desugar_export/exchange.rs
++++ b/crates/benitoite/tests/desugar_export/exchange.rs
+@@ -358,6 +358,7 @@ struct Surface<'a> {
+     type_order: Vec<usize>,
+     // [対象箇所数, 元の注釈が R と異なる箇所数]。対象外の関数も含む。
+     annotations: BTreeMap<&'static str, [usize; 2]>,
++    record_origins: bool,
+ }
+ impl Surface<'_> {
+     fn new(p: &CheckedProgram, ret: Option<Ty>, type_order: Vec<usize>) -> Surface<'_> {
+@@ -372,6 +373,7 @@ impl Surface<'_> {
+             clause_types: Vec::new(),
+             type_order,
+             annotations: BTreeMap::new(),
++            record_origins: false,
+         }
+     }
+     fn eff(&mut self, e: &EffectSet) -> Value {
+@@ -1017,7 +1019,20 @@ impl Surface<'_> {
+     fn expr(&mut self, e: &a::Expr, env: &[SurfaceSlot]) -> Value {
+         self.expr_at(e, env, Position::Other)
+     }
++    fn located(&mut self, node: NodeId, span: benitoite::base::Span, value: Value) -> Value {
++        if !self.record_origins || value.get("$interval").is_some() { return value; }
++        let ty = self.node_ty(node);
++        self.located_type(node, span, ty, value)
++    }
++    fn located_type(&self, node: NodeId, span: benitoite::base::Span, ty: Value, value: Value) -> Value {
++        if !self.record_origins { return value; }
++        json!({"$interval":{"node":node.0,"span":[span.file.0,span.start.0,span.end.0],"type":ty},"expr":value})
++    }
+     fn expr_at(&mut self, e: &a::Expr, env: &[SurfaceSlot], position: Position) -> Value {
++        let value = self.expr_unlocated(e, env, position);
++        self.located(e.id(), e.span(), value)
++    }
++    fn expr_unlocated(&mut self, e: &a::Expr, env: &[SurfaceSlot], position: Position) -> Value {
+         self.node_ty(e.id());
+         if let Some(args) = self.p.types.type_args.get(e.id()) {
+             self.args(args);
+@@ -1169,6 +1184,9 @@ impl Surface<'_> {
+                         panic!("invalid List.concatenate binding: {kind:?}")
+                     };
+                     let concat = tagged(tag, json!({"name":name,"tys":[elem.clone()],"effs":effs}));
++                    let list_ty = self.node_ty(v.id);
++                    let concat_ty = json!({"fn":{"params":[list_ty,list_ty],"ret":list_ty,"eff":[]}});
++                    let concat = self.located_type(v.id, v.span, concat_ty, concat);
+                     tagged(
+                         "listSpread",
+                         json!({"elem":elem,"concat":concat,"before":before,"spread":spread,"after":after}),
+@@ -1315,16 +1333,18 @@ impl Surface<'_> {
+                             "kind":kind,"align":align,"sign":sign,"alternate":spec.alternate,
+                             "zero":spec.zero,"width":spec.width,"precision":spec.precision}}),
+                         ));
+-                        converters
+-                            .push(tagged("primName", json!({"name":name,"tys":[],"effs":[]})));
++                        let converter = tagged("primName", json!({"name":name,"tys":[],"effs":[]}));
++                        let converter_ty = json!({"fn":{"params":[self.ty(ty)],"ret":{"base":{"name":"String"}},"eff":[]}});
++                        converters.push(self.located_type(s.expr.id(), s.span, converter_ty, converter));
+                     } else if *b == BuiltinTypeId::STRING {
+                         parts.push(json!("stringExpr"));
+                     } else {
+                         let id = table::interpolation_builtin(*b).unwrap();
+                         let name = builtins::builtin_decl(id).unwrap().name;
+                         parts.push(tagged("converted", json!({"ty":self.ty(ty)})));
+-                        converters
+-                            .push(tagged("primName", json!({"name":name,"tys":[],"effs":[]})));
++                        let converter = tagged("primName", json!({"name":name,"tys":[],"effs":[]}));
++                        let converter_ty = json!({"fn":{"params":[self.ty(ty)],"ret":{"base":{"name":"String"}},"eff":[]}});
++                        converters.push(self.located_type(s.expr.id(), s.span, converter_ty, converter));
+                     }
+                     parts.push(tagged("text", json!({"value":s.tail})));
+                 }
+@@ -1578,7 +1598,8 @@ impl Surface<'_> {
+             let expr = self.with_binds(rest, block, &local, position);
+             tagged("last", json!({"expr":expr}))
+         };
+-        tagged("withE", json!({"o":o,"bound":bound,"body":body}))
++        let value = tagged("withE", json!({"o":o,"bound":bound,"body":body}));
++        self.located(first.id, first.span, value)
+     }
+     fn call(&mut self, v: &a::CallExpr, env: &[SurfaceSlot]) -> Value {
+         if let Some(op) = self.p.types.builder_ops.get(v.id).cloned() {
+@@ -1638,7 +1659,7 @@ impl Surface<'_> {
+         self.node_ty(v.id);
+         let cond = self.expr(&v.cond, env);
+         let yes = self.block(&v.then_block, env, position);
+-        match &v.else_branch {
++        let value = match &v.else_branch {
+             Some(a::ElseBranch::Block(b)) => {
+                 let no = self.block(b, env, position);
+                 tagged("ite", json!({"cond":cond,"yes":yes,"no":no}))
+@@ -1648,7 +1669,8 @@ impl Surface<'_> {
+                 tagged("elseIf", json!({"cond":cond,"yes":yes,"no":no}))
+             }
+             None => tagged("ifOnly", json!({"cond":cond,"yes":yes})),
+-        }
++        };
++        self.located(v.id, v.span, value)
+     }
+     fn block(&mut self, b: &a::Block, env: &[SurfaceSlot], position: Position) -> Value {
+         self.statements(&b.stmts, env, position)
+@@ -2371,10 +2393,11 @@ fn getter_definition(
+ }
+ 
+ // 表層の本体は名前だけを保持する。依存先の範囲判定は使用時に伝播する。
+-fn constant_table(
++fn constant_table_recorded(
+     p: &CheckedProgram,
+     core: &c::CoreProgram,
+     coverage: &mut CoverageExport,
++    record_origins: bool,
+ ) -> ConstantTable {
+     let mut entries = BTreeMap::new();
+     for d in &core.consts {
+@@ -2395,6 +2418,7 @@ fn constant_table(
+         assert_eq!(p.types.decl_types.get(d.binding).unwrap().ret, d.ty);
+         let mut s = Surface::new(p, None, Vec::new());
+         s.closed_constant = true;
++        s.record_origins = record_origins;
+         let ty = s.ty(&d.ty);
+         let body = s.expr(&decl.value, &[]);
+         for item in s
+@@ -2434,13 +2458,60 @@ fn constant_table(
+     table
+ }
+ 
++/// 独立交換用。既存六入口の本文・sidecarへ対応や解析結果を混ぜない。
++pub(super) fn interval_definitions(p: &CheckedProgram, core: &c::CoreProgram) -> Vec<Value> {
++    let constants = constant_table_recorded(p, core, &mut CoverageExport::default(), true);
++    let mut output = Vec::new();
++    for (index, ast) in p.asts.iter().enumerate() {
++        let module = p.modules.get(ModuleId(u32::try_from(index).unwrap())).unwrap();
++        if matches!(module.kind, benitoite::modules::ModuleKind::Prelude | benitoite::modules::ModuleKind::Stdlib) {
++            continue;
++        }
++        let module_name = module.name.dotted();
++        for (position, decl) in ast.decls.iter().enumerate() {
++            let mut emit = |node, method: Option<usize>, function: Option<&a::FnDecl>, constant: Option<&a::ConstDecl>| {
++                let binding = *p.resolved.decls.get(node).unwrap();
++                let scheme = p.types.decl_types.get(binding).unwrap();
++                let declaration = p.resolved.bindings.get(binding).unwrap();
++                let name = match method {
++                    Some(method) => format!("{module_name}%impl:{position}:{method}:{}", declaration.name),
++                    None => format!("{module_name}.{}", declaration.name),
++                };
++                let mut surface = Surface::new(p, Some(scheme.ret.clone()), Vec::new());
++                surface.constants = Some(&constants);
++                surface.record_origins = true;
++                let params: Vec<_> = scheme.params.iter().map(|ty|surface.ty(ty)).collect();
++                let ty = surface.ty(&scheme.ret);
++                let body = if let Some(f) = function {
++                    let mut env: Vec<_> = (0..scheme.class_constraints.len()).map(SurfaceSlot::Dictionary).collect();
++                    env.extend(f.params.iter().map(|param|SurfaceSlot::Local(surface.declaration(param.id))));
++                    surface.block(f.body.as_ref().unwrap(), &env, Position::Tail)
++                } else {
++                    tagged("last", json!({"expr":surface.expr(&constant.unwrap().value, &[])}))
++                };
++                output.push(json!({"module":module_name,"name":name,"kind":if constant.is_some(){"constant"}else{"function"},
++                    "params":params,"type":ty,"body":body,"constants":constants.json(),"outside":surface.outside}));
++            };
++            match &decl.item {
++                a::Item::Fn(f) if f.body.is_some() => emit(f.id,None,Some(f),None),
++                a::Item::Const(c) => emit(c.id,None,None,Some(c)),
++                a::Item::Impl(i) => for (method,f) in i.fns.iter().enumerate() {
++                    if f.decl.body.is_some() { emit(f.decl.id,Some(method),Some(&f.decl),None); }
++                },
++                _ => {}
++            }
++        }
++    }
++    output
++}
++
+ /// 表層とコアの定義、定数、網羅性の入力を最終形式で書き出す。
+ pub fn definitions(
+     p: &CheckedProgram,
+     core: &c::CoreProgram,
+ ) -> (Vec<Value>, Value, CoverageExport) {
+     let mut coverage = CoverageExport::default();
+-    let constants = constant_table(p, core, &mut coverage);
++    let constants = constant_table_recorded(p, core, &mut coverage, false);
+     let mut result = Vec::new();
+     for d in &core.defs {
+         if d.origin != c::DefOrigin::User {
+diff --git a/crates/benitoite/tests/desugar_export/interval.rs b/crates/benitoite/tests/desugar_export/interval.rs
+index 58718929..dfc5ac67 100644
+--- a/crates/benitoite/tests/desugar_export/interval.rs
++++ b/crates/benitoite/tests/desugar_export/interval.rs
+@@ -2,6 +2,9 @@
+ use super::*;
+ use benitoite::resolve::BindingKind;
+ 
++#[path = "interval/source.rs"]
++mod source;
++
+ const RANGE_BUDGET_CASES: &[(&str, &str)] = &[
+     ("rangeCall", include_str!("interval/rangeCall.bnt")),
+     ("rangeSaved", include_str!("interval/rangeSaved.bnt")),
+@@ -268,3 +271,41 @@ fn assert_range_types(binding: &Value) {
+         assert_eq!(call["argumentTypes"], json!(args), "{call}");
+     }
+ }
++
++// 関門: 同じ実ソースの通常解析と既存Surface交換の順・元演算の対応を照合する。
++// 定数展開、未到達、独立入力、別本体で順や由来がずれれば失敗する。
++// 既存の六入口は解析の訪問表を読まない。sinkは計画で認めた任意の内部観測だけ。
++#[test]
++fn export_interval_identity() {
++    let output = export_directory("interval-identity");
++    fs::create_dir_all(&output).unwrap();
++    let cases = [
++        ("point", "const point: Integer = 42"),
++        ("division", "function division() -> Integer\n return 8 div 0\nend function"),
++        ("flow", "const zero: Integer = 0\nfunction flow(x: Integer) -> Integer\n bind alias <- zero\n return if x = 0 then 8 div x else if false then 9 mod 0 else alias end if end if\nend function"),
++        ("independent", "function independent() -> List[Integer]\n return [block bind x <- 0\n 8 div x end block]\nend function"),
++        ("lambda", "function nested() -> (function() -> Integer)\n return lambda() return 8 div 0 end lambda\nend function"),
++        ("spread", "function spread(xs: List[Integer]) -> List[Integer]\n return [1, ..xs, 3]\nend function"),
++    ];
++    let mut records = Vec::new();
++    for (label,text) in cases {
++        let (checked,observed) = benitoite::typeck::observe_intervals(||pipeline::check_text_on_current_thread(
++            label,text.as_bytes(),CheckOptions { require_main:false,deny_warnings:false }));
++        assert_eq!(checked.error_count(),0,"{label}: {:?}",checked.diagnostics);
++        let p = checked.program.as_ref().unwrap();
++        let core = pipeline::desugar_checked(p).unwrap();
++        let definitions = exchange::interval_definitions(p,&core);
++        for raw in definitions {
++            let actual = observed.iter().find(|entry|entry["definition"]==raw["name"]).unwrap_or_else(||panic!("missing {}: {observed:?}",raw["name"]));
++            let connected = source::connect(&raw,actual);
++            records.push(json!({"name":raw["name"],"correspondence":connected.correspondence,"candidates":connected.candidates}));
++            if label=="point" {
++                let zero = json!({"operations":"0","temporary":"0","saved":"0","peak":"0"});
++                let expected = json!({"integer":{"closed":["42","42"]},"boolean":[false,false],"other":false,"mayFail":false,
++                    "warnings":[],"coverage":"complete","after":{"body":zero,"whole":{"operations":"8","saved":"3","peak":"7"}}});
++                fs::write(output.join("point.json"),exchange::to_vec(&source::corpus(&raw,connected,expected)).unwrap()).unwrap();
++            }
++        }
++    }
++    fs::write(output.join("correspondence.json"),exchange::to_vec(&json!(records)).unwrap()).unwrap();
++}
+diff --git a/crates/benitoite/src/typeck/interval/observation.rs b/crates/benitoite/src/typeck/interval/observation.rs
+new file mode 100644
+index 00000000..8e00540b
+--- /dev/null
++++ b/crates/benitoite/src/typeck/interval/observation.rs
+@@ -0,0 +1,65 @@
++//! 独立交換の照合用の任意の記録先（設計書 02-05「区間解析の式の識別」）。
++//! 解析済みの対応だけを読む。無効時は複写・確保も予算操作も行わない。
++
++use super::{BodyReport, arithmetic::Candidate, identity::IdentityMap};
++use serde_json::{Value, json};
++use std::cell::RefCell;
++
++fn span(s: crate::base::Span) -> Value {
++    json!([s.file.0, s.start.0, s.end.0])
++}
++
++thread_local! {
++    static SINK: RefCell<Option<Vec<Value>>> = const { RefCell::new(None) };
++}
++
++struct Restore(Option<Vec<Value>>);
++impl Drop for Restore {
++    fn drop(&mut self) {
++        SINK.with(|sink| *sink.borrow_mut() = self.0.take());
++    }
++}
++
++/// 同じスレッドの通常の検査を観測する内部用入口。入れ子と panic でも元に戻す。
++/// AST の参照を保存せず、利用者の診断や解析の予算には影響しない。
++#[doc(hidden)]
++pub fn observe_intervals<T>(work: impl FnOnce() -> T) -> (T, Vec<Value>) {
++    let restore = Restore(SINK.with(|sink| sink.replace(Some(Vec::new()))));
++    let result = work();
++    let records = SINK.with(|sink| sink.borrow_mut().take()).unwrap_or_default();
++    drop(restore);
++    (result, records)
++}
++
++fn candidate(c: &Candidate) -> Value {
++    json!({"preorder":c.preorder.to_string(), "node":c.origin.node.0,
++        "primary":span(c.primary), "operation":format!("{:?}", c.operation),
++        "cause":match c.cause {
++            super::arithmetic::Cause::Overflow => "overflow",
++            super::arithmetic::Cause::ZeroDivisor => "zeroDivisor",
++            super::arithmetic::Cause::OutsideDomain => "outsideDomain",
++        }})
++}
++
++pub(super) fn record(identity: &IdentityMap<'_>, report: &BodyReport) {
++    SINK.with(|sink| {
++        let mut sink = sink.borrow_mut();
++        let Some(records) = sink.as_mut() else { return };
++        let occurrences: Vec<_> = (0..identity.occurrences.len())
++            .filter_map(|i| identity.occurrences.get(i))
++            .map(|e| json!({"preorder":e.preorder.to_string(),
++                "parent":e.parent.map(|n| n.to_string()), "end":e.end.map(|n| n.to_string()),
++                "form":format!("{:?}",e.form), "node":e.origin.map(|o|o.node.0),
++                "span":e.origin.map(|o|span(o.span))}))
++            .collect();
++        let candidates: Vec<_> = report.flow.as_ref().into_iter()
++            .flat_map(|flow| &flow.candidates).map(candidate).collect();
++        let independent: Vec<_> = report.flow.as_ref().into_iter()
++            .flat_map(|flow| &flow.independent)
++            .map(|input|json!({"start":input.start.to_string(),
++                "candidates":input.candidates.iter().map(candidate).collect::<Vec<_>>()})).collect();
++        records.push(json!({"definition":identity.definition, "occurrences":occurrences,
++            "next":identity.next.to_string(), "coverage":format!("{:?}",report.coverage),
++            "candidates":candidates,"independent":independent}));
++    });
++}
+diff --git a/crates/benitoite/tests/desugar_export/interval/source.rs b/crates/benitoite/tests/desugar_export/interval/source.rs
+new file mode 100644
+index 00000000..3700d882
+--- /dev/null
++++ b/crates/benitoite/tests/desugar_export/interval/source.rs
+@@ -0,0 +1,175 @@
++//! Surface の宣言順を独立に辿り、通常解析が取得した接頭辞と照合する。
++use super::*;
++use std::collections::BTreeMap;
++
++pub(super) struct Connected {
++    pub definition: Value,
++    pub correspondence: Vec<Value>,
++    pub candidates: Value,
++}
++
++fn strip(value: &Value) -> Value {
++    if value.get("$interval").is_some() {
++        return strip(&value["expr"]);
++    }
++    match value {
++        Value::Array(xs) => json!(xs.iter().map(strip).collect::<Vec<_>>()),
++        Value::Object(xs) => Value::Object(xs.iter().map(|(k,v)|(k.clone(),strip(v))).collect()),
++        _ => value.clone(),
++    }
++}
++
++struct Walk<'a> {
++    name: &'a str,
++    constants: BTreeMap<String, Value>,
++    active: std::collections::BTreeSet<String>,
++    entries: Vec<Value>,
++}
++
++impl Walk<'_> {
++    fn block(&mut self, block: &Value, parent: usize) {
++        if block == "empty" { return; }
++        let (tag, fields) = block.as_object().unwrap().iter().next().unwrap();
++        match tag.as_str() {
++            "builderBind" => self.block(&fields["rest"],parent),
++            "last" | "lastBind" | "lastDiscard" | "lastPat" => self.expr(&fields["expr"],Some(parent),None),
++            "bind" | "discard" | "seq" | "bindPat" => {
++                self.expr(&fields["expr"],Some(parent),None);
++                self.block(&fields["rest"],parent);
++            }
++            _ => panic!("unknown Surface Block: {tag}"),
++        }
++    }
++    fn list(&mut self, list: &Value, parent: usize) {
++        for e in list.as_array().unwrap() { self.expr(e,Some(parent),None); }
++    }
++    fn holes(&mut self, args: &Value, parent: usize) {
++        for arg in args.as_array().unwrap() {
++            if let Some(e) = arg.get("expr") { self.expr(&e["inner"],Some(parent),None); }
++            else { assert!(arg.get("hole").is_some(),"unknown HoleArg {arg}"); }
++        }
++    }
++    fn expr(&mut self, wrapped: &Value, parent: Option<usize>, root_type: Option<&Value>) {
++        let (value, metadata) = if root_type.is_some() { (wrapped,Value::Null) } else {
++            assert!(wrapped.get("$interval").is_some(),"missing source correspondence: {wrapped}");
++            (&wrapped["expr"],wrapped["$interval"].clone())
++        };
++        let (tag, fields) = if value == "unit" { ("unit",&Value::Null) } else {
++            let obj = value.as_object().unwrap();
++            assert_eq!(obj.len(),1,"Surface expression {value}");
++            let (tag,fields) = obj.iter().next().unwrap(); (tag.as_str(),fields)
++        };
++        let form = match tag {
++            "constName" => "Const", "lam" => "Lambda", "ite" => "IfElse", "matchE" => "Match",
++            "returnE" => "Return", "tryResultReturn" => "TryResult", "tryOptionReturn" => "TryOption",
++            "withE" => "With", "lazyE" => "Lazy", "handleE" => "Handle",
++            "literal" if fields["value"]["integer"]["value"].as_i64().is_some_and(|n|n<0) => "NegInt",
++            other => {
++                let mut chars = other.chars();
++                // The constructor spelling is the public Surface spelling; only its initial is capitalized.
++                let form = format!("{}{}",chars.next().unwrap().to_uppercase(),chars.as_str());
++                let index = self.entries.len();
++                self.push(index,parent,&metadata,root_type,form,value);
++                self.children(tag,fields,index);
++                self.entries[index]["end"] = json!(self.entries.len().to_string());
++                return;
++            }
++        };
++        let index = self.entries.len();
++        self.push(index,parent,&metadata,root_type,form.to_owned(),value);
++        self.children(tag,fields,index);
++        self.entries[index]["end"] = json!(self.entries.len().to_string());
++    }
++    fn push(&mut self,index:usize,parent:Option<usize>,metadata:&Value,root_type:Option<&Value>,form:String,value:&Value) {
++        self.entries.push(json!({"preorder":index.to_string(),"parent":parent.map(|n|n.to_string()),
++            "form":form,"node":metadata["node"],"span":metadata["span"],
++            "type":root_type.unwrap_or(&metadata["type"]),"expression":strip(value)}));
++    }
++    fn children(&mut self,tag:&str,f:&Value,parent:usize) {
++        match tag {
++            "local" | "funName" | "funDicts" | "methName" | "primName" | "opName" | "opDicts" | "raise" |
++            "nullCon" | "conValue" | "literal" | "negInt" | "negFloat" | "negDecimal" | "negInteger8" |
++            "negInteger16" | "negInteger32" | "negFloat32" | "unit" => {},
++            "constName" => {
++                let name = f["name"].as_str().unwrap();
++                assert!(self.active.insert(name.to_owned()),"cyclic constant {name}");
++                let body = self.constants.get(name).unwrap().clone();
++                self.expr(&body,Some(parent),None);
++                self.active.remove(name);
++            }
++            "builderOp" | "conCall" | "record" => self.list(&f["args"],parent),
++            "list" => self.list(&f["elems"],parent),
++            "paren" | "neg" | "not" | "returnE" | "tryResult" | "tryResultReturn" | "tryOption" | "tryOptionReturn" | "resume" => self.expr(&f["inner"],Some(parent),None),
++            "block" | "lam" | "lazyE" => self.block(&f["body"],parent),
++            "handleFail" => { self.block(&f["body"],parent); self.block(&f["clause"],parent); },
++            "recordUpdate" => { self.expr(&f["base"],Some(parent),None); self.list(&f["args"],parent); },
++            "call" => { self.expr(&f["callee"],Some(parent),None); self.list(&f["args"],parent); },
++            "pipe" | "binary" | "and" | "or" => { self.expr(&f["lhs"],Some(parent),None); self.expr(&f["rhs"],Some(parent),None); },
++            "partialCall" => { self.expr(&f["callee"],Some(parent),None); self.holes(&f["args"],parent); },
++            "partialCon" => self.holes(&f["args"],parent),
++            "listSpread" => { self.expr(&f["concat"],Some(parent),None); self.list(&f["before"],parent); self.expr(&f["spread"],Some(parent),None); self.list(&f["after"],parent); },
++            "interpolation" => { self.list(&f["es"],parent); self.list(&f["converters"],parent); },
++            "ite" => { self.expr(&f["cond"],Some(parent),None); self.block(&f["yes"],parent); self.block(&f["no"],parent); },
++            "elseIf" => { self.expr(&f["cond"],Some(parent),None); self.block(&f["yes"],parent); self.expr(&f["no"],Some(parent),None); },
++            "ifOnly" => { self.expr(&f["cond"],Some(parent),None); self.block(&f["yes"],parent); },
++            "matchE" => {
++                self.expr(&f["scrutinee"],Some(parent),None);
++                for arm in f["arms"].as_array().unwrap() {
++                    let arm = &arm["mk"];
++                    if !arm["guard"].is_null() { self.expr(&arm["guard"],Some(parent),None); }
++                    self.block(&arm["body"],parent);
++                }
++            },
++            "tryResultDie" | "tryOptionDie" => { self.expr(&f["inner"],Some(parent),None); if !f["message"].is_null() { self.expr(&f["message"],Some(parent),None); } },
++            "withE" => { self.expr(&f["bound"],Some(parent),None); self.block(&f["body"],parent); },
++            "handleE" => { self.block(&f["body"],parent); for clause in f["clauses"].as_array().unwrap() { self.block(&clause["body"],parent); } },
++            _ => panic!("unknown Surface Expr {tag} in {}",self.name),
++        }
++    }
++}
++
++pub(super) fn connect(raw: &Value, observed: &Value) -> Connected {
++    assert_eq!(raw["outside"],json!([]),"out-of-scope Surface {}",raw["name"]);
++    assert_eq!(raw["name"],observed["definition"]);
++    let name = raw["name"].as_str().unwrap();
++    let mut walk = Walk { name, constants:raw["constants"].as_array().unwrap().iter()
++        .map(|entry|(entry["name"].as_str().unwrap().to_owned(),entry["body"].clone())).collect(),
++        active:Default::default(),entries:Vec::new() };
++    walk.expr(&json!({"block":{"body":raw["body"]}}),None,Some(&raw["type"]));
++    let actual = observed["occurrences"].as_array().unwrap();
++    assert!(actual.len()<=walk.entries.len());
++    for (actual,expected) in actual.iter().zip(&walk.entries) {
++        for field in ["preorder","parent","form","node","span"] {
++            assert_eq!(actual[field],expected[field],"{name} key {} field {field}",actual["preorder"]);
++        }
++        if !actual["end"].is_null() { assert_eq!(actual["end"],expected["end"],"{name} subtree end"); }
++    }
++    assert_eq!(observed["next"],actual.len().to_string());
++    if observed["coverage"]=="Prepared" { assert_eq!(actual.len(),walk.entries.len(),"{name} missing suffix"); }
++    // 候補は表全体を照合した後にだけ複写する。独立入力自身の候補も捨てない。
++    let mut candidates = observed["candidates"].as_array().unwrap().clone();
++    for independent in observed["independent"].as_array().unwrap() {
++        candidates.extend(independent["candidates"].as_array().unwrap().iter().cloned());
++    }
++    for candidate in &candidates {
++        let index:usize = candidate["preorder"].as_str().unwrap().parse().unwrap();
++        assert_eq!(candidate["node"],walk.entries[index]["node"],"{name} candidate source");
++    }
++    let types:Vec<_> = walk.entries.iter().map(|entry|json!({"key":[name,entry["preorder"]],"type":entry["type"]})).collect();
++    let source_keys:Vec<_> = walk.entries.iter().filter(|entry| {
++        let e = &entry["expression"];
++        let ty = if entry["form"]=="Neg" { &e["neg"]["operand"] } else { &e["binary"]["operand"] };
++        let arithmetic = matches!(e["binary"]["op"].as_str(),Some("add"|"sub"|"mul"|"intDiv"|"mod")) || entry["form"]=="Neg";
++        arithmetic && matches!(ty["base"]["name"].as_str(),Some("Integer"|"Integer8"|"Integer16"|"Integer32"|"UnsignedInteger16"|"UnsignedInteger32"|"UnsignedInteger64"))
++    }).map(|entry|json!([name,entry["preorder"]])).collect();
++    Connected { definition:json!({"name":name,"kind":raw["kind"],"params":raw["params"],"type":raw["type"],"body":strip(&raw["body"]),"types":types,"sourceKeys":source_keys}),
++        correspondence:walk.entries,candidates:json!({"parent":observed["candidates"],"independent":observed["independent"]}) }
++}
++
++pub(super) fn corpus(raw:&Value, mut connected:Connected, expected:Value) -> Value {
++    connected.definition["expected"] = expected;
++    json!({"kind":"interval-corpus","version":1,"surfaceVersion":14,"traversalVersion":1,"profile":"base",
++        "inputs":[{"name":raw["name"],"fuel":"200","limits":{"body":{"operations":"100000","items":"100000"},"whole":{"operations":"1000000","items":"1000000"}},
++            "initial":{"body":{"operations":"0","temporary":"0","saved":"0","peak":"0"},"whole":{"operations":"0","saved":"0","peak":"0"}},
++            "constants":strip(&raw["constants"]),"standards":[],"apiAt":[],"modules":[{"name":raw["module"],"definitions":[connected.definition]}]}]})
++}

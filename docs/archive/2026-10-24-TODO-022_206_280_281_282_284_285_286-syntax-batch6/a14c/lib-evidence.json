@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-25",
+  "judge": "A14c の実装担当",
+  "base": "c60e47fe6782b21e49f2e5465c37feaba8d96781",
+  "head": "c60e47fe6782b21e49f2e5465c37feaba8d96781",
+  "dirty": true,
+  "uncommitted_diff": "lib-success.patch",
+  "diff_sha256": "ba4177e8350c8cf3765aab0eb7763878f4516ed2044cce096f12d1b4f785b742",
+  "untracked_library_inputs": [],
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "c60e47fe6782b21e49f2e5465c37feaba8d96781",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally",
+    "--test",
+    "*"
+  ],
+  "library_command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib"
+  ],
+  "configuration": "既定の Cargo test profile、既定機能の lib 全件",
+  "toolchains": {
+    "rust": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+  },
+  "library_inputs": "lib-inputs-sha256.json",
+  "frozen_before_run": "work-after-inputs-sha256.json",
+  "status": 0,
+  "passed": 1307,
+  "failed": 0,
+  "ignored": 21,
+  "test_seconds": 70.9,
+  "outer": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "c60e47fe6782b21e49f2e5465c37feaba8d96781",
+      "--only",
+      "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally",
+      "--test",
+      "*"
+    ],
+    "exit": 1,
+    "seconds": 128.679
+  },
+  "source_log": "work-after.log",
+  "time_log": "work-after-time.log",
+  "environment_limit": "/usr/bin/time -l は sysctl kern.clockrate: Operation not permitted。最大常駐量は取得不能。検査本体の終了と別。",
+  "changes_after_success": [
+    "tests/declarations.rs の既存の警告の一行を Lean に合わせる。以後の編集は結果・証拠・ログだけ。"
+  ],
+  "same_relation_state_reason": "lib 全件の成功後、本番 Rust・lib テスト・固定表・生成元・Cargo と構成は変更しない。成功した実行前から凍結した変更入力15ファイルは全件一致し、以後の実装変更は lib に含まれない統合ターゲット tests/declarations.rs だけである。未変更の入力は基準と同じで、未追跡の lib 入力はない。後の状態で lib 関係入力を全件ハッシュ照合する。",
+  "final_diff_sha256": "21e97d06272284e30d6016b1e4174ac2c916f1a939efa9109153c5831664605b",
+  "final_changed_files": [
+    "crates/benitoite/src/typeck/interval/domain.rs",
+    "crates/benitoite/src/typeck/interval/environment.rs",
+    "crates/benitoite/src/typeck/interval/flow.rs",
+    "crates/benitoite/src/typeck/interval/flow/matching.rs",
+    "crates/benitoite/src/typeck/interval/flow/widths/tests.rs",
+    "crates/benitoite/src/typeck/interval/tests.rs",
+    "crates/benitoite/src/typeck/interval/tests/budget_reference.rs",
+    "crates/benitoite/testdata/interval-budget/README.md",
+    "crates/benitoite/testdata/interval-budget/body.tsv",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean",
+    "crates/benitoite/testdata/interval-budget/summary.tsv",
+    "crates/benitoite/testdata/interval-budget/whole.tsv",
+    "crates/benitoite/tests/declarations.rs",
+    "docs/design/02-impl/02-05-typechecker.md"
+  ],
+  "final_input_hashes": "final-inputs-sha256.json",
+  "untracked_inputs_sha256": {},
+  "final_input_check": {
+    "library_files": 4038,
+    "all_equal": true,
+    "work_input_files": 16
+  },
+  "checks_after_library_success": [
+    "declarations の単独テスト成功",
+    "work-final の fmt・lint・全40統合・ソース規約・生成物・仕様集計が成功"
+  ]
+}

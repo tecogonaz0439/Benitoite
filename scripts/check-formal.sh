@@ -1,6 +1,6 @@
 #!/bin/bash
 # Lean の証明、脱糖・宣言表・網羅性の差分検査と型検査済みの全定義の検査。
-# 出力は target/desugar-diff/ と target/coverage-diff/ に保持する。macOS /bin/bash 3.2 で動く。
+# 出力は target/{desugar,coverage,interval}-diff/ に保持する。macOS /bin/bash 3.2 で動く。
 # 形式化の内側では、処理系より先に定義・証明・01-12 の写しをそろえ、sorry のない既定の
 # lake build と定義・言明・仮定のレビューを完了する。本スクリプトの全比較は、Rust と Lean の
 # 接続を閉じる区切りと最終の関係状態に割り当て、同じ状態への成功は引用できる。
@@ -36,6 +36,15 @@ if [ "$coverage_dir" = "$output_dir" ]; then
     exit 2
 fi
 export BENITOITE_COVERAGE_DIFF_DIR="$coverage_dir"
+interval_dir="${BENITOITE_INTERVAL_DIFF_DIR:-$repo_root/target/interval-diff/run-$$}"
+case "$interval_dir" in
+    /*) ;;
+    *) interval_dir="$repo_root/$interval_dir" ;;
+esac
+# リンク・..・親子関係も含めて三出力先の衝突を拒み、以前の報告を混ぜない。
+python3 -B scripts/check/formal_interval.py prepare \
+    --interval-dir "$interval_dir" --desugar-dir "$output_dir" --coverage-dir "$coverage_dir"
+export BENITOITE_INTERVAL_DIFF_DIR="$interval_dir"
 
 build_start=$SECONDS
 printf '%s\n' '== formal: lake build'
@@ -100,6 +109,11 @@ printf '%s\n' '== formal: lake build surfaceCheckAll'
 (cd formal && lake build surfaceCheckAll)
 printf 'lake build surfaceCheckAll: %ss\n' "$((SECONDS - surface_build_start))"
 
+interval_build_start=$SECONDS
+printf '%s\n' '== formal: lake build intervalDiff'
+(cd formal && lake build intervalDiff)
+printf 'lake build intervalDiff: %ss\n' "$((SECONDS - interval_build_start))"
+
 width_exchange_start=$SECONDS
 printf '%s\n' '== formal: width exchange'
 python3 -I formal/tests/test_width_exchange.py
@@ -137,8 +151,35 @@ printf 'batch4 independent exchange: %ss\n' "$((SECONDS - batch4_start))"
 
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'
-cargo test --test desugar_export -- --include-ignored --nocapture
+# 区間専用の四書き出しは次の段でそれぞれ別の出力先へ渡す。
+cargo test --test desugar_export -- --include-ignored --nocapture --skip export_interval
 printf 'Rust export (including cargo): %ss\n' "$((SECONDS - export_start))"
+
+interval_start=$SECONDS
+printf '%s\n' '== formal: Rust interval exports'
+for entry in identity manifest range vm; do
+    BENITOITE_DESUGAR_DIFF_DIR="$interval_dir/$entry" \
+        cargo test --test desugar_export "export_interval_$entry" -- --nocapture
+done
+# VM 比較で起動する実 CLI を、この関係状態から用意する。
+cargo build -p benitoite --bin benitoite
+python3 -B scripts/check/formal_interval.py collect \
+    --interval-dir "$interval_dir" --desugar-dir "$output_dir" --coverage-dir "$coverage_dir"
+printf '%s\n' '== formal: interval independent/Rust/eval/VM comparison'
+python3 -B formal/tests/test_interval_exchange.py \
+    --output "$interval_dir/comparison" --source-dir "$interval_dir/identity" \
+    --rust-dir "$interval_dir/programs" \
+    --rust-dir "$interval_dir/identity" \
+    --rust-dir "$interval_dir/manifest/manifest-interval" \
+    --rust-dir "$interval_dir/range/interval" \
+    --rust-dir "$interval_dir/vm/original" \
+    --rust-dir "$interval_dir/vm/instrumented" \
+    --rust-dir "$interval_dir/vm/range/original" \
+    --rust-dir "$interval_dir/vm/range/instrumented" \
+    --rust-dir "$interval_dir/vm/shifts/original" \
+    --rust-dir "$interval_dir/vm/shifts/instrumented" \
+    --vm-dir "$interval_dir/vm" --cli "$repo_root/target/debug/benitoite"
+printf 'interval comparison: %ss; reports: %s/comparison/\n' "$((SECONDS - interval_start))" "$interval_dir"
 
 batch3_start=$SECONDS
 printf '%s\n' '== formal: batch3/batch4 Rust exchange'
@@ -182,4 +223,12 @@ printf '%s\n' '== formal: per-program final Rust exports'
 # 全件の報告が揃ってから、入力の対応と六入口の件数も照合する。
 python3 -I crates/benitoite/tests/desugar_export/check_named.py "$output_dir" "$coverage_dir"
 printf 'final exports: %ss; reports: %s/named-*-report.json\n' "$((SECONDS - named_export_start))" "$output_dir"
+if [ "$status" -ne 0 ]; then
+    exit "$status"
+fi
+# 六入口の最終照合を通してから、全入力・報告のハッシュと件数を確定して読み戻す。
+python3 -B scripts/check/formal_interval.py manifest \
+    --interval-dir "$interval_dir" --desugar-dir "$output_dir" --coverage-dir "$coverage_dir"
+python3 -B scripts/check/formal_interval.py verify \
+    --interval-dir "$interval_dir" --desugar-dir "$output_dir" --coverage-dir "$coverage_dir"
 exit "$status"

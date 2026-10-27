@@ -1,0 +1,57 @@
+== plan: level work against 2878da41c88ad296c7d6d4e2a6eec63c64412bcb (changed files not classified) (partial selection: --only fmt,lint_default,tests_related)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test desugar_export
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+    Checking benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.51s
+== tests_related
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 34 tests
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch3::export_batch3_scope ... ok
+test batch5::export_batch5_formats ... ok
+test batch3::export_batch3_solve ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test batch3::export_batch4_log_standard ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_independent_program_exchange ... ok
+test export_batch2_character ... ok
+test export_batch2_failure ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_named_declarations_smoke ... ok
+test export_named_types_smoke ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test export_width_smoke ... ok
+test named::export_extensible_package ... ok
+test named::export_extensible_source ... ok
+test export_batch2_op ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_named_calls_smoke ... ok
+test named::export_named_static_calls_smoke ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_generated_record_property ... ok
+test batch3::export_batch3_builders ... ok
+test named::export_general_named_programs ... ok
+test interval::export_interval_range ... ok
+test export_interval_identity ... ok
+test export_interval_manifest ... ok
+
+test result: ok. 33 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 6.36s
+
+selected checks passed
+       20.63 real        56.45 user        21.76 sys
+time: sysctl kern.clockrate: Operation not permitted

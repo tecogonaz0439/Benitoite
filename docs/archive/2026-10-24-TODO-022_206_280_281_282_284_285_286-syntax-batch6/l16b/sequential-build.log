@@ -1,0 +1,2902 @@
+
+$ lake build Benitoite.Interval.Domain
+Build completed successfully (14 jobs).
+
+exit=0, seconds=0.149
+
+$ lake build Benitoite.Interval.Identity
+Build completed successfully (49 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.Eval
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.161
+
+$ lake build Benitoite.Interval.Environment
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.Arithmetic
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.Analyze
+Build completed successfully (55 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.Budget
+Build completed successfully (15 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.BudgetScan
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.Flow
+⚠ [54/54] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (54 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetEnvironment
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetPatterns
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.Sound
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [57/57] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetWalk
+⚠ [56/62] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/62] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (62 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetIndependentRun
+⚠ [56/63] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/63] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (63 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetChildren
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.BudgetAnalyze
+⚠ [56/65] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/65] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (65 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetProof
+⚠ [56/66] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/66] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (66 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetTraversal
+⚠ [56/67] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/67] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (67 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.BudgetNormal
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/68] Built Benitoite.Interval.BudgetNormal (15s)
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (68 jobs).
+
+exit=0, seconds=15.597
+
+$ lake build Benitoite.Interval.BudgetAnalysisExamples
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/69] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [69/69] Built Benitoite.Interval.BudgetAnalysisExamples (660ms)
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.781
+
+$ lake build Benitoite.Interval.BudgetLocated
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.151
+
+$ lake build Benitoite.Interval.BudgetCause
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/70] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/70] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [70/70] Built Benitoite.Interval.BudgetCause (540ms)
+Build completed successfully (70 jobs).
+
+exit=0, seconds=0.669
+
+$ lake build Benitoite.Interval.BudgetSound
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/71] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [71/71] Built Benitoite.Interval.BudgetSound (10s)
+Build completed successfully (71 jobs).
+
+exit=0, seconds=10.622
+
+$ lake build Benitoite.Interval.BudgetBody
+⚠ [56/72] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/72] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/72] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [72/72] Built Benitoite.Interval.BudgetBody (317ms)
+Build completed successfully (72 jobs).
+
+exit=0, seconds=0.464
+
+$ lake build Benitoite.Interval.SyntacticReach
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetReach
+⚠ [56/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/74] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [74/74] Built Benitoite.Interval.BudgetReach (1.4s)
+Build completed successfully (74 jobs).
+
+exit=0, seconds=1.505
+
+$ lake build Benitoite.Interval.BudgetIndependent
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/75] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [75/75] Built Benitoite.Interval.BudgetIndependent (1.7s)
+Build completed successfully (75 jobs).
+
+exit=0, seconds=1.819
+
+$ lake build Benitoite.Interval.BudgetIndependentSound
+⚠ [56/76] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/76] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/76] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [76/76] Built Benitoite.Interval.BudgetIndependentSound (931ms)
+Build completed successfully (76 jobs).
+
+exit=0, seconds=1.077
+
+$ lake build Benitoite.Interval.BudgetChildrenExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/77] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [77/77] Built Benitoite.Interval.BudgetChildrenExamples (394ms)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.456
+
+$ lake build Benitoite.Interval.BudgetCount
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [59/59] Built Benitoite.Interval.BudgetCount (5.2s)
+Build completed successfully (59 jobs).
+
+exit=0, seconds=5.350
+
+$ lake build Benitoite.Interval.BudgetDiscover
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [64/64] Building Benitoite.Interval.BudgetDiscover (467ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetDiscover.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscover.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscover.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetDiscover.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetDiscover.setup.json --json
+error: Benitoite/Interval/BudgetDiscover.lean:79:27: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Interval/BudgetDiscover.lean:86:15: Unknown identifier `untypedSlots`
+Some required targets logged failures:
+- Benitoite.Interval.BudgetDiscover
+error: build failed
+
+exit=1, seconds=0.567
+
+$ lake build Benitoite.Interval.Domain
+Build completed successfully (14 jobs).
+
+exit=0, seconds=0.149
+
+$ lake build Benitoite.Interval.Identity
+Build completed successfully (49 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.Eval
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.162
+
+$ lake build Benitoite.Interval.Environment
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.Arithmetic
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.Analyze
+Build completed successfully (55 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.Budget
+Build completed successfully (15 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetScan
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.Flow
+⚠ [54/54] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (54 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetEnvironment
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.149
+
+$ lake build Benitoite.Interval.BudgetPatterns
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.162
+
+$ lake build Benitoite.Interval.Sound
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [57/57] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetWalk
+⚠ [56/62] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/62] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (62 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetIndependentRun
+⚠ [56/63] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/63] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (63 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetChildren
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetAnalyze
+⚠ [56/65] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/65] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (65 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetProof
+⚠ [56/66] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/66] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (66 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetTraversal
+⚠ [56/67] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/67] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (67 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetNormal
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/68] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.161
+
+$ lake build Benitoite.Interval.BudgetAnalysisExamples
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/69] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.BudgetLocated
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.BudgetCause
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/70] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/70] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (70 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.BudgetSound
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/71] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (71 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.BudgetBody
+⚠ [56/72] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/72] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/72] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (72 jobs).
+
+exit=0, seconds=0.149
+
+$ lake build Benitoite.Interval.SyntacticReach
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.BudgetReach
+⚠ [56/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/74] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (74 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetIndependent
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/75] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (75 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetIndependentSound
+⚠ [56/76] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/76] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/76] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (76 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetChildrenExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/77] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:24: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.152
+
+$ lake build Benitoite.Interval.BudgetCount
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (59 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetDiscover
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [64/64] Building Benitoite.Interval.BudgetDiscover (475ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetDiscover.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscover.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscover.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetDiscover.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetDiscover.setup.json --json
+error: Benitoite/Interval/BudgetDiscover.lean:80:36: unexpected token '|'; expected ')', ',' or ':'
+error: Benitoite/Interval/BudgetDiscover.lean:87:15: Unknown identifier `untypedSlots`
+Some required targets logged failures:
+- Benitoite.Interval.BudgetDiscover
+error: build failed
+
+exit=1, seconds=0.566
+
+$ lake build Benitoite.Interval.Domain
+Build completed successfully (14 jobs).
+
+exit=0, seconds=0.149
+
+$ lake build Benitoite.Interval.Identity
+Build completed successfully (49 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.Eval
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.Environment
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.Arithmetic
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.Analyze
+Build completed successfully (55 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.Budget
+Build completed successfully (15 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetScan
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.Flow
+⚠ [54/54] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (54 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetEnvironment
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.161
+
+$ lake build Benitoite.Interval.BudgetPatterns
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.162
+
+$ lake build Benitoite.Interval.Sound
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [57/57] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetWalk
+⚠ [56/62] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/62] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (62 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetIndependentRun
+⚠ [56/63] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/63] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (63 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.BudgetChildren
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetAnalyze
+⚠ [56/65] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/65] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [65/65] Built Benitoite.Interval.BudgetAnalyze (493ms)
+Build completed successfully (65 jobs).
+
+exit=0, seconds=0.569
+
+$ lake build Benitoite.Interval.BudgetProof
+⚠ [56/66] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/66] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [66/66] Built Benitoite.Interval.BudgetProof (392ms)
+Build completed successfully (66 jobs).
+
+exit=0, seconds=0.458
+
+$ lake build Benitoite.Interval.BudgetTraversal
+⚠ [56/67] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/67] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [67/67] Built Benitoite.Interval.BudgetTraversal (2.5s)
+Build completed successfully (67 jobs).
+
+exit=0, seconds=2.638
+
+$ lake build Benitoite.Interval.BudgetNormal
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/68] Built Benitoite.Interval.BudgetNormal (15s)
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (68 jobs).
+
+exit=0, seconds=15.727
+
+$ lake build Benitoite.Interval.BudgetAnalysisExamples
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/69] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [69/69] Built Benitoite.Interval.BudgetAnalysisExamples (652ms)
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.776
+
+$ lake build Benitoite.Interval.BudgetLocated
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [68/68] Built Benitoite.Interval.BudgetLocated (2.5s)
+Build completed successfully (68 jobs).
+
+exit=0, seconds=2.630
+
+$ lake build Benitoite.Interval.BudgetCause
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/70] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/70] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [70/70] Built Benitoite.Interval.BudgetCause (526ms)
+Build completed successfully (70 jobs).
+
+exit=0, seconds=0.671
+
+$ lake build Benitoite.Interval.BudgetSound
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/71] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [71/71] Built Benitoite.Interval.BudgetSound (10s)
+Build completed successfully (71 jobs).
+
+exit=0, seconds=10.455
+
+$ lake build Benitoite.Interval.BudgetBody
+⚠ [56/72] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/72] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/72] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [72/72] Built Benitoite.Interval.BudgetBody (309ms)
+Build completed successfully (72 jobs).
+
+exit=0, seconds=0.462
+
+$ lake build Benitoite.Interval.SyntacticReach
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [69/69] Built Benitoite.Interval.SyntacticReach (1.9s)
+Build completed successfully (69 jobs).
+
+exit=0, seconds=1.923
+
+$ lake build Benitoite.Interval.BudgetReach
+⚠ [56/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/74] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [74/74] Built Benitoite.Interval.BudgetReach (2.0s)
+Build completed successfully (74 jobs).
+
+exit=0, seconds=2.114
+
+$ lake build Benitoite.Interval.BudgetIndependent
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/75] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [75/75] Built Benitoite.Interval.BudgetIndependent (1.7s)
+Build completed successfully (75 jobs).
+
+exit=0, seconds=1.722
+
+$ lake build Benitoite.Interval.BudgetIndependentSound
+⚠ [56/76] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/76] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/76] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [76/76] Built Benitoite.Interval.BudgetIndependentSound (1.3s)
+Build completed successfully (76 jobs).
+
+exit=0, seconds=1.392
+
+$ lake build Benitoite.Interval.BudgetChildrenExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/77] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [77/77] Built Benitoite.Interval.BudgetChildrenExamples (433ms)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.565
+
+$ lake build Benitoite.Interval.BudgetCount
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (59 jobs).
+
+exit=0, seconds=0.152
+
+$ lake build Benitoite.Interval.BudgetDiscover
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.150
+
+$ lake build Benitoite.Interval.BudgetDiscoverProof
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/70] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [70/70] Built Benitoite.Interval.BudgetDiscoverProof (2.8s)
+Build completed successfully (70 jobs).
+
+exit=0, seconds=2.962
+
+$ lake build Benitoite.Interval.BudgetDiscoveryExamples
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [71/71] Building Benitoite.Interval.BudgetDiscoveryExamples (340ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetDiscoveryExamples.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscoveryExamples.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscoveryExamples.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetDiscoveryExamples.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetDiscoveryExamples.setup.json --json
+error: Benitoite/Interval/BudgetDiscoveryExamples.lean:52:46: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Some required targets logged failures:
+- Benitoite.Interval.BudgetDiscoveryExamples
+error: build failed
+
+exit=1, seconds=0.465
+
+$ lake build Benitoite.Interval.Domain
+Build completed successfully (14 jobs).
+
+exit=0, seconds=0.148
+
+$ lake build Benitoite.Interval.Identity
+Build completed successfully (49 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.Eval
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.Environment
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.Arithmetic
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.Analyze
+Build completed successfully (55 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.Budget
+Build completed successfully (15 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetScan
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.Flow
+⚠ [54/54] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (54 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetEnvironment
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetPatterns
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.Sound
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [57/57] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetWalk
+⚠ [56/62] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/62] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (62 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetIndependentRun
+⚠ [56/63] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/63] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (63 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetChildren
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetAnalyze
+⚠ [56/65] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/65] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (65 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetProof
+⚠ [56/66] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/66] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (66 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetTraversal
+⚠ [56/67] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/67] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (67 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.BudgetNormal
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/68] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.154
+
+$ lake build Benitoite.Interval.BudgetAnalysisExamples
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/69] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.150
+
+$ lake build Benitoite.Interval.BudgetLocated
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.BudgetCause
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/70] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/70] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (70 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.BudgetSound
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/71] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (71 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetBody
+⚠ [56/72] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/72] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/72] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (72 jobs).
+
+exit=0, seconds=0.163
+
+$ lake build Benitoite.Interval.SyntacticReach
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/69] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetReach
+⚠ [56/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/74] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (74 jobs).
+
+exit=0, seconds=0.161
+
+$ lake build Benitoite.Interval.BudgetIndependent
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/75] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (75 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetIndependentSound
+⚠ [56/76] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/76] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/76] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (76 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.BudgetChildrenExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/77] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetCount
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (59 jobs).
+
+exit=0, seconds=0.158
+
+$ lake build Benitoite.Interval.BudgetDiscover
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/64] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.BudgetDiscoverProof
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/70] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (70 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetDiscoveryExamples
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [71/71] Built Benitoite.Interval.BudgetDiscoveryExamples (328ms)
+Build completed successfully (71 jobs).
+
+exit=0, seconds=0.474
+
+$ lake build Benitoite.Interval.BudgetExamples
+Build completed successfully (16 jobs).
+
+exit=0, seconds=0.156
+
+$ lake build Benitoite.Interval.BudgetIndependentExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/77] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [77/77] Built Benitoite.Interval.BudgetIndependentExamples (345ms)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.467
+
+$ lake build Benitoite.Interval.BudgetIndependentPosition
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/77] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [77/77] Built Benitoite.Interval.BudgetIndependentPosition (1.4s)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=1.500
+
+$ lake build Benitoite.Interval.BudgetScanExamples
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [59/59] Built Benitoite.Interval.BudgetScanExamples (356ms)
+Build completed successfully (59 jobs).
+
+exit=0, seconds=0.463
+
+$ lake build Benitoite.Interval.BudgetWhole
+⚠ [56/81] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/81] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [73/81] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [81/81] Built Benitoite.Interval.BudgetWhole (612ms)
+Build completed successfully (81 jobs).
+
+exit=0, seconds=0.672
+
+$ lake build Benitoite.Interval.BudgetWholeExamples
+⚠ [56/82] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/82] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [73/82] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [82/82] Built Benitoite.Interval.BudgetWholeExamples (352ms)
+Build completed successfully (82 jobs).
+
+exit=0, seconds=0.459
+
+$ lake build Benitoite.Interval.EvalClosed
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.150
+
+$ lake build Benitoite.Interval.Examples
+⚠ [57/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [62/74] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [69/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [74/74] Built Benitoite.Interval.Examples (962ms)
+Build completed successfully (74 jobs).
+
+exit=0, seconds=1.096
+
+$ lake build Benitoite.Interval.FlowExamples
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [57/58] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [58/58] Built Benitoite.Interval.FlowExamples (408ms)
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.470
+
+$ lake build Benitoite.Interval.IdentityExamples
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/68] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [68/68] Built Benitoite.Interval.IdentityExamples (507ms)
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.565
+
+$ lake build Benitoite.Interval.SyntacticReachExamples
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/75] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:73:27: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: Benitoite/Interval/BudgetNormal.lean:84:27: `if_pos` has been deprecated: Use `ite_eq_left` instead
+✔ [75/75] Built Benitoite.Interval.SyntacticReachExamples (337ms)
+Build completed successfully (75 jobs).
+
+exit=0, seconds=0.461
+
+$ lake build Benitoite.Interval.Domain
+Build completed successfully (14 jobs).
+
+exit=0, seconds=0.150
+
+$ lake build Benitoite.Interval.Identity
+Build completed successfully (49 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.Eval
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.152
+
+$ lake build Benitoite.Interval.Environment
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.151
+
+$ lake build Benitoite.Interval.Arithmetic
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.Analyze
+Build completed successfully (55 jobs).
+
+exit=0, seconds=0.159
+
+$ lake build Benitoite.Interval.Budget
+Build completed successfully (15 jobs).
+
+exit=0, seconds=0.157
+
+$ lake build Benitoite.Interval.BudgetScan
+Build completed successfully (52 jobs).
+
+exit=0, seconds=0.153
+
+$ lake build Benitoite.Interval.Flow
+⚠ [54/54] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (54 jobs).
+
+exit=0, seconds=0.155
+
+$ lake build Benitoite.Interval.BudgetEnvironment
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (57 jobs).
+
+exit=0, seconds=0.151
+
+$ lake build Benitoite.Interval.BudgetPatterns
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.151
+
+$ lake build Benitoite.Interval.Sound
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [57/57] Built Benitoite.Interval.Sound (12s)
+Build completed successfully (57 jobs).
+
+exit=0, seconds=13.100
+
+$ lake build Benitoite.Interval.BudgetWalk
+⚠ [56/62] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [62/62] Built Benitoite.Interval.BudgetWalk (442ms)
+Build completed successfully (62 jobs).
+
+exit=0, seconds=0.567
+
+$ lake build Benitoite.Interval.BudgetIndependentRun
+⚠ [56/63] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [63/63] Built Benitoite.Interval.BudgetIndependentRun (266ms)
+Build completed successfully (63 jobs).
+
+exit=0, seconds=0.358
+
+$ lake build Benitoite.Interval.BudgetChildren
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [64/64] Built Benitoite.Interval.BudgetChildren (652ms)
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.780
+
+$ lake build Benitoite.Interval.BudgetAnalyze
+⚠ [56/65] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [65/65] Built Benitoite.Interval.BudgetAnalyze (468ms)
+Build completed successfully (65 jobs).
+
+exit=0, seconds=0.571
+
+$ lake build Benitoite.Interval.BudgetProof
+⚠ [56/66] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [66/66] Built Benitoite.Interval.BudgetProof (365ms)
+Build completed successfully (66 jobs).
+
+exit=0, seconds=0.466
+
+$ lake build Benitoite.Interval.BudgetTraversal
+⚠ [56/67] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [67/67] Built Benitoite.Interval.BudgetTraversal (2.5s)
+Build completed successfully (67 jobs).
+
+exit=0, seconds=2.533
+
+$ lake build Benitoite.Interval.BudgetNormal
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [68/68] Built Benitoite.Interval.BudgetNormal (15s)
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (68 jobs).
+
+exit=0, seconds=15.723
+
+$ lake build Benitoite.Interval.BudgetAnalysisExamples
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [68/69] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [69/69] Built Benitoite.Interval.BudgetAnalysisExamples (651ms)
+Build completed successfully (69 jobs).
+
+exit=0, seconds=0.779
+
+$ lake build Benitoite.Interval.BudgetLocated
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [68/68] Built Benitoite.Interval.BudgetLocated (2.5s)
+Build completed successfully (68 jobs).
+
+exit=0, seconds=2.640
+
+$ lake build Benitoite.Interval.BudgetCause
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [68/70] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [70/70] Built Benitoite.Interval.BudgetCause (504ms)
+Build completed successfully (70 jobs).
+
+exit=0, seconds=0.565
+
+$ lake build Benitoite.Interval.BudgetSound
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [68/71] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [71/71] Built Benitoite.Interval.BudgetSound (10s)
+Build completed successfully (71 jobs).
+
+exit=0, seconds=10.734
+
+$ lake build Benitoite.Interval.BudgetBody
+⚠ [56/72] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [68/72] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [72/72] Built Benitoite.Interval.BudgetBody (315ms)
+Build completed successfully (72 jobs).
+
+exit=0, seconds=0.467
+
+$ lake build Benitoite.Interval.SyntacticReach
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [69/69] Built Benitoite.Interval.SyntacticReach (1.9s)
+Build completed successfully (69 jobs).
+
+exit=0, seconds=2.020
+
+$ lake build Benitoite.Interval.BudgetReach
+⚠ [56/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [74/74] Built Benitoite.Interval.BudgetReach (2.1s)
+Build completed successfully (74 jobs).
+
+exit=0, seconds=2.226
+
+$ lake build Benitoite.Interval.BudgetIndependent
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [75/75] Built Benitoite.Interval.BudgetIndependent (1.7s)
+Build completed successfully (75 jobs).
+
+exit=0, seconds=1.810
+
+$ lake build Benitoite.Interval.BudgetIndependentSound
+⚠ [56/76] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/76] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [76/76] Built Benitoite.Interval.BudgetIndependentSound (1.3s)
+Build completed successfully (76 jobs).
+
+exit=0, seconds=1.403
+
+$ lake build Benitoite.Interval.BudgetChildrenExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [77/77] Built Benitoite.Interval.BudgetChildrenExamples (410ms)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.567
+
+$ lake build Benitoite.Interval.BudgetCount
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (59 jobs).
+
+exit=0, seconds=0.160
+
+$ lake build Benitoite.Interval.BudgetDiscover
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [64/64] Built Benitoite.Interval.BudgetDiscover (462ms)
+Build completed successfully (64 jobs).
+
+exit=0, seconds=0.576
+
+$ lake build Benitoite.Interval.BudgetDiscoverProof
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [70/70] Built Benitoite.Interval.BudgetDiscoverProof (2.8s)
+Build completed successfully (70 jobs).
+
+exit=0, seconds=2.837
+
+$ lake build Benitoite.Interval.BudgetDiscoveryExamples
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [71/71] Built Benitoite.Interval.BudgetDiscoveryExamples (341ms)
+Build completed successfully (71 jobs).
+
+exit=0, seconds=0.465
+
+$ lake build Benitoite.Interval.BudgetExamples
+Build completed successfully (16 jobs).
+
+exit=0, seconds=0.152
+
+$ lake build Benitoite.Interval.BudgetIndependentExamples
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [77/77] Built Benitoite.Interval.BudgetIndependentExamples (373ms)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=0.472
+
+$ lake build Benitoite.Interval.BudgetIndependentPosition
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/77] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [77/77] Built Benitoite.Interval.BudgetIndependentPosition (1.4s)
+Build completed successfully (77 jobs).
+
+exit=0, seconds=1.501
+
+$ lake build Benitoite.Interval.BudgetScanExamples
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (59 jobs).
+
+exit=0, seconds=0.147
+
+$ lake build Benitoite.Interval.BudgetWhole
+⚠ [56/81] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [73/81] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [81/81] Built Benitoite.Interval.BudgetWhole (621ms)
+Build completed successfully (81 jobs).
+
+exit=0, seconds=0.780
+
+$ lake build Benitoite.Interval.BudgetWholeExamples
+⚠ [56/82] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [73/82] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [82/82] Built Benitoite.Interval.BudgetWholeExamples (375ms)
+Build completed successfully (82 jobs).
+
+exit=0, seconds=0.471
+
+$ lake build Benitoite.Interval.EvalClosed
+Build completed successfully (53 jobs).
+
+exit=0, seconds=0.151
+
+$ lake build Benitoite.Interval.Examples
+⚠ [57/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [69/74] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [74/74] Built Benitoite.Interval.Examples (1.1s)
+Build completed successfully (74 jobs).
+
+exit=0, seconds=1.202
+
+$ lake build Benitoite.Interval.FlowExamples
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [58/58] Built Benitoite.Interval.FlowExamples (431ms)
+Build completed successfully (58 jobs).
+
+exit=0, seconds=0.569
+
+$ lake build Benitoite.Interval.IdentityExamples
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [68/68] Built Benitoite.Interval.IdentityExamples (565ms)
+Build completed successfully (68 jobs).
+
+exit=0, seconds=0.675
+
+$ lake build Benitoite.Interval.SyntacticReachExamples
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [70/75] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [75/75] Built Benitoite.Interval.SyntacticReachExamples (330ms)
+Build completed successfully (75 jobs).
+
+exit=0, seconds=0.468

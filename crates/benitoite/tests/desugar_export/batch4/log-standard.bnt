@@ -51,11 +51,18 @@ function levelNumber(level: Log.Level) -> Integer
   end match
 end function
 
+function formatted() -> String
+  return Log.formatRecord(record: record(Log.Level.Debug))
+end function
+
 function main() -> Result[Unit, String] uses Log, Console.Write
   if handled() or enabled(Log.Level.Debug) or not enabled(Log.Level.Info) then
     return Result.Error("wrong enabled result")
   end if
   if levelNumber(Log.Level.Error) <> 3 then return Result.Error("wrong level") end if
+  if formatted() <> "level=DEBUG source=\"app/Main.bnt:12:3\" message=\"exchange\" attr.\"n\"=7" then
+    return Result.Error("wrong record format")
+  end if
   attributes()
   text()
   sinks(output: lambda(record: Log.Record) Console.writeLine(Log.Record.message(record)) end lambda)

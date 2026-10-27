@@ -1,0 +1,208 @@
+[
+  {
+    "profile": "base",
+    "analysis": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "base",
+      "inputCount": "8",
+      "excludedCount": "0",
+      "definitionCount": "8",
+      "comparedCount": "8",
+      "bodyCount": "8"
+    },
+    "informativeCount": "6",
+    "phaseDepthCount": "0",
+    "eval": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "base",
+      "inputCount": "8",
+      "excludedCount": "0",
+      "definitionCount": "8",
+      "comparedCount": "8",
+      "bodyCount": "8"
+    },
+    "excludedReasons": {},
+    "analysisMatched": true,
+    "analysisAccepted": true,
+    "evalMatched": true,
+    "evalAccepted": true
+  },
+  {
+    "profile": "flow",
+    "analysis": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "flow",
+      "inputCount": "9",
+      "excludedCount": "0",
+      "definitionCount": "9",
+      "comparedCount": "10",
+      "bodyCount": "10"
+    },
+    "informativeCount": "8",
+    "phaseDepthCount": "0",
+    "eval": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "flow",
+      "inputCount": "9",
+      "excludedCount": "3",
+      "definitionCount": "9",
+      "comparedCount": "7",
+      "bodyCount": "10"
+    },
+    "excludedReasons": {
+      "notClosedOrFuel": 2,
+      "embeddedEnvironment": 1
+    },
+    "analysisMatched": true,
+    "analysisAccepted": true,
+    "evalMatched": true,
+    "evalAccepted": true
+  },
+  {
+    "profile": "width",
+    "analysis": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "width",
+      "inputCount": "41",
+      "excludedCount": "0",
+      "definitionCount": "41",
+      "comparedCount": "41",
+      "bodyCount": "41"
+    },
+    "informativeCount": "41",
+    "phaseDepthCount": "0",
+    "eval": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "width",
+      "inputCount": "41",
+      "excludedCount": "0",
+      "definitionCount": "41",
+      "comparedCount": "41",
+      "bodyCount": "41"
+    },
+    "excludedReasons": {},
+    "analysisMatched": true,
+    "analysisAccepted": true,
+    "evalMatched": true,
+    "evalAccepted": true
+  },
+  {
+    "profile": "range",
+    "analysis": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "range",
+      "inputCount": "7",
+      "excludedCount": "0",
+      "definitionCount": "7",
+      "comparedCount": "7",
+      "bodyCount": "7"
+    },
+    "informativeCount": "2",
+    "phaseDepthCount": "0",
+    "eval": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "range",
+      "inputCount": "7",
+      "excludedCount": "0",
+      "definitionCount": "7",
+      "comparedCount": "7",
+      "bodyCount": "7"
+    },
+    "excludedReasons": {},
+    "analysisMatched": true,
+    "analysisAccepted": true,
+    "evalMatched": true,
+    "evalAccepted": true
+  },
+  {
+    "profile": "domain",
+    "analysis": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "domain",
+      "inputCount": "108",
+      "excludedCount": "0",
+      "definitionCount": "108",
+      "comparedCount": "108",
+      "bodyCount": "108"
+    },
+    "informativeCount": "54",
+    "phaseDepthCount": "0",
+    "eval": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "domain",
+      "inputCount": "108",
+      "excludedCount": "62",
+      "definitionCount": "108",
+      "comparedCount": "46",
+      "bodyCount": "108"
+    },
+    "excludedReasons": {
+      "unknownFailure": 46,
+      "notClosedOrFuel": 16
+    },
+    "analysisMatched": true,
+    "analysisAccepted": true,
+    "evalMatched": true,
+    "evalAccepted": true
+  }
+]

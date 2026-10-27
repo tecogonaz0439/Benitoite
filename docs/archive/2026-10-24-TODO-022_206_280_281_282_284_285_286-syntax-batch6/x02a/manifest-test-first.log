@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.32s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 1 test
+
+thread 'export_interval_manifest' (7721596) panicked at crates/benitoite/tests/desugar_export/interval.rs:30:9:
+assertion `left == right` failed: top: [Diagnostic { kind: Check, severity: Error, code: Some(E0416), message: "the value of this expression is not used", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(37), end: BytePos(38) }, text: "this has type `Integer`, not `Unit`" }), secondary: [], notes: [], helps: [Help { message: "write `return` to return this value from the function", edits: [Edit { span: Span { file: FileId(0), start: BytePos(37), end: BytePos(37) }, replacement: "return " }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: true
+ right: false
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_interval_manifest ... FAILED
+
+failures:
+
+failures:
+    export_interval_manifest
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.37s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

@@ -1,0 +1,2696 @@
+
+===== l16-eval.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✔ [52/52] Built Benitoite.Interval.Eval (4.0s)
+Build completed successfully (52 jobs).
+
+===== l16-sound.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✔ [53/57] Built Benitoite.Interval.Environment (607ms)
+✔ [54/57] Built Benitoite.Interval.Arithmetic (1.0s)
+✔ [55/57] Built Benitoite.Interval.Analyze (496ms)
+⚠ [56/57] Built Benitoite.Interval.Flow (2.1s)
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [57/57] Building Benitoite.Interval.Sound (11s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+error: Benitoite/Interval/Sound.lean:624:4: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case isTrue.refl
+key : OperationKey
+left right : BaseApprox
+a b : Integer64Value
+ha : left.Contains (ConcreteValue.integer a)
+hb : right.Contains (ConcreteValue.integer b)
+hl : left.live = true
+hr : right.live = true
+h✝ :
+  IntKind.integer64.min ≤ IntegerValue.toInt a - IntegerValue.toInt b ∧
+    IntegerValue.toInt a - IntegerValue.toInt b ≤ IntKind.integer64.max
+⊢ IntKind.integer64.checkedSub a b =
+    OperationResult.normal (ConcreteValue.integer ⟨IntegerValue.toInt a - IntegerValue.toInt b, h✝⟩)
+error: Benitoite/Interval/Sound.lean:642:4: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case isTrue.refl
+key : OperationKey
+left right : BaseApprox
+a b : Integer64Value
+ha : left.Contains (ConcreteValue.integer a)
+hb : right.Contains (ConcreteValue.integer b)
+hl : left.live = true
+hr : right.live = true
+h✝ :
+  IntKind.integer64.min ≤ IntegerValue.toInt a * IntegerValue.toInt b ∧
+    IntegerValue.toInt a * IntegerValue.toInt b ≤ IntKind.integer64.max
+⊢ IntKind.integer64.checkedMul a b =
+    OperationResult.normal (ConcreteValue.integer ⟨IntegerValue.toInt a * IntegerValue.toInt b, h✝⟩)
+error: Benitoite/Interval/Sound.lean:663:2: Type mismatch
+  divMod_normal_sound ha hb
+has type
+  Mem (IntegerValue.toInt ?m.284) (divModNormal left.integer right.integer)
+but is expected to have type
+  Mem v.toInt
+    (if False ∨ op = BinOp.sub ∨ op = BinOp.mul ∨ True ∨ (Comparison.ofBinOp op).isSome = true then
+        {
+          integer :=
+            (if op = BinOp.sub then
+                {
+                  integer :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).integer,
+                  boolean :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).boolean,
+                  other :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).other,
+                  mayFail :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).mayFail,
+                  warnings :=
+                    if subAlwaysOverflows left.integer right.integer = true then
+                      [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                          cause := WarningCause.overflow }]
+                    else [] }
+              else
+                if op = BinOp.mul then
+                  {
+                    integer :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).integer,
+                    boolean :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).boolean,
+                    other :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).other,
+                    mayFail :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).mayFail,
+                    warnings :=
+                      if mulAlwaysOverflows left.integer right.integer = true then
+                        [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                            cause := WarningCause.overflow }]
+                      else [] }
+                else
+                  { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+                    boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+                    other := (baseInteger (divModNormal left.integer right.integer) true).other,
+                    mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+                    warnings :=
+                      (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                          { normal := right.integer, mayFail := right.mayFail }).warnings }).integer,
+          boolean :=
+            (if op = BinOp.sub then
+                {
+                  integer :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).integer,
+                  boolean :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).boolean,
+                  other :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).other,
+                  mayFail :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).mayFail,
+                  warnings :=
+                    if subAlwaysOverflows left.integer right.integer = true then
+                      [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                          cause := WarningCause.overflow }]
+                    else [] }
+              else
+                if op = BinOp.mul then
+                  {
+                    integer :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).integer,
+                    boolean :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).boolean,
+                    other :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).other,
+                    mayFail :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).mayFail,
+                    warnings :=
+                      if mulAlwaysOverflows left.integer right.integer = true then
+                        [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                            cause := WarningCause.overflow }]
+                      else [] }
+                else
+                  { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+                    boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+                    other := (baseInteger (divModNormal left.integer right.integer) true).other,
+                    mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+                    warnings :=
+                      (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                          { normal := right.integer, mayFail := right.mayFail }).warnings }).boolean,
+          other :=
+            (if op = BinOp.sub then
+                {
+                  integer :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).integer,
+                  boolean :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).boolean,
+                  other :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).other,
+                  mayFail :=
+                    (baseInteger (subNormal left.integer right.integer)
+                        (subMayOverflow left.integer right.integer)).mayFail,
+                  warnings :=
+                    if subAlwaysOverflows left.integer right.integer = true then
+                      [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                          cause := WarningCause.overflow }]
+                    else [] }
+              else
+                if op = BinOp.mul then
+                  {
+                    integer :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).integer,
+                    boolean :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).boolean,
+                    other :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).other,
+                    mayFail :=
+                      (baseInteger (mulNormal left.integer right.integer)
+                          (mulMayOverflow left.integer right.integer)).mayFail,
+                    warnings :=
+                      if mulAlwaysOverflows left.integer right.integer = true then
+                        [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                            cause := WarningCause.overflow }]
+                      else [] }
+                else
+                  { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+                    boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+                    other := (baseInteger (divModNormal left.integer right.integer) true).other,
+                    mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+                    warnings :=
+                      (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                          { normal := right.integer, mayFail := right.mayFail }).warnings }).other,
+          mayFail :=
+            left.mayFail ||
+              (right.mayFail ||
+                (if op = BinOp.sub then
+                    {
+                      integer :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).integer,
+                      boolean :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).boolean,
+                      other :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).other,
+                      mayFail :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).mayFail,
+                      warnings :=
+                        if subAlwaysOverflows left.integer right.integer = true then
+                          [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                              cause := WarningCause.overflow }]
+                        else [] }
+                  else
+                    if op = BinOp.mul then
+                      {
+                        integer :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).integer,
+                        boolean :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).boolean,
+                        other :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).other,
+                        mayFail :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).mayFail,
+                        warnings :=
+                          if mulAlwaysOverflows left.integer right.integer = true then
+                            [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                                cause := WarningCause.overflow }]
+                          else [] }
+                    else
+                      { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+                        boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+                        other := (baseInteger (divModNormal left.integer right.integer) true).other,
+                        mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+                        warnings :=
+                          (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                              { normal := right.integer, mayFail := right.mayFail }).warnings }).mayFail),
+          warnings :=
+            left.warnings ++
+              (right.warnings ++
+                (if op = BinOp.sub then
+                    {
+                      integer :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).integer,
+                      boolean :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).boolean,
+                      other :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).other,
+                      mayFail :=
+                        (baseInteger (subNormal left.integer right.integer)
+                            (subMayOverflow left.integer right.integer)).mayFail,
+                      warnings :=
+                        if subAlwaysOverflows left.integer right.integer = true then
+                          [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                              cause := WarningCause.overflow }]
+                        else [] }
+                  else
+                    if op = BinOp.mul then
+                      {
+                        integer :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).integer,
+                        boolean :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).boolean,
+                        other :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).other,
+                        mayFail :=
+                          (baseInteger (mulNormal left.integer right.integer)
+                              (mulMayOverflow left.integer right.integer)).mayFail,
+                        warnings :=
+                          if mulAlwaysOverflows left.integer right.integer = true then
+                            [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                                cause := WarningCause.overflow }]
+                          else [] }
+                    else
+                      { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+                        boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+                        other := (baseInteger (divModNormal left.integer right.integer) true).other,
+                        mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+                        warnings :=
+                          (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                              { normal := right.integer, mayFail := right.mayFail }).warnings }).warnings) }
+      else baseUnknown).integer
+error: Benitoite/Interval/Sound.lean:725:50: Tactic `assumption` failed
+
+case refl.false
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key✝ : OperationKey
+op : Comparison
+left✝ right✝ : Expr
+a b : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+el :
+  EvalPartial concrete { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a)) leftTrace✝
+er :
+  EvalPartial concrete { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b)) rightTrace✝
+hl :
+  (analyzeBaseExpr fuel abstract { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }.key
+        { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }.source).live =
+    true
+hr :
+  (analyzeBaseExpr fuel abstract { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }.key
+        { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }.source).live =
+    true
+notAdd : op.binOp ≠ BinOp.add
+notDiv : ¬IntegerDivisionOp op.binOp
+recognized : Comparison.ofBinOp op.binOp = some op
+⊢ match ConcreteValue.boolean false with
+  | ConcreteValue.integer value =>
+    Mem value.toInt
+      (if op.binOp = BinOp.sub then
+          {
+            integer :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+            boolean :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+            other :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+            mayFail :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+            warnings :=
+              if
+                  subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                    true then
+                [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                    cause := WarningCause.overflow }]
+              else [] }
+        else
+          if op.binOp = BinOp.mul then
+            {
+              integer :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+              mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).integer
+  | ConcreteValue.boolean false =>
+    (if op.binOp = BinOp.sub then
+            {
+              integer :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            if op.binOp = BinOp.mul then
+              {
+                integer :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+                boolean :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+                other :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+                mayFail :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+                warnings :=
+                  if
+                      mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                          (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                        true then
+                    [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                        cause := WarningCause.overflow }]
+                  else [] }
+            else
+              { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+                mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).boolean.fst =
+      true
+  | ConcreteValue.boolean true =>
+    (if op.binOp = BinOp.sub then
+            {
+              integer :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            if op.binOp = BinOp.mul then
+              {
+                integer :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+                boolean :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+                other :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+                mayFail :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+                warnings :=
+                  if
+                      mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                          (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                        true then
+                    [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                        cause := WarningCause.overflow }]
+                  else [] }
+            else
+              { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+                mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).boolean.snd =
+      true
+  | x =>
+    (if op.binOp = BinOp.sub then
+          {
+            integer :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+            boolean :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+            other :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+            mayFail :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+            warnings :=
+              if
+                  subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                    true then
+                [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                    cause := WarningCause.overflow }]
+              else [] }
+        else
+          if op.binOp = BinOp.mul then
+            {
+              integer :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+              mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).other =
+      true
+error: Benitoite/Interval/Sound.lean:725:50: Tactic `assumption` failed
+
+case refl.true
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key✝ : OperationKey
+op : Comparison
+left✝ right✝ : Expr
+a b : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+el :
+  EvalPartial concrete { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a)) leftTrace✝
+er :
+  EvalPartial concrete { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b)) rightTrace✝
+hl :
+  (analyzeBaseExpr fuel abstract { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }.key
+        { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }.source).live =
+    true
+hr :
+  (analyzeBaseExpr fuel abstract { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }.key
+        { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }.source).live =
+    true
+notAdd : op.binOp ≠ BinOp.add
+notDiv : ¬IntegerDivisionOp op.binOp
+recognized : Comparison.ofBinOp op.binOp = some op
+⊢ match ConcreteValue.boolean true with
+  | ConcreteValue.integer value =>
+    Mem value.toInt
+      (if op.binOp = BinOp.sub then
+          {
+            integer :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+            boolean :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+            other :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+            mayFail :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+            warnings :=
+              if
+                  subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                    true then
+                [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                    cause := WarningCause.overflow }]
+              else [] }
+        else
+          if op.binOp = BinOp.mul then
+            {
+              integer :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+              mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).integer
+  | ConcreteValue.boolean false =>
+    (if op.binOp = BinOp.sub then
+            {
+              integer :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            if op.binOp = BinOp.mul then
+              {
+                integer :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+                boolean :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+                other :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+                mayFail :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+                warnings :=
+                  if
+                      mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                          (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                        true then
+                    [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                        cause := WarningCause.overflow }]
+                  else [] }
+            else
+              { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+                mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).boolean.fst =
+      true
+  | ConcreteValue.boolean true =>
+    (if op.binOp = BinOp.sub then
+            {
+              integer :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            if op.binOp = BinOp.mul then
+              {
+                integer :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+                boolean :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+                other :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+                mayFail :=
+                  (baseInteger
+                      (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                      (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+                warnings :=
+                  if
+                      mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                          (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                        true then
+                    [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                        cause := WarningCause.overflow }]
+                  else [] }
+            else
+              { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+                mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).boolean.snd =
+      true
+  | x =>
+    (if op.binOp = BinOp.sub then
+          {
+            integer :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+            boolean :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+            other :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+            mayFail :=
+              (baseInteger
+                  (subNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analerror: build failed
+yzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                  (subMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                    (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+            warnings :=
+              if
+                  subAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                    true then
+                [{ key := key✝, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                    cause := WarningCause.overflow }]
+              else [] }
+        else
+          if op.binOp = BinOp.mul then
+            {
+              integer :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).integer,
+              boolean :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).boolean,
+              other :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).other,
+              mayFail :=
+                (baseInteger
+                    (mulNormal (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)
+                    (mulMayOverflow (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                      (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer)).mayFail,
+              warnings :=
+                if
+                    mulAlwaysOverflows (analyzeBaseExpr fuel abstract (childKey key✝ []) left✝).integer
+                        (analyzeBaseExpr fuel abstract (childKey key✝ [left✝]) right✝).integer =
+                      true then
+                  [{ key := key✝, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                      cause := WarningCause.overflow }]
+                else [] }
+          else
+            { integer := baseEmpty.integer, boolean := (true, true), other := baseEmpty.other,
+              mayFail := baseEmpty.mayFail, warnings := baseEmpty.warnings }).other =
+      true
+error: Benitoite/Interval/Sound.lean:918:6: 'change' tactic failed, pattern
+  warning ∈
+    if divModAlwaysZero op left.integer right.integer = true then
+      [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+          cause := WarningCause.zeroDivisor }]
+    else []
+is not definitionally equal to target
+  warning ∈
+    {
+        integer :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if subAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+error: Benitoite/Interval/Sound.lean:923:21: Tactic `contradiction` failed
+
+case base.integer.isTrue.inr.inr.isFalse.isFalse.isTrue
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝⁴ : op = BinOp.add ∨ op = BinOp.sub ∨ op = BinOp.mul ∨ IntegerDivisionOp op ∨ (Comparison.ofBinOp op).isSome = true
+member : warning ∈ (baseThen left (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right))).warnings
+h✝³ : warning ∈ (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right)).warnings
+h✝² : ¬op = BinOp.add
+h✝¹ : ¬op = BinOp.sub
+h✝ : op = BinOp.mul
+h :
+  warning ∈
+    {
+        integer :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if mulAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+⊢ warning.key = key
+error: Benitoite/Interval/Sound.lean:923:21: Tactic `contradiction` failed
+
+case base.integer.isTrue.inr.inr.isFalse.isFalse.isFalse
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝⁴ : op = BinOp.add ∨ op = BinOp.sub ∨ op = BinOp.mul ∨ IntegerDivisionOp op ∨ (Comparison.ofBinOp op).isSome = true
+member : warning ∈ (baseThen left (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right))).warnings
+h✝³ : warning ∈ (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right)).warnings
+h✝² : ¬op = BinOp.add
+h✝¹ : ¬op = BinOp.sub
+h✝ : ¬op = BinOp.mul
+h :
+  warning ∈
+    (if IntegerDivisionOp op then
+        { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+          boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+          other := (baseInteger (divModNormal left.integer right.integer) true).other,
+          mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+          warnings :=
+            (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                { normal := right.integer, mayFail := right.mayFail }).warnings }
+      else if (Comparison.ofBinOp op).isSome = true then baseBoolean (true, true) else baseUnknown).warnings
+⊢ warning.key = key
+error: Benitoite/Interval/Sound.lean:1181:6: 'change' tactic failed, pattern
+  warning ∈
+    if divModAlwaysZero op left.integer right.integer = true then
+      [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+          cause := WarningCause.zeroDivisor }]
+    else []
+is not definitionally equal to target
+  warning ∈
+    {
+        integer :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if subAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+error: Benitoite/Interval/Sound.lean:1187:21: Tactic `contradiction` failed
+
+case base.integer.isTrue.inr.inr.isFalse.isFalse.isTrue
+lhs rhs : Expr
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝⁴ : op = BinOp.add ∨ op = BinOp.sub ∨ op = BinOp.mul ∨ IntegerDivisionOp op ∨ (Comparison.ofBinOp op).isSome = true
+member : warning ∈ (baseThen left (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right))).warnings
+h✝³ : warning ∈ (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right)).warnings
+h✝² : ¬op = BinOp.add
+h✝¹ : ¬op = BinOp.sub
+h✝ : op = BinOp.mul
+h :
+  warning ∈
+    {
+        integer :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if mulAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+⊢ warning.key = key ∧ targetOperationAt (Expr.binary op (Ty.base BaseTy.integer) lhs rhs) = some warning.operation
+error: Benitoite/Interval/Sound.lean:1187:21: Tactic `contradiction` failed
+
+case base.integer.isTrue.inr.inr.isFalse.isFalse.isFalse
+lhs rhs : Expr
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝⁴ : op = BinOp.add ∨ op = BinOp.sub ∨ op = BinOp.mul ∨ IntegerDivisionOp op ∨ (Comparison.ofBinOp op).isSome = true
+member : warning ∈ (baseThen left (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right))).warnings
+h✝³ : warning ∈ (baseThen right (baseOwn key op (Ty.base BaseTy.integer) left right)).warnings
+h✝² : ¬op = BinOp.add
+h✝¹ : ¬op = BinOp.sub
+h✝ : ¬op = BinOp.mul
+h :
+  warning ∈
+    (if IntegerDivisionOp op then
+        { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+          boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+          other := (baseInteger (divModNormal left.integer right.integer) true).other,
+          mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+          warnings :=
+            (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                { normal := right.integer, mayFail := right.mayFail }).warnings }
+      else if (Comparison.ofBinOp op).isSome = true then baseBoolean (true, true) else baseUnknown).warnings
+⊢ warning.key = key ∧ targetOperationAt (Expr.binary op (Ty.base BaseTy.integer) lhs rhs) = some warning.operation
+error: Benitoite/Interval/Sound.lean:1504:6: 'change' tactic failed, pattern
+  warning ∈
+    if divModAlwaysZero op left.integer right.integer = true then
+      [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+          cause := WarningCause.zeroDivisor }]
+    else []
+is not definitionally equal to target
+  warning ∈
+    {
+        integer :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if subAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+error: Benitoite/Interval/Sound.lean:1509:21: Tactic `contradiction` failed
+
+case base.integer.isFalse.isFalse.isTrue
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝² : ¬op = BinOp.add
+h✝¹ : ¬op = BinOp.sub
+h✝ : op = BinOp.mul
+h :
+  warning ∈
+    {
+        integer :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if mulAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+⊢ warning.key = key
+error: Benitoite/Interval/Sound.lean:1509:21: Tactic `contradiction` failed
+
+case base.integer.isFalse.isFalse.isFalse
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝² : ¬op = BinOp.add
+h✝¹ : ¬op = BinOp.sub
+h✝ : ¬op = BinOp.mul
+h :
+  warning ∈
+    (if IntegerDivisionOp op then
+        { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+          boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+          other := (baseInteger (divModNormal left.integer right.integer) true).other,
+          mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+          warnings :=
+            (analyzeDivMod key op { normal := left.integer, mayFail := left.mayFail }
+                { normal := right.integer, mayFail := right.mayFail }).warnings }
+      else if (Comparison.ofBinOp op).isSome = true then baseBoolean (true, true) else baseUnknown).warnings
+⊢ warning.key = key
+error: Benitoite/Interval/Sound.lean:1584:42: Application type mismatch: The argument
+  h
+has type
+  w ∈
+    {
+        integer :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if subAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+but is expected to have type
+  ?m.121 ∈ [?m.122]
+in the application
+  List.mem_singleton.mp h
+error: Benitoite/Interval/Sound.lean:1587:6: Tactic `contradiction` failed
+
+case refine_2.isFalse
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+a b : Integer64Value
+target : IntegerDivisionOp op
+ha : left.Contains (ConcreteValue.integer a)
+hb : right.Contains (ConcreteValue.integer b)
+w : IntervalWarning
+e : EvalEvent
+reached :
+  Reached
+    [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+        arguments := [ConcreteValue.integer a, ConcreteValue.integer b], result := checkedDivMod op a b }]
+    w e
+notAdd : op ≠ BinOp.add
+h✝ : ¬op = BinOp.sub
+h :
+  w ∈
+    (if op = BinOp.mul then
+        {
+          integer :=
+            (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).integer,
+          boolean :=
+            (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).boolean,
+          other :=
+            (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).other,
+          mayFail :=
+            (baseInteger (mulNormal left.integer right.integer) (mulMayOverflow left.integer right.integer)).mayFail,
+          warnings :=
+            if mulAlwaysOverflows left.integer right.integer = true then
+              [{ key := key, operation := TargetOperation.binary BinOp.mul (Ty.base BaseTy.integer),
+                  cause := WarningCause.overflow }]
+            else [] }
+      else
+        { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+          boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+          other := (baseInteger (divModNormal left.integer right.integer) true).other,
+          mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+          warnings :=
+            if divModAlwaysZero op left.integer right.integer = true then
+              [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+                  cause := WarningCause.zeroDivisor }]
+            else [] }).warnings
+⊢ e.result = OperationResult.rejected w.cause.toFailure
+error: Benitoite/Interval/Sound.lean:1680:13: `simp` made no progress
+error: Benitoite/Interval/Sound.lean:1680:26: `simp` made no progress
+error: Benitoite/Interval/Sound.lean:2061:34: Tactic `decide` proved that the proposition
+  let key := { definition := "Example.baseWarnings", surfacePreorder := 0 };
+  let one := Expr.literal (Literal.integer ⟨1, ⋯⟩);
+  let zero := Expr.literal (Literal.integer ⟨0, ⋯⟩);
+  let maximum := Expr.literal (Literal.integer ⟨9223372036854775807, ⋯⟩);
+  let overflow := Expr.binary BinOp.add (Ty.base BaseTy.integer) maximum one;
+  let inputs :=
+    [Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) one one) zero,
+      Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) overflow zero,
+      Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.returnE (Ty.base BaseTy.integer) one) zero,
+      (Expr.literal (Literal.boolean false)).ite (Block.last overflow) (Block.last one),
+      (Expr.literal (Literal.boolean true)).elseIf (Block.last one) overflow,
+      (Expr.literal (Literal.boolean false)).ifOnly (Block.lastDiscard overflow),
+      Expr.binary BinOp.sub (Ty.base BaseTy.integer) overflow one,
+      Expr.binary BinOp.add (Ty.base BaseTy.float) overflow one];
+  List.map
+      (fun source =>
+        let result := analyzeBaseExpr 16 (AbstractEnv.ofLocals []) key source;
+        (result.integer, result.other, result.mayFail,
+          List.map (fun w => (w.key.surfacePreorder, w.cause)) result.warnings))
+      inputs =
+    [(top, false, true, [(0, WarningCause.zeroDivisor)]), (Interval.bottom, false, true, [(1, WarningCause.overflow)]),
+      (Interval.bottom, false, false, []), (normalize 1 1, false, false, []), (normalize 1 1, false, false, []),
+      (Interval.bottom, true, false, []), (top, true, true, []), (top, true, true, [])]
+is false
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+
+===== l16-sound2.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [57/57] Building Benitoite.Interval.Sound (10s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+warning: Benitoite/Interval/Sound.lean:918:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1168:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:1558:42: Application type mismatch: The argument
+  h
+has type
+  w ∈
+    {
+        integer :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).integer,
+        boolean :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).boolean,
+        other := (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).other,
+        mayFail :=
+          (baseInteger (subNormal left.integer right.integer) (subMayOverflow left.integer right.integer)).mayFail,
+        warnings :=
+          if subAlwaysOverflows left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary BinOp.sub (Ty.base BaseTy.integer),
+                cause := WarningCause.overflow }]
+          else [] }.warnings
+but is expected to have type
+  ?m.189 ∈ [?m.190]
+in the application
+  List.mem_singleton.mp h
+error: Benitoite/Interval/Sound.lean:1561:6: Tactic `contradiction` failed
+
+case refine_2.isFalse
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+a b : Integer64Value
+target : IntegerDivisionOp op
+ha : left.Contains (ConcreteValue.integer a)
+hb : right.Contains (ConcreteValue.integer b)
+w : IntervalWarning
+e : EvalEvent
+reached :
+  Reached
+    [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+        arguments := [ConcreteValue.integer a, ConcreteValue.integer b], result := checkedDivMod op a b }]
+    w e
+notAdd : op ≠ BinOp.add
+notSub : op ≠ BinOp.sub
+notMul : op ≠ BinOp.mul
+h✝ : ¬False
+h :
+  w ∈
+    { integer := (baseInteger (divModNormal left.integer right.integer) true).integer,
+        boolean := (baseInteger (divModNormal left.integer right.integer) true).boolean,
+        other := (baseInteger (divModNormal left.integer right.integer) true).other,
+        mayFail := (baseInteger (divModNormal left.integer right.integer) true).mayFail,
+        warnings :=
+          if divModAlwaysZero op left.integer right.integer = true then
+            [{ key := key, operation := TargetOperation.binary op (Ty.base BaseTy.integer),
+                cause := WarningCause.zeroDivisor }]
+          else [] }.warnings
+⊢ e.result = OperationResult.rejected w.cause.toFailure
+warning: Benitoite/Interval/Sound.lean:1555:45: This simp argument is unused:
+  ite_eq_right notSub
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseOwn, ite_eq_right notAdd, ite_eq_right notMul, notSub, notMul, ite_eq_left target,
+    analyzeDivMod] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1555:66: This simp argument is unused:
+  ite_eq_right notMul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseOwn, ite_eq_right notAdd, ite_eq_right notSub, notSub, notMul, ite_eq_left target,
+    analyzeDivMod] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1654:43: This simp argument is unused:
+  ite_eq_right notSub
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseOwn, ite_eq_right notAdd, ite_eq_right notMul, notSub, notMul, ite_eq_right notDiv, recognized,
+    Option.isSome_some, ↓reduceIte, baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1654:64: This simp argument is unused:
+  ite_eq_right notMul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseOwn, ite_eq_right notAdd, ite_eq_right notSub, notSub, notMul, ite_eq_right notDiv, recognized,
+    Option.isSome_some, ↓reduceIte, baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: build failed
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+
+===== l16-sound3.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [57/58] Built Benitoite.Interval.EvalClosed (768ms)
+⚠ [58/58] Built Benitoite.Interval.Sound (11s)
+warning: Benitoite/Interval/Sound.lean:918:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1168:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (58 jobs).
+
+===== l16-all1.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [202/240] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:918:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1168:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [207/240] Built Benitoite.Interval.FlowExamples (535ms)
+✔ [208/240] Built Benitoite.Interval.BudgetEnvironment (1.2s)
+✔ [209/240] Built Benitoite.Interval.BudgetPatterns (1.4s)
+✔ [210/240] Built Benitoite.Interval.BudgetScanExamples (433ms)
+✔ [211/240] Built Benitoite.Interval.BudgetWalk (498ms)
+✔ [212/240] Built Benitoite.Interval.BudgetIndependentRun (283ms)
+✔ [213/240] Built Benitoite.Interval.BudgetChildren (686ms)
+✔ [214/240] Built Benitoite.Interval.BudgetAnalyze (504ms)
+✔ [215/240] Built Benitoite.Interval.BudgetProof (401ms)
+✔ [216/240] Built Benitoite.Interval.BudgetTraversal (2.6s)
+✔ [217/240] Built Benitoite.Interval.IdentityExamples (711ms)
+✔ [218/240] Built Benitoite.Interval.BudgetCount (5.8s)
+✔ [219/240] Built Benitoite.Interval.BudgetDiscover (539ms)
+✔ [220/240] Built Benitoite.Interval.BudgetLocated (2.0s)
+✔ [221/240] Built Benitoite.Interval.SyntacticReach (1.9s)
+✔ [222/240] Built Benitoite.Interval.BudgetDiscoverProof (3.1s)
+✔ [223/240] Built Benitoite.Interval.BudgetDiscoveryExamples (357ms)
+✔ [224/240] Built Benitoite.Interval.BudgetNormal (15s)
+✔ [225/240] Built Benitoite.Interval.BudgetCause (590ms)
+✖ [226/240] Building Benitoite.Interval.BudgetAnalysisExamples (3.8s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetAnalysisExamples.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetAnalysisExamples.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetAnalysisExamples.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetAnalysisExamples.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetAnalysisExamples.setup.json --json
+error: Benitoite/Interval/BudgetAnalysisExamples.lean:99:65: (kernel) application type mismatch
+  id (Eq.refl true)
+argument has type
+  true = true
+but function has type
+  decide
+        (let env := AbstractEnv.ofLocals [AbstractSlot.integer (normalize 0 0)];
+        let boundary :=
+          analyzeExpr { } { } 100 env key
+            (Expr.lam [] [] (Ty.base BaseTy.integer) Eff.empty
+              (Block.last (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) one (Expr.local 0))));
+        let unsupportedOp := run (Expr.binary BinOp.mul (Ty.base BaseTy.integer) overflow one);
+        let constant := analyzeExpr { } { } 100 env key (Expr.constE (Ty.base BaseTy.integer) (Expr.local 0));
+        boundary.coverage = Coverage.unsupported ∧
+          boundary.approx.integer = top ∧
+            warnings boundary = [] ∧
+              boundary.context.next.surfacePreorder = 4 ∧
+                unsupportedOp.coverage = Coverage.unsupported ∧
+                  warnings unsupportedOp = [] ∧ constant.approx.integer = top ∧ warnings constant = []) =
+      true →
+    decide
+        (let env := AbstractEnv.ofLocals [AbstractSlot.integer (normalize 0 0)];
+        let boundary :=
+          analyzeExpr { } { } 100 env key
+            (Expr.lam [] [] (Ty.base BaseTy.integer) Eff.empty
+              (Block.last (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) one (Expr.local 0))));
+        let unsupportedOp := run (Expr.binary BinOp.mul (Ty.base BaseTy.integer) overflow one);
+        let constant := analyzeExpr { } { } 100 env key (Expr.constE (Ty.base BaseTy.integer) (Expr.local 0));
+        boundary.coverage = Coverage.unsupported ∧
+          boundary.approx.integer = top ∧
+            warnings boundary = [] ∧
+              boundary.context.next.surfacePreorder = 4 ∧
+                unsupportedOp.coverage = Coverage.unsupported ∧
+                  warnings unsupportedOp = [] ∧ constant.approx.integer = top ∧ warnings constant = []) =
+      true
+✖ [227/240] Building Benitoite.Interval.BudgetSound (10s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetSound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.setup.json --json
+error: Benitoite/Interval/BudgetSound.lean:485:8: Type mismatch: After simplification, term
+  h
+ has type
+  @Causal BaseApprox
+    (do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.sub (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift)))
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) lt
+but is expected to have type
+  @Causal BaseApprox
+    (if decide (BinOp.sub = BinOp.add ∨ True) = true then do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.sub (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift))
+    else do
+      unknownChildren (expr fuel) (block fuel) fuel abstract (Expr.binary BinOp.sub (Ty.base BaseTy.integer) left right)
+      unsupported)
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) lt
+error: Benitoite/Interval/BudgetSound.lean:495:8: Type mismatch: After simplification, term
+  h
+ has type
+  @Causal BaseApprox
+    (do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.mul (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift)))
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) lt
+but is expected to have type
+  @Causal BaseApprox
+    (if decide (BinOp.mul = BinOp.add ∨ BinOp.mul = BinOp.sub ∨ True) = true then do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.mul (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift))
+    else do
+      unknownChildren (expr fuel) (block fuel) fuel abstract (Expr.binary BinOp.mul (Ty.base BaseTy.integer) left right)
+      unsupported)
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) lt
+error: Benitoite/Interval/BudgetSound.lean:535:8: Type mismatch: After simplification, term
+  h
+ has type
+  @Causal BaseApprox
+    (do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.sub (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift)))
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) (lt ++ rt)
+but is expected to have type
+  @Causal BaseApprox
+    (if decide (BinOp.sub = BinOp.add ∨ True) = true then do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.sub (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift))
+    else do
+      unknownChildren (expr fuel) (block fuel) fuel abstract (Expr.binary BinOp.sub (Ty.base BaseTy.integer) left right)
+      unsupported)
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) (lt ++ rt)
+error: Benitoite/Interval/BudgetSound.lean:545:8: Type mismatch: After simplification, term
+  h
+ has type
+  @Causal BaseApprox
+    (do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.mul (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift)))
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) (lt ++ rt)
+but is expected to have type
+  @Causal BaseApprox
+    (if decide (BinOp.mul = BinOp.add ∨ BinOp.mul = BinOp.sub ∨ True) = true then do
+      let lhs ← expr fuel abstract left
+      if (!lhs.live) = true then do
+          skipExpr fuel right
+          pure lhs.abrupt
+        else do
+          let rhs ← expr fuel abstract right
+          if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+            else do
+              let __do_lift ← own key BinOp.mul (Ty.base BaseTy.integer) lhs rhs
+              pure (baseThen lhs (baseThen rhs __do_lift))
+    else do
+      unknownChildren (expr fuel) (block fuel) fuel abstract (Expr.binary BinOp.mul (Ty.base BaseTy.integer) left right)
+      unsupported)
+    limits middle key (1 + (surfacePreorder left).length + (surfacePreorder right).length) (lt ++ rt)
+warning: Benitoite/Interval/BudgetSound.lean:429:63: This simp argument is unused:
+  decide_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:429:76: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:439:63: This simp argument is unused:
+  decide_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:439:76: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:481:63: This simp argument is unused:
+  decide_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:481:76: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:491:63: This simp argument is unused:
+  decide_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:491:76: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:531:63: This simp argument is unused:
+  decide_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:531:76: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:541:63: This simp argument is unused:
+  decide_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:541:76: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.BudgetAnalysisExamples
+- Benitoite.Interval.BudgetSound
+error: build failed
+
+===== l16-all2.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [202/240] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:918:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1168:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [226/240] Built Benitoite.Interval.BudgetAnalysisExamples (744ms)
+⚠ [227/240] Built Benitoite.Interval.BudgetSound (10s)
+warning: Benitoite/Interval/BudgetSound.lean:419:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:471:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:521:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [228/240] Built Benitoite.Interval.BudgetBody (319ms)
+✔ [229/240] Built Benitoite.Interval.Examples (909ms)
+✔ [230/240] Built Benitoite.Interval.BudgetReach (1.4s)
+✖ [231/240] Building Benitoite.Interval.SyntacticReachExamples (363ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/SyntacticReachExamples.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/SyntacticReachExamples.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/SyntacticReachExamples.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/SyntacticReachExamples.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/SyntacticReachExamples.setup.json --json
+error: Benitoite/Interval/SyntacticReachExamples.lean:33:2: Tactic `decide` proved that the proposition
+  List.filterMap
+        (fun x =>
+          if x.2.fst = true then
+            Option.map
+              (fun op =>
+                (x.fst.surfacePreorder,
+                  match op with
+                  | TargetOperation.binary op (Ty.base BaseTy.integer) => some op
+                  | x => none))
+              (targetOperationAt x.2.snd)
+          else none)
+        (numberSyntacticReach root
+          ((concreteRule
+                (Expr.block
+                  (Block.seq
+                    (Expr.list (Ty.base BaseTy.integer)
+                      (Exprs.cons
+                        (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                          (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                          (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                        Exprs.nil))
+                    (Block.last
+                      (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))))),
+              Expr.block
+                (Block.seq
+                  (Expr.list (Ty.base BaseTy.integer)
+                    (Exprs.cons
+                      (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                      Exprs.nil))
+                  (Block.last
+                    (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                      (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                      (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))))) ::
+            ((concreteRule
+                    (Expr.list (Ty.base BaseTy.integer)
+                      (Exprs.cons
+                        (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                          (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                          (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                        Exprs.nil)),
+                  Expr.list (Ty.base BaseTy.integer)
+                    (Exprs.cons
+                      (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                      Exprs.nil)) ::
+                outsideSyntacticReach
+                  (surfacePreorder
+                      (Expr.list (Ty.base BaseTy.integer)
+                        (Exprs.cons
+                          (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                            (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                            (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                          Exprs.nil))).tail ++
+              (concreteRule
+                    (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                      (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                      (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))),
+                  Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                    (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))) ::
+                if binarySupported BinOp.intDiv (Ty.base BaseTy.integer) = true then
+                  (concreteRule (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)),
+                        Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ::
+                      outsideSyntacticReach (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))).tail ++
+                    (concreteRule (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)),
+                        Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)) ::
+                      outsideSyntacticReach (surfacePreorder (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).tail
+                else
+                  outsideSyntacticReach
+                    (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ++
+                      surfacePreorder (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))))) =
+      [(12, some BinOp.intDiv)] ∧
+    List.filterMap
+          (fun x =>
+            if x.2.fst = true then
+              Option.map
+                (fun op =>
+                  (x.fst.surfacePreorder,
+                    match op with
+                    | TargetOperation.binary op (Ty.base BaseTy.integer) => some op
+                    | x => none))
+                (targetOperationAt x.2.snd)
+            else none)
+          (numberSyntacticReach root
+            ((concreteRule
+                  (Expr.binary BinOp.mul (Ty.base BaseTy.integer)
+                    (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                      (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                      (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                    (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))),
+                Expr.binary BinOp.mul (Ty.base BaseTy.integer)
+                  (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                    (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))
+                  (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))) ::
+              if binarySupported BinOp.mul (Ty.base BaseTy.integer) = true then
+                ((concreteRule
+                        (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                          (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                          (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))),
+                      Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))) ::
+                    if binarySupported BinOp.intDiv (Ty.base BaseTy.integer) = true then
+                      (concreteRule (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)),
+                            Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ::
+                          outsideSyntacticReach
+                            (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))).tail ++
+                        (concreteRule (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)),
+                            Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)) ::
+                          outsideSyntacticReach
+                            (surfacePreorder (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).tail
+                    else
+                      outsideSyntacticReach
+                        (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ++
+                          surfacePreorder (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)))) ++
+                  (concreteRule (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)),
+                      Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ::
+                    outsideSyntacticReach (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))).tail
+              else
+                outsideSyntacticReach
+                  (surfacePreorder
+                      (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))) ++
+                    surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))))) =
+        [] ∧
+      List.filterMap
+          (fun x =>
+            if x.2.fst = true then
+              Option.map
+                (fun op =>
+                  (x.fst.surfacePreorder,
+                    match op with
+                    | TargetOperation.binary op (Ty.base BaseTy.integer) => some op
+                    | x => none))
+                (targetOperationAt x.2.snd)
+            else none)
+          (numberSyntacticReach root
+            ((concreteRule
+                  (Expr.constE (Ty.base BaseTy.integer)
+                    (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).paren),
+                Expr.constE (Ty.base BaseTy.integer)
+                  (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                      (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).paren) ::
+              (concreteRule
+                    (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).paren,
+                  (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                      (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).paren) ::
+                (concreteRule
+                      (Expr.binary BinOp.intDiv (Ty.base BaseTy.integer)
+                        (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                        (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))),
+                    Expr.binary BinOp.intDiv (Ty.base BaseTy.integer) (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))
+                      (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))) ::
+                  if binarySupported BinOp.intDiv (Ty.base BaseTy.integer) = true then
+                    (concreteRule (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)),
+                          Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ::
+                        outsideSyntacticReach
+                          (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩))).tail ++
+                      (concreteRule (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)),
+                          Expr.literal (Literal.integer ⟨0, zero._proof_1⟩)) ::
+                        outsideSyntacticReach (surfacePreorder (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))).tail
+                  else
+                    outsideSyntacticReach
+                      (surfacePreorder (Expr.literal (Literal.integer ⟨1, one._proof_1⟩)) ++
+                        surfacePreorder (Expr.literal (Literal.integer ⟨0, zero._proof_1⟩))))) =
+        [(9, some BinOp.intDiv)]
+is false
+✔ [232/240] Built Benitoite.Interval.BudgetIndependent (1.7s)
+✔ [233/240] Built Benitoite.Interval.BudgetIndependentSound (831ms)
+✖ [234/240] Building Benitoite.Interval.BudgetChildrenExamples (493ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetChildrenExamples.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetChildrenExamples.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetChildrenExamples.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetChildrenExamples.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetChildrenExamples.setup.json --json
+error: Benitoite/Interval/BudgetChildrenExamples.lean:29:0: Expression
+  let cases :=
+    [(call division, [(1, []), (2, [(2, WarningCause.zeroDivisor)])]),
+      (Expr.list (Ty.base BaseTy.integer) (Exprs.cons division (Exprs.cons overflow Exprs.nil)),
+        [(1, [(1, WarningCause.zeroDivisor)]), (4, [(4, WarningCause.overflow)])]),
+      (Expr.record "Example.Record" [] [0] (Exprs.cons division Exprs.nil), [(1, [(1, WarningCause.zeroDivisor)])]),
+      (Expr.recordUpdate "Example.Record" [] 1 [0] Expr.unit (Exprs.cons division Exprs.nil),
+        [(1, []), (2, [(2, WarningCause.zeroDivisor)])]),
+      (Expr.interpolation [] (Exprs.cons division Exprs.nil) (Exprs.cons overflow Exprs.nil),
+        [(1, [(1, WarningCause.zeroDivisor)]), (4, [(4, WarningCause.overflow)])]),
+      (Expr.unit.partialCall ["x", "y"]
+          (HoleArgs.hole none 0 (Ty.base BaseTy.integer) (HoleArgs.expr none 1 division HoleArgs.nil))
+          (Ty.base BaseTy.integer) Eff.empty,
+        [(1, []), (2, [(2, WarningCause.zeroDivisor)])]),
+      (Expr.tryOptionDie (Ty.base BaseTy.integer) "Some" "None" "exit" division (some overflow),
+        [(1, [(1, WarningCause.zeroDivisor)]), (4, [(4, WarningCause.overflow)])]),
+      (Expr.tryOption [Ty.base BaseTy.integer] "Some" "None" division, [(1, [(1, WarningCause.zeroDivisor)])]),
+      (Expr.binary BinOp.mul (Ty.base BaseTy.integer) division overflow,
+        [(1, [(1, WarningCause.zeroDivisor)]), (4, [(4, WarningCause.overflow)])])];
+  cases.all fun x =>
+    match x with
+    | (source, expected) =>
+      let result := output source;
+      result.approx.warnings.isEmpty && decide (entries result.context = expected) &&
+        decide (result.approx.integer = top)
+did not evaluate to `true`
+✔ [235/240] Built Benitoite.Interval.BudgetIndependentExamples (450ms)
+✔ [236/240] Built Benitoite.Interval.BudgetIndependentPosition (1.5s)
+✔ [237/240] Built Benitoite.Interval.BudgetWhole (639ms)
+✔ [238/240] Built Benitoite.Interval.BudgetWholeExamples (357ms)
+Some required targets logged failures:
+- Benitoite.Interval.SyntacticReachExamples
+- Benitoite.Interval.BudgetChildrenExamples
+error: build failed
+
+===== l16-neg1.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✔ [52/58] Built Benitoite.Interval.Eval (4.1s)
+✔ [53/58] Built Benitoite.Interval.Environment (653ms)
+✔ [54/58] Built Benitoite.Interval.EvalClosed (919ms)
+✔ [55/58] Built Benitoite.Interval.Arithmetic (1.0s)
+✔ [56/58] Built Benitoite.Interval.Analyze (469ms)
+⚠ [57/58] Built Benitoite.Interval.Flow (1.0s)
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [58/58] Building Benitoite.Interval.Sound (10s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+error: Benitoite/Interval/Sound.lean:100:2: failed to synthesize instance of type class
+  Decidable (type = Ty.base BaseTy.integer)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Interval/Sound.lean:527:25: unsolved goals
+case succ.mk.neg
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+operandTy✝ : Ty
+e✝ : Expr
+unknown : ¬operandTy✝ = Ty.base BaseTy.integer
+⊢ sorry () = baseUnknown
+warning: Benitoite/Interval/Sound.lean:528:95: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:670:15: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:661:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:670:24: This simp argument is unused:
+  baseThen
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg, live, ↓reduceIte, baseNegOwn, baseInteger]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:670:34: This simp argument is unused:
+  live
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg, baseThen, ↓reduceIte, baseNegOwn, baseInteger]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:670:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg, baseThen, live, baseNegOwn, baseInteger]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:670:52: This simp argument is unused:
+  baseNegOwn
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg, baseThen, live, ↓reduceIte, baseInteger]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:670:64: This simp argument is unused:
+  baseInteger
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg, baseThen, live, ↓reduceIte, baseNegOwn]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:747:12: don't know how to synthesize implicit argument `key`
+  @checkedNeg_contains
+    (analyzeBaseExpr fuel abstract { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }.key
+      { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }.source)
+    value✝ value ?m.4301 ((base_normal_sound fuel models child) (ConcreteValue.integer value✝) rfl) h
+context:
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key✝ : OperationKey
+source✝ : Expr
+value✝ : Integer64Value
+trace✝ : EvalTrace
+child :
+  EvalPartial concrete { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer value✝)) trace✝
+value : ConcreteValue
+h : (checkedNeg value✝).outcome = EvalOutcome.normal value
+⊢ OperationKey
+warning: Benitoite/Interval/Sound.lean:953:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:964:16: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:965:5: Variable name `member` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _member
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+error: Benitoite/Interval/Sound.lean:1022:41: Tactic `subst` failed: 'warning' occurs at
+  { key := ?m.1698, operation := TargetOperation.neg (Ty.base BaseTy.integer), cause := WarningCause.overflow }
+
+case inr
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel : Nat
+type : Ty
+child : Expr
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.neg type child)).warnings
+h✝ :
+  warning =
+    { key := ?m.1698, operation := TargetOperation.neg (Ty.base BaseTy.integer), cause := WarningCause.overflow }
+⊢ KeyWithin key (surfaceSize (Expr.neg type child)) warning.key
+warning: Benitoite/Interval/Sound.lean:1229:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:1270:43: Tactic `subst` failed: 'warning' occurs at
+  { key := ?m.1732, operation := TargetOperation.neg (Ty.base BaseTy.integer), cause := WarningCause.overflow }
+
+case pos.inr
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel : Nat
+child : Expr
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.neg (Ty.base BaseTy.integer) child)).warnings
+h✝ :
+  warning =
+    { key := ?m.1732, operation := TargetOperation.neg (Ty.base BaseTy.integer), cause := WarningCause.overflow }
+⊢ LocatedList key (surfacePreorder (Expr.neg (Ty.base BaseTy.integer) child)) warning
+error: Benitoite/Interval/Sound.lean:1278:6: unsolved goals
+case neg
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel : Nat
+type : Ty
+child : Expr
+member : warning ∈ (sorry ()).warnings
+integer : ¬type = Ty.base BaseTy.integer
+⊢ LocatedList key (surfacePreorder (Expr.neg type child)) warning
+warning: Benitoite/Interval/Sound.lean:1278:31: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1278:40: This simp argument is unused:
+  integer
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseExpr, baseNeg, baseUnknown] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1278:49: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseExpr, baseNeg, integer] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1640:16: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1648:22: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: build failed
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+
+===== l16-neg2.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [58/58] Building Benitoite.Interval.Sound (11s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+warning: Benitoite/Interval/Sound.lean:955:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:1029:81: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  a ≥ 1
+  a - b + c ≤ 0
+where
+ a := ↑(surfaceSize (Expr.neg type child))
+ b := ↑{ key := key, operation := TargetOperation.neg (Ty.base BaseTy.integer),
+        cause := WarningCause.overflow }.key.surfacePreorder
+ c := ↑key.surfacePreorder
+warning: Benitoite/Interval/Sound.lean:1232:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1654:22: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+error: build failed
+
+===== l16-neg3.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [206/240] Built Benitoite.Interval.BudgetEnvironment (1.3s)
+✔ [207/240] Built Benitoite.Interval.BudgetPatterns (1.5s)
+✔ [208/240] Built Benitoite.Interval.BudgetScanExamples (537ms)
+✔ [209/240] Built Benitoite.Interval.BudgetCount (5.6s)
+⚠ [210/240] Built Benitoite.Interval.Sound (12s)
+warning: Benitoite/Interval/Sound.lean:955:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1232:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1654:22: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [211/240] Built Benitoite.Interval.FlowExamples (498ms)
+✔ [212/240] Built Benitoite.Interval.BudgetWalk (500ms)
+✔ [213/240] Built Benitoite.Interval.BudgetIndependentRun (310ms)
+✔ [214/240] Built Benitoite.Interval.BudgetDiscover (510ms)
+✔ [215/240] Built Benitoite.Interval.BudgetChildren (679ms)
+⚠ [216/240] Built Benitoite.Interval.BudgetAnalyze (485ms)
+warning: Benitoite/Interval/BudgetAnalyze.lean:62:23: This simp argument is unused:
+  negSupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [217/240] Built Benitoite.Interval.BudgetProof (362ms)
+✔ [218/240] Built Benitoite.Interval.BudgetTraversal (2.4s)
+✔ [219/240] Built Benitoite.Interval.IdentityExamples (795ms)
+✔ [220/240] Built Benitoite.Interval.BudgetLocated (2.1s)
+✔ [221/240] Built Benitoite.Interval.BudgetDiscoverProof (3.3s)
+✔ [222/240] Built Benitoite.Interval.BudgetDiscoveryExamples (340ms)
+✔ [223/240] Built Benitoite.Interval.SyntacticReach (1.0s)
+✔ [224/240] Built Benitoite.Interval.BudgetNormal (15s)
+✔ [225/240] Built Benitoite.Interval.BudgetCause (587ms)
+✔ [226/240] Built Benitoite.Interval.BudgetAnalysisExamples (739ms)
+✖ [227/240] Building Benitoite.Interval.BudgetSound (10s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetSound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.setup.json --json
+error: Benitoite/Interval/BudgetSound.lean:421:8: Application type mismatch: The argument
+  eval_trace_keys child
+has type
+  TraceKeys { source := source, type := Ty.base BaseTy.integer, key := childKey key [] }.key
+    (surfaceSize { source := source, type := Ty.base BaseTy.integer, key := childKey key [] }.source) trace
+but is expected to have type
+  TraceKeys middle.next ?m.4199 ?m.4200
+in the application
+  causal_bind_root next ?m.4202 ?m.4203 (eval_trace_keys child)
+error: Benitoite/Interval/BudgetSound.lean:432:8: Application type mismatch: The argument
+  eval_trace_keys child
+has type
+  TraceKeys { source := source, type := Ty.base BaseTy.integer, key := childKey key [] }.key
+    (surfaceSize { source := source, type := Ty.base BaseTy.integer, key := childKey key [] }.source) trace
+but is expected to have type
+  TraceKeys middle.next ?m.4276 ?m.4277
+in the application
+  causal_bind_root next ?m.4279
+    (fun tested final x =>
+      causal_map (causal_negOwn fun x member => negOwn_cause_absent key tested member) (?m.4304 tested))
+    (eval_trace_keys child)
+warning: Benitoite/Interval/BudgetSound.lean:435:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:487:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:537:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.BudgetSound
+error: build failed
+
+===== l16-neg4.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [202/240] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:955:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1232:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1654:22: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [213/240] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:62:23: This simp argument is unused:
+  negSupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [227/240] Building Benitoite.Interval.BudgetSound (10s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetSound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.setup.json --json
+error: Benitoite/Interval/BudgetSound.lean:429:16: don't know how to synthesize implicit argument `next`
+  @causal_bind_root BaseApprox ?m.4310 (expr fuel abstract source)
+    (fun tested => do
+      let value ← negOwn key tested
+      pure (?m.4312 tested value))
+    limits middle { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key
+    (surfaceSize source) trace [] next
+    (Eq.mpr
+      (id
+        (congrFun' (congrFun' (congrArg (Causal (expr fuel abstract source) limits middle) next) (surfaceSize source))
+          trace))
+      (expr_causal fuel models child limits middle next))
+    (fun tested final x =>
+      causal_map (causal_negOwn fun x member => negOwn_cause_absent key tested member) (?m.4312 tested))
+    (Eq.mpr (id (congrFun' (congrFun' (congrArg TraceKeys next) (surfaceSize source)) trace)) (eval_trace_keys child))
+    (of_eq_true
+      (Eq.trans
+        (congr (congrArg And List.Pairwise.nil._simp_1)
+          (Eq.trans
+            (forall_congr fun event =>
+              Eq.trans
+                (implies_congr List.not_mem_nil._simp_1
+                  (Eq.refl
+                    (event.key.definition = key.definition ∧
+                      key.surfacePreorder ≤ event.key.surfacePreorder ∧
+                        event.key.surfacePreorder < key.surfacePreorder + 1)))
+                (false_implies
+                  (event.key.definition = key.definition ∧
+                    key.surfacePreorder ≤ event.key.surfacePreorder ∧
+                      event.key.surfacePreorder < key.surfacePreorder + 1)))
+            (implies_true EvalEvent)))
+        (and_self True)))
+context:
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome✝ : EvalOutcome
+trace✝ : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome✝ trace✝
+limits : Limits
+ctx : Context
+fuel : Nat
+entered : Context
+same : entered.next = ctx.next
+middle : Context
+trace : EvalTrace
+outcome : EvalOutcome
+key : OperationKey
+source : Expr
+child : EvalPartial concrete { source := source, type := Ty.base BaseTy.integer, key := childKey key [] } outcome trace
+abrupt : outcome.Abrupt
+start :
+  ctx.next = { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key
+empty : ¬trace = []
+next :
+  middle.next =
+    childKey { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key []
+⊢ BaseApprox → Analysis ?m.4310
+error: Benitoite/Interval/BudgetSound.lean:429:16: don't know how to synthesize implicit argument `β`
+  @causal_bind_root BaseApprox ?m.4310 (expr fuel abstract source)
+    (fun tested => do
+      let value ← negOwn key tested
+      pure (?m.4312 tested value))
+    limits middle { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key
+    (surfaceSize source) trace [] next
+    (Eq.mpr
+      (id
+        (congrFun' (congrFun' (congrArg (Causal (expr fuel abstract source) limits middle) next) (surfaceSize source))
+          trace))
+      (expr_causal fuel models child limits middle next))
+    (fun tested final x =>
+      causal_map (causal_negOwn fun x member => negOwn_cause_absent key tested member) (?m.4312 tested))
+    (Eq.mpr (id (congrFun' (congrFun' (congrArg TraceKeys next) (surfaceSize source)) trace)) (eval_trace_keys child))
+    (of_eq_true
+      (Eq.trans
+        (congr (congrArg And List.Pairwise.nil._simp_1)
+          (Eq.trans
+            (forall_congr fun event =>
+              Eq.trans
+                (implies_congr List.not_mem_nil._simp_1
+                  (Eq.refl
+                    (event.key.definition = key.definition ∧
+                      key.surfacePreorder ≤ event.key.surfacePreorder ∧
+                        event.key.surfacePreorder < key.surfacePreorder + 1)))
+                (false_implies
+                  (event.key.definition = key.definition ∧
+                    key.surfacePreorder ≤ event.key.surfacePreorder ∧
+                      event.key.surfacePreorder < key.surfacePreorder + 1)))
+            (implies_true EvalEvent)))
+        (and_self True)))
+context:
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome✝ : EvalOutcome
+trace✝ : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome✝ trace✝
+limits : Limits
+ctx : Context
+fuel : Nat
+entered : Context
+same : entered.next = ctx.next
+middle : Context
+trace : EvalTrace
+outcome : EvalOutcome
+key : OperationKey
+source : Expr
+child : EvalPartial concrete { source := source, type := Ty.base BaseTy.integer, key := childKey key [] } outcome trace
+abrupt : outcome.Abrupt
+start :
+  ctx.next = { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key
+empty : ¬trace = []
+next :
+  middle.next =
+    childKey { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key []
+⊢ Type
+error: Benitoite/Interval/BudgetSound.lean:431:31: don't know how to synthesize implicit argument `β`
+  @causal_map BaseApprox ?m.4310 (negOwn key tested) limits final key 1 []
+    (causal_negOwn fun x member => negOwn_cause_absent key tested member) (?m.4312 tested)
+context:
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome✝ : EvalOutcome
+trace✝ : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome✝ trace✝
+limits : Limits
+ctx : Context
+fuel : Nat
+entered : Context
+same : entered.next = ctx.next
+middle : Context
+trace : EvalTrace
+outcome : EvalOutcome
+key : OperationKey
+source : Expr
+child : EvalPartial concrete { source := source, type := Ty.base BaseTy.integer, key := childKey key [] } outcome trace
+abrupt : outcome.Abrupt
+start :
+  ctx.next = { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key
+empty : ¬trace = []
+next :
+  middle.next =
+    childKey { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key []
+tested : BaseApprox
+final : Context
+x✝ : expr fuel abstract source limits middle = (Except.ok tested, final)
+⊢ Type
+error: Benitoite/Interval/BudgetSound.lean:431:114: don't know how to synthesize placeholder for argument `f`
+context:
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome✝ : EvalOutcome
+trace✝ : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome✝ trace✝
+limits : Limits
+ctx : Context
+fuel : Nat
+entered : Context
+same : entered.next = ctx.next
+middle : Context
+trace : EvalTrace
+outcome : EvalOutcome
+key : OperationKey
+source : Expr
+child : EvalPartial concrete { source := source, type := Ty.base BaseTy.integer, key := childKey key [] } outcome trace
+abrupt : outcome.Abrupt
+start :
+  ctx.next = { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key
+empty : ¬trace = []
+next :
+  middle.next =
+    childKey { source := Expr.neg (Ty.base BaseTy.integer) source, type := Ty.base BaseTy.integer, key := key }.key []
+tested : BaseApprox
+final : Context
+x✝ : expr fuel abstract source limits middle = (Except.ok tested, final)
+⊢ BaseApprox → ?m.4310
+error: Benitoite/Interval/BudgetSound.lean:429:11: failed to infer `have` declaration type
+warning: Benitoite/Interval/BudgetSound.lean:435:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it froerror: build failed
+m the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:487:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:537:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.BudgetSound
+
+===== l16-neg5.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [202/240] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:955:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1232:22: This simp argument is unused:
+  baseUnknown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseBoolean, baseEmpty, targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1654:22: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseNeg] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [216/240] Built Benitoite.Interval.BudgetAnalyze (492ms)
+✔ [217/240] Built Benitoite.Interval.BudgetProof (354ms)
+✔ [218/240] Built Benitoite.Interval.BudgetTraversal (2.4s)
+✔ [219/240] Built Benitoite.Interval.IdentityExamples (791ms)
+✔ [220/240] Built Benitoite.Interval.BudgetLocated (2.2s)
+✔ [221/240] Built Benitoite.Interval.BudgetDiscoverProof (3.3s)
+✔ [222/240] Built Benitoite.Interval.BudgetDiscoveryExamples (381ms)
+✔ [223/240] Built Benitoite.Interval.SyntacticReach (2.1s)
+✔ [224/240] Built Benitoite.Interval.BudgetNormal (15s)
+✔ [225/240] Built Benitoite.Interval.BudgetCause (582ms)
+✔ [226/240] Built Benitoite.Interval.BudgetAnalysisExamples (728ms)
+⚠ [227/240] Built Benitoite.Interval.BudgetSound (10s)
+warning: Benitoite/Interval/BudgetSound.lean:437:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:489:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:539:63: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize_binary, binarySupported, true_or, decide_true, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [228/240] Built Benitoite.Interval.BudgetBody (329ms)
+✔ [229/240] Built Benitoite.Interval.Examples (949ms)
+✔ [230/240] Built Benitoite.Interval.BudgetReach (1.5s)
+✔ [231/240] Built Benitoite.Interval.SyntacticReachExamples (373ms)
+✔ [232/240] Built Benitoite.Interval.BudgetIndependent (1.8s)
+✔ [233/240] Built Benitoite.Interval.BudgetIndependentSound (887ms)
+✔ [234/240] Built Benitoite.Interval.BudgetChildrenExamples (479ms)
+✔ [235/240] Built Benitoite.Interval.BudgetIndependentExamples (427ms)
+✔ [236/240] Built Benitoite.Interval.BudgetIndependentPosition (1.5s)
+✔ [237/240] Built Benitoite.Interval.BudgetWhole (608ms)
+✔ [238/240] Built Benitoite.Interval.BudgetWholeExamples (362ms)
+✔ [239/240] Built Benitoite (610ms)
+Build completed successfully (240 jobs).
+
+===== l16-final-local.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [210/240] Building Benitoite.Interval.Sound (11s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+error: Benitoite/Interval/Sound.lean:1555:85: unsolved goals
+case base.integer.isFalse.isFalse.isFalse.isFalse.isFalse
+key : OperationKey
+op : BinOp
+left right : BaseApprox
+warning : IntervalWarning
+h✝⁴ : ¬op = BinOp.add
+h✝³ : ¬op = BinOp.sub
+h✝² : ¬op = BinOp.mul
+h✝¹ : ¬IntegerDivisionOp op
+h✝ : Comparison.ofBinOp op = none
+h : warning ∈ baseUnknown.warnings
+⊢ warning.key = key
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+error: build failed
+
+===== l16-final-local2.log =====
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [210/240] Built Benitoite.Interval.Sound (11s)
+✔ [211/240] Built Benitoite.Interval.FlowExamples (504ms)
+✔ [212/240] Built Benitoite.Interval.BudgetWalk (507ms)
+✔ [213/240] Built Benitoite.Interval.BudgetIndependentRun (324ms)
+✔ [214/240] Built Benitoite.Interval.BudgetDiscover (530ms)
+✔ [215/240] Built Benitoite.Interval.BudgetChildren (674ms)
+✔ [216/240] Built Benitoite.Interval.BudgetAnalyze (468ms)
+✔ [217/240] Built Benitoite.Interval.BudgetProof (369ms)
+✔ [218/240] Built Benitoite.Interval.BudgetTraversal (2.4s)
+✔ [219/240] Built Benitoite.Interval.IdentityExamples (822ms)
+✔ [220/240] Built Benitoite.Interval.BudgetLocated (2.2s)
+✔ [221/240] Built Benitoite.Interval.BudgetDiscoverProof (3.4s)
+✔ [222/240] Built Benitoite.Interval.BudgetDiscoveryExamples (366ms)
+✔ [223/240] Built Benitoite.Interval.SyntacticReach (2.1s)
+✔ [224/240] Built Benitoite.Interval.BudgetNormal (15s)
+✔ [225/240] Built Benitoite.Interval.BudgetCause (603ms)
+✔ [226/240] Built Benitoite.Interval.BudgetAnalysisExamples (784ms)
+✔ [227/240] Built Benitoite.Interval.BudgetSound (11s)
+✔ [228/240] Built Benitoite.Interval.BudgetBody (316ms)
+✔ [229/240] Built Benitoite.Interval.Examples (958ms)
+✔ [230/240] Built Benitoite.Interval.BudgetReach (1.5s)
+✔ [231/240] Built Benitoite.Interval.SyntacticReachExamples (374ms)
+✔ [232/240] Built Benitoite.Interval.BudgetIndependent (1.8s)
+✔ [233/240] Built Benitoite.Interval.BudgetIndependentSound (901ms)
+✔ [234/240] Built Benitoite.Interval.BudgetIndependentExamples (433ms)
+✔ [235/240] Built Benitoite.Interval.BudgetChildrenExamples (492ms)
+✔ [236/240] Built Benitoite.Interval.BudgetIndependentPosition (1.5s)
+✔ [237/240] Built Benitoite.Interval.BudgetWhole (635ms)
+✔ [238/240] Built Benitoite.Interval.BudgetWholeExamples (365ms)
+✔ [239/240] Built Benitoite (594ms)
+Build completed successfully (240 jobs).

@@ -125,6 +125,7 @@ fn collect(entry: &EntrySpec, fs: &dyn ModuleFs) -> DeclarationResult {
         sources: Arc::new(loaded.sources),
         entry: None,
         diagnostics: vec![],
+        interval_analysis: Default::default(),
         program: None,
     };
     super::append_stage(&mut result, loaded.diagnostics, &hidden);

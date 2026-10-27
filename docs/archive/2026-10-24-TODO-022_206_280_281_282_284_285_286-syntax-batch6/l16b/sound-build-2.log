@@ -1,0 +1,543 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [57/57] Building Benitoite.Interval.Sound (12s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+warning: Benitoite/Interval/Sound.lean:69:5: Variable name `bounded` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _bounded
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+error: Benitoite/Interval/Sound.lean:81:81: unsolved goals
+case integer8
+value : Int
+bounded : IntKind.integer8.min ≤ value ∧ value ≤ IntKind.integer8.max
+inside : Mem value (normalize value value IntKind.integer8)
+nonempty : ¬normalize value value IntKind.integer8 = Interval.bottom
+⊢ Mem (IntegerValue.toInt ⟨value, bounded⟩) (normalize value value IntKind.integer8)
+
+case integer16
+value : Int
+bounded : IntKind.integer16.min ≤ value ∧ value ≤ IntKind.integer16.max
+inside : Mem value (normalize value value IntKind.integer16)
+nonempty : ¬normalize value value IntKind.integer16 = Interval.bottom
+⊢ Mem (IntegerValue.toInt ⟨value, bounded⟩) (normalize value value IntKind.integer16)
+
+case integer32
+value : Int
+bounded : IntKind.integer32.min ≤ value ∧ value ≤ IntKind.integer32.max
+inside : Mem value (normalize value value IntKind.integer32)
+nonempty : ¬normalize value value IntKind.integer32 = Interval.bottom
+⊢ Mem (IntegerValue.toInt ⟨value, bounded⟩) (normalize value value IntKind.integer32)
+
+case integer64
+value : Int
+bounded : IntKind.integer64.min ≤ value ∧ value ≤ IntKind.integer64.max
+inside : Mem value (normalize value value)
+nonempty : ¬normalize value value = Interval.bottom
+⊢ Mem (Integer64Value.toInt ⟨value, bounded⟩) (normalize value value)
+
+case unsignedInteger16
+value : Int
+bounded : IntKind.unsignedInteger16.min ≤ value ∧ value ≤ IntKind.unsignedInteger16.max
+inside : Mem value (normalize value value IntKind.unsignedInteger16)
+nonempty : ¬normalize value value IntKind.unsignedInteger16 = Interval.bottom
+⊢ Mem (IntegerValue.toInt ⟨value, bounded⟩) (normalize value value IntKind.unsignedInteger16)
+
+case unsignedInteger32
+value : Int
+bounded : IntKind.unsignedInteger32.min ≤ value ∧ value ≤ IntKind.unsignedInteger32.max
+inside : Mem value (normalize value value IntKind.unsignedInteger32)
+nonempty : ¬normalize value value IntKind.unsignedInteger32 = Interval.bottom
+⊢ Mem (IntegerValue.toInt ⟨value, bounded⟩) (normalize value value IntKind.unsignedInteger32)
+
+case unsignedInteger64
+value : Int
+bounded : IntKind.unsignedInteger64.min ≤ value ∧ value ≤ IntKind.unsignedInteger64.max
+inside : Mem value (normalize value value IntKind.unsignedInteger64)
+nonempty : ¬normalize value value IntKind.unsignedInteger64 = Interval.bottom
+⊢ Mem (IntegerValue.toInt ⟨value, bounded⟩) (normalize value value IntKind.unsignedInteger64)
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.451
+has type
+  baseUnknown.Contains ?m.451
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer8 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.464
+has type
+  baseUnknown.Contains ?m.464
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer16 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.477
+has type
+  baseUnknown.Contains ?m.477
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer32 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.490
+has type
+  baseUnknown.Contains ?m.490
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger16 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.503
+has type
+  baseUnknown.Contains ?m.503
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger32 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.516
+has type
+  baseUnknown.Contains ?m.516
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger64 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.527
+has type
+  baseUnknown.Contains ?m.527
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.540
+has type
+  baseUnknown.Contains ?m.540
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝¹) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.other type✝ notInteger✝ notBoolean✝ notUnit✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.553
+has type
+  baseUnknown.Contains ?m.553
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.checkedRange owner✝ origin✝ value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.566
+has type
+  baseUnknown.Contains ?m.566
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.rangeError owner✝ name✝ error✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.579
+has type
+  baseUnknown.Contains ?m.579
+but is expected to have type
+  (match some (AbstractSlot.unknown type✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.con owner✝ types✝ name✝ args✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.692
+has type
+  baseUnknown.Contains ?m.692
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer8 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.705
+has type
+  baseUnknown.Contains ?m.705
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer16 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.718
+has type
+  baseUnknown.Contains ?m.718
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer32 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.731
+has type
+  baseUnknown.Contains ?m.731
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger16 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.744
+has type
+  baseUnknown.Contains ?m.744
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger32 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.757
+has type
+  baseUnknown.Contains ?m.757
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger64 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.768
+has type
+  baseUnknown.Contains ?m.768
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.781
+has type
+  baseUnknown.Contains ?m.781
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.other type✝ notInteger✝ notBoolean✝ notUnit✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.794
+has type
+  baseUnknown.Contains ?m.794
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warerror: build failed
+nings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.checkedRange owner✝ origin✝ value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.807
+has type
+  baseUnknown.Contains ?m.807
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.rangeError owner✝ name✝ error✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.820
+has type
+  baseUnknown.Contains ?m.820
+but is expected to have type
+  (match some (AbstractSlot.builder kind✝) with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.con owner✝ types✝ name✝ args✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.931
+has type
+  baseUnknown.Contains ?m.931
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer8 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.944
+has type
+  baseUnknown.Contains ?m.944
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer16 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.957
+has type
+  baseUnknown.Contains ?m.957
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.integer32 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.970
+has type
+  baseUnknown.Contains ?m.970
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger16 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.983
+has type
+  baseUnknown.Contains ?m.983
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger32 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.996
+has type
+  baseUnknown.Contains ?m.996
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.unsignedInteger64 value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.1007
+has type
+  baseUnknown.Contains ?m.1007
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.1020
+has type
+  baseUnknown.Contains ?m.1020
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.other type✝ notInteger✝ notBoolean✝ notUnit✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.1033
+has type
+  baseUnknown.Contains ?m.1033
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.checkedRange owner✝ origin✝ value✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.1046
+has type
+  baseUnknown.Contains ?m.1046
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.rangeError owner✝ name✝ error✝)
+error: Benitoite/Interval/Sound.lean:680:11: Type mismatch
+  unknown_contains ?m.1059
+has type
+  baseUnknown.Contains ?m.1059
+but is expected to have type
+  (match some AbstractSlot.unavailable with
+      | some (AbstractSlot.integer range) => baseInteger range true
+      | some (AbstractSlot.integerKind kind range) => baseIntegerKind kind range true
+      | x =>
+        { integer := integerAt abstract index, boolean := baseUnknown.boolean, other := baseUnknown.other,
+          mayFail := baseUnknown.mayFail, warnings := baseUnknown.warnings, widths := baseUnknown.widths }).Contains
+    (ConcreteValue.con owner✝ types✝ name✝ args✝)
+error: Benitoite/Interval/Sound.lean:1231:38: Redundant alternative: Any expression matching
+  Expr.negInteger8 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1231:56: Redundant alternative: Any expression matching
+  Expr.negInteger16 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1231:75: Redundant alternative: Any expression matching
+  Expr.negInteger32 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1235:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger8 n✝)).warnings
+⊢ KeyWithin key (surfaceSize (Expr.negInteger8 n✝)) warning.key
+error: Benitoite/Interval/Sound.lean:1235:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger16 n✝)).warnings
+⊢ KeyWithin key (surfaceSize (Expr.negInteger16 n✝)) warning.key
+error: Benitoite/Interval/Sound.lean:1235:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger32 n✝)).warnings
+⊢ KeyWithin key (surfaceSize (Expr.negInteger32 n✝)) warning.key
+error: Benitoite/Interval/Sound.lean:1521:38: Redundant alternative: Any expression matching
+  Expr.negInteger8 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1521:56: Redundant alternative: Any expression matching
+  Expr.negInteger16 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1521:75: Redundant alternative: Any expression matching
+  Expr.negInteger32 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1525:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger8 n✝)).warnings
+⊢ LocatedList key (surfacePreorder (Expr.negInteger8 n✝)) warning
+error: Benitoite/Interval/Sound.lean:1525:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger16 n✝)).warnings
+⊢ LocatedList key (surfacePreorder (Expr.negInteger16 n✝)) warning
+error: Benitoite/Interval/Sound.lean:1525:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger32 n✝)).warnings
+⊢ LocatedList key (surfacePreorder (Expr.negInteger32 n✝)) warning
+Some required targets logged failures:
+- Benitoite.Interval.Sound

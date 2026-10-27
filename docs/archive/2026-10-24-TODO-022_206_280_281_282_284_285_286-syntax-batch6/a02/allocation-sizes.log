@@ -1,0 +1,23 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 1 test
+5000 constants, 1000 diagnostics: 6.392473s, 327850390 allocated bytes
+A02 allocation sizes: [(107491580, 8192), (49582080, 3072), (32689152, 192), (21643200, 288), (21522560, 160), (14563200, 1184), (13216320, 72), (4480720, 80), (4115584, 1408), (3885504, 672), (3500160, 320), (3263392, 584), (3210112, 496), (3033536, 704), (2651040, 480), (2452400, 40), (2364768, 3312), (2323464, 104), (1871328, 48), (1766800, 56), (1667072, 352), (1523648, 304), (1467232, 416), (1237536, 144)]
+
+thread 'repeated_constant_diagnostics_share_bounded_origin_work' (1944367) panicked at crates/benitoite/tests/call_allocations.rs:251:5:
+repeated origin traversal regression: 327850390
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test repeated_constant_diagnostics_share_bounded_origin_work ... FAILED
+
+failures:
+
+failures:
+    repeated_constant_diagnostics_share_bounded_origin_work
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 6.40s
+
+error: test failed, to rerun pass `-p benitoite --test call_allocations`
+A02_OUTER_EXIT_STATUS=101
+A02_OUTER_ELAPSED_SECONDS=7.81

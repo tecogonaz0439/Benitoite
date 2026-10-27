@@ -1,0 +1,11 @@
+import Benitoite.Interval.BudgetWhole
+open Benitoite.Surface Benitoite.Release Benitoite.Interval
+#check BudgetDiscovery.discover
+private def emptySeed : BodySeed := ⟨.function, .last (.lam [] [] (.base .unit) Eff.empty .empty), AbstractEnv.ofLocals []⟩
+private def paramSeed : BodySeed := ⟨.function, .last (.lam [] [.base .integer] (.base .unit) Eff.empty .empty), AbstractEnv.ofLocals []⟩
+#eval
+  let r := BudgetDiscovery.discover {} {} 100 "Example.empty" emptySeed
+  (r.context.walk.budget.body.operations, r.context.walk.budget.body.saved, r.context.walk.budget.body.peak, r.context.walk.budget.body.temporary)
+#eval
+  let r := BudgetDiscovery.discover {} {} 100 "Example.param" paramSeed
+  (r.context.walk.budget.body.operations, r.context.walk.budget.body.saved, r.context.walk.budget.body.peak, r.context.walk.budget.body.temporary)

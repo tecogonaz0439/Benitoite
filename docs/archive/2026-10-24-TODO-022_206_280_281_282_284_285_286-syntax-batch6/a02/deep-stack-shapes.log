@@ -1,0 +1,15 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error: expected `,` following `match` arm
+   --> crates/benitoite/src/typeck/interval/identity.rs:659:84
+    |
+659 |             Expr::Lit(_) | Expr::Unit(_) | Expr::Name(_) | Expr::Unary(_) => Ok(())
+    |                                                                                    ^
+    |
+help: missing a comma here to end this `match` arm
+    |
+659 |             Expr::Lit(_) | Expr::Unit(_) | Expr::Name(_) | Expr::Unary(_) => Ok(()),
+    |                                                                                    +
+
+error: could not compile `benitoite` (lib test) due to 1 previous error
+A02_OUTER_EXIT_STATUS=101
+A02_OUTER_ELAPSED_SECONDS=1.83

@@ -24,7 +24,7 @@ class GeneratorTests(unittest.TestCase):
     def test_matrix_and_api_boundaries(self):
         cases = corpus(False)
         main = [c for c in cases if c.section == '16.2' and c.family == 'main' and not c.codes]
-        self.assertEqual({c.n for c in main}, {0, 10, 100, 1000, 1250, 2500, 5000, 10000, 20000})
+        self.assertEqual({c.n for c in main}, {0, 1, 8, 10, 32, 64, 100, 256, 1000, 1250, 2500, 5000, 10000, 20000})
         properties = [c for c in cases if c.id.startswith('property-')]
         self.assertEqual(len(properties), 3*4*4*4*2)
         for c in properties:
@@ -33,6 +33,43 @@ class GeneratorTests(unittest.TestCase):
         modules = next(c for c in cases if c.id == 'functions-modules-1250-0')
         self.assertEqual(len(modules.sources('legacy')), 14)
         self.assertEqual(modules.sources('legacy')['main.bnt'].count('import Part'), 13)
+
+    def test_interval_check_points_and_load_controls(self):
+        # 関門: 新系列の測定漏れと、標準ロード固定費を空対照へ混ぜる退行を防ぐ。
+        # 既存の全族の検査は各系列の代表点や対照の対応までは拘束しない。
+        families = {'interval-'+name for name in ('bind', 'add', 'flow', 'range', 'http')}
+        families.update('interval-width-'+name for name in (
+            'Integer8', 'Integer16', 'Integer32', 'Integer64',
+            'UnsignedInteger16', 'UnsignedInteger32', 'UnsignedInteger64'))
+        full = corpus(False)
+        index = {c.id: c for c in full}
+        for quick in (False, True):
+            generated = corpus(quick)
+            selected = select_tier(generated, 'short', quick=quick)
+            intervals = [c for c in selected if c.family.startswith('interval-')]
+            self.assertEqual({c.family for c in intervals}, families)
+            for family in families:
+                self.assertEqual({c.n for c in intervals if c.family == family and c.n},
+                                 {1, 8, 32} if quick else {64, 256}, family)
+            ids = {c.id for c in selected}
+            for n in ((0, 1, 8, 32) if quick else (0, 64, 256)):
+                self.assertIn(f'functions-main-{n}-0', ids)
+                c = next(c for c in selected if c.id == f'functions-main-{n}-0')
+                self.assertEqual(c.params['source_bytes'],
+                                 sum(len(s.encode()) for s in c.sources('legacy').values()))
+            for c in intervals:
+                self.assertEqual(c.command, 'check')
+                self.assertEqual(c.codes, ())
+                self.assertFalse(c.requires)
+                source = c.sources('legacy')['main.bnt']
+                self.assertEqual(c.files['legacy'], c.files['modern'])
+                self.assertEqual(c.params['source_bytes'], len(source.encode()))
+                control = index[c.params['control_case']]
+                self.assertIn(control.id, ids)
+                control_source = control.sources('legacy')['main.bnt']
+                self.assertEqual([s for s in source.splitlines() if s.startswith('import ')],
+                                 [s for s in control_source.splitlines() if s.startswith('import ')])
+                self.assertNotIn(' bind ', control_source)
 
     def test_short_proposals_preserve_every_goal_input(self):
         full = corpus(False, fixtures=Path('.'))

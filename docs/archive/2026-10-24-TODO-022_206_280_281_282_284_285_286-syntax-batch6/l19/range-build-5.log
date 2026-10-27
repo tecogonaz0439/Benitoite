@@ -1,0 +1,89 @@
+⚠ [54/55] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:870:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1079:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [55/55] Building Benitoite.Interval.Range (458ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Range.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.setup.json --json
+error: Benitoite/Interval/Range.lean:490:10: unexpected token 'local'; expected term
+error: Benitoite/Interval/Range.lean:489:92: unsolved goals
+case pos
+abstract : AbstractEnv
+state : RangeState
+env : ConcreteEnv
+input : EvalInput
+origin : RangeOrigin
+result : ConcreteValue
+models : Models abstract env
+related : state.Models env
+recognized : rangeResultOrigin abstract state input = some origin
+evaluated : RangeSourceNormal env input origin result
+h✝ : sorry
+⊢ origin.ResultModels result
+
+case neg
+abstract : AbstractEnv
+state : RangeState
+env : ConcreteEnv
+input : EvalInput
+origin : RangeOrigin
+result : ConcreteValue
+models : Models abstract env
+related : state.Models env
+recognized : rangeResultOrigin abstract state input = some origin
+evaluated : RangeSourceNormal env input origin result
+h✝ : ¬sorry
+⊢ origin.ResultModels result
+error: Benitoite/Interval/Range.lean:490:16: unexpected token ':'; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+error: Benitoite/Interval/Range.lean:490:49: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+error: Benitoite/Interval/Range.lean:491:35: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+error: Benitoite/Interval/Range.lean:512:75: unexpected token '⟨'; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+error: Benitoite/Interval/Range.lean:521:74: unexpected token '⟨'; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+error: Benitoite/Interval/Range.lean:664:38: Application type mismatch: The argument
+  rfl
+has type
+  ?m.18 = ?m.18
+but is expected to have type
+  Unsupported
+    { source := Expr.tryResult [Ty.base BaseTy.integer, Ty.base BaseTy.unit] ok err source,
+        type := Ty.base BaseTy.integer, key := key }.source
+in the application
+  Or.inl rfl
+error: Benitoite/Interval/Range.lean:664:75: Application type mismatch: The argument
+  rfl
+has type
+  ?m.26 = ?m.26
+but is expected to have type
+  Unsupported
+    { source := Expr.tryResult [Ty.base BaseTy.integer, Ty.base BaseTy.unit] ok err source,
+        type := Ty.base BaseTy.integer, key := key }.source
+in the application
+  Or.inl rfl
+Some required targets logged failures:
+- Benitoite.Interval.Range
+error: build failed
+
+exit=1, seconds=0.563

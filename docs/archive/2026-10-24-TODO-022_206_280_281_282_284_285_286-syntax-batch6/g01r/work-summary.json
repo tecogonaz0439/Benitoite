@@ -1,0 +1,31 @@
+{
+  "started": "2026-10-27T01:57:28.930394+00:00",
+  "finished": "2026-10-27T02:00:59.659763+00:00",
+  "seconds": 210.72966108399999,
+  "check_exit": 1,
+  "time_exit": 1,
+  "child_ru_maxrss_bytes": 4648697856,
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "6f694c4ab2f1f7310c56cebb71e8803cfbeab7f8",
+    "--test",
+    "golden",
+    "--test",
+    "cli_process",
+    "--test",
+    "declarations",
+    "--test",
+    "skill_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "spec_examples",
+    "--test",
+    "reference_examples"
+  ],
+  "configuration": "default gc-mark-sweep",
+  "cargo_home": "<tmp>/benitoite-s02a/cargo"
+}

@@ -1,0 +1,8 @@
+Benitoite/Interval/FixedDomain.lean:337:4: error: Dependent elimination failed: Failed to solve equation
+  some fact =
+    match state.lookup index, fun fact =>
+      match Ty.data d✝ owner with
+      | Ty.data owner [] => if owner = fact.declaration.owner then some fact else none
+      | x => none with
+    | none, x => none
+    | some a, f => f a

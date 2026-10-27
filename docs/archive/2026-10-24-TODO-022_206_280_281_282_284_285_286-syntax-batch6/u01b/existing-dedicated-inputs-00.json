@@ -1,0 +1,44 @@
+[
+  {
+    "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+        "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 5,
+          "coverage": "Some",
+          "inputDefinitions": 19,
+          "maxBodyItems": 75058,
+          "maxBodyOperations": 100000,
+          "operations": 731021,
+          "peakItems": 473313,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 6,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 6,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 473254,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 19
+      }
+    ]
+  }
+]

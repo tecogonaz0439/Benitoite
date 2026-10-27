@@ -1,0 +1,26 @@
+import Benitoite
+#print axioms Benitoite.Interval.NormalSoundness
+#print axioms Benitoite.Interval.WarningSoundness
+#print axioms Benitoite.Interval.fixed_disjoint_outside
+#print axioms Benitoite.Interval.fixed_disjoint_iff
+#print axioms Benitoite.Interval.fixed_outside_result
+#print axioms Benitoite.Interval.fixed_evaluation_total
+#print axioms Benitoite.Interval.fixed_normal_inside
+#print axioms Benitoite.Interval.fixed_not_overflow
+#print axioms Benitoite.Interval.fixed_disjoint_rejected
+#print axioms Benitoite.Interval.fixed_at_disjoint_failed
+#print axioms Benitoite.Interval.arithmetic_target_at
+#print axioms Benitoite.Interval.target_at_tables
+#print axioms Benitoite.Interval.target_at_function
+#print axioms Benitoite.Interval.target_at_operation
+#print axioms Benitoite.Interval.analyzeBase_normal_sound
+#print axioms Benitoite.Interval.analyzeBase_warning_sound
+#print axioms Benitoite.Interval.analyzeBase_warning_located
+#print axioms Benitoite.Interval.BudgetAnalysis.analyze_warning_sound
+#print axioms Benitoite.Interval.BudgetAnalysis.analyze_warning_located
+#print axioms Benitoite.Interval.BudgetAnalysis.analyzeBody_normal
+#print axioms Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_sound
+#print axioms Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_located
+#print axioms Benitoite.Interval.BudgetAnalysis.WarningsInSyntacticReach.located
+#print axioms Benitoite.Interval.BudgetAnalysis.analyzeExpr_independent_sound
+#print axioms Benitoite.Interval.BudgetAnalysis.analyzeBody_independent_sound

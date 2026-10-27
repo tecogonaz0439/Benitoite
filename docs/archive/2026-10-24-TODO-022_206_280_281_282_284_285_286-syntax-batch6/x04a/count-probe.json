@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "from pathlib import Path; import json, runpy; h=runpy.run_path(\"scripts/check/formal_interval.py\"); roots={name:Path(\"target/\"+directory+\"/x04a-local\").resolve() for name,directory in [(\"interval\",\"interval-diff\"),(\"desugar\",\"desugar-diff\"),(\"coverage\",\"coverage-diff\")]}; p=roots[\"interval\"]/\"manifest.json\"; original=p.read_bytes(); d=json.loads(original); d[\"counts\"][\"vm\"][\"arithmetic\"]+=1; h[\"write\"](p,d)\ntry:\n h[\"verify\"](roots)\nexcept AssertionError as error:\n print(\"wrong count rejected:\",error)\nelse:\n raise AssertionError(\"wrong count accepted\")\nfinally:\n p.write_bytes(original)\nh[\"verify\"](roots)"
+  ],
+  "exit": 0,
+  "seconds": 1.035,
+  "cargoHome": "<tmp>/benitoite-a01a-cargo"
+}

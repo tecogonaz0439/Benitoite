@@ -4,7 +4,7 @@ Benitoite is a statically typed functional scripting language for automating eve
 
 ## Status
 
-The current version is `0.0.11` ([changes and migration](CHANGELOG.md#0011-san-benito)). Source-only release. No executables are provided. Executables will be provided from `0.1.0`.
+The current version is `0.0.12` ([changes and migration](CHANGELOG.md#0012-san-benito)). Source-only release. No executables are provided. Executables will be provided from `0.1.0`.
 
 Read the [language reference](docs/reference/benitoite.md) and [installation guide](docs/reference/install.md). The source includes the development [derive tool](tools/derive/README.md) for record JSON conversions and pure property generators/shrinkers.
 

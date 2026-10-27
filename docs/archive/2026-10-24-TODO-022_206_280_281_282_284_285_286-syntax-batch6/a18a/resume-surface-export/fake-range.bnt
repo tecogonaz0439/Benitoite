@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Range
+
+function checkInteger(minimum: Integer, maximum: Integer, value: Integer) -> Integer
+  return value
+end function
+
+function fakeIdentity() -> Integer
+  return checkInteger(value: 5, maximum: 10, minimum: 0)
+end function

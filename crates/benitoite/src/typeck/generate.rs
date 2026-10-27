@@ -152,6 +152,7 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
     if valid {
         super::consts::warnings(&mut ctx, block);
     }
+    ctx.collect_interval(f.id, valid);
     ctx.finish();
     if !d
         .diagnostics
@@ -160,6 +161,13 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
         .any(super::consts::prevents_evaluation)
     {
         super::checked_args::check(d, block);
+    }
+    if d.diagnostics
+        .iter()
+        .skip(before)
+        .any(crate::diag::Diagnostic::is_error)
+    {
+        d.interval.invalidate(f.id);
     }
 }
 

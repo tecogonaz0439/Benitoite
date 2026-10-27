@@ -777,10 +777,32 @@ fn main_check_reports_sources_without_execution() {
         ("bom", Some(b"\xef\xbb\xbf// source\nfunction main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("dependency-package", Some(b"import Tk.Helper\nfunction main() -> Unit\nend function\n"), Some(&[]), "present", None, true, &[
             ("package.bnt", b"// root config\ndependency Tk\n    path \"deps/kit\"\nend dependency\n"),
-            ("deps/kit/package.bnt", b"language \"0.0.11\"\npackage Kit\nend package\n"),
+            ("deps/kit/package.bnt", b"language \"0.0.12\"\npackage Kit\nend package\n"),
             ("deps/kit/Helper.bnt", b"import Benitoite.Unofficial.IO.Process\npublic function unused() -> Unit\n    bind action <- Process.shell\nend function\n"),
         ]),
     ]);
+}
+
+// 既存必須欄の厳密な比較は保ち、追加欄の値は報告の集計の表で検査する。
+fn report_without_interval_extension(report: &serde_json::Value) -> serde_json::Value {
+    let mut legacy = report.clone();
+    assert!(
+        legacy
+            .as_object_mut()
+            .unwrap()
+            .remove("intervalAnalysis")
+            .is_some()
+    );
+    for target in legacy["targets"].as_array_mut().unwrap() {
+        assert!(
+            target
+                .as_object_mut()
+                .unwrap()
+                .remove("intervalAnalysis")
+                .is_some()
+        );
+    }
+    legacy
 }
 
 fn check_main_reports(cases: &[CheckReportCase<'_>]) {
@@ -937,7 +959,7 @@ fn check_main_reports(cases: &[CheckReportCase<'_>]) {
             .collect::<Vec<_>>();
         let status = if success { "ok" } else { "checkError" };
         assert_eq!(
-            report,
+            report_without_interval_extension(&report),
             json!({
                 "schemaVersion": 1, "kind": "checkReport",
                 "producer": { "name": "benitoite", "version": env!("CARGO_PKG_VERSION"), "build": version["build"] },
@@ -1003,7 +1025,7 @@ fn check_report_panics_preserve_failure_and_single_output() {
         }
         assert!(!String::from_utf8_lossy(&output.stdout).contains("panicked at"));
         assert_eq!(
-            report,
+            report_without_interval_extension(&report),
             json!({
                 "schemaVersion": 1, "kind": "checkReport",
                 "producer": { "name": "benitoite", "version": env!("CARGO_PKG_VERSION"), "build": version["build"] },
@@ -1347,7 +1369,7 @@ fn check_usage_reports_respect_option_scope_and_argument_order() {
                 .into_iter()
                 .collect::<Vec<_>>();
             assert_eq!(
-                report,
+                report_without_interval_extension(&report),
                 json!({
                     "schemaVersion": 1, "kind": "checkReport",
                     "producer": {"name": "benitoite", "version": env!("CARGO_PKG_VERSION"), "build": version["build"]},
@@ -2878,6 +2900,13 @@ fn test_doc_uses_version_two_and_keeps_check_nonexecuting() {
     assert_eq!(report["schemaVersion"], 2);
     assert_eq!(report["executed"], false);
     assert_eq!(report["targets"][0]["docExamples"][0]["mode"], "run");
+    assert_eq!(
+        report["intervalAnalysis"],
+        report["targets"][0]["intervalAnalysis"]
+    );
+    assert_eq!(report["intervalAnalysis"]["coverage"], "some");
+    assert_eq!(report["intervalAnalysis"]["inputDefinitions"], 1);
+    assert_eq!(report["intervalAnalysis"]["unsupportedBodies"], 1);
     let executed = command()
         .args([
             "test",
@@ -2965,5 +2994,358 @@ fn log_default_output_runs_through_the_real_cli_in_both_modes() {
             output.stderr,
             b"level=INFO source=\"app:1:2\" message=\"done\" attr.\"n\"=3\n"
         );
+    }
+}
+
+// 関門: program を捨てる main/test の両経路と deny-warnings 後も、追加解析の
+// 範囲と件数が残ることを守る。診断の位置・注記は declarations と golden が守る。
+// 本物の入力と CLI を使い、内部の予算の検査を重ねない。
+#[test]
+fn interval_reports_keep_coverage_and_counts_independent_of_acceptance() {
+    let directory = TestDirectory::new();
+    let suffix =
+        "\nfunction main() -> Unit end function\n@test\nfunction checks() -> Unit end function\n";
+    let mut bounded = String::from("function risky(x: Integer) -> Integer\n bind z <- 0\n");
+    for i in 0..460 {
+        bounded.push_str(&format!(" bind a{i} <- x\n"));
+    }
+    bounded.push_str(" return 1 div z\nend function\n");
+    // 大きい一式の番号付け停止と、複数本体による全体上限を区別する。
+    let mut expression = String::from("1");
+    for _ in 0..15 {
+        expression = format!("({expression} + {expression})");
+    }
+    let unidentified =
+        format!("function risky() -> Integer\n bind _ <- ()\n return {expression}\nend function\n");
+    let whole = (0..15)
+        .map(|index| bounded.replace("risky(", &format!("risky{index}(")))
+        .collect::<String>();
+    let cases = [
+        (
+            "all",
+            "function risky(x: Integer) -> Integer\n return if x = 0 then 10 div x else 1 end if\nend function\n",
+            "all",
+            0,
+            0,
+            0,
+            0,
+            true,
+        ),
+        (
+            "unsupported",
+            "function risky(x: Byte) -> Boolean return x < x end function\n",
+            "some",
+            1,
+            0,
+            0,
+            0,
+            false,
+        ),
+        ("budget", bounded.as_str(), "some", 0, 1, 0, 0, false),
+        (
+            "unidentified",
+            unidentified.as_str(),
+            "some",
+            0,
+            0,
+            0,
+            1,
+            false,
+        ),
+        ("whole", whole.as_str(), "some", 0, 9, 8, 0, false),
+        (
+            "syntax",
+            "function broken( -> Unit\nend function\n",
+            "none",
+            0,
+            0,
+            0,
+            0,
+            false,
+        ),
+    ];
+    for (name, body, coverage, unsupported, exceeded, skipped, unnumbered, warns) in cases {
+        let script = directory.write(&format!("{name}.bnt"), &format!("{body}{suffix}"));
+        for test in [false, true] {
+            let mut ordinary = None;
+            for denied in [false, true] {
+                let mut invocation = command();
+                invocation.args(if test {
+                    vec!["test", "--check", "--report=json"]
+                } else {
+                    vec!["check", "--report=json"]
+                });
+                if denied {
+                    invocation.arg("--deny-warnings");
+                }
+                let output = invocation.arg(&script).output().unwrap();
+                let success = name != "syntax" && !(denied && warns);
+                assert_eq!(
+                    exit_code(&output),
+                    if success { 0 } else { 2 },
+                    "{name}: {output:?}"
+                );
+                assert!(output.stderr.is_empty(), "{name}: {output:?}");
+                let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+                assert_eq!(report["schemaVersion"], 1);
+                assert_eq!(report["complete"], success);
+                assert_eq!(report["executed"], false);
+                let interval = &report["intervalAnalysis"];
+                assert_eq!(*interval, report["targets"][0]["intervalAnalysis"]);
+                assert_eq!(interval["basis"], "localIntervals");
+                assert_eq!(interval["coverage"], coverage, "{name}: {report}");
+                assert_eq!(
+                    interval["unsupportedBodies"], unsupported,
+                    "{name}: {report}"
+                );
+                assert_eq!(interval["bodyBudgetExceeded"], exceeded, "{name}: {report}");
+                assert_eq!(interval["wholeBudgetSkipped"], skipped);
+                assert_eq!(interval["unidentifiedBodies"], unnumbered);
+                if denied {
+                    assert_eq!(ordinary.as_ref(), Some(interval));
+                } else {
+                    ordinary = Some(interval.clone());
+                }
+            }
+        }
+    }
+}
+
+// 関門: 七種の診断の直列化は golden が守り、ここでは実 CLI の通常/strict の
+// 終了状態と、run が警告による拒否の前にスクリプトを実行しないことを守る。
+// 同じ入力を共有し、数学上の境界・元位置の表を重ねない。
+#[test]
+fn width_interval_warnings_preserve_cli_acceptance_and_prevent_denied_execution() {
+    use serde_json::Value;
+    let directory = TestDirectory::new();
+    let script = directory.write(
+        "width-intervals.bnt",
+        include_str!("../testdata/warnings/local-width-intervals.bnt"),
+    );
+    for mode in ["check", "run"] {
+        for format in ["json", "text"] {
+            let mut ordinary = None;
+            for denied in [false, true] {
+                let mut invocation = command();
+                invocation.arg(mode).arg(format!("--diagnostics={format}"));
+                if mode == "run" {
+                    invocation.arg("--allow-effects=Console.Write");
+                }
+                if denied {
+                    invocation.arg("--deny-warnings");
+                }
+                let output = invocation.arg(&script).output().unwrap();
+                assert_eq!(
+                    exit_code(&output),
+                    if denied { 2 } else { 0 },
+                    "{mode}/{format}: {output:?}"
+                );
+                assert_eq!(
+                    output.stdout,
+                    if mode == "run" && !denied {
+                        b"ran\n".as_slice()
+                    } else {
+                        b"".as_slice()
+                    }
+                );
+                let stderr = String::from_utf8(output.stderr).unwrap();
+                if format == "json" {
+                    let diagnostics: Vec<Value> = stderr
+                        .lines()
+                        .map(|s| serde_json::from_str(s).unwrap())
+                        .collect();
+                    assert_eq!(diagnostics.len(), 8, "{stderr}");
+                    assert_eq!(
+                        diagnostics.iter().filter(|d| d["code"] == "W0402").count(),
+                        7
+                    );
+                    assert_eq!(
+                        diagnostics.iter().filter(|d| d["code"] == "W0401").count(),
+                        1
+                    );
+                    for diagnostic in &diagnostics {
+                        assert_eq!(
+                            diagnostic["severity"],
+                            if denied { "error" } else { "warning" }
+                        );
+                    }
+                    if denied {
+                        let mut expected: Vec<Value> = ordinary.take().unwrap();
+                        for diagnostic in &mut expected {
+                            diagnostic["severity"] = "error".into();
+                            diagnostic["notes"]
+                                .as_array_mut()
+                                .unwrap()
+                                .push("treated as an error because of `--deny-warnings`".into());
+                        }
+                        assert_eq!(diagnostics, expected);
+                    } else {
+                        ordinary = Some(diagnostics);
+                    }
+                } else {
+                    assert_eq!(stderr.matches("W0402").count(), 7, "{stderr}");
+                    assert_eq!(stderr.matches("W0401").count(), 1, "{stderr}");
+                    assert_eq!(
+                        stderr
+                            .matches("treated as an error because of `--deny-warnings`")
+                            .count(),
+                        if denied { 8 } else { 0 }
+                    );
+                }
+            }
+        }
+    }
+}
+
+// 関門: 内部候補の検査では届かない、実 CLI の W0404 の発行・位置・由来・
+// text/JSON・strict を守る。認定漏れや過剰な発行、補助位置の欠落で失敗する。
+// 既存の算術診断テストと準備を重ねず、固定域の入力を同じ表で比較する。
+#[test]
+fn shift_domain_warnings_reach_cli_renderers_only_for_disjoint_arguments() {
+    use serde_json::Value;
+    let directory = TestDirectory::new();
+    let chain = (0..10)
+        .map(|i| {
+            if i == 0 {
+                "  bind n0 <- 64\n".to_owned()
+            } else {
+                format!("  bind n{i} <- n{}\n", i - 1)
+            }
+        })
+        .collect::<String>();
+    let chain_origins = (2..10)
+        .rev()
+        .map(|i| format!("bind n{i} <- n{}", i - 1))
+        .collect::<Vec<_>>();
+    // (本体、推定域、正常域、一次位置、補助位置)。None は W0404 なし。
+    for (name, imports, result, body, expected) in [
+        ("primitive", "", "Integer", "  return Integer.shiftLeft(a: 1, n: 64)\n".into(), Some(("Integer.shiftLeft", "[64,64]", "[0,63]", "64", vec![]))),
+        ("wrapper", "import Benitoite.Integer64 as I\n", "Integer", "  bind amount <- if flag then 64 else 65 end if\n  return I.shiftLeft(n: amount, a: 1)\n".into(), Some(("Integer64.shiftLeft", "[64,65]", "[0,63]", "amount", vec!["bind amount <- if flag then 64 else 65 end if".into()]))),
+        ("byte", "import Benitoite.Byte\n", "Byte", "  return Byte.shiftLeft(a: 1u8, n: 8)\n".into(), Some(("Byte.shiftLeft", "[8,8]", "[0,7]", "8", vec![]))),
+        ("negative", "", "Integer", "  bind amount <- if flag then -2 else -1 end if\n  return Integer.shiftRight(a: 1, n: amount)\n".into(), Some(("Integer.shiftRight", "[-2,-1]", "[0,63]", "amount", vec!["bind amount <- if flag then -2 else -1 end if".into()]))),
+        ("comparison", "", "Integer", "  if x >= 64 then\n    return Integer.shiftLeft(a: 1, n: x)\n  end if\n  return 1\n".into(), Some(("Integer.shiftLeft", "[64,9223372036854775807]", "[0,63]", "x", vec!["x >= 64".into()]))),
+        ("bounded_origins", "", "Integer", format!("{chain}  return Integer.shiftLeft(a: 1, n: n9)\n"), Some(("Integer.shiftLeft", "[64,64]", "[0,63]", "n9", chain_origins))),
+        ("independent", "", "Integer", "  return Integer.absolute(Integer.absolute(Integer.shiftLeft(a: 1, n: 64)))\n".into(), Some(("Integer.shiftLeft", "[64,64]", "[0,63]", "64", vec![]))),
+        ("inside", "import Benitoite.Integer64 as I\nimport Benitoite.Byte\n", "Unit", "  bind _ <- Integer.shiftLeft(a: 1, n: 63)\n  bind _ <- I.shiftLeft(a: 1, n: 0)\n  bind _ <- Byte.shiftLeft(a: 1u8, n: 7)\n".into(), None),
+        ("intersect", "import Benitoite.Integer64 as I\nimport Benitoite.Byte\n", "Unit", "  bind amount <- if flag then 63 else 64 end if\n  bind _ <- Integer.shiftLeft(a: 1, n: amount)\n  bind _ <- I.shiftLeft(a: 1, n: amount)\n  bind small <- if flag then 7 else 8 end if\n  bind _ <- Byte.shiftLeft(a: 1u8, n: small)\n".into(), None),
+        ("top", "import Benitoite.Integer64 as I\nimport Benitoite.Byte\n", "Unit", "  bind _ <- Integer.shiftLeft(a: 1, n: x)\n  bind _ <- I.shiftLeft(a: 1, n: x)\n  bind _ <- Byte.shiftLeft(a: 1u8, n: x)\n".into(), None),
+        ("unreachable", "", "Unit", "  bind amount <- 64\n  if amount < 64 then\n    bind _ <- Integer.shiftLeft(a: 1, n: amount)\n  end if\n".into(), None),
+        ("returned_child", "", "Unit", "  bind _ <- Integer.shiftLeft(n: 64, a: block return () end block)\n".into(), None),
+    ] {
+        let source = format!("{imports}function sample(x: Integer, flag: Boolean) -> {result}\n{body}end function\nfunction main() -> Unit\nend function\n");
+        let script = directory.write(&format!("{name}.bnt"), &source);
+        for format in ["json", "text"] {
+            for denied in [false, true] {
+                let mut invocation = command();
+                invocation.args(["check", &format!("--diagnostics={format}")]);
+                if denied {
+                    invocation.arg("--deny-warnings");
+                }
+                let output = invocation.arg(&script).output().unwrap();
+                assert_eq!(exit_code(&output), if denied && expected.is_some() { 2 } else { 0 }, "{name}/{format}: {output:?}");
+                assert!(output.stdout.is_empty(), "{output:?}");
+                let stderr = String::from_utf8(output.stderr).unwrap();
+                let Some((function, inferred, allowed, primary, origins)) = &expected else {
+                    assert!(stderr.is_empty(), "{name}: {stderr}");
+                    continue;
+                };
+                let message = format!("argument `n` to `{function}` is always out of range");
+                let notes = [format!("the inferred interval is {inferred}"), format!("the allowed range is {allowed}"), "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully".into()];
+                if format == "json" {
+                    let diagnostics = stderr.lines().map(|s| serde_json::from_str::<Value>(s).unwrap()).collect::<Vec<_>>();
+                    assert_eq!(diagnostics.len(), 1, "{name}: {stderr}");
+                    let diagnostic = &diagnostics[0];
+                    assert_eq!(diagnostic["code"], "W0404");
+                    assert_eq!(diagnostic["kind"], "check");
+                    assert_eq!(diagnostic["severity"], if denied { "error" } else { "warning" });
+                    assert_eq!(diagnostic["message"], message);
+                    assert_eq!(diagnostic["primary"]["label"], "always out of range");
+                    let primary_start = diagnostic["primary"]["start"]["offset"].as_u64().unwrap() as usize;
+                    let primary_end = diagnostic["primary"]["end"]["offset"].as_u64().unwrap() as usize;
+                    assert_eq!(&source[primary_start..primary_end], *primary);
+                    assert_eq!(primary_start, source.rfind(&format!("n: {primary}")).unwrap() + 3);
+                    let secondary = diagnostic["secondary"].as_array().unwrap();
+                    assert_eq!(secondary.len(), origins.len());
+                    for (position, origin) in secondary.iter().zip(origins) {
+                        let start = position["start"]["offset"].as_u64().unwrap() as usize;
+                        let end = position["end"]["offset"].as_u64().unwrap() as usize;
+                        assert_eq!(&source[start..end], origin);
+                        assert_eq!(position["label"], "this binding or comparison contributes to the inferred interval");
+                    }
+                    let mut expected_notes = notes.to_vec();
+                    if denied {
+                        expected_notes.push("treated as an error because of `--deny-warnings`".into());
+                    }
+                    assert_eq!(diagnostic["notes"], serde_json::json!(expected_notes));
+                    assert_eq!(diagnostic["helps"], serde_json::json!([]));
+                } else {
+                    assert_eq!(stderr.matches("W0404").count(), 1, "{stderr}");
+                    assert!(stderr.contains(&message), "{stderr}");
+                    assert_eq!(stderr.matches("this binding or comparison contributes to the inferred interval").count(), origins.len());
+                    for note in notes {
+                        assert!(stderr.contains(&note), "{stderr}");
+                    }
+                }
+            }
+        }
+    }
+}
+
+// 関門: 子の正常値が Bottom のとき、引数の並びにかかわらず W0404 を重ねない。
+// 内部候補の検査と異なり、旧定数警告と新診断の統合後の出力を確かめる。
+#[test]
+fn shift_domain_warning_does_not_duplicate_a_child_overflow() {
+    use serde_json::Value;
+    let directory = TestDirectory::new();
+    for arguments in [
+        "a: 127s8 + 1s8, n: 8",
+        "n: 8, a: 127s8 + 1s8",
+        "a: 1s8, n: 9223372036854775807 + 1",
+    ] {
+        let source = format!(
+            "import Benitoite.Integer8\nfunction sample() -> Integer8\n  return Integer8.shiftLeft({arguments})\nend function\nfunction main() -> Unit\nend function\n"
+        );
+        let script = directory.write("child-bottom.bnt", &source);
+        let output = command()
+            .args(["check", "--diagnostics=json"])
+            .arg(&script)
+            .output()
+            .unwrap();
+        assert_eq!(exit_code(&output), 0, "{output:?}");
+        let diagnostics = String::from_utf8(output.stderr)
+            .unwrap()
+            .lines()
+            .map(|s| serde_json::from_str::<Value>(s).unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(diagnostics.len(), 1, "{arguments}: {diagnostics:?}");
+        assert_eq!(diagnostics[0]["code"], "W0402");
+    }
+}
+
+// 関門: 操作の既定実装だけを固定域と見なす退行を、実際のハンドラと CLI で防ぐ。
+// 候補や純粋なシフトのテストでは、Process.exit を差し替えた実行まで届かない。
+#[test]
+fn handled_process_exit_outside_default_range_has_no_domain_warning() {
+    let directory = TestDirectory::new();
+    let script = directory.write("handled-exit.bnt", "import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Process\nfunction finish() -> Integer uses Process.Exit\n  return Process.exit(300)\nend function\nfunction main() -> Unit uses Console.Write\n  bind code <- handle finish() with\n    case Process.exit(c) -> c\n  end handle\n  Console.writeLine(\"handled ${Integer.toString(code)}\")\nend function\n");
+    for mode in ["check", "run"] {
+        for format in ["text", "json"] {
+            let mut invocation = command();
+            invocation.args([mode, &format!("--diagnostics={format}"), "--deny-warnings"]);
+            if mode == "run" {
+                invocation.arg("--allow-effects=Console.Write");
+            }
+            let output = invocation.arg(&script).output().unwrap();
+            assert_eq!(exit_code(&output), 0, "{mode}/{format}: {output:?}");
+            assert!(output.stderr.is_empty(), "{output:?}");
+            assert_eq!(
+                output.stdout,
+                if mode == "run" {
+                    b"handled 300\n".as_slice()
+                } else {
+                    b"".as_slice()
+                }
+            );
+        }
     }
 }

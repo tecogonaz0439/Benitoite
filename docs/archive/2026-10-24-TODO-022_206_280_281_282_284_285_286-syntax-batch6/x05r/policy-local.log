@@ -1,0 +1,21 @@
+E
+======================================================================
+ERROR: test_formal_collect_preserves_shared_inputs_without_copying (scripts.check.test_policy.PolicyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 353, in test_formal_collect_preserves_shared_inputs_without_copying
+    helper = runpy.run_path(str(ROOT/'scripts/check/formal_interval.py'))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "<repo>/scripts/check/formal_interval.py", line 9, in <module>
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+NameError: name 'Path' is not defined
+
+----------------------------------------------------------------------
+Ran 1 test in 0.181s
+
+FAILED (errors=1)

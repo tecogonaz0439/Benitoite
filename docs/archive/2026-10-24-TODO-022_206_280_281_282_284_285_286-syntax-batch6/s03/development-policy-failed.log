@@ -1,0 +1,453 @@
+F.......F.F.........F..
+======================================================================
+FAIL: test_missing_tool_and_writable_db_copy (__main__.AdvisoriesTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 956, in test_missing_tool_and_writable_db_copy
+    self.assertIn(report['effective_config'], target['raw']['command'])
+AssertionError: '<tmp> not found in []
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['clear', 'clear'], code=0, first={'stderr': '{"type": "summary", "fields": {"advisories": {"errors": 0, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['clear', 'clear']
+
+First differing element 0:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
++ ['clear', 'clear']
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['advisories', 'clear'], code=0, first={'exit': 1, 'stderr': '{"type": "diagnostic", "fields": {"severity": "error", "code": "vulnerability", "message": "fixture advisory", "advisory": {"id": "RUSTSEC-2099-0001", "package": "fixture"}, "graphs": [{"Krate": {"name": "fixture", "version": "1.2.3"}}], "notes": ["Solution: Upgrade to >=1.2.4", "Announcement: https://example.invalid/advisory"]}}\n{"type": "summary", "fields": {"advisories": {"errors": 1, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['advisories', 'clear']
+
+First differing element 0:
+'unverified'
+'advisories'
+
+- ['unverified', 'unverified']
++ ['advisories', 'clear']
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['clear', 'advisories'], code=0, first={'stderr': '{"type": "summary", "fields": {"advisories": {"errors": 0, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['clear', 'advisories']
+
+First differing element 0:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
++ ['clear', 'advisories']
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['advisories', 'advisories'], code=0, first={'exit': 1, 'stderr': '{"type": "diagnostic", "fields": {"severity": "error", "code": "vulnerability", "message": "fixture advisory", "advisory": {"id": "RUSTSEC-2099-0001", "package": "fixture"}, "graphs": [{"Krate": {"name": "fixture", "version": "1.2.3"}}], "notes": ["Solution: Upgrade to >=1.2.4", "Announcement: https://example.invalid/advisory"]}}\n{"type": "summary", "fields": {"advisories": {"errors": 1, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['advisories', 'advisories']
+
+First differing element 0:
+'unverified'
+'advisories'
+
+- ['unverified', 'unverified']
++ ['advisories', 'advisories']
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['unverified', 'clear'], code=0, first={'exit': 1, 'stderr': '{"type": "log", "fields": {"level": "ERROR", "message": "failed to fetch advisory database: network unavailable"}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['unverified', 'clear']
+
+First differing element 1:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
+?                 ^^^  -----
+
++ ['unverified', 'clear']
+?                 ^^ +
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['clear', 'unverified'], code=0, first={'stderr': '{"type": "summary", "fields": {"advisories": {"errors": 0, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['clear', 'unverified']
+
+First differing element 0:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
+?   ^^^  -----
+
++ ['clear', 'unverified']
+?   ^^ +
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['unverified', 'unverified'], code=0, first={'exit': 1, 'stderr': '{"type": "log", "fields": {"level": "ERROR", "message": "failed to fetch advisory database: network unavailable"}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 919, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual(self.box.calls(), [
+AssertionError: Lists differ: [['ca[21 chars]ion']] != [['ca[21 chars]ion'], ['cargo', 'deny', '--format', 'json', '[272 chars]es']]
+
+Second list contains 2 additional elements.
+First extra element 1:
+['cargo', 'deny', '--format', 'json', '--log-level', 'debug', '--manifest-path', 'Cargo.toml', '--config', 'deny.toml', '--locked', 'check', 'advisories']
+
+- [['cargo', 'deny', '--version']]
+?                                ^
+
++ [['cargo', 'deny', '--version'],
+?                                ^
+
++  ['cargo',
++   'deny',
++   '--format',
++   'json',
++   '--log-level',
++   'debug',
++   '--manifest-path',
++   'Cargo.toml',
++   '--config',
++   'deny.toml',
++   '--locked',
++   'check',
++   'advisories'],
++  ['cargo',
++   'deny',
++   '--format',
++   'json',
++   '--log-level',
++   'debug',
++   '--manifest-path',
++   'fuzz/Cargo.toml',
++   '--config',
++   'deny.toml',
++   '--locked',
++   'check',
++   'advisories']]
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['advisories', 'unverified'], code=0, first={'exit': 1, 'stderr': '{"type": "diagnostic", "fields": {"severity": "error", "code": "vulnerability", "message": "fixture advisory", "advisory": {"id": "RUSTSEC-2099-0001", "package": "fixture"}, "graphs": [{"Krate": {"name": "fixture", "version": "1.2.3"}}], "notes": ["Solution: Upgrade to >=1.2.4", "Announcement: https://example.invalid/advisory"]}}\n{"type": "summary", "fields": {"advisories": {"errors": 1, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['advisories', 'unverified']
+
+First differing element 0:
+'unverified'
+'advisories'
+
+- ['unverified', 'unverified']
+?   ^^ ^  -- ^
+
++ ['advisories', 'unverified']
+?   ^^ ^^^   ^
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['unverified', 'clear'], code=0, first={'exit': 1, 'stderr': 'unknown output containing RUSTSEC-2099-0001'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['unverified', 'clear']
+
+First differing element 1:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
+?                 ^^^  -----
+
++ ['unverified', 'clear']
+?                 ^^ +
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['unverified', 'clear'], code=0, first={'stderr': ''})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['unverified', 'clear']
+
+First differing element 1:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
+?                 ^^^  -----
+
++ ['unverified', 'clear']
+?                 ^^ +
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['unverified', 'clear'], code=0, first={'exit': 0, 'stderr': '{"type": "diagnostic", "fields": {"severity": "error", "code": "vulnerability", "message": "fixture advisory", "advisory": {"id": "RUSTSEC-2099-0001", "package": "fixture"}, "graphs": [{"Krate": {"name": "fixture", "version": "1.2.3"}}], "notes": ["Solution: Upgrade to >=1.2.4", "Announcement: https://example.invalid/advisory"]}}\n{"type": "summary", "fields": {"advisories": {"errors": 1, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['unverified', 'clear']
+
+First differing element 1:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
+?                 ^^^  -----
+
++ ['unverified', 'clear']
+?                 ^^ +
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['unverified', 'clear'], code=0, first={'stderr': '{"type": "diagnostic", "fields": {"code": "index-failure", "severity": "warning"}}\n{"type": "summary", "fields": {"advisories": {"errors": 0, "warnings": 1, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 916, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual([t['state'] for t in report['targets']], states)
+AssertionError: Lists differ: ['unverified', 'unverified'] != ['unverified', 'clear']
+
+First differing element 1:
+'unverified'
+'clear'
+
+- ['unverified', 'unverified']
+?                 ^^^  -----
+
++ ['unverified', 'clear']
+?                 ^^ +
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['error', 'clear'], code=1, first={'exit': 1, 'stderr': '{"type": "log", "fields": {"level": "ERROR", "message": "failed to parse config from \'deny.toml\'"}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 914, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+AssertionError: 0 != 1 : == plan: level work against f3e699804822d2ee5b0bd1d49fa4699d4eb7c395 (changed files not classified) (partial selection: --only advisories)
+   [advisories] because of --only (estimate: ~1-3 min; initial DB fetch unknown)
+      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)
+        cargo deny --version
+        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== advisories
+advisories evidence: <tmp>
+command: cargo deny --version
+error: no such command: deny
+=== workspace: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== fuzz: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== ADVISORIES REPORT: see each target; no all-target zero claim ===
+advisories unit exit: 0; evidence: <tmp>
+selected checks passed
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['clear', 'error'], code=1, first={'stderr': '{"type": "summary", "fields": {"advisories": {"errors": 0, "warnings": 0, "notes": 0, "helps": 0}}}\n'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 914, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+AssertionError: 0 != 1 : == plan: level work against f3e699804822d2ee5b0bd1d49fa4699d4eb7c395 (changed files not classified) (partial selection: --only advisories)
+   [advisories] because of --only (estimate: ~1-3 min; initial DB fetch unknown)
+      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)
+        cargo deny --version
+        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== advisories
+advisories evidence: <tmp>
+command: cargo deny --version
+error: no such command: deny
+=== workspace: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== fuzz: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== ADVISORIES REPORT: see each target; no all-target zero claim ===
+advisories unit exit: 0; evidence: <tmp>
+selected checks passed
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['error', 'clear'], code=1, first={'exit': 17, 'stderr': 'executor broke'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 914, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+AssertionError: 0 != 1 : == plan: level work against f3e699804822d2ee5b0bd1d49fa4699d4eb7c395 (changed files not classified) (partial selection: --only advisories)
+   [advisories] because of --only (estimate: ~1-3 min; initial DB fetch unknown)
+      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)
+        cargo deny --version
+        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== advisories
+advisories evidence: <tmp>
+command: cargo deny --version
+error: no such command: deny
+=== workspace: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== fuzz: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== ADVISORIES REPORT: see each target; no all-target zero claim ===
+advisories unit exit: 0; evidence: <tmp>
+selected checks passed
+
+
+======================================================================
+FAIL: test_target_states_raw_evidence_and_exit_status (__main__.AdvisoriesTests) (states=['error', 'clear'], code=1, first={'exit': 1, 'stderr': "thread 'main' panicked at fixture"})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 914, in test_target_states_raw_evidence_and_exit_status
+    self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+AssertionError: 0 != 1 : == plan: level work against f3e699804822d2ee5b0bd1d49fa4699d4eb7c395 (changed files not classified) (partial selection: --only advisories)
+   [advisories] because of --only (estimate: ~1-3 min; initial DB fetch unknown)
+      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)
+        cargo deny --version
+        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== advisories
+advisories evidence: <tmp>
+command: cargo deny --version
+error: no such command: deny
+=== workspace: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== fuzz: UNVERIFIED: fetch/check unavailable ===
+reason: cargo-deny unavailable
+raw exit: None
+observed advisory occurrences: 0; IDs: none observed
+=== ADVISORIES REPORT: see each target; no all-target zero claim ===
+advisories unit exit: 0; evidence: <tmp>
+selected checks passed
+
+
+======================================================================
+FAIL: test_change_execution_configurations_and_containment (__main__.PolicyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 721, in test_change_execution_configurations_and_containment
+    self.assertEqual(ordinary, [
+AssertionError: Lists differ: [['ca[679 chars]te', '--example', 'gen_skill'], ['cargo', 'deny', '--version']] != [['ca[679 chars]te', '--example', 'gen_skill']]
+
+First list contains 1 additional elements.
+First extra element 8:
+['cargo', 'deny', '--version']
+
+Diff is 1104 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_change_partial_selection_preserves_configurations_and_failures (__main__.PolicyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 755, in test_change_partial_selection_preserves_configurations_and_failures
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 1 != 0 : == plan: level change against missing-base (changed files not classified) (partial selection: --only test_default_all,test_heap_all,test_stress,doc_default,lint_heap,heap_checks,formal_build,licenses,spec_examples,reference_examples,skill_docs)
+   [lint_heap] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep\,heap-verify\,alloc-stats
+   [test_default_all] because of --only (estimate: several min (cache dependent))
+      command: cargo test --workspace --all-targets
+   [test_heap_all] because of --only (estimate: several min (cache dependent))
+      command: cargo test --workspace --all-targets --no-default-features --features gc-mark-sweep\,heap-verify
+   [test_stress] because of --only (estimate: long: several min)
+      command: cargo test --workspace --lib --tests --no-default-features --features gc-mark-sweep\,heap-verify\,gc-stress
+   [doc_default] because of --only (estimate: seconds to a few min)
+      command: cargo test --workspace --doc
+   [licenses] because of --only (estimate: seconds to a few min)
+      command: check_licenses (Python compares deny.toml and scripts/release/about.toml; cargo deny --version; cargo deny check licenses)
+   [heap_checks] because of --only (estimate: long: nightly Miri, ~10 min)
+      command: scripts/check-heap.sh
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   omitted: spec_examples reference_examples skill_docs (included by test_default_all, default configuration)
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== lint_heap
+== test_default_all
+== test_heap_all
+== test_stress
+== doc_default
+== licenses
+cargo-deny is unavailable. Install it with: cargo install cargo-deny --locked
+FAILED: licenses
+
+
+======================================================================
+FAIL: test_legacy_contract (__main__.PolicyTests) (name='only-licenses')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 270, in test_legacy_contract
+    self.assertEqual(actual, fixture['cases'][name])
+AssertionError: {'exit': 1, 'plan': '== plan: only licenses\n   [l[178 chars]n']]} != {'exit': 0, 'plan': '== plan: only licenses\n   [l[218 chars]: []}
+- {'calls': [['cargo', 'deny', '--version']],
+?                                          -
+
++ {'calls': [['cargo', 'deny', '--version'],
++            ['cargo', 'deny', 'check', 'licenses']],
+   'checks': ['licenses'],
+-  'exit': 1,
+?          ^
+
++  'exit': 0,
+?          ^
+
+   'plan': '== plan: only licenses\n'
+           '   [licenses] licenses                                            '
+           'because of --only',
+   'python_commands': [],
+   'stops': []}
+
+======================================================================
+FAIL: test_work_diff_range_includes_staged_untracked_deleted_and_renamed (__main__.PolicyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>/scripts/check/test_policy.py", line 528, in test_work_diff_range_includes_staged_untracked_deleted_and_renamed
+    self.assertIn('(5 changed file(s))', result.stdout)
+AssertionError: '(5 changed file(s))' not found in '== plan: level work against c45eec39d9d008a25b16cf6edd7b47440c46fc3e (6 changed file(s))\n   [fmt] because of Cargo.toml (estimate: seconds)\n      command: cargo fmt --all --check\n   [lint_default] because of Cargo.toml (estimate: ~1-3 min (cache dependent))\n      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep\n   [lib_default] because of Cargo.toml (estimate: ~1 min)\n      command: cargo test -p benitoite --lib\n   [tests_related] because of Cargo.toml (estimate: target dependent)\n      command: cargo test -p benitoite --test golden\n   [source_rules] because of Cargo.toml (estimate: seconds)\n      command: check_placeholder_allows\n      command: check_unsafe_allows\n   [skill_generated] because of Cargo.toml (estimate: seconds to a few min)\n      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)\n   [spec_tally] because of Cargo.toml (estimate: seconds to a few min)\n      command: python3 tools/spec-coverage/spec_coverage.py --self-test\n      command: python3 tools/spec-coverage/spec_coverage.py\n   [spec_examples] because of docs/design/01-spec/01-02-syntax.md (estimate: target dependent)\n      command: cargo test -q -p benitoite --test spec_examples\n   [reference_examples] because of docs/reference/benitoite.md (estimate: target dependent)\n      command: cargo test -q -p benitoite --test reference_examples\n   [skill_docs] because of docs/design/01-spec/01-02-syntax.md (estimate: target dependent)\n      command: cargo test -q -p benitoite --test skill_docs\n   [licenses] because of Cargo.toml (estimate: seconds to a few min)\n      command: check_licenses (Python compares deny.toml and scripts/release/about.toml; cargo deny --version; cargo deny check licenses)\n   [advisories] because of Cargo.toml (estimate: ~1-3 min; initial DB fetch unknown)\n      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)\n        cargo deny --version\n        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories\n        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories\n   later: stage checks named connections; change covers full regression; release checks the candidate\n'
+
+----------------------------------------------------------------------
+Ran 25 tests in 15.966s
+
+FAILED (failures=21)

@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-25",
+  "judge": "A14a 実装担当",
+  "base": "58d2fcb5f7449db6011972947b665dda04033f80",
+  "head": "58d2fcb5f7449db6011972947b665dda04033f80",
+  "dirty": true,
+  "changed_files_at_lib_success": [
+    "crates/benitoite/src/typeck/interval/arithmetic.rs",
+    "crates/benitoite/src/typeck/interval/diagnostics.rs",
+    "crates/benitoite/src/typeck/interval/domain.rs",
+    "crates/benitoite/src/typeck/interval/flow.rs",
+    "crates/benitoite/src/typeck/interval/flow/widths/tests.rs",
+    "crates/benitoite/src/typeck/interval/tests.rs",
+    "docs/design/01-spec/01-04-types-basic.md",
+    "docs/design/02-impl/02-05-typechecker.md"
+  ],
+  "uncommitted_diff_sha256": "90f7ead140f7c07d2b2d67b964a86aaeacbc4568b90990a35f361a74bfca1826",
+  "untracked_lib_inputs": [],
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "58d2fcb5f7449db6011972947b665dda04033f80",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally",
+    "--test",
+    "*"
+  ],
+  "unit": "lib_default",
+  "unit_command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib"
+  ],
+  "configuration": "既定の gc-mark-sweep。no heap-verify, no gc-stress。明示フィルタ・ignore 解除なし。",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+  "counts": {
+    "passed": 1306,
+    "failed": 0,
+    "ignored": 21
+  },
+  "unit_exit_code": 0,
+  "unit_seconds": 71.58,
+  "enclosing_work_exit_code": 1,
+  "enclosing_work_wall_seconds": 130.007,
+  "enclosing_failure": "tests_related の declarations の旧期待値だけ。lib_default は成功済み。",
+  "maximum_resident_set_size": null,
+  "environment_limit": "/usr/bin/time -l: sysctl kern.clockrate: Operation not permitted",
+  "original_log": "work-after.log",
+  "original_result": "work-after-result.json",
+  "later_changes_expected": [
+    "crates/benitoite/tests/declarations.rs の幅付き除算の一行の期待値・局所性の印",
+    "a14a の結果・証拠・ログ"
+  ],
+  "reason_for_reuse": "declarations.rs は別の統合ターゲットであり cargo test --lib の入力に含まれない。lib の本体・単体テスト・固定表・構成のハッシュを変更後に再照合する。",
+  "input_sha256": {
+    "crates/benitoite/src/typeck/interval/arithmetic.rs": "97b8bca9f82d8e4ed6afe53cbc503b0ddfd66ea2c9393494056490741a6ffbad",
+    "crates/benitoite/src/typeck/interval/diagnostics.rs": "89581dbb97acd8506f020a7806bc4b836dab60e60a185a744690ab933a9488b3",
+    "crates/benitoite/src/typeck/interval/domain.rs": "ae31215a8e8d17f5db8eb8d743301b367b1358946687802fd7b914d32299da83",
+    "crates/benitoite/src/typeck/interval/flow.rs": "0fd89d3c00fc40d5531ef3613d84ed9add55690608e528b97835bfb1cf3c2e60",
+    "crates/benitoite/src/typeck/interval/flow/widths/tests.rs": "ccc698e6bd2f7f14d0c5ba53bdd7f7a62e0e648b6f6397f438f6ecb56f9363bb",
+    "crates/benitoite/src/typeck/interval/tests.rs": "92507f9748a5ac2169cb21d798434564f06b0ec0fd9edf56f64d23645b4bf9e6",
+    "crates/benitoite/testdata/interval-budget/README.md": "811a702a0dc5d0b0e6cc135b2d78826bb4c001840348f13961aae1e24be20d6b",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "da1ca4547d725ad52e33283bf3672c2c450df71e16ec8ea1c36b6c20ef5cb85d",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "95b6d88ee728426bb94cc5b45c4967af3a1e986e15ce47ad02e1a988b805ce31",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "52baceddfff4625ccbf2fd7acd250392f5bde2d731bfa3eec3114f39171e0af7",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "e59e9e08821cdcca04c8446d7805721df65936159dddbfb57cb2c371191b3de8",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "cfb261ab4fc794d8acdd3e089781e5e32b2b550bc4e45217fdc2865275c4a1bd",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "01ac37e5e84f9645722a54388434304e6311aea898d7126568653b3c8de823c4",
+    "Cargo.toml": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+    "Cargo.lock": "f63fed7d012a331fb653d1f5e7e17a8833dc15ac7c3423ae447b45003968b0d2",
+    "crates/benitoite/Cargo.toml": "34e09ac63460b350dfd6f7b9aed6adb794e49a641414e1679e8f7a0c97679a52",
+    "rust-toolchain.toml": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb"
+  },
+  "later_changes_actual": [
+    "crates/benitoite/tests/declarations.rs の W0401 の期待値と局所性の印",
+    "a14a の結果・証拠・ログ"
+  ],
+  "inputs_still_match_after_integration_test_change": true,
+  "uncommitted_diff_sha256_after_integration_test_change": "744d00ee55f0c8908fffd81b8ef314529e3fdbe851c23ed26d9e915e73c2bd36",
+  "changed_files_after_integration_test_change": [
+    "crates/benitoite/src/typeck/interval/arithmetic.rs",
+    "crates/benitoite/src/typeck/interval/diagnostics.rs",
+    "crates/benitoite/src/typeck/interval/domain.rs",
+    "crates/benitoite/src/typeck/interval/flow.rs",
+    "crates/benitoite/src/typeck/interval/flow/widths/tests.rs",
+    "crates/benitoite/src/typeck/interval/tests.rs",
+    "crates/benitoite/tests/declarations.rs",
+    "docs/design/01-spec/01-04-types-basic.md",
+    "docs/design/02-impl/02-05-typechecker.md"
+  ]
+}

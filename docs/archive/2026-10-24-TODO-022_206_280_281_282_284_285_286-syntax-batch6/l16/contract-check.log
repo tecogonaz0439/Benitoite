@@ -1,0 +1,15 @@
+formal: B_WORK との差分なし
+docs/design: B_WORK との差分なし
+crates/benitoite: B_WORK との差分なし
+Cargo.toml: B_WORK との差分なし
+Cargo.lock: B_WORK との差分なし
+fuzz: B_WORK との差分なし
+scripts: B_WORK との差分なし
+NormalSoundness: 定義全文一致
+WarningSoundness: 定義全文一致
+試行の baseline 全32行は固定表の同じ上限、または完走後の最終行と一致（cap列を除く）
+git diff --check: 終了0
+formal/lakefile.toml: moreLeanArgs = ["-M", "12288"] を維持
+最終確認: HEAD は B_WORK と一致。既存の追跡ファイルに差分なし。
+最終試行: 現行32行は固定表と一致。試行32行に範囲外の depth 停止なし。上限200は全件完走。
+results.md: 相対リンク、フェンス、末尾空白を確認。再現用 Python の構文を確認。

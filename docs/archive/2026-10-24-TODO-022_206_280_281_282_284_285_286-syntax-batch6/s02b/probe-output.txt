@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.57s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+configured_limit=100000
+allocate(99999, false)=(99999,)
+allocate(1, false)=(100000,)
+allocate(1, true)=(100000,)
+raw_debug=cannot allocate another handle: store handle limit exceeded
+public_trap=None
+cause[0] display=cannot allocate another handle: store handle limit exceeded; debug="cannot allocate another handle: store handle limit exceeded"
+classification=Stop(Runtime(ExternalTrap { function: "testFn", component: "wasm/test.wasm", export: "allocate", trap: "cannot allocate another handle: store handle limit exceeded" }))
+call stats=false: Stop(Runtime(ExternalTrap { function: "testFn", component: "wasm/test.wasm", export: "allocate", trap: "cannot allocate another handle: store handle limit exceeded" }))
+diagnostic=Diagnostic { kind: Runtime, severity: Error, code: Some(R0601), message: "the external function `testFn` trapped: cannot allocate another handle: store handle limit exceeded", primary: None, secondary: [], notes: ["component `wasm/test.wasm`, function `allocate`", "functions left by tail calls are not shown"], helps: [], trace: Some(CallTrace { frames: [], omitted: 0 }), task_origins: [], waiting: [], backtrace: None }
+call stats=true: Stop(Runtime(ExternalTrap { function: "testFn", component: "wasm/test.wasm", export: "allocate", trap: "cannot allocate another handle: store handle limit exceeded" }))
+diagnostic=Diagnostic { kind: Runtime, severity: Error, code: Some(R0601), message: "the external function `testFn` trapped: cannot allocate another handle: store handle limit exceeded", primary: None, secondary: [], notes: ["component `wasm/test.wasm`, function `allocate`", "functions left by tail calls are not shown"], helps: [], trace: Some(CallTrace { frames: [], omitted: 0 }), task_origins: [], waiting: [], backtrace: None }
+statistics={"adapter_failures":[],"arguments_transfer":{"incomplete_calls":0,"maximum":0,"total":0},"calls":1,"construction_bytes":{"incomplete_calls":0,"maximum":0,"total":0},"fallback_reasons":{},"fuel":{"incomplete_calls":0,"maximum":1500008,"total":1500008},"functions":{"wasm/test.wasm#testFn":{"adapter_failures":[],"arguments_transfer":{"incomplete_calls":0,"maximum":0,"total":0},"calls":1,"construction_bytes":{"incomplete_calls":0,"maximum":0,"total":0},"fallback_reasons":{},"fuel":{"incomplete_calls":0,"maximum":1500008,"total":1500008},"memory":{"incomplete_calls":0,"maximum":0,"total":0},"reached_limits":{},"results_transfer":{"incomplete_calls":1,"maximum":0,"total":0},"routes":{"dynamic":1}}},"memory":{"incomplete_calls":0,"maximum":0,"total":0},"reached_limits":{},"results_transfer":{"incomplete_calls":1,"maximum":0,"total":0},"routes":{"dynamic":1},"runtime_compilations":{"adapter":0,"normal":1},"stateful_instances":[]}
+test external::runtime::tests::s02b_probe::s02b_probe_component_handle_limit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1292 filtered out; finished in 0.04s
+
+        8.60 real        14.97 user         0.95 sys
+time: sysctl kern.clockrate: Operation not permitted

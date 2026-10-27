@@ -1,0 +1,648 @@
+$ lake build Benitoite.Interval.Sound
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:870:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1079:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [57/57] Building Benitoite.Interval.Sound (19s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+error: Benitoite/Interval/Sound.lean:25:8: unexpected token ':'; expected identifier
+error: Benitoite/Interval/Sound.lean:28:30: Invalid `⟨...⟩` notation: The expected type
+  (kind : IntKind) → Interval kind
+is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+error: Benitoite/Interval/Sound.lean:42:38: Invalid field `opaque`: The environment does not contain `Benitoite.Interval.BaseApprox.opaque`, so it is not possible to project the field `opaque` from an expression
+  approx
+of type `BaseApprox`
+warning: Benitoite/Interval/Sound.lean:87:75: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:88:4: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:80:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:95:57: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:96:4: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:102:27: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:108:60: unexpected token 'opaque'; expected '}'
+error: Benitoite/Interval/Sound.lean:108:67: unexpected token ':='; expected identifier
+error: Benitoite/Interval/Sound.lean:108:67: unexpected token ':='; expected ':'
+error: Benitoite/Interval/Sound.lean:111:2: Invalid `⟨...⟩` notation: The expected type
+  (kind : IntKind) → Interval kind
+is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+warning: Benitoite/Interval/Sound.lean:263:42: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:264:41: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:286:51: Invalid field `opaque`: The environment does not contain `Benitoite.Interval.BaseApprox.opaque`, so it is not possible to project the field `opaque` from an expression
+  tested
+of type `BaseApprox`
+error: Benitoite/Interval/Sound.lean:315:0: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+warning: Benitoite/Interval/Sound.lean:323:36: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:324:6: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:327:0: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+warning: Benitoite/Interval/Sound.lean:332:14: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:333:30: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:589:6: too many variable names provided
+error: Benitoite/Interval/Sound.lean:589:28: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:589:22: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.253
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case unit
+x✝ : ?m.253
+⊢ baseUnknown.Contains ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:589:22: Tactic `cases` failed: major premise type is not an inductive type
+  type✝ = Ty.base BaseTy.unit → False
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case other
+type✝ : Ty
+notInteger✝ : IntKind.ofType type✝ = none
+notBoolean✝ : type✝ ≠ Ty.base BaseTy.boolean
+value : type✝ ≠ Ty.base BaseTy.unit
+⊢ baseUnknown.Contains (ConcreteValue.other type✝ notInteger✝ notBoolean✝ value)
+error: Benitoite/Interval/Sound.lean:589:38: Tactic `rfl` failed: The left-hand side
+  baseUnknown
+is not definitionally equal to the right-hand side
+  ConcreteValue.checkedRange owner✝ origin✝
+    { minimum := minimum✝, maximum := maximum✝, value := value✝, bounded := bounded✝ }
+
+case checkedRange.mk
+owner✝ : OpaqueName
+origin✝ : OperationKey
+minimum✝ maximum✝ value✝ : Int
+bounded✝ : Checked.Range.InRange minimum✝ maximum✝ value✝
+⊢ baseUnknown.Contains
+    (ConcreteValue.checkedRange owner✝ origin✝
+      { minimum := minimum✝, maximum := maximum✝, value := value✝, bounded := bounded✝ })
+error: Benitoite/Interval/Sound.lean:589:38: Tactic `rfl` failed: The left-hand side
+  baseUnknown
+is not definitionally equal to the right-hand side
+  ConcreteValue.rangeError owner✝ name✝ (Checked.Range.RangeError.invalidBounds lo✝ hi✝)
+
+case rangeError.invalidBounds
+owner✝ : DataName
+name✝ : ConName
+lo✝ hi✝ : Int
+⊢ baseUnknown.Contains (ConcreteValue.rangeError owner✝ name✝ (Checked.Range.RangeError.invalidBounds lo✝ hi✝))
+error: Benitoite/Interval/Sound.lean:589:38: Tactic `rfl` failed: The left-hand side
+  baseUnknown
+is not definitionally equal to the right-hand side
+  ConcreteValue.rangeError owner✝ name✝ (Checked.Range.RangeError.outOfRange lo✝ hi✝ value✝)
+
+case rangeError.outOfRange
+owner✝ : DataName
+name✝ : ConName
+lo✝ hi✝ value✝ : Int
+⊢ baseUnknown.Contains (ConcreteValue.rangeError owner✝ name✝ (Checked.Range.RangeError.outOfRange lo✝ hi✝ value✝))
+error: Benitoite/Interval/Sound.lean:589:38: Tactic `rfl` failed: The left-hand side
+  baseUnknown
+is not definitionally equal to the right-hand side
+  ConcreteValue.con owner✝ types✝ name✝ []
+
+case con.nil
+owner✝ : DataName
+types✝ : List Ty
+name✝ : ConName
+⊢ baseUnknown.Contains (ConcreteValue.con owner✝ types✝ name✝ [])
+error: Benitoite/Interval/Sound.lean:589:38: Tactic `rfl` failed: The left-hand side
+  baseUnknown
+is not definitionally equal to the right-hand side
+  ConcreteValue.con owner✝ types✝ name✝ (head✝ :: tail✝)
+
+case con.cons
+owner✝ : DataName
+types✝ : List Ty
+name✝ : ConName
+head✝ : ConcreteValue
+tail✝ : List ConcreteValue
+⊢ baseUnknown.Contains (ConcreteValue.con owner✝ types✝ name✝ (head✝ :: tail✝))
+warning: Benitoite/Interval/Sound.lean:594:28: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:592:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:604:38: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:601:8: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:616:6: too many variable names provided
+error: Benitoite/Interval/Sound.lean:616:28: Unknown identifier `truth`
+error: Benitoite/Interval/Sound.lean:616:22: Tactic `cases` failed: major premise type is not an inductive type
+  type✝ = Ty.base BaseTy.unit → False
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case other
+left right : BaseApprox
+type✝ : Ty
+notInteger✝ : IntKind.ofType type✝ = none
+notBoolean✝ : type✝ ≠ Ty.base BaseTy.boolean
+truth : type✝ ≠ Ty.base BaseTy.unit
+inside : left.other = true ∧ sorry () = true ∨ right.other = true ∧ sorry () = true
+⊢ (left.other = true ∨ right.other = true) ∧ sorry () = true
+warning: Benitoite/Interval/Sound.lean:610:28: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:610:49: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:726:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:728:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:728:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:736:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:864:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:864:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:928:58: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:911:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:937:28: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:934:8: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:958:50: Application type mismatch: The argument
+  normal
+has type
+  Interval ?m.14
+but is expected to have type
+  Interval kind
+in the application
+  matchKindArmEnv abstract source kind normal
+warning: Benitoite/Interval/Sound.lean:1132:52: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1132:63: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1059:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1102:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1102:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1102:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1113:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1113:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1113:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1132:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1162:62: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1154:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1173:34: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1165:8: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:1227:42: Tactic `rfl` failed: The left-hand side
+  analyzeBaseExpr (fuel + 1) abstract { source := Expr.unit, type := Ty.base BaseTy.unit, key := key✝ }.key
+    { source := Expr.unit, type := Ty.base BaseTy.unit, key := key✝ }.source
+is not definitionally equal to the right-hand side
+  ConcreteValue.unit
+
+case refl
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key✝ : OperationKey
+⊢ (analyzeBaseExpr (fuel + 1) abstract { source := Expr.unit, type := Ty.base BaseTy.unit, key := key✝ }.key
+        { source := Expr.unit, type := Ty.base BaseTy.unit, key := key✝ }.source).Contains
+    ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:1364:6: Tactic `rfl` failed: The left-hand side
+  baseUnit
+is not definitionally equal to the right-hand side
+  ConcreteValue.unit
+
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace✝ : EvalTrace
+models : Models abstract concrete
+eval : EvalPartial concrete input outcome trace✝
+fuel : Nat
+trace : EvalTrace
+key✝ : OperationKey
+cond✝ : Expr
+yes✝ : Block
+condition :
+  EvalPartial concrete { source := cond✝, type := Ty.base BaseTy.boolean, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.boolean false)) trace
+refined : AbstractEnv
+atEnv :
+  branchEnv abstract { source := cond✝, type := Ty.base BaseTy.boolean, key := childKey key✝ [] }.source
+      (analyzeBaseExpr fuel abstract { source := cond✝, type := Ty.base BaseTy.boolean, key := childKey key✝ [] }.key
+          { source := cond✝, type := Ty.base BaseTy.boolean, key := childKey key✝ [] }.source).boolean
+      false =
+    some refined
+related : Models refined concrete
+⊢ baseUnit.Contains ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:1389:43: Tactic `rfl` failed: The left-hand side
+  analyzeBaseBlock (fuel + 1) abstract key Block.empty
+is not definitionally equal to the right-hand side
+  ConcreteValue.unit
+
+case refl
+abstract : AbstractEnv
+concrete : ConcreteEnv
+key : OperationKey
+body : Block
+type : Ty
+outcome : EvalOutcome
+trace : EvalTrace
+models : Models abstract concrete
+eval : EvalBlock concrete key body type outcome trace
+fuel : Nat
+⊢ (analyzeBaseBlock (fuel + 1) abstract key Block.empty).Contains ConcreteValue.unit
+error: Benitoite/Interval/Sound.lean:1398:88: Application type mismatch: The argument
+  rfl
+has type
+  ?m.9338 = ?m.9338
+but is expected to have type
+  baseUnit.Contains ConcreteValue.unit
+in the application
+  then_contains (contains_live ((base_normal_sound fuel models child) value✝ rfl)) rfl
+error: Benitoite/Interval/Sound.lean:1398:88: Application type mismatch: The argument
+  rfl
+has type
+  ?m.9481 = ?m.9481
+but is expected to have type
+  baseUnit.Contains ConcreteValue.unit
+in the application
+  then_contains (contains_live ((base_normal_sound fuel models child) value✝ rfl)) rfl
+error: Benitoite/Interval/Sound.lean:1398:88: Application type mismatch: The argument
+  rfl
+has type
+  ?m.9624 = ?m.9624
+but is expected to have type
+  baseUnit.Contains ConcreteValue.unit
+in the application
+  then_contains (contains_live ((base_normal_sound fuel models child) value✝ rfl)) rfl
+error: Benitoite/Interval/Sound.lean:1443:6: Type mismatch
+  (base_block_normal_sound fuel related body) value h
+has type
+  (analyzeBaseBlock fuel inner key body✝).Contains value
+but is expected to have type
+  (baseKindArm IntKind.integer64 abstract source normal alts✝ fun inner =>
+        analyzeBaseBlock fuel inner key body✝).Contains
+    value
+error: Benitoite/Interval/Sound.lean:1451:6: Tactic `apply` failed: could not unify the type of `merge_contains (Or.inl ?m.10703)`
+  (baseMerge ?m.10697 ?m.10698 ?m.10699).Contains ?m.10700
+with the goal
+  (baseKindArm IntKind.integer64 abstract source normal alts✝ fun inner =>
+        baseMerge (analyzeBaseExpr fuel inner key guard✝)
+          (baseBranch inner guard✝ (analyzeBaseExpr fuel inner key guard✝) true fun refined =>
+            analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard✝)) body✝)
+          baseEmpty).Contains
+    value
+
+abstract : AbstractEnv
+concrete : ConcreteEnv
+source : Expr
+normal : Interval
+key scrutineeKey : OperationKey
+integer : Integer64Value
+arms : Arms
+type : Ty
+outcome✝ : EvalOutcome
+trace st : EvalTrace
+models : Models abstract concrete
+scrutinee :
+  EvalPartial concrete { source := source, type := Ty.base BaseTy.integer, key := scrutineeKey }
+    (EvalOutcome.normal (ConcreteValue.integer integer)) st
+inside : Mem integer.toInt normal
+eval : EvalArms concrete key integer arms type outcome✝ trace
+fuel : Nat
+outcome : EvalOutcome
+alts✝ : List Surface.Alternative
+guard✝ : Expr
+body✝ : Block
+rest✝ : Arms
+selected✝ : List ConcreteValue
+gt✝ bt✝ : EvalTrace
+selection : IntegerSelection alts✝ integer selected✝
+condition :
+  EvalPartial
+    { locals := List.map some selected✝.reverse ++ concrete.locals, standards := concrete.standards,
+      apiAt := concrete.apiAt }
+    { source := guard✝, type := Ty.base BaseTy.boolean, key := key } (EvalOutcome.normal (ConcreteValue.boolean true))
+    gt✝
+body :
+  EvalBlock
+    { locals := List.map some selected✝.reverse ++ concrete.locals, standards := concrete.standards,
+      apiAt := concrete.apiAt }
+    (advanceKey key (surfaceSize guard✝)) body✝ type outcome bt✝
+value : ConcreteValue
+h : outcome = EvalOutcome.normal value
+inner : AbstractEnv
+entry : matchArmEnv abstract source (Ty.base BaseTy.integer) normal alts✝ = some inner
+related :
+  Models inner
+    { locals := List.map some selected✝.reverse ++ concrete.locals, standards := concrete.standards,
+      apiAt := concrete.apiAt }
+refined : AbstractEnv
+atEnv :
+  branchEnv inner { source := guard✝, type := Ty.base BaseTy.boolean, key := key }.source
+      (analyzeBaseExpr fuel inner { source := guard✝, type := Ty.base BaseTy.boolean, key := key }.key
+          { source := guard✝, type := Ty.base BaseTy.boolean, key := key }.source).boolean
+      true =
+    some refined
+modeled :
+  Models refined
+    { locals := List.map some selected✝.reverse ++ concrete.locals, standards := concrete.standards,
+      apiAt := concrete.apiAt }
+⊢ (baseKindArm IntKind.integer64 abstract source normal alts✝ fun inner =>
+        baseMerge (analyzeBaseExpr fuel inner key guard✝)
+          (baseBranch inner guard✝ (analyzeBaseExpr fuel inner key guard✝) true fun refined =>
+            analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard✝)) body✝)
+          baseEmpty).Contains
+    value
+error: Benitoite/Interval/Sound.lean:1476:40: Unknown identifier `match_width_selection_models`
+error: Benitoite/Interval/Sound.lean:1476:13: Tactic `rcases` failed: `x✝ : ?m.11589` is not an inductive datatype
+error: Benitoite/Interval/Sound.lean:1482:40: Unknown identifier `match_width_selection_models`
+error: Benitoite/Interval/Sound.lean:1482:13: Tactic `rcases` failed: `x✝ : ?m.11597` is not an inductive datatype
+warning: Benitoite/Interval/Sound.lean:1277:8: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:1182:16: (kernel) unknown constant 'Benitoite.Interval.matchKind_contains'
+warning: Benitoite/Interval/Sound.lean:1442:17: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1442:26: This simp argument is unused:
+  entry
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseArm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1448:17: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1448:26: This simp argument is unused:
+  entry
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseArm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1513:35: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1523:35: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1586:25: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1632:89: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:1920:71: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [targetOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2276:8: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:2593:20: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:2619:16: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:2691:20: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:2686:16: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:3029:6: Type mismatch: After simplification, term
+  Good.follow ha ht
+ has type
+  Good key (guardSize guard + (blockSize body + armsSize rest))
+    ((baseArm abstract source normal alts fun inner =>
+          match guard with
+          | none => analyzeBaseBlock fuel inner key body
+          | some condition =>
+            baseMerge (analyzeBaseExpr fuel inner key condition)
+              (baseBranch inner condition (analyzeBaseExpr fuel inner key condition) true fun refined =>
+                analyzeBaseBlock fuel refined (advanceKey key (surfaceSize condition)) body)
+              baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (guardSize guard + blockSize body)) rest).warnings)
+    trace
+but is expected to have type
+  Good key (guardSize guard + (blockSize body + armsSize rest))
+    ((match matchArmEnv abstract source (Ty.base BaseTy.integer) normal alts with
+        | none => baseEmpty
+        | some inner =>
+          match guard with
+          | none => analyzeBaseBlock fuel inner key body
+          | some condition =>
+            baseMerge (analyzeBaseExpr fuel inner key condition)
+              (baseBranch inner condition (analyzeBaseExpr fuel inner key condition) true fun refined =>
+                analyzeBaseBlock fuel refined (advanceKey key (surfaceSize condition)) body)
+              baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (guardSize guard + blockSize body)) rest).warnings)
+    trace
+error: Benitoite/Interval/Sound.lean:3036:6: Type mismatch: After simplification, term
+  Good.follow ha ht
+ has type
+  Good key (blockSize body + armsSize rest)
+    ((baseArm abstract source normal alts fun inner => analyzeBaseBlock fuel inner key body).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal (advanceKey key (blockSize body))
+          rest).warnings)
+    trace
+but is expected to have type
+  Good key (blockSize body + armsSize rest)
+    ((match matchArmEnv abstract source (Ty.base BaseTy.integer) normal alts with
+        | none => baseEmpty
+        | some inner => analyzeBaseBlock fuel inner key body).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal (advanceKey key (blockSize body))
+          rest).warnings)
+    trace
+error: Benitoite/Interval/Sound.lean:3051:6: Type mismatch: After simplification, term
+  Good.follow ha ht
+ has type
+  Good key (surfaceSize guard + blockSize body + armsSize rest)
+    ((baseArm abstract source normal alts fun inner =>
+          baseMerge (analyzeBaseExpr fuel inner key guard)
+            (baseBranch inner guard (analyzeBaseExpr fuel inner key guard) true fun refined =>
+              analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard)) body)
+            baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (surfaceSize guard + blockSize body)) rest).warnings)
+    (gt✝ ++ bt✝)
+but is expected to have type
+  Good key (surfaceSize guard + blockSize body + armsSize rest)
+    ((match matchArmEnv abstract source (Ty.base BaseTy.integer) normal alts with
+        | none => baseEmpty
+        | some inner =>
+          baseMerge (analyzeBaseExpr fuel inner key guard)
+            (baseBranch inner guard (analyzeBaseExpr fuel inner key guard) true fun refined =>
+              analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard)) body)
+            baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (surfaceSize guard + blockSize body)) rest).warnings)
+    (gt✝ ++ bt✝)
+error: Benitoite/Interval/Sound.lean:3063:6: Type mismatch: After simplification, term
+  Good.follow ha ht
+ has type
+  Good key (surfaceSize guard + blockSize body + armsSize rest)
+    ((baseArm abstract source normal alts fun inner =>
+          baseMerge (analyzeBaseExpr fuel inner key guard)
+            (baseBranch inner guard (analyzeBaseExpr fuel inner key guard) true fun refined =>
+              analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard)) body)
+            baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (surfaceSize guard + blockSize body)) rest).warnings)
+    (gt✝ ++ rt✝)
+but is expected to have type
+  Good key (surfaceSize guard + blockSize body + armsSize rest)
+    ((match matchArmEnv abstract source (Ty.base BaseTy.integer) normal alts with
+        | none => baseEmpty
+        | some inner =>
+          baseMerge (analyzeBaseExpr fuel inner key guard)
+            (baseBranch inner guard (analyzeBaseExpr fuel inner key guard) true fun refined =>
+              analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard)) body)
+            baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (surfaceSize guard + blockSize body)) rest).warnings)
+    (gt✝ ++ rt✝)
+error: Benitoite/Interval/Sound.lean:3076:6: Type mismatch: After simplification, term
+  Good.follow ha ht
+ has type
+  Good key (surfaceSize guard + blockSize body + armsSize rest)
+    ((baseArm abstract source normal alts fun inner =>
+          baseMerge (analyzeBaseExpr fuel inner key guard)
+            (baseBranch inner guard (analyzeBaseExpr fuel inner key guard) true fun refined =>
+              analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard)) body)
+            baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (surfaceSize guard + blockSize body)) rest).warnings)
+    trace
+but is expected to have type
+  Good key (surfaceSize guard + blockSize body + armsSize rest)
+    ((match matchArmEnv abstract source (Ty.base BaseTy.integer) normal alts with
+        | none => baseEmpty
+        | some inner =>
+          baseMerge (analyzeBaseExpr fuel inner key guard)
+            (baseBranch inner guard (analyzeBaseExpr fuel inner key guard) true fun refined =>
+              analyzeBaseBlock fuel refined (advanceKey key (surfaceSize guard)) body)
+            baseEmpty).warnings ++
+      (analyzeBaseKindArms fuel IntKind.integer64 abstract source normal
+          (advanceKey key (surfaceSize guard + blockSize body)) rest).warnings)
+    trace
+error: Benitoite/Interval/Sound.lean:3096:40: Unknown identifier `match_width_selection_models`
+error: Benitoite/Interval/Sound.lean:3096:13: Tactic `rcases` failed: `x✝ : ?m.11052` is not an inductive datatype
+error: Benitoite/Interval/Sound.lean:3104:40: Unknown identifier `match_width_selection_models`
+error: Benitoite/Interval/Sound.lean:3104:13: Tactic `rcases` failed: `x✝ : ?m.11056` is not an inductive datatype
+error: Benitoite/Interval/Sound.lean:3119:40: Unknown identifier `match_width_selection_models`
+error: Benitoite/Interval/Sound.lean:3119:13: Tactic `rcases` failed: `x✝ : ?m.11060` is not an inductive datatype
+error: Benitoite/Interval/Sound.lean:3131:40: Unknown identifier `match_width_selection_models`
+error: Benitoite/Interval/Sound.lean:3131:13: Tactic `rcases` failed: `x✝ : ?m.11064` is not an inductive datatype
+warning: Benitoite/Interval/Sound.lean:3029:86: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:2738:16: (kernel) unknown constant 'Benitoite.Interval.matchKind_contains'
+error: Benitoite/Interval/Sound.lean:2965:16: (kernel) unknown constant 'Benitoite.Interval.matchKind_contains'
+warning: Benitoite/Interval/Sound.lean:3025:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3025:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+error: build failed
+
+exit=1, seconds=19.250

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 580, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 573, in main
+    exercise(args.output.resolve(), executable)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 376, in exercise
+    if result['excludedCount'] == '0' and result['phaseDepthCount'] == '0':
+KeyError: 'excludedCount'

@@ -14,6 +14,7 @@ use crate::pipeline::CheckResult;
 use crate::runtime::panic as panic_boundary;
 use crate::runtime::report::{self, FaultThread};
 use crate::runtime::run::{EXIT_CHECK, EXIT_INTERNAL, EXIT_OK};
+use crate::typeck::{IntervalAnalysis, IntervalBudgetStops, IntervalCoverage};
 
 use super::inspection::{ProgramInspection, ShellReference, effect_name};
 use super::{CliEnv, DevPanic, Options, build_info, pipeline, prelude_error};
@@ -24,6 +25,37 @@ struct ReportContext<'a> {
     script: &'a Path,
     entry: Option<EntrySpec>,
     checked: CheckResult,
+}
+
+/// main と test は同じ追加解析の欄を返し、既存の complete と独立して読む。
+pub(super) fn interval_value(summary: &IntervalAnalysis) -> Value {
+    let budget_stops = |stops: IntervalBudgetStops| {
+        json!({
+            "bodyOperations": stops.body_operations, "bodyItems": stops.body_items,
+            "wholeOperations": stops.whole_operations, "wholeItems": stops.whole_items
+        })
+    };
+    json!({
+        "basis": "localIntervals",
+        "coverage": match summary.coverage {
+            IntervalCoverage::All => "all", IntervalCoverage::Some => "some", IntervalCoverage::None => "none"
+        },
+        "inputDefinitions": summary.input_definitions,
+        "unsupportedBodies": summary.unsupported_bodies,
+        "bodyBudgetExceeded": summary.body_budget_exceeded,
+        "wholeBudgetSkipped": summary.whole_budget_skipped,
+        "unidentifiedBodies": summary.unidentified_bodies,
+        "phaseStops": {
+            "exceeded": budget_stops(summary.phase_stops.exceeded),
+            "unidentified": budget_stops(summary.phase_stops.unidentified),
+            "depth": summary.phase_stops.depth, "other": summary.phase_stops.other
+        },
+        "usage": {
+            "operations": summary.usage.operations, "savedItems": summary.usage.saved_items,
+            "peakItems": summary.usage.peak_items, "maxBodyOperations": summary.usage.max_body_operations,
+            "maxBodyItems": summary.usage.max_body_items
+        }
+    })
 }
 
 pub(super) fn source_id(target_id: &str, file: FileId) -> String {
@@ -164,7 +196,8 @@ fn value(
     let targets = context.entry.iter().map(|entry| json!({
         "targetId": "t0", "requestIndex": 0, "entry": entry.display_name,
         "root": entry.root.display().to_string(), "sourceId": checked.entry.map(|file| source_id("t0", file)),
-        "kind": "main", "status": status, "complete": code == EXIT_OK, "main": main
+        "kind": "main", "status": status, "complete": code == EXIT_OK, "main": main,
+        "intervalAnalysis": interval_value(&checked.interval_analysis)
     })).collect::<Vec<_>>();
     let source_sets = context
         .entry
@@ -181,6 +214,7 @@ fn value(
             "status": status, "complete": code == EXIT_OK, "targetsComplete": context.entry.is_some(), "executed": false,
             "requestedTargets": [{ "requestIndex": 0, "path": context.script.display().to_string() }],
             "targets": targets,
+            "intervalAnalysis": interval_value(&checked.interval_analysis),
             "sources": sources, "sourceSets": source_sets,
             "aggregateEffects": aggregate, "diagnostics": diagnostics, "diagnosticTargets": diagnostic_targets
         }),
@@ -206,6 +240,7 @@ fn usage_value(script: Option<&Path>, detail: &str) -> Value {
         "status": "usageError", "complete": false, "targetsComplete": false, "executed": false,
         "requestedTargets": requested_targets, "targets": [], "sources": [], "sourceSets": [],
         "aggregateEffects": null,
+        "intervalAnalysis": interval_value(&IntervalAnalysis::default()),
         "diagnostics": [{ "kind": "check", "severity": "error", "code": null,
             "message": detail, "primary": null, "secondary": [], "notes": [], "helps": [] }],
         "diagnosticTargets": [{ "diagnosticIndex": 0, "targetId": null }]
@@ -265,6 +300,7 @@ pub(super) fn run_check(options: Options, script: PathBuf, env: CliEnv) -> u8 {
             sources: Arc::new(SourceTable::new()),
             entry: None,
             diagnostics: Vec::new(),
+            interval_analysis: Default::default(),
             program: None,
         },
     };

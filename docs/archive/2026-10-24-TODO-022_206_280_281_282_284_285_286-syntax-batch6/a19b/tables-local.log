@@ -1,0 +1,12 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.74s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 3 tests
+test typeck::interval::flow::range::tables_tests::shift_recognition_requires_both_tables_and_the_original_name_key ... ok
+test typeck::interval::flow::range::tables_tests::shift_tables_leave_unrelated_bodies_and_unloaded_modules_unchanged ... ok
+shift declarations: 20 BuiltinFn (PrimName), 7 Fn (FunName)
+test typeck::interval::flow::range::tables_tests::shift_tables_identify_all_resolved_declarations_and_lean_contracts ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1350 filtered out; finished in 0.14s
+

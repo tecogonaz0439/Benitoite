@@ -1,0 +1,19 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "100ab3753ed99f954f7b93f9a8329e2554de54ae",
+    "--only",
+    "policy_selftest,advisories"
+  ],
+  "check_exit": 0,
+  "time_exit": 1,
+  "elapsed_seconds": 19.928,
+  "maximum_resident_set_size": "unavailable",
+  "environment": {
+    "CARGO_HOME": "<tmp>/benitoite-s02a/cargo",
+    "BENITOITE_ADVISORY_DB_PATH": "<tmp>/benitoite-s04/db"
+  }
+}

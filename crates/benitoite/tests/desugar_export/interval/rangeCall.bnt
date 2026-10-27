@@ -1,0 +1,3 @@
+function sample(value: Integer) -> Result[Range.CheckedInteger, Range.RangeError]
+ return Range.checkInteger(value: value, maximum: 10, minimum: 0)
+end function

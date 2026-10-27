@@ -57,6 +57,8 @@ pub struct CheckResult {
     pub diagnostics: Vec<Diagnostic>,
     /// 誤りがなければ `Some`。`deny_warnings` のときは、警告もなければ `Some`
     pub program: Option<CheckedProgram>,
+    /// 区間解析の範囲と件数。警告を誤りに昇格しても保持する。
+    pub interval_analysis: crate::typeck::IntervalAnalysis,
 }
 
 impl CheckResult {
@@ -162,6 +164,7 @@ pub(crate) fn check_with_source_origin(
                 Some(&panic),
                 crate::runtime::report::FaultThread::Stage,
             )],
+            interval_analysis: Default::default(),
             program: None,
         },
         Err(error) => CheckResult {
@@ -173,6 +176,7 @@ pub(crate) fn check_with_source_origin(
                 None,
                 crate::runtime::report::FaultThread::Stage,
             )],
+            interval_analysis: Default::default(),
             program: None,
         },
     };
@@ -311,6 +315,7 @@ fn check_stages_counted(
         sources,
         entry: entry_file,
         diagnostics: Vec::new(),
+        interval_analysis: Default::default(),
         program: None,
     };
     append_stage(&mut result, loaded.diagnostics, &hidden_warnings);
@@ -340,6 +345,7 @@ fn check_stages_counted(
                 &resolved,
                 opts.require_main,
             );
+            result.interval_analysis = types.interval_analysis();
             append_stage(&mut result, diagnostics, &hidden_warnings);
             if !result.diagnostics.iter().any(Diagnostic::is_error) {
                 let (diagnostics, count) = crate::external::check::check_externals_counted(
@@ -442,6 +448,10 @@ impl ModuleFs for MemoryFs {
 mod stack_test_inputs;
 
 #[cfg(test)]
+#[path = "pipeline/interval_inventory.rs"]
+mod interval_inventory;
+
+#[cfg(test)]
 mod tests {
 
     // 関門: 公開の検査の入口が段の順、警告の扱い、深い入力への対応を守る。
@@ -526,7 +536,16 @@ mod tests {
 
     #[test]
     fn stages_fit_the_measured_stack_through_deep_branches() {
-        assert_stages_fit_measured_stack(&["if", "else-if", "match-body", "match-subject"]);
+        assert_stages_fit_measured_stack(&[
+            "if",
+            "else-if",
+            "match-body",
+            "match-subject",
+            "if-comparison",
+            "else-if-comparison",
+            "match-integer-body",
+            "match-integer-subject",
+        ]);
     }
 
     #[test]
@@ -537,6 +556,7 @@ mod tests {
     #[test]
     fn stages_fit_the_measured_stack_through_deep_operators() {
         assert_stages_fit_measured_stack(&[
+            "call",
             "binary-right",
             "binary-left",
             "pipe",

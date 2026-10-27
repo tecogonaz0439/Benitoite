@@ -1,0 +1,358 @@
+{
+  "inputs": {
+    "crates/benitoite/tests/desugar_export/interval.rs": "4d2d2e957cd8e4e32b447084b05e07ca0ea1cdd4678e007a5585a37cc02d643c",
+    "crates/benitoite/tests/desugar_export/interval/vm.rs": "4c57ca39b72b3c97eaf47d67f8fe119ff7f1c94467cf810f54cabc8ef119f6e8",
+    "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt": "dfbd98979fb6b6b9253118c99b185fd8950be72a837b5d5d9e75a246673937fd",
+    "formal/tests/interval_vm_compare.py": "edb17fa67e02574240a85ed0e5743f0dde1b78e4fcae57cce38e87dee32cb053",
+    "formal/tests/test_interval_exchange.py": "25310e0b70d51a04c457d026aad930b8f18a68f3dfc3194148ded419c819229a",
+    "docs/design/07-quality/07-04-formal-semantics.md": "97b75bc265f7548e4ae307d9c2d28e8d846d1d1cd5a6add64874e9d6fea631c0",
+    "crates/benitoite/tests/desugar_export/interval/README.md": "087b78479d81a7fb093b592b1f29471d5d794756e12c55f2524bd7f42c6f95b6"
+  },
+  "protectedFiles": 753,
+  "lib": {
+    "target": "unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)",
+    "counts": [
+      1332,
+      0,
+      21
+    ]
+  },
+  "integration": [
+    {
+      "target": "tests/build_info.rs (target/debug/deps/build_info-74284aae04ee09e8)",
+      "counts": [
+        0,
+        0,
+        5
+      ]
+    },
+    {
+      "target": "tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/checked_args.rs (target/debug/deps/checked_args-be3cae742fe14985)",
+      "counts": [
+        10,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)",
+      "counts": [
+        37,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/coverage_export.rs (target/debug/deps/coverage_export-dfd1484753d40198)",
+      "counts": [
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "target": "tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)",
+      "counts": [
+        31,
+        0,
+        1
+      ]
+    },
+    {
+      "target": "tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)",
+      "counts": [
+        34,
+        0,
+        1
+      ]
+    },
+    {
+      "target": "tests/external_signals.rs (target/debug/deps/external_signals-ea7ec4ae24524f87)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/fmt_command.rs (target/debug/deps/fmt_command-7bb132e1501eefba)",
+      "counts": [
+        21,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/golden.rs (target/debug/deps/golden-7190357a94580310)",
+      "counts": [
+        2,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/http_descriptor_exhaustion.rs (target/debug/deps/http_descriptor_exhaustion-df465bef20f90de2)",
+      "counts": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/http_exchange_release.rs (target/debug/deps/http_exchange_release-a1b457383d0948a8)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/interrupt_process.rs (target/debug/deps/interrupt_process-3c7fa7c12fec49de)",
+      "counts": [
+        11,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/io_modes.rs (target/debug/deps/io_modes-4ca7874bcf3ce9f4)",
+      "counts": [
+        11,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l10_console_clock_process.rs (target/debug/deps/l10_console_clock_process-a604957de93742f9)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l13_external_commands.rs (target/debug/deps/l13_external_commands-0fada77aa6017f35)",
+      "counts": [
+        7,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l21_json.rs (target/debug/deps/l21_json-b23fe1f810ae73e9)",
+      "counts": [
+        4,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l23_csv.rs (target/debug/deps/l23_csv-1468f7923eeef67f)",
+      "counts": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l24_time.rs (target/debug/deps/l24_time-7fcfd84595cd8bcb)",
+      "counts": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l30_http_server.rs (target/debug/deps/l30_http_server-62505e6788aaeef4)",
+      "counts": [
+        12,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l31_http_serve_and_helpers.rs (target/debug/deps/l31_http_serve_and_helpers-7aad19a347f89901)",
+      "counts": [
+        6,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/l32_http_client.rs (target/debug/deps/l32_http_client-098889df410f9255)",
+      "counts": [
+        9,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/named_arguments.rs (target/debug/deps/named_arguments-4cc393dac98db971)",
+      "counts": [
+        22,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/network_faults.rs (target/debug/deps/network_faults-4b6fba212933d442)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/open_062.rs (target/debug/deps/open_062-4dd0345666867525)",
+      "counts": [
+        8,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/open_062_http.rs (target/debug/deps/open_062_http-4e71efa35fe0c753)",
+      "counts": [
+        4,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/package_command.rs (target/debug/deps/package_command-282300bdfc18d55a)",
+      "counts": [
+        16,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/property_library.rs (target/debug/deps/property_library-9eb81d6b42debf5d)",
+      "counts": [
+        15,
+        0,
+        2
+      ]
+    },
+    {
+      "target": "tests/random_programs.rs (target/debug/deps/random_programs-83bf775e37def9dc)",
+      "counts": [
+        7,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/reference_examples.rs (target/debug/deps/reference_examples-37c744dcd0b23c60)",
+      "counts": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-a938f8f1251b1df6)",
+      "counts": [
+        23,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/skill_docs.rs (target/debug/deps/skill_docs-5b49ceaf91734838)",
+      "counts": [
+        8,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/skill_examples.rs (target/debug/deps/skill_examples-cf66a301ffe96469)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/spec_examples.rs (target/debug/deps/spec_examples-b7d1eaef83e2d734)",
+      "counts": [
+        7,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/stdlib_doc_examples.rs (target/debug/deps/stdlib_doc_examples-d023dc849acf58a7)",
+      "counts": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/test_command.rs (target/debug/deps/test_command-3358157b9881c5d2)",
+      "counts": [
+        52,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/verify.rs (target/debug/deps/verify-93b1dbc573e190ff)",
+      "counts": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/vm_handlers.rs (target/debug/deps/vm_handlers-27bc3607989d7d5a)",
+      "counts": [
+        5,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/vm_lazy.rs (target/debug/deps/vm_lazy-e28ee8ac02564c37)",
+      "counts": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "target": "tests/vm_reference_cells.rs (target/debug/deps/vm_reference_cells-ee912349211b319a)",
+      "counts": [
+        2,
+        0,
+        0
+      ]
+    }
+  ],
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "65b165272b42c3f3621ad59bc2a2c6c9cec9c46e"
+    ],
+    "exit": 0,
+    "seconds": 472.78
+  },
+  "archiveEntries": 731,
+  "archiveLinks": 1,
+  "pythonSyntax": true,
+  "pathsRedacted": true,
+  "diffCheck": true
+}

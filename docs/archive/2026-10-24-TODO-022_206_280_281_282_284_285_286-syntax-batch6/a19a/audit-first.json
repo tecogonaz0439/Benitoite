@@ -1,0 +1,16 @@
+{
+  "exit": 1,
+  "reason": "source_rules と spec_tally の各二コマンドの見出しを、別の検査単位として二重に数えた",
+  "observed_headers": [
+    "fmt",
+    "lint_default",
+    "lib_default",
+    "tests_related",
+    "source_rules",
+    "source_rules",
+    "skill_generated",
+    "spec_tally",
+    "spec_tally"
+  ],
+  "fix": "出現順を保って重複を除き、七単位の集合と順序を照合する"
+}

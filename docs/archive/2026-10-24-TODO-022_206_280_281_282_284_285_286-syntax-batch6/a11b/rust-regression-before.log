@@ -1,0 +1,23 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.78s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::interval::tests::budget_reference::unrelated_function_preserves_diagnostics_below_whole_limits' (3167408) panicked at crates/benitoite/src/typeck/interval/tests/budget_reference.rs:483:9:
+assertion `left == right` failed: boundary=true
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::budget_reference::unrelated_function_preserves_diagnostics_below_whole_limits ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::budget_reference::unrelated_function_preserves_diagnostics_below_whole_limits
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1318 filtered out; finished in 0.29s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+       12.28 real        22.75 user         1.41 sys
+time: sysctl kern.clockrate: Operation not permitted

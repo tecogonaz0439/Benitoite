@@ -1,0 +1,194 @@
+== plan: level stage against e61a5b09cf54aecac857b90aaf76580c4d224e7b (changed files not classified) (partial selection: --only tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test declarations --test named_arguments --test golden --test cli_process --test test_command
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== tests_related
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.77s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 33 tests
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test log_default_output_runs_through_the_real_cli_in_both_modes ... ok
+test log_main_report_and_effect_limits_keep_schema_one ... ok
+test file_effects_reach_main_reports_and_limit_origins ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test failure_entry_help_uses_resolved_standard_effect ... ok
+test main_check_reports_warnings_without_execution ... ok
+test cli_process_contracts ... ok
+test main_check_reports_sources_without_execution ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test main_check_reports_failures_without_execution ... ok
+test run_failure_contracts_are_checked_before_effect_limits ... ok
+test skill_document_output_failures_exit_one ... ok
+test main_check_reports_contracts_without_execution ... ok
+test shared_decisions_are_accepted_by_all_cli_modes ... ok
+test skill_documents_need_no_writable_directory ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test tool_panics_are_internal_reports ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test main_check_reports_shell_without_execution ... ok
+test test_doc_uses_version_two_and_keeps_check_nonexecuting ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_type_limits ... ok
+test interval_reports_keep_coverage_and_counts_independent_of_acceptance ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.94s
+
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 28 tests
+test diagnosed_binding_chain_scales_with_input_length ... ignored, long: checks near-linear recovery of a long chain of diagnosed bindings
+test config_rejects_duplicate_unknown_and_incomplete_settings ... ok
+test declarations_do_not_resolve_check_or_evaluate_bodies ... ok
+test diagnosed_recovery_keeps_pending_call_escape ... ok
+test diagnosed_recovery_does_not_infer_values_from_callback_requirements ... ok
+test diagnosed_recovery_skips_coverage_without_a_known_pattern_shape ... ok
+test file_uses_external_declarations_check_the_effective_contract ... ok
+test file_uses_failure_no_fail_is_enforced_at_calls ... ok
+test file_uses_inventory_keeps_original_ast_and_effect_origins ... ok
+test file_uses_imports_and_higher_order_values_use_merged_contracts ... ok
+test file_uses_loading_merges_functions_and_rejects_config_declarations ... ok
+test declaration_errors_are_rejected_at_the_same_stage_as_check ... ok
+test constant_intervals_analyze_bodies_and_merge_original_warning_locations ... ok
+test inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries ... ok
+test inventory_json_preserves_resolved_types_order_spans_and_input_hashes ... ok
+test checked_lists_hide_representation_and_bind_indices_to_their_list ... ok
+test file_uses_visibility_reports_once_and_repairs_all_public_functions ... ok
+test opaque_declarations_keep_representation_and_owner_but_hide_its_contract ... ok
+test diagnosed_binding_recovery_preserves_own_contracts ... ok
+test log_standard_declarations_and_effect_identity ... ok
+test file_uses_contracts_preserve_existing_restrictions ... ok
+test opaque_types_keep_nominal_equality_and_nonempty_coverage ... ok
+test log_standard_handlers_keep_the_outer_effect_contract ... ok
+test interpolation_formats_preserve_recovery ... ok
+test diagnosed_recovery_preserves_independent_later_checks ... ok
+test interval_boundaries_forget_outer_facts_and_keep_inner_warnings ... ok
+test diagnosed_recovery_preserves_partial_structure ... ok
+test local_intervals_report_only_reached_arithmetic_failures ... ok
+
+test result: ok. 27 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 5.23s
+
+     Running tests/golden.rs (target/debug/deps/golden-7190357a94580310)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.69s
+
+     Running tests/named_arguments.rs (target/debug/deps/named_arguments-4cc393dac98db971)
+
+running 22 tests
+test deferred_list_elements_determine_named_callback_contracts ... ok
+test known_local_values_and_explicit_higher_order_contracts_keep_their_names ... ok
+test final_higher_order_contracts_preserve_parameter_order ... ok
+test class_implementations_require_declaration_names_in_order ... ok
+test nested_dictionary_arguments_wait_for_numeric_defaulting ... ok
+test builders_require_import_in_the_using_module ... ok
+test constructor_function_values_and_direct_holes_keep_the_original_parameter_names ... ok
+test named_partial_application_keeps_return_try_and_resume_inside_its_lambda ... ok
+test positional_callbacks_preserve_core_contracts ... ok
+test new_contract_boundaries_check_implementations_in_imported_modules ... ok
+test record_syntax_checks_constructor_kind_and_keeps_real_record_errors ... ok
+test unresolved_contracts_suppress_dependent_class_ambiguity_and_keep_child_errors ... ok
+test final_call_rules_reject_positional_arguments_in_all_three_paths ... ok
+test unresolved_special_calls_explain_where_to_put_the_contract ... ok
+test block_expressions_preserve_scope_effects_and_escape_diagnostics ... ok
+test unresolved_contracts_wait_for_the_same_body_and_never_invent_names ... ok
+test ordinary_named_calls_report_exact_causes_at_the_public_boundary ... ok
+test binary_traits_preserve_error_types_kinds_and_callback_names ... ok
+test operations_use_declared_names_and_handlers_bind_independent_local_names ... ok
+test named_holes_and_pipe_insertion_keep_exact_contracts_and_causes ... ok
+test string_builders_keep_second_class_values_and_capture_boundaries ... ok
+test list_and_bytes_builders_keep_types_and_boundaries ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s
+
+     Running tests/test_command.rs (target/debug/deps/test_command-3358157b9881c5d2)
+
+running 52 tests
+test an_unreadable_directory_runs_no_tests ... ok
+test check_rejects_explicit_execution_options_even_at_their_defaults ... ok
+test check_is_accepted_and_missing_paths_still_report_usage_errors ... ok
+test all_passing_tests_end_with_ok_and_no_failures_section ... ok
+test an_interrupt_request_ends_with_the_interrupted_summary ... ok
+test check_observes_interrupts_only_before_each_file ... ok
+test a_file_with_check_errors_is_not_run_but_others_are ... ok
+test check_report_usage_errors_scan_options_in_both_orders ... ok
+test check_report_keeps_success_after_errors_and_diagnostic_indices ... ok
+test check_report_keeps_completed_and_unstarted_targets_on_interrupt ... ok
+test check_report_preserves_contracts_descriptions_locations_and_source_identity ... ok
+test deadlock_reports_name_the_first_task_after_the_test_function ... ok
+test check_report_preserves_warning_promotion_and_program_shell_scope ... ok
+test deny_warnings_skips_a_file_with_warnings ... ok
+test a_file_without_tests_writes_only_the_summary ... ok
+test directory_walk_skips_settings_and_nested_package_roots ... ok
+test check_keeps_diagnostics_and_checks_files_after_errors ... ok
+test check_does_not_run_user_code_or_write_result_lines ... ok
+test die_source_fails_one_test_and_keeps_running ... ok
+test doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs ... ok
+test doc_report_preserves_partial_unknowns_and_option_rejections ... ok
+test a_directory_is_expanded_in_path_order_with_itself_as_the_root ... ok
+test doc_examples_use_public_imports_without_inheriting_private_names ... ok
+test doc_text_reports_escape_control_characters_in_example_ids ... ok
+test json_lines_have_the_fields_in_order ... ok
+test doc_expectations_fail_per_example_and_keep_running ... ok
+test limited_test_options_reject_invalid_or_check_only_invocations ... ok
+test doc_modes_share_discovery_and_version_two_reports ... ok
+test exit_status_prioritizes_internal_and_check_errors_over_test_failures ... ok
+test doc_run_checks_unhandled_effects_and_exact_stderr ... ok
+test failure_entry_contracts_are_checked_before_test_execution ... ok
+test log_default_events_are_captured_once_by_the_test_runner ... ok
+test log_handlers_receive_expanded_source_locations ... ok
+test file_effects_reach_test_contracts_but_not_outer_doc_examples ... ok
+test limited_test_control_flow_matches_reported_effects ... ok
+test ordinary_test_does_not_parse_documentation_examples ... ok
+test mixed_results_are_reported_in_the_text_form ... ok
+test max_call_stack_limits_each_test ... ok
+test log_test_report_and_effect_limits_use_the_canonical_name ... ok
+test process_interrupt::sigint_stops_the_runner_with_the_interrupted_summary ... ok
+test prepared_sources_are_reused_and_the_next_file_is_prepared_after_execution ... ok
+test limited_tests_recheck_reported_contracts_after_changes ... ok
+test result_lines_escape_file_names_only_in_text_output ... ok
+test limited_tests_consume_the_prepared_artifacts_in_order ... ok
+test tests_of_imported_modules_run_only_when_their_file_is_given ... ok
+test property_results_use_ordinary_test_reports_and_check_never_runs_callbacks ... ok
+test doc_prepares_all_entries_and_limits_before_any_execution ... ok
+test task_origins_end_at_the_test_function ... ok
+test source_locations_execute_at_written_sites_and_original_doc_comments ... ok
+test check_report_and_execution_select_the_same_entries_and_functions ... ok
+test limited_tests_reject_every_entry_before_any_execution ... ok
+test external_session_shares_preparation_and_isolates_each_test ... ok
+
+test result: ok. 52 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.11s
+
+selected checks passed
+       85.69 real       546.57 user        10.60 sys
+          1311817728  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1565897  page reclaims
+                2092  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  88  messages sent
+                  62  messages received
+                  13  signals received
+                2052  voluntary context switches
+              407507  involuntary context switches
+            65122694  instructions retired
+            22923004  cycles elapsed
+             1884592  peak memory footprint
+exit 0

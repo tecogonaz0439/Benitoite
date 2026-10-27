@@ -1,0 +1,60 @@
+--- crates/benitoite/tests/desugar_export/interval/manifest.rs
++++ crates/benitoite/tests/desugar_export/interval/manifest.rs
+@@ -1,4 +1,5 @@
+ //! 元 AST の全定義と交換・通常解析の範囲を別々に記録する。
++//! （設計書 02-05「区間解析の式の識別」）。
+ use super::*;
+ use benitoite::syntax::ast::Item;
+ use std::collections::BTreeSet;
+@@ -14,6 +15,7 @@
+ }
+ 
+ impl Export {
++    /// 検査できなかった入力も元の入力順で残す。
+     pub(crate) fn unavailable(&mut self, group: &str, name: &str, reasons: Value) {
+         let row = json!({"group":group,"name":name,"checker":"failed",
+             "reasons":reasons,"definitions":[],"counts":{"checkerSucceeded":"0","checkerFailed":"1"},
+@@ -21,6 +23,7 @@
+         self.manifests.push(&row);
+         self.summaries.push(&row);
+     }
++    /// 既存六入口と独立した出力先を準備する。
+     pub(crate) fn new(output: &Path) -> Self {
+         fs::create_dir_all(output).unwrap();
+         Self {
+@@ -33,6 +36,7 @@
+         }
+     }
+ 
++    /// 型検査成功・全定義・通常解析の範囲を同じ検査から書き出す。
+     pub(crate) fn push(
+         &mut self,
+         group: &str,
+@@ -201,6 +205,7 @@
+         }
+     }
+ 
++    /// 本文・観測・全定義の一覧と要約をそれぞれ確定する。
+     pub(crate) fn finish(self) {
+         self.summaries.finish(
+             &self.output.join("interval-summary.json"),
+--- crates/benitoite/tests/desugar_export/interval.rs
++++ crates/benitoite/tests/desugar_export/interval.rs
+@@ -5,6 +5,7 @@
+ #[path = "interval/manifest.rs"]
+ pub(crate) mod manifest;
+ 
++/// 全件入口の局所入力と、区間の予算入力を持ち主の境界で検査する。
+ pub(super) fn export_interval_manifest() {
+     let output = export_directory("interval-manifest");
+     let stdlib = exchange::complete_stdlib();
+--- crates/benitoite/tests/desugar_export/interval/source.rs
++++ crates/benitoite/tests/desugar_export/interval/source.rs
+@@ -13,6 +13,7 @@
+     pub body_types: Vec<Value>,
+ }
+ 
++/// 元位置の注釈を外し、独立交換の正規の本文を得る。
+ pub(super) fn strip(value: &Value) -> Value {
+     if value.get("$interval").is_some() {
+         return strip(&value["expr"]);

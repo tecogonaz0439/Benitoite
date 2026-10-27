@@ -17,6 +17,8 @@ mod differential;
 mod exchange;
 #[path = "random_programs/generator.rs"]
 pub mod generator;
+#[path = "desugar_export/interval.rs"]
+mod interval;
 #[path = "desugar_export/named.rs"]
 mod named;
 
@@ -28,6 +30,20 @@ use serde_json::{Value, json};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
+
+// 関門: 通常解析とSurfaceの元位置・全対象演算を独立交換へ渡す。
+// 既存六入口は区間解析の識別表を読まない。実pipelineと共有の書き出しを使う。
+#[test]
+fn export_interval_identity() {
+    interval::export_interval_identity();
+}
+
+// 関門: 元 AST の全定義と未発見・未解析を、交換の対象外と区別して保存する。
+// 既存六入口の範囲判定だけでは全体上限後の定義や空モジュールを検査できない。
+#[test]
+fn export_interval_manifest() {
+    interval::export_interval_manifest();
+}
 
 // 関門: 新しい数の脱糖と宣言表が Lean の独立した規則へ実際に渡せることを守る。
 // VM の実行だけでは、交換形式のビット欠落や対象外への誤った除外を捕まえられない。
@@ -357,6 +373,7 @@ fn write_exchange(
 
 // corpus と各表は同じ入力順で直ちに書き、注釈と分類の件数だけを保持する。
 struct CorpusStream {
+    intervals: interval::manifest::Export,
     inputs: exchange::InputStream,
     builtins: exchange::InputStream,
     declarations: exchange::InputStream,
@@ -368,6 +385,7 @@ struct CorpusStream {
 impl CorpusStream {
     fn new(output: &Path, prefix: &str) -> Self {
         Self {
+            intervals: interval::manifest::Export::new(&output.join(format!("{prefix}interval"))),
             inputs: exchange::InputStream::new(output, &format!("{prefix}corpus")),
             builtins: exchange::InputStream::new(output, &format!("{prefix}builtins")),
             declarations: exchange::InputStream::new(output, &format!("{prefix}stdlib")),
@@ -420,6 +438,7 @@ impl CorpusStream {
         stdlib: &pipeline::CheckedProgram,
     ) {
         let mut tables = vec![];
+        self.intervals.push(group, name, &checked, stdlib);
         let mut declarations = vec![];
         let mut coverage = vec![];
         let input = export(
@@ -433,6 +452,7 @@ impl CorpusStream {
     }
 
     fn finish(self, output: &Path, stem: &str) {
+        self.intervals.finish();
         self.inputs.finish(
             &output.join(format!("{stem}-corpus.json")),
             json!({"version":14,"operators":exchange::operators(),"annotations":self.annotations}),
@@ -484,11 +504,20 @@ fn export_desugar_corpus() {
             deny_warnings: false,
         };
         match pipeline::check_path(&path, options) {
-            Ok(checked) => named_stream.export("golden", &relative.display().to_string(), checked, &stdlib),
-            Err(error) => named_stream.push(
-                json!({"group":"golden","name":relative.display().to_string(),
-                "excluded":[format!("entry: {error:?}")],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}), vec![], vec![], vec![],
-            ),
+            Ok(checked) => {
+                named_stream.export("golden", &relative.display().to_string(), checked, &stdlib)
+            }
+            Err(error) => {
+                named_stream.intervals.unavailable(
+                    "golden",
+                    &relative.display().to_string(),
+                    json!([format!("entry: {error:?}")]),
+                );
+                named_stream.push(
+                    json!({"group":"golden","name":relative.display().to_string(),
+                    "excluded":[format!("entry: {error:?}")],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}), vec![], vec![], vec![],
+                );
+            }
         }
     }
     for seed in 0..1000 {
@@ -512,6 +541,9 @@ fn export_desugar_corpus() {
         );
         let program = checked.program.as_ref().unwrap();
         assert!(named::contracts_well_formed(program));
+        named_stream
+            .intervals
+            .push("random", &name, &checked, &stdlib);
         let mut named_programs = named::Export::new();
         named_programs.push("random", &name, program, &stdlib);
         let input = named_programs.inputs.pop().unwrap();

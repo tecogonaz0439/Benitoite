@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+function finish() -> Integer uses Process.Exit
+  return Process.exit(300)
+end function
+function main() -> Unit uses Console.Write
+  bind code <- handle finish() with
+    case Process.exit(c) -> c
+  end handle
+  Console.writeLine("handled ${Integer.toString(code)}")
+end function

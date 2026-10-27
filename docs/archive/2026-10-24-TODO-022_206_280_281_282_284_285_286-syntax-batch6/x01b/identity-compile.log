@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.09s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 1 test
+
+thread 'export_interval_identity' (7624859) panicked at crates/benitoite/tests/desugar_export/interval.rs:355:9:
+assertion `left == right` failed: arithmetic-Integer: [Diagnostic { kind: Check, severity: Error, code: Some(E0216), message: "`div` is a keyword and cannot be used as a name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(234), end: BytePos(237) }, text: "keyword used as a name" }), secondary: [], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0216), message: "`mod` is a keyword and cannot be used as a name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(311), end: BytePos(314) }, text: "keyword used as a name" }), secondary: [], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0211), message: "`!=` is not an operator in Benitoite", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(510), end: BytePos(512) }, text: "not a Benitoite operator" }), secondary: [], notes: [], helps: [Help { message: "write `<>` for inequality", edits: [Edit { span: Span { file: FileId(0), start: BytePos(510), end: BytePos(512) }, replacement: "<>" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 3
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_interval_identity ... FAILED
+
+failures:
+
+failures:
+    export_interval_identity
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 32 filtered out; finished in 1.35s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

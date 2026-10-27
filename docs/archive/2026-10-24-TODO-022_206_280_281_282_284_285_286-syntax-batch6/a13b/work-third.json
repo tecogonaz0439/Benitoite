@@ -1,0 +1,15 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "629a90e3525de313e91f1b807c642bd64ad32a67",
+    "--only",
+    "fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally,formal_build",
+    "--test",
+    "*"
+  ],
+  "wrapper_exit": 1,
+  "seconds": 40.211452957999995
+}

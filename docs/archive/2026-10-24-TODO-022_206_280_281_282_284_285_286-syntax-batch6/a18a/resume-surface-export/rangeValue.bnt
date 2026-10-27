@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Range
+function checkInteger(minimum: Integer, maximum: Integer, value: Integer) -> Integer
+ return value
+end function
+function sample(checked: Range.CheckedInteger) -> Integer
+ return Range.value(value: checked)
+end function

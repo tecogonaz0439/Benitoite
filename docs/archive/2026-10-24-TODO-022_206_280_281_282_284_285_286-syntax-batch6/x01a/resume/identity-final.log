@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.00s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 1 test
+
+thread 'interval::export_interval_identity' (7499447) panicked at crates/benitoite/tests/desugar_export/interval.rs:345:9:
+assertion `left == right` failed: match: [Diagnostic { kind: Check, severity: Error, code: Some(E0201), message: "expected a newline or the end of the block, found `case`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(88), end: BytePos(92) }, text: "unexpected `case`" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test interval::export_interval_identity ... FAILED
+
+failures:
+
+failures:
+    interval::export_interval_identity
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 32 filtered out; finished in 0.61s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.83s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 2 tests
+test shift_domain_warning_does_not_duplicate_a_child_overflow ... ok
+
+thread 'shift_domain_warnings_reach_cli_renderers_only_for_disjoint_arguments' (6641006) panicked at crates/benitoite/tests/cli_process.rs:3246:17:
+assertion `left == right` failed: expanded_constant/json: Output { status: ExitStatus(unix_wait_status(512)), stdout: "", stderr: "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0433\",\"message\":\"this expression cannot be used in a constant\",\"primary\":{\"file\":\"<tmp>/benitoite-cli-process-28336-1792995978490052000-1/expanded_constant.bnt\",\"start\":{\"line\":1,\"column\":45,\"offset\":44},\"end\":{\"line\":1,\"column\":75,\"offset\":74},\"label\":\"not a constant expression\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"write a function without parameters to compute the value when it is called\",\"edits\":[]}]}\n" }
+  left: 2
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test shift_domain_warnings_reach_cli_renderers_only_for_disjoint_arguments ... FAILED
+
+failures:
+
+failures:
+    shift_domain_warnings_reach_cli_renderers_only_for_disjoint_arguments
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 35 filtered out; finished in 2.36s
+
+error: test failed, to rerun pass `-p benitoite --test cli_process`

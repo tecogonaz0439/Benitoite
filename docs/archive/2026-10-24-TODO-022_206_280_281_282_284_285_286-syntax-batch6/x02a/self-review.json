@@ -1,0 +1,43 @@
+{
+  "base": "2878da41c88ad296c7d6d4e2a6eec63c64412bcb",
+  "head": "2878da41c88ad296c7d6d4e2a6eec63c64412bcb",
+  "inputHashesUnchanged": true,
+  "formalUnchanged": true,
+  "protectedHashes": {
+    "Cargo.toml": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+    "Cargo.lock": "f63fed7d012a331fb653d1f5e7e17a8833dc15ac7c3423ae447b45003968b0d2",
+    "fuzz/Cargo.toml": "d8045b5ce1533133739c8b3e53c09c7d88fb0f7ce8252f5640028a73d14a16e2",
+    "fuzz/Cargo.lock": "0cca6d39a47673bbb1e4bf42722983a7c7bdbf2cfbe9f75df46163e26842dc0c",
+    "deny.toml": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+    "rust-toolchain.toml": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+    "scripts/check-formal.sh": "cb041355cdda7733f913aac0cfea45e84e56018fd7f1fdaf9ab36762754b97b2",
+    "formal/lakefile.toml": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+    "crates/benitoite/tests/call_allocations.rs": "8969603a024280f5c319abbaee2ea00a9fa39665647b6fa04d55f181ff4e6b00",
+    "crates/benitoite/src/typeck/interval/budget.rs": "3608290d154c5d7130359efbf7153cc4e7f06d50c92cb10eb09a7f520ad26f63",
+    "crates/benitoite/tests/desugar_export/exchange-manifest.json": "300f44197d3038ff802928775388411d4cdfee2069bc89ce9ebc6ad225a3b0ed",
+    "crates/benitoite/tests/desugar_export/routing-manifest.json": "ef4295d95bd122f0749daa7189fb8a9ad723228e527c09d155ba64635352b729",
+    "crates/benitoite/testdata/interval-budget/README.md": "669d15bd0761e71ffc96da58afceac11275151ba7d2221c5e7c39291d3e04300",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "598a645d440b8e00b2638a449f0e75a5b391a8f275eeb9b1cdde891d393955d9",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "8e9912595f14e6d6c0359a6f02c7aec84743606d4ed4ed73985c4e9a71b1ac00",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "4269fcf6c302d48e9e763dc51b05cf54fae3afe1b6fba46545dabf5a9043385e",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "81b7a7820688a1aa3a8e5b9b89af8dd253605ad176d180c676bc3769eccea6a6",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "7b84bc791e9364e095e05cc392b2f173fbbdf9ff26eac244aa02642762e4379d",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "6189541f2b0495b0d07488ebd91e832e79dd3e54b2b2caa2a68810b258e85e66"
+  },
+  "legacyProgramInputs": 1790,
+  "legacyManifestUnchanged": true,
+  "codeLines": {
+    "production": [
+      100,
+      1
+    ],
+    "rustTests": [
+      546,
+      9
+    ],
+    "pythonComparison": [
+      146,
+      0
+    ]
+  }
+}

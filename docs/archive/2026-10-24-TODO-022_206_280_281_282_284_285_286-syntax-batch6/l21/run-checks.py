@@ -1,0 +1,68 @@
+"""L21 の局所検査と指定検査。保存時に手元のパスを伏せる。"""
+from pathlib import Path
+import json
+import importlib.util
+import fcntl
+import os
+import subprocess
+import sys
+import tempfile
+import time
+
+OUT = Path(__file__).resolve().parent
+ROOT = OUT.parents[2]
+BASE = "8b48e75a43c90069b7c44e6e073182b45ed2413b"
+spec = importlib.util.spec_from_file_location('process_control', OUT / 'process-control.py')
+control = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(control)
+mode = sys.argv[1]
+work = ["scripts/check.sh", "--level", "work", "--base", BASE, "--only",
+        "formal_build,spec_examples,spec_tally"]
+cwd = ROOT
+if mode == "dry-run":
+    command = work + ["--dry-run"]
+elif mode == "work":
+    command = ["/usr/bin/time", "-l", "/bin/zsh", str(OUT / "run-work.sh")]
+elif mode == "default-up-to-date":
+    command = ["lake", "--no-build", "build"]
+    cwd = ROOT / "formal"
+elif mode == "default-build":
+    command = ["/usr/bin/time", "-l", "/bin/zsh", str(OUT / "run-default.sh")]
+elif mode == "examples":
+    command = ["lake", "env", "lean", "-M", "6144", "Benitoite/Interval/Examples.lean"]
+    cwd = ROOT / "formal"
+elif mode == "axioms":
+    command = ["lake", "env", "lean", "-M", "6144", str(OUT / (mode + ".lean"))]
+    cwd = ROOT / "formal"
+else:
+    raise SystemExit("dry-run/work/default-up-to-date/default-build/examples/axioms")
+lock = None
+if mode not in ('dry-run',):
+    lock = open(Path(tempfile.gettempdir()) / 'benitoite-l20d-lean.lock', 'a')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        raise SystemExit('別の L21 Lean 検査が実行中のため起動しない')
+started = time.monotonic()
+timeout = 30 if mode == 'examples' else 300
+result = control.run(command, cwd=cwd, env=os.environ.copy(), timeout=timeout)
+output = result.stdout
+for old, new in [(str(ROOT), "<repo>"), (str(Path.home()), "<home>"),
+                 (tempfile.gettempdir().rstrip('/'), "<tmp>"),
+                 ("<tmp>", "<tmp>"), ("/tmp", "<tmp>")]:
+    output = output.replace(old, new)
+record = {"wrapper_exit": result.returncode, "outer_seconds": time.monotonic() - started}
+for line in output.splitlines():
+    if line.startswith("L21_CHECK_EXIT_STATUS="):
+        record["check_exit"] = int(line.split("=", 1)[1])
+    if line.startswith("L21_DEFAULT_EXIT_STATUS="):
+        record["check_exit"] = int(line.split("=", 1)[1])
+    if "maximum resident set size" in line:
+        record["maximum_resident_set_size_line"] = line.strip()
+record["rss_available"] = "maximum_resident_set_size_line" in record
+(OUT / f"{mode}.log").write_text(output)
+record_name = mode
+(OUT / f"{record_name}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
+print(output[-3000:])
+print(json.dumps(record, ensure_ascii=False))
+raise SystemExit(record.get("check_exit", result.returncode))

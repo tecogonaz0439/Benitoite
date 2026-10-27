@@ -1,0 +1,61 @@
+{
+  "base": "61e04c646797d045d8bf876800c2e8cba690db59",
+  "head": "61e04c646797d045d8bf876800c2e8cba690db59",
+  "branch": "mod012/A19a",
+  "index_unchanged": true,
+  "work_inputs_unchanged": 6,
+  "fixed_inputs_unchanged": 7,
+  "formal_dependencies_generated_skill_unchanged": true,
+  "diff_check": "passed",
+  "records_redacted": 52,
+  "python_syntax": "passed",
+  "result_links": "passed",
+  "line_changes": {
+    "crates/benitoite/src/typeck/interval/fixed_domain.rs": {
+      "added": 152,
+      "deleted": 0
+    },
+    "crates/benitoite/src/typeck/interval/flow/range.rs": {
+      "added": 118,
+      "deleted": 46
+    },
+    "crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs": {
+      "added": 193,
+      "deleted": 0
+    },
+    "crates/benitoite/src/typeck/interval/mod.rs": {
+      "added": 1,
+      "deleted": 0
+    },
+    "crates/benitoite/src/typeck/interval/tests/budget_reference.rs": {
+      "added": 4,
+      "deleted": 1
+    },
+    "docs/design/02-impl/02-05-typechecker.md": {
+      "added": 6,
+      "deleted": 0
+    }
+  },
+  "work_units": [
+    "fmt",
+    "lint_default",
+    "lib_default",
+    "tests_related",
+    "source_rules",
+    "skill_generated",
+    "spec_tally"
+  ],
+  "work_check_exit": 0,
+  "work_seconds": 454.94447808300004,
+  "time_exit": 1,
+  "lib": {
+    "passed": 1327,
+    "ignored": 21
+  },
+  "integration": {
+    "targets": 40,
+    "passed": 388,
+    "ignored": 10
+  },
+  "maximum_resident_set_size": "unavailable: sandbox denied sysctl kern.clockrate"
+}

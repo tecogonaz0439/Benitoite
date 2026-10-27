@@ -1,0 +1,446 @@
+{
+  "version": 1,
+  "source": "L21 x03-range-cases.md の手書きの独立期待値。数値は十進文字列。interval=nullはBottom。",
+  "cases": [
+    {
+      "id": "lower",
+      "input": "range",
+      "raw": "lower",
+      "projection": "lowerValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "0"
+      ],
+      "result": {
+        "Ok": [
+          "0",
+          "10",
+          "0"
+        ]
+      },
+      "value": "0",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "lowerOnlyOk",
+      "fields": "lowerFields",
+      "interval": [
+        "0",
+        "10"
+      ]
+    },
+    {
+      "id": "upper",
+      "input": "range",
+      "raw": "upper",
+      "projection": "upperValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "10"
+      ],
+      "result": {
+        "Ok": [
+          "0",
+          "10",
+          "10"
+        ]
+      },
+      "value": "10",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "upperOnlyOk",
+      "fields": "upperFields",
+      "interval": [
+        "0",
+        "10"
+      ]
+    },
+    {
+      "id": "singleton",
+      "input": "range",
+      "raw": "singleton",
+      "projection": "singletonValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "7",
+        "7",
+        "7"
+      ],
+      "result": {
+        "Ok": [
+          "7",
+          "7",
+          "7"
+        ]
+      },
+      "value": "7",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "singletonOnlyOk",
+      "fields": "singletonFields",
+      "interval": [
+        "7",
+        "7"
+      ]
+    },
+    {
+      "id": "integer-min",
+      "input": "range",
+      "raw": "integerMin",
+      "projection": "integerMinValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "-9223372036854775808",
+        "9223372036854775807",
+        "-9223372036854775808"
+      ],
+      "result": {
+        "Ok": [
+          "-9223372036854775808",
+          "9223372036854775807",
+          "-9223372036854775808"
+        ]
+      },
+      "value": "-9223372036854775808",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "integerMinOnlyOk",
+      "fields": "integerMinFields",
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ]
+    },
+    {
+      "id": "integer-max",
+      "input": "range",
+      "raw": "integerMax",
+      "projection": "integerMaxValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "-9223372036854775808",
+        "9223372036854775807",
+        "9223372036854775807"
+      ],
+      "result": {
+        "Ok": [
+          "-9223372036854775808",
+          "9223372036854775807",
+          "9223372036854775807"
+        ]
+      },
+      "value": "9223372036854775807",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "onlyOk": "integerMaxOnlyOk",
+      "fields": "integerMaxFields",
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ]
+    },
+    {
+      "id": "reversed-between",
+      "input": "range",
+      "raw": "reversedBetween",
+      "projection": "reversedBetweenValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "10",
+        "0",
+        "5"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "InvalidBounds",
+          "arguments": [
+            "10",
+            "0"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ]
+    },
+    {
+      "id": "reversed-outside",
+      "input": "range",
+      "raw": "reversedOutside",
+      "projection": "reversedOutsideValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "10",
+        "0",
+        "15"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "InvalidBounds",
+          "arguments": [
+            "10",
+            "0"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ]
+    },
+    {
+      "id": "below",
+      "input": "range",
+      "raw": "below",
+      "projection": "belowValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "-1"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "OutOfRange",
+          "arguments": [
+            "0",
+            "10",
+            "-1"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ]
+    },
+    {
+      "id": "above",
+      "input": "range",
+      "raw": "above",
+      "projection": "aboveValue",
+      "sourcePositions": [
+        "2",
+        "1",
+        "0"
+      ],
+      "arguments": [
+        "0",
+        "10",
+        "11"
+      ],
+      "result": {
+        "Error": {
+          "constructor": "OutOfRange",
+          "arguments": [
+            "0",
+            "10",
+            "11"
+          ]
+        }
+      },
+      "value": "-99",
+      "warnings": [],
+      "l21TraceRaw": [
+        "1"
+      ],
+      "l21TraceProjection": [
+        "1"
+      ]
+    },
+    {
+      "id": "nested-inner",
+      "input": "range",
+      "projection": "nestedInner",
+      "onlyOk": "nestedInnerOnlyOk",
+      "value": "105",
+      "interval": [
+        "100",
+        "110"
+      ],
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "12"
+      ]
+    },
+    {
+      "id": "nested-outer",
+      "input": "range",
+      "projection": "nestedOuter",
+      "onlyOk": "nestedOuterOnlyOk",
+      "value": "5",
+      "interval": [
+        "0",
+        "10"
+      ],
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "12"
+      ]
+    },
+    {
+      "id": "unrelated",
+      "input": "range",
+      "projection": "unrelated",
+      "onlyOk": "unrelatedOnlyOk",
+      "value": "105",
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ],
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "6"
+      ],
+      "caller": "unrelatedCaller",
+      "initialChecked": [
+        "100",
+        "110",
+        "105"
+      ],
+      "l21ExternalOriginKey": "90",
+      "interproceduralAnalysis": false
+    },
+    {
+      "id": "increment",
+      "input": "range",
+      "projection": "increment",
+      "onlyOk": "incrementOnlyOk",
+      "arguments": [
+        "0",
+        "9",
+        "9"
+      ],
+      "value": "10",
+      "interval": [
+        "1",
+        "10"
+      ],
+      "failure": null,
+      "warnings": [],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "6"
+      ]
+    },
+    {
+      "id": "increment-overflow",
+      "input": "range",
+      "projection": "incrementOverflow",
+      "onlyOk": "incrementOverflowOnlyOk",
+      "arguments": [
+        "9223372036854775807",
+        "9223372036854775807",
+        "9223372036854775807"
+      ],
+      "value": null,
+      "interval": null,
+      "failure": "overflow",
+      "warnings": [
+        "overflow"
+      ],
+      "l21TraceProjection": [
+        "1",
+        "7",
+        "6"
+      ]
+    },
+    {
+      "id": "fake-identity",
+      "input": "fake-range",
+      "projection": "fakeIdentity",
+      "evalClosed": null,
+      "interval": [
+        "-9223372036854775808",
+        "9223372036854775807"
+      ],
+      "unsupported": true,
+      "warnings": [],
+      "vmComparison": false
+    }
+  ]
+}

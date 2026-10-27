@@ -1,0 +1,1780 @@
+[
+  {
+    "group": "golden",
+    "name": "testdata/external/resource",
+    "counts": {
+      "allBodies": "2",
+      "analyzedBodies": "2",
+      "bodyBudgetExceeded": "0",
+      "bottomBodies": "0",
+      "checkerFailed": "0",
+      "checkerSucceeded": "1",
+      "constantDefinitions": "0",
+      "depthBodies": "0",
+      "functionDefinitions": "2",
+      "informativeBodies": "0",
+      "inputDefinitions": "2",
+      "methodDefinitions": "0",
+      "notAnalyzedBodies": "0",
+      "outsideDefinitions": "2",
+      "phaseDepth": "0",
+      "sourceModules": "2",
+      "topBodies": "0",
+      "unidentifiedBodies": "0",
+      "unsupportedBodies": "2",
+      "wholeBudgetSkipped": "0"
+    },
+    "outside": [
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "6",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".createMany"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "7",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".main"
+        }
+      }
+    ],
+    "whole": {
+      "after": {
+        "operations": "612",
+        "peak": "132",
+        "saved": "111"
+      },
+      "bodies": [
+        {
+          "coverage": "Prepared",
+          "definition": ".createMany"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main"
+        }
+      ],
+      "definition": "",
+      "fuel": "4096",
+      "kind": "whole",
+      "legacyWarnings": {
+        "diagnostics": [],
+        "identities": []
+      },
+      "limits": {
+        "body": {
+          "items": "100000",
+          "operations": "100000"
+        },
+        "whole": {
+          "items": "1000000",
+          "operations": "1000000"
+        }
+      },
+      "phases": [
+        {
+          "definition": ".createMany",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".main",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        }
+      ],
+      "remainingDefinitions": [],
+      "remainingModules": [],
+      "stopped": null
+    }
+  },
+  {
+    "group": "golden",
+    "name": "testdata/external/wit-docs-declarations",
+    "counts": {
+      "allBodies": "1",
+      "analyzedBodies": "1",
+      "bodyBudgetExceeded": "0",
+      "bottomBodies": "0",
+      "checkerFailed": "0",
+      "checkerSucceeded": "1",
+      "constantDefinitions": "0",
+      "depthBodies": "0",
+      "functionDefinitions": "1",
+      "informativeBodies": "0",
+      "inputDefinitions": "1",
+      "methodDefinitions": "0",
+      "notAnalyzedBodies": "0",
+      "outsideDefinitions": "1",
+      "phaseDepth": "0",
+      "sourceModules": "1",
+      "topBodies": "0",
+      "unidentifiedBodies": "0",
+      "unsupportedBodies": "1",
+      "wholeBudgetSkipped": "0"
+    },
+    "outside": [
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "5",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".main"
+        }
+      }
+    ],
+    "whole": {
+      "after": {
+        "operations": "184",
+        "peak": "65",
+        "saved": "49"
+      },
+      "bodies": [
+        {
+          "coverage": "Prepared",
+          "definition": ".main"
+        }
+      ],
+      "definition": "",
+      "fuel": "4096",
+      "kind": "whole",
+      "legacyWarnings": {
+        "diagnostics": [],
+        "identities": []
+      },
+      "limits": {
+        "body": {
+          "items": "100000",
+          "operations": "100000"
+        },
+        "whole": {
+          "items": "1000000",
+          "operations": "1000000"
+        }
+      },
+      "phases": [
+        {
+          "definition": ".main",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        }
+      ],
+      "remainingDefinitions": [],
+      "remainingModules": [],
+      "stopped": null
+    }
+  },
+  {
+    "group": "golden",
+    "name": "testdata/packages/json-wasm-same",
+    "counts": {
+      "allBodies": "85",
+      "analyzedBodies": "85",
+      "bodyBudgetExceeded": "0",
+      "bottomBodies": "63",
+      "checkerFailed": "0",
+      "checkerSucceeded": "1",
+      "constantDefinitions": "20",
+      "depthBodies": "0",
+      "functionDefinitions": "60",
+      "informativeBodies": "63",
+      "inputDefinitions": "80",
+      "methodDefinitions": "0",
+      "notAnalyzedBodies": "0",
+      "outsideDefinitions": "2",
+      "phaseDepth": "0",
+      "sourceModules": "12",
+      "topBodies": "20",
+      "unidentifiedBodies": "0",
+      "unsupportedBodies": "86",
+      "wholeBudgetSkipped": "0"
+    },
+    "outside": [
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "2",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".compare"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "4",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".pointers"
+        }
+      }
+    ],
+    "whole": {
+      "after": {
+        "operations": "44256",
+        "peak": "5374",
+        "saved": "5355"
+      },
+      "bodies": [
+        {
+          "coverage": "Prepared",
+          "definition": ".description"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".length"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".compare"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".compare%body:59:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".deep"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".pointers"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".pointers%body:14:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".pointers%body:128:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main%body:90:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main%body:106:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main%body:184:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.parse"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.stringify"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.stringifyPretty"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.readValue"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.ident"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.accept"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.array"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parser.object"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Codec.parse"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Codec.stringify"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Codec.stringifyPretty"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.input"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.byte"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.slice"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.whitespace"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.digit"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.digits"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.error"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.eof"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.numberError"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Scan.position"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.read"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.readFrom"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.escape"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.hex"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.fourHex"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.unicode"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.scalar"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.quoted"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.quoteFrom"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Strings.hexDigit"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.read"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.decimal"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.exponent"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.written"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.piece"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.firstNonzero"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.trimZeros"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.canonicalDigits"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.midpoint"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.factorsOfFive"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Numbers.scaleTwo"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.eofList"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.eofObject"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.eofString"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.eofValue"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.colon"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.listEnd"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.objectEnd"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.ident"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.value"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.escape"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.number"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.range"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.unicode"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.control"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.key"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.surrogate"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.comma"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.trailing"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.hexEnd"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Text.depth"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Writer.write"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Writer.indent"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Writer.writeFrom"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.flatten"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.flattenFrom"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.flattenFrom%body:70:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.flattenFrom%body:95:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.rebuild"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.readNode"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.readKey"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmJson.Nodes.accept"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parts.empty"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parts.append"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "PureJson.Parts.finish"
+        }
+      ],
+      "definition": "",
+      "fuel": "4096",
+      "kind": "whole",
+      "legacyWarnings": {
+        "diagnostics": [],
+        "identities": []
+      },
+      "limits": {
+        "body": {
+          "items": "100000",
+          "operations": "100000"
+        },
+        "whole": {
+          "items": "1000000",
+          "operations": "1000000"
+        }
+      },
+      "phases": [
+        {
+          "definition": ".description",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".length",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".compare",
+          "discovered": [
+            {
+              "definition": ".compare%body:59:0",
+              "ready": true
+            }
+          ],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".deep",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".pointers",
+          "discovered": [
+            {
+              "definition": ".pointers%body:14:0",
+              "ready": true
+            },
+            {
+              "definition": ".pointers%body:128:0",
+              "ready": true
+            }
+          ],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".main",
+          "discovered": [
+            {
+              "definition": ".main%body:90:0",
+              "ready": true
+            },
+            {
+              "definition": ".main%body:106:0",
+              "ready": true
+            },
+            {
+              "definition": ".main%body:184:0",
+              "ready": true
+            }
+          ],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.parse",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.stringify",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.stringifyPretty",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.readValue",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.ident",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.accept",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.array",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parser.object",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Codec.parse",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Codec.stringify",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Codec.stringifyPretty",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.input",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.byte",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.slice",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.whitespace",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.digit",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.digits",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.error",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.eof",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.numberError",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Scan.position",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.read",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.readFrom",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.escape",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.hex",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.fourHex",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.unicode",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.scalar",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.quoted",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.quoteFrom",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Strings.hexDigit",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.read",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.decimal",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.exponent",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.written",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.piece",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.firstNonzero",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.trimZeros",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.canonicalDigits",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.midpoint",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.factorsOfFive",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Numbers.scaleTwo",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.eofList",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.eofObject",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.eofString",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.eofValue",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.colon",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.listEnd",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.objectEnd",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.ident",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.value",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.escape",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.number",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.range",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.unicode",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.control",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.key",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.surrogate",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.comma",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.trailing",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.hexEnd",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Text.depth",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Writer.write",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Writer.indent",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Writer.writeFrom",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Nodes.flatten",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Nodes.flattenFrom",
+          "discovered": [
+            {
+              "definition": "WasmJson.Nodes.flattenFrom%body:70:0",
+              "ready": true
+            },
+            {
+              "definition": "WasmJson.Nodes.flattenFrom%body:95:0",
+              "ready": true
+            }
+          ],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Nodes.rebuild",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Nodes.readNode",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Nodes.readKey",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmJson.Nodes.accept",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parts.empty",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parts.append",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "PureJson.Parts.finish",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        }
+      ],
+      "remainingDefinitions": [],
+      "remainingModules": [],
+      "stopped": null
+    }
+  },
+  {
+    "group": "golden",
+    "name": "testdata/packages/wasm-regex-same",
+    "counts": {
+      "allBodies": "18",
+      "analyzedBodies": "18",
+      "bodyBudgetExceeded": "0",
+      "bottomBodies": "11",
+      "checkerFailed": "0",
+      "checkerSucceeded": "1",
+      "constantDefinitions": "0",
+      "depthBodies": "0",
+      "functionDefinitions": "17",
+      "informativeBodies": "11",
+      "inputDefinitions": "17",
+      "methodDefinitions": "0",
+      "notAnalyzedBodies": "0",
+      "outsideDefinitions": "7",
+      "phaseDepth": "0",
+      "sourceModules": "4",
+      "topBodies": "0",
+      "unidentifiedBodies": "0",
+      "unsupportedBodies": "19",
+      "wholeBudgetSkipped": "0"
+    },
+    "outside": [
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "3",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".compare"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "2",
+          "kind": "function",
+          "method": null,
+          "module": "WasmRegex.Pattern",
+          "name": "WasmRegex.Pattern.compile"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "3",
+          "kind": "function",
+          "method": null,
+          "module": "WasmRegex.Pattern",
+          "name": "WasmRegex.Pattern.isMatch"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "4",
+          "kind": "function",
+          "method": null,
+          "module": "WasmRegex.Pattern",
+          "name": "WasmRegex.Pattern.find"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "5",
+          "kind": "function",
+          "method": null,
+          "module": "WasmRegex.Pattern",
+          "name": "WasmRegex.Pattern.findAll"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "6",
+          "kind": "function",
+          "method": null,
+          "module": "WasmRegex.Pattern",
+          "name": "WasmRegex.Pattern.replaceAll"
+        }
+      },
+      {
+        "enumerationComplete": false,
+        "outside": [
+          "external type"
+        ],
+        "source": {
+          "declaration": "7",
+          "kind": "function",
+          "method": null,
+          "module": "WasmRegex.Pattern",
+          "name": "WasmRegex.Pattern.count"
+        }
+      }
+    ],
+    "whole": {
+      "after": {
+        "operations": "2765",
+        "peak": "585",
+        "saved": "574"
+      },
+      "bodies": [
+        {
+          "coverage": "Prepared",
+          "definition": ".native"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".guest"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".quoted"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".compare"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".compare%body:158:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main%body:46:0"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.compile"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.isMatch"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.find"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.findAll"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.replaceAll"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.count"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.isMatchOnce"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.findAllOnce"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.countOnce"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.matchText"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.matchByteStart"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": "WasmRegex.Pattern.matchByteEnd"
+        }
+      ],
+      "definition": "",
+      "fuel": "4096",
+      "kind": "whole",
+      "legacyWarnings": {
+        "diagnostics": [],
+        "identities": []
+      },
+      "limits": {
+        "body": {
+          "items": "100000",
+          "operations": "100000"
+        },
+        "whole": {
+          "items": "1000000",
+          "operations": "1000000"
+        }
+      },
+      "phases": [
+        {
+          "definition": ".native",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".guest",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".quoted",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".compare",
+          "discovered": [
+            {
+              "definition": ".compare%body:158:0",
+              "ready": true
+            }
+          ],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".main",
+          "discovered": [
+            {
+              "definition": ".main%body:46:0",
+              "ready": true
+            }
+          ],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.compile",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.isMatch",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.find",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.findAll",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.replaceAll",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.count",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.isMatchOnce",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.findAllOnce",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.countOnce",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.matchText",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.matchByteStart",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": "WasmRegex.Pattern.matchByteEnd",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        }
+      ],
+      "remainingDefinitions": [],
+      "remainingModules": [],
+      "stopped": null
+    }
+  }
+]

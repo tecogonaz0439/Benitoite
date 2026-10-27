@@ -1,0 +1,11 @@
+Benitoite/Interval/Examples.lean:909:6: error: Type mismatch: After simplification, term
+  EvalPartial.local env (childKey k [Expr.funName "Std.Range.value" [] []]) 0 value read
+ has type
+  EvalPartial env
+    { source := Expr.local 0, type := Ty.data names.owner [], key := childKey k [Expr.funName "Std.Range.value" [] []] }
+    (EvalOutcome.normal value) []
+but is expected to have type
+  EvalPartial env
+    { source := Expr.local 0, type := Ty.data names.record.owner [],
+      key := childKey k [Expr.funName "Std.Range.value" [] []] }
+    (EvalOutcome.normal value) []

@@ -1,0 +1,17 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.05s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+A02_STACK_SHAPE="(1 + ", depth=450
+A02_STACK_SHAPE="(", depth=900
+A02_STACK_SHAPE="lambda()\n bind _ <- ", depth=300
+A02_STACK_SHAPE="if true then ", depth=450
+A02_STACK_SHAPE="match true with\n case true -> ", depth=200
+A02_STACK_SHAPE="match ", depth=450
+test typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1306 filtered out; finished in 0.70s
+
+A02_OUTER_EXIT_STATUS=0
+A02_OUTER_ELAPSED_SECONDS=9.77

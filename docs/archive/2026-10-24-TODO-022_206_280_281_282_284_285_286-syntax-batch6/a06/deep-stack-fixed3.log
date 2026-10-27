@@ -1,0 +1,23 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.23s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+A06 temporary stack probe: (1 + , 450
+A06 temporary stack probe: (, 900
+A06 temporary stack probe: lambda()
+ bind _ <- , 300
+A06 temporary stack probe: if true then , 450
+A06 temporary stack probe: match true with
+ case true -> , 200
+A06 temporary stack probe: match , 450
+test typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1313 filtered out; finished in 0.57s
+
+A06_COMMAND_EXIT_STATUS=0
+       10.85 real        18.51 user         1.23 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A06_OUTER_EXIT_STATUS=1
+A06_WALL_SECONDS=10.859

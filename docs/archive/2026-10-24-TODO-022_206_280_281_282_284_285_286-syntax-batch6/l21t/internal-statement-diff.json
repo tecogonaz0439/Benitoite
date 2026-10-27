@@ -1,0 +1,67 @@
+{
+  "formal/Benitoite/Interval/Examples.lean:projection_run": {
+    "before": "private theorem projection_run (env : ConcreteEnv) (k : OperationKey)\n    (value : ConcreteValue) (out : OperationResult)\n    (identified : env.standardAt k = some valueBinding)\n    (read : env.locals[0]? = some (some value))\n    (typed : value.type = .opaque names.owner)\n    (standard : EvalStandard valueBinding.rule k [value] out) :\n    EvalPartial env ⟨projection, .base .integer, k⟩ (valueBinding.rule.finish out)\n      [valueEvent k value out]",
+    "after": "private theorem projection_run (env : ConcreteEnv) (k : OperationKey)\n    (value : ConcreteValue) (out : OperationResult)\n    (identified : env.standardAt k = some valueBinding)\n    (read : env.locals[0]? = some (some value))\n    (typed : value.type = .data names.owner [])\n    (standard : EvalStandard valueBinding.rule k [value] out) :\n    EvalPartial env ⟨projection, .base .integer, k⟩ (valueBinding.rule.finish out)\n      [valueEvent k value out]",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_finish_ok": {
+    "before": "theorem range_finish_ok {names key lo hi value output}\n    (success : rangeCheck names key lo hi value = .normal output) :\n    (StandardRule.rangeCheck names).finish (rangeCheck names key lo hi value) =\n      .normal (.con names.result [.opaque names.owner, .data names.error []]\n        names.ok [output]) ∧ names.IsOk\n          (.con names.result [.opaque names.owner, .data names.error []]\n            names.ok [output]) output",
+    "after": "theorem range_finish_ok {names key lo hi value output}\n    (success : rangeCheck names key lo hi value = .normal output) :\n    (StandardRule.rangeCheck names).finish (rangeCheck names key lo hi value) =\n      .normal (.con names.result [.data names.owner [], .data names.error []]\n        names.ok [output]) ∧ names.IsOk\n          (.con names.result [.data names.owner [], .data names.error []]\n            names.ok [output]) output",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_ok_identity": {
+    "before": "theorem range_ok_identity {names result payload}\n    (recognized : RangeNames.IsOk names result payload) :\n    result = .con names.result [.opaque names.owner, .data names.error []]\n      names.ok [payload] ∧ payload.type = .opaque names.owner",
+    "after": "theorem range_ok_identity {names result payload}\n    (recognized : RangeNames.IsOk names result payload) :\n    result = .con names.result [.data names.owner [], .data names.error []]\n      names.ok [payload] ∧ payload.type = .data names.owner []",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_other_possible": {
+    "before": "theorem range_other_possible (owner : OpaqueName) (key : OperationKey)\n    (value : Integer64Value) :\n    EvalStandard (.rangeValue owner) key [.other (.opaque owner) rfl (by simp) (by simp)]\n      (.normal (.integer value))",
+    "after": "theorem range_other_possible (owner : DataName) (key : OperationKey)\n    (value : Integer64Value) :\n    EvalStandard (.rangeValue owner) key [.other (.data owner []) rfl (by simp) (by simp)]\n      (.normal (.integer value))",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_value_total": {
+    "before": "theorem range_value_total {input : ConcreteValue} {owner : OpaqueName}\n    (typed : input.type = .opaque owner) (key : OperationKey) :\n    ∃ result, EvalStandard (.rangeValue owner) key [input] result",
+    "after": "theorem range_value_total {input : ConcreteValue} {owner : DataName}\n    (typed : input.type = .data owner []) (key : OperationKey) :\n    ∃ result, EvalStandard (.rangeValue owner) key [input] result",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_check_at_total": {
+    "before": "theorem range_check_at_total {env key names binding}\n    (identified : ConcreteEnv.standardAt env key = some binding)\n    (rule : binding.rule = .rangeCheck names) (lo hi value : Integer64Value) :\n    ∃ result, EvalStandardAt env key [.integer lo, .integer hi, .integer value]\n      (.normal result) ∧ result.type = .data names.result [.opaque names.owner, .data names.error []]",
+    "after": "theorem range_check_at_total {env key names binding}\n    (identified : ConcreteEnv.standardAt env key = some binding)\n    (rule : binding.rule = .rangeCheck names) (lo hi value : Integer64Value) :\n    ∃ result, EvalStandardAt env key [.integer lo, .integer hi, .integer value]\n      (.normal result) ∧ result.type = .data names.result [.data names.owner [], .data names.error []]",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_other_at_possible": {
+    "before": "theorem range_other_at_possible {env key owner binding}\n    (identified : ConcreteEnv.standardAt env key = some binding)\n    (rule : binding.rule = .rangeValue owner) (value : Integer64Value) :\n    EvalStandardAt env key [.other (.opaque owner) rfl (by simp) (by simp)]\n      (.normal (.integer value))",
+    "after": "theorem range_other_at_possible {env key owner binding}\n    (identified : ConcreteEnv.standardAt env key = some binding)\n    (rule : binding.rule = .rangeValue owner) (value : Integer64Value) :\n    EvalStandardAt env key [.other (.data owner []) rfl (by simp) (by simp)]\n      (.normal (.integer value))",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_result_ok_models": {
+    "before": "theorem range_result_ok_models {origin : RangeOrigin} {result payload : ConcreteValue}\n    (fromCheck : origin.ResultModels result)\n    (matched : origin.names.IsOk result payload) : origin.CheckedModels payload",
+    "after": "theorem range_result_ok_models {origin : RangeOrigin} {result payload : ConcreteValue}\n    (different : origin.names.ok ≠ origin.names.err)\n    (fromCheck : origin.ResultModels result)\n    (matched : origin.names.IsOk result payload) : origin.CheckedModels payload",
+    "type_encoding_only": false
+  },
+  "formal/Benitoite/Interval/Range.lean:range_bind_ok_models": {
+    "before": "theorem range_bind_ok_models {state env origin result payload}\n    (related : state.Models env) (fromCheck : origin.ResultModels result)\n    (matched : origin.names.IsOk result payload) :\n    (rangeBindOk state origin).Models { env with locals := some payload :: env.locals }",
+    "after": "theorem range_bind_ok_models {state env origin result payload}\n    (different : origin.names.ok ≠ origin.names.err)\n    (related : state.Models env) (fromCheck : origin.ResultModels result)\n    (matched : origin.names.IsOk result payload) :\n    (rangeBindOk state origin).Models { env with locals := some payload :: env.locals }",
+    "type_encoding_only": false
+  },
+  "formal/Benitoite/Interval/Range.lean:range_ok_payload_models": {
+    "before": "theorem range_ok_payload_models {origin : RangeOrigin} {result payload : ConcreteValue}\n    (fromCheck : origin.ResultModels result)\n    (matched : origin.names.OkPayload result payload) : origin.CheckedModels payload",
+    "after": "theorem range_ok_payload_models {origin : RangeOrigin} {result payload : ConcreteValue}\n    (different : origin.names.ok ≠ origin.names.err)\n    (fromCheck : origin.ResultModels result)\n    (matched : origin.names.OkPayload result payload) : origin.CheckedModels payload",
+    "type_encoding_only": false
+  },
+  "formal/Benitoite/Interval/Range.lean:range_match_ok_models": {
+    "before": "theorem range_match_ok_models {abstract : AbstractEnv} {state inner : RangeState}\n    {env : ConcreteEnv} {input : EvalInput} {pattern : Pattern}\n    {result payload : ConcreteValue}\n    (models : Models abstract env) (related : state.Models env)\n    (matched : rangeMatchOk abstract state input pattern = some inner)\n    (evaluated : ∀ origin, rangeResultOrigin abstract state input = some origin →\n      RangeSourceNormal env input origin result ∧ origin.names.OkPayload result payload) :\n    inner.Models { env with locals := some payload :: env.locals }",
+    "after": "theorem range_match_ok_models {abstract : AbstractEnv} {state inner : RangeState}\n    {env : ConcreteEnv} {input : EvalInput} {pattern : Pattern}\n    {result payload : ConcreteValue}\n    (models : Models abstract env) (related : state.Models env)\n    (matched : rangeMatchOk abstract state input pattern = some inner)\n    (evaluated : ∀ origin, rangeResultOrigin abstract state input = some origin →\n      RangeSourceNormal env input origin result ∧ origin.names.OkPayload result payload ∧\n        origin.names.ok ≠ origin.names.err) :\n    inner.Models { env with locals := some payload :: env.locals }",
+    "type_encoding_only": false
+  },
+  "formal/Benitoite/Interval/Range.lean:range_result_names_type": {
+    "before": "theorem range_result_names_type {env type names}\n    (recognized : rangeResultNames env type = some names) :\n    type = .data names.result [.opaque names.owner, .data names.error []]",
+    "after": "theorem range_result_names_type {env type names}\n    (recognized : rangeResultNames env type = some names) :\n    type = .data names.result [.data names.owner [], .data names.error []]",
+    "type_encoding_only": true
+  },
+  "formal/Benitoite/Interval/Range.lean:range_result_models_type": {
+    "before": "theorem range_result_models_type {origin : RangeOrigin} {value : ConcreteValue}\n    (related : origin.ResultModels value) :\n    value.type = .data origin.names.result [.opaque origin.names.owner, .data origin.names.error []]",
+    "after": "theorem range_result_models_type {origin : RangeOrigin} {value : ConcreteValue}\n    (related : origin.ResultModels value) :\n    value.type = .data origin.names.result [.data origin.names.owner [], .data origin.names.error []]",
+    "type_encoding_only": true
+  }
+}

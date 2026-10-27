@@ -1,0 +1,34 @@
+$ lake env lean -M 12288 <tmp>/benitoite-l15-contracts.lean
+
+import Benitoite.Interval.Sound
+
+#print axioms Benitoite.Interval.scaleBounds_sound
+#print axioms Benitoite.Interval.mulBounds_sound
+#print axioms Benitoite.Interval.checkedMul_normal_iff
+#print axioms Benitoite.Interval.checkedMul_overflow_iff
+#print axioms Benitoite.Interval.mul_normal_sound
+#print axioms Benitoite.Interval.mul_may_overflow_sound
+#print axioms Benitoite.Interval.mul_always_overflows_sound
+#print axioms Benitoite.Interval.mul_approx_normal_sound
+#print axioms Benitoite.Interval.mul_approx_overflow_sound
+#print axioms Benitoite.Interval.mul_bottom_iff
+#print axioms Benitoite.Interval.mul_bottom_child
+#print axioms Benitoite.Interval.analyzeBase_normal_sound
+#print axioms Benitoite.Interval.analyzeBase_warning_sound
+
+'Benitoite.Interval.scaleBounds_sound' depends on axioms: [propext, Quot.sound]
+'Benitoite.Interval.mulBounds_sound' depends on axioms: [propext, Quot.sound]
+'Benitoite.Interval.checkedMul_normal_iff' depends on axioms: [propext]
+'Benitoite.Interval.checkedMul_overflow_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_may_overflow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_always_overflows_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_approx_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_approx_overflow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_bottom_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.mul_bottom_child' depends on axioms: [propext]
+'Benitoite.Interval.analyzeBase_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+EXIT=0
+ELAPSED=0.326s

@@ -1,0 +1,378 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✖ [52/52] Building Benitoite.Interval.Eval (4.5s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Eval.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Eval.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Eval.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Eval.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Eval.setup.json --json
+error: Benitoite/Interval/Eval.lean:1300:65: unsolved goals
+case widthBinary
+env : ConcreteEnv
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ b✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ b✝)) rightTrace✝
+unsupported :
+  (match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none) =
+    none
+⊢ False
+
+case widthBinaryLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+not64✝ : ¬kind✝ = IntKind.integer64
+unsupported :
+  (match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none) =
+    none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case widthBinaryRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+unsupported :
+  (match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none) =
+    none
+abrupt✝ : outcome.Abrupt
+evalRight✝ : EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+
+case widthNeg
+env : ConcreteEnv
+key✝ : OperationKey
+kind✝ : IntKind
+source✝ : Expr
+value✝ : IntegerValue kind✝
+trace✝ : EvalTrace
+signed✝ : kind✝.min < 0
+not64✝ : ¬kind✝ = IntKind.integer64
+eval✝ :
+  EvalPartial env { source := source✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ value✝)) trace✝
+unsupported :
+  match
+    match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none with
+  | some kind =>
+    0 ≤
+      match kind with
+      | IntKind.integer8 => -128
+      | IntKind.integer16 => -32768
+      | IntKind.integer32 => -2147483648
+      | IntKind.integer64 => -9223372036854775808
+      | IntKind.unsignedInteger16 => 0
+      | IntKind.unsignedInteger32 => 0
+      | IntKind.unsignedInteger64 => 0
+  | none => True
+⊢ False
+
+case widthNegAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+kind✝ : IntKind
+source✝ : Expr
+not64✝ : ¬kind✝ = IntKind.integer64
+signed✝ :
+  (match kind✝ with
+    | IntKind.integer8 => -128
+    | IntKind.integer16 => -32768
+    | IntKind.integer32 => -2147483648
+    | IntKind.integer64 => -9223372036854775808
+    | IntKind.unsignedInteger16 => 0
+    | IntKind.unsignedInteger32 => 0
+    | IntKind.unsignedInteger64 => 0) <
+    0
+unsupported :
+  match
+    match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none with
+  | some kind =>
+    0 ≤
+      match kind with
+      | IntKind.integer8 => -128
+      | IntKind.integer16 => -32768
+      | IntKind.integer32 => -2147483648
+      | IntKind.integer64 => -9223372036854775808
+      | IntKind.unsignedInteger16 => 0
+      | IntKind.unsignedInteger32 => 0
+      | IntKind.unsignedInteger64 => 0
+  | none => True
+abrupt✝ : outcome.Abrupt
+eval✝ : EvalPartial env { source := source✝, type := kind✝.type, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+error: Benitoite/Interval/Eval.lean:1395:6: unsolved goals
+case widthBinary
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ b✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ b✝)) rightTrace✝
+unknown :
+  (match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none) =
+    none
+resultEq : EvalOutcome.normal value = (op✝.apply kind✝ a✝ b✝).outcome
+⊢ (unknownAnalysis (op✝.type kind✝)).normal value
+error: Benitoite/Interval/Eval.lean:1395:6: unsolved goals
+case widthBinaryLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+kind✝ : Interror: build failed
+Kind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+not64✝ : ¬kind✝ = IntKind.integer64
+unknown :
+  (match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none) =
+    none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (op✝.type kind✝)).normal value
+error: Benitoite/Interval/Eval.lean:1395:6: unsolved goals
+case widthBinaryRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+unknown :
+  (match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none) =
+    none
+abrupt✝ : outcome.Abrupt
+evalRight✝ : EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (op✝.type kind✝)).normal value
+error: Benitoite/Interval/Eval.lean:1395:6: unsolved goals
+case widthNeg
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+kind✝ : IntKind
+source✝ : Expr
+value✝ : IntegerValue kind✝
+trace✝ : EvalTrace
+signed✝ : kind✝.min < 0
+not64✝ : ¬kind✝ = IntKind.integer64
+eval✝ :
+  EvalPartial env { source := source✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ value✝)) trace✝
+unknown :
+  match
+    match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none with
+  | some kind =>
+    0 ≤
+      match kind with
+      | IntKind.integer8 => -128
+      | IntKind.integer16 => -32768
+      | IntKind.integer32 => -2147483648
+      | IntKind.integer64 => -9223372036854775808
+      | IntKind.unsignedInteger16 => 0
+      | IntKind.unsignedInteger32 => 0
+      | IntKind.unsignedInteger64 => 0
+  | none => True
+resultEq : EvalOutcome.normal value = (kind✝.checkedNeg signed✝ value✝).outcome
+⊢ (unknownAnalysis kind✝.type).normal value
+error: Benitoite/Interval/Eval.lean:1395:6: unsolved goals
+case widthNegAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+kind✝ : IntKind
+source✝ : Expr
+not64✝ : ¬kind✝ = IntKind.integer64
+signed✝ :
+  (match kind✝ with
+    | IntKind.integer8 => -128
+    | IntKind.integer16 => -32768
+    | IntKind.integer32 => -2147483648
+    | IntKind.integer64 => -9223372036854775808
+    | IntKind.unsignedInteger16 => 0
+    | IntKind.unsignedInteger32 => 0
+    | IntKind.unsignedInteger64 => 0) <
+    0
+unknown :
+  match
+    match kind✝.type with
+    | Ty.base BaseTy.integer8 => some IntKind.integer8
+    | Ty.base BaseTy.integer16 => some IntKind.integer16
+    | Ty.base BaseTy.integer32 => some IntKind.integer32
+    | Ty.base BaseTy.integer => some IntKind.integer64
+    | Ty.base BaseTy.unsignedInteger16 => some IntKind.unsignedInteger16
+    | Ty.base BaseTy.unsignedInteger32 => some IntKind.unsignedInteger32
+    | Ty.base BaseTy.unsignedInteger64 => some IntKind.unsignedInteger64
+    | x => none with
+  | some kind =>
+    0 ≤
+      match kind with
+      | IntKind.integer8 => -128
+      | IntKind.integer16 => -32768
+      | IntKind.integer32 => -2147483648
+      | IntKind.integer64 => -9223372036854775808
+      | IntKind.unsignedInteger16 => 0
+      | IntKind.unsignedInteger32 => 0
+      | IntKind.unsignedInteger64 => 0
+  | none => True
+abrupt✝ : outcome.Abrupt
+eval✝ : EvalPartial env { source := source✝, type := kind✝.type, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis kind✝.type).normal value
+warning: Benitoite/Interval/Eval.lean:1701:81: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Eval.lean:1701:97: This simp argument is unused:
+  IntKind.min
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify, IntKind.ofType, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Eval.lean:1701:110: This simp argument is unused:
+  min64
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify, IntKind.ofType, IntKind.min]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Eval.lean:1703:81: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Eval.lean:1703:97: This simp argument is unused:
+  IntKind.min
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify, IntKind.ofType, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Eval.lean:1703:110: This simp argument is unused:
+  min64
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify, IntKind.ofType, IntKind.min]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.Eval

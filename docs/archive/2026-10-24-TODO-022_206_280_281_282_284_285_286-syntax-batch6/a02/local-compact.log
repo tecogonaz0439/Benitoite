@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.95s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 14 tests
+test typeck::interval::identity::tests::embedded_constants_use_original_types_and_multiple_occurrences ... ok
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+test typeck::interval::identity::tests::numbering_stops_with_prefix_instead_of_renumbering ... ok
+test typeck::interval::identity::tests::boundaries_keep_original_preorders_and_clause_order ... ok
+test typeck::interval::identity::tests::failure_clause_and_empty_lambda_keep_body_ranges ... ok
+test typeck::interval::identity::tests::unknown_children_and_synthetic_functions_have_source_origins ... ok
+test typeck::interval::identity::tests::direct_negative_minima_and_zero_are_single_surface_occurrences ... ok
+test typeck::interval::identity::tests::source_order_negative_literals_and_return_keep_surface_keys ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::identity::tests::builder_slots_try_actions_and_nested_with_do_not_invent_ast_children ... ok
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... ok
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1293 filtered out; finished in 0.31s
+
+A02_OUTER_EXIT_STATUS=0
+A02_OUTER_ELAPSED_SECONDS=24.37

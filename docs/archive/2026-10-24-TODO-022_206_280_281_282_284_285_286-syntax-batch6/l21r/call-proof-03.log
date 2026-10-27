@@ -1,0 +1,15 @@
+Benitoite/Interval/BudgetCallReach.lean:188:6: error: Application type mismatch: The argument
+  []
+has type
+  List ?m.182
+but is expected to have type
+  CallReach.Scope
+in the application
+  within_unknown fuel env (callee.call labels positions arguments) []
+Benitoite/Interval/BudgetCallReach.lean:209:4: error: Type mismatch: After simplification, term
+  (identify_success (callee.call labels positions sources) limits entered identified).right.left
+ has type
+  @Eq OperationKey middle.next { definition := ctx.next.definition, surfacePreorder := ctx.next.surfacePreorder + 1 }
+but is expected to have type
+  @Eq OperationKey middle.next (advanceKey ctx.next 1)
+Benitoite/Interval/BudgetCallReach.lean:219:2: error: `dsimp` made no progress

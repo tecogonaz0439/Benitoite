@@ -1,0 +1,939 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✖ [52/52] Building Benitoite.Interval.Eval (1.6s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Eval.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Eval.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Eval.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Eval.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Eval.setup.json --json
+error: Benitoite/Interval/Eval.lean:722:22: Invalid dotted identifier notation: The expected type of `.integer64` could not be determined
+
+Hint: Using `IntKind.integer64 would be unambiguous:
+  [apply] `IntKind.integer64`
+error: Benitoite/Interval/Eval.lean:722:44: Invalid field notation: Type of
+  kind
+is not known; cannot resolve field `min`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Array.min`
+  • `List.min`
+  • `min`
+  • `Nat.min`
+  • `Option.min`
+  • `Std.ExtTreeSet.min`
+  • `Std.TreeSet.min`
+  • `IntKind.min`
+  • `Lean.Grind.Config.min`
+  • `Std.Packages.LinearOrderOfLEArgs.min`
+  • `Std.Packages.LinearOrderOfOrdArgs.min`
+  • `String.Pos.Raw.min`
+  • `String.Pos.Raw.Internal.min`
+error: Benitoite/Interval/Eval.lean:723:39: Invalid field notation: Type of
+  kind
+is not known; cannot resolve field `type`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `NonemptyType.type`
+  • `ConcreteValue.type`
+  • `EvalInput.type`
+  • `IntKind.type`
+  • `WidthBinary.type`
+  • `Const.type`
+  • `IO.FS.Metadata.type`
+error: Benitoite/Interval/Eval.lean:725:28: Invalid field notation: Type of
+  kind
+is not known; cannot resolve field `type`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `NonemptyType.type`
+  • `ConcreteValue.type`
+  • `EvalInput.type`
+  • `IntKind.type`
+  • `WidthBinary.type`
+  • `Const.type`
+  • `IO.FS.Metadata.type`
+error: Benitoite/Interval/Eval.lean:725:46: Invalid field notation: Type of
+  kind
+is not known; cannot resolve field `type`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `NonemptyType.type`
+  • `ConcreteValue.type`
+  • `EvalInput.type`
+  • `IntKind.type`
+  • `WidthBinary.type`
+  • `Const.type`
+  • `IO.FS.Metadata.type`
+error: Benitoite/Interval/Eval.lean:913:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:914:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:915:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:917:6: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: Benitoite/Interval/Eval.lean:918:56: `simp` made no progress
+
+Note: The target expression is not type-correct under the `implicit` transparency level, which may have triggered the failure. This is usually caused by unfolding of semireducible definitions in prior tactic steps. Use `set_option linter.tacticCheckInstances true` to investigate the source of the issue.
+Full error:
+  Application type mismatch: The argument
+    EvalPartial
+  has type
+    x✝
+  but is expected to have type
+    ?m.1
+  in the application
+    @?m.36 EvalPartial
+error: Benitoite/Interval/Eval.lean:917:96: unsolved goals
+x✝ : Sort u_1
+EvalPartial : x✝
+env : ?m.26
+key : ?m.27
+left : ?m.28
+right : ?m.29
+a : ?m.30
+b : ?m.31
+lt : ?m.32
+rt : ?m.33
+el : sorry
+er : sorry
+⊢ ∃ trace, sorry ∧ ?m.18 ∈ trace
+error: Benitoite/Interval/Eval.lean:923:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:924:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:925:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:927:6: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: Benitoite/Interval/Eval.lean:928:69: `simp` made no progress
+
+Note: The target expression is not type-correct under the `implicit` transparency level, which may have triggered the failure. This is usually caused by unfolding of semireducible definitions in prior tactic steps. Use `set_option linter.tacticCheckInstances true` to investigate the source of the issue.
+Full error:
+  Application type mismatch: The argument
+    EvalPartial
+  has type
+    x✝
+  but is expected to have type
+    ?m.1
+  in the application
+    @?m.37 EvalPartial
+error: Benitoite/Interval/Eval.lean:927:100: unsolved goals
+x✝ : Sort u_1
+EvalPartial : x✝
+env : ?m.27
+key : ?m.28
+op : BinOp
+left : ?m.29
+right : ?m.30
+a : ?m.31
+b : ?m.32
+lt : ?m.33
+rt : ?m.34
+target : IntegerDivisionOp op
+el : sorry
+er : sorry
+⊢ ∃ trace, sorry ∧ ?m.19 ∈ trace
+error: Benitoite/Interval/Eval.lean:932:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `importerror: build failed
+` or `open` statement.
+error: Benitoite/Interval/Eval.lean:933:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:934:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:936:6: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: Benitoite/Interval/Eval.lean:937:63: `simp` made no progress
+
+Note: The target expression is not type-correct under the `implicit` transparency level, which may have triggered the failure. This is usually caused by unfolding of semireducible definitions in prior tactic steps. Use `set_option linter.tacticCheckInstances true` to investigate the source of the issue.
+Full error:
+  Application type mismatch: The argument
+    EvalPartial
+  has type
+    x✝
+  but is expected to have type
+    ?m.1
+  in the application
+    @?m.36 EvalPartial
+error: Benitoite/Interval/Eval.lean:936:107: unsolved goals
+x✝ : Sort u_1
+EvalPartial : x✝
+env : ?m.26
+key : ?m.27
+left : ?m.28
+right : ?m.29
+a : ?m.30
+b : ?m.31
+lt : ?m.32
+rt : ?m.33
+op : Comparison
+el : sorry
+er : sorry
+⊢ ∃ trace, sorry ∧ ?m.18 ∈ trace
+error: Benitoite/Interval/Eval.lean:941:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:943:4: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:948:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:951:8: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:952:21: Invalid dotted identifier notation: The expected type of `.normal` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `EvalOutcome.normal`
+  [apply] `OperationResult.normal`
+  [apply] `Std.CancellationToken.Consumer.normal`
+  [apply] `Std.Notify.Consumer.normal`
+error: Benitoite/Interval/Eval.lean:953:4: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:956:16: Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  EvalPartial
+has type `x✝` which does not have the necessary form.
+error: Benitoite/Interval/Eval.lean:961:10: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:964:8: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:965:21: Invalid dotted identifier notation: The expected type of `.normal` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `EvalOutcome.normal`
+  [apply] `OperationResult.normal`
+  [apply] `Std.CancellationToken.Consumer.normal`
+  [apply] `Std.Notify.Consumer.normal`
+error: Benitoite/Interval/Eval.lean:966:4: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:970:16: Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  EvalPartial
+has type `x✝` which does not have the necessary form.
+error: Benitoite/Interval/Eval.lean:974:17: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:976:28: Function expected at
+  EvalBlock
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:977:11: Function expected at
+  EvalBlock
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:976:14: failed to synthesize instance of type class
+  Decidable truth
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Interval/Eval.lean:978:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:979:2: Tactic `cases` failed: major premise type is not an inductive type
+  Prop
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+Consider using the 'by_cases' tactic, which does true/false reasoning for propositions.
+
+x✝¹ : Sort u_1
+EvalPartial : x✝¹
+x✝ : Sort u_2
+EvalBlock : x✝
+env : ?m.35
+key : ?m.36
+cond : ?m.37
+yes : ?m.38
+no : ?m.39
+type : ?m.40
+truth : Prop
+ct : ?m.41
+outcome : ?m.42
+bt : ?m.43
+condition : sorry
+branch : sorry
+⊢ ∃ trace, sorry ∧ trace = ct ++ bt
+error: Benitoite/Interval/Eval.lean:985:17: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:987:28: Function expected at
+  EvalBlock
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:988:11: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:987:14: failed to synthesize instance of type class
+  Decidable truth
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Interval/Eval.lean:989:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:990:2: Tactic `cases` failed: major premise type is not an inductive type
+  Prop
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+Consider using the 'by_cases' tactic, which does true/false reasoning for propositions.
+
+x✝¹ : Sort u_1
+EvalPartial : x✝¹
+x✝ : Sort u_2
+EvalBlock : x✝
+env : ?m.35
+key : ?m.36
+cond : ?m.37
+yes : ?m.38
+no : ?m.39
+type : ?m.40
+truth : Prop
+ct : ?m.41
+outcome : ?m.42
+bt : ?m.43
+condition : sorry
+branch : sorry
+⊢ ∃ trace, sorry ∧ trace = ct ++ bt
+error: Benitoite/Interval/Eval.lean:996:17: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:998:28: Function expected at
+  EvalBlock
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:999:21: Invalid dotted identifier notation: The expected type of `.normal` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `EvalOutcome.normal`
+  [apply] `OperationResult.normal`
+  [apply] `Std.CancellationToken.Consumer.normal`
+  [apply] `Std.Notify.Consumer.normal`
+error: Benitoite/Interval/Eval.lean:998:14: failed to synthesize instance of type class
+  Decidable truth
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Benitoite/Interval/Eval.lean:1000:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1001:2: Tactic `cases` failed: major premise type is not an inductive type
+  Prop
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+Consider using the 'by_cases' tactic, which does true/false reasoning for propositions.
+
+x✝¹ : Sort u_1
+EvalPartial : x✝¹
+x✝ : Sort u_2
+EvalBlock : x✝
+env : ?m.46
+key : ?m.47
+cond : ?m.48
+yes : ?m.49
+truth : Prop
+ct : List ?m.50
+outcome : ?m.51
+bt : List ?m.50
+condition : sorry
+branch : sorry
+⊢ ∃ trace, sorry ∧ trace = ct ++ bt
+error: Benitoite/Interval/Eval.lean:1009:12: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1010:12: Function expected at
+  EvalBlock
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  { env with locals := some value :: env.locals }
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1012:13: Function expected at
+  EvalBlock
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1140:12: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1141:14: Invalid field notation: Type of
+  input
+is not known; cannot resolve field `key`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.key`
+  • `EvalInput.key`
+  • `BuiltinConstraint.key`
+  • `BuiltinDataSummary.key`
+  • `TParam.key`
+error: Benitoite/Interval/Eval.lean:1141:37: Invalid field notation: Type of
+  input
+is not known; cannot resolve field `source`
+
+Hint: Consider replacing the field projection `.source` with a call to the function `EvalInput.source`.
+error: Benitoite/Interval/Eval.lean:1235:12: Function expected at
+  EvalBlock
+but this term has type
+  ?m.13
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1257:12: Function expected at
+  EvalArms
+but this term has type
+  ?m.25
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalArms` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1142:2: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Interval/Eval.lean:1237:2: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Interval/Eval.lean:1259:2: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Interval/Eval.lean:1282:12: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1282:52: Invalid field notation: Type of
+  trace
+is not known; cannot resolve field `map`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Array.map`
+  • `BaseIO.map`
+  • `EIO.map`
+  • `EStateM.map`
+  • `Except.map`
+  • `ExceptT.map`
+  • `Functor.map`
+  • `List.map`
+  • `Option.map`
+  • `Prod.map`
+  • `StateT.map`
+  • `String.map`
+  • `Sum.map`
+  • `Task.map`
+  • `Thunk.map`
+  • `Vector.map`
+  • `Array.mapFinIdxM.map`
+  • `List.IsInfix.map`
+  • `List.IsPrefix.map`
+  • `List.IsSuffix.map`
+  • `List.Pairwise.map`
+  • `List.Perm.map`
+  • `List.Sublist.map`
+  • `Std.DHashMap.map`
+  • `Std.DTreeMap.map`
+  • `Std.ExtDHashMap.map`
+  • `Std.ExtDTreeMap.map`
+  • `Std.ExtHashMap.map`
+  • `Std.ExtTreeMap.map`
+  • `Std.HashMap.map`
+  • `Std.Iter.map`
+  • `Std.IterM.map`
+  • `Std.TreeMap.map`
+  • `Vector.mapFinIdxM.map`
+  • `Inhabits.map`
+  • `NamesWF.map`
+  • `Ty.map`
+  • `TyCon.map`
+  • `Lean.Omega.Coeffs.map`
+  • `Lean.Omega.Constraint.map`
+  • `Std.Async.AsyncTask.map`
+  • `Std.Async.BaseAsync.map`
+  • `Std.Async.EAsync.map`
+  • `Std.Async.ETask.map`
+  • `Std.Async.MaybeTask.map`
+  • `Std.DHashMap.Equiv.map`
+  • `Std.DHashMap.Raw.map`
+  • `Std.DTreeMap.Equiv.map`
+  • `Std.DTreeMap.Raw.map`
+  • `Std.Do.Spec.map`
+  • `Std.Do.WP.map`
+  • `Std.HashMap.Equiv.map`
+  • `Std.HashMap.Raw.map`
+  • `Std.Http.Headers.map`
+  • `Std.Internal.Small.map`
+  • `Std.IterM.Equiv.map`
+  • `Std.IterM.InternalCombinators.map`
+  • `Std.Iterators.HetT.map`
+  • `Std.Iterators.PostconditionT.map`
+  • `Std.TreeMap.Equiv.map`
+  • `Std.TreeMap.Raw.map`
+  • `Inhabits.below.map`
+  • `Std.DHashMap.Internal.AssocList.map`
+  • `Std.DHashMap.Internal.Raw₀.map`
+  • `Std.DHashMap.Raw.Equiv.map`
+  • `Std.DHashMap.Raw.WF.map`
+  • `Std.DTreeMap.Internal.Impl.map`
+  • `Std.DTreeMap.Raw.Equiv.map`
+  • `Std.HashMap.Raw.Equiv.map`
+  • `Std.HashMap.Raw.WF.map`
+  • `Std.Internal.Do.Spec.map`
+  • `Std.Internal.Do.Triple.map`
+  • `Std.Internal.List.DistinctKeys.map`
+  • `Std.Sat.AIG.RefVec.map`
+  • `Std.TreeMap.Raw.Equiv.map`
+  • `Std.DTreeMap.Internal.Impl.Balanced.map`
+  • `Std.DTreeMap.Internal.Impl.Equiv.map`
+  • `Std.DTreeMap.Internal.Impl.WF.map`
+  • `Std.Sat.AIG.RelabelNat.State.map`
+  • `Std.Tactic.BVDecide.BVExpr.Cache.map`
+error: Benitoite/Interval/Eval.lean:1283:31: Unknown identifier `eval_trace_keys`
+error: Benitoite/Interval/Eval.lean:1288:13: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1289:8: Invalid field notation: Type of
+  value
+is not known; cannot resolve field `toInt`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `BitVec.toInt`
+  • `Bool.toInt`
+  • `ISize.toInt`
+  • `Int16.toInt`
+  • `Int32.toInt`
+  • `Int64.toInt`
+  • `Int8.toInt`
+  • `IntegerValue.toInt`
+  • `Integer64Value.toInt`
+  • `Float.Model.UnpackedFloat.toInt`
+  • `Lean.Grind.ToInt.toInt`
+  • `Std.Time.Internal.UnitVal.toInt`
+  • `Std.Time.Year.Offset.toInt`
+  • `Std.Time.Internal.Bounded.LE.toInt`
+error: Benitoite/Interval/Eval.lean:1289:43: Invalid field notation: Type of
+  value
+is not known; cannot resolve field `toInt_bounds`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `IntegerValue.toInt_bounds`
+  • `Integer64Value.toInt_bounds`
+error: Benitoite/Interval/Eval.lean:1294:12: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1323:4: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1382:12: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1403:12: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1404:17: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `operation`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.operation`
+  • `IntervalWarning.operation`
+  • `Std.Iterators.HetT.operation`
+  • `Std.Iterators.PostconditionT.operation`
+error: Benitoite/Interval/Eval.lean:1404:35: Invalid dotted identifier notation: The expected type of `.binary` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.ParserDescr.binary`
+  [apply] `TargetOperation.binary`
+  [apply] `Expr.binary`
+  [apply] `Operator.binary`
+error: Benitoite/Interval/Eval.lean:1406:11: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `arguments`
+
+Hint: Consider replacing the field projection `.arguments` with a call to the function `EvalEvent.arguments`.
+error: Benitoite/Interval/Eval.lean:1406:30: Invalid dotted identifier notation: The expected type of `.integer` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ConcreteValue.integer`
+  [apply] `BaseTy.integer`
+  [apply] `Const.integer`
+  [apply] `Literal.integer`
+  [apply] `Pattern.integer`
+  [apply] `Coverage.Represents.integer`
+error: Benitoite/Interval/Eval.lean:1406:42: Invalid dotted identifier notation: The expected type of `.integer` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ConcreteValue.integer`
+  [apply] `BaseTy.integer`
+  [apply] `Const.integer`
+  [apply] `Literal.integer`
+  [apply] `Pattern.integer`
+  [apply] `Coverage.Represents.integer`
+error: Benitoite/Interval/Eval.lean:1407:6: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `result`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.result`
+  • `RangeNames.result`
+  • `BuilderOp.result`
+  • `Std.Tactic.BVDecide.Return.result`
+  • `Std.Tactic.BVDecide.BVExpr.Return.result`
+error: Benitoite/Interval/Eval.lean:1482:12: Function expected at
+  EvalBlock
+but this term has type
+  ?m.55
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalBlock` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1483:17: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `operation`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.operation`
+  • `IntervalWarning.operation`
+  • `Std.Iterators.HetT.operation`
+  • `Std.Iterators.PostconditionT.operation`
+error: Benitoite/Interval/Eval.lean:1483:35: Invalid dotted identifier notation: The expected type of `.binary` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.ParserDescr.binary`
+  [apply] `TargetOperation.binary`
+  [apply] `Expr.binary`
+  [apply] `Operator.binary`
+error: Benitoite/Interval/Eval.lean:1485:11: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `arguments`
+
+Hint: Consider replacing the field projection `.arguments` with a call to the function `EvalEvent.arguments`.
+error: Benitoite/Interval/Eval.lean:1485:30: Invalid dotted identifier notation: The expected type of `.integer` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ConcreteValue.integer`
+  [apply] `BaseTy.integer`
+  [apply] `Const.integer`
+  [apply] `Literal.integer`
+  [apply] `Pattern.integer`
+  [apply] `Coverage.Represents.integer`
+error: Benitoite/Interval/Eval.lean:1485:42: Invalid dotted identifier notation: The expected type of `.integer` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ConcreteValue.integer`
+  [apply] `BaseTy.integer`
+  [apply] `Const.integer`
+  [apply] `Literal.integer`
+  [apply] `Pattern.integer`
+  [apply] `Coverage.Represents.integer`
+error: Benitoite/Interval/Eval.lean:1486:6: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `result`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.result`
+  • `RangeNames.result`
+  • `BuilderOp.result`
+  • `Std.Tactic.BVDecide.Return.result`
+  • `Std.Tactic.BVDecide.BVExpr.Return.result`
+error: Benitoite/Interval/Eval.lean:1506:12: Function expected at
+  EvalArms
+but this term has type
+  ?m.113
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalArms` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1507:17: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `operation`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.operation`
+  • `IntervalWarning.operation`
+  • `Std.Iterators.HetT.operation`
+  • `Std.Iterators.PostconditionT.operation`
+error: Benitoite/Interval/Eval.lean:1507:35: Invalid dotted identifier notation: The expected type of `.binary` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.ParserDescr.binary`
+  [apply] `TargetOperation.binary`
+  [apply] `Expr.binary`
+  [apply] `Operator.binary`
+error: Benitoite/Interval/Eval.lean:1509:11: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `arguments`
+
+Hint: Consider replacing the field projection `.arguments` with a call to the function `EvalEvent.arguments`.
+error: Benitoite/Interval/Eval.lean:1509:30: Invalid dotted identifier notation: The expected type of `.integer` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ConcreteValue.integer`
+  [apply] `BaseTy.integer`
+  [apply] `Const.integer`
+  [apply] `Literal.integer`
+  [apply] `Pattern.integer`
+  [apply] `Coverage.Represents.integer`
+error: Benitoite/Interval/Eval.lean:1509:42: Invalid dotted identifier notation: The expected type of `.integer` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ConcreteValue.integer`
+  [apply] `BaseTy.integer`
+  [apply] `Const.integer`
+  [apply] `Literal.integer`
+  [apply] `Pattern.integer`
+  [apply] `Coverage.Represents.integer`
+error: Benitoite/Interval/Eval.lean:1509:56: Invalid field notation: Type of
+  event
+is not known; cannot resolve field `result`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `EvalEvent.result`
+  • `RangeNames.result`
+  • `BuilderOp.result`
+  • `Std.Tactic.BVDecide.Return.result`
+  • `Std.Tactic.BVDecide.BVExpr.Return.result`
+error: Benitoite/Interval/Eval.lean:1408:2: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Interval/Eval.lean:1487:2: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Interval/Eval.lean:1510:2: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Interval/Eval.lean:1532:31: Unknown identifier `EvalPartial`
+error: Benitoite/Interval/Eval.lean:1540:31: Unknown identifier `EvalPartial`
+error: Benitoite/Interval/Eval.lean:1556:4: Function expected at
+  EvalPartial
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  env
+
+Hint: The identifier `EvalPartial` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+error: Benitoite/Interval/Eval.lean:1557:17: maximum number of errors (100; from option `maxErrors`) reached, exiting
+Some required targets logged failures:
+- Benitoite.Interval.Eval

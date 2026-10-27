@@ -1,0 +1,587 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [55/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [56/57] Built Benitoite.Interval.Analyze (436ms)
+✖ [57/57] Building Benitoite.Interval.Sound (12s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+error: Benitoite/Interval/Sound.lean:70:25: Application type mismatch: The argument
+  normalize value value
+has type
+  Interval
+but is expected to have type
+  Interval kind
+in the application
+  @baseIntegerKind kind (normalize value value)
+warning: Benitoite/Interval/Sound.lean:73:16: declaration uses `sorry`
+error: Benitoite/Interval/Sound.lean:83:4: Type mismatch
+  (mem_normalize ?m.27 ?m.27 ?m.27).mpr ⟨?m.18, ⟨?m.23, ⟨Int.le_refl ?m.27, Int.le_refl ?m.27⟩⟩⟩
+has type
+  Mem ?m.27 (normalize ?m.27 ?m.27)
+but is expected to have type
+  Mem value (normalize value value kind)
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:6: too many variable names provided
+error: Benitoite/Interval/Sound.lean:460:28: Unknown identifier `truth`
+error: Benitoite/Interval/Sound.lean:460:22: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.395
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case unit
+left right : BaseApprox
+inside : left.other = true ∨ right.other = true
+x✝ : ?m.395
+⊢ (left.other || right.other) = true
+error: Benitoite/Interval/Sound.lean:460:22: Tactic `cases` failed: major premise type is not an inductive type
+  type✝ = Ty.base BaseTy.unit → False
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case other
+left right : BaseApprox
+type✝ : Ty
+notInteger✝ : IntKind.ofType type✝ = none
+notBoolean✝ : type✝ ≠ Ty.base BaseTy.boolean
+truth : type✝ ≠ Ty.base BaseTy.unit
+inside : left.other = true ∨ right.other = true
+⊢ (left.other || right.other) = true
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:460:44: Unknown constant `Bool.or_eq_true.mpr`
+error: Benitoite/Interval/Sound.lean:616:25: unsolved goals
+case integer8
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : IntKind.integer8.max < ↑n✝
+⊢ ↑n✝ ≤ IntKind.integer8.max → baseIntegerKind IntKind.integer8 (sorry ()) = baseUnknown
+
+case integer16
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : IntKind.integer16.max < ↑n✝
+⊢ ↑n✝ ≤ IntKind.integer16.max → baseIntegerKind IntKind.integer16 (sorry ()) = baseUnknown
+
+case integer32
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : IntKind.integer32.max < ↑n✝
+⊢ ↑n✝ ≤ IntKind.integer32.max → baseIntegerKind IntKind.integer32 (sorry ()) = baseUnknown
+
+case unsignedInteger16
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : IntKind.unsignedInteger16.max < ↑n✝
+⊢ ↑n✝ ≤ IntKind.unsignedInteger16.max → baseIntegerKind IntKind.unsignedInteger16 (sorry ()) = baseUnknown
+
+case unsignedInteger32
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : IntKind.unsignedInteger32.max < ↑n✝
+⊢ ↑n✝ ≤ IntKind.unsignedInteger32.max → baseIntegerKind IntKind.unsignedInteger32 (sorry ()) = baseUnknown
+
+case unsignedInteger64
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : IntKind.unsignedInteger64.max < ↑n✝
+⊢ ↑n✝ ≤ IntKind.unsignedInteger64.max → baseIntegerKind IntKind.unsignedInteger64 (sorry ()) = baseUnknown
+error: Benitoite/Interval/Sound.lean:614:25: unsolved goals
+case succ.mk.negInteger8
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : 128 < ↑n✝
+⊢ ↑n✝ ≤ 128 → baseIntegerKind IntKind.integer8 (sorry ()) = baseUnknown
+
+case succ.mk.negInteger16
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : 32768 < ↑n✝
+⊢ ↑n✝ ≤ 32768 → baseIntegerKind IntKind.integer16 (sorry ()) = baseUnknown
+
+case succ.mk.negInteger32
+concrete : ConcreteEnv
+env : AbstractEnv
+fuel : Nat
+type : Ty
+key : OperationKey
+n✝ : Nat
+unknown : 2147483648 < ↑n✝
+⊢ ↑n✝ ≤ 2147483648 → baseIntegerKind IntKind.integer32 (sorry ()) = baseUnknown
+warning: Benitoite/Interval/Sound.lean:615:104: declaration uses `sorry`
+warning: Benitoite/Interval/Sound.lean:616:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:639:65: Application type mismatch: The argument
+  models
+has type
+  Models abstract concrete
+of sort `Prop` but is expected to have type
+  IntegerValue ?m.1839
+of sort `Type` in the application
+  models_bindRangeKind kind models
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unknown.integer8
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+type✝ : Option Ty
+atSlot : lookup abstract index = some (AbstractSlot.unknown type✝)
+value✝ : IntegerValue IntKind.integer8
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer8 value✝))
+related : SlotModels (AbstractSlot.unknown type✝) (some (ConcreteValue.integer8 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer8)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unknown.integer16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+type✝ : Option Ty
+atSlot : lookup abstract index = some (AbstractSlot.unknown type✝)
+value✝ : IntegerValue IntKind.integer16
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer16 value✝))
+related : SlotModels (AbstractSlot.unknown type✝) (some (ConcreteValue.integer16 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer16)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unknown.integer32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+type✝ : Option Ty
+atSlot : lookup abstract index = some (AbstractSlot.unknown type✝)
+value✝ : IntegerValue IntKind.integer32
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer32 value✝))
+related : SlotModels (AbstractSlot.unknown type✝) (some (ConcreteValue.integer32 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer32)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unknown.unsignedInteger16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+type✝ : Option Ty
+atSlot : lookup abstract index = some (AbstractSlot.unknown type✝)
+value✝ : IntegerValue IntKind.unsignedInteger16
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger16 value✝))
+related : SlotModels (AbstractSlot.unknown type✝) (some (ConcreteValue.unsignedInteger16 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger16)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unknown.unsignedInteger32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+type✝ : Option Ty
+atSlot : lookup abstract index = some (AbstractSlot.unknown type✝)
+value✝ : IntegerValue IntKind.unsignedInteger32
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger32 value✝))
+related : SlotModels (AbstractSlot.unknown type✝) (some (ConcreteValue.unsignedInteger32 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger32)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unknown.unsignedInteger64
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+type✝ : Option Ty
+atSlot : lookup abstract index = some (AbstractSlot.unknown type✝)
+value✝ : IntegerValue IntKind.unsignedInteger64
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger64 value✝))
+related : SlotModels (AbstractSlot.unknown type✝) (some (ConcreteValue.unsignedInteger64 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger64)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case builder.integer8
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+kind✝ : BuilderKind
+atSlot : lookup abstract index = some (AbstractSlot.builder kind✝)
+value✝ : IntegerValue IntKind.integer8
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer8 value✝))
+related : SlotModels (AbstractSlot.builder kind✝) (some (ConcreteValue.integer8 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer8)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case builder.integer16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+kind✝ : BuilderKind
+atSlot : lookup abstract index = some (AbstractSlot.builder kind✝)
+value✝ : IntegerValue IntKind.integer16
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer16 value✝))
+related : SlotModels (AbstractSlot.builder kind✝) (some (ConcreteValue.integer16 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer16)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case builder.integer32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+kind✝ : BuilderKind
+atSlot : lookup abstract index = some (AbstractSlot.builder kind✝)
+value✝ : IntegerValue IntKind.integer32
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer32 value✝))
+related : SlotModels (AbstractSlot.builder kind✝) (some (ConcreteValue.integer32 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer32)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case builder.unsignedInteger16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+kind✝ : BuilderKind
+atSlot : lookup abstract index = some (AbstractSlot.builder kind✝)
+value✝ : IntegerValue IntKind.unsignedInteger16
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger16 value✝))
+related : SlotModels (AbstractSlot.builder kind✝) (some (ConcreteValue.unsignedInteger16 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger16)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case builder.unsignedInteger32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+kind✝ : BuilderKind
+atSlot : lookup abstract index = some (AbstractSlot.builder kind✝)
+value✝ : IntegerValue IntKind.unsignedInteger32
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger32 value✝))
+related : SlotModels (AbstractSlot.builder kind✝) (some (ConcreteValue.unsignedInteger32 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger32)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case builder.unsignedInteger64
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+kind✝ : BuilderKind
+atSlot : lookup abstract index = some (AbstractSlot.builder kind✝)
+value✝ : IntegerValue IntKind.unsignedInteger64
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger64 value✝))
+related : SlotModels (AbstractSlot.builder kind✝) (some (ConcreteValue.unsignedInteger64 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger64)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unavailable.integer8
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+atSlot : lookup abstract index = some AbstractSlot.unavailable
+value✝ : IntegerValue IntKind.integer8
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer8 value✝))
+related : SlotModels AbstractSlot.unavailable (some (ConcreteValue.integer8 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer8)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unavailable.integer16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+atSlot : lookup abstract index = some AbstractSlot.unavailable
+value✝ : IntegerValue IntKind.integer16
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer16 value✝))
+related : SlotModels AbstractSlot.unavailable (some (ConcreteValue.integer16 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer16)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unavailable.integer32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+atSlot : lookup abstract index = some AbstractSlot.unavailable
+value✝ : IntegerValue IntKind.integer32
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.integer32 value✝))
+related : SlotModels AbstractSlot.unavailable (some (ConcreteValue.integer32 value✝))
+⊢ Mem value✝.toInt (top IntKind.integer32)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unavailable.unsignedInteger16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+atSlot : lookup abstract index = some AbstractSlot.unavailable
+value✝ : IntegerValue IntKind.unsignedInteger16
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger16 value✝))
+related : SlotModels AbstractSlot.unavailable (some (ConcreteValue.unsignedInteger16 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger16)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unavailable.unsignedInteger32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+atSlot : lookup abstract index = some AbstractSlot.unavailable
+value✝ : IntegerValue IntKind.unsignedInteger32
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger32 value✝))
+related : SlotModels AbstractSlot.unavailable (some (ConcreteValue.unsignedInteger32 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger32)
+error: Benitoite/Interval/Sound.lean:680:8: unsolved goals
+case unavailable.unsignedInteger64
+abstract : AbstractEnv
+concrete : ConcreteEnv
+index : Nat
+models : Models abstract concrete
+atSlot : lookup abstract index = some AbstractSlot.unavailable
+value✝ : IntegerValue IntKind.unsignedInteger64
+atIndex : concrete.locals[index]? = some (some (ConcreteValue.unsignedInteger64 value✝))
+related : SlotModels AbstractSlot.unavailable (some (ConcreteValue.unsignedInteger64 value✝))
+⊢ Mem value✝.toInt (top IntKind.unsignedInteger64)
+error: Benitoite/Interval/Sound.lean:1231:38: Redundant alternative: Any expression matching
+  Expr.negInteger8 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1231:56: Redundant alternative: Any expression matching
+  Expr.negInteger16 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1231:75: Redundant alternative: Any expression matching
+  Expr.negInteger32 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ (baseInteger (normalize n✝.toValue.toInt n✝.toValue.toInt)).warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.integer n✝))) warning.key
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.float x✝))) warning.key
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.decimal n✝ scale✝))) warning.key
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.string s✝))) warning.key
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.character c✝))) warning.key
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ (baseBoolean (!b✝, b✝)).warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.boolean b✝))) warning.key
+warning: Benitoite/Interval/Sound.lean:1137:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1137:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1137:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.byte n✝))) warning.key
+warning: Benitoite/Interval/Sound.lean:1137:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1137:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1137:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: Benitoite/Interval/Sound.lean:1137:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  KeyWithin key (surfaceSize (Expr.literal (Literal.float32 bits✝))) warning.key
+error: Benitoite/Interval/Sound.lean:1235:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger8 n✝)).warnings
+⊢ KeyWithin key (surfaceSize (Expr.negInteger8 n✝)) warning.key
+error: Benitoite/Interval/Sound.lean:1235:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger16 n✝)).warnings
+⊢ KeyWithin key (surfaceSize (Expr.negInteger16 n✝)) warning.key
+error: Benitoite/Interval/Sound.lean:1235:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger32 n✝)).warnings
+⊢ KeyWithin key (surfaceSize (Expr.negInteger32 n✝)) warning.key
+error: Benitoite/Interval/Sound.lean:1521:38: Redundant alternative: Any expression matching
+  Expr.negInteger8 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1521:56: Redundant alternative: Any expression matching
+  Expr.negInteger16 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1521:75: Redundant alternative: Any expression matching
+  Expr.negInteger32 n✝, member
+will match one of the preceding alternatives
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ (baseInteger (normalize n✝.toValue.toInt n✝.toValue.toInt)).warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.integer n✝))) warning
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.float x✝))) warning
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.decimal n✝ scale✝))) warning
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.string s✝))) warning
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.character c✝))) warning
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ (baseBoolean (!b✝, b✝)).warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.boolean b✝))) warning
+warning: Benitoite/Interval/Sound.lean:1366:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1366:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1366:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.byte n✝))) warning
+warning: Benitoite/Interval/Sound.lean:1366:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1366:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:1366:40: Try `simp at member` instead of `simpa using member`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: Benitoite/Interval/Sound.lean:1366:40: Type mismatch: After simplification, term
+  member
+ has type
+  warning ∈ baseUnknown.warnings
+but is expected to have type
+  LocatedList key (surfacePreorder (Expr.literal (Literal.float32 bits✝))) warning
+error: Benitoite/Interval/Sound.lean:1525:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger8 n✝)).warnings
+⊢ LocatedList key (surfacePreorder (Expr.negInteger8 n✝)) warning
+error: Benitoite/Interval/Sound.lean:1525:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger16 n✝)).warnings
+⊢ LocatedList key (surfacePreorder (Expr.negInteger16 n✝)) warning
+error: Benitoite/Interval/Sound.lean:1525:89: Tactic `contradiction` failed
+
+env : AbstractEnv
+key : OperationKey
+source : Expr
+warning : IntervalWarning
+fuel n✝ : Nat
+member : warning ∈ (analyzeBaseExpr (fuel + 1) env key (Expr.negInteger32 n✝)).warnings
+⊢ LocatedList key (surfacePreorder (Expr.negInteger32 n✝)) warning
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+error: build failed

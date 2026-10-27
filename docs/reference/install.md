@@ -1,8 +1,8 @@
 # Installing Benitoite
 
-This page explains how to install `benitoite` `0.0.11`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+This page explains how to install `benitoite` `0.0.12`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
 
-Version 0.0.11 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.11 executable archive or SHA256SUMS is provided.
+Version 0.0.12 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.12 executable archive or SHA256SUMS is provided.
 
 ## Supported systems
 
@@ -146,6 +146,10 @@ benitoite skill install
 The Skill describes only the version of `benitoite` it comes with. When the versions differ, the Skill tells the agent to ask you to run `benitoite skill install` again. Read the [CHANGELOG](../../CHANGELOG.md) before updating to a new minor version (for example, from `0.1.x` to `0.2.0`): minor versions may contain incompatible changes.
 
 See [Functions and lambdas](benitoite.md#6-functions-and-lambdas) for calling rules and function contracts. Use the Skill installed from the same executable to look up parameter names and callback contracts.
+
+### Updating from 0.0.11 to 0.0.12
+
+Build the release source and reinstall its embedded Skill. Have the harness review the [migration guide](../../CHANGELOG.md#0012-san-benito), the per-Store component handle limit, local interval warnings under `--deny-warnings`, and inspection readers that need to accept `intervalAnalysis`. JSON/Property derive targets must not have file-level `uses`; review existing targets and make a fresh preview after any relocation or effect-declaration change. Review source and dependencies before setting `language "0.0.12"` and running `benitoite package update`. See [compatibility](benitoite.md#migrating-to-0012) for the migration details.
 
 ### Updating from 0.0.10 to 0.0.11
 

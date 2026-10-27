@@ -1,0 +1,298 @@
+{
+  "base": "335caabf3b08b98ae7f8c3c7311f1c116ae28072",
+  "head": "335caabf3b08b98ae7f8c3c7311f1c116ae28072",
+  "unchanged_formal_files": 305,
+  "central": {
+    "NormalSoundness": "06ba7536b776c538ca79334db702fd4c756eb1871d51d234cc86df4e8c4db2bf",
+    "WarningSoundness": "3707732b57cb8e8aa1583845575e574c5c327d7b2ea1067d4fd8ace0e999ec80"
+  },
+  "preserved_theorem_statements": 2765,
+  "auxiliary_statement_changes": [
+    {
+      "file": "formal/Benitoite/Interval/EvalClosed.lean",
+      "name": "evalClosed_call",
+      "change": "認定されない call の評価不能に限定。中心命題・入口の健全性の変更ではない。"
+    }
+  ],
+  "reference_definitions": [
+    {
+      "file": "formal/Benitoite/Interval/BudgetAnalyze.lean",
+      "name": "expr",
+      "changed": false,
+      "before_sha256": "14d0890f473265507c499ce648fe208eff1999f8b5dd617805fd27516404c6e3",
+      "after_sha256": "14d0890f473265507c499ce648fe208eff1999f8b5dd617805fd27516404c6e3"
+    },
+    {
+      "file": "formal/Benitoite/Interval/BudgetAnalyze.lean",
+      "name": "independent",
+      "changed": false,
+      "before_sha256": "9f307546c76df59ccc2b08181a03a7b93900fa07b5b8b6ab06a85927640020be",
+      "after_sha256": "9f307546c76df59ccc2b08181a03a7b93900fa07b5b8b6ab06a85927640020be"
+    },
+    {
+      "file": "formal/Benitoite/Interval/BudgetAnalyze.lean",
+      "name": "analyze",
+      "changed": false,
+      "before_sha256": "b56e34062b030c703ca31636b3e95452f6e661a0fcfdd32e273f7047e4b4bb9b",
+      "after_sha256": "b56e34062b030c703ca31636b3e95452f6e661a0fcfdd32e273f7047e4b4bb9b"
+    },
+    {
+      "file": "formal/Benitoite/Interval/BudgetAnalyze.lean",
+      "name": "analyzeBody",
+      "changed": false,
+      "before_sha256": "2dbb088272416685d1ce5a62a27c89a160351c0e4d87c65b900cce478f574cc3",
+      "after_sha256": "2dbb088272416685d1ce5a62a27c89a160351c0e4d87c65b900cce478f574cc3"
+    },
+    {
+      "file": "formal/Benitoite/Interval/BudgetDiscover.lean",
+      "name": "expr",
+      "changed": false,
+      "before_sha256": "10c30e8376d93e8cc26bc727491da00ce45c75710de51634cb99bc3682a8e5d9",
+      "after_sha256": "10c30e8376d93e8cc26bc727491da00ce45c75710de51634cb99bc3682a8e5d9"
+    },
+    {
+      "file": "formal/Benitoite/Interval/BudgetWhole.lean",
+      "name": "analyze",
+      "changed": false,
+      "before_sha256": "115b4d5d38fb334a245dea16dbb619273fc7c22bf249380e3b8bf171d21d740f",
+      "after_sha256": "115b4d5d38fb334a245dea16dbb619273fc7c22bf249380e3b8bf171d21d740f"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Environment.lean",
+      "name": "AbstractSlot",
+      "changed": false,
+      "before_sha256": "2b064b6d3f0762e5082869fc254a88202971f263f4d3e99d3247a9735ea2220c",
+      "after_sha256": "2b064b6d3f0762e5082869fc254a88202971f263f4d3e99d3247a9735ea2220c"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Environment.lean",
+      "name": "topSlot",
+      "changed": false,
+      "before_sha256": "0836d340471479072214940ff849a8feb0f5989b8525d9b5770ba06de948ab6c",
+      "after_sha256": "0836d340471479072214940ff849a8feb0f5989b8525d9b5770ba06de948ab6c"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Environment.lean",
+      "name": "SlotModels",
+      "changed": false,
+      "before_sha256": "dfb0a94510738a90efac34875933e647006dccd883ffead9830cd42deec94643",
+      "after_sha256": "dfb0a94510738a90efac34875933e647006dccd883ffead9830cd42deec94643"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Environment.lean",
+      "name": "Models",
+      "changed": false,
+      "before_sha256": "3f39b643cdf34b709e4e363b60a830e86c833edfb59727bcc32c974875c67f27",
+      "after_sha256": "3f39b643cdf34b709e4e363b60a830e86c833edfb59727bcc32c974875c67f27"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "ConcreteValue",
+      "changed": false,
+      "before_sha256": "bca859b94ef98eae4f3d0c3ed4ef15bfa32e9e0a1fe75ab7c28448cdbd4b59ff",
+      "after_sha256": "bca859b94ef98eae4f3d0c3ed4ef15bfa32e9e0a1fe75ab7c28448cdbd4b59ff"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "ConcreteValue.type",
+      "changed": false,
+      "before_sha256": "2843ec9c1f5f830f1863b83e708e3236234a12936ec347aa635805f64ac80dd1",
+      "after_sha256": "2843ec9c1f5f830f1863b83e708e3236234a12936ec347aa635805f64ac80dd1"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalStandard",
+      "changed": false,
+      "before_sha256": "c4bb148d14b6bbe211f2d966dceb7da187e72eff70840edb3db8e5d35226c5b9",
+      "after_sha256": "c4bb148d14b6bbe211f2d966dceb7da187e72eff70840edb3db8e5d35226c5b9"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "StandardRule.finish",
+      "changed": false,
+      "before_sha256": "41798692857b2739f72445c00085281b7d517078fa35d6625c732cc7ab13155d",
+      "after_sha256": "41798692857b2739f72445c00085281b7d517078fa35d6625c732cc7ab13155d"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "Unsupported",
+      "changed": false,
+      "before_sha256": "9315951fc95ac64a776f1eb53b927e8383dae33d48ae6f598e03255090ed8751",
+      "after_sha256": "9315951fc95ac64a776f1eb53b927e8383dae33d48ae6f598e03255090ed8751"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "Unmodeled",
+      "changed": false,
+      "before_sha256": "beef122eea7621b3dc996a9f3f7fedb4a8c920db58505f919f8cc24033581b78",
+      "after_sha256": "beef122eea7621b3dc996a9f3f7fedb4a8c920db58505f919f8cc24033581b78"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "UnknownAt",
+      "changed": false,
+      "before_sha256": "cb6e621c0e50f48ad99d8d87de5a58fb26e9d7b436016ede9be5928e58bce6c8",
+      "after_sha256": "cb6e621c0e50f48ad99d8d87de5a58fb26e9d7b436016ede9be5928e58bce6c8"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalPartial",
+      "changed": false,
+      "before_sha256": "7ec5485d0acf1bd582e3b0901631f79aec22d13fcbd2e6e2fc09d1dc8fbe5317",
+      "after_sha256": "7ec5485d0acf1bd582e3b0901631f79aec22d13fcbd2e6e2fc09d1dc8fbe5317"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalArguments",
+      "changed": false,
+      "before_sha256": "2645803262895145ee85d86230c66f816176a9ed901c8e3076828f173278896c",
+      "after_sha256": "2645803262895145ee85d86230c66f816176a9ed901c8e3076828f173278896c"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalArms",
+      "changed": false,
+      "before_sha256": "80487d277ae94a7a961c73e5bdbee4bb3e89b1565b8a339c9cbca70becf96e10",
+      "after_sha256": "80487d277ae94a7a961c73e5bdbee4bb3e89b1565b8a339c9cbca70becf96e10"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalWidthArms",
+      "changed": false,
+      "before_sha256": "a74c3c361641d32bbd1012ed107a885550c944ef4290bdebde9516dd7c926616",
+      "after_sha256": "a74c3c361641d32bbd1012ed107a885550c944ef4290bdebde9516dd7c926616"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalResultArms",
+      "changed": false,
+      "before_sha256": "c934ca6403396f7e831cd6dff59da16f459c93d11a9eae5488809557ac8b0a5e",
+      "after_sha256": "c934ca6403396f7e831cd6dff59da16f459c93d11a9eae5488809557ac8b0a5e"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "EvalBlock",
+      "changed": false,
+      "before_sha256": "89af0aeb997110d446892bf8e2451f6ed03aa319ca203cd251a7ab685231206e",
+      "after_sha256": "89af0aeb997110d446892bf8e2451f6ed03aa319ca203cd251a7ab685231206e"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Eval.lean",
+      "name": "Reached",
+      "changed": false,
+      "before_sha256": "14e97b5ba1cf6ddc104a205741d2e0ba5c02736cbf9a7fba5d60a6942c61f1d4",
+      "after_sha256": "14e97b5ba1cf6ddc104a205741d2e0ba5c02736cbf9a7fba5d60a6942c61f1d4"
+    },
+    {
+      "file": "formal/Benitoite/Interval/EvalClosed.lean",
+      "name": "sameType",
+      "changed": true,
+      "before_sha256": "34bf4057dba49cf79759b3f5237e9800d0e24f6ccedf6b4d72eb03070bcebc88",
+      "after_sha256": "b11e9918c7a17aecab593e87b44c993d7849608eac0ca3056bb564822194c1d9"
+    },
+    {
+      "file": "formal/Benitoite/Interval/EvalClosed.lean",
+      "name": "typeOf",
+      "changed": true,
+      "before_sha256": "05e836f686639195c4eb370cf048c1c670ec11db0eb4886439a5399d0620fc90",
+      "after_sha256": "72e7c0a5d2b75ad1a611f44210a4359ad2c963fa8d365137c6eb3ab1122238f8"
+    },
+    {
+      "file": "formal/Benitoite/Interval/EvalClosed.lean",
+      "name": "blockType",
+      "changed": true,
+      "before_sha256": "f7480970daa4d02f7196c43933f5c990a926891245beef008ba2dccfcdb0469c",
+      "after_sha256": "24f821dbd1ecbf610c2e2d2124a427225b8facfb5f74285979308909bb2dfd47"
+    },
+    {
+      "file": "formal/Benitoite/Interval/EvalClosed.lean",
+      "name": "expr",
+      "changed": true,
+      "before_sha256": "a06f873c87470dad38fe03e2a72c76d8392d90bab2cff708c5661230d14a4164",
+      "after_sha256": "ff838e01bfda792d9a26335d5bee67f61943b18bca1109f90b70224f41e63ee9"
+    },
+    {
+      "file": "formal/Benitoite/Interval/EvalClosed.lean",
+      "name": "evalClosed",
+      "changed": false,
+      "before_sha256": "6eb7627f7ce37eadeea3926ffcef28965afdb7ad1c9884a35de79063f16bdbb4",
+      "after_sha256": "6eb7627f7ce37eadeea3926ffcef28965afdb7ad1c9884a35de79063f16bdbb4"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Range.lean",
+      "name": "RangeState",
+      "changed": false,
+      "before_sha256": "1ae8ff00c5cb9cf251a86717fe0f48b7c4ce4fa7d0efcc7c8d23a07772a9a769",
+      "after_sha256": "1ae8ff00c5cb9cf251a86717fe0f48b7c4ce4fa7d0efcc7c8d23a07772a9a769"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Range.lean",
+      "name": "RangeState.Models",
+      "changed": false,
+      "before_sha256": "249c5aa99d0cee493e5d5d5c075618ae2205cd5bd1c3342420545f3c9f6088c8",
+      "after_sha256": "249c5aa99d0cee493e5d5d5c075618ae2205cd5bd1c3342420545f3c9f6088c8"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Sound.lean",
+      "name": "analyzeBaseExpr",
+      "changed": false,
+      "before_sha256": "d4b9806219a157726e9f842f08161e533717551339e9fee25dcd08388ef0fbbe",
+      "after_sha256": "d4b9806219a157726e9f842f08161e533717551339e9fee25dcd08388ef0fbbe"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Sound.lean",
+      "name": "analyzeBaseBlock",
+      "changed": false,
+      "before_sha256": "a0871e1080921afd9e59f5bd4f1b5c2c787cc60caa4bb0a7cb3d98b1d3734a71",
+      "after_sha256": "a0871e1080921afd9e59f5bd4f1b5c2c787cc60caa4bb0a7cb3d98b1d3734a71"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Sound.lean",
+      "name": "analyzeBase",
+      "changed": false,
+      "before_sha256": "96fdd32664f1cb8f46e16c0cc1cccf34198a245ac7bc1888cf874111153bab84",
+      "after_sha256": "96fdd32664f1cb8f46e16c0cc1cccf34198a245ac7bc1888cf874111153bab84"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Sound.lean",
+      "name": "targetOperationAt",
+      "changed": false,
+      "before_sha256": "d921c6d894e3d8f9e905217337fa9a916345087939970ae79fc3bc449c6663cf",
+      "after_sha256": "d921c6d894e3d8f9e905217337fa9a916345087939970ae79fc3bc449c6663cf"
+    },
+    {
+      "file": "formal/Benitoite/Interval/Sound.lean",
+      "name": "WarningLocated",
+      "changed": false,
+      "before_sha256": "0c2ac7eab802296a66b384ff679d3ad06e275147deadeb11dc9c004e44ed5a35",
+      "after_sha256": "0c2ac7eab802296a66b384ff679d3ad06e275147deadeb11dc9c004e44ed5a35"
+    },
+    {
+      "file": "formal/Benitoite/Interval/SyntacticReach.lean",
+      "name": "concreteRule",
+      "changed": false,
+      "before_sha256": "ea048a6492f2159cbcba749e8611914eca9a9a5bb3b551de51e77fbe163faec1",
+      "after_sha256": "ea048a6492f2159cbcba749e8611914eca9a9a5bb3b551de51e77fbe163faec1"
+    }
+  ],
+  "fixed_inputs": {
+    "crates/benitoite/testdata/interval-budget/README.md": "81ab1b102c663831f574e08f3a4b31cab5f4c2c2770fe4cb5647718aafae8e57",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "009fc2505bfe75db7542dde9f900339cad79297fb88703663c95b1577cc79b08",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "13a356ca1a8e5519c74a4fd72bd9dc70234a4593b02c2722240b34798a84eb9a",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "53e669cb0943aed3b291aa70e346e4a1ee66dc45bda80c57aa0cc119979cfd06",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "7b65e2c9f212da23ae918326ef0cbc17258d305255971a1e3d113de0589556ae",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "1f9dfcb600cdd4696720afc76dc3a02ea112de58d5bd7f5a698c94c09bc6f5fb",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "8835d3a79436418a7c883e41f5d84f0218b2b041f778f3e8560cf5821c833d2b",
+    "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f"
+  },
+  "existing_examples_preserved": true,
+  "new_examples": 6,
+  "changed_inputs": {
+    "docs/design/01-spec/01-12-core-calculus.md": "49dc5317ada6a368da4ee3ead0f14dc7c923f9eaa1c91ac337e72183068be2bc",
+    "docs/design/07-quality/07-04-formal-semantics.md": "75520564609e3292a392ad796e631cf52b7814f25b9fee89431ee1ee5fafc08d",
+    "formal/Benitoite/Interval/EvalClosed.lean": "5bce4e0fb44a70691e856c17d24f0174151e9607cc258356ba54c8e688c0219a",
+    "formal/Benitoite/Interval/Examples.lean": "0e29eb4baf53fbe43e4895ac20b52040a8151cee1c5de9f6f774de2e85a78461"
+  },
+  "added_lines_no_forbidden_proofs": true,
+  "diff_check": 0
+}

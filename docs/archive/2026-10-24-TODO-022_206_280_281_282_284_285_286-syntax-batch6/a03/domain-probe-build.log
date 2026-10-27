@@ -1,0 +1,5 @@
+COMMAND: ['/usr/bin/time', '-l', 'rustc', '--edition', '2024', '--test', '<tmp>/benitoite-a03/domain-probe.rs', '-o', '<tmp>/benitoite-a03/domain-probe']
+        0.29 real         0.20 user         0.08 sys
+time: sysctl kern.clockrate: Operation not permitted
+EXIT_STATUS=1
+ELAPSED_SECONDS=0.298

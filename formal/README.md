@@ -9,13 +9,43 @@ cd formal
 lake build
 ```
 
-Lean の版は `lean-toolchain` で固定している。ツールチェーンは elan が導入する。`lake build` は、証明を省いた箇所（`sorry`）を警告として示す。
+Lean の版は `lean-toolchain` で固定している。ツールチェーンは elan が導入する。`lake build` は、証明を省いた箇所（`sorry`）を警告として示す。`scripts/check.sh` の `formal_build` は、この既定ビルドと `sorry` の拒否だけを行う。Rust との接続を含む全比較は、次の独立した入口で行う。`lakefile.toml` は各 Lean プロセスに `-M 12288`（MiB）を指定する。ファイルを一つ検査する `lake env lean` にも同じ上限を付け、Lean のビルドを並行して走らせない。
 
-Lean の脱糖と処理系の脱糖の差分テストと、段階 E の検査（07-03「差分テスト」）は、リポジトリの根で次のように走らせる。`lake build`、実行ファイル（`desugarDiff`・`builtinCheck`・`coverageDiff`・`coverageProgramDiff`・`surfaceCheckAll`）のビルド、処理系の書き出し（`crates/benitoite/tests/desugar_export.rs`・`coverage_export.rs`）、比較を順に行い、一致・既知の差・不一致・対象外の数を示す（全体で約 9〜10 分）。結果は `target/desugar-diff/` と `target/coverage-diff/` に置く（`BENITOITE_DESUGAR_DIFF_DIR`・`BENITOITE_COVERAGE_DIFF_DIR` で変えられる）。
+Lean と処理系の全比較（07-03「差分テスト」）は、リポジトリの根で次のように走らせる。既定の `lake build`、既存六入口（`desugarDiff`・`builtinCheck`・`coverageDiff`・`coverageProgramDiff`・`surfaceCheck`・`surfaceCheckAll`）と `intervalDiff` のビルド、処理系の書き出し、各独立交換と実ソースの比較を順に行う。区間解析では同じ関係状態から実 CLI もビルドし、閉じた対象入力の評価関係と VM の値・失敗・到達を比較する。所要時間は入力とビルドの状態に依存するため、その実行の記録へ残す。
 
 ```sh
 scripts/check-formal.sh
 ```
+
+出力先は三つに分ける。`run-ID` は既定ではシェルのプロセス番号を使い、各環境変数で変更できる。
+
+| 出力 | 既定の出力先 | 環境変数 |
+|---|---|---|
+| 脱糖・組み込み表・プログラム網羅性・表層検査と機能別の交換 | `target/desugar-diff/run-ID/` | `BENITOITE_DESUGAR_DIFF_DIR` |
+| 通常網羅性と view の独立入力 | `target/coverage-diff/run-ID/` | `BENITOITE_COVERAGE_DIFF_DIR` |
+| 区間の書き出し・独立比較・Rust/Lean 解析・評価関係/VM・全体の manifest | `target/interval-diff/run-ID/` | `BENITOITE_INTERVAL_DIFF_DIR` |
+
+三出力先は、毎回リポジトリ内の新しい場所、または空のディレクトリを指定する。区間の出力先は `target/interval-diff/` の下に置く。実パスで同じ場所・親子になる場所、`..` を含むパス、古い出力の再利用は拒否する。シンボリックリンクを解決した後もこの条件を要求する。幅の独立交換の `target/p3a-gate/width-exchange/` 等、従来の独立検査の保存先も維持する。
+
+区間の四書き出しは identity・manifest・range・vm ごとに逐次実行する。`formal/tests/test_interval_exchange.py` は五 profile（base・flow・width・range・domain）の独立期待値を analyze/eval で比較し、次の10系統をそれぞれ `--rust-dir` から読み、通常解析を照合する。表のパスは区間の出力先からの相対パスである。
+
+| 実ソースの集合 | ディレクトリ |
+|---|---|
+| 既存の全件と独立プログラム | `programs/`。元の二 corpus の入力名・群・順序を照合して連結する |
+| 元 AST と Surface の識別の対応 | `identity/` |
+| 全関係定義と予算停止 | `manifest/manifest-interval/` |
+| Range の通常解析 | `range/interval/` |
+| 算術・フローの元ソースと標識付きソース | `vm/original/`・`vm/instrumented/` |
+| Range の元ソースと標識付きソース | `vm/range/original/`・`vm/range/instrumented/` |
+| シフトの元ソースと標識付きソース | `vm/shifts/original/`・`vm/shifts/instrumented/` |
+
+独立交換の版は `interval-corpus` 1・Surface 14・走査順1であり、既存の六入口の corpus/sidecar へ解析結果を混ぜない。正常値・警告候補・統合後の利用者向け警告・操作数・最大同時保持・停止位置と分類を Rust/Lean 間で照合し、全関係定義の manifest と未発見・未解析の範囲も確認する。型検査の成功件数、解析の対象外・Top・予算停止と、評価の理由付き除外を分けて読む。空の比較・全 Top だけの一致・解析の深さ除外を成功にしない。
+
+比較の出力は `comparison/` に置く。五 profile の両モードは `profile-manifest.json`、10系統の解析は `real-source-summary.json`、評価関係と実 VM は `vm/vm-summary.json`・`vm/range/range-vm-summary.json`・`vm/shifts/shift-vm-summary.json` にまとめる（いずれも `comparison/` 配下）。シフトの域内と Byte・UnsignedInteger8 の入力は独立期待値による VM の照合として分け、評価関係との一致件数に加えない。Range の三欄・同じ成功値の射影・逆転の優先を含む比較範囲と A1 の限界は [07-04「区間解析の対象構文の評価関係」](../docs/design/07-quality/07-04-formal-semantics.md#区間解析の対象構文の評価関係)に従う。
+
+全比較の最後に `scripts/check/formal_interval.py` が三出力先の全入力・全報告と件数を照合する。区間の出力先の `input-manifest.json` は比較前の入力ハッシュ、`manifest-comparison.json` は独立入力と10系統の全定義の対応、`manifest.json` は実行後の全ファイルのハッシュと比較件数を持つ。manifest 自身はハッシュの一覧から除く。既存六入口の最終照合が成功してから確定し、読み戻して追加・欠落・改変・件数の相違を拒否する。`Log.formatRecord` の公開利用も、脱糖の出力先の `batch3/g2/corpus.json` の `log-standard` に直接の call があることと、`batch3/g2-exchange-results.json` の六入口の成功・入力ハッシュで照合する。
+
+全比較は Rust と Lean の接続を閉じる区切りと最終の関係状態に割り当てる。既定ビルド・独立入力だけの検査・全件を使わない局所比較の成功は、それぞれの範囲の証拠である。全比較の結果を保存・引用するときは、一時的な `target/` のログだけに依存せず、入力一覧・ハッシュ・各入口の件数・除外理由・実行状態を永続の記録へ残す。具体的な割り当てと引用条件は [07-03「実装の規約と静的な検査」](../docs/design/07-quality/07-03-compiler-testing.md#実装の規約と静的な検査)に従う。
 
 定理が仮定する公理は、次のように確かめる。Lean の標準の公理（`propext`・`Quot.sound`・`Classical.choice`）のほかに `sorryAx` などが現れたら、証明が完了していない。
 
@@ -55,7 +85,7 @@ open Benitoite.Release
 #print axioms Benitoite.Surface.CheckTables.checkProgram_sound
 #print axioms Benitoite.Surface.CheckTables.checkProgram_empty
 LEAN
-lake env lean /tmp/axioms.lean
+lake env lean -M 12288 /tmp/axioms.lean
 ```
 
 0.0.9で加えた小モデルと構築器の補題は、上の既存30件とは別に確かめる。
@@ -74,7 +104,7 @@ import Benitoite
 #print axioms Benitoite.Surface.builders_block_no_capture
 #print axioms Benitoite.Surface.builders_ordinary_result
 LEAN
-lake env lean /tmp/batch3-axioms.lean
+lake env lean -M 12288 /tmp/batch3-axioms.lean
 ```
 
 `Integer` の有界表現を支える境界と全域の変換も確認する。主定理の一覧への追加の確認であり、変換を新しい外部の仮定にしない。
@@ -86,7 +116,7 @@ import Benitoite
 #print axioms Benitoite.Release.Integer64Literal.toValue
 #print axioms Benitoite.Release.Integer64Magnitude.negValue
 LEAN
-lake env lean /tmp/batch4-integer-axioms.lean
+lake env lean -M 12288 /tmp/batch4-integer-axioms.lean
 ```
 
 Integer の全域の判定は、`Coverage.integerBounds`・`integerAtoms`・`integerCovered`・`integerHasOther` に定義している。全域を覆う場合だけ `other` を除き、区間の分割・順序とガードの扱いを保つ。小区間と残りの値への所属の一意性、全域の被覆との同値を次の一覧で確認する。`Release/CoverageIntegerExamples.lean` は、穴・境界・相関・ガード・燃料切れを独立した期待値で検査し、既定 import に含まれる。Rust の整数の判定への接続と全比較はこの Lean の検査と区別する。
@@ -105,7 +135,7 @@ import Benitoite
 #print axioms Benitoite.Release.Coverage.integer_interval_bounds
 #print axioms Benitoite.Release.usefulWithView_extension_exhaustive
 LEAN
-lake env lean /tmp/batch4-coverage-axioms.lean
+lake env lean -M 12288 /tmp/batch4-coverage-axioms.lean
 ```
 
 
@@ -146,7 +176,7 @@ import Benitoite
 #print axioms Benitoite.Release.maxBuilderListLen_le_max64
 #print axioms Benitoite.Release.Model.assumptions
 LEAN
-lake env lean /tmp/batch4-local-axioms.lean
+lake env lean -M 12288 /tmp/batch4-local-axioms.lean
 ```
 
 専用計算項を加えた状態の全走査、共有番号の範囲、通常値の捕捉禁止も確認する。`localRefs` の相互帰納は、内部の計算へ LocalCtx.Scoped と StoreTy.BuilderPlaces を渡し、捕捉境界では空 Δ と隠した Ψ を使う。C_BuilderLet/C_BuilderOp の型付けを進行・保存・エフェクトの健全性へ接続する。専用項の逆転、局所対応を渡す置換、分類内の List の要素型への型代入を以下で確認する。
@@ -183,7 +213,7 @@ import Benitoite
 #print axioms Benitoite.Release.HasTypeVsQ.localRefs
 #print axioms Benitoite.Release.builder_value_no_free_local
 LEAN
-lake env lean /tmp/batch4-dedicated-axioms.lean
+lake env lean -M 12288 /tmp/batch4-dedicated-axioms.lean
 ```
 
 専用セルの内容は `Release/BuilderContents.lean`、一操作は `BuilderExec.lean`、ストアと継続の補助は `Lemmas/BuilderStore.lean`、通常引数からの全域性・内容の型保存・閉性は `Lemmas/BuilderTyping.lean` にある。`LocalTyping.lean` は共有番号の分類を保つ付け替え・局所置換を証明する。`BuilderExamples.lean` は実行関数の Unicode のバイト長、追記順序、Byte の境界と原子的な失敗を確認し、既定 import に含める。
@@ -288,7 +318,7 @@ import Benitoite
 #print axioms Benitoite.Release.BuilderExamples.dedicated_location_not_captured
 #print axioms Benitoite.Release.BuilderExamples.dedicated_inside_lambda
 LEAN
-lake env lean /tmp/batch4-builder-axioms.lean
+lake env lean -M 12288 /tmp/batch4-builder-axioms.lean
 ```
 
 
@@ -329,7 +359,7 @@ import Benitoite
 #print axioms Benitoite.Surface.LocalCtx.extend_zero
 #print axioms Benitoite.Surface.LocalCtx.extend_nil
 LEAN
-lake env lean /tmp/batch4-lowering-axioms.lean
+lake env lean -M 12288 /tmp/batch4-lowering-axioms.lean
 ```
 
 表層の種類の照合と、Stateなしの通常関数の検査例も確認する。
@@ -340,7 +370,7 @@ import Benitoite
 #print axioms Benitoite.Surface.BuilderKind.contents_injective
 #print axioms Benitoite.Surface.BuilderExamples.pure_program_checked
 LEAN
-lake env lean /tmp/batch4-surface-axioms.lean
+lake env lean -M 12288 /tmp/batch4-surface-axioms.lean
 ```
 
 `Release.snapshot_structure_stable` は、抽象モデルの値と内容が不変であることの確認であり、copyの二つの等式は定義から `rfl` で閉じる。`capture_local_valid`・`resume_local_valid` の第三の結論である専用セルの場所・内容の保存も、前提で後続ストアを `σ.set κ …` に固定しているため、`Store.set` の定義から得られる。後続の型と局所有効性の根拠は `preservation` と `StateTy.local_invariant` である。これらを物理表現の共有や書き換え、GCの独立した証拠とはしない。Rustとの対応には、String・Bytes・Listのcopy後に元の構築器へ追記しても取り出した値の内容が変わらないことと、継続の保存・再開時の専用セルの保持を、実ヒープと独立した期待値で確かめる必要がある。
@@ -550,7 +580,7 @@ import Benitoite
 #print axioms Benitoite.Surface.Check.block_case
 #print axioms Benitoite.Surface.Check.computes_block
 LEAN
-lake env lean /tmp/batch4-argplan-axioms.lean
+lake env lean -M 12288 /tmp/batch4-argplan-axioms.lean
 ```
 
 Listの独立小モデルとLogの適用例も、同じ既定importから確認する。Listの小証明は
@@ -584,5 +614,5 @@ import Benitoite
 #print axioms Benitoite.Surface.LogExamples.program_checked
 #print axioms Benitoite.Surface.LogExamples.console_pure_rejected
 LEAN
-lake env lean /tmp/batch4-list-log-axioms.lean
+lake env lean -M 12288 /tmp/batch4-list-log-axioms.lean
 ```

@@ -1,0 +1,18 @@
+== plan: level work against 6db695e16bc21eedda2002630f3474632f8b64a1 (5 changed file(s))
+   [fmt] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/tests/desugar_export/exchange-manifest.json (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate

@@ -1,0 +1,9 @@
+budget-reference.lean: exit=0, seconds=60.711
+Traceback (most recent call last):
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 132, in <module>
+    main()
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 117, in main
+    for name, rows in generate(args.log_dir, declarations).items():
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 63, in generate
+    assert complete < 200, (name, kind)
+AssertionError: ('whole:rangeSaved', '2')

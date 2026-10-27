@@ -25797,6 +25797,34 @@
       "coverage": null,
       "implementations": 0,
       "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/warnings/local-width-intervals.bnt",
+      "definitions": 9,
+      "scopes": {
+        "inScope": 9
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 9
+    },
+    {
+      "group": "golden",
+      "name": "testdata/warnings/skill-local-intervals.bnt",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
     }
   ],
   "routingManifest": "routing-manifest.json",
@@ -25889,7 +25917,7 @@
     "desugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
-      "matched": 1062,
+      "matched": 1075,
       "excluded": 0
     },
     "surfaceCounts": {
@@ -25897,7 +25925,7 @@
       "preparationFailure": 0,
       "outOfScope": 19,
       "mismatched": 0,
-      "matched": 51729,
+      "matched": 51742,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
@@ -27150,14 +27178,14 @@
       }
     ],
     "coverage": {
-      "matched": 22482,
+      "matched": 22483,
       "mismatched": 0,
       "outOfScope": 0,
       "fuelExhausted": 0
     },
-    "definitions": 73840,
-    "surfaceChecks": 51749,
-    "coverageEntries": 22482,
+    "definitions": 73853,
+    "surfaceChecks": 51762,
+    "coverageEntries": 22483,
     "randomDesugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
@@ -27166,7 +27194,7 @@
     },
     "desugarPrograms": {
       "golden": {
-        "matched": 371,
+        "matched": 373,
         "excluded": 419,
         "outside": 0,
         "mismatched": 0

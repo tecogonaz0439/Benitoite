@@ -1293,13 +1293,26 @@ diag_codes! {
         "The declaration is marked `@deprecated` and may be removed later. The note shows its message.";
 
     // ---- W04: 型と演算の警告 ----
-    W0401 Check "this divides by zero" "the divisor is always 0" []
-        "The divisor is a constant expression whose value is 0, so the division stops the program when it runs.";
-    W0402 Check "this calculation overflows `{ty}`" "always overflows" []
-        "Every operand is a constant expression and the result does not fit the type, so the calculation stops the program when it runs.";
+    W0401 Check "this divides by zero" "the divisor is always 0"
+        [inferred_range: "the inferred divisor interval is {interval}",
+         local_analysis: "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+         origin: "this binding or comparison contributes to the inferred interval"]
+        "Constant evaluation or local interval analysis shows that the divisor is always zero. If execution reaches this operation and all operands are evaluated successfully, the division stops the program at runtime.";
+    W0402 Check "this calculation overflows `{ty}`" "always overflows"
+        [inferred_range: "the inferred result interval before the range check is {interval}",
+         allowed_range: "the range of `{ty}` is {range}",
+         local_analysis: "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+         origin: "this binding or comparison contributes to the inferred interval"]
+        "Constant evaluation or local interval analysis shows that the result does not fit the type. If execution reaches this operation and all operands are evaluated successfully, the calculation stops the program at runtime.";
     W0403 Check "the key `{key}` appears more than once" "repeated key"
         [first: "first given here"]
         "`Map.fromList` keeps the last value for a repeated key and `Set.fromList` keeps one element, so a repeated key in a list literal is likely a mistake.";
+    W0404 Check "argument `{parameter}` to `{function}` is always out of range" "always out of range"
+        [inferred_range: "the inferred interval is {interval}",
+         allowed_range: "the allowed range is {range}",
+         local_analysis: "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully",
+         origin: "this binding or comparison contributes to the inferred interval"]
+        "Local interval analysis shows that the argument is always out of range. If execution reaches this call and all arguments are evaluated successfully, the call stops the program at runtime.";
 
     // ---- W05: エフェクトの警告 ----
     W0501 Check "`uses IO.All` allows more effects than this function performs" ""
@@ -1384,8 +1397,9 @@ diag_codes! {
          transfer: "values passed to or from an external function are limited to {limit} bytes in their host representation, in each direction"]
         "By default, external calls limit total guest linear memory to 64 MiB and each direction of value transfer to a 256 MiB budget. Generated adapters count the complete transfer buffer and separately limit logical value construction to the same budget. The user running the script can change these limits with `--wasm-memory` and `--wasm-transfer`.";
     R0906 Resource "the external function `{function}` needed {size} {resource}; the limit is {limit}" ""
-        [component: "component `{component}`"]
-        "Each external call limits core instances, memories, and tables to 16 each, and each guest table to 10,000 elements. Reduce the component's resource requirements.";
+        [component: "component `{component}`",
+         component_handles: "the external function `{function}` exceeded the limit of {limit} component handles"]
+        "Each Store limits core instances, memories, and tables to 16 each, each guest table to 10,000 elements, and simultaneously live component handles to 100,000. Stateful calls retain the live handle count across calls; dropping a handle returns capacity. Reduce the component's resource requirements.";
 
 
     R0907 Resource "`{function}` could not reserve buffer memory" ""

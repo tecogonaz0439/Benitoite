@@ -1,0 +1,90 @@
+{
+  "base": "f41a35c3116d96862b832032c2d1bcb5efc02b68",
+  "head": "f41a35c3116d96862b832032c2d1bcb5efc02b68",
+  "changed_tracked": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite/Interval/Environment.lean",
+    "formal/Benitoite/Interval/Range.lean"
+  ],
+  "unchanged_formal_files": 305,
+  "preserved_declarations_in_edited_files": {
+    "formal/Benitoite/Interval/Environment.lean": 74,
+    "formal/Benitoite/Interval/Range.lean": 18
+  },
+  "added_declarations": {
+    "formal/Benitoite/Interval/Environment.lean": [
+      "AbstractEnv.standardAt",
+      "BindingScope.fresh_idAt",
+      "BindingScope.idAt",
+      "models_standardAt"
+    ],
+    "formal/Benitoite/Interval/Range.lean": [
+      "RangeLocalFact",
+      "RangeLocalFact.Models",
+      "RangeNames.OkPayload",
+      "RangeOrigin",
+      "RangeOrigin.CheckedModels",
+      "RangeOrigin.ResultModels",
+      "RangeSourceNormal",
+      "RangeState",
+      "RangeState.Models",
+      "RangeState.Valid",
+      "RangeState.empty",
+      "RangeState.extend",
+      "RangeState.forget",
+      "rangeBindOk",
+      "rangeCallOrigin",
+      "rangeCheckedOrigin",
+      "rangeFixedInteger",
+      "rangeMatchOk",
+      "rangeOkPattern",
+      "rangeResultOrigin",
+      "rangeSaveResult",
+      "range_bind_ok_models",
+      "range_bind_ok_valid",
+      "range_call_origin_table",
+      "range_checked_models_mem",
+      "range_checked_origin_models",
+      "range_checked_shift",
+      "range_checked_wrong_id",
+      "range_empty_models",
+      "range_empty_valid",
+      "range_extend_models",
+      "range_extend_valid",
+      "range_fixed_integer_sound",
+      "range_forget_models",
+      "range_match_ok_models",
+      "range_ok_payload_models",
+      "range_result_at_models",
+      "range_result_not_other",
+      "range_result_ok_models",
+      "range_result_source_models",
+      "range_save_result_models",
+      "range_save_result_valid",
+      "range_saved_result_models"
+    ]
+  },
+  "central_definition_sha256": {
+    "NormalSoundness": "06ba7536b776c538ca79334db702fd4c756eb1871d51d234cc86df4e8c4db2bf",
+    "WarningSoundness": "3707732b57cb8e8aa1583845575e574c5c327d7b2ea1067d4fd8ace0e999ec80"
+  },
+  "axiom_dependencies_checked": 130,
+  "no_added_sorry_axiom_admit": true,
+  "fixed_file_sha256": {
+    "crates/benitoite/testdata/interval-budget/README.md": "81ab1b102c663831f574e08f3a4b31cab5f4c2c2770fe4cb5647718aafae8e57",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "009fc2505bfe75db7542dde9f900339cad79297fb88703663c95b1577cc79b08",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "13a356ca1a8e5519c74a4fd72bd9dc70234a4593b02c2722240b34798a84eb9a",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "53e669cb0943aed3b291aa70e346e4a1ee66dc45bda80c57aa0cc119979cfd06",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "7b65e2c9f212da23ae918326ef0cbc17258d305255971a1e3d113de0589556ae",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "1f9dfcb600cdd4696720afc76dc3a02ea112de58d5bd7f5a698c94c09bc6f5fb",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "8835d3a79436418a7c883e41f5d84f0218b2b041f778f3e8560cf5821c833d2b",
+    "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f"
+  },
+  "final_inputs_sha256": {
+    "docs/design/01-spec/01-12-core-calculus.md": "47edb19763e9e80c8c1120f3320bf5ce0ac84fea4761a8ebf037017ce3608a51",
+    "docs/design/07-quality/07-04-formal-semantics.md": "d89c36f5df9dfb0855c2a78800dc31ad8751f7f0dd49c29b3e042d339660adc1",
+    "formal/Benitoite/Interval/Environment.lean": "f4dc21bdc27e2dbb84edc6dc0b2aa1158f8742accbf97696e629372db9429a6b",
+    "formal/Benitoite/Interval/Range.lean": "9edf9285a2e84d6d9b0479518e3baa1d521890c4889d54c28173efa0ac57ab7a"
+  }
+}

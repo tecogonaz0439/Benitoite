@@ -1,0 +1,31 @@
+Benitoite/Interval/FixedDomainExamples.lean:43:7: error: Type mismatch
+  FixedDomainApi.httpListen.resultType (Ty.base BaseTy.unit) httpNames =
+    Ty.data "resolved:Result" [Ty.data "resolved:Listener" [], Ty.data "resolved:NetworkError" []]
+has type
+  Prop
+but is expected to have type
+  Bool
+Benitoite/Interval/FixedDomainExamples.lean:43:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Benitoite/Interval/FixedDomainExamples.lean:45:7: error: Type mismatch
+  FixedDomainApi.processExit.resultType (Ty.base BaseTy.boolean) httpNames = Ty.base BaseTy.boolean
+has type
+  Prop
+but is expected to have type
+  Bool
+Benitoite/Interval/FixedDomainExamples.lean:45:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Benitoite/Interval/FixedDomainExamples.lean:46:7: error: Type mismatch
+  (FixedDomainApi.shift ShiftOperand.byte ShiftOperation.left).argumentTypes =
+    [Ty.base BaseTy.byte, Ty.base BaseTy.integer]
+has type
+  Prop
+but is expected to have type
+  Bool
+Benitoite/Interval/FixedDomainExamples.lean:46:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Benitoite/Interval/FixedDomainExamples.lean:48:67: error: failed to synthesize
+  Decidable (Ty.base BaseTy.string ≠ Ty.base BaseTy.boolean)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Benitoite/Interval/FixedDomainExamples.lean:48:79: error: failed to synthesize
+  Decidable (Ty.base BaseTy.string ≠ Ty.base BaseTy.unit)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

@@ -1,0 +1,150 @@
+== plan: level stage against caadeaa397ba46a29f76ab83948a48aac90e6016 (changed files not classified) (partial selection: --only tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test declarations --test checked_args --test named_arguments --test golden --test cli_process
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== tests_related
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.75s
+     Running tests/checked_args.rs (target/debug/deps/checked_args-be3cae742fe14985)
+
+running 10 tests
+test log_record_parameter_is_an_ordinary_contextual_name ... ok
+test constant_origins_follow_cached_transitive_values ... ok
+test range_checked_integer_hides_all_representation_operations ... ok
+test constant_origin_labels_are_bounded_and_keep_chain_endpoints ... ok
+test regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion ... ok
+test source_location_requires_the_standard_direct_zero_argument_call ... ok
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test regex_constants_reject_only_known_direct_standard_calls ... ok
+test additional_budgets_fall_back_to_runtime_and_do_not_reset_per_body ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.90s
+
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 33 tests
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test local_interval_warnings_keep_json_locations_and_deny_exit ... ok
+test log_default_output_runs_through_the_real_cli_in_both_modes ... ok
+test file_effects_reach_main_reports_and_limit_origins ... ok
+test log_main_report_and_effect_limits_keep_schema_one ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test failure_entry_help_uses_resolved_standard_effect ... ok
+test cli_process_contracts ... ok
+test main_check_reports_warnings_without_execution ... ok
+test main_check_reports_failures_without_execution ... ok
+test main_check_reports_sources_without_execution ... ok
+test run_failure_contracts_are_checked_before_effect_limits ... ok
+test skill_document_output_failures_exit_one ... ok
+test shared_decisions_are_accepted_by_all_cli_modes ... ok
+test main_check_reports_contracts_without_execution ... ok
+test skill_documents_need_no_writable_directory ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test tool_panics_are_internal_reports ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test main_check_reports_shell_without_execution ... ok
+test test_doc_uses_version_two_and_keeps_check_nonexecuting ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_type_limits ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.80s
+
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 26 tests
+test diagnosed_binding_chain_scales_with_input_length ... ignored, long: checks near-linear recovery of a long chain of diagnosed bindings
+test config_rejects_duplicate_unknown_and_incomplete_settings ... ok
+test declarations_do_not_resolve_check_or_evaluate_bodies ... ok
+test diagnosed_recovery_keeps_pending_call_escape ... ok
+test diagnosed_recovery_skips_coverage_without_a_known_pattern_shape ... ok
+test diagnosed_recovery_does_not_infer_values_from_callback_requirements ... ok
+test file_uses_inventory_keeps_original_ast_and_effect_origins ... ok
+test file_uses_external_declarations_check_the_effective_contract ... ok
+test file_uses_failure_no_fail_is_enforced_at_calls ... ok
+test file_uses_loading_merges_functions_and_rejects_config_declarations ... ok
+test file_uses_imports_and_higher_order_values_use_merged_contracts ... ok
+test declaration_errors_are_rejected_at_the_same_stage_as_check ... ok
+test inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries ... ok
+test inventory_json_preserves_resolved_types_order_spans_and_input_hashes ... ok
+test file_uses_visibility_reports_once_and_repairs_all_public_functions ... ok
+test opaque_declarations_keep_representation_and_owner_but_hide_its_contract ... ok
+test log_standard_declarations_and_effect_identity ... ok
+test checked_lists_hide_representation_and_bind_indices_to_their_list ... ok
+test log_standard_handlers_keep_the_outer_effect_contract ... ok
+test diagnosed_binding_recovery_preserves_own_contracts ... ok
+test file_uses_contracts_preserve_existing_restrictions ... ok
+test opaque_types_keep_nominal_equality_and_nonempty_coverage ... ok
+test interpolation_formats_preserve_recovery ... ok
+test local_intervals_report_only_reached_arithmetic_failures ... ok
+test diagnosed_recovery_preserves_independent_later_checks ... ok
+test diagnosed_recovery_preserves_partial_structure ... ok
+
+test result: ok. 25 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.62s
+
+     Running tests/golden.rs (target/debug/deps/golden-7190357a94580310)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 57.65s
+
+     Running tests/named_arguments.rs (target/debug/deps/named_arguments-4cc393dac98db971)
+
+running 22 tests
+test deferred_list_elements_determine_named_callback_contracts ... ok
+test known_local_values_and_explicit_higher_order_contracts_keep_their_names ... ok
+test final_higher_order_contracts_preserve_parameter_order ... ok
+test class_implementations_require_declaration_names_in_order ... ok
+test builders_require_import_in_the_using_module ... ok
+test nested_dictionary_arguments_wait_for_numeric_defaulting ... ok
+test constructor_function_values_and_direct_holes_keep_the_original_parameter_names ... ok
+test named_partial_application_keeps_return_try_and_resume_inside_its_lambda ... ok
+test positional_callbacks_preserve_core_contracts ... ok
+test new_contract_boundaries_check_implementations_in_imported_modules ... ok
+test record_syntax_checks_constructor_kind_and_keeps_real_record_errors ... ok
+test unresolved_contracts_suppress_dependent_class_ambiguity_and_keep_child_errors ... ok
+test final_call_rules_reject_positional_arguments_in_all_three_paths ... ok
+test unresolved_special_calls_explain_where_to_put_the_contract ... ok
+test block_expressions_preserve_scope_effects_and_escape_diagnostics ... ok
+test ordinary_named_calls_report_exact_causes_at_the_public_boundary ... ok
+test unresolved_contracts_wait_for_the_same_body_and_never_invent_names ... ok
+test binary_traits_preserve_error_types_kinds_and_callback_names ... ok
+test operations_use_declared_names_and_handlers_bind_independent_local_names ... ok
+test named_holes_and_pipe_insertion_keep_exact_contracts_and_causes ... ok
+test string_builders_keep_second_class_values_and_capture_boundaries ... ok
+test list_and_bytes_builders_keep_types_and_boundaries ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.48s
+
+selected checks passed
+      109.03 real       526.89 user        11.63 sys
+          1351647232  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1386198  page reclaims
+               68422  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  86  messages sent
+                  62  messages received
+                   9  signals received
+                6134  voluntary context switches
+              458819  involuntary context switches
+            66531410  instructions retired
+            32812277  cycles elapsed
+             1917360  peak memory footprint
+exit 0

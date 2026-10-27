@@ -1,0 +1,77 @@
+⚠ [54/55] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:870:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1079:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [55/55] Building Benitoite.Interval.Range (495ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Range.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.setup.json --json
+error: Benitoite/Interval/Range.lean:699:2: failed to synthesize
+  Decidable
+    (let names :=
+      { owner := "Std.Range.CheckedInteger", result := "Std.Result.Result", error := "Std.Range.Error",
+        ok := "Std.Result.Ok", err := "Std.Result.Error", invalidBounds := "Std.Range.InvalidBounds",
+        outOfRange := "Std.Range.OutOfRange" };
+    let key := { definition := "Example.run", surfacePreorder := 7 };
+    let env :=
+      { locals := [], standards := [{ declaration := "Std.Range.checkInteger", rule := StandardRule.rangeCheck names }],
+        apiAt := fun k => if k = key then some "Std.Range.checkInteger" else none };
+    let call :=
+      {
+        source :=
+          (Expr.funName "Std.Range.checkInteger" [] []).call [some "value", some "maximum", some "minimum"] [2, 1, 0]
+            (Exprs.cons (Expr.local 0)
+              (Exprs.cons (Expr.literal (Literal.integer ⟨10, ⋯⟩))
+                (Exprs.cons (Expr.literal (Literal.integer ⟨0, ⋯⟩)) Exprs.nil))),
+        type := Ty.data names.result [Ty.opaque names.owner, Ty.data names.error []], key := key };
+    let start := RangeState.empty { positions := [3], nextId := 4 };
+    let saved := rangeSaveResult env start call;
+    let localResult :=
+      { source := Expr.local 0, type := call.type, key := { definition := "Example.run", surfacePreorder := 20 } };
+    let ok := Pattern.con (some names.result) names.ok [Pattern.var];
+    let snapshot := fun inner i =>
+      Option.map (fun o => (o.checkKey.surfacePreorder, o.minimum.toInt, o.maximum.toInt)) (rangeCheckedOrigin inner i);
+    Option.map (fun inner => snapshot inner 0) (rangeMatchOk env start call ok) = some (some (7, 0, 10)) ∧
+      Option.map
+            (fun inner =>
+              (snapshot inner 0, snapshot (inner.extend none) 1, (rangeCheckedOrigin (inner.extend none) 0).isSome,
+                inner.scope.idAt 0))
+            (rangeMatchOk env saved localResult ok) =
+          some (some (7, 0, 10), some (7, 0, 10), false, some 5) ∧
+        (rangeResultOrigin env (rangeSaveResult env saved localResult) localResult).isNone = true ∧
+          (rangeMatchOk env saved localResult (Pattern.con (some names.result) names.err [Pattern.var])).isNone = true ∧
+            (rangeMatchOk env saved localResult (Pattern.con (some names.result) names.ok [Pattern.wild])).isNone =
+              true)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: Benitoite/Interval/Range.lean:712:95: unexpected token '['; expected '}'
+error: Benitoite/Interval/Range.lean:715:67: unexpected token; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+error: Benitoite/Interval/Range.lean:719:26: unexpected token ','; expected ':'
+error: Benitoite/Interval/Range.lean:719:64: unexpected token; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+Some required targets logged failures:
+- Benitoite.Interval.Range
+error: build failed
+
+exit=1, seconds=0.558

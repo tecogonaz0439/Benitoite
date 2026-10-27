@@ -1,0 +1,261 @@
+{
+  "kind": "real-source-analysis",
+  "counts": {
+    "allBodies": 30,
+    "analyzedBodies": 24,
+    "bodyBudgetExceeded": 9,
+    "bottomBodies": 10,
+    "checkerFailed": 0,
+    "checkerSucceeded": 5,
+    "constantDefinitions": 3,
+    "depthBodies": 0,
+    "excludedBodies": 0,
+    "excludedDefinitions": 0,
+    "functionDefinitions": 27,
+    "informativeBodies": 12,
+    "inputDefinitions": 30,
+    "methodDefinitions": 0,
+    "notAnalyzedBodies": 6,
+    "outsideDefinitions": 0,
+    "phaseDepth": 0,
+    "sourceModules": 7,
+    "topBodies": 12,
+    "unidentifiedBodies": 0,
+    "unsupportedBodies": 3,
+    "wholeBudgetSkipped": 7
+  },
+  "inputs": 5,
+  "checkerFailed": 0,
+  "comparedBodies": "24",
+  "informativeBodies": "12",
+  "depthExcluded": "0",
+  "phaseDepth": "0",
+  "excluded": [],
+  "incompleteDiscovery": [
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many0",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many1",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many2",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many3",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many4",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many5",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many6",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many7",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many8",
+      "discoveryStarted": true,
+      "discoveryComplete": false,
+      "pending": []
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many9",
+      "discoveryStarted": false,
+      "discoveryComplete": false,
+      "pending": []
+    }
+  ],
+  "independentInputs": 2463,
+  "userWarnings": 8,
+  "parentCandidates": 8,
+  "independentCandidates": 0,
+  "phaseStops": [
+    {
+      "phase": "whole",
+      "reason": {
+        "kind": "exceeded",
+        "resource": "operations",
+        "scope": "whole"
+      },
+      "count": 1
+    },
+    {
+      "phase": "discovery",
+      "reason": {
+        "kind": "exceeded",
+        "resource": "operations",
+        "scope": "body"
+      },
+      "count": 9
+    },
+    {
+      "phase": "queue",
+      "reason": {
+        "kind": "exceeded",
+        "resource": "operations",
+        "scope": "body"
+      },
+      "count": 9
+    },
+    {
+      "phase": "embedded",
+      "reason": {
+        "kind": "exceeded",
+        "resource": "operations",
+        "scope": "whole"
+      },
+      "count": 1
+    }
+  ],
+  "notStartedDefinitions": [
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many10"
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many11"
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many12"
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many13"
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many14"
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "definition": ".many15"
+    }
+  ],
+  "unproducedBodies": [
+    {
+      "input": "interval-budget:wholeBudget",
+      "stop": {
+        "scope": "whole",
+        "resource": "operations",
+        "kind": "exceeded"
+      },
+      "reason": "notAnalyzed",
+      "mismatches": [],
+      "definition": ".many10",
+      "comparisonEligible": false
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "stop": {
+        "scope": "whole",
+        "resource": "operations",
+        "kind": "exceeded"
+      },
+      "reason": "notAnalyzed",
+      "mismatches": [],
+      "definition": ".many11",
+      "comparisonEligible": false
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "stop": {
+        "scope": "whole",
+        "resource": "operations",
+        "kind": "exceeded"
+      },
+      "reason": "notAnalyzed",
+      "mismatches": [],
+      "definition": ".many12",
+      "comparisonEligible": false
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "stop": {
+        "scope": "whole",
+        "resource": "operations",
+        "kind": "exceeded"
+      },
+      "reason": "notAnalyzed",
+      "mismatches": [],
+      "definition": ".many13",
+      "comparisonEligible": false
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "stop": {
+        "scope": "whole",
+        "resource": "operations",
+        "kind": "exceeded"
+      },
+      "reason": "notAnalyzed",
+      "mismatches": [],
+      "definition": ".many14",
+      "comparisonEligible": false
+    },
+    {
+      "input": "interval-budget:wholeBudget",
+      "stop": {
+        "scope": "whole",
+        "resource": "operations",
+        "kind": "exceeded"
+      },
+      "reason": "notAnalyzed",
+      "mismatches": [],
+      "definition": ".many15",
+      "comparisonEligible": false
+    }
+  ],
+  "nonintegerMatchInputs": 0,
+  "nonBottomInformativeBodies": 2,
+  "negativeCases": [
+    "integer",
+    "after",
+    "context",
+    "next",
+    "warnings",
+    "phasePosition",
+    "userWarnings"
+  ],
+  "rustLeanMatched": true,
+  "vmCompared": false
+}

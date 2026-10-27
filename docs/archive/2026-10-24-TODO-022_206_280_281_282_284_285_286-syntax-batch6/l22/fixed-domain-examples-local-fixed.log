@@ -1,0 +1,22 @@
+Benitoite/Interval/FixedDomainExamples.lean:76:56: error: unexpected identifier; expected '}'
+Benitoite/Interval/FixedDomainExamples.lean:94:73: error: Application type mismatch: The argument
+  []
+has type
+  List ?m.18
+but is expected to have type
+  HoleArgs
+in the application
+  (Expr.funName binding.declaration [] []).partialCall [] []
+Benitoite/Interval/FixedDomainExamples.lean:94:76: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Ty.nil`
+
+Note: Inferred this name from the expected resulting type of `.nil`:
+  Ty
+Benitoite/Interval/FixedDomainExamples.lean:94:82: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Eff.base`
+
+Note: Inferred this name from the expected resulting type of `.base`:
+  Eff
+Benitoite/Interval/FixedDomainExamples.lean:94:82: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.EffR.base`
+
+Note: Inferred this name from the expected resulting type of `.base`:
+  Eff
+Benitoite/Interval/FixedDomainExamples.lean:89:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors

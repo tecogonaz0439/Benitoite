@@ -1,0 +1,41 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.69s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 5 tests
+test typeck::interval::tests::range_calls::range_projection_reaches_public_overflow_diagnostics_only_for_the_same_value ... ok
+test typeck::interval::tests::range_calls::range_projection_does_not_warn_on_error_reversed_or_out_of_range ... ok
+
+thread 'typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins' (5234423) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:540:13:
+assertion failed: !unsupported
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins ... FAILED
+test typeck::interval::tests::range_calls::range_projection_matches_lean_bounds_and_following_arithmetic ... ok
+
+thread 'typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge' (5234421) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:562:13:
+assertion `left == right` failed: import Benitoite.Unofficial.Range as R
+function sample(x: Integer, flag: Boolean, other: R.CheckedInteger) -> Integer
+ bind _ <- [block
+ 
+ match R.checkInteger(minimum: 0, maximum: 10, value: x) with
+ case Result.Ok(c) -> bind _ <- if flag then 0 else 1 end if
+ R.value(c)
+ case Result.Error(_) -> return -99
+ end match
+ end block]
+ return 0
+end function
+
+  left: Interval { bounds: Some((0, 10)) }
+ right: Interval { bounds: Some((-9223372036854775808, 9223372036854775807)) }
+test typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge
+    typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.99s
+
+error: test failed, to rerun pass `-p benitoite --lib`

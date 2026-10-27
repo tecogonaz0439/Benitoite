@@ -1,0 +1,17 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "cli_process",
+    "handled_process_exit_outside_default_range_has_no_domain_warning",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 1.236
+}

@@ -1,0 +1,274 @@
+{
+  "property-seven-24-20-1000-all-ok": {
+    "before": {
+      "seconds": 0.04141179199999101,
+      "status": 0,
+      "stdout": "reduced=[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]\nmessage=bad\nshrinks=20\nshrinkWork=689\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.03877566599999227,
+      "status": 0,
+      "stdout": "reduced=[7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]\nmessage=bad\nshrinks=20\nshrinkWork=689\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-seven-24-20-1000-always-error": {
+    "before": {
+      "seconds": 0.044357708000006824,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.0400214999999946,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-distinct-24-20-1000-all-ok": {
+    "before": {
+      "seconds": 0.041561042000012094,
+      "status": 0,
+      "stdout": "reduced=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]\nmessage=bad\nshrinks=20\nshrinkWork=251\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.037353416999991396,
+      "status": 0,
+      "stdout": "reduced=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]\nmessage=bad\nshrinks=20\nshrinkWork=251\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-distinct-24-20-1000-always-error": {
+    "before": {
+      "seconds": 0.0395354999999995,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.03669295800000327,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-zero-24-20-1000-all-ok": {
+    "before": {
+      "seconds": 0.04100608299998498,
+      "status": 0,
+      "stdout": "reduced=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\nmessage=bad\nshrinks=5\nshrinkWork=504\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.03792979100001048,
+      "status": 0,
+      "stdout": "reduced=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\nmessage=bad\nshrinks=5\nshrinkWork=504\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-zero-24-20-1000-always-error": {
+    "before": {
+      "seconds": 0.040753790999985995,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.0357374170000071,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-max-24-20-1000-all-ok": {
+    "before": {
+      "seconds": 0.041300917000000936,
+      "status": 0,
+      "stdout": "reduced=[9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807]\nmessage=bad\nshrinks=20\nshrinkWork=681\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.037503416999982164,
+      "status": 0,
+      "stdout": "reduced=[9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807, 9223372036854775807]\nmessage=bad\nshrinks=20\nshrinkWork=681\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "property-max-24-20-1000-always-error": {
+    "before": {
+      "seconds": 0.03934383300000377,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.03639974999998685,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-string-candidates": {
+    "before": {
+      "seconds": 0.03939337500000306,
+      "status": 0,
+      "stdout": "[\"\\\"\\\"\", \"\\\"🙂Z\\\"\", \"\\\"あZ\\\"\", \"\\\"あé\\\"\", \"\\\"é🙂Z\\\"\", \"\\\"あ🙂Z\\\"\", \"\\\"あéZ\\\"\", \"\\\"あé🙂\\\"\"]\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.03574166699999637,
+      "status": 0,
+      "stdout": "[\"\\\"\\\"\", \"\\\"🙂Z\\\"\", \"\\\"あZ\\\"\", \"\\\"あé\\\"\", \"\\\"é🙂Z\\\"\", \"\\\"あ🙂Z\\\"\", \"\\\"あéZ\\\"\", \"\\\"あé🙂\\\"\"]\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-string-all-ok": {
+    "before": {
+      "seconds": 0.04042037499999651,
+      "status": 0,
+      "stdout": "reduced=\"あé🙂Z\"\nmessage=bad\nshrinks=20\nshrinkWork=266\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.036315374999986716,
+      "status": 0,
+      "stdout": "reduced=\"あé🙂Z\"\nmessage=bad\nshrinks=20\nshrinkWork=266\nlimitReached=true\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-string-always-error": {
+    "before": {
+      "seconds": 0.03971870899999885,
+      "status": 0,
+      "stdout": "reduced=\"\"\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.0364113340000074,
+      "status": 0,
+      "stdout": "reduced=\"\"\nmessage=bad\nshrinks=1\nshrinkWork=4\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-map-candidates": {
+    "before": {
+      "seconds": 0.040908957999988615,
+      "status": 0,
+      "stdout": "[\"[Pair(\\\"z\\\", 7), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 7)]\", \"[Pair(\\\"a\\\", 0), Pair(\\\"z\\\", 7), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 1), Pair(\\\"z\\\", 7), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 0), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 3), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 1), Pair(\\\"é\\\", 1)]\"]\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.036838041999999405,
+      "status": 0,
+      "stdout": "[\"[Pair(\\\"z\\\", 7), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 7)]\", \"[Pair(\\\"a\\\", 0), Pair(\\\"z\\\", 7), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 1), Pair(\\\"z\\\", 7), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 0), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 3), Pair(\\\"é\\\", 1)]\", \"[Pair(\\\"a\\\", 3), Pair(\\\"z\\\", 1), Pair(\\\"é\\\", 1)]\"]\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-map-all-ok": {
+    "before": {
+      "seconds": 0.04149062499999445,
+      "status": 0,
+      "stdout": "reduced=[Pair(\"a\", 3), Pair(\"z\", 7), Pair(\"é\", 1)]\nmessage=bad\nshrinks=9\nshrinkWork=71\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.03754716599999597,
+      "status": 0,
+      "stdout": "reduced=[Pair(\"a\", 3), Pair(\"z\", 7), Pair(\"é\", 1)]\nmessage=bad\nshrinks=9\nshrinkWork=71\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-map-always-error": {
+    "before": {
+      "seconds": 0.0403081249999957,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=3\nshrinkWork=11\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.0366062500000055,
+      "status": 0,
+      "stdout": "reduced=[]\nmessage=bad\nshrinks=3\nshrinkWork=11\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-record-candidates": {
+    "before": {
+      "seconds": 0.04042362500001673,
+      "status": 0,
+      "stdout": "[\"0,3\", \"3,3\", \"1,3\", \"7,0\", \"7,1\"]\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.0373770420000028,
+      "status": 0,
+      "stdout": "[\"0,3\", \"3,3\", \"1,3\", \"7,0\", \"7,1\"]\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-record-all-ok": {
+    "before": {
+      "seconds": 0.04074412500000335,
+      "status": 0,
+      "stdout": "reduced=7,3\nmessage=bad\nshrinks=5\nshrinkWork=15\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.037411958999996386,
+      "status": 0,
+      "stdout": "reduced=7,3\nmessage=bad\nshrinks=5\nshrinkWork=15\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "order-record-always-error": {
+    "before": {
+      "seconds": 0.04079749999999649,
+      "status": 0,
+      "stdout": "reduced=0,0\nmessage=bad\nshrinks=2\nshrinkWork=13\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    },
+    "after": {
+      "seconds": 0.037793415999999525,
+      "status": 0,
+      "stdout": "reduced=0,0\nmessage=bad\nshrinks=2\nshrinkWork=13\nlimitReached=false\n",
+      "stderr": "",
+      "validation": "verified"
+    }
+  }
+}

@@ -80,6 +80,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
             ctx.check_type_limits(c.value.span());
             let valid = !ctx.diagnostics.iter().any(prevents_evaluation)
                 && ctx.decls.diagnostics.len() == before;
+            ctx.collect_interval(c.id, valid);
             ctx.finish();
             if valid {
                 pending.insert(id, c.clone());
@@ -1223,9 +1224,9 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
             | Expr::Resume(_)
             | Expr::Error(_) => None,
         };
-        if let Some(e) = divisor
-            && bad_shape(ctx.decls, e).is_none()
-            && eval(ctx.decls, e, &mut EvalBudget::default())
+        if let Some(divisor) = divisor
+            && bad_shape(ctx.decls, divisor).is_none()
+            && eval(ctx.decls, divisor, &mut EvalBudget::default())
                 .ok()
                 .is_some_and(|v| match v {
                     V::Integer(n) => n == 0,
@@ -1249,7 +1250,16 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
                     | V::Set(_) => false,
                 })
         {
-            diagnostics.push(DiagBuilder::new(DiagCode::W0401).primary(e.span()).build());
+            ctx.decls.interval.warnings.constant(
+                e.id(),
+                super::interval::arithmetic::Cause::ZeroDivisor,
+                divisor.span(),
+            );
+            diagnostics.push(
+                DiagBuilder::new(DiagCode::W0401)
+                    .primary(divisor.span())
+                    .build(),
+            );
         }
         match arithmetic_candidate(ctx.decls, e)
             .then(|| eval(ctx.decls, e, &mut EvalBudget::default()))
@@ -1258,6 +1268,11 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
                 if span == e.span() && condition != super::text::DIVISION_BY_ZERO =>
             {
                 if let Some(ty) = ctx.expr_types.get(e.id()) {
+                    ctx.decls.interval.warnings.constant(
+                        e.id(),
+                        super::interval::arithmetic::Cause::Overflow,
+                        span,
+                    );
                     diagnostics.push(
                         DiagBuilder::new(DiagCode::W0402)
                             .arg("ty", ctx.show_type(ty))
@@ -1303,7 +1318,8 @@ fn visit_if<'a>(i: &'a IfExpr, f: &mut impl FnMut(&'a Expr)) {
         }
     }
 }
-fn visit_expr<'a>(e: &'a Expr, f: &mut impl FnMut(&'a Expr)) {
+/// 定数を含む元の式と子を、書き換えずに先行順で読む。
+pub(super) fn visit_expr<'a>(e: &'a Expr, f: &mut impl FnMut(&'a Expr)) {
     f(e);
     match e {
         Expr::Paren(p) => visit_expr(&p.inner, f),

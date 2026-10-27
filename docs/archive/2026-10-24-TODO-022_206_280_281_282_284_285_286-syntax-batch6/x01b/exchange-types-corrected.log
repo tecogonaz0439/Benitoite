@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 976, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 969, in main
+    exercise(args.output.resolve(), executable, args.source_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 638, in exercise
+    exercise_source(runner, source_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 479, in exercise_source
+    assert len({(e['node'], tuple(e['span'])) for e in mapped}) < len(mapped), label
+AssertionError: interpolation

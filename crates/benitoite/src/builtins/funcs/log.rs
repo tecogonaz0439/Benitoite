@@ -14,7 +14,7 @@ builtin! {
         if level_rank(field(&ctx, record, 0)?)? == 0 {
             return Ok(IoReply::Done(Value::Unit));
         }
-        let mut line = format_record(&ctx, record)?;
+        let mut line = format_record(&ctx, record, "Log.emit")?;
         line.push_char('\n')?;
         match ctx.services().write_output(Stream::Stderr, line.as_str())? {
             None => Ok(IoReply::Done(Value::Unit)),
@@ -43,7 +43,7 @@ builtin! {
     /// 既定処理と明示テキストハンドラが共有する純粋な整形。
     name = "Log.formatRecord",
     pure fn format(ctx, record: Value<'e>) -> Value<'e> {
-        ctx.alloc_str_buf(format_record(&ctx, record)?)
+        ctx.alloc_str_buf(format_record(&ctx, record, "Log.formatRecord")?)
     }
 }
 
@@ -65,7 +65,11 @@ fn level_rank(value: Value<'_>) -> Result<u32, Stop> {
         .ok_or_else(invalid)
 }
 
-fn format_record<'e>(ctx: &ValueCtx<'e>, record: Value<'e>) -> Result<StrBuf, Stop> {
+fn format_record<'e>(
+    ctx: &ValueCtx<'e>,
+    record: Value<'e>,
+    function: &'static str,
+) -> Result<StrBuf, Stop> {
     let level = match level_rank(field(ctx, record, 0)?)? {
         0 => text::DEBUG,
         1 => text::INFO,
@@ -73,7 +77,7 @@ fn format_record<'e>(ctx: &ValueCtx<'e>, record: Value<'e>) -> Result<StrBuf, St
         3 => text::ERROR,
         _ => return Err(invalid()),
     };
-    let mut buf = StrBuf::new("Log.emit");
+    let mut buf = StrBuf::new(function);
     buf.push_str(text::LEVEL)?;
     buf.push_str(level)?;
     buf.push_str(text::SOURCE)?;
@@ -82,7 +86,7 @@ fn format_record<'e>(ctx: &ValueCtx<'e>, record: Value<'e>) -> Result<StrBuf, St
     let line = field(ctx, location, 1)?.as_int().ok_or_else(invalid)?;
     let column = field(ctx, location, 2)?.as_int().ok_or_else(invalid)?;
     // 位置全体を先に有界化し、引用の際も同じ文字列上限を守る（設計書 02-09）。
-    let mut source = StrBuf::new("Log.emit");
+    let mut source = StrBuf::new(function);
     source.push_str(file)?;
     source.push_str(&format!(":{line}:{column}"))?;
     super::json::quoted(&mut buf, source.as_str())?;

@@ -24,9 +24,20 @@ def functions(n, family, bad):
 def cases(quick=False, repeats=1, fixtures=None):
     cases = []
     for family in ('main', 'args', 'modules'):
-        for n in ((0, 10, 100) if quick else (0, 10, 100, 1000, 1250, 2500, 5000, 10000, 20000)):
+        original = (0, 10, 100) if quick else (0, 10, 100, 1000, 1250, 2500, 5000, 10000, 20000)
+        interval_points = (1, 8, 32) if quick else (1, 8, 32, 64, 256)
+        points = sorted(set(original) | (set(interval_points) if family == 'main' else set()))
+        for n in points:
             for bad in (False, True):
-                cases.append(Case(f'functions-{family}-{n}-{int(bad)}', '16.2', family, n, functions(n, family, bad), codes=('E0401',) if bad else (), params=dict(bad=bad)))
+                # 正常入力だけを足し、既存の拒否入力とその格子は保つ。
+                if bad and n not in original:
+                    continue
+                files = functions(n, family, bad)
+                cases.append(Case(
+                    f'functions-{family}-{n}-{int(bad)}', '16.2', family, n, files,
+                    codes=('E0401',) if bad else (),
+                    params=dict(bad=bad, input_unit='function declarations',
+                                source_bytes=sum(len(s.encode()) for s in files['legacy'].values()))))
     if fixtures:
         for name in ('fib', 'loop', 'string'):
             source = (fixtures / f'tools/bench/programs/{name}.bnt').read_text()
@@ -35,4 +46,6 @@ def cases(quick=False, repeats=1, fixtures=None):
 
 
 def short_point(case):
-    return (case.family in ('main', 'args', 'modules') and case.n in (0, 1000)) or case.family == 'existing'
+    return ((case.family == 'main' and not case.codes and case.n in (64, 256)) or
+            (case.family in ('main', 'args', 'modules') and case.n in (0, 1000)) or
+            case.family == 'existing')

@@ -1,0 +1,154 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.99s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::interval::tests::budget_reference::range_scans_charge_direct_calls_and_borrow_only_three_arguments' (5003663) panicked at crates/benitoite/src/typeck/interval/identity/tests.rs:73:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        188,
+                    ),
+                    end: BytePos(
+                        189,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `p0`, `p1`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                188,
+                            ),
+                            end: BytePos(
+                                188,
+                            ),
+                        },
+                        replacement: "p0: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                191,
+                            ),
+                            end: BytePos(
+                                191,
+                            ),
+                        },
+                        replacement: "p1: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        308,
+                    ),
+                    end: BytePos(
+                        309,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `p0`, `p1`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                308,
+                            ),
+                            end: BytePos(
+                                308,
+                            ),
+                        },
+                        replacement: "p0: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                311,
+                            ),
+                            end: BytePos(
+                                311,
+                            ),
+                        },
+                        replacement: "p1: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::budget_reference::range_scans_charge_direct_calls_and_borrow_only_three_arguments ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::budget_reference::range_scans_charge_direct_calls_and_borrow_only_three_arguments
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1326 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p benitoite --lib`

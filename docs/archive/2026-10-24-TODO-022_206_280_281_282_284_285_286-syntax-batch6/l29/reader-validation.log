@@ -1,0 +1,10 @@
+Benitoite/Interval/Exchange.lean:528:85: error: Ambiguous term
+  Expr
+Possible interpretations:
+  Surface.Expr : Type
+  
+  Lean.Expr : Type
+Benitoite/Interval/Exchange.lean:541:72: error: Cannot lift nested action `← child.getObjVal? "key"` over a binder.
+This error usually happens when you are trying to lift a method nested in a `fun`, `let`, or `match`-alternative, and it can often be fixed by adding a missing `do`.
+Benitoite/Interval/Exchange.lean:548:12: warning: declaration uses `sorry`
+Benitoite/Interval/Exchange.lean:595:12: warning: declaration uses `sorry`

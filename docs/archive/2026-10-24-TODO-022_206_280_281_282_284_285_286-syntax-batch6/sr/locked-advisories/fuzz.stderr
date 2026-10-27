@@ -1,0 +1,12 @@
+{"fields":{"level":"INFO","message":"using config from <repo>/target/check-advisories/20261024T212426Z-ejr_4dhv/deny.effective.toml","timestamp":"2026-10-24T21:24:27.194229Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetching crates for fuzz/Cargo.toml","timestamp":"2026-10-24T21:24:27.194349Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"Fetching advisory database with git cli from 'https://github.com/RustSec/advisory-db'","timestamp":"2026-10-24T21:24:27.19445Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"reset https://github.com/RustSec/advisory-db","timestamp":"2026-10-24T21:24:27.20825Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"fetched https://github.com/RustSec/advisory-db","timestamp":"2026-10-24T21:24:27.911065Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"advisory database https://github.com/RustSec/advisory-db fetched in 716.63425ms","timestamp":"2026-10-24T21:24:27.911087Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"loading advisory database from <tmp>/benitoite-sr-c8u5wqk9/db/advisory-db-3157b0e258782691","timestamp":"2026-10-24T21:24:27.911104Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"finished loading advisory database from <tmp>/benitoite-sr-c8u5wqk9/db/advisory-db-3157b0e258782691","timestamp":"2026-10-24T21:24:27.944901Z"},"type":"log"}
+{"fields":{"level":"ERROR","message":"failed to fetch crates:     Updating crates.io index\nerror: cannot update the lock file <repo>/fuzz/Cargo.lock because --locked was passed to prevent this\nhelp: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.\n","timestamp":"2026-10-24T21:24:29.205805Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathering crates for fuzz/Cargo.toml","timestamp":"2026-10-24T21:24:29.20583Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathering crate metadata","timestamp":"2026-10-24T21:24:29.205843Z"},"type":"log"}
+{"fields":{"level":"ERROR","message":"`cargo metadata` exited with an error:     Updating crates.io index\nerror: cannot update the lock file <repo>/fuzz/Cargo.lock because --locked was passed to prevent this\nhelp: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.\n","timestamp":"2026-10-24T21:24:29.594842Z"},"type":"log"}

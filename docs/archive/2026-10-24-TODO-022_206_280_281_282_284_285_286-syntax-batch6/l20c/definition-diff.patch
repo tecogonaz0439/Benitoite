@@ -1,0 +1,476 @@
+diff --git a/formal/Benitoite/Interval/EvalClosed.lean b/formal/Benitoite/Interval/EvalClosed.lean
+index 64853a3e..37276b52 100644
+--- a/formal/Benitoite/Interval/EvalClosed.lean
++++ b/formal/Benitoite/Interval/EvalClosed.lean
+@@ -41,17 +41,33 @@ end ClosedRun
+ 
+ namespace ClosedEval
+ 
+-/-- この評価器で具体値を作る基本型の一致だけを計算する。
++mutual
++/-- 基本型と Range の不透明型・Result のデータ型の一致を計算する。
+ 関数型の効果の外延的等号を決定する手続きは要求しない。 -/
+ def sameType : (a b : Ty) → Option (PLift (a = b))
+   | .base a, .base b => if same : a = b then some ⟨by subst b; rfl⟩ else none
++  | .opaque a, .opaque b => if same : a = b then some ⟨by subst b; rfl⟩ else none
++  | .data a xs, .data b ys => do
++      if same : a = b then
++        let ⟨types⟩ ← sameTypes xs ys
++        some ⟨by subst b; subst ys; rfl⟩
++      else none
++  | _, _ => none
++/-- 型引数も順序と個数を保って照合する。 -/
++def sameTypes : (a b : List Ty) → Option (PLift (a = b))
++  | [], [] => some ⟨rfl⟩
++  | a :: xs, b :: ys => do
++      let ⟨head⟩ ← sameType a b
++      let ⟨tail⟩ ← sameTypes xs ys
++      some ⟨by subst b; subst ys; rfl⟩
+   | _, _ => none
++end
+ 
+ -- 捨てる式と return のオペランドには期待型が書かれていない。
+ -- 構文から得た候補を使うが、実際の導出は expr が別に構築する。
+ mutual
+ /-- 閉じた対象の型候補。型検査器の代用にはしない。 -/
+-def typeOf : Nat → List (Option Ty) → Expr → Option Ty
++def typeOf (standards : List StandardBinding) : Nat → List (Option Ty) → Expr → Option Ty
+   | 0, _, _ => none
+   | n+1, locals, source =>
+     match source with
+@@ -63,28 +79,31 @@ def typeOf : Nat → List (Option Ty) → Expr → Option Ty
+     | .literal (.unsignedInteger16 _) => some (.base .unsignedInteger16)
+     | .literal (.unsignedInteger32 _) => some (.base .unsignedInteger32)
+     | .literal (.unsignedInteger64 _) => some (.base .unsignedInteger64)
++    | .call (.funName declaration [] []) _ _ _ =>
++        (standards.find? (fun binding => binding.declaration == declaration)).map
++          (fun binding => binding.rule.resultType)
+     | .neg type _ => match IntKind.ofType type with
+         | some kind => if kind.min < 0 then some type else none
+         | none => none
+     | .literal (.boolean _) | .not _ | .and _ _ | .or _ _ => some (.base .boolean)
+     | .unit | .ifOnly _ _ => some (.base .unit)
+     | .constE t _ | .returnE t _ | .matchE t _ _ => some t
+-    | .paren e => typeOf n locals e
+-    | .block b | .ite _ b _ | .elseIf _ b _ => blockType n locals b
++    | .paren e => typeOf standards n locals e
++    | .block b | .ite _ b _ | .elseIf _ b _ => blockType standards n locals b
+     | .binary op t _ _ =>
+         if (Comparison.ofBinOp op).isSome then some (.base .boolean) else some t
+     | _ => none
+ /-- Block の型候補は束縛の型と専用位置を区別する。 -/
+-def blockType : Nat → List (Option Ty) → Block → Option Ty
++def blockType (standards : List StandardBinding) : Nat → List (Option Ty) → Block → Option Ty
+   | 0, _, _ => none
+   | n+1, locals, body =>
+     match body with
+     | .empty | .lastBind .. | .lastDiscard .. | .lastPat .. => some (.base .unit)
+-    | .last e => typeOf n locals e
+-    | .bind _ t _ rest => blockType n (some t :: locals) rest
+-    | .builderBind _ rest => blockType n (none :: locals) rest
+-    | .bindPat _ pat t _ rest => blockType n (List.replicate pat.binders (some t) ++ locals) rest
+-    | .discard _ rest | .seq _ rest => blockType n locals rest
++    | .last e => typeOf standards n locals e
++    | .bind _ t _ rest => blockType standards n (some t :: locals) rest
++    | .builderBind _ rest => blockType standards n (none :: locals) rest
++    | .bindPat _ pat t _ rest => blockType standards n (List.replicate pat.binders (some t) ++ locals) rest
++    | .discard _ rest | .seq _ rest => blockType standards n locals rest
+ end
+ 
+ /-- 実値から型候補の環境を作る。専用 builder 位置は値なしのまま残す。 -/
+@@ -348,6 +367,105 @@ def widthNeg (kind : IntKind) (not64 : kind ≠ .integer64) (signed : kind.min <
+     (fun outcome trace proof abrupt =>
+       .widthNegAbrupt env key kind source outcome trace not64 signed proof abrupt)
+ 
++/-- 標準規則を計算した結果にも評価導出を付ける。 -/
++structure StandardRun (rule : StandardRule) (key : OperationKey) (arguments : List ConcreteValue) where
++  result : OperationResult
++  sound : EvalStandard rule key arguments result
++
++/-- 決定できる三欄だけを実行し、other に任意の具体値を選ばない。 -/
++def standard : (rule : StandardRule) → (key : OperationKey) → (arguments : List ConcreteValue) →
++    Option (StandardRun rule key arguments)
++  | .rangeCheck names, key, [.integer lo, .integer hi, .integer value] =>
++      some ⟨rangeCheck names key lo hi value, .rangeCheck names key lo hi value⟩
++  | .rangeValue owner, key, [.checkedRange actual origin value] =>
++      if same : actual = owner then
++        if bounded : min64 ≤ value.value ∧ value.value ≤ max64 then
++          some ⟨.normal (.integer ⟨value.value, bounded⟩), by
++            subst actual; exact .rangeValue owner key origin value bounded⟩
++        else some ⟨.rejected .unknown, by
++          subst actual; exact .rangeValueUnrepresentable owner key origin value bounded⟩
++      else none
++  | _, _, _ => none
++
++/-- 具体的な Result の同じ中身と、その見方の導出。 -/
++structure ResultRun (names : RangeNames) (value : ConcreteValue) where
++  tag : ConName
++  payload : ConcreteValue
++  sound : names.ResultView value tag payload
++
++/-- other の見方は非決定的なので、閉じた評価器では選ばない。 -/
++def resultView (names : RangeNames) : (value : ConcreteValue) → Option (ResultRun names value)
++  | .con result [.opaque owner, .data error []] tag [payload] => do
++      if hr : result = names.result then
++        if ho : owner = names.owner then
++          if he : error = names.error then
++            if hok : tag = names.ok then
++              let ⟨typed⟩ ← sameType payload.type (.opaque names.owner)
++              some ⟨names.ok, payload, by
++                subst result; subst owner; subst error; subst tag
++                exact .ok payload typed⟩
++            else if herr : tag = names.err then
++              let ⟨typed⟩ ← sameType payload.type (.data names.error [])
++              some ⟨names.err, payload, by
++                subst result; subst owner; subst error; subst tag
++                exact .error payload typed⟩
++            else none
++          else none
++        else none
++      else none
++  | _ => none
++
++/-- 選択肢が照合しなかったことと、未対応で評価できないことを区別する。 -/
++inductive ResultSelectionRun (names : RangeNames) (value : ConcreteValue) (tag : ConName)
++    (payload : ConcreteValue) (arity : Nat) (alts : List Alternative) where
++  | miss (proof : ∀ alt ∈ alts, resultPatternMatch names value tag payload alt.pat = none)
++  | hit (selected : List ConcreteValue)
++      (proof : ∃ before alt after raw,
++        alts = before ++ alt :: after ∧
++        (∀ prior ∈ before, resultPatternMatch names value tag payload prior.pat = none) ∧
++        resultPatternMatch names value tag payload alt.pat = some raw ∧
++        selectSlots raw alt.slots = some selected ∧ alt.slots.length = arity)
++
++/-- 最初に照合した選択肢を使い、slots が不正なら後の選択肢へ逃げない。 -/
++def selectResult (names : RangeNames) (value : ConcreteValue) (tag : ConName)
++    (payload : ConcreteValue) (arity : Nat) : (alts : List Alternative) →
++    Option (ResultSelectionRun names value tag payload arity alts)
++  | [] => some (.miss (by simp))
++  | alt :: rest =>
++      match matched : resultPatternMatch names value tag payload alt.pat with
++      | some raw => do
++          match selected : selectSlots raw alt.slots with
++          | none => none
++          | some slots =>
++              if count : alt.slots.length = arity then
++                some (.hit slots ⟨[], alt, rest, raw, rfl, by simp, matched, selected, count⟩)
++              else none
++      | none => do
++          let tail ← selectResult names value tag payload arity rest
++          match tail with
++          | .miss miss => some (.miss (by
++              intro prior member
++              rcases List.mem_cons.mp member with same | member
++              · subst prior; exact matched
++              · exact miss prior member))
++          | .hit selected proof =>
++              some (.hit selected (by
++                obtain ⟨before, picked, after, raw, equal, missed, hit, ordered, count⟩ := proof
++                refine ⟨alt :: before, picked, after, raw, ?_, ?_, hit, ordered, count⟩
++                · simp [equal]
++                · intro prior member
++                  rcases List.mem_cons.mp member with rfl | member
++                  · exact matched
++                  · exact missed prior member))
++
++/-- 引数列の結果と導出。中断の場合は Abrupt の証拠も保持する。 -/
++inductive ArgumentsRun (env : ConcreteEnv) (key : OperationKey) (sources : List Expr) (type : Ty) where
++  | normal (values : List ConcreteValue) (trace : EvalTrace)
++      (sound : EvalArguments env key sources type (.normal values) trace)
++  | abrupt (outcome : EvalOutcome) (trace : EvalTrace)
++      (sound : EvalArguments env key sources type (.abrupt outcome) trace)
++      (abrupt : outcome.Abrupt)
++
+ mutual
+ /-- 深さを上限にし、到達した既知の式だけを評価する。 -/
+ def expr : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+@@ -411,7 +529,7 @@ def expr : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+         subst annotation; exact .constE env key source type _ _ proof))
+   | n+1, env, key, .returnE annotation source, type => do
+       let ⟨same⟩ ← sameType annotation type
+-      let sourceType ← typeOf n (localTypes env) source
++      let sourceType ← typeOf env.standards n (localTypes env) source
+       let result ← expr n env (childKey key []) source sourceType
+       some (result.map returnOutcome id (fun _ _ proof => by
+         subst annotation; exact .returnE env key type source sourceType _ _ proof))
+@@ -532,9 +650,35 @@ def expr : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+         | .boolean false, hc => some ⟨.normal .unit, ct, .ifOnlyFalse env key cond yes ct hc⟩
+         | _, _ => none)
+         (fun _ _ hc abrupt => .ifOnlyAbrupt env key cond yes _ _ hc abrupt)
++  | n+1, env, key, .call callee labels positions sources, type => do
++      match recognized : rangeCallBinding env ⟨.call callee labels positions sources, type, key⟩ with
++      | none => none
++      | some binding =>
++          let ⟨typed⟩ ← sameType binding.rule.resultType type
++          have recognized' : rangeCallBinding env
++              ⟨.call callee labels positions sources, binding.rule.resultType, key⟩ = some binding := by
++            simpa only [typed] using recognized
++          let evaluated ← arguments n env (childKey key [callee]) (exprsChildren sources)
++            binding.rule.argumentType
++          match evaluated with
++          | .normal values trace children => do
++              match ordered : orderArguments positions values with
++              | none => none
++              | some args =>
++                  let run ← standard binding.rule key args
++                  some ⟨binding.rule.finish run.result,
++                    trace ++ [⟨key, .standard binding, args, run.result⟩], by
++                      subst type
++                      exact .standardCall env key callee labels positions sources binding values args
++                        run.result trace recognized' children ordered run.sound⟩
++          | .abrupt outcome trace children abrupt =>
++              some ⟨outcome, trace, by
++                subst type
++                exact .standardCallAbrupt env key callee labels positions sources binding outcome
++                  trace recognized' children abrupt⟩
+   | n+1, env, key, .matchE annotation source arms, type => do
+       let ⟨same⟩ ← sameType annotation type
+-      let sourceType ← typeOf n (localTypes env) source
++      let sourceType ← typeOf env.standards n (localTypes env) source
+       let result ← expr n env (childKey key []) source sourceType
+       result.bind [] (fun value st hs => do
+         match value, hs with
+@@ -546,23 +690,59 @@ def expr : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+               subst annotation; subst sourceType
+               exact .matchInteger env key source arms type value _ st _ hs ha))
+         | value, hs => do
+-            let kind ← IntKind.ofType sourceType
+-            if not64 : kind ≠ .integer64 then
+-              let ⟨sameType⟩ ← sameType sourceType kind.type
+-              let ⟨integer, sameValue⟩ ← integerValue kind value
+-              let result ← widthArmList n env (childKey key [source]) kind integer arms type
+-              some (result.map id (st ++ ·) (fun _ _ ha => by
+-                subst annotation
+-                have hs' : EvalPartial env ⟨source, kind.type, childKey key []⟩
+-                    (.normal (.ofInteger kind integer)) st := by
+-                  simpa only [sameType, sameValue] using hs
+-                exact .matchWidth env key kind source arms type integer _ st _ not64 hs' ha))
+-            else none)
++            match IntKind.ofType sourceType with
++            | some kind =>
++                if not64 : kind ≠ .integer64 then
++                  let ⟨sameType⟩ ← sameType sourceType kind.type
++                  let ⟨integer, sameValue⟩ ← integerValue kind value
++                  let result ← widthArmList n env (childKey key [source]) kind integer arms type
++                  some (result.map id (st ++ ·) (fun _ _ ha => by
++                    subst annotation
++                    have hs' : EvalPartial env ⟨source, kind.type, childKey key []⟩
++                        (.normal (.ofInteger kind integer)) st := by
++                      simpa only [sameType, sameValue] using hs
++                    exact .matchWidth env key kind source arms type integer _ st _ not64 hs' ha))
++                else none
++            | none =>
++                match recognized : rangeResultMatch env value arms with
++                | none => none
++                | some names =>
++                    let view ← resultView names value
++                    let result ← resultArmList n env (childKey key [source]) names value
++                      view.tag view.payload arms type
++                    some (result.map id (st ++ ·) (fun _ _ ha => by
++                      subst annotation
++                      exact .matchResult env key source arms type sourceType value names
++                        view.tag view.payload _ st _ recognized view.sound hs ha)))
+         (fun _ _ hs abrupt => by
+           subst annotation
+           exact .matchAbrupt env key source arms type sourceType _ _ hs abrupt)
+   | _, _, _, _, _ => none
+ 
++/-- 引数はソース順に一度ずつ評価し、中断後は残りを評価しない。 -/
++def arguments : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
++    (sources : List Expr) → (type : Ty) → Option (ArgumentsRun env key sources type)
++  | 0, _, _, _, _ => none
++  | _n+1, env, key, [], type => some (.normal [] [] (.nil env key type))
++  | n+1, env, key, source :: rest, type => do
++      let head ← expr n env key source type
++      match head with
++      | ⟨.normal value, ht, proof⟩ =>
++          let tail ← arguments n env (advanceKey key (surfaceSize source)) rest type
++          match tail with
++          | .normal values rt tail =>
++              some (.normal (value :: values) (ht ++ rt)
++                (.cons env key source rest type value values ht rt proof tail))
++          | .abrupt outcome rt tail abrupt =>
++              some (.abrupt outcome (ht ++ rt)
++                (.tailAbrupt env key source rest type value outcome ht rt proof tail) abrupt)
++      | ⟨.failed reason, trace, proof⟩ =>
++          some (.abrupt (.failed reason) trace
++            (.headAbrupt env key source rest type _ trace proof trivial) trivial)
++      | ⟨.returned value, trace, proof⟩ =>
++          some (.abrupt (.returned value) trace
++            (.headAbrupt env key source rest type _ trace proof trivial) trivial)
++
+ /-- 全 Block 形をソース順に評価し、専用位置と通常位置を混同しない。 -/
+ def block : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+     (body : Block) → (type : Ty) → Option (ClosedRun (EvalBlock env key body type))
+@@ -579,7 +759,7 @@ def block : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+       some (result.map discardOutcome id
+         (fun _ _ proof => .lastBind env key kind boundType source _ _ proof))
+   | n+1, env, key, .lastDiscard source, .base .unit => do
+-      let sourceType ← typeOf n (localTypes env) source
++      let sourceType ← typeOf env.standards n (localTypes env) source
+       let result ← expr n env key source sourceType
+       some (result.map discardOutcome id
+         (fun _ _ proof => .lastDiscard env key source sourceType _ _ proof))
+@@ -595,7 +775,7 @@ def block : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
+           .bind env key kind boundType source rest type value _ et _ head tail)))
+         (fun _ _ head abrupt => .bindAbrupt env key kind boundType source rest type _ _ head abrupt)
+   | n+1, env, key, .discard source rest, type => do
+-      let sourceType ← typeOf n (localTypes env) source
++      let sourceType ← typeOf env.standards n (localTypes env) source
+       let result ← expr n env key source (sourceType)
+       result.bind [] (fun value et head => do
+         let result ← block n env (advanceKey key (surfaceSize source)) rest type
+@@ -692,6 +872,42 @@ def widthArmList : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey)
+                 | _, _ => none)
+                 (fun outcome trace condition abrupt => by
+                   simpa only [guardEq, id, List.nil_append] using (EvalWidthArms.guardAbrupt env key kind value alts guard body rest type selected outcome trace proof condition abrupt))
++/-- Result の選択・guard・本体を同じ成功値の環境で評価する。 -/
++def resultArmList : (fuel : Nat) → (env : ConcreteEnv) → (key : OperationKey) →
++    (names : RangeNames) → (value : ConcreteValue) → (tag : ConName) → (payload : ConcreteValue) → (arms : Arms) → (type : Ty) →
++    Option (ClosedRun (EvalResultArms env key names value tag payload arms type))
++  | 0, _, _, _, _, _, _, _, _ => none
++  | n+1, env, key, names, value, tag, payload, .nil, type => some ⟨.failed .unknown, [], .nil env key names value tag payload type⟩
++  | n+1, env, key, names, value, tag, payload, .cons alts guard body rest, type => do
++      let selection ← selectResult names value tag payload ((alts.head?.map fun first => first.slots.length).getD 0) alts
++      match selection with
++      | .miss proof =>
++          let result ← resultArmList n env (advanceKey key (guardSize guard + blockSize body)) names value tag payload rest type
++          some (result.map id id
++            (fun _ _ tail => .skip env key names value tag payload alts guard body rest type _ _ proof tail))
++      | .hit selected proof =>
++          let inner := { env with locals := selected.reverse.map some ++ env.locals }
++          match guardEq : guard with
++          | none =>
++              let result ← block n inner key body type
++              some (result.map id id
++                (fun outcome trace branch => by
++                  simpa only [guardEq, id, List.nil_append] using (EvalResultArms.body env key names value tag payload alts body rest type selected outcome trace proof branch)))
++          | some guard =>
++              let result ← expr n inner key guard (.base .boolean)
++              result.bind [] (fun truth gt condition => do
++                match truth, condition with
++                | .boolean true, condition =>
++                    let result ← block n inner (advanceKey key (surfaceSize guard)) body type
++                    some (result.map id (gt ++ ·) (fun outcome trace branch => by
++                      simpa only [guardEq, id, List.nil_append] using (EvalResultArms.guardTrue env key names value tag payload alts guard body rest type selected outcome gt trace proof condition branch)))
++                | .boolean false, condition =>
++                    let result ← resultArmList n env (advanceKey key (surfaceSize guard + blockSize body)) names value tag payload rest type
++                    some (result.map id (gt ++ ·) (fun outcome trace tail => by
++                      simpa only [guardEq, id, List.nil_append] using (EvalResultArms.guardFalse env key names value tag payload alts guard body rest type selected outcome gt trace proof condition tail)))
++                | _, _ => none)
++                (fun outcome trace condition abrupt => by
++                  simpa only [guardEq, id, List.nil_append] using (EvalResultArms.guardAbrupt env key names value tag payload alts guard body rest type selected outcome trace proof condition abrupt))
+ end
+ 
+ end ClosedEval
+@@ -707,11 +923,20 @@ theorem evalClosed_sound {env input fuel result}
+     (_evaluated : evalClosed env input fuel = some result) :
+     EvalPartial env input result.outcome result.trace := result.sound
+ 
+-/-- 一般呼び出しは、引数を評価せず評価不能にする。 -/
++/-- 認定されない一般呼び出しは、引数を評価せず評価不能にする。 -/
+ theorem evalClosed_call (env : ConcreteEnv) (key : OperationKey) (head : Expr)
+-    (labels : List (Option String)) (positions : List Nat) (args : Exprs) (type : Ty) (fuel : Nat) :
++    (labels : List (Option String)) (positions : List Nat) (args : Exprs) (type : Ty) (fuel : Nat)
++    (unrecognized : rangeCallBinding env ⟨.call head labels positions args, type, key⟩ = none) :
+     evalClosed env ⟨.call head labels positions args, type, key⟩ fuel = none := by
+-  cases fuel <;> rfl
++  cases fuel with
++  | zero => rfl
++  | succ n =>
++      simp only [evalClosed, ClosedEval.expr]
++      split
++      · rfl
++      · rename_i binding recognized
++        rw [unrecognized] at recognized
++        contradiction
+ 
+ /-- 未知の値と事実を切る境界は、正常値にも失敗にも固定しない。 -/
+ theorem evalClosed_unsupported {env input fuel} (unsupported : Unsupported input.source) :
+diff --git a/formal/Benitoite/Interval/Examples.lean b/formal/Benitoite/Interval/Examples.lean
+index db09d8fc..fe0964ed 100644
+--- a/formal/Benitoite/Interval/Examples.lean
++++ b/formal/Benitoite/Interval/Examples.lean
+@@ -1045,4 +1045,82 @@ example :
+       [true, false, false, false, false, false] := by
+   decide +kernel
+ 
++-- 閉じた評価器の入口で、実際の引数計算・契約順・同じ成功値の射影を確認する。
++-- 導出だけの例と違い、評価器が未接続ならこの固定値・番号列にはならない。
++example :
++    (match evalClosed concrete
++      ⟨.matchE (.base .integer) checkCall arms, .base .integer, key 0⟩ 32 with
++    | some ⟨.normal (.integer value), trace, _⟩ =>
++        value.toInt == 5 && trace.map (fun event => event.key.surfacePreorder) == [3, 1, 8]
++    | _ => false) = true := by decide +kernel
++
++-- 一度保存した Result と古い整数位置を保ち、shadow の後も成功値だけを射影する。
++example :
++    let env := {concrete with apiAt := fun k =>
++      if k.surfacePreorder = 1 then some "Std.Range.checkInteger" else some "Std.Range.value"}
++    let source := Expr.block (.bind .bind resultType checkCall
++      (.last (.matchE (.base .integer) (.local 0)
++        (.cons [okAlt] none
++          (.bind .shadow (.base .integer) (lit ⟨99, by decide⟩)
++            (.last (.call (.funName "Std.Range.value" [] []) [some "checked"] [0]
++              (.cons (.local 1) .nil)))) .nil))))
++    (match evalClosed env ⟨source, .base .integer, key 0⟩ 48 with
++    | some ⟨.normal (.integer value), trace, _⟩ =>
++        value.toInt == 5 && trace.map (fun event => event.key.surfacePreorder) == [3, 1, 11]
++    | _ => false) = true := by decide +kernel
++
++-- 逆転は値の範囲外より優先し、API の Error は実行時の失敗へ変えない。
++example :
++    let call := fun lo hi value => Expr.call (.funName "Std.Range.checkInteger" [] [])
++      [none, none, none] [0, 1, 2] (.cons (lit lo) (.cons (lit hi) (.cons (lit value) .nil)))
++    let cases := [(call ⟨10, by decide⟩ ⟨0, by decide⟩ ⟨15, by decide⟩, true),
++      (call ⟨0, by decide⟩ ⟨10, by decide⟩ ⟨15, by decide⟩, false)]
++    cases.all (fun (source, inverted) =>
++      (match evalClosed concrete ⟨source, resultType, key 1⟩ 16 with
++      | some ⟨.normal (.con _ _ tag [.rangeError _ _ error]), trace, _⟩ =>
++          tag == names.err && trace.length == 1 &&
++            match error with
++            | .invalidBounds lo hi => inverted && lo == 10 && hi == 0
++            | .outOfRange lo hi value => !inverted && lo == 0 && hi == 10 && value == 15
++      | _ => false) &&
++      (match evalClosed concrete
++          ⟨.matchE (.base .integer) source arms, .base .integer, key 0⟩ 32 with
++      | some ⟨.normal (.integer value), trace, _⟩ =>
++          value.toInt == -1 && trace.map (fun event => event.key.surfacePreorder) == [1]
++      | _ => false)) = true := by decide +kernel
++
++-- Ok に一致しても guard が偽なら元の環境に戻り、次の Error/全体パターンを試す。
++example :
++    let guarded := Arms.cons [okAlt] (some (.literal (.boolean false)))
++      (.last (.binary .intDiv (.base .integer) (lit ⟨1, by decide⟩) (lit ⟨0, by decide⟩)))
++      (.cons [⟨.wild, []⟩] none (.last (.local 0)) .nil)
++    let env := {concrete with locals := [some (.integer ⟨42, by decide⟩)]}
++    (match evalClosed env ⟨.matchE (.base .integer) checkCall guarded, .base .integer, key 0⟩ 32 with
++    | some ⟨.normal (.integer value), trace, _⟩ =>
++        value.toInt == 42 && trace.map (fun event => event.key.surfacePreorder) == [3, 1]
++    | _ => false) = true := by decide +kernel
++
++-- 引数の return は後続引数と親の事象を飛ばし、先に完了した子の事象だけ残す。
++example :
++    let source := Expr.call (.funName "Std.Range.checkInteger" [] []) [none, none, none] [0, 1, 2]
++      (.cons (.binary .add (.base .integer) (lit ⟨2, by decide⟩) (lit ⟨3, by decide⟩))
++        (.cons (.returnE (.base .integer) (lit ⟨7, by decide⟩))
++          (.cons (.binary .intDiv (.base .integer) (lit ⟨1, by decide⟩) (lit ⟨0, by decide⟩)) .nil)))
++    (match evalClosed concrete ⟨source, resultType, key 1⟩ 32 with
++    | some ⟨.returned (.integer value), trace, _⟩ =>
++        value.toInt == 7 && trace.map (fun event => event.key.surfacePreorder) == [3]
++    | _ => false) = true := by decide +kernel
++
++-- other の値には決定的な中身を選ばず、偽の宣言・未解決・型違い・深さ不足も評価不能とする。
++example :
++    let unknownValue := {concrete with locals := [some unknownChecked]}
++    let noApi := {concrete with apiAt := fun _ => none}
++    let fake := Expr.call (.funName "User.Range.value" [] []) [none] [0] (.cons (.local 0) .nil)
++    (evalClosed unknownEnv ⟨.matchE (.base .integer) (.local 0) arms, .base .integer, key 8⟩ 32).isNone = true ∧
++    (evalClosed unknownValue ⟨projection, .base .integer, key 8⟩ 16).isNone = true ∧
++    (evalClosed concrete ⟨fake, .base .integer, key 8⟩ 16).isNone = true ∧
++    (evalClosed noApi ⟨checkCall, resultType, key 1⟩ 16).isNone = true ∧
++    (evalClosed concrete ⟨checkCall, .base .integer, key 1⟩ 16).isNone = true ∧
++    (evalClosed concrete ⟨checkCall, resultType, key 1⟩ 2).isNone = true := by decide +kernel
++
+ end Benitoite.Interval.Examples.RangeSurface

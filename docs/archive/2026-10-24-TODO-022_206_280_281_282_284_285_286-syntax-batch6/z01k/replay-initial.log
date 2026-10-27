@@ -1,0 +1,9 @@
+baseline: routing identifiers: missing [], extra [('golden', 'testdata/warnings/skill-local-intervals.bnt')]
+final input routing: 1792 inputs, identifiers, exclusions, scopes and coverage agree
+programs/programReports: 1792 inputs, 73853 definitions, 51762 surface checks, 22483 coverage entries agree
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/z01k/replay.py", line 113, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/z01k/replay.py", line 104, in main
+    hashes[str(path.relative_to(ROOT))] = hashlib.file_digest(stream, "sha256").hexdigest()
+AttributeError: module 'hashlib' has no attribute 'file_digest'

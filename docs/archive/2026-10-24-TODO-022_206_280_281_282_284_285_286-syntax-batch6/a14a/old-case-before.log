@@ -1,0 +1,20 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates' (3978585) panicked at crates/benitoite/src/typeck/interval/tests.rs:461:9:
+assertion `left == right` failed: otherWidth
+  left: false
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1326 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p benitoite --lib`

@@ -1,0 +1,30 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 2 tests
+test typeck::interval::tests::budget_reference::whole_budget_matches_lean_through_discovery_queue_and_embedded_bodies ... ok
+
+thread 'typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary' (4103566) panicked at crates/benitoite/src/typeck/interval/tests/budget_reference.rs:397:17:
+assertion `left == right` failed: const limit: Integer8 = 0s8
+const minimum: Integer8 = -128s8
+function helper(x: Integer8) -> Integer8 return x end function
+function sample(x: Integer8) -> Integer8
+ return match (x) with
+ case _ if not (x <> 0s8) -> 1s8 div x
+ case _ -> 1s8
+ end match
+end function
+
+  left: "s8_matchWildcard\t0\t39\t39\t9\t22\t8\t3\t\t\t0"
+ right: "s8_matchWildcard\t0\t39\t39\t9\t22\t8\t1\t\t\t0"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 1326 filtered out; finished in 3.00s
+
+error: test failed, to rerun pass `-p benitoite --lib`

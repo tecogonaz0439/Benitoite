@@ -1,0 +1,34 @@
+== plan: level work against 65b165272b42c3f3621ad59bc2a2c6c9cec9c46e (47 changed file(s))
+   [fmt] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/tests/desugar_export/interval.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [formal_build] because of formal/tests/interval_vm_compare.py (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+Diff in <repo>/crates/benitoite/tests/desugar_export/interval/vm.rs:22:
+     let output = export_directory("interval-vm");
+     fs::create_dir_all(&output).unwrap();
+     let text = include_str!("vm-arithmetic.bnt");
+[31m-    assert!(!text.contains("intervalOperand"), "temporary name collision");
+(B[m[32m+    assert!(
+(B[m[32m+        !text.contains("intervalOperand"),
+(B[m[32m+        "temporary name collision"
+(B[m[32m+    );
+(B[m     let original = checked(text);
+     let stdlib = exchange::complete_stdlib();
+     let mut export = manifest::Export::new(&output.join("original"));
+FAILED: fmt

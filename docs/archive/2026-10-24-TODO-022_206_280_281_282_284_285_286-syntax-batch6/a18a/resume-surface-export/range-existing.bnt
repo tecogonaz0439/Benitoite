@@ -1,0 +1,32 @@
+import Benitoite.Unofficial.Range
+
+function upperEndpoint() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(minimum: 0, maximum: 10, value: 10)
+end function
+
+function invalidBounds() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(minimum: 10, maximum: 0, value: 5)
+end function
+
+function outsideRange() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(minimum: 0, maximum: 10, value: 11)
+end function
+
+function integerMinimum() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(minimum: -9223372036854775808, maximum: 9223372036854775807, value: -9223372036854775808)
+end function
+
+function integerMaximum() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(minimum: -9223372036854775808, maximum: 9223372036854775807, value: 9223372036854775807)
+end function
+
+function recheck(value: Range.CheckedInteger) -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(minimum: Range.minimum(value), maximum: Range.maximum(value), value: Range.value(value))
+end function
+
+function checkedValue(result: Result[Range.CheckedInteger, Range.RangeError]) -> Option[Integer]
+  return match result with
+    case Result.Ok(value) -> Option.Some(Range.value(value))
+    case Result.Error(_) -> Option.None
+  end match
+end function

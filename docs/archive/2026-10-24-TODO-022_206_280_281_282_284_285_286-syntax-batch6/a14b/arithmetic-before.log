@@ -1,0 +1,93 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error[E0425]: cannot find value `W0402` in this scope
+    --> crates/benitoite/src/typeck/interval/flow/widths/tests.rs:324:17
+     |
+ 324 |                 W0402,
+     |                 ^^^^^ not found in this scope
+     |
+note: unit variant `crate::typeck::tests::interpolation_formats::C::W0402` exists but is inaccessible
+    --> crates/benitoite/src/diag/codes.rs:51:15
+     |
+  51 |               $($code,)*
+     |                 ^^^^^ not accessible
+...
+  83 | / diag_codes! {
+  84 | |     // ---- E01: 読み込みと字句 ----
+  85 | |     E0101 Check "cannot read file `{path}`" ""
+  86 | |         [reason: "{reason}", imported: "the module is imported here"]
+...    |
+1452 | |         "The compiler shares match decisions and falls back to matching rows in source order; final decision nodes, edges, worki...
+1453 | | }
+     | |_- in this macro invocation
+     = note: this error originates in the macro `diag_codes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `W0402` in this scope
+    --> crates/benitoite/src/typeck/interval/flow/widths/tests.rs:330:17
+     |
+ 330 |                 W0402,
+     |                 ^^^^^ not found in this scope
+     |
+note: unit variant `crate::typeck::tests::interpolation_formats::C::W0402` exists but is inaccessible
+    --> crates/benitoite/src/diag/codes.rs:51:15
+     |
+  51 |               $($code,)*
+     |                 ^^^^^ not accessible
+...
+  83 | / diag_codes! {
+  84 | |     // ---- E01: 読み込みと字句 ----
+  85 | |     E0101 Check "cannot read file `{path}`" ""
+  86 | |         [reason: "{reason}", imported: "the module is imported here"]
+...    |
+1452 | |         "The compiler shares match decisions and falls back to matching rows in source order; final decision nodes, edges, worki...
+1453 | | }
+     | |_- in this macro invocation
+     = note: this error originates in the macro `diag_codes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `(i128, i128): From<&str>` is not satisfied
+   --> crates/benitoite/src/typeck/interval/flow/widths/tests.rs:323:25
+    |
+323 |                 "n * n".into(),
+    |                         ^^^^ the trait `From<&str>` is not implemented for `(i128, i128)`
+    |
+    = help: the following other types implement trait `From<T>`:
+              `(T, T)` implements `From<[T; 2]>`
+              `(T, T, T)` implements `From<[T; 3]>`
+              `(T, T, T, T)` implements `From<[T; 4]>`
+              `(T, T, T, T, T)` implements `From<[T; 5]>`
+              `(T, T, T, T, T, T)` implements `From<[T; 6]>`
+              `(T, T, T, T, T, T, T)` implements `From<[T; 7]>`
+              `(T, T, T, T, T, T, T, T)` implements `From<[T; 8]>`
+              `(T, T, T, T, T, T, T, T, T)` implements `From<[T; 9]>`
+            and 7 others
+    = note: required for `&str` to implement `Into<(i128, i128)>`
+
+error[E0277]: the trait bound `(i128, i128): From<&str>` is not satisfied
+   --> crates/benitoite/src/typeck/interval/flow/widths/tests.rs:329:28
+    |
+329 |                 "2u64 * n".into(),
+    |                            ^^^^ the trait `From<&str>` is not implemented for `(i128, i128)`
+    |
+    = help: the following other types implement trait `From<T>`:
+              `(T, T)` implements `From<[T; 2]>`
+              `(T, T, T)` implements `From<[T; 3]>`
+              `(T, T, T, T)` implements `From<[T; 4]>`
+              `(T, T, T, T, T)` implements `From<[T; 5]>`
+              `(T, T, T, T, T, T)` implements `From<[T; 6]>`
+              `(T, T, T, T, T, T, T)` implements `From<[T; 7]>`
+              `(T, T, T, T, T, T, T, T)` implements `From<[T; 8]>`
+              `(T, T, T, T, T, T, T, T, T)` implements `From<[T; 9]>`
+            and 7 others
+    = note: required for `&str` to implement `Into<(i128, i128)>`
+
+warning: unused variable: `kind`
+   --> crates/benitoite/src/typeck/interval/flow/widths/tests.rs:372:10
+    |
+372 |     for (kind, ty, suffix, min, max) in KINDS {
+    |          ^^^^ help: if this is intentional, prefix it with an underscore: `_kind`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+Some errors have detailed explanations: E0277, E0425.
+For more information about an error, try `rustc --explain E0277`.
+error: `benitoite` (lib test) generated 1 warning
+error: warnings are denied by `build.warnings` configuration

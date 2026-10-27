@@ -1,5 +1,8 @@
 //! Pure inclusive Integer range checks. Success retains both bounds and the value; bounds may differ between values of the same CheckedInteger type.
 //!
+//! Local interval analysis recognizes direct calls to the standard checkInteger and value functions, including import aliases. With fixed Integer64 bounds, it can retain the bounds through a direct match or one local binding of the Result. In a single Ok(checked) pattern, a direct Range.value(checked) can supply that interval to later arithmetic.
+//! The analysis does not carry this information through aliases, repackaging, value joins, function boundaries, or dynamic bounds. A join of condition environments also forgets it, including information from outside the condition. It adds no warning for Range errors and keeps all runtime checks. This analysis does not extend to CheckedLength or CheckedIndex.
+//!
 //! ```benitoite test
 //! import Benitoite.Unofficial.Range
 //! @test

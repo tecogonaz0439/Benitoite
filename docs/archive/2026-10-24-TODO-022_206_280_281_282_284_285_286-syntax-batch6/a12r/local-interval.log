@@ -1,0 +1,6 @@
+  File "<string>", line 1
+    import json,subprocess,sys,time; s=time.monotonic(); r=subprocess.run(sys.argv[2:]); m={'command':sys.argv[2:],'exit_code':r.returncode,'seconds':time.monotonic()-s}; open(sys.argv[1],'w').write(json.dumps(m,indent=2)+'
+                                                                                                                                                                                                                               ^
+SyntaxError: EOL while scanning string literal
+        0.01 real         0.00 user         0.00 sys
+time: sysctl kern.clockrate: Operation not permitted

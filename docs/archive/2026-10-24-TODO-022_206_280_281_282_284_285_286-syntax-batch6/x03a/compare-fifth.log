@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1001, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 994, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir, args.vm_dir, args.cli)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 647, in exercise
+    interval_vm_compare.exercise(vm_runner, vm_dir, cli)
+  File "<repo>/formal/tests/interval_vm_compare.py", line 221, in exercise
+    compare_run(process, definitions['.addition']['evaluation'], sites)
+  File "<repo>/formal/tests/interval_vm_compare.py", line 146, in compare_run
+    position = [span['start']['offset'], span['end']['offset']]
+TypeError: 'NoneType' object is not subscriptable

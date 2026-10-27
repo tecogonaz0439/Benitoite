@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1001, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 994, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir, args.vm_dir, args.cli)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 647, in exercise
+    interval_vm_compare.exercise(vm_runner, vm_dir, cli)
+  File "<repo>/formal/tests/interval_vm_compare.py", line 186, in exercise
+    report = runner.invoke('vm-closed', 'eval', corpus, 0)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 397, in invoke
+    assert p.returncode == code, (label, p.returncode, code, p.stdout, p.stderr)
+AssertionError: ('vm-closed', 1, 0, 'intervalDiff: mode=eval matched=false accepted=false\n', '')

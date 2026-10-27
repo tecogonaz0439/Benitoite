@@ -1,0 +1,13 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+warning: unused variable: `input`
+   --> crates/benitoite/src/typeck/interval/identity.rs:662:9
+    |
+662 |         input: &BodyInput<'ast>,
+    |         ^^^^^ help: if this is intentional, prefix it with an underscore: `_input`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+error: `benitoite` (lib test) generated 1 warning (run `cargo fix --lib -p benitoite --tests` to apply 1 suggestion)
+error: warnings are denied by `build.warnings` configuration
+A02_OUTER_EXIT_STATUS=101
+A02_OUTER_ELAPSED_SECONDS=7.69

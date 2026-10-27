@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.37s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 1 test
+20000 constants: 52.245096541s, 539581825 allocated bytes
+
+thread 'long_constant_chain_has_bounded_check_allocations' (1906656) panicked at crates/benitoite/tests/call_allocations.rs:189:5:
+quadratic allocation regression: 539581825
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test long_constant_chain_has_bounded_check_allocations ... FAILED
+
+failures:
+
+failures:
+    long_constant_chain_has_bounded_check_allocations
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 52.25s
+
+error: test failed, to rerun pass `-p benitoite --test call_allocations`
+A02_OUTER_EXIT_STATUS=101
+A02_OUTER_ELAPSED_SECONDS=69.48

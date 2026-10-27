@@ -1,0 +1,32 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.69s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 2 tests
+
+thread 'typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown' (5095529) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:54:13:
+assertion `left == right` failed
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples' (5095530) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:36:17:
+assertion `left == right` failed: import Benitoite.Unofficial.Range
+function sample(x: Integer) -> Unit
+ bind _ <- Range.checkInteger(minimum: x div 0, maximum: 0, value: 1)
+end function
+
+  left: []
+ right: [3]
+test typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples ... FAILED
+test typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown
+    typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `-p benitoite --lib`

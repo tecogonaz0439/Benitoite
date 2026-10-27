@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 146, in <module>
+    main()
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 139, in main
+    result = dict(realSource=check_source(args.source_dir, args.output, executable, args.legacy_corpus, args.supplemental_group),
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 47, in check_source
+    assert row['manifest'] == [body for definition in row['definitions'] for body in definition['manifest']], 'source body manifest order'
+AssertionError: source body manifest order

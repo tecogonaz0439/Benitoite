@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "formal/tests/test_interval_exchange.py",
+    "--rust-dir",
+    "target/x02a-identity",
+    "--rust-dir",
+    "target/x02a-scope/manifest-interval",
+    "--output",
+    "target/x02b-third"
+  ],
+  "exit": 0,
+  "seconds": 4.784
+}

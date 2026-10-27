@@ -1,0 +1,12 @@
+import Benitoite.Trait
+effect E
+  function use[T: Trait.Show](value: T) -> Integer
+end effect
+function main() -> Unit uses State
+  bind _ <- handle use(1) with
+    case use(value) ->
+      bind captured <- 0
+      bind _ <- 10 div captured
+      resume(1)
+  end handle
+end function

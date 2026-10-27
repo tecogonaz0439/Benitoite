@@ -1,0 +1,653 @@
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:870:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1079:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [61/71] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:764:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:766:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:766:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:774:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:902:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:902:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1141:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1141:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1141:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1152:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1152:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1152:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1171:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1481:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1487:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1960:71: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [targetOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3065:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3065:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3065:117: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [65/71] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:99:23: This simp argument is unused:
+  binarySupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:99:40: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [binarySupported]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [68/71] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [71/71] Building Benitoite.Interval.BudgetSound (13s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetSound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetSound.setup.json --json
+error: Benitoite/Interval/BudgetSound.lean:924:10: Type mismatch: After simplification, term
+  h
+ has type
+  @Benitoite.Interval.BudgetAnalysis.Causal Benitoite.Interval.BaseApprox
+    (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+      (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+      (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+        (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+        (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+      Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+      (Benitoite.Interval.BudgetAnalysis.expr fuel abstract source) fun (tested : Benitoite.Interval.BaseApprox) =>
+      @ite.{1} (Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+        (@Eq.{1} Bool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (instDecidableEqBool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+          (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+          (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+            (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+            (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+          Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms) fun (__r : Unit) =>
+          @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Benitoite.Interval.BaseApprox (Benitoite.Interval.BaseApprox.abrupt tested))
+        (Benitoite.Interval.BudgetAnalysis.expr_causal.match_4.{1}
+          (fun (x : Option.{0} Benitoite.Interval.IntKind) =>
+            Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+          (Benitoite.Interval.BaseApprox.matchKind tested)
+          (fun (kind : Benitoite.Interval.IntKind) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+              (Benitoite.Interval.BudgetAnalysis.armListKind fuel kind abstract source
+                (Benitoite.Interval.BaseApprox.rangeKind tested kind) arms)
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift))
+          fun (_ : Unit) =>
+          @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms)
+            fun (__r : Unit) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox Benitoite.Interval.BudgetAnalysis.unsupported
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift)))
+    limits middle (Benitoite.Interval.childKey key (@List.nil.{0} Benitoite.Surface.Expr))
+    (@HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat)
+      (@List.length.{0} Benitoite.Surface.Expr (Benitoite.Interval.surfacePreorder source))
+      (Benitoite.Interval.armsSize arms))
+    st
+but is expected to have type
+  @Benitoite.Interval.BudgetAnalysis.Causal Benitoite.Interval.BaseApprox
+    (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+      (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+      (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+        (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+        (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+      Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+      (Benitoite.Interval.BudgetAnalysis.expr fuel abstract source) fun (tested : Benitoite.Interval.BaseApprox) =>
+      @ite.{1} (Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+        (@Eq.{1} Bool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (instDecidableEqBool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+          (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+          (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+            (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+            (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+          Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms) fun (__r : Unit) =>
+          @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Benitoite.Interval.BaseApprox (Benitoite.Interval.BaseApprox.abrupt tested))
+        (Benitoite.Interval.BudgetAnalysis.negModeled.match_1.{1}
+          (fun (x : Option.{0} Benitoite.Interval.IntKind) =>
+            Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+          (Benitoite.Interval.BaseApprox.matchKind tested)
+          (fun (kind : Benitoite.Interval.IntKind) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+              (Benitoite.Interval.BudgetAnalysis.armListKind fuel kind abstract source
+                (Benitoite.Interval.BaseApprox.rangeKind tested kind) arms)
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift))
+          fun (_ : Unit) =>
+          @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms)
+            fun (__r : Unit) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox Benitoite.Interval.BudgetAnalysis.unsupported
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift)))
+    limits middle (Benitoite.Interval.childKey key (@List.nil.{0} Benitoite.Surface.Expr))
+    (@HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat)
+      (@List.length.{0} Benitoite.Surface.Expr (Benitoite.Interval.surfacePreorder source))
+      (Benitoite.Interval.armsSize arms))
+    st
+error: Benitoite/Interval/BudgetSound.lean:924:10: Type mismatch: After simplification, term
+  h
+ has type
+  @Benitoite.Interval.BudgetAnalysis.Causal Benitoite.Interval.BaseApprox
+    (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+      (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+      (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+        (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+        (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+      Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+      (Benitoite.Interval.BudgetAnalysis.expr fuel abstract source) fun (tested : Benitoite.Interval.BaseApprox) =>
+      @ite.{1} (Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+        (@Eq.{1} Bool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (instDecidableEqBool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+          (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+          (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+            (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+            (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+          Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms) fun (__r : Unit) =>
+          @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Benitoite.Interval.BaseApprox (Benitoite.Interval.BaseApprox.abrupt tested))
+        (Benitoite.Interval.BudgetAnalysis.expr_causal.match_4.{1}
+          (fun (x : Option.{0} Benitoite.Interval.IntKind) =>
+            Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+          (Benitoite.Interval.BaseApprox.matchKind tested)
+          (fun (kind : Benitoite.Interval.IntKind) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+              (Benitoite.Interval.BudgetAnalysis.armListKind fuel kind abstract source
+                (Benitoite.Interval.BaseApprox.rangeKind tested kind) arms)
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift))
+          fun (_ : Unit) =>
+          @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms)
+            fun (__r : Unit) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox Benitoite.Interval.BudgetAnalysis.unsupported
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift)))
+    limits middle (Benitoite.Interval.childKey key (@List.nil.{0} Benitoite.Surface.Expr))
+    (@HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat)
+      (@List.length.{0} Benitoite.Surface.Expr (Benitoite.Interval.surfacePreorder source))
+      (Benitoite.Interval.armsSize arms))
+    st
+but is expected to have type
+  @Benitoite.Interval.BudgetAnalysis.Causal Benitoite.Interval.BaseApprox
+    (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+      (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+      (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+        (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+        (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+      Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+      (Benitoite.Interval.BudgetAnalysis.expr fuel abstract source) fun (tested : Benitoite.Interval.BaseApprox) =>
+      @ite.{1} (Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+        (@Eq.{1} Bool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (instDecidableEqBool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+          (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+          (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+            (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+            (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+          Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms) fun (__r : Unit) =>
+          @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Benitoite.Interval.BaseApprox (Benitoite.Interval.BaseApprox.abrupt tested))
+        (Benitoite.Interval.BudgetAnalysis.negModeled.match_1.{1}
+          (fun (x : Option.{0} Benitoite.Interval.IntKind) =>
+            Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+          (Benitoite.Interval.BaseApprox.matchKind tested)
+          (fun (kind : Benitoite.Interval.IntKind) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+              (Benitoite.Interval.BudgetAnalysis.armListKind fuel kind abstract source
+                (Benitoite.Interval.BaseApprox.rangeKind tested kind) arms)
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift))
+          fun (_ : Unit) =>
+          @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms)
+            fun (__r : Unit) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox Benitoite.Interval.BudgetAnalysis.unsupported
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift)))
+    limits middle (Benitoite.Interval.childKey key (@List.nil.{0} Benitoite.Surface.Expr))
+    (@HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat)
+      (@List.length.{0} Benitoite.Surface.Expr (Benitoite.Interval.surfacePreorder source))
+      (Benitoite.Interval.armsSize arms))
+    st
+error: Benitoite/Interval/BudgetSound.lean:924:10: Type mismatch: After simplification, term
+  h
+ has type
+  @Benitoite.Interval.BudgetAnalysis.Causal Benitoite.Interval.BaseApprox
+    (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+      (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+      (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+        (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+        (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+      Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+      (Benitoite.Interval.BudgetAnalysis.expr fuel abstract source) fun (tested : Benitoite.Interval.BaseApprox) =>
+      @ite.{1} (Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+        (@Eq.{1} Bool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (instDecidableEqBool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+          (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+          (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+            (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+            (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+          Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms) fun (__r : Unit) =>
+          @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Benitoite.Interval.BaseApprox (Benitoite.Interval.BaseApprox.abrupt tested))
+        (Benitoite.Interval.BudgetAnalysis.expr_causal.match_4.{1}
+          (fun (x : Option.{0} Benitoite.Interval.IntKind) =>
+            Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+          (Benitoite.Interval.BaseApprox.matchKind tested)
+          (fun (kind : Benitoite.Interval.IntKind) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+              (Benitoite.Interval.BudgetAnalysis.armListKind fuel kind abstract source
+                (Benitoite.Interval.BaseApprox.rangeKind tested kind) arms)
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift))
+          fun (_ : Unit) =>
+          @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms)
+            fun (__r : Unit) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox Benitoite.Interval.BudgetAnalysis.unsupported
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift)))
+    limits middle (Benitoite.Interval.childKey key (@List.nil.{0} Benitoite.Surface.Expr))
+    (@HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat)
+      (@List.length.{0} Benitoite.Surface.Expr (Benitoite.Interval.surfacePreorder source))
+      (Benitoite.Interval.armsSize arms))
+    st
+but is expected to have type
+  @Benitoite.Interval.BudgetAnalysis.Causal Benitoite.Interval.BaseApprox
+    (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+      (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+      (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+        (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+        (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+      Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+      (Benitoite.Interval.BudgetAnalysis.expr fuel abstract source) fun (tested : Benitoite.Interval.BaseApprox) =>
+      @ite.{1} (Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+        (@Eq.{1} Bool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (instDecidableEqBool (Bool.not (Benitoite.Interval.BaseApprox.live tested)) Bool.true)
+        (@ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+          (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+          (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+            (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+            (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+          Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms) fun (__r : Unit) =>
+          @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Benitoite.Interval.BaseApprox (Benitoite.Interval.BaseApprox.abrupt tested))
+        (Benitoite.Interval.BudgetAnalysis.negModeled.match_1.{1}
+          (fun (x : Option.{0} Benitoite.Interval.IntKind) =>
+            Benitoite.Interval.BudgetAnalysis.Analysis Benitoite.Interval.BaseApprox)
+          (Benitoite.Interval.BaseApprox.matchKind tested)
+          (fun (kind : Benitoite.Interval.IntKind) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox
+              (Benitoite.Interval.BudgetAnalysis.armListKind fuel kind abstract source
+                (Benitoite.Interval.BaseApprox.rangeKind tested kind) arms)
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift))
+          fun (_ : Unit) =>
+          @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+            (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+            (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+              (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+              (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+            Unit Benitoite.Interval.BaseApprox (Benitoite.Interval.BudgetAnalysis.skipArms fuel arms)
+            fun (__r : Unit) =>
+            @ReaderT.bind.{0, 0} Benitoite.Interval.Budget.Limits
+              (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+              (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+              Benitoite.Interval.BaseApprox Benitoite.Interval.BaseApprox Benitoite.Interval.BudgetAnalysis.unsupported
+              fun (__do_lift : Benitoite.Interval.BaseApprox) =>
+              @ReaderT.pure.{0, 0} Benitoite.Interval.Budget.Limits
+                (ExceptT.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context))
+                (@ExceptT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Halt
+                  (StateM.{0} Benitoite.Interval.BudgetAnalysis.Context)
+                  (@StateT.instMonad.{0, 0} Benitoite.Interval.BudgetAnalysis.Context Id.{0} Id.instMonad.{0}))
+                Benitoite.Interval.BaseApprox (Benitoite.Interval.baseThen tested __do_lift)))
+    limits middle (Benitoite.Interval.childKey key (@List.nil.{0} Benitoite.Surface.Expr))
+    (@HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat)
+      (@List.length.{0} Benitoite.Surface.Expr (Benitoite.Interval.surfacePreorder source))
+      (Benitoite.Interval.armsSize arms))
+    st
+Some required targets logged failures:
+- Benitoite.Interval.BudgetSound
+error: build failed

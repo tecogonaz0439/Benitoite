@@ -1,0 +1,12 @@
+function id(value: Integer) -> Integer
+  return value
+end function
+function sample() -> Integer
+  bind _ <- id(block
+    if true then return 7 end if
+    0
+  end block)
+  bind zero <- 0
+  return 10 div zero
+end function
+function main() -> Unit end function

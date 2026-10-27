@@ -1,0 +1,18 @@
+Benitoite/Interval/Exchange.lean:237:34: error: Application type mismatch: The argument
+  Eff.empty
+has type
+  Eff
+but is expected to have type
+  Exchange.Eff
+in the application
+  Exchange.fromTy Eff.empty
+Benitoite/Interval/Exchange.lean:556:10: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.base`
+  ?m.21
+is not of the form `C ...` or `... → C ...` where C is a constant
+Benitoite/Interval/Exchange.lean:557:10: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.base`
+  ?m.25
+is not of the form `C ...` or `... → C ...` where C is a constant
+Benitoite/Interval/Exchange.lean:557:4: error(lean.redundantMatchAlt): Redundant alternative: Any expression matching
+  some val✝
+will match one of the preceding alternatives
+Benitoite/Interval/Exchange.lean:679:5: error: unexpected token 'matches'; expected '(', ':=', 'rec', '|' or term

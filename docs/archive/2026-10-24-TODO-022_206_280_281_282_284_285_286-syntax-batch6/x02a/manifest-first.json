@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "crates/benitoite/tests/desugar_export/interval/check-manifest.py",
+    "--source-dir",
+    "target/x02a-identity",
+    "--independent-dir",
+    "target/x02a-exchange",
+    "--output",
+    "target/x02a-manifest-check"
+  ],
+  "exit": 1,
+  "seconds": 0.085
+}

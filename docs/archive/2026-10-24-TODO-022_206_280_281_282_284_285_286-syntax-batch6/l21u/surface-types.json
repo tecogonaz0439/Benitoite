@@ -1,0 +1,182 @@
+{
+  "source": "crates/benitoite/tests/desugar_export/batch3/range.bnt",
+  "expectation": "formal/Benitoite/Interval/Eval.lean StandardRule.argumentType/resultType",
+  "decoder": "formal/Benitoite/Exchange/Syntax.lean:71-72 (data と opaque を別々に読む)",
+  "rangeNames": {
+    "owner": "data:525",
+    "checkedConstructor": "con:525:0",
+    "result": "data:212",
+    "error": "data:529",
+    "ok": "con:212:0",
+    "err": "con:212:1",
+    "invalidBounds": "con:529:0",
+    "outOfRange": "con:529:1"
+  },
+  "checkedIntegerDeclaration": {
+    "builtin": "ordinary",
+    "ctors": [
+      {
+        "args": [
+          {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        ],
+        "constructorName": "CheckedInteger",
+        "fields": [
+          "minimum",
+          "maximum",
+          "value"
+        ],
+        "name": "con:525:0"
+      }
+    ],
+    "extensible": false,
+    "isRecord": true,
+    "name": "data:525",
+    "ntys": 0,
+    "package": "stdlib",
+    "typeName": "CheckedInteger"
+  },
+  "checkedConstructor": "con:525:0",
+  "constructorFieldsEqual": true,
+  "comparisons": [
+    {
+      "function": "Range.checkInteger",
+      "field": "resultType",
+      "actual": {
+        "data": {
+          "args": [
+            {
+              "data": {
+                "args": [],
+                "name": "data:525"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "data:529"
+              }
+            }
+          ],
+          "name": "data:212"
+        }
+      },
+      "expected": {
+        "data": {
+          "name": "data:212",
+          "args": [
+            {
+              "data": {
+                "args": [],
+                "name": "data:525"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "data:529"
+              }
+            }
+          ]
+        }
+      },
+      "equal": true
+    },
+    {
+      "function": "Range.checkInteger",
+      "field": "argumentType",
+      "actual": [
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        }
+      ],
+      "expected": [
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        }
+      ],
+      "equal": true
+    },
+    {
+      "function": "Range.value",
+      "field": "resultType",
+      "actual": {
+        "base": {
+          "name": "Integer"
+        }
+      },
+      "expected": {
+        "base": {
+          "name": "Integer"
+        }
+      },
+      "equal": true
+    },
+    {
+      "function": "Range.value",
+      "field": "argumentType",
+      "actual": [
+        {
+          "data": {
+            "args": [],
+            "name": "data:525"
+          }
+        }
+      ],
+      "expected": [
+        {
+          "data": {
+            "args": [],
+            "name": "data:525"
+          }
+        }
+      ],
+      "equal": true
+    }
+  ],
+  "allEqual": true,
+  "leanDefinitionSourceSha256": "67db60ecd6e43ac799fee28d69a7834c34cb95a7c8cded57fef3b4f8e9bcda81",
+  "generatedLeanInputSha256": "5e5c975526ba9f5a24e38d58d70f8efc74c7b4960f3266c2da80c827df6d6bc3",
+  "inputSha256": {
+    "corpus.json": "151938f224e669ed9308261deea199d13abea7f6f8ce84bf5d4ee41c39c9692d",
+    "stdlib.json": "bc1cd63c6a4518c35f6bb23b0d2fbbcadd151947e12c2e18460e676515d4c2a3",
+    "builtins.json": "2a70301b5c4eee1da96da247174f849fc2b1a1c9c80db34e1bca564bc8942c6d"
+  }
+}

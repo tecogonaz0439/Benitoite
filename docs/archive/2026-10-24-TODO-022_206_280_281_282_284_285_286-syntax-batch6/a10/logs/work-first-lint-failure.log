@@ -1,0 +1,126 @@
+== plan: level work against 7d2277bd3e8d9017b6020dd30bc9a70b80f7d8ae (14 changed file(s))
+   [fmt] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   omitted: spec_examples (included by tests_related, default configuration)
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/discovery.rs:159:13
+    |
+159 |             e => e,
+    |             ^ help: try: `e @ IdentityStop::Depth | e @ IdentityStop::NumberOverflow | e @ IdentityStop::Input(_) | e @ IdentityStop::MissingReference(_) | e @ IdentityStop::MissingScheme(_) | e @ IdentityStop::MissingConstant(_) | e @ IdentityStop::MissingLiteral(_) | e @ IdentityStop::MissingTryKind(_) | e @ IdentityStop::Unmapped(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+    = note: requested on the command line with `-D clippy::wildcard-enum-match-arm`
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/discovery.rs:168:17
+    |
+168 |                 e => e,
+    |                 ^ help: try: `e @ IdentityStop::Depth | e @ IdentityStop::NumberOverflow | e @ IdentityStop::Input(_) | e @ IdentityStop::MissingReference(_) | e @ IdentityStop::MissingScheme(_) | e @ IdentityStop::MissingConstant(_) | e @ IdentityStop::MissingLiteral(_) | e @ IdentityStop::MissingTryKind(_) | e @ IdentityStop::Unmapped(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/discovery.rs:267:25
+    |
+267 |                         _ => false,
+    |                         ^ help: try: `Expr::Lit(_) | Expr::Interp(_) | Expr::Unit(_) | Expr::Paren(_) | Expr::List(_) | Expr::Call(_) | Expr::Record(_) | Expr::Binary(_) | Expr::Unary(_) | Expr::Pipe(_) | Expr::If(_) | Expr::Match(_) | Expr::Lambda(_) | Expr::Return(_) | Expr::Try(_) | Expr::Block(_) | Expr::Lazy(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) | Expr::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/discovery.rs:764:13
+    |
+764 |             _ => {}
+    |             ^ help: try: `Pattern::Wildcard(_) | Pattern::Lit(_) | Pattern::Unit(_) | Pattern::Range(_) | Pattern::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/discovery.rs:808:17
+    |
+808 |                 _ => Ok(0),
+    |                 ^ help: try: `Pattern::Wildcard(_) | Pattern::Lit(_) | Pattern::Unit(_) | Pattern::Range(_) | Pattern::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/flow/independent.rs:157:13
+    |
+157 |             _ => return Err(IdentityStop::Unmapped(source.id())),
+    |             ^ help: try: `Expr::Lit(_) | Expr::Name(_) | Expr::Unit(_) | Expr::Binary(_) | Expr::If(_) | Expr::Match(_) | Expr::Return(_) | Expr::Block(_) | Expr::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/mod.rs:230:25
+    |
+230 |                         _ => None,
+    |                         ^ help: try: `Coverage::None | Coverage::Prepared`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+warning: this `if` statement can be collapsed
+   --> crates/benitoite/src/typeck/interval/mod.rs:283:17
+    |
+283 | /                 if let Err(IdentityStop::AnalysisBudget(stop)) = discovery.result {
+284 | |                     if stop.whole() {
+285 | |                         report.stopped = Some(stop);
+286 | |                     }
+287 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+    = note: `#[warn(clippy::collapsible_if)]` on by default
+help: collapse nested if block
+    |
+283 ~                 if let Err(IdentityStop::AnalysisBudget(stop)) = discovery.result
+284 ~                     && stop.whole() {
+285 |                         report.stopped = Some(stop);
+286 ~                     }
+    |
+
+warning: this `if` statement can be collapsed
+   --> crates/benitoite/src/typeck/interval/mod.rs:288:17
+    |
+288 | /                 if let Some(Err(IdentityStop::AnalysisBudget(stop))) = discovery.queue {
+289 | |                     if stop.whole() {
+290 | |                         report.stopped = Some(stop);
+291 | |                     }
+292 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+288 ~                 if let Some(Err(IdentityStop::AnalysisBudget(stop))) = discovery.queue
+289 ~                     && stop.whole() {
+290 |                         report.stopped = Some(stop);
+291 ~                     }
+    |
+
+error: `benitoite` (lib) generated 2 warnings
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+error: `benitoite` (lib test) generated 2 warnings (2 duplicates)
+error: warnings are denied by `build.warnings` configuration
+FAILED: lint_default
+       11.78 real        14.64 user         0.97 sys
+time: sysctl kern.clockrate: Operation not permitted

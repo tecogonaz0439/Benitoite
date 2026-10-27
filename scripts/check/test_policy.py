@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import runpy
 import shlex
 import shutil
 import subprocess
@@ -35,6 +36,18 @@ if name == 'lake':
     print(os.environ.get('POLICY_LAKE_OUTPUT', ''), end='')
 if name != 'cargo':
     sys.exit(0)
+if args[:2] == ['deny', '--version']:
+    if os.environ.get('POLICY_ADVISORIES_MISSING'):
+        print('error: no such command: deny', file=sys.stderr)
+        sys.exit(101)
+    print('cargo-deny 0.20.2')
+    sys.exit(0)
+if args[0] == 'deny' and args[-2:] == ['check', 'advisories']:
+    key = 'fuzz' if 'fuzz/Cargo.toml' in args else 'workspace'
+    case = json.loads(Path(os.environ['POLICY_ADVISORIES']).read_text())[key] if os.environ.get('POLICY_ADVISORIES') else {}
+    print(case.get('stdout', ''), end='')
+    print(case.get('stderr', '{"type":"summary","fields":{"advisories":{"errors":0,"warnings":0,"notes":0,"helps":0}}}\n'), end='', file=sys.stderr)
+    sys.exit(case.get('exit', 0))
 scenario_path = os.environ.get('POLICY_CARGO')
 if not scenario_path:
     sys.exit(0)
@@ -75,7 +88,7 @@ class Sandbox:
         self.env = dict(os.environ, PATH=str(self.bin) + os.pathsep + os.environ['PATH'],
                         POLICY_LOG=str(self.log), PYTHONDONTWRITEBYTECODE='1',
                         GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
-        for name in ('POLICY_FAIL', 'POLICY_CARGO', 'POLICY_LAKE_OUTPUT'):
+        for name in ('POLICY_FAIL', 'POLICY_CARGO', 'POLICY_LAKE_OUTPUT', 'POLICY_ADVISORIES', 'POLICY_ADVISORIES_MISSING', 'BENITOITE_ADVISORY_DB_PATH'):
             self.env.pop(name, None)
         for name in ('cargo', 'lake'):
             self.put('.external/' + name, EXTERNAL, executable=True)
@@ -101,7 +114,9 @@ class Sandbox:
         self.put('crates/benitoite/testdata/acceptance/INDEX.md',
                  '## 初回リリース版の完了条件\n| 完了条件 | テスト |\n|---|---|\n'
                  + ''.join(f'| fixture {i} | `runner/sample.bnt` |\n' for i in range(4)))
-        self.put('.gitignore', '.external/\n__pycache__/\n')
+        self.put('.gitignore', '.external/\n__pycache__/\ntarget/\n')
+        for name in ('Cargo.lock', 'fuzz/Cargo.lock'):
+            self.put(name, '# fixture input\n')
         self.git('init', '-q')
         self.git('add', '.')
         self.git('-c', 'user.name=Policy Test', '-c', 'user.email=policy@example.invalid',
@@ -186,7 +201,7 @@ class PolicyTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.box.close()
 
-    def test_formal_batch3_entries_and_failure_propagation(self):
+    def test_formal_entries_and_failure_propagation(self):
         # 外部プロセスだけを代え、本物のシェルが独立入力と実ソースを両方呼ぶこと、
         # 各入口の失敗を最後の成功で上書きしないことを確かめる。
         with tempfile.TemporaryDirectory(prefix='benitoite-formal-policy-') as temporary:
@@ -197,7 +212,11 @@ class PolicyTests(unittest.TestCase):
             (root / 'external').mkdir()
             for name in ('lake', 'cargo', 'python3'):
                 path = root / 'external' / name
-                path.write_text(EXTERNAL.replace("#!/usr/bin/env python3", "#!" + sys.executable, 1))
+                observer = ("if name == 'cargo' and any(a.startswith('export_interval_') for a in args):\n"
+                            "    with open(os.environ['POLICY_EXPORT_DIRS'], 'a') as stream:\n"
+                            "        stream.write(json.dumps(os.environ['BENITOITE_DESUGAR_DIFF_DIR']) + '\\n')\n")
+                path.write_text(EXTERNAL.replace("#!/usr/bin/env python3", "#!" + sys.executable, 1)
+                                .replace("if name == 'lake':", observer + "if name == 'lake':"))
                 path.chmod(0o755)
             for name in ('coverageDiff', 'coverageProgramDiff', 'desugarDiff', 'builtinCheck', 'surfaceCheckAll'):
                 path = root / 'formal/.lake/build/bin' / name
@@ -205,12 +224,16 @@ class PolicyTests(unittest.TestCase):
                 path.chmod(0o755)
             log = root / 'calls.jsonl'
             env = dict(os.environ, PATH=str(root / 'external') + os.pathsep + os.environ['PATH'], POLICY_LOG=str(log))
-            for name in ('POLICY_FAIL', 'POLICY_CARGO', 'BENITOITE_DESUGAR_DIFF_DIR', 'BENITOITE_COVERAGE_DIFF_DIR'):
+            for name in ('POLICY_FAIL', 'POLICY_CARGO', 'BENITOITE_DESUGAR_DIFF_DIR',
+                         'BENITOITE_COVERAGE_DIFF_DIR', 'BENITOITE_INTERVAL_DIFF_DIR'):
                 env.pop(name, None)
             # 失敗時の呼び出し列も全引数で比べるため、実行ごとのPIDを含まない出力先にする。
             output_dir = root / 'target/desugar-diff/policy'
             env['BENITOITE_DESUGAR_DIFF_DIR'] = str(output_dir)
             env['BENITOITE_COVERAGE_DIFF_DIR'] = str(root / 'target/coverage-diff/policy')
+            interval_dir = root / 'target/interval-diff/policy'
+            env['BENITOITE_INTERVAL_DIFF_DIR'] = str(interval_dir)
+            env['POLICY_EXPORT_DIRS'] = str(root/'export-dirs.jsonl')
             result = execute(['bash', 'scripts/check-formal.sh'], root, env)
             self.assertEqual(result.returncode, 0, result.stderr)
             calls = [json.loads(line) for line in log.read_text().splitlines()]
@@ -234,7 +257,36 @@ class PolicyTests(unittest.TestCase):
                         '--rust-dir', rust_dir,
                         '--report', str(output_dir / 'batch3' / (profile + '-exchange-results.json')),
                     ])
-            for call in (independent, batch4, rust[0], *checker):
+            interval = [call for call in calls if call[:3] ==
+                        ['python3', '-B', 'formal/tests/test_interval_exchange.py']]
+            self.assertEqual(len(interval), 1)
+            args = interval[0][3:]
+            self.assertEqual(args[args.index('--output')+1], str(interval_dir / 'comparison'))
+            self.assertEqual(args[args.index('--source-dir')+1], str(interval_dir / 'identity'))
+            self.assertEqual(args[args.index('--vm-dir')+1], str(interval_dir / 'vm'))
+            self.assertEqual([args[i+1] for i, value in enumerate(args) if value == '--rust-dir'],
+                             [str(interval_dir / name) for name in (
+                                 'programs', 'identity', 'manifest/manifest-interval', 'range/interval',
+                                 'vm/original', 'vm/instrumented', 'vm/range/original',
+                                 'vm/range/instrumented', 'vm/shifts/original', 'vm/shifts/instrumented')])
+            exports = [['cargo', 'test', '--test', 'desugar_export', 'export_interval_'+name,
+                        '--', '--nocapture'] for name in ('identity', 'manifest', 'range', 'vm')]
+            for call in exports:
+                self.assertEqual(calls.count(call), 1)
+            self.assertEqual([json.loads(line) for line in (root/'export-dirs.jsonl').read_text().splitlines()],
+                             [str(interval_dir/name) for name in ('identity', 'manifest', 'range', 'vm')])
+            self.assertIn(['cargo', 'test', '--test', 'desugar_export', '--',
+                           '--include-ignored', '--nocapture', '--skip', 'export_interval'], calls)
+            self.assertIn(['lake', 'build', 'intervalDiff'], calls)
+            artifact_calls = [call for call in calls if call[:3] ==
+                              ['python3', '-B', 'scripts/check/formal_interval.py']]
+            self.assertEqual([call[3] for call in artifact_calls], ['prepare', 'collect', 'manifest', 'verify'])
+            self.assertEqual(calls[-2:], artifact_calls[-2:])
+            # 旧六入口の全体と各交換を残し、新しい途中失敗も後の成功で隠さない。
+            for tool in ('coverageDiff', 'coverageProgramDiff', 'desugarDiff', 'builtinCheck', 'surfaceCheckAll'):
+                self.assertTrue(any(call[0] == tool for call in calls))
+            for call in (independent, batch4, rust[0], *checker, *exports, interval[0], *artifact_calls,
+                         ['lake', 'build', 'intervalDiff'], ['cargo', 'build', '-p', 'benitoite', '--bin', 'benitoite']):
                 with self.subTest(failure=call):
                     log.unlink()
                     failed = execute(['bash', 'scripts/check-formal.sh'], root,
@@ -243,6 +295,120 @@ class PolicyTests(unittest.TestCase):
                     self.assertEqual(len(log.read_text().splitlines()), calls.index(call) + 1)
                     self.assertEqual([json.loads(line) for line in log.read_text().splitlines()],
                                      calls[:calls.index(call) + 1])
+
+    def test_formal_output_directory_isolation(self):
+        # 本物の準備入口へ、.. とリンクを含む出力先を渡す。内容の字面は検査しない。
+        with tempfile.TemporaryDirectory(prefix='benitoite-formal-paths-') as temporary:
+            root = Path(temporary).resolve()
+            helper = root / 'scripts/check/formal_interval.py'
+            helper.parent.mkdir(parents=True)
+            shutil.copy2(ROOT / 'scripts/check/formal_interval.py', helper)
+            shutil.copy2(ROOT / 'scripts/check/interval_artifacts.py', helper.with_name('interval_artifacts.py'))
+            interval = root / 'target/interval-diff/run'
+            desugar = root / 'target/desugar-diff/run'
+            coverage = root / 'target/coverage-diff/run'
+            def prepare(path, other=desugar):
+                return execute([sys.executable, '-B', str(helper), 'prepare', '--interval-dir', str(path),
+                                '--desugar-dir', str(other), '--coverage-dir', str(coverage)], root)
+            for path, other in [(interval, interval), (interval, interval/'nested'),
+                                (interval, interval.parent), (root/'elsewhere', desugar),
+                                (interval/'../../desugar-diff/run', desugar)]:
+                with self.subTest(path=path, other=other):
+                    self.assertNotEqual(prepare(path, other).returncode, 0)
+                    self.assertFalse(interval.exists())
+            self.assertEqual(prepare(interval).returncode, 0)
+            (root/'target/interval-diff/link').symlink_to(desugar, target_is_directory=True)
+            self.assertNotEqual(prepare(root/'target/interval-diff/link').returncode, 0)
+            (interval/'old-report.json').write_text('{}')
+            self.assertNotEqual(prepare(interval).returncode, 0)
+
+    def test_formal_input_manifest_rejects_changed_and_missing_files(self):
+        # 実ファイルの同定を境界にする。比較器は起動せず、入力を実際に壊して検査する。
+        helper = runpy.run_path(str(ROOT/'scripts/check/formal_interval.py'))
+        with tempfile.TemporaryDirectory(prefix='benitoite-formal-inputs-') as temporary:
+            root = Path(temporary).resolve()
+            roots = {name: root/name for name in ('interval', 'desugar', 'coverage')}
+            for directory in roots.values():
+                directory.mkdir()
+            source = roots['desugar']/'corpus.json'
+            source.write_text('{"inputs":[1]}')
+            report = roots['interval']/'report.json'
+            report.write_text('{"matched":true}')
+            artifacts = helper['inventory'](roots)
+            helper['write'](roots['interval']/'input-manifest.json',
+                            dict(kind='formal-interval-inputs', version=1, artifacts=artifacts))
+            helper['verify_inputs'](roots)
+            for path in (source, report):
+                original = path.read_bytes()
+                path.write_bytes(original + b' ')
+                with self.assertRaisesRegex(AssertionError, 'hash differs'):
+                    helper['verify_inputs'](roots)
+                path.unlink()
+                with self.assertRaisesRegex(AssertionError, 'missing'):
+                    helper['verify_inputs'](roots)
+                path.write_bytes(original)
+            helper['verify_inputs'](roots)
+
+    def test_formal_collect_preserves_shared_inputs_without_copying(self):
+        helper = runpy.run_path(str(ROOT/'scripts/check/formal_interval.py'))
+        with tempfile.TemporaryDirectory(prefix='benitoite-formal-shared-') as temporary:
+            root = Path(temporary).resolve()
+            roots = {name: root/name for name in ('interval', 'desugar', 'coverage')}
+            for directory in roots.values():
+                directory.mkdir()
+            for stem in ('named-programs', 'independent-program'):
+                directory = roots['desugar']/(stem+'-interval')
+                directory.mkdir()
+                row = dict(group='golden', name=stem, payload='x'*32768)
+                helper['write'](roots['desugar']/(stem+'-corpus.json'), dict(inputs=[row]))
+                for filename in helper['SOURCE_FILES']:
+                    helper['write'](directory/filename, dict(kind=filename, inputs=[row]))
+            helper['collect'](roots)
+            for filename in helper['SOURCE_FILES']:
+                shared = roots['interval']/'programs'/filename
+                self.assertEqual(helper['read'](shared)['inputs'],
+                                 [dict(group='golden', name=stem, payload='x'*32768)
+                                  for stem in ('named-programs', 'independent-program')])
+                self.assertEqual(list(helper['input_rows'](shared)), helper['read'](shared)['inputs'])
+                self.assertLess(shared.stat().st_size, 1024)
+            # 最終照合の要約とfuelの記録は配列であり、索引と取り違えない。
+            summary = roots['interval']/'real-source-summary.json'
+            helper['write'](summary, [dict(comparedBodies='1')])
+            self.assertEqual(helper['read'](summary), [dict(comparedBodies='1')])
+            helper['verify_inputs'](roots)
+            source = roots['desugar']/'named-programs-interval/interval-material.json'
+            source.write_text(source.read_text().replace('x', 'y'))
+            with self.assertRaisesRegex(AssertionError, 'hash differs'):
+                helper['verify_inputs'](roots)
+
+    def test_formal_source_evidence_and_negative_requirements(self):
+        # 外部成果物の関門。Bottom だけ・警告だけ・独立入力だけの根拠を区別する。
+        helper = runpy.run_path(str(ROOT/'scripts/check/formal_interval.py'))
+        sources, evidence = [], []
+        for name in helper['SOURCE_DIRS']:
+            sources.append(dict(nonBottomInformativeBodies=0, userWarnings=1,
+                negativeCases=sorted(helper['NEGATIVE_ALL']-helper['NEGATIVE_ABSENT'][name]),
+                independentCandidates=0, phaseStops=[], excluded=[]))
+            evidence.append(dict(nonBottomInformativeBodies=0, userWarnings=1, nonTopIndependentInputs=0))
+        sources[0]['nonBottomInformativeBodies'] = evidence[0]['nonBottomInformativeBodies'] = 1
+        check = helper['require_source_evidence']
+        check(sources, evidence)
+        sources[0]['nonBottomInformativeBodies'] = evidence[0]['nonBottomInformativeBodies'] = 0
+        with self.assertRaisesRegex(AssertionError, 'across source collections'):
+            check(sources, evidence)
+        sources[0]['nonBottomInformativeBodies'] = evidence[0]['nonBottomInformativeBodies'] = 1
+        sources[1]['userWarnings'] = evidence[1]['userWarnings'] = 0
+        with self.assertRaisesRegex(AssertionError, 'identity: no non-Bottom'):
+            check(sources, evidence)
+        evidence[1]['nonTopIndependentInputs'] = 1
+        check(sources, evidence)
+        for index, source in enumerate(sources):
+            for case in list(source['negativeCases']):
+                with self.subTest(directory=helper['SOURCE_DIRS'][index], case=case):
+                    source['negativeCases'].remove(case)
+                    with self.assertRaisesRegex(AssertionError, 'required negative cases missing'):
+                        check(sources, evidence)
+                    source['negativeCases'].append(case)
 
     def test_legacy_contract(self):
         fixture = json.loads(FIXTURE.read_text())
@@ -362,7 +528,7 @@ class PolicyTests(unittest.TestCase):
         expected = [
             ['cargo', 'fmt', '--all', '--check'],
             ['cargo', 'clippy', '-p', 'benitoite', '--lib', '--tests',
-             '--no-default-features', '--features', 'gc-mark-sweep'],
+             '--examples', '--no-default-features', '--features', 'gc-mark-sweep'],
             ['cargo', 'test', '-p', 'benitoite', '--lib'],
             ['cargo', 'test', '-p', 'benitoite', '--test', '*'],
             ['cargo', 'run', '-q', '-p', 'benitoite', '--example', 'gen_skill'],
@@ -569,7 +735,12 @@ class PolicyTests(unittest.TestCase):
                 'skill_generated', 'spec_tally'}
         cases = [
             ('docs/design/00-overview/00-03-roadmap.md', {'spec_tally'}),
+            ('crates/benitoite/src/sample.rs', rust),
+            ('crates/benitoite/examples/sample.rs', rust),
             ('fuzz/src/sample.rs', rust),
+            *[(name, rust | {'licenses', 'advisories'}) for name in
+              ('Cargo.toml', 'Cargo.lock', 'crates/benitoite/Cargo.toml', 'deny.toml')],
+            *[(name, rust | {'advisories'}) for name in ('fuzz/Cargo.toml', 'fuzz/Cargo.lock')],
             ('formal/sample.lean', {'formal_build'}),
             ('formal/reviews/sample.md', set()),
             ('scripts/release/about.hbs', {'licenses'}),
@@ -630,6 +801,8 @@ class PolicyTests(unittest.TestCase):
             ('deny.toml', rust | {'licenses'}),
             ('crates/benitoite/Cargo.toml', rust | {'licenses'}),
             ('fuzz/src/change.rs', rust),
+            ('fuzz/Cargo.toml', rust),
+            ('fuzz/Cargo.lock', rust),
             ('formal/change.lean', {'formal_build'}),
             ('formal/reviews/change.md', set()),
             ('scripts/check-formal.sh', {'formal_build'}),
@@ -659,7 +832,7 @@ class PolicyTests(unittest.TestCase):
                     result = self.box.check('--level', 'change', '--base', self.box.base, '--dry-run')
                     self.assertEqual(result.returncode, 3 if stopped else 0, result.stdout + result.stderr)
                     selected = set(re.findall(r'^   \[([a-z_]+)\]', result.stdout, re.MULTILINE))
-                    self.assertEqual(selected, units, result.stdout)
+                    self.assertEqual(selected, units | {'advisories'}, result.stdout)
                     self.assertEqual('== stop:' in result.stdout, stopped)
                     self.assertEqual(self.box.calls(), [])
                     if stopped:
@@ -699,13 +872,17 @@ class PolicyTests(unittest.TestCase):
                 ordinary = [c for c in self.box.calls() if '--ignored' not in c]
                 self.assertEqual(ordinary, [
                     ['cargo', 'fmt', '--all', '--check'],
-                    ['cargo', 'clippy', '-p', 'benitoite', '--lib', '--tests', '--no-default-features', '--features', 'gc-mark-sweep'],
+                    ['cargo', 'clippy', '-p', 'benitoite', '--lib', '--tests', '--examples', '--no-default-features', '--features', 'gc-mark-sweep'],
                     ['cargo', 'clippy', '--workspace', '--all-targets', '--no-default-features', '--features', 'gc-mark-sweep,heap-verify,alloc-stats'],
                     ['cargo', 'test', '--workspace', '--all-targets'],
                     ['cargo', 'test', '--workspace', '--all-targets', '--no-default-features', '--features', 'gc-mark-sweep,heap-verify'],
                     ['cargo', 'test', '--workspace', '--lib', '--tests', '--no-default-features', '--features', 'gc-mark-sweep,heap-verify,gc-stress'],
                     ['cargo', 'test', '--workspace', '--doc'],
                     ['cargo', 'run', '-q', '-p', 'benitoite', '--example', 'gen_skill'],
+                    ['cargo', 'deny', '--version'],
+                    *[['cargo', 'deny', '--format', 'json', '--log-level', 'debug',
+                       '--manifest-path', manifest, '--config', 'deny.toml', '--locked', 'check', 'advisories']
+                      for manifest in ('Cargo.toml', 'fuzz/Cargo.toml')],
                 ])
                 executions = [c for c in self.box.calls() if '--ignored' in c]
                 self.assertEqual([c[c.index('--') + 1:] for c in executions],
@@ -795,7 +972,7 @@ class PolicyTests(unittest.TestCase):
                         self.assertEqual(self.box.calls(), [])
                         self.assertIn('scripts/check/run_ignored.py', plan.stdout)
                         self.assertNotIn('== stop:', plan.stdout)
-                        self.assertEqual(re.findall(r'^   \[([a-z_]+)\]', plan.stdout, re.MULTILINE), [only or 'release_stack'])
+                        self.assertEqual(re.findall(r'^   \[([a-z_]+)\]', plan.stdout, re.MULTILINE), [only] if only else ['release_stack', 'advisories'])
                         result = self.box.check(*args)
                         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                         calls = self.box.calls()
@@ -818,6 +995,174 @@ class PolicyTests(unittest.TestCase):
                                 self.box.env.pop('POLICY_FAIL')
             finally:
                 (self.box.root / 'unknown.input').unlink()
+
+
+class AdvisoriesTests(unittest.TestCase):
+    def setUp(self):
+        self.box = Sandbox()
+        self.args = ['--level', 'work', '--only', 'advisories', '--base', self.box.base]
+
+    def tearDown(self):
+        self.box.close()
+
+    def run_cases(self, workspace, fuzz):
+        self.box.put('.external/advisories.json', json.dumps(dict(workspace=workspace, fuzz=fuzz)))
+        self.box.env['POLICY_ADVISORIES'] = str(self.box.bin / 'advisories.json')
+        result = self.box.check(*self.args)
+        reports = sorted((self.box.root / 'target/check-advisories').glob('*/report.json'),
+                         key=lambda path: path.stat().st_mtime_ns)
+        return result, json.loads(reports[-1].read_text())
+
+    def test_selection_without_changes_explicit_levels_and_dry_run(self):
+        for level in ('work', 'stage', 'change', 'release'):
+            with self.subTest(level=level):
+                args = ['--level', level, '--only', 'advisories', '--base', 'missing-base']
+                plan = self.box.check(*args, '--dry-run')
+                self.assertEqual(plan.returncode, 0, plan.stderr)
+                self.assertIn('--manifest-path Cargo.toml --config deny.toml --locked check advisories', plan.stdout)
+                self.assertIn('--manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories', plan.stdout)
+                self.assertEqual(self.box.calls(), [])
+                self.assertFalse((self.box.root / 'target').exists())
+        for level, expected in [('work', []), ('change', ['advisories']),
+                                ('release', ['release_stack', 'advisories'])]:
+            plan = self.box.check('--level', level, '--base', self.box.base, '--dry-run')
+            self.assertEqual(plan.returncode, 0, plan.stderr)
+            self.assertEqual(re.findall(r'^   \[([a-z_]+)\]', plan.stdout, re.MULTILINE), expected)
+            self.assertEqual(self.box.calls(), [])
+        # 名指し以外の既存検査の集合は、固定legacy記録でも引き続き検査する。
+        self.assertEqual(self.box.check('--only', 'advisories', '--dry-run').returncode, 2)
+
+    def test_target_states_raw_evidence_and_exit_status(self):
+        def record(kind, fields):
+            return json.dumps(dict(type=kind, fields=fields)) + '\n'
+        clear = dict(stderr=record('summary', dict(advisories=dict(errors=0, warnings=0, notes=0, helps=0))))
+        finding = dict(exit=1, stderr=record('diagnostic', dict(
+            severity='error', code='vulnerability', message='fixture advisory',
+            advisory=dict(id='RUSTSEC-2099-0001', package='fixture'),
+            graphs=[dict(Krate=dict(name='fixture', version='1.2.3'))],
+            notes=['Solution: Upgrade to >=1.2.4', 'Announcement: https://example.invalid/advisory']))
+            + record('summary', dict(advisories=dict(errors=1, warnings=0, notes=0, helps=0))))
+        unavailable = dict(exit=1, stderr=record('log', dict(level='ERROR', message='failed to fetch advisory database: network unavailable')))
+        config = dict(exit=1, stderr=record('log', dict(level='ERROR', message="failed to parse config from 'deny.toml'")))
+        locked = dict(exit=1, stderr=record('log', dict(level='ERROR', message=
+            '`cargo metadata` exited with an error: error: cannot update the lock file fuzz/Cargo.lock because --locked was passed to prevent this')))
+        locked_legacy = dict(exit=1, stderr=record('log', dict(level='ERROR', message=
+            'the lock file needs to be updated but --locked was passed to prevent this')))
+        index = dict(stderr=record('diagnostic', dict(code='index-failure', severity='warning'))
+                     + record('summary', dict(advisories=dict(errors=0, warnings=1, notes=0, helps=0))))
+        cases = [
+            (clear, clear, ['clear', 'clear'], 0),
+            (finding, clear, ['advisories', 'clear'], 0),
+            (clear, finding, ['clear', 'advisories'], 0),
+            (finding, finding, ['advisories', 'advisories'], 0),
+            (unavailable, clear, ['unverified', 'clear'], 0),
+            (clear, unavailable, ['clear', 'unverified'], 0),
+            (unavailable, unavailable, ['unverified', 'unverified'], 0),
+            (finding, unavailable, ['advisories', 'unverified'], 0),
+            (dict(exit=1, stderr='unknown output containing RUSTSEC-2099-0001'), clear, ['unverified', 'clear'], 0),
+            (dict(stderr=''), clear, ['unverified', 'clear'], 0),
+            (dict(stderr=record('diagnostic', dict(severity='warning', code='future-code'))),
+             clear, ['unverified', 'clear'], 0),
+            (dict(stderr=record('log', dict(level='ERROR', message=[]))),
+             clear, ['unverified', 'clear'], 0),
+            (dict(exit=0, stderr=finding['stderr']), clear, ['unverified', 'clear'], 0),
+            (index, clear, ['unverified', 'clear'], 0),
+            (locked, clear, ['error', 'clear'], 1),
+            (clear, locked, ['clear', 'error'], 1),
+            (locked_legacy, clear, ['error', 'clear'], 1),
+            (config, clear, ['error', 'clear'], 1),
+            (clear, config, ['clear', 'error'], 1),
+            (dict(exit=17, stderr='executor broke'), clear, ['error', 'clear'], 1),
+            (dict(exit=1, stderr="thread 'main' panicked at fixture"), clear, ['error', 'clear'], 1),
+        ]
+        for first, second, states, code in cases:
+            with self.subTest(states=states, code=code, first=first):
+                result, report = self.run_cases(first, second)
+                self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+                if first in (locked, locked_legacy) or second in (locked, locked_legacy):
+                    self.assertIn('lock needs update (--locked)', result.stdout)
+                self.assertEqual(report['exit'], code)
+                self.assertEqual([t['state'] for t in report['targets']], states)
+                self.assertEqual('=== ALL TARGETS CHECKED: 0 advisories ===' in result.stdout,
+                                 states == ['clear', 'clear'])
+                self.assertEqual(self.box.calls(), [
+                    ['cargo', 'deny', '--version'],
+                    *[['cargo', 'deny', '--format', 'json', '--log-level', 'debug',
+                       '--manifest-path', manifest, '--config', 'deny.toml', '--locked', 'check', 'advisories']
+                      for manifest in ('Cargo.toml', 'fuzz/Cargo.toml')]])
+                evidence = sorted((self.box.root / 'target/check-advisories').glob('*/report.json'),
+                                  key=lambda p: p.stat().st_mtime_ns)[-1].parent
+                for target, case in zip(report['targets'], (first, second)):
+                    self.assertEqual(target['lock_sha256'], target['lock_sha256_after'])
+                    self.assertEqual((evidence / target['raw']['stderr']).read_text(), case.get('stderr', ''))
+                    if target['state'] == 'advisories':
+                        self.assertEqual(target['count'], 1)
+                        self.assertEqual(target['ids'], ['RUSTSEC-2099-0001'])
+                        self.assertIn('fixture 1.2.3', result.stdout)
+                        self.assertIn('Upgrade to >=1.2.4', result.stdout)
+                        self.assertIn('https://rustsec.org/advisories/RUSTSEC-2099-0001.html', result.stdout)
+
+    def test_missing_tool_and_writable_db_copy(self):
+        self.box.env['POLICY_ADVISORIES_MISSING'] = '1'
+        result, report = self.run_cases({}, {})
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual([t['state'] for t in report['targets']], ['unverified', 'unverified'])
+        self.assertIn('cargo-deny unavailable', result.stdout)
+        self.assertNotIn('ALL TARGETS CHECKED', result.stdout)
+        self.box.env.pop('POLICY_ADVISORIES_MISSING')
+        original = (self.box.root / 'deny.toml').read_bytes()
+        result = execute([sys.executable, '-B', 'scripts/check/advisories.py', '--db-path',
+                          str(self.box.root / '.external/db')], self.box.root, self.box.env)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((self.box.root / 'deny.toml').read_bytes(), original)
+        reports = sorted((self.box.root / 'target/check-advisories').glob('*/report.json'),
+                         key=lambda p: p.stat().st_mtime_ns)
+        report = json.loads(reports[-1].read_text())
+        copied = (reports[-1].parent / 'deny.effective.toml').read_text()
+        self.assertEqual(copied.replace('[advisories]\ndb-path = '
+                         + json.dumps(report['db_path_override']), '[advisories]'), original.decode())
+        for target in report['targets']:
+            self.assertIn(report['effective_config'], target['raw']['command'])
+
+    def test_saved_evidence_redacts_local_paths_after_database_lookup(self):
+        with tempfile.TemporaryDirectory(prefix='benitoite-home-') as home, \
+                tempfile.TemporaryDirectory(prefix='benitoite-tmp-') as scratch:
+            self.box.env.update(HOME=home, TMPDIR=scratch, TMP=scratch, TEMP=scratch)
+            paths = [str(self.box.root), home, scratch]
+            def record(message):
+                return json.dumps(dict(type='log', fields=dict(level='DEBUG', message=message))) + '\n'
+            stdout = record('paths: ' + ' '.join(path + '/source' for path in paths))
+            stderr = (record('loading advisory database from ' + str(self.box.root))
+                      + json.dumps(dict(type='summary', fields=dict(advisories=dict(
+                          errors=0, warnings=0, notes=0, helps=0)))) + '\n')
+            self.box.put('.external/advisories.json', json.dumps(dict.fromkeys(
+                ('workspace', 'fuzz'), dict(stdout=stdout, stderr=stderr))))
+            self.box.env['POLICY_ADVISORIES'] = str(self.box.bin / 'advisories.json')
+            self.box.env['BENITOITE_ADVISORY_DB_PATH'] = scratch + '/db'
+            result = self.box.check(*self.args)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            evidence = next((self.box.root / 'target/check-advisories').iterdir())
+            # 表示と実際のコマンドは元のパスを使い、保存された全ファイルだけを検査する。
+            self.assertIn(stdout, result.stdout)
+            for path in evidence.iterdir():
+                saved = path.read_text()
+                for original in paths:
+                    self.assertNotIn(original, saved, path.name)
+            self.assertIn('<repo>/source <home>/source <tmp>/source',
+                          (evidence / 'workspace.stdout').read_text())
+            self.assertIn('loading advisory database from <repo>',
+                          (evidence / 'fuzz.stderr').read_text())
+            self.assertIn('db-path = "<tmp>/db"', (evidence / 'deny.effective.toml').read_text())
+            report = json.loads((evidence / 'report.json').read_text())
+            self.assertTrue(report['path_redaction']['applied'])
+            self.assertEqual(report['db_path_override'], '<tmp>/db')
+            for target in report['targets']:
+                self.assertEqual(target['state'], 'clear')
+                self.assertEqual(target['databases'], [dict(path='<repo>', commit=self.box.base)])
+            commands = self.box.calls()
+            effective = str(evidence.resolve() / 'deny.effective.toml')
+            for command in commands[1:]:
+                self.assertEqual(command[command.index('--config') + 1], effective)
 
 
 class IgnoredTests(unittest.TestCase):

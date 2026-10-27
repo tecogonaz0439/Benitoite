@@ -1,0 +1,9 @@
+error[E0303]: `Float` has no member `isInfinite`
+  --> work/m012/scratch/s2/json-sink.bnt:12:39
+   |
+12 |       if Float.isNaN(number) or Float.isInfinite(number) then
+   |                                       ^^^^^^^^^^ not found in `Float`
+   |
+   = note: `Float` has: `absolute`, `ceiling`, `floor`, `isNaN`, `parse`, `round`, `squareRoot`, `toString`, `truncate`
+
+error: could not check work/m012/scratch/s2/json-sink.bnt due to 1 previous error

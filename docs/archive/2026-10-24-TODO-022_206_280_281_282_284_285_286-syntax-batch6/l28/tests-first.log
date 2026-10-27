@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 335, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 328, in main
+    exercise(args.output.resolve(), executable)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 222, in exercise
+    runner.invoke(c['profile']+'-eval', 'eval', c, 0)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 184, in invoke
+    assert p.returncode == code, (label, p.returncode, code, p.stdout, p.stderr)
+AssertionError: ('flow-eval', 1, 0, 'intervalDiff: mode=eval matched=false accepted=false\n', '')

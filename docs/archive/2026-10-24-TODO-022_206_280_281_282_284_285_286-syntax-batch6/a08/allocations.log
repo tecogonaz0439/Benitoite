@@ -1,0 +1,14 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 2 tests
+5000 constants, 1000 diagnostics: 1.367138416s, 267178210 allocated bytes
+test repeated_constant_diagnostics_share_bounded_origin_work ... ok
+20000 constants: 8.627952291s, 454943955 allocated bytes
+test long_constant_chain_has_bounded_check_allocations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 10.00s
+
+
+runner exit=0, elapsed=11.455s

@@ -1,0 +1,24 @@
+Benitoite/Interval/BudgetWholeExamples.lean:62:0: error: Expression
+  let sample := input "First.sample" (Block.last division);
+  let unrelated := input "First.unrelated" Block.empty;
+  let rows :=
+    List.map
+      (fun cap =>
+        List.map
+          (fun inputs =>
+            let r := analyze { body := { operations := cap, items := 1000 } } { } 100 [{ definitions := inputs }];
+            List.filterMap
+              (fun b =>
+                if (b.definition == sample.name) = true then
+                  some (b.output.context.budget.body.operations, warningKeys b)
+                else none)
+              (bodyOutputs r))
+          [[sample], [unrelated, sample]])
+      [10, 11, 12];
+  decide
+    (rows =
+      [[[(10, [])], [(10, [])]], [[(11, [(1, WarningCause.zeroDivisor)])], [(11, [(1, WarningCause.zeroDivisor)])]],
+        [[(11, [(1, WarningCause.zeroDivisor)])], [(11, [(1, WarningCause.zeroDivisor)])]]])
+did not evaluate to `true`
+        0.42 real         0.26 user         0.16 sys
+time: sysctl kern.clockrate: Operation not permitted

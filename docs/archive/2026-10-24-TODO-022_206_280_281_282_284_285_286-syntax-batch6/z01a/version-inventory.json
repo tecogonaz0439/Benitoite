@@ -1,0 +1,4224 @@
+{
+  "command": "git grep -n '0\\.0\\.11'",
+  "baseline": "dbd5b64432c04699a21a43b77abdf2e00bf9d348",
+  "trackedOnly": true,
+  "matches": 1078,
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "lines": [
+        8,
+        28,
+        30,
+        34,
+        36
+      ],
+      "action": "UnreleasedをZ01bで版の見出しへ移す。過去版・比較元の0.0.11は保つ"
+    },
+    {
+      "path": "Cargo.lock",
+      "lines": [
+        60
+      ],
+      "action": "対象をbenitoiteに絞ったoffline updateで同期する"
+    },
+    {
+      "path": "README.md",
+      "lines": [
+        7
+      ],
+      "action": "現行版とCHANGELOGのアンカーを更新する"
+    },
+    {
+      "path": "crates/benitoite/Cargo.toml",
+      "lines": [
+        3
+      ],
+      "action": "package.versionを0.0.12へ上げる（根のCargo.tomlに版指定はない）"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "lines": [
+        65
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "lines": [
+        951
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "crates/benitoite/skill/references/inspection.md",
+      "lines": [
+        44
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "crates/benitoite/src/external/tests.rs",
+      "lines": [
+        1613,
+        1755,
+        1779
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/src/modules/hash.rs",
+      "lines": [
+        222
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/src/modules/package.rs",
+      "lines": [
+        514,
+        523,
+        526,
+        534,
+        546
+      ],
+      "action": "BREAKING_CHANGESを追加し、履歴・全案内・受理表のテストを拡張する（既存版は保つ）"
+    },
+    {
+      "path": "crates/benitoite/src/modules/tests.rs",
+      "lines": [
+        37,
+        72,
+        98,
+        107,
+        118,
+        914,
+        934,
+        958,
+        964,
+        970,
+        1043,
+        1078,
+        1114,
+        1118,
+        1153,
+        1189
+      ],
+      "action": "受理表・現在より新しい版・全移行案内と成功用の設定を更新する"
+    },
+    {
+      "path": "crates/benitoite/src/modules/text.rs",
+      "lines": [
+        51
+      ],
+      "action": "0.0.11の既存移行文は保ち、0.0.12の要約・案内の定数を加える"
+    },
+    {
+      "path": "crates/benitoite/src/typeck/pattern_ext.rs",
+      "lines": [
+        915
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/src/typeck/tests/diagnostics_batch4.rs",
+      "lines": [
+        267,
+        271
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+      "lines": [
+        3
+      ],
+      "action": "現行版・E0907/E0908の追加案内・位置を候補の実診断に合わせる"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+      "lines": [
+        3
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/main.bnt",
+      "lines": [
+        3
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-config.diag.json",
+      "lines": [
+        1
+      ],
+      "action": "現行版・E0907/E0908の追加案内・位置を候補の実診断に合わせる"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-language.diag.json",
+      "lines": [
+        1
+      ],
+      "action": "現行版・E0907/E0908の追加案内・位置を候補の実診断に合わせる"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+      "lines": [
+        1
+      ],
+      "action": "現行版・E0907/E0908の追加案内・位置を候補の実診断に合わせる"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+      "lines": [
+        1
+      ],
+      "action": "成功させるlanguage宣言を更新し、依存ハッシュと位置の期待値も照合する"
+    },
+    {
+      "path": "crates/benitoite/tests/cli_process.rs",
+      "lines": [
+        780
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "lines": [
+        641,
+        646
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/tests/package_command.rs",
+      "lines": [
+        18,
+        192,
+        219,
+        274,
+        275,
+        400,
+        405,
+        407,
+        452,
+        463
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/tests/spec_examples.rs",
+      "lines": [
+        455
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "crates/benitoite/tests/test_command.rs",
+      "lines": [
+        1441,
+        1448,
+        1956,
+        1967,
+        2887,
+        2902,
+        2911
+      ],
+      "action": "現行版の成功入力・依存設定・期待値を確認して更新する。歴史的な拒否入力は保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a01a/work-resumed.log",
+      "lines": [
+        21,
+        24,
+        1328
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a01a/work.log",
+      "lines": [
+        120
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a01b/work.log",
+      "lines": [
+        21,
+        1335
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/allocation-sizes.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/allocation-traces-small.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/allocation-traces.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/allocation-without-collection.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/allocation-without-driver.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/constant-allocations-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/constant-allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/deep-stack-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/deep-stack-shapes-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/deep-stack-shapes.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/deep-stack.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/local-compact.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/local-storage-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/local-storage.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-cached.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-lazy-index.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-leaf.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-small-vectors.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/repeated-allocations-verified.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/work-accepted.log",
+      "lines": [
+        21,
+        24,
+        1342
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/work-complete.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/work-final.log",
+      "lines": [
+        21,
+        24,
+        1342
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/work-verified.log",
+      "lines": [
+        21,
+        24,
+        1342
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a02/work.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a03/allocation-chain.log",
+      "lines": [
+        133
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a03/work.log",
+      "lines": [
+        124,
+        145,
+        1463
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/allocation-chain.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/deep-stack.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/local-bindings-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/local-bindings.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/local-budget.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/work-fixed.log",
+      "lines": [
+        21,
+        24,
+        1345
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a04/work.log",
+      "lines": [
+        121
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/allocation-chain.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/allocation-repeated.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/deep-stack.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/local-arithmetic-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/local-arithmetic.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/local-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a05/work.log",
+      "lines": [
+        21,
+        24,
+        1347
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/allocation-chain.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/allocation-repeated.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/deep-stack-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/deep-stack-fixed2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/deep-stack-fixed3.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/deep-stack-probe.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/deep-stack.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/local-branches.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/local-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/work-fixed.log",
+      "lines": [
+        21,
+        24,
+        1349
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a06/work.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07/allocations-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07/work-recheck.log",
+      "lines": [
+        22,
+        1347
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07/work.log",
+      "lines": [
+        25,
+        40,
+        1363
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/local-declarations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/local-interval.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/regression-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/resumed-declarations-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/resumed-declarations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/resumed-work.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07ra/work.log",
+      "lines": [
+        21,
+        1346
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/allocations-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/allocations.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/declarations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/declarations-stress-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/declarations-stress.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/stack-local-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/stack-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/work-first.log",
+      "lines": [
+        22
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a07rb/work.log",
+      "lines": [
+        22,
+        1347
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a08/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a08/local-declarations-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a08/local-declarations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a08/work-final.log",
+      "lines": [
+        21,
+        24,
+        1347
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a08/work-recheck.log",
+      "lines": [
+        21,
+        24,
+        1347
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a08/work.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a09/allocations.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a09/local.log",
+      "lines": [
+        2,
+        15
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a09/structure-regression.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a09/work-first.log",
+      "lines": [
+        22
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a09/work.log",
+      "lines": [
+        22,
+        25,
+        1348
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/allocations-long.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/boundaries-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/interval-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/stack-fixed-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/stack-reproduction.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/work-first-lint-failure.log",
+      "lines": [
+        22
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/work-second-stack-failure.log",
+      "lines": [
+        22,
+        25
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a10/logs/work.log",
+      "lines": [
+        22,
+        25,
+        1352
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/allocations-chain.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/local-reference.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/regression-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/unrelated-first-report.json",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/unrelated-prefixed-report.json",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/work-initial.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/work-stack-failure.log",
+      "lines": [
+        21,
+        24
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/work.log",
+      "lines": [
+        21,
+        1353
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11b/allocations-chain.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11b/rust-local-reference.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11b/rust-regression-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11b/rust-work.log",
+      "lines": [
+        18,
+        21,
+        1351
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-cli-fixed.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-cli.log",
+      "lines": [
+        1,
+        10,
+        11,
+        17,
+        18,
+        23,
+        24,
+        29,
+        30,
+        35,
+        36,
+        41,
+        42
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-interval.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-report-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-report.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-summary.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/local-test-report.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12a/work.log",
+      "lines": [
+        21,
+        24,
+        1354
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12b/results.md",
+      "lines": [
+        41
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12b/work.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12r/allocations.log",
+      "lines": [
+        8
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12r/local-budget.log",
+      "lines": [
+        14
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12r/local-interval-fixed.log",
+      "lines": [
+        25
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12r/warning-order-before.log",
+      "lines": [
+        12
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a12r/work.log",
+      "lines": [
+        2030,
+        2032,
+        2035
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13a/widths-final.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13a/work-first.log",
+      "lines": [
+        72
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13a/work.log",
+      "lines": [
+        21,
+        24,
+        1358
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/allocations.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/arithmetic.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/before.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/cli-report.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/constant-intervals.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/interval-first.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/interval.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/stack-after.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/work-first.log",
+      "lines": [
+        24
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/work-second.log",
+      "lines": [
+        24,
+        1362,
+        1442
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/work-third.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a13b/work.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/allocations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/arithmetic-after-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/arithmetic-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/budget-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/declarations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/diagnostics-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/old-case-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/work-after.log",
+      "lines": [
+        21,
+        1361
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/work-final.log",
+      "lines": [
+        19
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14a/work.log",
+      "lines": [
+        22
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14b/allocations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14b/arithmetic-after-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14b/arithmetic-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14b/arithmetic-before-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14b/arithmetic-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14b/work.log",
+      "lines": [
+        22,
+        1362
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/allocations-local-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/allocations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/budget-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/budget-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-after-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-after-3.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-after-4.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-before-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-debug.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-trace-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-trace-3.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/comparisons-trace.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/declarations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/old-comparison-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/regression-baseline.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/work-after.log",
+      "lines": [
+        21,
+        1362
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/work-final.log",
+      "lines": [
+        19
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a14c/work.log",
+      "lines": [
+        21,
+        24
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/allocations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/cli-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/golden-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/public-local-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/public-local-final-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/public-local-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/public-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15a/work.log",
+      "lines": [
+        21,
+        24,
+        1361
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15b/generate.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a15b/work-time.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/allocations-after-stack-fix-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/allocations-after-stack-fix.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/allocations-local-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/allocations-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/budget-first.log",
+      "lines": [
+        142
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/budget-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/budget-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/interval-local-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/interval-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/range-scans-local-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/range-scans-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/regression-baseline.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/stack-after-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/stack-after-3.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/stack-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/stack-before-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/stack-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/work-retry.log",
+      "lines": [
+        21,
+        1361
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16a/work.log",
+      "lines": [
+        126
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/interval-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/range-expanded.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/range-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/range-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/range-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/regression-baseline.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a16b/work.log",
+      "lines": [
+        21,
+        1368
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17a/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17a/interval-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17a/range-final-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17a/range-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17a/regression-baseline.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17a/work.log",
+      "lines": [
+        128,
+        1494
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/baseline.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/interval-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/projection-fifth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/projection-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/projection-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/projection-fourth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/projection-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/projection-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/regression-baseline.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a17b/work.log",
+      "lines": [
+        21,
+        24,
+        1381
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/budget-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-export-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-export-fourth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-export-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-export-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-export.log",
+      "lines": [
+        142
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-reference-check-output/range-export.log",
+      "lines": [
+        7
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-work-fixed.log",
+      "lines": [
+        21,
+        24,
+        1381
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-work.log",
+      "lines": [
+        130
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/surface-range.log",
+      "lines": [
+        142
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18b/gen-skill.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18b/work.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/reference-output/range-export.log",
+      "lines": [
+        7
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/tables-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/tables-first.log",
+      "lines": [
+        142
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/tables.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/work-final.log",
+      "lines": [
+        21,
+        24,
+        1383
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19a/work.log",
+      "lines": [
+        73
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/budget-heads.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/compile-domain.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/domain-budget.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/domain-regression-valid.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/domain-regression.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/domain-tests.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/heads-regression.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/interval-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/range-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/tables-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a19b/work.log",
+      "lines": [
+        74,
+        93,
+        1457
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21a/gen-skill.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21a/work.log",
+      "lines": [
+        21,
+        24,
+        1388
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/cli-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/cli-domain-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/cli-domain-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/golden-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/work-final.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21b/work.log",
+      "lines": [
+        21,
+        24,
+        1388
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21c/generate.log",
+      "lines": [
+        142
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21c/work.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21d/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21d/budget-after.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21d/reference-generate/range-export.log",
+      "lines": [
+        148
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21d/regression-before.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21d/work.log",
+      "lines": [
+        78,
+        96,
+        1460
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/g01/change.log",
+      "lines": [
+        181,
+        192,
+        298,
+        3745,
+        7190,
+        9363,
+        9381,
+        9677
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/g01r/work.log",
+      "lines": [
+        123,
+        145,
+        1510
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/plan.md",
+      "lines": [
+        8,
+        758,
+        1223
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/r04/results.md",
+      "lines": [
+        18
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/results.md",
+      "lines": [
+        197,
+        201
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-G.md",
+      "lines": [
+        23,
+        66
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-R08.md",
+      "lines": [
+        6,
+        29,
+        50,
+        84
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-S-response.md",
+      "lines": [
+        8
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-S.md",
+      "lines": [
+        19,
+        30,
+        34,
+        37,
+        38,
+        104
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-S1-response.md",
+      "lines": [
+        59
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-S1.md",
+      "lines": [
+        11
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-S2.md",
+      "lines": [
+        6,
+        40
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/reviews/RV-U.md",
+      "lines": [
+        26
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/s-a0/stage.log",
+      "lines": [
+        6
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/s-a1/stage.log",
+      "lines": [
+        6
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/s-a2/stage.log",
+      "lines": [
+        6
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/s-a3/stage.log",
+      "lines": [
+        147
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/s01/results.md",
+      "lines": [
+        14
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/s02b/probe-output.txt",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/findings-advisories/fuzz.stderr",
+      "lines": [
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/findings-advisories/report.json",
+      "lines": [
+        59,
+        71,
+        92,
+        135,
+        147,
+        168,
+        211,
+        223,
+        244,
+        287,
+        299,
+        320,
+        369,
+        381,
+        402,
+        454,
+        485,
+        516,
+        547,
+        578,
+        609,
+        640,
+        671,
+        702,
+        733,
+        764,
+        795,
+        826,
+        857,
+        954,
+        974,
+        995,
+        1038,
+        1058,
+        1079,
+        1122,
+        1142,
+        1163,
+        1206,
+        1226,
+        1247,
+        1296,
+        1316,
+        1337,
+        1389,
+        1428,
+        1467,
+        1506,
+        1545,
+        1584,
+        1623,
+        1662,
+        1701,
+        1740,
+        1779,
+        1818,
+        1857,
+        1896
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/findings-advisories/workspace.stderr",
+      "lines": [
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/findings.log",
+      "lines": [
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        254,
+        255,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/fuzz-input-sync.diff",
+      "lines": [
+        8
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/locked-advisories/report.json",
+      "lines": [
+        59,
+        71,
+        92,
+        135,
+        147,
+        168,
+        211,
+        223,
+        244,
+        287,
+        299,
+        320,
+        369,
+        381,
+        402,
+        454,
+        485,
+        516,
+        547,
+        578,
+        609,
+        640,
+        671,
+        702,
+        733,
+        764,
+        795,
+        826,
+        857
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/locked-advisories/workspace.stderr",
+      "lines": [
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/locked.log",
+      "lines": [
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/original-advisories/report.json",
+      "lines": [
+        59,
+        71,
+        92,
+        135,
+        147,
+        168,
+        211,
+        223,
+        244,
+        287,
+        299,
+        320,
+        369,
+        381,
+        402,
+        454,
+        485,
+        516,
+        547,
+        578,
+        609,
+        640,
+        671,
+        702,
+        733,
+        764,
+        795,
+        826,
+        857
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/original-advisories/workspace.stderr",
+      "lines": [
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/original.log",
+      "lines": [
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/results.md",
+      "lines": [
+        11,
+        31,
+        33
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/sr/sync.log",
+      "lines": [
+        2
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/study/interval-analysis.md",
+      "lines": [
+        3,
+        388,
+        390,
+        404
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/study/riders-probes/README.md",
+      "lines": [
+        20
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/study/riders-probes/output-verification.json",
+      "lines": [
+        3
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/study/riders-probes/verify-output.py",
+      "lines": [
+        18
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/study/riders.md",
+      "lines": [
+        3,
+        39,
+        159,
+        161,
+        238,
+        244,
+        246
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u01a/existing-tests.log",
+      "lines": [
+        2108
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u01b/cli-build.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u01b/dedicated.log",
+      "lines": [
+        7
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u01b/work.log",
+      "lines": [
+        2186,
+        2209
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u02a/work.log",
+      "lines": [
+        146
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u02b/work.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03a/initial-warning-report.json",
+      "lines": [
+        173
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03a/results.md",
+      "lines": [
+        17,
+        94
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03a/retry.log",
+      "lines": [
+        15
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03a/warning-report.json",
+      "lines": [
+        193
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03a/work.log",
+      "lines": [
+        143
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03b/results.md",
+      "lines": [
+        51
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03b/static-check.json",
+      "lines": [
+        11
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03b/translation-inventory.json",
+      "lines": [
+        55,
+        939
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03b/work.log",
+      "lines": [
+        17
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03r/inventory.log",
+      "lines": [
+        138
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u03r/work.log",
+      "lines": [
+        1625,
+        1650
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/allocations-at-stop.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/identity-fifth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/identity-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/identity-fourth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/identity-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/identity-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/allocations-scoped.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/identity-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/identity-family.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/identity-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/identity-first.log",
+      "lines": [
+        142
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/identity-scoped.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/identity-synthetics.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/work-corrected.log",
+      "lines": [
+        21
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/work-final.log",
+      "lines": [
+        21,
+        24,
+        1388
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/work-scoped.log",
+      "lines": [
+        21,
+        24,
+        1388
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/resume/work.log",
+      "lines": [
+        71
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01a/source-check.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/identity-compile.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/identity-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/identity-heads-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/identity-named-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/identity-syntax-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/identity-types-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/work-corrected.log",
+      "lines": [
+        23,
+        26,
+        1390
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x01b/work.log",
+      "lines": [
+        23
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/correction.log",
+      "lines": [
+        11
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/identity-compiled.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/identity-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/manifest-test-constant.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/manifest-test-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/manifest-test-random.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/manifest-test-return.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/manifest-test-stack.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/manifest-test-summary.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/stack-boundary-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/stack-default-reproduction.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02a/work.log",
+      "lines": [
+        21,
+        24,
+        1388
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/allocations-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/source-identity-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/source-identity.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/source-manifest-corrected.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/source-manifest.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x02b/work-check.log",
+      "lines": [
+        23,
+        26,
+        1390
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-fifth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-fourth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-matrix.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/export-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03a/work-final-check.log",
+      "lines": [
+        23,
+        26,
+        1390
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-complete.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-fifth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-final-2.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-fourth.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/export-third.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03b/work-check.log",
+      "lines": [
+        23,
+        26,
+        1390
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03c/allocations.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03c/export-first.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03c/export-second.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x03c/work-check.log",
+      "lines": [
+        23,
+        26,
+        1390
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x04a/local-exports.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/k1.log",
+      "lines": [
+        634,
+        1431
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/run2/k1.log",
+      "lines": [
+        760,
+        1476,
+        1573
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/run2/progress.jsonl",
+      "lines": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/run3/k1.log",
+      "lines": [
+        634,
+        1335,
+        1416
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/run3/progress.jsonl",
+      "lines": [
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05r/exports-final.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05r/work.log",
+      "lines": [
+        25,
+        28,
+        1392
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/export-local.log",
+      "lines": [
+        1
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work-final.log",
+      "lines": [
+        23,
+        26
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work.log",
+      "lines": [
+        122,
+        148,
+        1512
+      ],
+      "action": "第6弾の実行時の記録・判断として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/decisions.md",
+      "lines": [
+        1754
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/v1/results.md",
+      "lines": [
+        7
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/README.md",
+      "lines": [
+        29
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/a6r/results.md",
+      "lines": [
+        19,
+        38,
+        46
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/decisions.md",
+      "lines": [
+        217,
+        299,
+        301
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/g1/results.md",
+      "lines": [
+        100
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/plan.md",
+      "lines": [
+        26,
+        28,
+        223,
+        227,
+        318,
+        355
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/preflight.md",
+      "lines": [
+        60,
+        93
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/results.md",
+      "lines": [
+        136,
+        140,
+        149,
+        163,
+        171,
+        173
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/reviews/RP1-response.md",
+      "lines": [
+        14
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/reviews/RP1.md",
+      "lines": [
+        50,
+        52
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/reviews/RV-A36.md",
+      "lines": [
+        42
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/reviews/RV-G1.md",
+      "lines": [
+        45
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/reviews/RV-Z1.md",
+      "lines": [
+        3,
+        6,
+        14,
+        15,
+        19,
+        20,
+        21,
+        33,
+        34,
+        35,
+        54,
+        82
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/study/file-effects.md",
+      "lines": [
+        78
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/bundled-licenses.json",
+      "lines": [
+        74
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/candidate-final.json",
+      "lines": [
+        71
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/manual-cli-observations.json",
+      "lines": [
+        9,
+        20,
+        344,
+        397,
+        423,
+        437,
+        450,
+        458,
+        476,
+        538,
+        552
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/manual-cli-table.md",
+      "lines": [
+        7,
+        8,
+        42,
+        43,
+        44,
+        49,
+        50
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/manual-summary.json",
+      "lines": [
+        63
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1/results.md",
+      "lines": [
+        3,
+        11,
+        15,
+        17,
+        19,
+        28,
+        35,
+        42,
+        92,
+        97,
+        99,
+        102
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1r/document-check-initial.json",
+      "lines": [
+        24,
+        29
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1r/document-check.json",
+      "lines": [
+        24,
+        29
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z1r/results.md",
+      "lines": [
+        15,
+        16,
+        18
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/archive/2026-10-23-TODO-206_272_273_276-syntax-batch5/z2/results.md",
+      "lines": [
+        3,
+        18,
+        20,
+        21,
+        24,
+        65
+      ],
+      "action": "過去の記録として保つ"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "lines": [
+        477
+      ],
+      "action": "現行で受理するlanguageの例を更新する"
+    },
+    {
+      "path": "docs/design/02-impl/02-09-runtime.md",
+      "lines": [
+        375
+      ],
+      "action": "上限導入前の比較元0.0.11として保つ"
+    },
+    {
+      "path": "docs/design/06-tooling/06-09-packages.md",
+      "lines": [
+        20,
+        32,
+        53,
+        55
+      ],
+      "action": "既存の0.0.11行は保ち、0.0.12の登録・案内と受理の説明を加える"
+    },
+    {
+      "path": "docs/ja/reference/benitoite.md",
+      "lines": [
+        3,
+        19,
+        103,
+        162,
+        1920,
+        1922,
+        1945,
+        1957,
+        1975,
+        2007,
+        2018,
+        2189
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/ja/reference/install.md",
+      "lines": [
+        3,
+        5,
+        7,
+        152,
+        154
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/ja/skill/SKILL.md",
+      "lines": [
+        3,
+        72
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/ja/skill/references/common-mistakes.md",
+      "lines": [
+        3
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/ja/skill/references/idioms.md",
+      "lines": [
+        3,
+        940
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/ja/skill/references/inspection.md",
+      "lines": [
+        3,
+        46
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/ja/skill/references/language-comparison.md",
+      "lines": [
+        3
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "lines": [
+        16,
+        100,
+        159,
+        2016,
+        2018,
+        2041,
+        2053,
+        2071,
+        2103,
+        2114,
+        2285
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "docs/reference/install.md",
+      "lines": [
+        3,
+        5,
+        150,
+        152
+      ],
+      "action": "現行版・翻訳元・導入例・固定参照を更新し、過去移行節と比較元の版は保つ"
+    },
+    {
+      "path": "fuzz/Cargo.lock",
+      "lines": [
+        60
+      ],
+      "action": "対象をbenitoiteに絞ったoffline updateで同期する"
+    }
+  ]
+}

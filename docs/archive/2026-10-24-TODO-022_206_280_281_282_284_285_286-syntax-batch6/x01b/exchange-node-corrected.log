@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 974, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 967, in main
+    exercise(args.output.resolve(), executable, args.source_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 636, in exercise
+    exercise_source(runner, source_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 477, in exercise_source
+    assert len({e['node'] for e in mapped}) < len(mapped), label
+AssertionError: with

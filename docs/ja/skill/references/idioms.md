@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -11,7 +11,8 @@
 - `benitoite test` のブロックは `benitoite test` で実行する。そのテストはすべて通らなければならない。
 - `benitoite error` のブロックは `benitoite check` で失敗しなければならず、後に続く `diagnostic` のブロックの各行が報告に現れなければならない。
 - 例の前の `files` のブロックは、スクリプトの隣にファイルを作る。最初の行は `name: <ファイル名>`、残りが中身である。
-- ほかの情報文字列のブロック（`text` や `sh` など）は検査しない。
+- 「局所の区間解析の警告を説明する」の `text` のスクリプトは、警告のゴールデンテストの入力と一致させる。診断のコード・位置・区間・文言は `tests/golden.rs` で検査する。
+- それ以外の情報文字列のブロック（`text` や `sh` など）は検査しない。
 - この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
@@ -35,6 +36,8 @@
 - [テストの書き方](#テストの書き方)
 - [補間の静的な書式](#補間の静的な書式)
 - [数値のビット幅と変換](#数値のビット幅と変換)
+- [局所の区間解析の警告を説明する](#局所の区間解析の警告を説明する)
+- [ファイルと JSON へのログの出力](#ファイルと-json-へのログの出力)
 - [WASM の外部の関数と WIT の型](#wasm-の外部の関数と-wit-の型)
 
 ## 具体的なコンテナと汎用のコンテナ
@@ -555,6 +558,8 @@ function main() -> Result[Unit, String] uses Http.Listen, State
 end function
 ```
 
+HTTP の値と局所の区間解析の対象外のフィールドは、[HTTP の値は追跡しない](#http-の値は追跡しない)を参照する。
+
 ## コレクション
 
 リスト、マップ、集合は永続である。関数は新しいコレクションを返し、元のコレクションを変えない。マップと集合は、加えた順ではなくキーの順に並ぶので、`Map.forEach` と `Set.toList` はキーを整列した順に辿る。
@@ -783,6 +788,95 @@ end function
 1.5 255
 ```
 
+## 局所の区間解析の警告を説明する
+
+局所の解析による W0401、W0402、W0404 では、一次位置、推論した区間、該当する場合の許容範囲、局所の解析の注記を読む。束縛や比較の副位置を辿り、その区間になる理由を説明する。副位置は最大八つである。失敗の説明には、実行がその演算や呼び出しへ到達し、すべてのオペランドや引数の評価が成功するという条件を付ける。解析は、その位置に到達することを証明しない。既存の定数の警告が優先され、注記が少なくなる場合もある。
+
+次の完全なスクリプトでは、`main` がどの関数も呼ばない場合でも、`check` で三つの警告が出る。実行せずに検査する。
+
+```text
+function divide(value: Integer, divisor: Integer) -> Integer
+  if divisor = 0 then
+    return value div divisor
+  else
+    return value
+  end if
+end function
+
+function increase(value: Integer8) -> Integer8
+  if value >= 120s8 then
+    return value + 10s8
+  else
+    return value
+  end if
+end function
+
+function shift(n: Integer) -> Integer
+  if n >= 64 then
+    return Integer.shiftLeft(a: 1, n: n)
+  else
+    return 1
+  end if
+end function
+
+function main() -> Unit
+  return ()
+end function
+```
+
+| 警告 | 説明する内容 |
+|---|---|
+| `divisor` の W0401 | `divisor = 0` の分岐では除数の区間が `[0,0]` になる。正常なオペランドを得てこの除算に到達すれば、零除算になる。 |
+| `value + 10s8` の W0402 | 比較によって `value` が `[120,127]` に絞られる。数学的な和 `[130,137]` は Integer8 の `[-128,127]` から完全に外れる。 |
+| 引数の式 `n`（`n: n` の値）の W0404 | シフト回数の区間 `[64,9223372036854775807]` は Integer が許す `[0,63]` から完全に外れる。回数についての警告であり、左シフトで捨てるビットについての警告ではない。 |
+
+W0404 は、標準の整数と Byte のシフト関数の直接呼び出しを識別し、同じ宣言の取り込みの別名も含める。関数値、穴、パイプを通した呼び出しや、同名の利用者の関数は識別の対象外である。
+
+意図した振る舞いに従って修正を選ぶ。たとえば零の除数を拒否し、算術演算前に入力を検査し、シフト回数を確かめる。警告を消すために定数を自動で小さくしたり、数値型を変えたり、`uses` を広げたりしない。`--deny-warnings` は警告を検査の誤りにするため、使う場合は警告を別に見直す。通常の検査はこれらの警告があっても受理し、実行時の検査も残る。
+
+警告がなくても成功の証明にはならない。区間が許容範囲と一部重なる場合、除数が零にも零以外にもなりうる場合、一般の乗算、通常の関数の戻り値では、結果が未知になりうる。正常な整数の未知の値は型の全値域で表し、正常値を持たない式と区別する。関数、ラムダ、lazy、ハンドラの節の本体は、呼び出し元や捕捉値の事実を持たずに開始する。未対応の形の子を独立に解析するときも外の事実を捨てるため、入力内の局所の事実で警告を説明し、プログラム全体がそこに到達すると述べない。未知の値、未対応の形、予算の枯渇だけを理由に、コードやエフェクトの契約を変える必要はない。失敗の処理と実行時の検査を残し、[解析の範囲](inspection.md#局所の区間解析)は報告の受理と別に読む。
+
+### Range の成功値
+
+値が両端を含む範囲を満たす必要があるときは、`Range.checkInteger` を使い、返された `Result` を照合する。次の補助関数は、結果を一度保存して照合し、同じ `Ok` の値への直接の `Range.value` 呼び出しから計算して、結果を包み直す。
+
+```benitoite test
+import Benitoite.Unofficial.Range
+
+function checkedIncrement(value: Integer) -> Result[Integer, Range.RangeError]
+  bind result <- Range.checkInteger(minimum: 0, maximum: 10, value: value)
+  return match result with
+    case Result.Ok(checked) ->
+      bind incremented <- Range.value(checked) + 1
+      Result.Ok(incremented)
+    case Result.Error(error) -> Result.Error(error)
+  end match
+end function
+
+@test("checked increment handles both range outcomes")
+function checkedIncrementWorks() -> Unit uses Assert.Check
+  Assert.equal(actual: checkedIncrement(10), expected: Result.Ok(11))
+  Assert.equal(actual: checkedIncrement(11), expected: Result.Error(Range.RangeError.OutOfRange(0, 10, 11)))
+end function
+```
+
+固定した Integer の端点を持つ標準の `Range.checkInteger`/`Range.value` の直接呼び出しでは、function summary がその成功値の端点を保持できる。同じ宣言の取り込みの別名も使える。動的な端点、成功値をコピーした別名、合流（条件環境の合流も含む）、包み直し、別のインスタンス、関数値、穴、パイプでは、この情報を保たない。一般の関数呼び出しを越えた解析は行わず、`checkedIncrement` の呼び出し元に結果の区間は伝わらない。検査済みの長さ・添字・非空リストには、この function summary はない。不正な端点や範囲外の入力は、定数も含めて引き続き `Result.Error` を返し、新しい区間の警告を出さない。構築と射影の契約は生成した [Range の参照](../../../../crates/benitoite/skill/references/stdlib/Range.md)を読む。
+
+### HTTP の値は追跡しない
+
+`Http.text`、`Http.html`、`Http.json` は応答の値を作る。局所の区間解析はその結果を未知とし、`Response.status` の事実を取り出さない。HTTP のレコードの明示的な構築、局所への保存、更新でもフィールドの事実は伝えない。次の例は W0404 なしで `check` を通る。応答は送信しない。
+
+```benitoite check
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit
+  bind response <- Http.text(status: 700, s: "example")
+  bind _ <- Http.Response(..response, status: 701)
+end function
+```
+
+既定の `Http.respond` の実装は、引き続き実行時に status が 200..599 に収まることを検査する。W0404 の対象は標準関数の直接のシフト回数の引数だけであり、`Process.exit`、HTTP の操作、そのレコードのフィールドは含めない。言語のハンドラが操作の既定の振る舞いを置き換えられるためである。警告がなくても、応答の妥当性やネットワークの権限は確認できない。API の契約は生成した [HTTP の参照](../../../../crates/benitoite/skill/references/stdlib/Network.Http.md)を読む。
+
 ## WASM の外部の関数と WIT の型
 
 外部の関数は、本体も `end function` も付けずに宣言し、呼ぶ前にコンポーネントの実際の WIT の契約を確かめる。コンポーネントは、取り込みのないバイナリの Component Model のコンポーネントでなければならず、WASI もホストの関数も使えない。パスは宣言が属する根からの相対パスであり、パッケージのコンポーネントは `wasm/` の下に置かなければならない。公開名は world の関数か `interface#function` であり、版を含むインターフェースの完全な名前と一致させる。宣言は単相であり、具体的な型を使う。実際の引数と結果のフィールドに外部のリソース型を含む関数には `uses State` が要り、ほかの関数は純粋である。
@@ -843,6 +937,8 @@ WIT の形は、`value: s64` を持つレコード、入れ子のレコード、
 
 `run` と `test` の `--wasm-stats` を使って、経路、代替の経路を選んだ理由、転送量、`construction_bytes`（両方向の合計）、アダプタの失敗を調べる。`--wasm-memory`、`--wasm-fuel`、`--wasm-transfer` は、関数の契約を変えずに上限を変える。燃料の枯渇は R0904、転送量・構築量・メモリの枯渇は R0905、対象数の上限は R0906、戻り値の大きさの上限は R0902 を報告する。トラップとゲストの ABI 違反は R0601 を報告し、宣言した `Result.Error` は通常の値である。これらの実行時の失敗は `match` や `try` で捕えられない。 `runtime_compilations.normal` と `runtime_compilations.adapter` は、それぞれの共有表へ実行用 Component を追加できた回数を数え、`test_declaration_compilations` は、テストの入口と文書の例の静的な宣言照合でコンパイルを試みた回数を別に数える。
 
+各 Store は、同時に生存するコンポーネントハンドル（component handle）を、コアの表の要素や線形メモリと別に 100,000 個までに制限する。状態を持つインスタンスでは、この数を呼び出し間で保持する。上限を超えると、必要数を表示せず R0906 で実行を止め、`--wasm-stats` の `reached_limits` に `component_handles` を記録する。このセキュリティのための制限は、0.0.11 よりゲストの受理範囲を狭める。ゲストは不要になったハンドルを解放する。ゲストの `resource.drop` で解放した分は再利用できる。数えるのは Wasmtime のコンポーネントハンドルであり、Benitoite の値として表す外部ハンドルだけではない。
+
 ## 局所の構築とログ
 
 block で構築器を局所に保ち、不変のコピーを返す。専用操作は State を加えない。
@@ -865,6 +961,124 @@ hello world
 ```
 
 Log と SourceLocation は prelude から使う。message、attributes、location を明示し、IO.All に Log が含まれないことに注意する。完全なハンドラで処理するか、宣言上限に残る Log を許可集合へ加える。検査済みの長さ・添字・非空リストは Range と NonEmptyList の参照文書を使う。
+
+## ファイルと JSON へのログの出力
+
+Writer を一度開き、出力先の関数に捕捉する。`Log.formatRecord` は純粋な関数であり、既定のテキストの書式とエスケープを保つが、改行を加えず、レベルを選別しない。この例では `withSinks` が Debug を除き、`File.writeLine` が改行を加える。共通の属性をイベントの属性より先に並べ、キーの重複も保つ。
+
+両方の例は、出力を再現できるように固定の `Location` を作る。実際の呼び出し位置を記録するには、各ログの呼び出しに `SourceLocation.here()` を直接渡す。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.log", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event")], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "n", value: 42)], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.log") or die)
+end function
+```
+
+```output
+level=INFO source="app/Main.bnt:12:3" message="first\n\"quoted\"" attr."tag"="common" attr."tag"="event"
+level=WARN source="app/Main.bnt:12:3" message="second" attr."tag"="common" attr."n"=42
+```
+
+出力先の関数とその呼び出しは、すべて Writer の `with` ブロック内に置く。解放後に捕捉した Writer を使うと実行時エラーになる。Writer はバッファを使うため、`writeLine` の成功は解放時の flush の成功を保証しない。書き込みの失敗は `or die` で伝播し、`end with` での flush の失敗はリソース解放の実行時エラーになる。書き込みのエラーを値として処理しても、Writer は失敗した状態を保ち、解放時にも報告する。close の結果を明示的に処理するには、ブロックを抜ける前に `File.closeWriter` を呼び、返された Result を調べる。これは File とリソースの規則に従うものであり、各イベントがストレージに書き込まれたことを例が保証するわけではない。
+
+解放後に読み戻すため、検査する出力には両方の書き込みが含まれる。File.Read と Console.Write は、この読み戻しと表示のためだけに必要である。実行前にハーネスへ宣言上限の確認を求める。File.Write、File.Read、Console.Write、解放のための State、`or die` のための Process.Exit が含まれる。完全なハンドラは本体の Log エフェクトを取り除く。ファイル単位の `uses Log` があれば、main の宣言には Log が加わる。これらの宣言は、パスごとの実行時の権限制御を行わない。
+
+JSON Lines には、純粋な変換関数でアプリケーションの書式を定める。属性は `{key, value}` オブジェクトの配列として保つ。属性名をキーにした Map に変換すると、重複と順序が失われる。この例はレベルと位置を含み、u64 全域を保つために符号なし整数を `{"unsignedInteger":"..."}`、有限でない Float を `{"nonFiniteFloat":"..."}` で表す。`Json.Value` は符号なし整数の構成子を持たず、有限でない `Json.Value.Float` を直接文字列化すると null になる。`Float.isNaN(number - number)` は、既存の API で有限でない値を判定する。実行する例には NaN を含むが、正負の無限大は試さない。これはアプリケーションの書式であり、Log の標準の JSON スキーマではない。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+
+function jsonScalar(value: Log.Value) -> Json.Value
+  return match value with
+    case Log.Value.Text(text) -> Json.Value.String(text)
+    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)
+    case Log.Value.Integer(number) -> Json.Value.Integer(number)
+    case Log.Value.UnsignedInteger(number) ->
+      Json.Value.Object(Map.fromList([Pair("unsignedInteger", Json.Value.String(UnsignedInteger64.toString(number)))]))
+    case Log.Value.Float(number) ->
+      if Float.isNaN(number - number) then
+        Json.Value.Object(Map.fromList([Pair("nonFiniteFloat", Json.Value.String(Float.toString(number)))]))
+      else
+        Json.Value.Float(number)
+      end if
+  end match
+end function
+
+function jsonAttribute(value: Log.Attribute) -> Json.Value
+  return Json.Value.Object(Map.fromList([
+    Pair("key", Json.Value.String(Log.Attribute.key(value))),
+    Pair("value", jsonScalar(Log.Attribute.value(value)))
+  ]))
+end function
+
+function jsonRecord(record: Log.Record) -> Json.Value
+  bind level <- match Log.Record.level(record) with
+    case Log.Level.Debug -> "debug"
+    case Log.Level.Info -> "info"
+    case Log.Level.Warn -> "warn"
+    case Log.Level.Error -> "error"
+  end match
+  bind location <- Log.Record.location(record)
+  return Json.Value.Object(Map.fromList([
+    Pair("level", Json.Value.String(level)),
+    Pair("message", Json.Value.String(Log.Record.message(record))),
+    Pair("attributes", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),
+    Pair("location", Json.Value.Object(Map.fromList([
+      Pair("file", Json.Value.String(SourceLocation.Location.file(location))),
+      Pair("line", Json.Value.Integer(SourceLocation.Location.line(location))),
+      Pair("column", Json.Value.Integer(SourceLocation.Location.column(location)))
+    ])))
+  ]))
+end function
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.jsonl", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event"), Log.attribute(key: "n", value: 42)], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "flag", value: true), Log.attribute(key: "unsigned", value: 18446744073709551615u64), Log.attribute(key: "finite", value: 1.5), Log.attribute(key: "nan", value: Float.squareRoot(-1.0))], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.jsonl") or die)
+end function
+```
+
+```output
+{"attributes":[{"key":"tag","value":"common"},{"key":"tag","value":"event"},{"key":"n","value":42}],"level":"info","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"first\n\"quoted\""}
+{"attributes":[{"key":"tag","value":"common"},{"key":"flag","value":true},{"key":"unsigned","value":{"unsignedInteger":"18446744073709551615"}},{"key":"finite","value":1.5},{"key":"nan","value":{"nonFiniteFloat":"NaN"}}],"level":"warn","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"second"}
+```
+
+メッセージ内の改行と引用符は、一行の JSON 内でエスケープする。寿命・失敗・エフェクトの規則はテキストの出力先と同じである。Json はアプリケーションで取り込む。Log に Json への依存やファイル・JSON 専用のハンドラは加わらない。
 
 ## ファイル単位のエフェクトと純粋な補助
 

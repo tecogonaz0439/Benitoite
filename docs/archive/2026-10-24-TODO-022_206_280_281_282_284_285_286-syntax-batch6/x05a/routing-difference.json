@@ -1,0 +1,110 @@
+{
+  "actualInputs": 1791,
+  "expectedInputs": 1790,
+  "extra": [
+    {
+      "group": "golden",
+      "name": "testdata/warnings/local-width-intervals.bnt"
+    }
+  ],
+  "missing": [],
+  "extraIntervalSummaries": [
+    {
+      "checker": "succeeded",
+      "counts": {
+        "allBodies": "9",
+        "analyzedBodies": "9",
+        "bodyBudgetExceeded": "0",
+        "bottomBodies": "8",
+        "checkerFailed": "0",
+        "checkerSucceeded": "1",
+        "constantDefinitions": "0",
+        "depthBodies": "0",
+        "functionDefinitions": "9",
+        "informativeBodies": "8",
+        "inputDefinitions": "9",
+        "methodDefinitions": "0",
+        "notAnalyzedBodies": "0",
+        "outsideDefinitions": "0",
+        "phaseDepth": "0",
+        "sourceModules": "1",
+        "topBodies": "1",
+        "unidentifiedBodies": "0",
+        "unsupportedBodies": "1",
+        "wholeBudgetSkipped": "0"
+      },
+      "definitions": [
+        {
+          "declaration": "0",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".signed8"
+        },
+        {
+          "declaration": "1",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".signed16"
+        },
+        {
+          "declaration": "2",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".signed32"
+        },
+        {
+          "declaration": "3",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".signed64"
+        },
+        {
+          "declaration": "4",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".unsigned16"
+        },
+        {
+          "declaration": "5",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".unsigned32"
+        },
+        {
+          "declaration": "6",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".unsigned64"
+        },
+        {
+          "declaration": "7",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".guarded"
+        },
+        {
+          "declaration": "8",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".main"
+        }
+      ],
+      "enumerationComplete": true,
+      "group": "golden",
+      "name": "testdata/warnings/local-width-intervals.bnt"
+    }
+  ],
+  "fixedManifestSha256": "300f44197d3038ff802928775388411d4cdfee2069bc89ce9ebc6ad225a3b0ed",
+  "introducedBy": "8cf22e4df305b4a5983ca4650c5339fd3b50f05e",
+  "originalTask": "A15a",
+  "note": "全件 corpus 本体との直接照合でも同じ1件の余剰と欠落0件を確認した。ここでは軽量な区間の入力一覧から再確認した。"
+}

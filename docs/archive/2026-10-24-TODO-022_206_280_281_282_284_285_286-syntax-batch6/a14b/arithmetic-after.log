@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+warning: type `ResultBounds` is more private than the item `TargetOperation::result_bounds`
+  --> crates/benitoite/src/typeck/interval/arithmetic.rs:42:5
+   |
+42 | /     pub fn result_bounds(
+43 | |         self,
+44 | |         kind: IntKind,
+45 | |         left: Interval,
+46 | |         right: Interval,
+47 | |     ) -> Option<ResultBounds> {
+   | |_____________________________^ method `TargetOperation::result_bounds` is reachable at visibility `pub(in crate::typeck)`
+   |
+note: but type `ResultBounds` is only usable at visibility `pub(in crate::typeck::interval)`
+  --> crates/benitoite/src/typeck/interval/arithmetic.rs:12:1
+   |
+12 | pub(super) enum ResultBounds {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: `#[warn(private_interfaces)]` on by default
+
+error: `benitoite` (lib test) generated 1 warning
+error: warnings are denied by `build.warnings` configuration

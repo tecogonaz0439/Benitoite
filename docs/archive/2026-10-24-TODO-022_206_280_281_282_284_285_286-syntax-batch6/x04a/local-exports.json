@@ -1,0 +1,16 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=target/interval-diff/x04a-local/identity",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_interval_identity",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 9.892,
+  "cargoHome": "<tmp>/benitoite-a01a-cargo"
+}

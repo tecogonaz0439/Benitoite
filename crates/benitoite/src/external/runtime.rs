@@ -26,6 +26,7 @@ pub(super) const FUEL: u64 = 10_000_000_000;
 pub(super) const MEMORY: u64 = 64 * 1024 * 1024;
 pub(super) const TRANSFER: u64 = 256 * 1024 * 1024;
 const TABLE_ELEMENTS: u64 = 10_000;
+const COMPONENT_HANDLES: usize = 100_000;
 pub(in crate::external) const OBJECTS: usize = 16;
 
 /// 中断は VM の停止の経路へ返し、実行時エラーと区別する。
@@ -321,10 +322,16 @@ impl ResourceLimiter for CallLimits {
 pub(in crate::external) fn has_priority_failure(e: &wasmtime::Error) -> bool {
     e.downcast_ref::<MemoryLimitExceeded>().is_some()
         || e.downcast_ref::<TableLimitExceeded>().is_some()
+        || component_handle_limit_exceeded(e)
         || matches!(
             e.downcast_ref::<Trap>(),
             Some(Trap::Interrupt | Trap::OutOfFuel)
         )
+}
+
+fn component_handle_limit_exceeded(e: &wasmtime::Error) -> bool {
+    e.chain()
+        .any(|cause| cause.to_string() == text::COMPONENT_HANDLE_LIMIT)
 }
 
 /// 既存経路と補助で Wasmtime の停止原因の優先順を共有する。
@@ -347,6 +354,24 @@ pub(in crate::external) fn failure(
             resource: text::TABLE_ELEMENTS,
             size: error.desired,
             limit: TABLE_ELEMENTS,
+        }));
+    }
+    match e.downcast_ref::<Trap>() {
+        Some(Trap::Interrupt) => return ExternalFailure::Interrupted,
+        Some(Trap::OutOfFuel) => {
+            return ExternalFailure::Stop(Stop::Resource(ResourceError::ExternalFuel {
+                function: spec.function.clone(),
+                component: spec.component.display.clone(),
+                limit: limits.fuel,
+            }));
+        }
+        _ => {}
+    }
+    if component_handle_limit_exceeded(&e) {
+        return ExternalFailure::Stop(Stop::Resource(ResourceError::ExternalComponentHandles {
+            function: spec.function.clone(),
+            component: spec.component.display.clone(),
+            limit: u64::try_from(COMPONENT_HANDLES).unwrap_or(u64::MAX),
         }));
     }
     if let Some(report) = super::adapter::runtime::reported_failure(&e) {
@@ -382,14 +407,6 @@ pub(in crate::external) fn failure(
         }
     }
     match e.downcast_ref::<Trap>() {
-        Some(Trap::Interrupt) => ExternalFailure::Interrupted,
-        Some(Trap::OutOfFuel) => {
-            ExternalFailure::Stop(Stop::Resource(ResourceError::ExternalFuel {
-                function: spec.function.clone(),
-                component: spec.component.display.clone(),
-                limit: limits.fuel,
-            }))
-        }
         Some(trap) => ExternalFailure::Stop(Stop::Runtime(RuntimeError::ExternalTrap {
             function: spec.function.clone(),
             component: spec.component.display.clone(),
@@ -698,6 +715,7 @@ pub(in crate::external) fn new_store(
         },
     );
     store.limiter(|s| s);
+    store.set_max_component_handles(COMPONENT_HANDLES);
     reset_limits(&mut store, limits)?;
     Ok(store)
 }
@@ -1389,6 +1407,11 @@ mod tests {
     fn failures_and_fresh_instances() {
         let cases = [
             ("(func (export \"f\") unreachable)", "trap"),
+            (
+                r#"(func $"cannot allocate another handle: store handle limit exceeded"
+                    (export "f") unreachable)"#,
+                "trap",
+            ),
             ("(func (export \"f\") (loop br 0))", "fuel"),
             (
                 "(memory 1) (func (export \"f\") i32.const 1024 memory.grow drop)",
@@ -1739,6 +1762,102 @@ mod tests {
             ))) if resource == expected),
                 "{result:?}"
             );
+        }
+    }
+
+    // 関門: 実際のコンポーネントハンドルの境界・drop 後の再利用・呼び出しを越える生存数を守る。
+    // コア資源数のテストでは検出できない R0601 への退行と統計による Internal 化を捕まえる。
+    // 公開設定や本番の差し込み口を増やさず、準備済み宣言から実行と報告までを通す。
+    // spec: 02-09 外部の関数の実行
+    // spec: 03-10 実行
+    #[test]
+    fn component_handle_limit_is_preserved_across_calls_and_drop() {
+        use crate::diag::{DiagCode, ReportKind};
+        use crate::external::stats::{Collector, ExecutionOptions};
+
+        let mut table = table(
+            include_str!("../../testdata/external/component-handles.wat"),
+            "allocate",
+            Some(WitPlan::U32),
+        );
+        set_params(&mut table, vec![WitPlan::U32, WitPlan::Bool]);
+        let mut heap = Heap::new(HeapConfig::default());
+        for route in ["dynamic", "stateful", "adapter"] {
+            let stateful = route == "stateful";
+            // 準備済みの stateful 宣言の経路を通し、ゲストが内部に保持する
+            // コンポーネントハンドルの数が呼び出しを越えて制限されることを確かめる。
+            Arc::make_mut(&mut table.functions[0].spec).route = if stateful {
+                ExternalRoute::Stateful
+            } else {
+                ExternalRoute::Dynamic
+            };
+            let binding = if route == "adapter" {
+                super::super::adapter::runtime::prepare(
+                    &[Arc::clone(&table.functions[0].spec)],
+                    &mut 100_000,
+                    super::super::adapter::component::GENERATION_LIMIT,
+                )
+                .unwrap()
+                .remove(&0)
+            } else {
+                None
+            };
+            if route == "adapter" {
+                assert!(binding.as_ref().unwrap().fallback_reason().is_none());
+            }
+            Arc::make_mut(&mut table.functions[0].spec).adapter = binding;
+            for collect in [false, true] {
+                let stats = Collector::new();
+                let mut runtime = ExternalRuntime::configured(
+                    None,
+                    ExecutionOptions {
+                        stats: collect.then(|| stats.clone()),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+                heap.epoch(|ctx| {
+                    if stateful {
+                        for (n, release, expected) in [
+                            (99_999, false, 99_999),
+                            (1, false, 100_000),
+                            (1, true, 100_000),
+                        ] {
+                            let result = call(
+                                &mut runtime, &table, 0, ctx,
+                                &[Value::UInt32(n), Value::Bool(release)],
+                            ).unwrap();
+                            assert_eq!(result.as_uint32(), Some(expected));
+                        }
+                    }
+                    let error = call(
+                        &mut runtime, &table, 0, ctx,
+                        &[Value::UInt32(if stateful { 1 } else { 100_001 }), Value::Bool(false)],
+                    ).unwrap_err();
+                    let ExternalFailure::Stop(stop) = error else {
+                        panic!("expected a resource stop: {error:?}");
+                    };
+                    let diagnostic = crate::runtime::report::stop_diagnostic(
+                        &crate::bytecode::asm::ProgramBuilder::new().program,
+                        &crate::vm::StopInfo {
+                            stop, at: None, frames: vec![], spawns: vec![], deadlock: vec![],
+                        },
+                    );
+                    assert_eq!(diagnostic.kind, ReportKind::Resource);
+                    assert_eq!(diagnostic.code, Some(DiagCode::R0906));
+                    assert_eq!(diagnostic.message,
+                        "the external function `testFn` exceeded the limit of 100000 component handles");
+                    assert!(diagnostic.notes.iter().any(|n| n.contains("wasm/test.wasm")));
+                    if collect {
+                        let json = stats.json().unwrap();
+                        assert_eq!(json["calls"], if stateful { 4 } else { 1 });
+                        assert_eq!(json["routes"][route], if stateful { 4 } else { 1 });
+                        assert_eq!(json["reached_limits"], serde_json::json!({"component_handles": 1}));
+                        assert_eq!(json["functions"]["wasm/test.wasm#testFn"]["reached_limits"],
+                            serde_json::json!({"component_handles": 1}));
+                    }
+                });
+            }
         }
     }
 

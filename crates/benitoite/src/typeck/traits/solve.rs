@@ -13,7 +13,12 @@ use crate::typeck::{
 use crate::types::*;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
-pub(super) type ImplTable = BTreeMap<(BindingId, TyCon), NodeId>;
+pub(in crate::typeck) type ImplTable = BTreeMap<(BindingId, TyCon), NodeId>;
+pub(in crate::typeck) fn shared_table(d: &Decls<'_>) -> std::rc::Rc<ImplTable> {
+    d.impl_index
+        .as_ref()
+        .map_or_else(|| std::rc::Rc::new(table(d)), std::rc::Rc::clone)
+}
 pub(super) fn target_con(i: &ImplDef) -> Option<TyCon> {
     match &i.target {
         TypeArg::Ty(Ty::Con(c, _)) | TypeArg::Head(TyHead::Con(c)) => Some(*c),
@@ -408,7 +413,9 @@ fn unresolved_argument(solver: &Solver, arg: &IClassArg) -> bool {
 }
 
 pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
-    let table = table(ctx.decls);
+    // 型クラスの要求がない本体では全実装の索引を作らない。宣言集合は
+    // この検査中に変わらない（設計書 02-05「型クラスの制約の解決」）。
+    let mut impl_table = None;
     let mut waiting_uses = BTreeSet::new();
     let constraints = std::mem::take(&mut ctx.constraints)
         .into_iter()
@@ -453,11 +460,12 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
             continue;
         }
         let mut parts = 0;
+        let index = impl_table.get_or_insert_with(|| shared_table(ctx.decls));
         let dict = match resolve(
             ctx.decls,
             &ctx.solver,
             &ctx.scheme,
-            &table,
+            index.as_ref(),
             class,
             &arg,
             &mut parts,

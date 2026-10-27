@@ -1,0 +1,84 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.59s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 6 tests
+
+thread 'typeck::interval::tests::range_calls::range_projection_does_not_warn_on_error_reversed_or_out_of_range' (5237628) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:634:13:
+assertion `left == right` failed
+  left: Some((-9223372036854775808, 9223372036854775807))
+ right: None
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::range_calls::range_projection_does_not_warn_on_error_reversed_or_out_of_range ... FAILED
+
+thread 'typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins' (5237632) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:546:13:
+assertion `left == right` failed: import Benitoite.Unofficial.Range as R
+function sample(x: Integer, flag: Boolean, other: R.CheckedInteger) -> Integer
+ bind _ <- [block
+ bind saved <- R.checkInteger(minimum: 0, maximum: 10, value: x)
+ match saved with
+ case Result.Ok(c) -> R.value(c)
+ case Result.Error(_) -> return -99
+ end match
+ end block]
+ return 0
+end function
+
+  left: Some((-9223372036854775808, 9223372036854775807))
+ right: Some((0, 10))
+test typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins ... FAILED
+
+thread 'typeck::interval::tests::range_calls::range_projection_reaches_public_overflow_diagnostics_only_for_the_same_value' (5237633) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:617:9:
+assertion `left == right` failed: import Benitoite.Unofficial.Range as R
+function sample(x: Integer, flag: Boolean, other: R.CheckedInteger) -> Integer
+ bind _ <- [block
+ 
+ match R.checkInteger(minimum: 9223372036854775807, maximum: 9223372036854775807, value: x) with
+ case Result.Ok(c) -> 
+ R.value(c) + 1
+ case Result.Error(_) -> return -99
+ end match
+ end block]
+ return 0
+end function
+
+  left: 0
+ right: 1
+test typeck::interval::tests::range_calls::range_projection_reaches_public_overflow_diagnostics_only_for_the_same_value ... FAILED
+
+thread 'typeck::interval::tests::range_calls::range_projection_independent_child_forgets_outer_success_but_restores_parent' (5237630) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:598:9:
+assertion `left == right` failed
+  left: Some((-9223372036854775808, 9223372036854775807))
+ right: Some((0, 10))
+test typeck::interval::tests::range_calls::range_projection_independent_child_forgets_outer_success_but_restores_parent ... FAILED
+
+thread 'typeck::interval::tests::range_calls::range_projection_matches_lean_bounds_and_following_arithmetic' (5237631) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:513:25:
+assertion `left == right` failed: import Benitoite.Unofficial.Range as R
+function sample(x: Integer, flag: Boolean, other: R.CheckedInteger) -> Integer
+ bind _ <- [block
+ 
+ match R.checkInteger(value: 0, maximum: 10, minimum: 0) with
+ case Result.Ok(c) -> R.value(c)
+ case Result.Error(_) -> return -99
+ end match
+ end block]
+ return 0
+end function
+
+  left: Some((-9223372036854775808, 9223372036854775807))
+ right: Some((0, 10))
+test typeck::interval::tests::range_calls::range_projection_matches_lean_bounds_and_following_arithmetic ... FAILED
+test typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_projection_does_not_warn_on_error_reversed_or_out_of_range
+    typeck::interval::tests::range_calls::range_projection_independent_child_forgets_outer_success_but_restores_parent
+    typeck::interval::tests::range_calls::range_projection_matches_lean_bounds_and_following_arithmetic
+    typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins
+    typeck::interval::tests::range_calls::range_projection_reaches_public_overflow_diagnostics_only_for_the_same_value
+
+test result: FAILED. 1 passed; 5 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 1.52s
+
+error: test failed, to rerun pass `-p benitoite --lib`

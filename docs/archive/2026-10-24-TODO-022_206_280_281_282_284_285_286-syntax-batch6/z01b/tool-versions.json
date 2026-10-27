@@ -1,0 +1,17 @@
+{
+  "rustc": {
+    "command": "rustc --version --verbose",
+    "exit": 0,
+    "output": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n"
+  },
+  "cargo": {
+    "command": "cargo --version --verbose",
+    "exit": 0,
+    "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)\nrelease: 1.98.1\ncommit-hash: 797e8a9bca276c1c9f9f738d2a20f484fa4eea9d\ncommit-date: 2026-08-05\nhost: aarch64-apple-darwin\nlibgit2: 1.9.4 (sys:0.21.0 vendored)\nlibcurl: 8.7.1 (sys:0.4.90+curl-8.21.0 system ssl:(SecureTransport) LibreSSL/3.3.6)\nssl: OpenSSL 3.6.3 9 Jun 2026\nos: Mac OS 27.0.1 [64-bit]\n"
+  },
+  "cargo-deny": {
+    "command": "cargo deny --version",
+    "exit": 0,
+    "output": "cargo-deny 0.20.2\n"
+  }
+}

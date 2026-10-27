@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.10s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::interval::flow::widths::tests::arithmetic_keeps_each_width_and_intermediate_failure' (3961674) panicked at crates/benitoite/src/typeck/interval/flow/widths/tests.rs:141:13:
+assertion `left == right` failed: Integer8: bind n <- if flag then 1s8 else 3s8 end if
+ return n + 2s8
+  left: true
+ right: false
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::flow::widths::tests::arithmetic_keeps_each_width_and_intermediate_failure ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::flow::widths::tests::arithmetic_keeps_each_width_and_intermediate_failure
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1325 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

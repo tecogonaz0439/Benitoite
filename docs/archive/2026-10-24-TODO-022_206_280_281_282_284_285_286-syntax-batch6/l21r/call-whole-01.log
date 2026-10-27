@@ -1,0 +1,302 @@
+Benitoite/Interval/CallReachWhole.lean:39:10: error: Tactic `apply` failed: could not unify the conclusion of `ih`
+  ∀ (body : BodyOutput), body ∈ (runEntries limits fuel rest ?state ?outputsRev).bodiesRev → body.CallsRecognized
+with the goal
+  ∀ (body : BodyOutput),
+    body ∈
+        (match bodySlot limits state with
+          | BudgetScan.Outcome.stopped reason last =>
+            { bodiesRev := outputsRev, pending := entry :: rest, stopped := some (Halt.budget reason),
+              after := finishBody last }
+          | BudgetScan.Outcome.ok value ready =>
+            have kind :=
+              match entry✝.embedded.kind with
+              | BoundaryKind.lambda => BodyKind.lambda
+              | BoundaryKind.lazy => BodyKind.lazy
+              | x => BodyKind.clause;
+            have seed := { kind := kind, body := entry✝.embedded.body, initial := entryEnv entry✝.embedded initial✝ };
+            have output := runBody limits ready fuel entry✝.embedded.definition seed;
+            runEntries limits fuel rest✝ output.output.after (output :: outputsRev)).bodiesRev →
+      body.CallsRecognized
+
+Note: The full type of `ih` is
+  ∀ (state : Budget.State) (outputsRev : List BodyOutput),
+    (∀ (body : BodyOutput), body ∈ outputsRev → body.CallsRecognized) →
+      ∀ (body : BodyOutput), body ∈ (runEntries limits fuel rest state outputsRev).bodiesRev → body.CallsRecognized
+
+case h_2
+limits : Limits
+fuel : Nat
+entry : BudgetDiscovery.Entry
+rest : List BudgetDiscovery.Entry
+ih :
+  ∀ (state : Budget.State) (outputsRev : List BodyOutput),
+    (∀ (body : BodyOutput), body ∈ outputsRev → body.CallsRecognized) →
+      ∀ (body : BodyOutput), body ∈ (runEntries limits fuel rest state outputsRev).bodiesRev → body.CallsRecognized
+state : Budget.State
+outputsRev : List BodyOutput
+before : ∀ (body : BodyOutput), body ∈ outputsRev → body.CallsRecognized
+remaining✝ : List BudgetDiscovery.Entry
+entry✝ : BudgetDiscovery.Entry
+rest✝ : List BudgetDiscovery.Entry
+heq✝² : entry :: rest = entry✝ :: rest✝
+x✝¹ : Option Halt
+heq✝¹ : exhausted limits state = none
+x✝ : Option AbstractEnv
+initial✝ : AbstractEnv
+heq✝ : entry✝.initial = some initial✝
+⊢ ∀ (body : BodyOutput),
+    body ∈
+        (match bodySlot limits state with
+          | BudgetScan.Outcome.stopped reason last =>
+            { bodiesRev := outputsRev, pending := entry :: rest, stopped := some (Halt.budget reason),
+              after := finishBody last }
+          | BudgetScan.Outcome.ok value ready =>
+            have kind :=
+              match entry✝.embedded.kind with
+              | BoundaryKind.lambda => BodyKind.lambda
+              | BoundaryKind.lazy => BodyKind.lazy
+              | x => BodyKind.clause;
+            have seed := { kind := kind, body := entry✝.embedded.body, initial := entryEnv entry✝.embedded initial✝ };
+            have output := runBody limits ready fuel entry✝.embedded.definition seed;
+            runEntries limits fuel rest✝ output.output.after (output :: outputsRev)).bodiesRev →
+      body.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:58:18: error: Type mismatch: After simplification, term
+  runBody_call_reach limits ready.budget fuel input.name seed
+ has type
+  (runBody limits ready.budget fuel input.name seed).CallsRecognized
+but is expected to have type
+  ∀ (body : BodyOutput),
+    (match prepared✝ with
+          | Except.error reason =>
+            { input := input, prepared := Except.error reason, embedded := { after := finishBody ready✝.budget } }
+          | Except.ok seed =>
+            match exhausted limits (runBody limits ready✝.budget fuel input.name seed).output.context.budget with
+            | some reason =>
+              { input := input, prepared := Except.ok seed,
+                root := some (runBody limits ready✝.budget fuel input.name seed),
+                embedded :=
+                  { stopped := some reason,
+                    after := (runBody limits ready✝.budget fuel input.name seed).output.after } }
+            | none =>
+              match
+                exhausted limits
+                  (BudgetDiscovery.discover limits
+                          (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                          seed).context.walk.budget with
+              | some reason =>
+                { input := input, prepared := Except.ok seed,
+                  root := some (runBody limits ready✝.budget fuel input.name seed),
+                  discovery :=
+                    some
+                      (BudgetDiscovery.discover limits
+                        (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name seed),
+                  embedded :=
+                    { stopped := some reason,
+                      after :=
+                        (BudgetDiscovery.discover limits
+                            (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                            seed).after } }
+              | none =>
+                match
+                  scope
+                    (fun x =>
+                      prepareQueue
+                        (BudgetDiscovery.discover limits
+                              (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                              seed).context.entriesRev)
+                    limits
+                    (BudgetDiscovery.discover limits
+                          (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                          seed).context.walk with
+                | (queue, final) =>
+                  match queue with
+                  | Except.error reason =>
+                    { input := input, prepared := Except.ok seed,
+                      root := some (runBody limits ready✝.budget fuel input.name seed),
+                      discovery :=
+                        some
+                          (BudgetDiscovery.discover limits
+                            (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                            seed),
+                      queue := some (Except.error reason), embedded := { after := finishBody final.budget } }
+                  | Except.ok entries =>
+                    { input := input, prepared := Except.ok seed,
+                      root := some (runBody limits ready✝.budget fuel input.name seed),
+                      discovery :=
+                        some
+                          (BudgetDiscovery.discover limits
+                            (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                            seed),
+                      queue := some (Except.ok entries),
+                      embedded := runEntries limits fuel entries (finishBody final.budget) }).root =
+        some body →
+      body.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:58:91: error: unsolved goals
+limits : Limits
+state : Budget.State
+fuel : Nat
+input : Definition
+ready : Context
+seed : BodySeed
+prepared : prepareRoot input limits { budget := state, next := bodyRootKey input.name } = (Except.ok seed, ready)
+x✝ : Id (Except Halt BodySeed × Context)
+prepared✝ : Except Halt BodySeed
+ready✝ : Context
+heq✝ : (Except.ok seed, ready) = (prepared✝, ready✝)
+⊢ ∀ (body : BodyOutput),
+    body ∈
+        (match prepared✝ with
+            | Except.error reason =>
+              { input := input, prepared := Except.error reason, embedded := { after := finishBody ready✝.budget } }
+            | Except.ok seed =>
+              match exhausted limits (runBody limits ready✝.budget fuel input.name seed).output.context.budget with
+              | some reason =>
+                { input := input, prepared := Except.ok seed,
+                  root := some (runBody limits ready✝.budget fuel input.name seed),
+                  embedded :=
+                    { stopped := some reason,
+                      after := (runBody limits ready✝.budget fuel input.name seed).output.after } }
+              | none =>
+                match
+                  exhausted limits
+                    (BudgetDiscovery.discover limits
+                            (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                            seed).context.walk.budget with
+                | some reason =>
+                  { input := input, prepared := Except.ok seed,
+                    root := some (runBody limits ready✝.budget fuel input.name seed),
+                    discovery :=
+                      some
+                        (BudgetDiscovery.discover limits
+                          (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                          seed),
+                    embedded :=
+                      { stopped := some reason,
+                        after :=
+                          (BudgetDiscovery.discover limits
+                              (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                              seed).after } }
+                | none =>
+                  match
+                    scope
+                      (fun x =>
+                        prepareQueue
+                          (BudgetDiscovery.discover limits
+                                (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel
+                                input.name seed).context.entriesRev)
+                      limits
+                      (BudgetDiscovery.discover limits
+                            (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                            seed).context.walk with
+                  | (queue, final) =>
+                    match queue with
+                    | Except.error reason =>
+                      { input := input, prepared := Except.ok seed,
+                        root := some (runBody limits ready✝.budget fuel input.name seed),
+                        discovery :=
+                          some
+                            (BudgetDiscovery.discover limits
+                              (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                              seed),
+                        queue := some (Except.error reason), embedded := { after := finishBody final.budget } }
+                    | Except.ok entries =>
+                      { input := input, prepared := Except.ok seed,
+                        root := some (runBody limits ready✝.budget fuel input.name seed),
+                        discovery :=
+                          some
+                            (BudgetDiscovery.discover limits
+                              (runBody limits ready✝.budget fuel input.name seed).output.context.budget fuel input.name
+                              seed),
+                        queue := some (Except.ok entries),
+                        embedded := runEntries limits fuel entries (finishBody final.budget) }).embedded.bodiesRev →
+      body.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:59:6: error: No goals to be solved
+Benitoite/Interval/CallReachWhole.lean:77:8: error: Tactic `apply` failed: could not unify the conclusion of `ih`
+  ∀ (output : DefinitionOutput), output ∈ (definitions limits fuel rest ?report).definitionsRev → output.CallsRecognized
+with the goal
+  ∀ (output : DefinitionOutput),
+    output ∈
+        (match bodySlot limits report.after with
+          | BudgetScan.Outcome.stopped reason last =>
+            { definitionsRev := report.definitionsRev, remainingDefinitions := input :: rest,
+              remainingModules := report.remainingModules, stopped := some (Halt.budget reason),
+              after := finishBody last }
+          | BudgetScan.Outcome.ok value ready =>
+            have output := runDefinition limits ready fuel input✝;
+            have next :=
+              { definitionsRev := output :: report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                remainingModules := report.remainingModules, stopped := report.stopped,
+                after := output.embedded.after };
+            definitions limits fuel rest✝ next).definitionsRev →
+      output.CallsRecognized
+
+Note: The full type of `ih` is
+  ∀ (report : Report),
+    (∀ (output : DefinitionOutput), output ∈ report.definitionsRev → output.CallsRecognized) →
+      ∀ (output : DefinitionOutput),
+        output ∈ (definitions limits fuel rest report).definitionsRev → output.CallsRecognized
+
+case h_2
+limits : Limits
+fuel : Nat
+input : Definition
+rest : List Definition
+ih :
+  ∀ (report : Report),
+    (∀ (output : DefinitionOutput), output ∈ report.definitionsRev → output.CallsRecognized) →
+      ∀ (output : DefinitionOutput),
+        output ∈ (definitions limits fuel rest report).definitionsRev → output.CallsRecognized
+report : Report
+before : ∀ (output : DefinitionOutput), output ∈ report.definitionsRev → output.CallsRecognized
+inputs✝ : List Definition
+input✝ : Definition
+rest✝ : List Definition
+heq✝¹ : input :: rest = input✝ :: rest✝
+x✝ : Option Halt
+heq✝ : exhausted limits report.after = none
+⊢ ∀ (output : DefinitionOutput),
+    output ∈
+        (match bodySlot limits report.after with
+          | BudgetScan.Outcome.stopped reason last =>
+            { definitionsRev := report.definitionsRev, remainingDefinitions := input :: rest,
+              remainingModules := report.remainingModules, stopped := some (Halt.budget reason),
+              after := finishBody last }
+          | BudgetScan.Outcome.ok value ready =>
+            have output := runDefinition limits ready fuel input✝;
+            have next :=
+              { definitionsRev := output :: report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                remainingModules := report.remainingModules, stopped := report.stopped,
+                after := output.embedded.after };
+            definitions limits fuel rest✝ next).definitionsRev →
+      output.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:96:10: error: Type mismatch
+  saved
+has type
+  ∀ (output : DefinitionOutput),
+    output ∈ (definitions limits fuel input.definitions report).definitionsRev → output.CallsRecognized
+but is expected to have type
+  ∀ (output : DefinitionOutput),
+    output ∈
+        { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+            remainingModules := input :: rest, stopped := some (Halt.budget reason✝),
+            after := finishBody last✝ }.definitionsRev →
+      output.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:97:10: error: Type mismatch
+  ih (definitions limits fuel input.definitions report) saved
+has type
+  ∀ (output : DefinitionOutput),
+    output ∈ (modules limits fuel rest (definitions limits fuel input.definitions report)).definitionsRev →
+      output.CallsRecognized
+but is expected to have type
+  ∀ (output : DefinitionOutput),
+    output ∈
+        (have next :=
+            definitions limits fuel input✝.definitions
+              { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                remainingModules := report.remainingModules, stopped := report.stopped, after := finishBody ready✝ };
+          match next.stopped with
+          | some val =>
+            { definitionsRev := next.definitionsRev, remainingDefinitions := next.remainingDefinitions,
+              remainingModules := rest✝, stopped := next.stopped, after := next.after }
+          | none => modules limits fuel rest✝ next).definitionsRev →
+      output.CallsRecognized

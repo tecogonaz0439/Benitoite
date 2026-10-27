@@ -1,0 +1,27 @@
+function divide(value: Integer, divisor: Integer) -> Integer
+  if divisor = 0 then
+    return value div divisor
+  else
+    return value
+  end if
+end function
+
+function increase(value: Integer8) -> Integer8
+  if value >= 120s8 then
+    return value + 10s8
+  else
+    return value
+  end if
+end function
+
+function shift(n: Integer) -> Integer
+  if n >= 64 then
+    return Integer.shiftLeft(value: 1, n: n)
+  else
+    return 1
+  end if
+end function
+
+function main() -> Unit
+  return ()
+end function

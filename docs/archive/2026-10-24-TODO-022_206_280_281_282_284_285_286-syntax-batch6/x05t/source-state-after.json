@@ -1,0 +1,209 @@
+{
+  "base": "d3f7c3e5327b7e97c57d959c46ce62997bf9f009",
+  "head": "d3f7c3e5327b7e97c57d959c46ce62997bf9f009",
+  "status": " M crates/benitoite/tests/desugar_export/interval/manifest.rs\n M docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/plan.md\n M docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/results.md\n M docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05/results.md\n M docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/results.md\n M docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05r/results.md\n M docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/results.md\n M docs/design/07-quality/07-03-compiler-testing.md\n M docs/design/07-quality/07-04-formal-semantics.md\n M formal/tests/interval_source_compare.py\n M scripts/check/formal_interval.py\n M scripts/check/interval_artifacts.py\n M scripts/check/test_policy.py\n?? docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/\n",
+  "files": {
+    "crates/benitoite/tests/desugar_export/interval/manifest.rs": "2dd7bf8dc97583331772c902560458abc3b96c75809cf83aa8a32242d5e7a971",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/plan.md": "d368f4f76e66d8f29ac4d0a9af1bcf05f299e74e3b2c26db1ba35e449509d773",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/results.md": "a5eb88c928c2f868a6c4e8e13d8ca64829955aa8531f10a1fd51eab0d24f3742",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05/results.md": "f19728de2f20bfc2dde7c1833849da84c085ad10345a3535573f4130522f0f2d",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/results.md": "05a0d5abb4deaa31d776c62db6542d8a9e8c363bd91e2e751e3dd6c550c74cdd",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05r/results.md": "3a3558832346fae1d12daa616688fec7e1ab553a8d63e39d87597977c3ba349a",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/results.md": "ddfddbeeb717ff531710c6da594da5ddaf79792c53d0ba3b217009565e02f942",
+    "docs/design/07-quality/07-03-compiler-testing.md": "50bf1d2e62dd409f9c6671729c9ebb2027d43458ab1084c390d4cfa69a83e764",
+    "docs/design/07-quality/07-04-formal-semantics.md": "1532884172d5ae11a5e021015b3383882c1d5c6d0d00f1e8d44947b4530a9337",
+    "formal/tests/interval_source_compare.py": "3d7ff3a607258e3abc4ea494bfafb2d1a608d3b3a82c3d003bfcad8060827fac",
+    "scripts/check/formal_interval.py": "408b3c694a7d67511cb53d08c1bbef969c4bd3295c030d90ed377df7341a5417",
+    "scripts/check/interval_artifacts.py": "f36d6af2b0a54be678248cdfb622bc7fe5a7cd902a28c395b39b328e972a011c",
+    "scripts/check/test_policy.py": "c8c4a839a17efa6b86a7f57db830674ed7d75299352d42eb60d9271c08593432",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit-after-fix-started.json": "ba9d5367d869c9063bb9a45fcd81fcda7c77477a764dcf149b6952ab323f376c",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit-after-fix.json": "8130137de9ba105ab64fb321a91eea6dfe71b455746be88a78519eadf5c6fa44",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit-after-fix.log": "c607a8c92ab942440e8f60d9273cb70d308947268097a9eb87534770028799a4",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit-initial-started.json": "9bf7bae9ce3b4deb05208d953dca8df4df77f0fb27e28feb09a7170b15d83237",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit-initial.json": "a123dbb093ed016f363907f6ed1c831083cedeebe6ec22e89e70f25c3a0ea998",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit-initial.log": "c607a8c92ab942440e8f60d9273cb70d308947268097a9eb87534770028799a4",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit.py": "083db56d04dfda8d7911612ab3fa7746145df8b9d52187f191e4c7773d33a24e",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/bundle-started.json": "c3b55556490ccd736c0d7772461ac38c48c9edbce82295a4eae8e902dfa85d55",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/bundle.json": "a60828778d492db1c3dd8a229c7a61eaf1212f89b3edf389bc8b98c799c39e47",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/bundle.log": "f5f8c5ec339249b9074a0bace63f1c654c08e257ea53833bd283eecfe85565a3",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/bundle.py": "dffba4957365a68e3cce2e5c00fd1288f17ee7320cab9228e6bcaee06018be83",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/change-statistics.json": "811927fed236b807fe70f6899fe9697044e7c943789ea33ba4ab1387059a79f7",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/counts.json": "7d635bc89bbfc5a578c2288e6d0b3fc89ba0c3cffaa03117e03b7cecc75a52ca",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/export-local-started.json": "081dddeb1615686372f1a03838449ad778e064dcdb7e732884a8e4497621d7be",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/export-local.json": "acd4018c53fc18cf87232d008541a5bfba4d788090fc724322deff0fe106f567",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/export-local.log": "f457d0fcc4f4baabad61b7536e145cfa001e238c29123ca9f0c07ab18559bcb3",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/local-records-index.json": "0230dd0f2a4085ddfe602c712bda5dd331de0bf037177a16328a4290ab3e1df2",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/original-preserved.json": "c889f35d3065606fdf94819b7e72fda9b8360d2a2d07d0a548772448736205fa",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/policy-local-started.json": "015fb26c50ede06a8769e45abcb5c8191e91520186879da2be2bc16d1fde6522",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/policy-local.json": "05812ceb843530ea577cfece8b03b5ea0cb688564c3f2b5f3c7b656918d8ee67",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/policy-local.log": "4c435339e04b8d53aa147838516f4e1fcb3682d918dc0bd8e4de9baee492e5a9",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-dry-run-started.json": "74df35bf421c18284049c9adf581143c9ce9060f1d63ee718c50f007eba2848a",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-dry-run.json": "0353eb82423c6131d13c3dc47e933f18ad0a7656fa67230d6dd8fdced1230033",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-dry-run.log": "aecd4e4434c5983523563b085741fdd59a8874acc7d40a7766cfce6d015dbbde",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work-body.json": "ef34222adfd566ac7ee339c9baf3f55eb95ea25ac9da306750fd96424cf0390d",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work-command.json": "e5f260cf7a279f29392adbb3750f63141b3f0772bd8893f5dcd29a231ee88d81",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work-final-started.json": "2528bb71c46fc022ed22a39e0b04b88044a05f9152f6aef314052f680e1f47e1",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work-final.log": "9841cddab9bd25072f17fb254850948babe6b735e20fbb342d9a9e12f4a283c9",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work-started.json": "89dbde82b0575fdaf12555d9de95b0b1f485adaa0930c586e114748c88648d9f",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work.json": "cbe64d6c6320061ba9adcb48610b531dbe54e43cb63fabdf86b6aa188adeb211",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/remaining-work.log": "a457a52adee868fcc6d24514e5eea61fbe6c42e5222dd9e7035c2fd0bd8dc237",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/results.md": "13433532c4e5fdafe68756edd07f8557fbd0fd5df50ac4c3dc637e7a177cc602",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/run.py": "b9f52afc82b46547089f543162b6d42a48462d698a22ad0d24a2663e7de13e32",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved-details.json": "74b16b1dcaa943390c69d8f0fc7271bee3bbc901c1a2f0594bd37deac046cde8",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved-run2-started.json": "f34a0adb3ca96e89e990e8eaa1013e1dc77566f86e74f29796ac6bca366344ca",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved-run2.json": "4f8af8e727542617b46a440ea0294c4efdaf9bf77fa0e9e6338de8b10888f550",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved-run2.log": "b6d98924b530786d31fec48f53b2308b003b54a180a47634f8978806d2fc5d54",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved-started.json": "8756a05f9914ebff4ceb1083a679ab9f88921904e4f3fd7929164542469c182c",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved.json": "af908ec8e83563c8ecfa393415a96706c71bdaedd42200db2d30e1c6c16d1e6b",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved.log": "9ee4a3d9ebdbae3e716ff032872c7fdf97f7386e23377f7f690a22093d3439f2",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved.py": "de5810cebc2fe93af559b3c0efbc8c8121b6a2d5bb15b3b27a791b19c62135a7",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/self-review.json": "0c04e4b4c24cf4f0a225e0855a50e8a33320ee240d95cee2526fb633979e4b27",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/session-start.json": "f29c95b741d1087ba44ef8144eba0e762e40fcabe1d04294bd48abf68554428a",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-before-started.json": "08dd66c44a1c2baea7db714535c01152f893be793834389cc61ea4a322f2f3b6",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-before.json": "ac3590bada822cca966f94302bbb95846ec4302201804318c75e25ae49ecb0c7",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-before.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-corrected-started.json": "1bfe696dea72a9ba254d56dab8b9183d08f31a4d1445f05024ccd741d67044dd",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-corrected.json": "c3b790f68aa179f987996da40971713be70f544cacaa7c89e70ad7d1c5eef78a",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-corrected.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-final-started.json": "d868543bf90fa6717975d438c5ad3870e61c7b8acb1a036d4dac129873deef36",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/state.py": "818b4862bd82d807b2341e17f63e72def5bc99b84e269b18fc1f1fd5ed7fa493",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/test-counts.json": "1f888b444a887d568c569cd7b5a960e41fbfd88b7b4bd0555175d0c134427a8a",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work-body.json": "88ca1f70a3614b10fad4d27d76f5c6e7f72a0e6a5e34097982546d2665355dd6",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work-dry-run-started.json": "87633ad95003e732d80762893a5f02cfe61d4db6b161a3dcdc3309cdc9eae91c",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work-dry-run.json": "7152f6eb91c64d7c6ab5d7cb14ff01b47a09c4c43da04c1549f5040ec82cf66d",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work-dry-run.log": "9d3f3ebf23f36820ad10d4b9d61365557707c63d387a9546203d116c7ff69227",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work-started.json": "d9f4476198a18e338195d0913e8c462f086ac57889b1596a9f474851d4dce9d4",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work.json": "1822ee61ba63f22d5d8adaa210c87b4599c2d581e5fd778c83e047a5b8a874dd",
+    "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/work.log": "420f1b8595bce2fb01e4a7b84380935532d5802f6c9b1cf6102c11ce035bcb1d"
+  },
+  "trackedDiffSha256": "3343d611964162a01b866ae96b118eddfd450f92bcbe1acde1f349c5b53718fa",
+  "run3SourceDifferences": [
+    {
+      "path": "crates/benitoite/tests/desugar_export/interval/manifest.rs",
+      "before": "428f4374228362f268a6710db084f1e0de34b8f36f29467833a06cfe4323bc7e",
+      "after": "2dd7bf8dc97583331772c902560458abc3b96c75809cf83aa8a32242d5e7a971"
+    },
+    {
+      "path": "docs/design/07-quality/07-03-compiler-testing.md",
+      "before": "b336957463a0b45c893f07db9af410722d2961153b956a3f82dce3ee93889740",
+      "after": "50bf1d2e62dd409f9c6671729c9ebb2027d43458ab1084c390d4cfa69a83e764"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "before": "129151f8c003fd24a69626f0c875915afecb260db11ea068dad7098abd9925ff",
+      "after": "1532884172d5ae11a5e021015b3383882c1d5c6d0d00f1e8d44947b4530a9337"
+    },
+    {
+      "path": "formal/tests/interval_source_compare.py",
+      "before": "3b7f1c32f7d6fca49e5ec8145ecd846bd029d511ebc1b98befb8802c92aa7fe0",
+      "after": "3d7ff3a607258e3abc4ea494bfafb2d1a608d3b3a82c3d003bfcad8060827fac"
+    },
+    {
+      "path": "scripts/check/formal_interval.py",
+      "before": "21a8a32cc8c13db6895140aca12aaca8df6a31a261cc83422086f4a93a298c46",
+      "after": "408b3c694a7d67511cb53d08c1bbef969c4bd3295c030d90ed377df7341a5417"
+    },
+    {
+      "path": "scripts/check/interval_artifacts.py",
+      "before": "b84d466ce9fb56f685266065097be3463a3f1bcb02a6843ae8ce5ddc752deb3d",
+      "after": "f36d6af2b0a54be678248cdfb622bc7fe5a7cd902a28c395b39b328e972a011c"
+    },
+    {
+      "path": "scripts/check/test_policy.py",
+      "before": "8711bd2919d1fe06bcdb07d663c6fcd2bd44230a6b3df2e84d18d5f1a0539913",
+      "after": "c8c4a839a17efa6b86a7f57db830674ed7d75299352d42eb60d9271c08593432"
+    }
+  ],
+  "skippedPrivateLinks": [],
+  "originalExecutableHashes": {
+    "formal/.lake/build/bin/desugarDiff": "25d8339f07727f9ff49e1acd0f1157b00b7533b7937e11bb25789a7ddfc9de43",
+    "formal/.lake/build/bin/builtinCheck": "b56f6605d67b881280f52e1570e3d5312211a4b7fe2729ff548f3dae21d26ffc",
+    "formal/.lake/build/bin/coverageDiff": "eb6fb56054d5ef0c3801ab4ec8b2c16cc921279b658a17d976e808aa6d79b4c4",
+    "formal/.lake/build/bin/coverageProgramDiff": "0fc629848801e07060cc05ef3e51363819680927a1edcae21f918a8b2f733ae5",
+    "formal/.lake/build/bin/surfaceCheck": "a9783f9597b7717ad763420c8565f6de1ccc65dc60a7575c0b8819368ed192a1",
+    "formal/.lake/build/bin/surfaceCheckAll": "81131a19ce18f6c42fde4a5b707c759388b4ee781a2907e1cb4627f1b48610e2",
+    "formal/.lake/build/bin/intervalDiff": "cd35d8e89b247dfdbaced47bd8fe44b6d173968ece02a20de6f698e472ce4eec",
+    "target/debug/benitoite": "6795e7fa1b4016eda7403f02eb6e099ab04e702bd1e2fb383c13cfa0b458996d"
+  },
+  "executableHashes": {
+    "formal/.lake/build/bin/desugarDiff": "25d8339f07727f9ff49e1acd0f1157b00b7533b7937e11bb25789a7ddfc9de43",
+    "formal/.lake/build/bin/builtinCheck": "b56f6605d67b881280f52e1570e3d5312211a4b7fe2729ff548f3dae21d26ffc",
+    "formal/.lake/build/bin/coverageDiff": "eb6fb56054d5ef0c3801ab4ec8b2c16cc921279b658a17d976e808aa6d79b4c4",
+    "formal/.lake/build/bin/coverageProgramDiff": "0fc629848801e07060cc05ef3e51363819680927a1edcae21f918a8b2f733ae5",
+    "formal/.lake/build/bin/surfaceCheck": "a9783f9597b7717ad763420c8565f6de1ccc65dc60a7575c0b8819368ed192a1",
+    "formal/.lake/build/bin/surfaceCheckAll": "81131a19ce18f6c42fde4a5b707c759388b4ee781a2907e1cb4627f1b48610e2",
+    "formal/.lake/build/bin/intervalDiff": "cd35d8e89b247dfdbaced47bd8fe44b6d173968ece02a20de6f698e472ce4eec",
+    "target/debug/benitoite": "d466fcdde9e21a21ec49c5df3f2c27738a2cb9073219f9f2c4348a5e7e87ec59"
+  },
+  "executablesUnchanged": false,
+  "environment": {
+    "rust": {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "output": "rustc 1.98.1 (48a229cea 2026-09-01)\n"
+    },
+    "cargo": {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n"
+    },
+    "lean": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "--version"
+      ],
+      "cwd": "formal",
+      "exit": 0,
+      "output": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)\n"
+    },
+    "lake": {
+      "command": [
+        "lake",
+        "--version"
+      ],
+      "cwd": "formal",
+      "exit": 0,
+      "output": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)\n"
+    },
+    "elan": {
+      "command": [
+        "elan",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "output": "elan 4.2.4 (227caca13 2026-08-25)\n"
+    },
+    "python": {
+      "command": [
+        "python3",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "output": "Python 3.9.6\n"
+    },
+    "macos": {
+      "command": [
+        "sw_vers",
+        "-productVersion"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "output": "27.0.1\n"
+    }
+  }
+}

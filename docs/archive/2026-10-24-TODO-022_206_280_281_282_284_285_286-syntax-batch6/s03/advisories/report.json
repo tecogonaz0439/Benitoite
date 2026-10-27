@@ -1,0 +1,116 @@
+{
+  "started": "2026-10-24T17:59:45.858057+00:00",
+  "config": "deny.toml",
+  "targets": [
+    {
+      "name": "workspace",
+      "manifest": "Cargo.toml",
+      "lock": "Cargo.lock",
+      "lock_sha256": "f63fed7d012a331fb653d1f5e7e17a8833dc15ac7c3423ae447b45003968b0d2",
+      "lock_sha256_after": "f63fed7d012a331fb653d1f5e7e17a8833dc15ac7c3423ae447b45003968b0d2",
+      "state": "clear",
+      "reason": "completed",
+      "count": 0,
+      "ids": [],
+      "advisories": [],
+      "raw": {
+        "command": [
+          "cargo",
+          "deny",
+          "--format",
+          "json",
+          "--log-level",
+          "debug",
+          "--manifest-path",
+          "Cargo.toml",
+          "--config",
+          "<repo>/target/check-advisories/20261024T175945Z-7nkl5pbp/deny.effective.toml",
+          "--locked",
+          "check",
+          "advisories"
+        ],
+        "started": "2026-10-24T17:59:45.881016+00:00",
+        "finished": "2026-10-24T17:59:47.437739+00:00",
+        "exit": 0,
+        "error": null,
+        "stdout": "workspace.stdout",
+        "stderr": "workspace.stderr"
+      },
+      "databases": [
+        {
+          "url": "https://github.com/RustSec/advisory-db",
+          "fetched": "2026-10-24T17:59:47.373442Z"
+        },
+        {
+          "path": "<repo>/target/check-advisories-db/advisory-db-3157b0e258782691",
+          "commit": "21d909e4c8bd4e14c7aea58bf980c881a0053ab1"
+        }
+      ]
+    },
+    {
+      "name": "fuzz",
+      "manifest": "fuzz/Cargo.toml",
+      "lock": "fuzz/Cargo.lock",
+      "lock_sha256": "0cca6d39a47673bbb1e4bf42722983a7c7bdbf2cfbe9f75df46163e26842dc0c",
+      "lock_sha256_after": "0cca6d39a47673bbb1e4bf42722983a7c7bdbf2cfbe9f75df46163e26842dc0c",
+      "state": "clear",
+      "reason": "completed",
+      "count": 0,
+      "ids": [],
+      "advisories": [],
+      "raw": {
+        "command": [
+          "cargo",
+          "deny",
+          "--format",
+          "json",
+          "--log-level",
+          "debug",
+          "--manifest-path",
+          "fuzz/Cargo.toml",
+          "--config",
+          "<repo>/target/check-advisories/20261024T175945Z-7nkl5pbp/deny.effective.toml",
+          "--locked",
+          "check",
+          "advisories"
+        ],
+        "started": "2026-10-24T17:59:47.446512+00:00",
+        "finished": "2026-10-24T17:59:48.297047+00:00",
+        "exit": 0,
+        "error": null,
+        "stdout": "fuzz.stdout",
+        "stderr": "fuzz.stderr"
+      },
+      "databases": [
+        {
+          "url": "https://github.com/RustSec/advisory-db",
+          "fetched": "2026-10-24T17:59:48.232108Z"
+        },
+        {
+          "path": "<repo>/target/check-advisories-db/advisory-db-3157b0e258782691",
+          "commit": "21d909e4c8bd4e14c7aea58bf980c881a0053ab1"
+        }
+      ]
+    }
+  ],
+  "exit": 0,
+  "config_sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+  "db_path_override": "<repo>/target/check-advisories-db",
+  "effective_config": "<repo>/target/check-advisories/20261024T175945Z-7nkl5pbp/deny.effective.toml",
+  "effective_config_sha256": "26629fab81a7d6c3ccff6fbf99435a1a6add20763862ec5595b7a0b89f547f6e",
+  "version": {
+    "command": [
+      "cargo",
+      "deny",
+      "--version"
+    ],
+    "started": "2026-10-24T17:59:45.858388+00:00",
+    "finished": "2026-10-24T17:59:45.880877+00:00",
+    "exit": 0,
+    "error": null,
+    "stdout": "version.stdout",
+    "stderr": "version.stderr"
+  },
+  "cargo_deny": "cargo-deny 0.20.2",
+  "finished": "2026-10-24T17:59:48.305300+00:00"
+}

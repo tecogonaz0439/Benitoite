@@ -1,0 +1,293 @@
+{
+  "base": "c6d2eeea202e7918376cdfb4d30d1be796b98972",
+  "head": "c6d2eeea202e7918376cdfb4d30d1be796b98972",
+  "branch": "mod012/L24",
+  "protected": {
+    "NormalSoundness": "06ba7536b776c538ca79334db702fd4c756eb1871d51d234cc86df4e8c4db2bf",
+    "WarningSoundness": "3707732b57cb8e8aa1583845575e574c5c327d7b2ea1067d4fd8ace0e999ec80",
+    "ConcreteValue": "67e95bc4090d2c390809ea67b27a6181c1f5286270bb61d4439c832669e746ea",
+    "ConcreteValue.type": "16a6cf626ffef8eea33beb0ce83961f42830a7e514864552a326ba260d9cae64",
+    "EvalInput": "a80d03e0ef936228303467689f85f6e3ff20a1d2e30fed4fc51539f166b948de",
+    "Reached": "807607d86c7fc09818ac95f65db60dad160b8880d5fd84246d0b44b72d7d6c28",
+    "targetOperationAt": "0218c8badd145fbde0f71106bff5e70594ec2b1ee54e1b4f7b8947614b318bc9",
+    "arithmeticOperationAt": "6bed7e01c41cc8fa8b1addde4bfed31b72c417b837cb39ec400d7c9531785ff1",
+    "WarningLocated": "f9533c7ca2dc65f4e029ec2a4b7e9025c94d74862975119bde9f22e0db223a26",
+    "Models": "6839b6a5477ff40e4a2325895a50cc99aceb15da60ff6dde8e21962c6691ee80",
+    "SlotModels": "5ab841695198623b351c2a3c0cc8fa0e03e49cce984f46e5b95dfdb8b5f7c616",
+    "AbstractSlot": "02e769f1468fc82e472103c5f86c6373244be82e8da8fd9352a7522fc517ec59",
+    "AbstractEnv": "4782d8e864a1dee932e72ffe95532fa0f9b5e8a63bb026f7cbf9fa1aa6192268"
+  },
+  "header_changes": [
+    {
+      "path": "formal/Benitoite/Interval/BudgetBody.lean",
+      "name": "analyzeBody_warning_located",
+      "old": "theorem analyzeBody_warning_located (limits : Limits) (state : Budget.State) (fuel : Nat) (definition : String) (seed : BodySeed) (warning : IntervalWarning) (member : warning ∈ (analyzeBody limits state fuel definition seed).approx.warnings) : ∃ node, (warning.key, node) ∈ numbered (bodyRootKey definition) (bodyRoot seed.body) ∧ targetOperationAt seed.initial warning.key node = some warning.operation",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/CallReachSound.lean",
+          "analyzeBody_warning_located"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetCallReach.lean",
+      "name": "within_call",
+      "old": "theorem within_call (fuel : Nat) (env : AbstractEnv) (callee : Expr) (labels : List (Option String)) (positions : List Nat) (sources : Exprs) (extra) (ha : Within (arguments fuel env sources) (CallReach.exprs env sources) extra) : Within (BudgetAnalysis.expr (fuel + 1) env (.call callee labels positions sources)) (CallReach.expr env (.call callee labels positions sources)) extra",
+      "new": "theorem within_call (fuel : Nat) (env : AbstractEnv) (callee : Expr) (labels : List (Option String)) (positions : List Nat) (sources : Exprs) (extra) (ha : ∀ extra, Within (arguments fuel env sources) (CallReach.exprs env sources) extra) (he : ∀ extra source, Within (BudgetAnalysis.expr fuel env source) (CallReach.expr env source) extra) : Within (BudgetAnalysis.expr (fuel + 1) env (.call callee labels positions sources)) (CallReach.expr env (.call callee labels positions sources)) extra",
+      "moved": []
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetLocated.lean",
+      "name": "expr_located",
+      "old": "theorem expr_located (fuel : Nat) (env : AbstractEnv) (source : Expr) (limits : Limits) (ctx : Context) : ListExtension (fun warning => ∃ node, (warning.key, node) ∈ numbered ctx.next source ∧ arithmeticOperationAt node = some warning.operation) ctx.warningsRev (expr fuel env source limits ctx).2.warningsRev",
+      "new": "theorem expr_located (fuel : Nat) (env : AbstractEnv) (source : Expr) (limits : Limits) (ctx : Context) : ListExtension (fun warning => ∃ node, (warning.key, node) ∈ numbered ctx.next source ∧ WarningOperationSyntax node warning.operation) ctx.warningsRev (expr fuel env source limits ctx).2.warningsRev",
+      "moved": []
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetLocated.lean",
+      "name": "analyzeExpr_warning_located",
+      "old": "theorem analyzeExpr_warning_located (limits : Limits) (state : Budget.State) (fuel : Nat) (env : AbstractEnv) (key : OperationKey) (source : Expr) (warning : IntervalWarning) (member : warning ∈ (analyzeExpr limits state fuel env key source).approx.warnings) : ∃ node, (warning.key, node) ∈ numbered key source ∧ targetOperationAt env warning.key node = some warning.operation",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/CallReachSound.lean",
+          "analyzeExpr_warning_located"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetLocated.lean",
+      "name": "analyze_warning_located",
+      "old": "theorem analyze_warning_located : WarningLocated analyze",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/CallReachSound.lean",
+          "analyze_warning_located"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_join",
+      "old": "theorem tables_join (base : AbstractEnv) (left right : Option AbstractEnv) (hl : SameOptionTables base left) (hr : SameOptionTables base right) : SameOptionTables base (joinConditionEnvs base left right)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_join"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_option_bind",
+      "old": "theorem tables_option_bind {env : AbstractEnv} {first : Option AbstractEnv} {next : AbstractEnv → Option AbstractEnv} (hf : SameOptionTables env first) (hn : ∀ middle, SameOptionTables middle (next middle)) : SameOptionTables env (first.bind next)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_option_bind"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_atomic",
+      "old": "theorem tables_atomic (env source truth) : SameOptionTables env (atomicConditionEnv env source truth)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_atomic"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_condition",
+      "old": "theorem tables_condition (env : AbstractEnv) (source : Expr) (truth : Bool) : SameOptionTables env (conditionEnv env source truth)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_condition"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_branch",
+      "old": "theorem tables_branch (env source normal truth) : SameOptionTables env (branchEnv env source normal truth)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_branch"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_extendMatch",
+      "old": "theorem tables_extendMatch (env slots positions) : SameOptionTables env (extendMatchSlots env slots positions)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_extendMatch"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_alternative",
+      "old": "theorem tables_alternative (env source type normal alt) : SameOptionTables env (matchAlternativeEnv env source type normal alt)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_alternative"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_kindAlternative",
+      "old": "theorem tables_kindAlternative (env source kind normal alt) : SameOptionTables env (matchKindAlternativeEnv env source kind normal alt)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_kindAlternative"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_alternatives",
+      "old": "theorem tables_alternatives (template env source type normal alts) (same : rangeTables template = rangeTables env) : SameOptionTables env (matchAlternativesEnv template env source type normal alts)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_alternatives"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_kindAlternatives",
+      "old": "theorem tables_kindAlternatives (template env source kind normal alts) (same : rangeTables template = rangeTables env) : SameOptionTables env (matchKindAlternativesEnv template env source kind normal alts)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_kindAlternatives"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "name": "tables_arm",
+      "old": "theorem tables_arm (env source kind normal alts) : SameOptionTables env (matchKindArmEnv env source kind normal alts)",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/TablePreservation.lean",
+          "tables_arm"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "name": "http_record_empty_models",
+      "old": "theorem http_record_empty_models (env : ConcreteEnv) : HttpRecordState.empty.Models env",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/RangeState.lean",
+          "http_record_empty_models"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "name": "http_record_lookup_extend",
+      "old": "theorem http_record_lookup_extend (state : HttpRecordState) (fact : Option HttpRecordFact) : (state.extend fact).lookup 0 = fact ∧ ∀ index, (state.extend fact).lookup (index + 1) = state.lookup index",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/RangeState.lean",
+          "http_record_lookup_extend"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "name": "http_record_extend_models",
+      "old": "theorem http_record_extend_models {state : HttpRecordState} {env : ConcreteEnv} {fact : Option HttpRecordFact} {value : Option ConcreteValue} (related : state.Models env) (head : ∀ known, fact = some known → ∃ v, value = some v ∧ known.Models v) : (state.extend fact).Models { env with locals := value :: env.locals }",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/RangeState.lean",
+          "http_record_extend_models"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "name": "http_record_copy_models",
+      "old": "theorem http_record_copy_models {state : HttpRecordState} {env : ConcreteEnv} {index value} (related : state.Models env) (atValue : env.locals[index]? = some (some value)) : (state.copy index).Models { env with locals := some value :: env.locals }",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/RangeState.lean",
+          "http_record_copy_models"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "name": "http_record_forget_models",
+      "old": "theorem http_record_forget_models (state : HttpRecordState) (env : ConcreteEnv) : state.forget.Models env",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/RangeState.lean",
+          "http_record_forget_models"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "name": "http_record_local_sound",
+      "old": "theorem http_record_local_sound {state : HttpRecordState} {env : ConcreteEnv} {index fact value integer} (related : state.Models env) (known : state.lookup index = some fact) (atValue : env.locals[index]? = some (some value)) (read : fact.declaration.read value = some integer) : Mem integer.toInt fact.normal",
+      "new": null,
+      "moved": [
+        [
+          "formal/Benitoite/Interval/RangeState.lean",
+          "http_record_local_sound"
+        ]
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Interval/SyntacticReach.lean",
+      "name": "concreteRule_known",
+      "old": "theorem concreteRule_known {source : Expr} (concrete : concreteRule source = true) (env : ConcreteEnv) (type : Ty) (key : OperationKey) (callKnown : ∀ callee labels positions arguments, source = .call callee labels positions arguments → rangeCallBinding env ⟨source, type, key⟩ ≠ none) : ¬ UnknownAt env ⟨source, type, key⟩",
+      "new": "theorem concreteRule_known {source : Expr} (concrete : concreteRule source = true) (env : ConcreteEnv) (type : Ty) (key : OperationKey) (callKnown : ∀ callee labels positions arguments, source = .call callee labels positions arguments → rangeCallBinding env ⟨source, type, key⟩ ≠ none) (recordKnown : (match source with | .record .. | .recordUpdate .. => httpExpressionBinding env ⟨source, type, key⟩ ≠ none | _ => True)) : ¬ UnknownAt env ⟨source, type, key⟩",
+      "moved": []
+    }
+  ],
+  "fixed_files": {
+    "crates/benitoite/testdata/interval-budget/README.md": "12af5c62cc34ef9567113ba35242548ed53571d0ba393929fce5cdba6883f543",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "99628afdd3a2be03aa24d12bf081a547bcd7458cdae6a90d088a714aa2132ef3",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "dba75504e33b87b728c8eebea9ac49d837c9cfa358add5cbce6acb13931ff017",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "1bac731aa50a3bf875e0721c39ab39b7279dee47c67a87284a9eee59bea775f1",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "85b30b727147603a2970a9e6ffc8ec06b841e6853b85d09bc3162f7c9385f866",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "7b84bc791e9364e095e05cc392b2f173fbbdf9ff26eac244aa02642762e4379d",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "6189541f2b0495b0d07488ebd91e832e79dd3e54b2b2caa2a68810b258e85e66"
+  },
+  "forbidden_proof_commands": []
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s2/file-sink.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.133,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "work/m012/scratch/s2/file-sink.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.155,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s2/json-sink.bnt"
+    ],
+    "exit": 2,
+    "seconds": 0.034,
+    "stdout": "",
+    "stderr": "error[E0303]: `Float` has no member `isInfinite`\n  --> work/m012/scratch/s2/json-sink.bnt:12:39\n   |\n12 |       if Float.isNaN(number) or Float.isInfinite(number) then\n   |                                       ^^^^^^^^^^ not found in `Float`\n   |\n   = note: `Float` has: `absolute`, `ceiling`, `floor`, `isNaN`, `parse`, `round`, `squareRoot`, `toString`, `truncate`\n\nerror: could not check work/m012/scratch/s2/json-sink.bnt due to 1 previous error\n"
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "work/m012/scratch/s2/json-sink.bnt"
+    ],
+    "exit": 2,
+    "seconds": 0.034,
+    "stdout": "",
+    "stderr": "error[E0303]: `Float` has no member `isInfinite`\n  --> work/m012/scratch/s2/json-sink.bnt:12:39\n   |\n12 |       if Float.isNaN(number) or Float.isInfinite(number) then\n   |                                       ^^^^^^^^^^ not found in `Float`\n   |\n   = note: `Float` has: `absolute`, `ceiling`, `floor`, `isNaN`, `parse`, `round`, `squareRoot`, `toString`, `truncate`\n\nerror: could not run work/m012/scratch/s2/json-sink.bnt due to 1 previous error\n"
+  }
+]

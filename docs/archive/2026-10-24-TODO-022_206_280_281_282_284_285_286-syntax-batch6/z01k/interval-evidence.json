@@ -1,0 +1,2034 @@
+{
+  "manifest": "target/interval-diff/run-17585/programs/interval-manifest.json",
+  "row": {
+    "bodies": [
+      {
+        "analyzed": true,
+        "bottom": true,
+        "coverage": "Prepared",
+        "definition": ".divide",
+        "depth": false,
+        "informative": true,
+        "top": false,
+        "valueAvailable": true
+      },
+      {
+        "analyzed": true,
+        "bottom": true,
+        "coverage": "Prepared",
+        "definition": ".increase",
+        "depth": false,
+        "informative": true,
+        "top": false,
+        "valueAvailable": true
+      },
+      {
+        "analyzed": true,
+        "bottom": true,
+        "coverage": "Prepared",
+        "definition": ".shift",
+        "depth": false,
+        "informative": true,
+        "top": false,
+        "valueAvailable": true
+      },
+      {
+        "analyzed": true,
+        "bottom": true,
+        "coverage": "Prepared",
+        "definition": ".main",
+        "depth": false,
+        "informative": true,
+        "top": false,
+        "valueAvailable": true
+      }
+    ],
+    "checker": "succeeded",
+    "counts": {
+      "allBodies": "4",
+      "analyzedBodies": "4",
+      "bodyBudgetExceeded": "0",
+      "bottomBodies": "4",
+      "checkerFailed": "0",
+      "checkerSucceeded": "1",
+      "constantDefinitions": "0",
+      "depthBodies": "0",
+      "excludedBodies": "0",
+      "excludedDefinitions": "0",
+      "functionDefinitions": "4",
+      "informativeBodies": "4",
+      "inputDefinitions": "4",
+      "methodDefinitions": "0",
+      "notAnalyzedBodies": "0",
+      "outsideDefinitions": "0",
+      "phaseDepth": "0",
+      "sourceModules": "1",
+      "topBodies": "0",
+      "unidentifiedBodies": "0",
+      "unsupportedBodies": "0",
+      "wholeBudgetSkipped": "0"
+    },
+    "definitions": [
+      {
+        "bodyTypes": [
+          {
+            "definition": ".divide",
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          }
+        ],
+        "correspondence": [
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "block": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "ite": {
+                        "cond": {
+                          "binary": {
+                            "lhs": {
+                              "local": {
+                                "index": 0
+                              }
+                            },
+                            "op": "eq",
+                            "operand": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "rhs": {
+                              "literal": {
+                                "value": {
+                                  "integer": {
+                                    "value": 0
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "no": {
+                          "last": {
+                            "expr": {
+                              "returnE": {
+                                "inner": {
+                                  "local": {
+                                    "index": 1
+                                  }
+                                },
+                                "ret": {
+                                  "base": {
+                                    "name": "Unit"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "yes": {
+                          "last": {
+                            "expr": {
+                              "returnE": {
+                                "inner": {
+                                  "binary": {
+                                    "lhs": {
+                                      "local": {
+                                        "index": 1
+                                      }
+                                    },
+                                    "op": "intDiv",
+                                    "operand": {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    },
+                                    "rhs": {
+                                      "local": {
+                                        "index": 0
+                                      }
+                                    }
+                                  }
+                                },
+                                "ret": {
+                                  "base": {
+                                    "name": "Unit"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Block",
+            "node": null,
+            "observedEnd": "11",
+            "parent": null,
+            "preorder": "0",
+            "sourceStatus": "syntheticBodyRoot",
+            "span": null,
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "ite": {
+                "cond": {
+                  "binary": {
+                    "lhs": {
+                      "local": {
+                        "index": 0
+                      }
+                    },
+                    "op": "eq",
+                    "operand": {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    },
+                    "rhs": {
+                      "literal": {
+                        "value": {
+                          "integer": {
+                            "value": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "no": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": {
+                          "local": {
+                            "index": 1
+                          }
+                        },
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "yes": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": {
+                          "binary": {
+                            "lhs": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "op": "intDiv",
+                            "operand": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "rhs": {
+                              "local": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        },
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "IfElse",
+            "node": 16,
+            "observedEnd": "11",
+            "parent": "0",
+            "preorder": "1",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              63,
+              144
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "5",
+            "expression": {
+              "binary": {
+                "lhs": {
+                  "local": {
+                    "index": 0
+                  }
+                },
+                "op": "eq",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Binary",
+            "node": 7,
+            "observedEnd": "5",
+            "parent": "1",
+            "preorder": "2",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              66,
+              77
+            ],
+            "type": {
+              "base": {
+                "name": "Boolean"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "4",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 5,
+            "observedEnd": "4",
+            "parent": "2",
+            "preorder": "3",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              66,
+              73
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "5",
+            "expression": {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 0
+                  }
+                }
+              }
+            },
+            "form": "Literal",
+            "node": 6,
+            "observedEnd": "5",
+            "parent": "2",
+            "preorder": "4",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              76,
+              77
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "returnE": {
+                "inner": {
+                  "binary": {
+                    "lhs": {
+                      "local": {
+                        "index": 1
+                      }
+                    },
+                    "op": "intDiv",
+                    "operand": {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    },
+                    "rhs": {
+                      "local": {
+                        "index": 0
+                      }
+                    }
+                  }
+                },
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 11,
+            "observedEnd": "9",
+            "parent": "1",
+            "preorder": "5",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              87,
+              111
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "binary": {
+                "lhs": {
+                  "local": {
+                    "index": 1
+                  }
+                },
+                "op": "intDiv",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "local": {
+                    "index": 0
+                  }
+                }
+              }
+            },
+            "form": "Binary",
+            "node": 10,
+            "observedEnd": "9",
+            "parent": "5",
+            "preorder": "6",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              94,
+              111
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "8",
+            "expression": {
+              "local": {
+                "index": 1
+              }
+            },
+            "form": "Local",
+            "node": 8,
+            "observedEnd": "8",
+            "parent": "6",
+            "preorder": "7",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              94,
+              99
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 9,
+            "observedEnd": "9",
+            "parent": "6",
+            "preorder": "8",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              104,
+              111
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "returnE": {
+                "inner": {
+                  "local": {
+                    "index": 1
+                  }
+                },
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 14,
+            "observedEnd": "11",
+            "parent": "1",
+            "preorder": "9",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              123,
+              135
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "local": {
+                "index": 1
+              }
+            },
+            "form": "Local",
+            "node": 13,
+            "observedEnd": "11",
+            "parent": "9",
+            "preorder": "10",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              130,
+              135
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          }
+        ],
+        "embedded": [],
+        "enumerationComplete": true,
+        "manifest": [
+          ".divide"
+        ],
+        "outside": [],
+        "source": {
+          "declaration": "0",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".divide"
+        }
+      },
+      {
+        "bodyTypes": [
+          {
+            "definition": ".increase",
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          }
+        ],
+        "correspondence": [
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "block": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "ite": {
+                        "cond": {
+                          "binary": {
+                            "lhs": {
+                              "local": {
+                                "index": 0
+                              }
+                            },
+                            "op": "ge",
+                            "operand": {
+                              "base": {
+                                "name": "Integer8"
+                              }
+                            },
+                            "rhs": {
+                              "literal": {
+                                "value": {
+                                  "integer8": {
+                                    "value": 120
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "no": {
+                          "last": {
+                            "expr": {
+                              "returnE": {
+                                "inner": {
+                                  "local": {
+                                    "index": 0
+                                  }
+                                },
+                                "ret": {
+                                  "base": {
+                                    "name": "Unit"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "yes": {
+                          "last": {
+                            "expr": {
+                              "returnE": {
+                                "inner": {
+                                  "binary": {
+                                    "lhs": {
+                                      "local": {
+                                        "index": 0
+                                      }
+                                    },
+                                    "op": "add",
+                                    "operand": {
+                                      "base": {
+                                        "name": "Integer8"
+                                      }
+                                    },
+                                    "rhs": {
+                                      "literal": {
+                                        "value": {
+                                          "integer8": {
+                                            "value": 10
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "ret": {
+                                  "base": {
+                                    "name": "Unit"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Block",
+            "node": null,
+            "observedEnd": "11",
+            "parent": null,
+            "preorder": "0",
+            "sourceStatus": "syntheticBodyRoot",
+            "span": null,
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "ite": {
+                "cond": {
+                  "binary": {
+                    "lhs": {
+                      "local": {
+                        "index": 0
+                      }
+                    },
+                    "op": "ge",
+                    "operand": {
+                      "base": {
+                        "name": "Integer8"
+                      }
+                    },
+                    "rhs": {
+                      "literal": {
+                        "value": {
+                          "integer8": {
+                            "value": 120
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "no": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": {
+                          "local": {
+                            "index": 0
+                          }
+                        },
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "yes": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": {
+                          "binary": {
+                            "lhs": {
+                              "local": {
+                                "index": 0
+                              }
+                            },
+                            "op": "add",
+                            "operand": {
+                              "base": {
+                                "name": "Integer8"
+                              }
+                            },
+                            "rhs": {
+                              "literal": {
+                                "value": {
+                                  "integer8": {
+                                    "value": 10
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "IfElse",
+            "node": 33,
+            "observedEnd": "11",
+            "parent": "0",
+            "preorder": "1",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              208,
+              287
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "5",
+            "expression": {
+              "binary": {
+                "lhs": {
+                  "local": {
+                    "index": 0
+                  }
+                },
+                "op": "ge",
+                "operand": {
+                  "base": {
+                    "name": "Integer8"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer8": {
+                        "value": 120
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Binary",
+            "node": 24,
+            "observedEnd": "5",
+            "parent": "1",
+            "preorder": "2",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              211,
+              225
+            ],
+            "type": {
+              "base": {
+                "name": "Boolean"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "4",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 22,
+            "observedEnd": "4",
+            "parent": "2",
+            "preorder": "3",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              211,
+              216
+            ],
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "5",
+            "expression": {
+              "literal": {
+                "value": {
+                  "integer8": {
+                    "value": 120
+                  }
+                }
+              }
+            },
+            "form": "Literal",
+            "node": 23,
+            "observedEnd": "5",
+            "parent": "2",
+            "preorder": "4",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              220,
+              225
+            ],
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "returnE": {
+                "inner": {
+                  "binary": {
+                    "lhs": {
+                      "local": {
+                        "index": 0
+                      }
+                    },
+                    "op": "add",
+                    "operand": {
+                      "base": {
+                        "name": "Integer8"
+                      }
+                    },
+                    "rhs": {
+                      "literal": {
+                        "value": {
+                          "integer8": {
+                            "value": 10
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 28,
+            "observedEnd": "9",
+            "parent": "1",
+            "preorder": "5",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              235,
+              254
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "binary": {
+                "lhs": {
+                  "local": {
+                    "index": 0
+                  }
+                },
+                "op": "add",
+                "operand": {
+                  "base": {
+                    "name": "Integer8"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer8": {
+                        "value": 10
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Binary",
+            "node": 27,
+            "observedEnd": "9",
+            "parent": "5",
+            "preorder": "6",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              242,
+              254
+            ],
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "8",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 25,
+            "observedEnd": "8",
+            "parent": "6",
+            "preorder": "7",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              242,
+              247
+            ],
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "literal": {
+                "value": {
+                  "integer8": {
+                    "value": 10
+                  }
+                }
+              }
+            },
+            "form": "Literal",
+            "node": 26,
+            "observedEnd": "9",
+            "parent": "6",
+            "preorder": "8",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              250,
+              254
+            ],
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "returnE": {
+                "inner": {
+                  "local": {
+                    "index": 0
+                  }
+                },
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 31,
+            "observedEnd": "11",
+            "parent": "1",
+            "preorder": "9",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              266,
+              278
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "11",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 30,
+            "observedEnd": "11",
+            "parent": "9",
+            "preorder": "10",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              273,
+              278
+            ],
+            "type": {
+              "base": {
+                "name": "Integer8"
+              }
+            }
+          }
+        ],
+        "embedded": [],
+        "enumerationComplete": true,
+        "manifest": [
+          ".increase"
+        ],
+        "outside": [],
+        "source": {
+          "declaration": "1",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".increase"
+        }
+      },
+      {
+        "bodyTypes": [
+          {
+            "definition": ".shift",
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          }
+        ],
+        "correspondence": [
+          {
+            "acquired": true,
+            "end": "12",
+            "expression": {
+              "block": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "ite": {
+                        "cond": {
+                          "binary": {
+                            "lhs": {
+                              "local": {
+                                "index": 0
+                              }
+                            },
+                            "op": "ge",
+                            "operand": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "rhs": {
+                              "literal": {
+                                "value": {
+                                  "integer": {
+                                    "value": 64
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "no": {
+                          "last": {
+                            "expr": {
+                              "returnE": {
+                                "inner": {
+                                  "literal": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 1
+                                      }
+                                    }
+                                  }
+                                },
+                                "ret": {
+                                  "base": {
+                                    "name": "Unit"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "yes": {
+                          "last": {
+                            "expr": {
+                              "returnE": {
+                                "inner": {
+                                  "call": {
+                                    "args": [
+                                      {
+                                        "literal": {
+                                          "value": {
+                                            "integer": {
+                                              "value": 1
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "local": {
+                                          "index": 0
+                                        }
+                                      }
+                                    ],
+                                    "callee": {
+                                      "primName": {
+                                        "effs": [],
+                                        "name": "Integer.shiftLeft",
+                                        "tys": []
+                                      }
+                                    },
+                                    "labels": [
+                                      "a",
+                                      "n"
+                                    ],
+                                    "positions": [
+                                      0,
+                                      1
+                                    ]
+                                  }
+                                },
+                                "ret": {
+                                  "base": {
+                                    "name": "Unit"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Block",
+            "node": null,
+            "observedEnd": "12",
+            "parent": null,
+            "preorder": "0",
+            "sourceStatus": "syntheticBodyRoot",
+            "span": null,
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "12",
+            "expression": {
+              "ite": {
+                "cond": {
+                  "binary": {
+                    "lhs": {
+                      "local": {
+                        "index": 0
+                      }
+                    },
+                    "op": "ge",
+                    "operand": {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    },
+                    "rhs": {
+                      "literal": {
+                        "value": {
+                          "integer": {
+                            "value": 64
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "no": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": {
+                          "literal": {
+                            "value": {
+                              "integer": {
+                                "value": 1
+                              }
+                            }
+                          }
+                        },
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "yes": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": {
+                          "call": {
+                            "args": [
+                              {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 1
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "local": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "callee": {
+                              "primName": {
+                                "effs": [],
+                                "name": "Integer.shiftLeft",
+                                "tys": []
+                              }
+                            },
+                            "labels": [
+                              "a",
+                              "n"
+                            ],
+                            "positions": [
+                              0,
+                              1
+                            ]
+                          }
+                        },
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "IfElse",
+            "node": 51,
+            "observedEnd": "12",
+            "parent": "0",
+            "preorder": "1",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              342,
+              427
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "5",
+            "expression": {
+              "binary": {
+                "lhs": {
+                  "local": {
+                    "index": 0
+                  }
+                },
+                "op": "ge",
+                "operand": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "rhs": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 64
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Binary",
+            "node": 41,
+            "observedEnd": "5",
+            "parent": "1",
+            "preorder": "2",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              345,
+              352
+            ],
+            "type": {
+              "base": {
+                "name": "Boolean"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "4",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 39,
+            "observedEnd": "4",
+            "parent": "2",
+            "preorder": "3",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              345,
+              346
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "5",
+            "expression": {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 64
+                  }
+                }
+              }
+            },
+            "form": "Literal",
+            "node": 40,
+            "observedEnd": "5",
+            "parent": "2",
+            "preorder": "4",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              350,
+              352
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "10",
+            "expression": {
+              "returnE": {
+                "inner": {
+                  "call": {
+                    "args": [
+                      {
+                        "literal": {
+                          "value": {
+                            "integer": {
+                              "value": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "local": {
+                          "index": 0
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "primName": {
+                        "effs": [],
+                        "name": "Integer.shiftLeft",
+                        "tys": []
+                      }
+                    },
+                    "labels": [
+                      "a",
+                      "n"
+                    ],
+                    "positions": [
+                      0,
+                      1
+                    ]
+                  }
+                },
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 46,
+            "observedEnd": "10",
+            "parent": "1",
+            "preorder": "5",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              362,
+              398
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "10",
+            "expression": {
+              "call": {
+                "args": [
+                  {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 1
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "local": {
+                      "index": 0
+                    }
+                  }
+                ],
+                "callee": {
+                  "primName": {
+                    "effs": [],
+                    "name": "Integer.shiftLeft",
+                    "tys": []
+                  }
+                },
+                "labels": [
+                  "a",
+                  "n"
+                ],
+                "positions": [
+                  0,
+                  1
+                ]
+              }
+            },
+            "form": "Call",
+            "node": 45,
+            "observedEnd": "10",
+            "parent": "5",
+            "preorder": "6",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              369,
+              398
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "8",
+            "expression": {
+              "primName": {
+                "effs": [],
+                "name": "Integer.shiftLeft",
+                "tys": []
+              }
+            },
+            "form": "PrimName",
+            "node": 42,
+            "observedEnd": "8",
+            "parent": "6",
+            "preorder": "7",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              369,
+              386
+            ],
+            "type": {
+              "fn": {
+                "eff": [],
+                "names": [
+                  "a",
+                  "n"
+                ],
+                "params": [
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "9",
+            "expression": {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 1
+                  }
+                }
+              }
+            },
+            "form": "Literal",
+            "node": 43,
+            "observedEnd": "9",
+            "parent": "6",
+            "preorder": "8",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              390,
+              391
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "10",
+            "expression": {
+              "local": {
+                "index": 0
+              }
+            },
+            "form": "Local",
+            "node": 44,
+            "observedEnd": "10",
+            "parent": "6",
+            "preorder": "9",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              396,
+              397
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "12",
+            "expression": {
+              "returnE": {
+                "inner": {
+                  "literal": {
+                    "value": {
+                      "integer": {
+                        "value": 1
+                      }
+                    }
+                  }
+                },
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 49,
+            "observedEnd": "12",
+            "parent": "1",
+            "preorder": "10",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              410,
+              418
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "12",
+            "expression": {
+              "literal": {
+                "value": {
+                  "integer": {
+                    "value": 1
+                  }
+                }
+              }
+            },
+            "form": "Literal",
+            "node": 48,
+            "observedEnd": "12",
+            "parent": "10",
+            "preorder": "11",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              417,
+              418
+            ],
+            "type": {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          }
+        ],
+        "embedded": [],
+        "enumerationComplete": true,
+        "manifest": [
+          ".shift"
+        ],
+        "outside": [],
+        "source": {
+          "declaration": "2",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".shift"
+        }
+      },
+      {
+        "bodyTypes": [
+          {
+            "definition": ".main",
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          }
+        ],
+        "correspondence": [
+          {
+            "acquired": true,
+            "end": "3",
+            "expression": {
+              "block": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "inner": "unit",
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "form": "Block",
+            "node": null,
+            "observedEnd": "3",
+            "parent": null,
+            "preorder": "0",
+            "sourceStatus": "syntheticBodyRoot",
+            "span": null,
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "3",
+            "expression": {
+              "returnE": {
+                "inner": "unit",
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              }
+            },
+            "form": "Return",
+            "node": 56,
+            "observedEnd": "3",
+            "parent": "0",
+            "preorder": "1",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              468,
+              477
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          },
+          {
+            "acquired": true,
+            "end": "3",
+            "expression": "unit",
+            "form": "Unit",
+            "node": 55,
+            "observedEnd": "3",
+            "parent": "1",
+            "preorder": "2",
+            "sourceStatus": "mapped",
+            "span": [
+              0,
+              475,
+              477
+            ],
+            "type": {
+              "base": {
+                "name": "Unit"
+              }
+            }
+          }
+        ],
+        "embedded": [],
+        "enumerationComplete": true,
+        "manifest": [
+          ".main"
+        ],
+        "outside": [],
+        "source": {
+          "declaration": "3",
+          "kind": "function",
+          "method": null,
+          "module": "",
+          "name": ".main"
+        }
+      }
+    ],
+    "enumerationComplete": true,
+    "excluded": [],
+    "group": "golden",
+    "input": "golden:testdata/warnings/skill-local-intervals.bnt",
+    "manifest": [
+      ".divide",
+      ".increase",
+      ".shift",
+      ".main"
+    ],
+    "name": "testdata/warnings/skill-local-intervals.bnt",
+    "whole": {
+      "after": {
+        "operations": "306",
+        "peak": "55",
+        "saved": "48"
+      },
+      "bodies": [
+        {
+          "coverage": "Prepared",
+          "definition": ".divide"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".increase"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".shift"
+        },
+        {
+          "coverage": "Prepared",
+          "definition": ".main"
+        }
+      ],
+      "definition": "",
+      "fuel": "4096",
+      "kind": "whole",
+      "legacyWarnings": {
+        "diagnostics": [],
+        "identities": []
+      },
+      "limits": {
+        "body": {
+          "items": "100000",
+          "operations": "100000"
+        },
+        "whole": {
+          "items": "1000000",
+          "operations": "1000000"
+        }
+      },
+      "phases": [
+        {
+          "definition": ".divide",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".increase",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".shift",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        },
+        {
+          "definition": ".main",
+          "discovered": [],
+          "discovery": "complete",
+          "embeddedStop": null,
+          "entry": "complete",
+          "pending": [],
+          "queue": "complete"
+        }
+      ],
+      "remainingDefinitions": [],
+      "remainingModules": [],
+      "stopped": null
+    }
+  },
+  "report": "target/interval-diff/run-17585/comparison/real-source-0/source-analysis-401.report.json",
+  "reportSha256": "8a79108f51ee98eb1b785f4fac50aed428c1294550736e5c8748b5d90b8a6461",
+  "result": {
+    "version": 1,
+    "profileManifest": {
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "domain",
+      "inputCount": "1",
+      "excludedCount": "0",
+      "definitionCount": "4",
+      "comparedCount": "4",
+      "bodyCount": "4"
+    },
+    "profile": "domain",
+    "phaseDepthCount": "0",
+    "mode": "analyze",
+    "matched": true,
+    "kind": "interval-report",
+    "initialFuel": "180",
+    "informativeCount": "4",
+    "excludedCount": "0",
+    "comparedCount": "4",
+    "accepted": true,
+    "acceptanceReasons": []
+  }
+}

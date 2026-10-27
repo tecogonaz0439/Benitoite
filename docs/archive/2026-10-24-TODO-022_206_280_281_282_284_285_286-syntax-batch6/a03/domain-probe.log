@@ -1,0 +1,94 @@
+COMMAND: ['<tmp>/benitoite-a03/domain-probe', '--nocapture']
+
+running 2 tests
+normalization cases: 14
+test typeck::integer64_normalization_boundaries ... ok
+enumerated set pairs: 841
+test typeck::set_operations_match_enumerated_sets ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+EXIT_STATUS=0
+ELAPSED_SECONDS=0.210
+
+検証用の一時入力（絶対パスを伏せた写し）:
+mod typeck {
+    #[path = "<repo>/crates/benitoite/src/typeck/interval/domain.rs"]
+    mod domain;
+
+    #[test]
+    fn integer64_normalization_boundaries() {
+        use domain::Interval as I;
+        let min = -9_223_372_036_854_775_808_i128;
+        let max = 9_223_372_036_854_775_807_i128;
+        let cases = [
+            (2, 1, None),
+            (7, 7, Some((7, 7))),
+            (min, min, Some((min, min))),
+            (max, max, Some((max, max))),
+            (min, max, Some((min, max))),
+            (min - 1, max + 1, Some((min, max))),
+            (min - 1, min, Some((min, min))),
+            (max, max + 1, Some((max, max))),
+            (max + 1, max + 2, None),
+            (min - 2, min - 1, None),
+            (i128::MIN, i128::MAX, Some((min, max))),
+            (i128::MAX, i128::MIN, None),
+            (i128::MIN, i128::MIN, None),
+            (i128::MAX, i128::MAX, None),
+        ];
+        for (lo, hi, expected) in cases {
+            let actual = I::normalize(lo, hi);
+            assert_eq!(actual.bounds(), expected, "normalize({lo}, {hi})");
+            assert_eq!(actual.is_bottom(), expected.is_none());
+            for value in [i128::MIN, min - 1, min, 6, 7, 8, max, max + 1, i128::MAX] {
+                let belongs = expected.is_some_and(|(a, b)| a <= value && value <= b);
+                assert_eq!(actual.contains(value), belongs);
+            }
+        }
+        assert_eq!(I::top().bounds(), Some((min, max)));
+        assert_eq!(I::bottom().bounds(), None);
+        println!("normalization cases: {}", cases.len());
+    }
+
+    #[test]
+    fn set_operations_match_enumerated_sets() {
+        use domain::Interval as I;
+        let mut cases = vec![(I::bottom(), Vec::<i128>::new())];
+        for lo in -3..=3 {
+            for hi in lo..=3 {
+                cases.push((I::normalize(lo, hi), (lo..=hi).collect()));
+            }
+        }
+        for (a, sa) in &cases {
+            assert_eq!(a.meet(I::top()), *a);
+            assert_eq!(I::top().meet(*a), *a);
+            assert_eq!(a.join(I::top()), I::top());
+            assert_eq!(I::top().join(*a), I::top());
+            assert!(a.is_subset_of(I::top()));
+            for (b, sb) in &cases {
+                let intersection: Vec<_> = sa.iter().copied().filter(|x| sb.contains(x)).collect();
+                let mut union = sa.clone();
+                union.extend(sb);
+                union.sort_unstable();
+                union.dedup();
+                let hull = union.first().copied().zip(union.last().copied());
+                assert_eq!(a.meet(*b).bounds(), intersection.first().copied().zip(intersection.last().copied()));
+                assert_eq!(a.join(*b).bounds(), hull);
+                assert_eq!(a.is_subset_of(*b), sa.iter().all(|x| sb.contains(x)));
+            }
+        }
+        let negative = I::normalize(-2, -1);
+        let positive = I::normalize(1, 2);
+        assert!(!negative.contains(0) && !positive.contains(0));
+        assert_eq!(negative.join(positive).bounds(), Some((-2, 2)));
+        assert!(negative.join(positive).contains(0));
+        assert_eq!(I::normalize(-2, 0).meet(I::normalize(0, 3)).bounds(), Some((0, 0)));
+        let min = I::normalize(-9_223_372_036_854_775_808, -9_223_372_036_854_775_808);
+        let max = I::normalize(9_223_372_036_854_775_807, 9_223_372_036_854_775_807);
+        assert_eq!(min.join(max), I::top());
+        assert!(min.meet(max).is_bottom());
+        assert!(!I::top().is_subset_of(min));
+        println!("enumerated set pairs: {}", cases.len() * cases.len());
+    }
+}

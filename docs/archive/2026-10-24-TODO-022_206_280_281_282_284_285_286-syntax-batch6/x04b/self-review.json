@@ -1,0 +1,65 @@
+{
+  "base": "2a0e03e5097e057fb02b0712344aa7246b326d55",
+  "head": "2a0e03e5097e057fb02b0712344aa7246b326d55",
+  "changedTracked": [
+    "docs/design/07-quality/07-03-compiler-testing.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/README.md"
+  ],
+  "diffCheck": true,
+  "codeLeanScriptsUnchanged": true,
+  "addedLinks": [
+    {
+      "source": "docs/design/07-quality/07-03-compiler-testing.md",
+      "target": "07-04-formal-semantics.md#区間解析の独立交換の読者"
+    },
+    {
+      "source": "docs/design/07-quality/07-03-compiler-testing.md",
+      "target": "../../../formal/README.md#検査"
+    },
+    {
+      "source": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../../../formal/README.md#検査"
+    },
+    {
+      "source": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "07-03-compiler-testing.md#実装の規約と静的な検査"
+    },
+    {
+      "source": "formal/README.md",
+      "target": "../docs/design/07-quality/07-04-formal-semantics.md#区間解析の対象構文の評価関係"
+    },
+    {
+      "source": "formal/README.md",
+      "target": "../docs/design/07-quality/07-03-compiler-testing.md#実装の規約と静的な検査"
+    }
+  ],
+  "sourceDirectories": [
+    "programs",
+    "identity",
+    "manifest/manifest-interval",
+    "range/interval",
+    "vm/original",
+    "vm/instrumented",
+    "vm/range/original",
+    "vm/range/instrumented",
+    "vm/shifts/original",
+    "vm/shifts/instrumented"
+  ],
+  "leanExampleMemoryLimit": true,
+  "recordsRedacted": true,
+  "documents": [
+    {
+      "path": "docs/design/07-quality/07-03-compiler-testing.md",
+      "sha256": "fa085d94026acd081466522eb212025becc13ba0708454e99bc7df76e9d7604d"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "sha256": "0caf8663c5cee25d24ab924a85166ba484049dfa9626fd1dd7c614de0e83b70a"
+    },
+    {
+      "path": "formal/README.md",
+      "sha256": "832f0fea0526024e20e5fcd50769d9cbe10817e3669f75ef93ba9b4b925496f7"
+    }
+  ]
+}

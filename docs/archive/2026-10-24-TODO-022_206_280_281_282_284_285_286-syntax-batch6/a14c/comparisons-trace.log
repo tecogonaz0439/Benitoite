@@ -1,0 +1,310 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.55s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(587)) Some(2)
+refine Integer8 BindingId(587) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(587)) Some(2)
+refine Integer8 BindingId(587) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(588) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(588) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(589)) Some(-128)
+refine Integer8 BindingId(589) Interval { bounds: Some((-128, 127)) } -128 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(589)) Some(-128)
+refine Integer8 BindingId(589) Interval { bounds: Some((-128, 127)) } -128 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(590)) Some(127)
+refine Integer8 BindingId(590) Interval { bounds: Some((-128, 127)) } 127 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(590)) Some(127)
+refine Integer8 BindingId(590) Interval { bounds: Some((-128, 127)) } 127 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(591)) Some(2)
+refine Integer8 BindingId(591) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(591)) Some(2)
+refine Integer8 BindingId(591) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(592)) Some(3)
+refine Integer8 BindingId(592) Interval { bounds: Some((-128, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(592)) Some(3)
+refine Integer8 BindingId(592) Interval { bounds: Some((-128, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(593) Interval { bounds: Some((-128, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(593) Interval { bounds: Some((-128, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(594)) Some(3)
+refine Integer8 BindingId(594) Interval { bounds: Some((-128, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(594)) Some(3)
+refine Integer8 BindingId(594) Interval { bounds: Some((-128, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(595)) Some(2)
+refine Integer8 BindingId(595) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(595)) Some(2)
+refine Integer8 BindingId(595) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(596)) Some(2)
+refine Integer8 BindingId(596) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(596)) Some(2)
+refine Integer8 BindingId(596) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(597)) Some(127)
+refine Integer8 BindingId(597) Interval { bounds: Some((-128, 127)) } 127 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(597)) Some(127)
+refine Integer8 BindingId(597) Interval { bounds: Some((-128, 127)) } 127 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(598)) Some(-128)
+refine Integer8 BindingId(598) Interval { bounds: Some((-128, 127)) } -128 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(598)) Some(-128)
+refine Integer8 BindingId(598) Interval { bounds: Some((-128, 127)) } -128 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(599)) Some(2)
+refine Integer8 BindingId(599) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(599)) Some(2)
+refine Integer8 BindingId(599) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(3)
+refine Integer8 BindingId(600) Interval { bounds: Some((2, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(3)
+refine Integer8 BindingId(600) Interval { bounds: Some((2, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(3)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(3)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(3)
+refine Integer8 BindingId(602) Interval { bounds: Some((2, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(3)
+refine Integer8 BindingId(602) Interval { bounds: Some((2, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(3)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 3 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(3)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 3 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(604)) Some(2)
+refine Integer8 BindingId(604) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(604)) Some(2)
+refine Integer8 BindingId(604) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(605) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(605) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(1399)) Some(0)
+refine Integer8 BindingId(1399) Interval { bounds: Some((-128, 127)) } 0 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(607)) Some(0)
+refine Integer8 BindingId(607) Interval { bounds: Some((-128, 127)) } 0 true
+
+thread 'typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees' (4104495) panicked at crates/benitoite/src/typeck/interval/flow/widths/tests.rs:687:13:
+assertion `left == right` failed: Integer8: return if x = 2s8 then x else 1s8 div 0s8 end if: Analysis {
+    value: Ok(
+        Approx {
+            normal: Interval {
+                bounds: None,
+            },
+            provenance: Provenance(
+                None,
+            ),
+            returned: Interval {
+                bounds: None,
+            },
+            live: false,
+            only_integer: false,
+            non_integer_other: false,
+            boolean: (
+                false,
+                false,
+            ),
+            may_fail: true,
+            unsupported: false,
+            widths: Empty,
+            returned_widths: Known(
+                [
+                    Interval {
+                        bounds: Some(
+                            (
+                                -128,
+                                127,
+                            ),
+                        ),
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                ],
+            ),
+        },
+    ),
+    candidates: [
+        Candidate {
+            preorder: 7,
+            origin: Origin {
+                node: NodeId(
+                    23,
+                ),
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        203,
+                    ),
+                    end: BytePos(
+                        214,
+                    ),
+                },
+            },
+            primary: Span {
+                file: FileId(
+                    0,
+                ),
+                start: BytePos(
+                    211,
+                ),
+                end: BytePos(
+                    214,
+                ),
+            },
+            operation: Binary(
+                IntDiv,
+            ),
+            cause: ZeroDivisor,
+            kind: Integer8,
+            left: Interval {
+                bounds: Some(
+                    (
+                        1,
+                        1,
+                    ),
+                ),
+            },
+            right: Interval {
+                bounds: Some(
+                    (
+                        0,
+                        0,
+                    ),
+                ),
+            },
+            origins: Provenance(
+                None,
+            ),
+        },
+    ],
+    independent: [],
+    unsupported: false,
+}
+  left: Some((-128, 127))
+ right: Some((2, 2))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

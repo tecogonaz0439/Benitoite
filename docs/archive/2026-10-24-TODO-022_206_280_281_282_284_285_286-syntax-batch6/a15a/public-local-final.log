@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.72s
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 4 tests
+
+thread 'interval_widths::width_boundaries_warn_only_at_reached_operations' (4199144) panicked at crates/benitoite/tests/declarations/interval_widths.rs:211:13:
+Integer8/14: [Diagnostic { kind: Check, severity: Error, code: Some(E0241), message: "a guard is written with `if`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(85), end: BytePos(89) }, text: "" }), secondary: [], notes: [], helps: [Help { message: "write `case v if v = 0s8 ->`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(85), end: BytePos(89) }, replacement: "if" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test interval_widths::width_boundaries_warn_only_at_reached_operations ... FAILED
+test interval_widths::width_constants_merge_expansions_and_prefer_existing_warnings ... ok
+test interval_widths::standard_arithmetic_warnings_keep_constant_evaluation_contract ... ok
+test interval_widths::arithmetic_warnings_keep_the_integer_kind_range_and_primary ... ok
+
+failures:
+
+failures:
+    interval_widths::width_boundaries_warn_only_at_reached_operations
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 28 filtered out; finished in 5.87s
+
+error: test failed, to rerun pass `-p benitoite --test declarations`

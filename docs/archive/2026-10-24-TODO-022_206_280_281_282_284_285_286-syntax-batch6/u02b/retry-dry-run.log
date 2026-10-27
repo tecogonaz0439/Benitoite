@@ -1,0 +1,6 @@
+== plan: level work against 8cff73ac4139560f8af6876d887151ecadb8ad27 (changed files not classified) (partial selection: --only reference_examples,skill_docs)
+   [reference_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test reference_examples
+   [skill_docs] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test skill_docs
+   later: stage checks named connections; change covers full regression; release checks the candidate

@@ -1,0 +1,6 @@
+== plan: level work against 51dc0fefe2fc7a75df915a19640afb436d051e9e (53 changed file(s))
+   [policy_selftest] because of scripts/check/interval_artifacts.py (estimate: seconds to 1 min)
+      command: python3 -B scripts/check/test_policy.py
+   [formal_build] because of formal/tests/interval_source_compare.py (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate

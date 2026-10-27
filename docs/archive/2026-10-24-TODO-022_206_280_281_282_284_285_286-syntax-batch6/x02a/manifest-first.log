@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 121, in <module>
+    main()
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 115, in main
+    independent=check_independent(args.independent_dir))
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 85, in check_independent
+    corpus = read(directory/(profile+'-analyze-'+str(attempt)+'.input.json'))
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 16, in read
+    return json.loads(path.read_text())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: 'target/x02a-exchange/flow-containers-analyze-1.input.json'

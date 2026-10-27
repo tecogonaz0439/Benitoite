@@ -1,0 +1,656 @@
+{
+  "body": {
+    "old_rows": 18336,
+    "new_rows": 18398,
+    "shapes": {
+      "branches": {
+        "changed": 48,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "warnings"
+        ],
+        "old_success_caps": [
+          33,
+          21,
+          33,
+          21
+        ],
+        "new_success_caps": [
+          34,
+          21,
+          34,
+          21
+        ]
+      },
+      "call": {
+        "changed": 48,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          19,
+          19,
+          19,
+          19
+        ],
+        "new_success_caps": [
+          20,
+          19,
+          20,
+          19
+        ]
+      },
+      "generalProduct": {
+        "changed": 56,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop"
+        ],
+        "old_success_caps": [
+          38,
+          20,
+          38,
+          20
+        ],
+        "new_success_caps": [
+          39,
+          20,
+          39,
+          20
+        ]
+      },
+      "rangeAllArms": {
+        "changed": 58,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "warnings"
+        ],
+        "old_success_caps": [
+          185,
+          35,
+          185,
+          35
+        ],
+        "new_success_caps": [
+          186,
+          35,
+          186,
+          35
+        ]
+      },
+      "rangeIncrement": {
+        "changed": 18,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "next",
+          "stop",
+          "warnings"
+        ],
+        "old_success_caps": [
+          158,
+          30,
+          158,
+          30
+        ],
+        "new_success_caps": [
+          159,
+          30,
+          159,
+          30
+        ]
+      },
+      "rangeSaved": {
+        "changed": 64,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop"
+        ],
+        "old_success_caps": [
+          144,
+          31,
+          144,
+          31
+        ],
+        "new_success_caps": [
+          146,
+          31,
+          146,
+          31
+        ]
+      },
+      "rangeValue": {
+        "changed": 8,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "stop"
+        ],
+        "old_success_caps": [
+          42,
+          15,
+          42,
+          15
+        ],
+        "new_success_caps": [
+          43,
+          15,
+          43,
+          15
+        ]
+      },
+      "recordPattern": {
+        "changed": 40,
+        "removed": 0,
+        "added": 6,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          27,
+          14,
+          27,
+          14
+        ],
+        "new_success_caps": [
+          30,
+          14,
+          30,
+          14
+        ]
+      },
+      "s16_matchPatternUnknown": {
+        "changed": 80,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          45,
+          25,
+          45,
+          25
+        ],
+        "new_success_caps": [
+          47,
+          25,
+          47,
+          25
+        ]
+      },
+      "s16_matchUnknown": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          41,
+          26,
+          41,
+          26
+        ],
+        "new_success_caps": [
+          42,
+          26,
+          42,
+          26
+        ]
+      },
+      "s32_matchPatternUnknown": {
+        "changed": 80,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          45,
+          25,
+          45,
+          25
+        ],
+        "new_success_caps": [
+          47,
+          25,
+          47,
+          25
+        ]
+      },
+      "s32_matchUnknown": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          41,
+          26,
+          41,
+          26
+        ],
+        "new_success_caps": [
+          42,
+          26,
+          42,
+          26
+        ]
+      },
+      "s8_matchPatternUnknown": {
+        "changed": 80,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          45,
+          25,
+          45,
+          25
+        ],
+        "new_success_caps": [
+          47,
+          25,
+          47,
+          25
+        ]
+      },
+      "s8_matchUnknown": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          41,
+          26,
+          41,
+          26
+        ],
+        "new_success_caps": [
+          42,
+          26,
+          42,
+          26
+        ]
+      },
+      "u16_matchPatternUnknown": {
+        "changed": 80,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          45,
+          25,
+          45,
+          25
+        ],
+        "new_success_caps": [
+          47,
+          25,
+          47,
+          25
+        ]
+      },
+      "u16_matchUnknown": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          41,
+          26,
+          41,
+          26
+        ],
+        "new_success_caps": [
+          42,
+          26,
+          42,
+          26
+        ]
+      },
+      "u32_matchPatternUnknown": {
+        "changed": 80,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          45,
+          25,
+          45,
+          25
+        ],
+        "new_success_caps": [
+          47,
+          25,
+          47,
+          25
+        ]
+      },
+      "u32_matchUnknown": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          41,
+          26,
+          41,
+          26
+        ],
+        "new_success_caps": [
+          42,
+          26,
+          42,
+          26
+        ]
+      },
+      "u64_matchPatternUnknown": {
+        "changed": 80,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          45,
+          25,
+          45,
+          25
+        ],
+        "new_success_caps": [
+          47,
+          25,
+          47,
+          25
+        ]
+      },
+      "u64_matchUnknown": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          41,
+          26,
+          41,
+          26
+        ],
+        "new_success_caps": [
+          42,
+          26,
+          42,
+          26
+        ]
+      },
+      "unsupportedByte": {
+        "changed": 18,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "next",
+          "stop",
+          "independent",
+          "unsupported"
+        ],
+        "old_success_caps": [
+          35,
+          21,
+          35,
+          21
+        ],
+        "new_success_caps": [
+          37,
+          21,
+          37,
+          21
+        ]
+      }
+    },
+    "saved_sha256": "99628afdd3a2be03aa24d12bf081a547bcd7458cdae6a90d088a714aa2132ef3"
+  },
+  "whole": {
+    "old_rows": 6304,
+    "new_rows": 6315,
+    "shapes": {
+      "whole:captured": {
+        "changed": 31,
+        "removed": 0,
+        "added": 1,
+        "columns": [
+          "operations",
+          "saved",
+          "peak"
+        ]
+      },
+      "whole:rangeAllArms": {
+        "changed": 129,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "warnings",
+          "phases"
+        ]
+      },
+      "whole:rangeIncrement": {
+        "changed": 79,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "warnings",
+          "phases"
+        ]
+      },
+      "whole:rangeSaved": {
+        "changed": 97,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "operations",
+          "saved",
+          "peak",
+          "phases"
+        ]
+      },
+      "whole:rangeValue": {
+        "changed": 31,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "operations",
+          "phases"
+        ]
+      }
+    },
+    "saved_sha256": "6189541f2b0495b0d07488ebd91e832e79dd3e54b2b2caa2a68810b258e85e66"
+  },
+  "summary": {
+    "old_rows": 6304,
+    "new_rows": 6315,
+    "shapes": {
+      "whole:captured": {
+        "changed": 9,
+        "removed": 0,
+        "added": 1,
+        "columns": [
+          "wholeBudgetSkipped",
+          "unidentifiedBodies"
+        ]
+      },
+      "whole:rangeAllArms": {
+        "changed": 118,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "bodyBudgetExceeded",
+          "wholeBudgetSkipped",
+          "unidentifiedBodies",
+          "phaseStops"
+        ]
+      },
+      "whole:rangeIncrement": {
+        "changed": 74,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "bodyBudgetExceeded",
+          "wholeBudgetSkipped",
+          "unidentifiedBodies",
+          "phaseStops"
+        ]
+      },
+      "whole:rangeSaved": {
+        "changed": 61,
+        "removed": 0,
+        "added": 4,
+        "columns": [
+          "bodyBudgetExceeded",
+          "wholeBudgetSkipped",
+          "unidentifiedBodies",
+          "phaseStops"
+        ]
+      },
+      "whole:rangeValue": {
+        "changed": 26,
+        "removed": 0,
+        "added": 2,
+        "columns": [
+          "bodyBudgetExceeded",
+          "wholeBudgetSkipped",
+          "phaseStops"
+        ]
+      }
+    },
+    "saved_sha256": "7b84bc791e9364e095e05cc392b2f173fbbdf9ff26eac244aa02642762e4379d"
+  }
+}

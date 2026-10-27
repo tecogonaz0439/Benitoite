@@ -1,0 +1,104 @@
+== plan: level work against 61e04c646797d045d8bf876800c2e8cba690db59 (38 changed file(s))
+   [fmt] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/src/typeck/interval/fixed_domain.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+    Checking libc v0.2.190
+    Checking serde_core v1.0.229
+    Checking libm v0.2.16
+    Checking generic-array v0.14.7
+    Checking thiserror v2.0.21
+    Checking target-lexicon v0.13.5
+    Checking cranelift-assembler-x64 v0.136.4
+   Compiling zmij v1.0.23
+    Checking cobs v0.3.0
+    Checking crc32fast v1.5.2
+    Checking anyhow v1.0.104
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.7
+    Checking cpufeatures v0.2.17
+    Checking errno v0.3.14
+   Compiling wasmtime-internal-core v49.0.4
+    Checking rustls v0.23.46
+    Checking core-foundation v0.10.1
+    Checking security-framework-sys v2.17.0
+    Checking digest v0.10.7
+    Checking httparse v1.10.1
+    Checking signal-hook-registry v1.4.8
+    Checking serde v1.0.229
+    Checking hashbrown v0.17.1
+   Compiling cranelift-bitset v0.136.4
+   Compiling indexmap v2.14.2
+    Checking semver v1.0.28
+    Checking sha2 v0.10.9
+   Compiling serde_json v1.0.151
+    Checking smallvec v1.16.3
+   Compiling pulley-interpreter v49.0.4
+    Checking postcard v1.1.3
+   Compiling wasmparser v0.258.3
+    Checking regalloc2 v0.15.2
+    Checking security-framework v3.7.0
+    Checking getrandom v0.3.4
+    Checking encoding_rs v0.8.42
+    Checking gimli v0.33.0
+    Checking cranelift-entity v0.136.4
+   Compiling cranelift-codegen-meta v0.136.4
+    Checking object v0.40.0
+    Checking cranelift-bforest v0.136.4
+    Checking rustls-platform-verifier v0.7.1
+    Checking graviola v0.4.1
+    Checking ureq-proto v0.6.4
+    Checking wasmtime-internal-jit-icache-coherence v49.0.4
+    Checking signal-hook v0.4.5
+    Checking rustix v1.1.5
+    Checking mio v1.2.4
+    Checking cpufeatures v0.3.1
+    Checking ureq v3.4.2
+    Checking sha2 v0.11.0
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Checking rustls-graviola v0.4.0
+   Compiling cranelift-codegen v0.136.4
+    Checking signal-hook-mio v0.3.0
+    Checking getrandom v0.4.3
+    Checking wasmprinter v0.258.3
+   Compiling wasm-encoder v0.258.3
+   Compiling wit-parser v0.258.3
+    Checking wasmtime-environ v49.0.4
+   Compiling wasm-metadata v0.258.3
+   Compiling wit-component v0.258.3
+   Compiling wasmtime-internal-wit-bindgen v49.0.4
+   Compiling wasmtime-internal-component-macro v49.0.4
+    Checking cranelift-native v0.136.4
+    Checking wasmtime-internal-unwinder v49.0.4
+    Checking cranelift-frontend v0.136.4
+    Checking wasmtime-internal-cranelift v49.0.4
+    Checking wasmtime v49.0.4
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs:100:21
+    |
+100 |                     other => panic!("unexpected declaration kind: {other:?}"),
+    |                     ^^^^^ help: try: `other @ BindingKind::ImplFn { .. } | other @ BindingKind::Const | other @ BindingKind::Data | other @ BindingKind::BuiltinType(_) | other @ BindingKind::Alias | other @ BindingKind::ExternalType | other @ BindingKind::Record | other @ BindingKind::Field { .. } | other @ BindingKind::Ctor { .. } | other @ BindingKind::Trait | other @ BindingKind::Method { .. } | other @ BindingKind::Effect | other @ BindingKind::BuiltinEffect(_) | other @ BindingKind::Op { .. } | other @ BindingKind::Module(_) | other @ BindingKind::NamespaceRoot | other @ BindingKind::TypeParam { .. } | other @ BindingKind::EffectVar { .. } | other @ BindingKind::Local(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+    = note: requested on the command line with `-D clippy::wildcard-enum-match-arm`
+
+error: could not compile `benitoite` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+FAILED: lint_default
+       41.18 real       124.32 user        38.80 sys
+time: sysctl kern.clockrate: Operation not permitted

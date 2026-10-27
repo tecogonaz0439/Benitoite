@@ -452,7 +452,7 @@ fn check_local_bindings(
             // 外部のファイルだけを補い、依存の解決も本物の読み込みと名前解決を通す。
             (
                 format!("{path}/package.bnt"),
-                format!("language \"0.0.11\"\npackage {alias}\nend package\n").into_bytes(),
+                format!("language \"0.0.12\"\npackage {alias}\nend package\n").into_bytes(),
             )
         })
         .collect();

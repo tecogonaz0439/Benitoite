@@ -1,0 +1,73 @@
+== plan: level work against 6a6fd6ea78de81da6fbe04d225ac3728bb65a98a (14 changed file(s))
+   [fmt] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/src/typeck/interval/flow.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/flow.rs:377:21
+    |
+377 |                     _ => break,
+    |                     ^ help: try: `Expr::Lit(_) | Expr::Interp(_) | Expr::Name(_) | Expr::Unit(_) | Expr::List(_) | Expr::Call(_) | Expr::Record(_) | Expr::Binary(_) | Expr::Unary(_) | Expr::Pipe(_) | Expr::If(_) | Expr::Match(_) | Expr::Lambda(_) | Expr::Return(_) | Expr::Try(_) | Expr::Block(_) | Expr::Lazy(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) | Expr::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+    = note: requested on the command line with `-D clippy::wildcard-enum-match-arm`
+
+error: arithmetic operation that can potentially result in unexpected side-effects
+   --> crates/benitoite/src/typeck/interval/flow.rs:876:56
+    |
+876 |             Self::Ne if lo == k => Interval::normalize(lo + 1, hi),
+    |                                                        ^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#arithmetic_side_effects
+    = note: requested on the command line with `-D clippy::arithmetic-side-effects`
+
+error: arithmetic operation that can potentially result in unexpected side-effects
+   --> crates/benitoite/src/typeck/interval/flow.rs:877:60
+    |
+877 |             Self::Ne if hi == k => Interval::normalize(lo, hi - 1),
+    |                                                            ^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#arithmetic_side_effects
+
+error: arithmetic operation that can potentially result in unexpected side-effects
+   --> crates/benitoite/src/typeck/interval/flow.rs:879:71
+    |
+879 |             Self::Lt => range.meet(Interval::normalize(Interval::MIN, k - 1)),
+    |                                                                       ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#arithmetic_side_effects
+
+error: arithmetic operation that can potentially result in unexpected side-effects
+   --> crates/benitoite/src/typeck/interval/flow.rs:881:56
+    |
+881 |             Self::Gt => range.meet(Interval::normalize(k + 1, Interval::MAX)),
+    |                                                        ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#arithmetic_side_effects
+
+error: could not compile `benitoite` (lib) due to 5 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `benitoite` (lib test) due to 5 previous errors
+FAILED: lint_default
+A06_COMMAND_EXIT_STATUS=1
+       11.02 real        13.77 user         0.95 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A06_OUTER_EXIT_STATUS=1
+A06_WALL_SECONDS=11.027

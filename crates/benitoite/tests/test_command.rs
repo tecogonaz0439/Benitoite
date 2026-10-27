@@ -163,6 +163,29 @@ function passesQuietly() -> Unit uses Console.Write
 end function
 "#;
 
+// crashes は到達した除数の失敗を意図している。局所解析の警告を一件確認し、
+// 実行時の失敗や test --check の非実行の契約は同じ入力で維持する。
+fn mixed_warning(file: &str) -> String {
+    format!(
+        r#"warning[W0401]: this divides by zero
+  --> <dir>/{file}:29:19
+   |
+29 |   bind _ <- 1 div n
+   |                   ^ the divisor is always 0
+   |
+  ::: <dir>/{file}:28:3
+   |
+28 |   bind n <- 0
+   |   ----------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred divisor interval is [0,0]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning: 1 warning emitted
+"#
+    )
+}
+
 // 関門: 成功と失敗の混じったファイルの文章の形の全体（設計書 06-04「結果の報告」）。
 // 説明の有無、理由ごとの詳細、捕らえた出力の節、成功したテストの出力を示さないこと、空の行の置き方を一度に確かめる。
 #[test]
@@ -171,7 +194,7 @@ fn mixed_results_are_reported_in_the_text_form() {
     let file = dir.write("sum.bnt", MIXED);
     let out = run(&dir, &[&file]);
     assert_eq!(out.exit, 1, "{}", out.stderr);
-    assert_eq!(out.stderr, "");
+    assert_eq!(out.stderr, mixed_warning("sum.bnt"));
     let expected = r#"test <dir>/sum.bnt: "adds \"two\" numbers" ... ok
 test <dir>/sum.bnt: sumOfEmpty ... FAILED
 test <dir>/sum.bnt: truth ... FAILED
@@ -1336,7 +1359,22 @@ fn check_does_not_run_user_code_or_write_result_lines() {
             let out = run(&dir, &[diagnostics, target, "--check"]);
             assert_eq!(out.exit, 0, "{}", out.stderr);
             assert_eq!(out.stdout, "");
-            assert_eq!(out.stderr, "");
+            if target == &file {
+                if diagnostics == "--diagnostics=text" {
+                    assert_eq!(out.stderr, mixed_warning("mixed.bnt"));
+                } else {
+                    let warnings: Vec<serde_json::Value> = out
+                        .stderr
+                        .lines()
+                        .map(|line| serde_json::from_str(line).unwrap())
+                        .collect();
+                    assert_eq!(warnings.len(), 1);
+                    assert_eq!(warnings[0]["code"], "W0401");
+                    assert_eq!(warnings[0]["severity"], "warning");
+                }
+            } else {
+                assert_eq!(out.stderr, "");
+            }
             assert!(!dir.0.join("marker.txt").exists());
         }
     }
@@ -1351,6 +1389,8 @@ fn check_does_not_run_user_code_or_write_result_lines() {
         assert_eq!(report["executed"], false);
         assert!(!dir.0.join("marker.txt").exists());
         if target == &file {
+            assert_eq!(report["diagnostics"].as_array().unwrap().len(), 1);
+            assert_eq!(report["diagnostics"][0]["code"], "W0401");
             assert_eq!(
                 report["targets"][0]["tests"][0]["effects"]["expanded"],
                 serde_json::json!(["Assert.Check"])
@@ -1365,7 +1405,13 @@ fn check_does_not_run_user_code_or_write_result_lines() {
     // 非実行を時間待ちや、実行しても何もしない関数で判定しない。
     let executed = run(&dir, &["--diagnostics=json", &file, &writes]);
     assert_eq!(executed.exit, 1, "{} {}", executed.stdout, executed.stderr);
-    assert_eq!(executed.stderr, "");
+    let warnings: Vec<serde_json::Value> = executed
+        .stderr
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(warnings.len(), 1);
+    assert_eq!(warnings[0]["code"], "W0401");
     let lines: Vec<serde_json::Value> = executed
         .stdout
         .lines()
@@ -1392,14 +1438,14 @@ fn check_does_not_run_user_code_or_write_result_lines() {
 fn check_report_and_execution_select_the_same_entries_and_functions() {
     use serde_json::{Value, json};
     let dir = Directory::new("selection-parity");
-    dir.write("suite/package.bnt", "language \"0.0.11\"\n");
+    dir.write("suite/package.bnt", "language \"0.0.12\"\n");
     dir.write("suite/Lib/Text.bnt", "public function message() -> String\n  return \"hello\"\nend function\n@test\nfunction libTest() -> Unit\nend function\n");
     dir.write("suite/tests.bnt", "import Lib.Text\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n");
     dir.write(
         "suite/none.bnt",
         "function helper() -> Unit\nend function\n",
     );
-    dir.write("suite/deps/package.bnt", "language \"0.0.11\"\n");
+    dir.write("suite/deps/package.bnt", "language \"0.0.12\"\n");
     dir.write(
         "suite/deps/tests.bnt",
         "@test\nfunction packageTest() -> Unit\nend function\n",
@@ -1545,6 +1591,10 @@ fn check_report_and_execution_select_the_same_entries_and_functions() {
                     .map(|function| json!([row[1], function]))
             })
             .collect();
+        if exit == 0 && targets.is_empty() {
+            assert_eq!(report["intervalAnalysis"]["coverage"], "all");
+            assert_eq!(report["intervalAnalysis"]["inputDefinitions"], 0);
+        }
         if exit == 0 && expected_tests.is_empty() {
             for target in targets {
                 assert_eq!(target["tests"], json!([]));
@@ -1758,6 +1808,7 @@ fn an_unreadable_directory_runs_no_tests() {
     assert_eq!(report["status"], "checkError");
     assert_eq!(report["complete"], false);
     assert_eq!(report["targetsComplete"], false);
+    assert_eq!(report["intervalAnalysis"]["coverage"], "none");
     assert_eq!(report["targets"].as_array().unwrap().len(), 2);
     assert_eq!(report["diagnostics"][0]["code"], "E0101");
     assert_eq!(
@@ -1902,7 +1953,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.11\"\n");
+    dir.write("package.bnt", "language \"0.0.12\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -1913,7 +1964,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.11\"\npackage Textkit\nend package\n",
+        "language \"0.0.12\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -2027,11 +2078,16 @@ fn check_report_preserves_contracts_descriptions_locations_and_source_identity()
     assert_eq!(report["targetsComplete"], true);
     assert_eq!(report["executed"], false);
     assert_eq!(report["targets"].as_array().unwrap().len(), 2);
+    assert_eq!(report["intervalAnalysis"]["coverage"], "some");
+    assert_eq!(report["intervalAnalysis"]["inputDefinitions"], 6);
+    assert_eq!(report["intervalAnalysis"]["unsupportedBodies"], 2);
     for index in 0..2 {
         let target = &report["targets"][index];
         assert_eq!(target["targetId"], format!("t{index}"));
         assert_eq!(target["requestIndex"], index);
         assert_eq!(target["kind"], "tests");
+        assert_eq!(target["intervalAnalysis"]["inputDefinitions"], 3);
+        assert_eq!(target["intervalAnalysis"]["unsupportedBodies"], 1);
         assert_eq!(target["status"], "ok");
         assert_eq!(target["complete"], true);
         assert!(target.get("main").is_none());
@@ -2108,6 +2164,10 @@ fn check_report_keeps_success_after_errors_and_diagnostic_indices() {
     assert_eq!(report["complete"], false);
     let targets = report["targets"].as_array().unwrap();
     assert_eq!(targets.len(), 3);
+    assert_eq!(report["intervalAnalysis"]["coverage"], "some");
+    assert_eq!(targets[0]["intervalAnalysis"]["coverage"], "none");
+    assert_eq!(targets[1]["intervalAnalysis"]["coverage"], "all");
+    assert_eq!(targets[2]["intervalAnalysis"]["coverage"], "none");
     assert_eq!(targets[0]["tests"], serde_json::Value::Null);
     assert_eq!(targets[0]["processShellReference"], "unknown");
     assert_eq!(targets[1]["tests"][0]["function"], "good");
@@ -2185,6 +2245,7 @@ fn check_report_usage_errors_scan_options_in_both_orders() {
             let report: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
             assert_eq!(report["kind"], "testCheckReport");
             assert_eq!(report["status"], "usageError");
+            assert_eq!(report["intervalAnalysis"]["coverage"], "none");
             assert_eq!(report["targetsComplete"], false);
             assert_eq!(report["targets"], serde_json::json!([]));
             assert_eq!(
@@ -2237,9 +2298,22 @@ fn check_report_keeps_completed_and_unstarted_targets_on_interrupt() {
         assert_eq!(report["targetsComplete"], true);
         assert_eq!(report["complete"], exit == 0);
         assert_eq!(report["targets"].as_array().unwrap().len(), 2);
+        assert_eq!(
+            report["intervalAnalysis"]["coverage"],
+            match before {
+                0 => "none",
+                1 => "some",
+                _ => "all",
+            }
+        );
+        assert_eq!(report["intervalAnalysis"]["inputDefinitions"], before);
         for index in 0..2 {
             let target = &report["targets"][index];
             assert_eq!(target["complete"], index < before);
+            assert_eq!(
+                target["intervalAnalysis"]["coverage"],
+                if index < before { "all" } else { "none" }
+            );
             assert_eq!(
                 target["status"],
                 if index < before { "ok" } else { "interrupted" }
@@ -2810,7 +2884,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     let dir = Directory::new("doc-environment");
     dir.write(
         "deps/words/package.bnt",
-        "language \"0.0.11\"\npackage Words\nend package\n",
+        "language \"0.0.12\"\npackage Words\nend package\n",
     );
     let imported_doc = documentation(
         " test",
@@ -2825,7 +2899,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
         " test",
         "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n",
         None,
-    ) + "language \"0.0.11\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
+    ) + "language \"0.0.12\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
     let file = dir.write("Docs.bnt", &source);
     let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
     assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
@@ -2834,7 +2908,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     // ディレクトリ選択の共通の根とpackage.bntの依存も引き継ぐ。
     dir.write(
         "package.bnt",
-        "language \"0.0.11\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
+        "language \"0.0.12\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
     );
     fs::remove_file(&file).unwrap();
     dir.write("nested/Docs.bnt", &documentation(" test", "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n", None));

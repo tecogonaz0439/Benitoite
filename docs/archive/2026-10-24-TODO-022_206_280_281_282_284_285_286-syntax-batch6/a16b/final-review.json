@@ -1,0 +1,93 @@
+{
+  "head": "a7a82d12f3ab1e15d88345cb8ba2c7f2392ab4d3",
+  "base": "a7a82d12f3ab1e15d88345cb8ba2c7f2392ab4d3",
+  "inputs_unchanged": {
+    "crates/benitoite/src/typeck/consts.rs": true,
+    "crates/benitoite/src/typeck/interval/discovery.rs": true,
+    "crates/benitoite/src/typeck/interval/environment.rs": true,
+    "crates/benitoite/src/typeck/interval/flow.rs": true,
+    "crates/benitoite/src/typeck/interval/flow/range.rs": true,
+    "crates/benitoite/src/typeck/interval/input.rs": true,
+    "crates/benitoite/src/typeck/interval/tests.rs": true,
+    "docs/design/02-impl/02-05-typechecker.md": true,
+    "crates/benitoite/src/typeck/interval/tests/range_calls.rs": true,
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": true,
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": true,
+    "crates/benitoite/testdata/interval-budget/body.tsv": true,
+    "crates/benitoite/testdata/interval-budget/README.md": true,
+    "crates/benitoite/testdata/interval-budget/whole.tsv": true,
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": true,
+    "crates/benitoite/testdata/interval-budget/summary.tsv": true,
+    "formal/lakefile.toml": true
+  },
+  "fixed_files_match_base": {
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": true,
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": true,
+    "crates/benitoite/testdata/interval-budget/body.tsv": true,
+    "crates/benitoite/testdata/interval-budget/README.md": true,
+    "crates/benitoite/testdata/interval-budget/whole.tsv": true,
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": true,
+    "crates/benitoite/testdata/interval-budget/summary.tsv": true
+  },
+  "formal_diff": "",
+  "dependency_diff": "",
+  "diff_check": 0,
+  "indexed_diff": "",
+  "links": [
+    {
+      "target": "regression-baseline.log",
+      "exists": true
+    },
+    {
+      "target": "check-baseline.py",
+      "exists": true
+    },
+    {
+      "target": "baseline-restore.json",
+      "exists": true
+    },
+    {
+      "target": "regenerate.log",
+      "exists": true
+    },
+    {
+      "target": "regenerate-check.log",
+      "exists": true
+    },
+    {
+      "target": "allocations.log",
+      "exists": true
+    },
+    {
+      "target": "run.py",
+      "exists": true
+    },
+    {
+      "target": "run-work.sh",
+      "exists": true
+    },
+    {
+      "target": "work.log",
+      "exists": true
+    },
+    {
+      "target": "test-counts.json",
+      "exists": true
+    },
+    {
+      "target": "final-inputs-sha256.json",
+      "exists": true
+    },
+    {
+      "target": "final-review.json",
+      "exists": true
+    }
+  ],
+  "path_leaks": [],
+  "rust_lines": {
+    "production_added": 270,
+    "production_deleted": 44,
+    "tests_added": 230,
+    "tests_deleted": 0
+  }
+}

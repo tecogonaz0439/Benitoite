@@ -46,7 +46,15 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 
 既定の書式は `level=INFO source="app/Main.bnt:12:3" message="完了" attr."count"=3` とする。level/source/message、続いて属性のリスト順に並べ、属性の重複を保つ。位置全体・メッセージ・属性の鍵・文字列値はJSONと同じ引用とエスケープを使い、改行と制御文字も一行へ収める。Booleanはtrue/false、整数は十進、有限FloatはFloat.toStringと同じ往復可能な表示、非有限Floatはnan/inf/-infとする。時刻は付けない。この一行はJSON形式ではない。
 
-【決定】既定のemitとwithTextLoggerは非公開の純粋な書式関数を共有し、整形途中も文字列の上限を検査する。既定のemitはConsoleと同じstderrバッファへ改行を含めて一度に渡す。待ち・中断・最終書き出し・出力失敗には既存のConsoleと同じ手順を使う。stderrの書き込み失敗はR0202であり、握りつぶさない。
+【決定】公開の純粋な関数 `Log.formatRecord(record: Log.Record) -> String` は、上の既定書式で一記録を文字列にする。末尾の改行は加えず、Debugを含めて渡された水準をそのまま整形する。水準による選別と出力は呼び出し側が行う。理由: 利用者の出力先でも既定と同じ書式とエスケープを使えるようにするためである。
+
+開いたファイルへ複数の記録を書くには、`with` で一度開いた `File.Writer` を出力関数に捕捉し、`withSinks` の本文を同じ `with` の内側で実行する。テキストの出力関数は `Log.formatRecord` の結果を `File.writeLine` へ渡す。出力関数は解放後に呼ばない。書き込みの成功は、解放時の書き出しの成功を保証しない。書き込みと解放の失敗は、本章「File」の規則に従う。
+
+標準のログの JSON 形式は定めない。Log モジュールは Json モジュールに依存しない。利用側で JSON へ変換する例は、英語リファレンスの [File and JSON log sinks](../../reference/benitoite.md#file-and-json-log-sinks) を参照する。
+
+パスごとの実行時の許可は、`File.Writer` と `withSinks` の組み合わせでは制御しない。ハーネスは実行前に、処理後も残るエフェクトの宣言上限を確認する。
+
+【決定】既定のemitとwithTextLoggerはformatRecordと同じ整形処理を使い、整形途中も文字列の上限を検査する。既定のemitはConsoleと同じstderrバッファへ改行を含めて一度に渡す。待ち・中断・最終書き出し・出力失敗には既存のConsoleと同じ手順を使う。stderrの書き込み失敗はR0202であり、握りつぶさない。
 
 ### モジュールとエフェクト
 

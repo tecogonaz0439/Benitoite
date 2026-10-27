@@ -1,0 +1,19 @@
+局所検査の記録（実行器の出力から転記）
+
+初回: リポジトリの根で lake build Benitoite.Interval.Arithmetic を実行し、lakefile がないため終了1（0.941秒）。
+以後は formal/ から実行した。
+
+初回の formal/ での局所ビルド: 終了1。
+Eval は3.6秒で成功。Arithmetic は680msで失敗。
+Int.mul_le_mul_of_nonpos_left に渡す二つの引数の順序が逆であった。
+引数を nonpos, inside の順に修正した。
+
+修正後: lake build Benitoite.Interval.Arithmetic は終了0（外側0.754秒）。
+独立例5件追加後: 同じ局所ビルドは終了0（外側0.752秒）。
+符号付き四種の下限の行と写し追加後: 同じ局所ビルドは終了0（外側0.849秒）。
+最終出力:
+✔ [53/53] Built Benitoite.Interval.Arithmetic (829ms)
+Build completed successfully (53 jobs).
+
+Lean の実行には formal/lakefile.toml の -M 12288 が付いている。
+別の Lean 呼び出しとの並行実行はしていない。

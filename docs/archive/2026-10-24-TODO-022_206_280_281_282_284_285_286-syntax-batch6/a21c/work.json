@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-l",
+    "python3",
+    "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a21c/run.py",
+    "--inner",
+    "work-check",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "b71119087f891c0c872ca8f9e1ba5afb3398cd69",
+    "--only",
+    "spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples"
+  ],
+  "cwd": "<repo>",
+  "cargo_home": "<tmp>/benitoite-a01a-cargo",
+  "started": "2026-10-26T15:51:02.566769+09:00",
+  "finished": "2026-10-26T15:51:30.865459+09:00",
+  "elapsed_seconds": 28.299,
+  "exit_status": 1
+}

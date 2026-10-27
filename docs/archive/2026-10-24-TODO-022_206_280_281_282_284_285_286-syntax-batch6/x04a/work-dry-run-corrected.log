@@ -1,0 +1,6 @@
+== plan: level work against 0b5afe5d5feb3370e6570c8314eb6e4b885d2587 (28 changed file(s))
+   [policy_selftest] because of scripts/check/formal_interval.py (estimate: seconds to 1 min)
+      command: python3 -B scripts/check/test_policy.py
+   [formal_build] because of scripts/check-formal.sh (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate

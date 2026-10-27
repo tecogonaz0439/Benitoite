@@ -7,8 +7,9 @@ use std::path::PathBuf;
 use serde_json::{Value, json};
 
 use super::*;
-use crate::cli::check_report::{diagnostic_value, source_id, sources};
+use crate::cli::check_report::{diagnostic_value, interval_value, source_id, sources};
 use crate::cli::inspection::{ShellReference, effect_name};
+use crate::typeck::IntervalAnalysis;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Status {
@@ -49,6 +50,7 @@ struct Target {
     status: Option<Status>,
     effects: BTreeSet<String>,
     docs: Option<docs::Batch>,
+    interval: IntervalAnalysis,
 }
 
 struct Context<'a> {
@@ -94,6 +96,7 @@ pub(in crate::cli::tools) fn usage_error(
         "status": "usageError", "complete": false, "targetsComplete": false, "executed": false,
         "requestedTargets": requested(paths), "targets": [], "sources": [], "sourceSets": [],
         "aggregateEffects": null,
+        "intervalAnalysis": interval_value(&IntervalAnalysis::default()),
         "diagnostics": [{ "kind": "check", "severity": "error", "code": null, "message": detail,
             "primary": null, "secondary": [], "notes": [], "helps": [] }],
         "diagnosticTargets": [{ "diagnosticIndex": 0, "targetId": null }]
@@ -190,6 +193,7 @@ fn prepare_all(
             status: None,
             effects: BTreeSet::new(),
             docs: None,
+            interval: IntervalAnalysis::default(),
         })
         .collect();
     if let Err(failure) = selection.completion {
@@ -252,6 +256,7 @@ fn prepare_all(
             )?
         };
         let mut checked = prepared.result;
+        target.interval = checked.interval_analysis;
         if let Some(error) = prelude_error(&checked) {
             let message =
                 render::render_one_text(error, &checked.sources, TextOptions { color: false });
@@ -345,6 +350,7 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
     let mut diagnostics = Vec::new();
     let mut diagnostic_targets = Vec::new();
     let mut aggregate = BTreeSet::new();
+    let mut intervals = Vec::new();
     for (index, target) in context.targets.iter().enumerate() {
         let id = format!("t{index}");
         let status = target.status.unwrap_or(context.status);
@@ -353,12 +359,29 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
             ShellReference::Absent => "absent",
             ShellReference::Unknown => "unknown",
         };
+        let interval = if let Some(batch) = &target.docs {
+            let missing = IntervalAnalysis::default();
+            IntervalAnalysis::aggregate(
+                std::iter::once(&target.interval)
+                    .chain(
+                        batch
+                            .examples
+                            .iter()
+                            .map(|example| &example.checked.interval_analysis),
+                    )
+                    .chain((!batch.complete).then_some(&missing)),
+            )
+        } else {
+            target.interval
+        };
+        intervals.push(interval);
         targets.push(json!({
             "targetId": id, "requestIndex": target.selected.request_index,
             "entry": target.selected.entry.display_name, "root": target.selected.entry.root.display().to_string(),
             "sourceId": target.source_id, "kind": "tests",
             "status": status.as_str(), "complete": target.status == Some(Status::Ok), "tests": target.tests,
-            "processShellReference": shell, "shellReferenceScope": "checkedProgram"
+            "processShellReference": shell, "shellReferenceScope": "checkedProgram",
+            "intervalAnalysis": interval_value(&interval)
         }));
         all_sources.extend(target.sources.iter().cloned());
         let mut ids = target.source_ids.clone();
@@ -411,6 +434,9 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
         "schemaVersion": if context.doc { 2 } else { 1 }, "kind": "testCheckReport", "producer": crate::cli::build_info::producer(),
         "status": context.status.as_str(), "complete": context.status == Status::Ok, "targetsComplete": context.targets_complete, "executed": false,
         "requestedTargets": requested(context.paths), "targets": targets, "sources": all_sources, "sourceSets": source_sets,
+        "intervalAnalysis": interval_value(&if context.targets_complete {
+            IntervalAnalysis::aggregate(&intervals)
+        } else { IntervalAnalysis::default() }),
         "aggregateEffects": if context.status == Status::Ok { json!({"basis": "declaredUpperBound", "expanded": aggregate}) } else { Value::Null },
         "diagnostics": diagnostics, "diagnosticTargets": diagnostic_targets
     }))

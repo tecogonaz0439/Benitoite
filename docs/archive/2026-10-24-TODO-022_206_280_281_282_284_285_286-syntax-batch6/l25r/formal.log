@@ -1,0 +1,8 @@
+== plan: level work against 62949b1d91bd2cd0c8e5aa546deb79614274cbb6 (changed files not classified) (partial selection: --only formal_build)
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== formal_build
+selected checks passed
+        0.18 real         0.11 user         0.14 sys
+time: sysctl kern.clockrate: Operation not permitted

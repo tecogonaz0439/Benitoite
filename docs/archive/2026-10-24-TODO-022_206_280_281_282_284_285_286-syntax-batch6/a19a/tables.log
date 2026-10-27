@@ -1,0 +1,582 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.52s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 2 tests
+
+thread 'typeck::interval::flow::range::tables_tests::shift_tables_identify_all_resolved_declarations_and_lean_contracts' (6371527) panicked at crates/benitoite/src/typeck/interval/identity/tests.rs:73:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.Integer` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        41,
+                    ),
+                    end: BytePos(
+                        69,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.Integer`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                41,
+                            ),
+                            end: BytePos(
+                                69,
+                            ),
+                        },
+                        replacement: "Benitoite.Integer",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.Integer64` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        93,
+                    ),
+                    end: BytePos(
+                        123,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.Integer64`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                93,
+                            ),
+                            end: BytePos(
+                                123,
+                            ),
+                        },
+                        replacement: "Benitoite.Integer64",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.Integer8` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        149,
+                    ),
+                    end: BytePos(
+                        178,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.Integer8`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                149,
+                            ),
+                            end: BytePos(
+                                178,
+                            ),
+                        },
+                        replacement: "Benitoite.Integer8",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.Integer16` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        203,
+                    ),
+                    end: BytePos(
+                        233,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.Integer16`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                203,
+                            ),
+                            end: BytePos(
+                                233,
+                            ),
+                        },
+                        replacement: "Benitoite.Integer16",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.Integer32` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        259,
+                    ),
+                    end: BytePos(
+                        289,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.Integer32`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                259,
+                            ),
+                            end: BytePos(
+                                289,
+                            ),
+                        },
+                        replacement: "Benitoite.Integer32",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.UnsignedInteger` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        315,
+                    ),
+                    end: BytePos(
+                        351,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.UnsignedInteger`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                315,
+                            ),
+                            end: BytePos(
+                                351,
+                            ),
+                        },
+                        replacement: "Benitoite.UnsignedInteger",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.UnsignedInteger64` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        383,
+                    ),
+                    end: BytePos(
+                        421,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.UnsignedInteger64`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                383,
+                            ),
+                            end: BytePos(
+                                421,
+                            ),
+                        },
+                        replacement: "Benitoite.UnsignedInteger64",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.UnsignedInteger16` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        455,
+                    ),
+                    end: BytePos(
+                        493,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.UnsignedInteger16`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                455,
+                            ),
+                            end: BytePos(
+                                493,
+                            ),
+                        },
+                        replacement: "Benitoite.UnsignedInteger16",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.UnsignedInteger32` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        527,
+                    ),
+                    end: BytePos(
+                        565,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.UnsignedInteger32`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                527,
+                            ),
+                            end: BytePos(
+                                565,
+                            ),
+                        },
+                        replacement: "Benitoite.UnsignedInteger32",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.UnsignedInteger8` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        599,
+                    ),
+                    end: BytePos(
+                        636,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.UnsignedInteger8`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                599,
+                            ),
+                            end: BytePos(
+                                636,
+                            ),
+                        },
+                        replacement: "Benitoite.UnsignedInteger8",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Unofficial.Byte` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        669,
+                    ),
+                    end: BytePos(
+                        694,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is a standard module in this version and is imported as `Benitoite.Byte`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                669,
+                            ),
+                            end: BytePos(
+                                694,
+                            ),
+                        },
+                        replacement: "Benitoite.Byte",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::flow::range::tables_tests::shift_tables_identify_all_resolved_declarations_and_lean_contracts ... FAILED
+test typeck::interval::flow::range::tables_tests::shift_tables_leave_unrelated_bodies_and_unloaded_modules_unchanged ... ok
+
+failures:
+
+failures:
+    typeck::interval::flow::range::tables_tests::shift_tables_identify_all_resolved_declarations_and_lean_contracts
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 1346 filtered out; finished in 0.14s
+
+error: test failed, to rerun pass `-p benitoite --lib`

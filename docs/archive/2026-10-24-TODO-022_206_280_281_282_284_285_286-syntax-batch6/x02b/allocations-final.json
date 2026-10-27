@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "call_allocations",
+    "long_constant_chain_has_bounded_check_allocations",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 10.071
+}

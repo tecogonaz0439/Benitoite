@@ -1,0 +1,37 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error[E0433]: cannot find type `Ty` in this scope
+   --> crates/benitoite/src/typeck/interval/flow/independent.rs:326:55
+    |
+326 |                 if segment.format.is_some() || *ty != Ty::Con(TyCon::Builtin(B::STRING), Vec::new())
+    |                                                       ^^ use of undeclared type `Ty`
+    |
+help: consider importing this enum
+    |
+  4 + use crate::types::Ty;
+    |
+
+error[E0433]: cannot find type `TyCon` in this scope
+   --> crates/benitoite/src/typeck/interval/flow/independent.rs:326:63
+    |
+326 |                 if segment.format.is_some() || *ty != Ty::Con(TyCon::Builtin(B::STRING), Vec::new())
+    |                                                               ^^^^^ use of undeclared type `TyCon`
+    |
+help: consider importing this enum
+    |
+  4 + use crate::types::TyCon;
+    |
+
+error[E0433]: cannot find type `B` in this scope
+   --> crates/benitoite/src/typeck/interval/flow/independent.rs:326:78
+    |
+326 |                 if segment.format.is_some() || *ty != Ty::Con(TyCon::Builtin(B::STRING), Vec::new())
+    |                                                                              ^ use of undeclared type `B`
+    |
+note: struct `crate::typeck::tests::interpolation_formats::B` exists but is inaccessible
+   --> crates/benitoite/src/types/builtin.rs:6:1
+    |
+  6 | pub struct BuiltinTypeId(pub u16);
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not accessible
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `benitoite` (lib test) due to 3 previous errors

@@ -1,0 +1,130 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.36s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees' (4103256) panicked at crates/benitoite/src/typeck/interval/flow/widths/tests.rs:687:13:
+assertion `left == right` failed: Integer8: return if x = 2s8 then x else 1s8 div 0s8 end if: Analysis {
+    value: Ok(
+        Approx {
+            normal: Interval {
+                bounds: None,
+            },
+            provenance: Provenance(
+                None,
+            ),
+            returned: Interval {
+                bounds: None,
+            },
+            live: false,
+            only_integer: false,
+            non_integer_other: false,
+            boolean: (
+                false,
+                false,
+            ),
+            may_fail: true,
+            unsupported: false,
+            widths: Empty,
+            returned_widths: Known(
+                [
+                    Interval {
+                        bounds: Some(
+                            (
+                                -128,
+                                127,
+                            ),
+                        ),
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                ],
+            ),
+        },
+    ),
+    candidates: [
+        Candidate {
+            preorder: 7,
+            origin: Origin {
+                node: NodeId(
+                    23,
+                ),
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        203,
+                    ),
+                    end: BytePos(
+                        214,
+                    ),
+                },
+            },
+            primary: Span {
+                file: FileId(
+                    0,
+                ),
+                start: BytePos(
+                    211,
+                ),
+                end: BytePos(
+                    214,
+                ),
+            },
+            operation: Binary(
+                IntDiv,
+            ),
+            cause: ZeroDivisor,
+            kind: Integer8,
+            left: Interval {
+                bounds: Some(
+                    (
+                        1,
+                        1,
+                    ),
+                ),
+            },
+            right: Interval {
+                bounds: Some(
+                    (
+                        0,
+                        0,
+                    ),
+                ),
+            },
+            origins: Provenance(
+                None,
+            ),
+        },
+    ],
+    independent: [],
+    unsupported: false,
+}
+  left: Some((-128, 127))
+ right: Some((2, 2))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

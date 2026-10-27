@@ -1,0 +1,364 @@
+$ (cd formal && lake build Benitoite.Interval.Domain)
+✔ [14/14] Built Benitoite.Interval.Domain (445ms)
+Build completed successfully (14 jobs).
+EXIT=0; elapsed=0.561s
+
+$ (cd formal && lake build Benitoite.Interval.Identity)
+Build completed successfully (49 jobs).
+EXIT=0; elapsed=0.154s
+
+$ (cd formal && lake build Benitoite.Interval.Eval)
+✔ [52/52] Built Benitoite.Interval.Eval (3.6s)
+Build completed successfully (52 jobs).
+EXIT=0; elapsed=3.693s
+
+$ (cd formal && lake build Benitoite.Interval.Environment)
+✔ [53/53] Built Benitoite.Interval.Environment (478ms)
+Build completed successfully (53 jobs).
+EXIT=0; elapsed=0.565s
+
+$ (cd formal && lake build Benitoite.Interval.Arithmetic)
+✔ [53/53] Built Benitoite.Interval.Arithmetic (443ms)
+Build completed successfully (53 jobs).
+EXIT=0; elapsed=0.570s
+
+$ (cd formal && lake build Benitoite.Interval.Analyze)
+✔ [55/55] Built Benitoite.Interval.Analyze (436ms)
+Build completed successfully (55 jobs).
+EXIT=0; elapsed=0.570s
+
+$ (cd formal && lake build Benitoite.Interval.Budget)
+✔ [15/15] Built Benitoite.Interval.Budget (652ms)
+Build completed successfully (15 jobs).
+EXIT=0; elapsed=0.777s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetScan)
+✔ [52/52] Built Benitoite.Interval.BudgetScan (370ms)
+Build completed successfully (52 jobs).
+EXIT=0; elapsed=0.464s
+
+$ (cd formal && lake build Benitoite.Interval.Flow)
+⚠ [54/54] Built Benitoite.Interval.Flow (1.9s)
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Build completed successfully (54 jobs).
+EXIT=0; elapsed=2.022s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetEnvironment)
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [57/57] Built Benitoite.Interval.BudgetEnvironment (1.1s)
+Build completed successfully (57 jobs).
+EXIT=0; elapsed=1.202s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetPatterns)
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [58/58] Built Benitoite.Interval.BudgetPatterns (1.4s)
+Build completed successfully (58 jobs).
+EXIT=0; elapsed=1.494s
+
+$ (cd formal && lake build Benitoite.Interval.Sound)
+⚠ [56/57] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [57/57] Built Benitoite.Interval.Sound (9.6s)
+Build completed successfully (57 jobs).
+EXIT=0; elapsed=9.672s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetWalk)
+⚠ [56/62] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [62/62] Built Benitoite.Interval.BudgetWalk (449ms)
+Build completed successfully (62 jobs).
+EXIT=0; elapsed=0.563s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetIndependentRun)
+⚠ [56/63] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [63/63] Built Benitoite.Interval.BudgetIndependentRun (274ms)
+Build completed successfully (63 jobs).
+EXIT=0; elapsed=0.361s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetChildren)
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [64/64] Built Benitoite.Interval.BudgetChildren (681ms)
+Build completed successfully (64 jobs).
+EXIT=0; elapsed=0.774s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetAnalyze)
+⚠ [56/65] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [65/65] Built Benitoite.Interval.BudgetAnalyze (448ms)
+Build completed successfully (65 jobs).
+EXIT=0; elapsed=0.567s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetProof)
+⚠ [56/66] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [66/66] Built Benitoite.Interval.BudgetProof (366ms)
+Build completed successfully (66 jobs).
+EXIT=0; elapsed=0.464s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetTraversal)
+⚠ [56/67] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [67/67] Built Benitoite.Interval.BudgetTraversal (2.4s)
+Build completed successfully (67 jobs).
+EXIT=0; elapsed=2.532s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetNormal)
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [68/68] Built Benitoite.Interval.BudgetNormal (13s)
+Build completed successfully (68 jobs).
+EXIT=0; elapsed=14.006s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetAnalysisExamples)
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [69/69] Built Benitoite.Interval.BudgetAnalysisExamples (650ms)
+Build completed successfully (69 jobs).
+EXIT=0; elapsed=0.777s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetLocated)
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [68/68] Built Benitoite.Interval.BudgetLocated (1.7s)
+Build completed successfully (68 jobs).
+EXIT=0; elapsed=1.804s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetCause)
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [70/70] Built Benitoite.Interval.BudgetCause (504ms)
+Build completed successfully (70 jobs).
+EXIT=0; elapsed=0.566s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetSound)
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [71/71] Built Benitoite.Interval.BudgetSound (9.3s)
+Build completed successfully (71 jobs).
+EXIT=0; elapsed=9.490s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetBody)
+⚠ [56/72] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [72/72] Built Benitoite.Interval.BudgetBody (311ms)
+Build completed successfully (72 jobs).
+EXIT=0; elapsed=0.468s
+
+$ (cd formal && lake build Benitoite.Interval.SyntacticReach)
+⚠ [56/69] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [69/69] Built Benitoite.Interval.SyntacticReach (1.7s)
+Build completed successfully (69 jobs).
+EXIT=0; elapsed=1.821s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetReach)
+⚠ [56/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [74/74] Built Benitoite.Interval.BudgetReach (1.4s)
+Build completed successfully (74 jobs).
+EXIT=0; elapsed=1.505s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetIndependent)
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [75/75] Built Benitoite.Interval.BudgetIndependent (1.7s)
+Build completed successfully (75 jobs).
+EXIT=0; elapsed=1.816s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetIndependentSound)
+⚠ [56/76] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [76/76] Built Benitoite.Interval.BudgetIndependentSound (841ms)
+Build completed successfully (76 jobs).
+EXIT=0; elapsed=0.984s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetChildrenExamples)
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [77/77] Built Benitoite.Interval.BudgetChildrenExamples (398ms)
+Build completed successfully (77 jobs).
+EXIT=0; elapsed=0.464s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetCount)
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [59/59] Built Benitoite.Interval.BudgetCount (5.2s)
+Build completed successfully (59 jobs).
+EXIT=0; elapsed=5.317s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetDiscover)
+⚠ [56/64] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [64/64] Built Benitoite.Interval.BudgetDiscover (482ms)
+Build completed successfully (64 jobs).
+EXIT=0; elapsed=0.565s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetDiscoverProof)
+⚠ [56/70] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [70/70] Built Benitoite.Interval.BudgetDiscoverProof (2.8s)
+Build completed successfully (70 jobs).
+EXIT=0; elapsed=2.939s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetDiscoveryExamples)
+⚠ [56/71] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [71/71] Built Benitoite.Interval.BudgetDiscoveryExamples (323ms)
+Build completed successfully (71 jobs).
+EXIT=0; elapsed=0.464s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetExamples)
+✔ [16/16] Built Benitoite.Interval.BudgetExamples (281ms)
+Build completed successfully (16 jobs).
+EXIT=0; elapsed=0.362s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetIndependentExamples)
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [77/77] Built Benitoite.Interval.BudgetIndependentExamples (348ms)
+Build completed successfully (77 jobs).
+EXIT=0; elapsed=0.463s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetIndependentPosition)
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [77/77] Built Benitoite.Interval.BudgetIndependentPosition (1.4s)
+Build completed successfully (77 jobs).
+EXIT=0; elapsed=1.492s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetScanExamples)
+⚠ [56/59] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [59/59] Built Benitoite.Interval.BudgetScanExamples (363ms)
+Build completed successfully (59 jobs).
+EXIT=0; elapsed=0.467s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetWhole)
+⚠ [56/81] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [81/81] Built Benitoite.Interval.BudgetWhole (620ms)
+Build completed successfully (81 jobs).
+EXIT=0; elapsed=0.778s
+
+$ (cd formal && lake build Benitoite.Interval.BudgetWholeExamples)
+⚠ [56/82] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [82/82] Built Benitoite.Interval.BudgetWholeExamples (389ms)
+Build completed successfully (82 jobs).
+EXIT=0; elapsed=0.473s
+
+$ (cd formal && lake build Benitoite.Interval.EvalClosed)
+✔ [53/53] Built Benitoite.Interval.EvalClosed (674ms)
+Build completed successfully (53 jobs).
+EXIT=0; elapsed=0.761s
+
+$ (cd formal && lake build Benitoite.Interval.Examples)
+⚠ [57/74] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [74/74] Built Benitoite.Interval.Examples (824ms)
+Build completed successfully (74 jobs).
+EXIT=0; elapsed=0.978s
+
+$ (cd formal && lake build Benitoite.Interval.FlowExamples)
+⚠ [56/58] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [58/58] Built Benitoite.Interval.FlowExamples (418ms)
+Build completed successfully (58 jobs).
+EXIT=0; elapsed=0.567s
+
+$ (cd formal && lake build Benitoite.Interval.IdentityExamples)
+⚠ [56/68] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [68/68] Built Benitoite.Interval.IdentityExamples (539ms)
+Build completed successfully (68 jobs).
+EXIT=0; elapsed=0.672s
+
+$ (cd formal && lake build Benitoite.Interval.SyntacticReachExamples)
+⚠ [56/75] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [75/75] Built Benitoite.Interval.SyntacticReachExamples (321ms)
+Build completed successfully (75 jobs).
+EXIT=0; elapsed=0.459s
+
+$ (cd formal && lake build Benitoite)
+⚠ [201/240] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:711:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [239/240] Built Benitoite (4.1s)
+Build completed successfully (240 jobs).
+EXIT=0; elapsed=4.302s
+
+TOTAL_ELAPSED=81.766s

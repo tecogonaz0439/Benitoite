@@ -1,0 +1,143 @@
+{
+  "k1Completed": false,
+  "failure": "AssertionError: incomplete enumeration",
+  "rustLeanRealSourceComparedBodies": 0,
+  "profilesCompleted": false,
+  "sixEntriesFinalized": false,
+  "finalManifestPresent": false,
+  "vm": {
+    "arithmetic": {
+      "compared": 39,
+      "excluded": 0,
+      "operations": 80,
+      "markerFailureExcluded": "R0201"
+    },
+    "range": {
+      "compared": 37,
+      "evaluationExcluded": 0,
+      "selectedOut": [
+        {
+          "definition": ".unrelated",
+          "reason": "parameterOrGeneralCall"
+        },
+        {
+          "definition": ".unrelatedCaller",
+          "reason": "parameterOrGeneralCall"
+        },
+        {
+          "definition": ".threeFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".lowerFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".upperFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".singletonFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".integerMinFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".integerMaxFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".unrelatedOnlyOk",
+          "reason": "parameterOrGeneralCall"
+        }
+      ]
+    },
+    "shifts": {
+      "compared": 46,
+      "independentOnly": 62,
+      "evaluationExcluded": {
+        "unknownFailure": 46,
+        "notClosedOrFuel": 16
+      },
+      "vmRuns": 108
+    }
+  },
+  "coverage": {
+    "report.json": {
+      "cases": 10020,
+      "matched": 10020,
+      "mismatched": 0,
+      "fuelExhausted": 0,
+      "randomCases": 10000
+    },
+    "future-report.json": {
+      "cases": 10028,
+      "matched": 10028,
+      "mismatched": 0,
+      "fuelExhausted": 0,
+      "randomCases": 10000
+    }
+  },
+  "reader": {
+    "readerInputs": 195,
+    "readerOccurrences": 1381,
+    "sourceTargets": 227,
+    "arithmeticKinds": 81,
+    "shiftDeclarations": 27,
+    "shiftHeads": {
+      "primName": 40,
+      "funName": 14
+    },
+    "syntheticRoots": 195,
+    "analyzedProbeBodies": 0,
+    "acceptedPointBodies": 1
+  },
+  "testResults": [
+    "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.04s",
+    "test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1278.78s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 4.10s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 4.24s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 2.36s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 3.28s"
+  ],
+  "timings": [
+    "lake build: 0s",
+    "lake build desugarDiff: 0s",
+    "lake build builtinCheck: 0s",
+    "lake build coverageDiff: 0s",
+    "Rust coverage export (including cargo): 17s",
+    "coverageDiff: 2s; report: <repo>/target/coverage-diff/x05a-k1-20261027/report.json",
+    "coverage stages: 21s",
+    "lake build coverageProgramDiff: 1s",
+    "lake build surfaceCheckAll: 0s",
+    "lake build intervalDiff: 0s",
+    "width exchange: 1s; reports: target/p3a-gate/width-exchange/",
+    "named exchange: 2s",
+    "extensible exchange: 6s",
+    "try exchange: 3s",
+    "batch2 exchange: 2s",
+    "batch3 independent exchange: 3s",
+    "batch4 independent exchange: 6s",
+    "Rust export (including cargo): 1279s"
+  ],
+  "incompleteInputs": [
+    {
+      "name": "testdata/external/resource",
+      "outsideDefinitions": "2"
+    },
+    {
+      "name": "testdata/external/wit-docs-declarations",
+      "outsideDefinitions": "1"
+    },
+    {
+      "name": "testdata/packages/json-wasm-same",
+      "outsideDefinitions": "2"
+    },
+    {
+      "name": "testdata/packages/wasm-regex-same",
+      "outsideDefinitions": "7"
+    }
+  ]
+}

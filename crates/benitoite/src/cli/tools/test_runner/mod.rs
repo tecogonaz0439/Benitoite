@@ -932,6 +932,7 @@ fn prepare(
             sources: checked.sources,
             entry: checked.entry,
             diagnostics: checked.diagnostics,
+            interval_analysis: checked.interval_analysis,
             program: None,
         },
         compiled,

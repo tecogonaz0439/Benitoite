@@ -1,0 +1,268 @@
+import Benitoite.Unofficial.Range
+
+function lower() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 0, maximum: 10, minimum: 0)
+end function
+
+function lowerValue() -> Integer
+  return match Range.checkInteger(value: 0, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function upper() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 10, maximum: 10, minimum: 0)
+end function
+
+function upperValue() -> Integer
+  return match Range.checkInteger(value: 10, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function singleton() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 7, maximum: 7, minimum: 7)
+end function
+
+function singletonValue() -> Integer
+  return match Range.checkInteger(value: 7, maximum: 7, minimum: 7) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function integerMin() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: -9223372036854775808, maximum: 9223372036854775807, minimum: -9223372036854775808)
+end function
+
+function integerMinValue() -> Integer
+  return match Range.checkInteger(value: -9223372036854775808, maximum: 9223372036854775807, minimum: -9223372036854775808) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function integerMax() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 9223372036854775807, maximum: 9223372036854775807, minimum: -9223372036854775808)
+end function
+
+function integerMaxValue() -> Integer
+  return match Range.checkInteger(value: 9223372036854775807, maximum: 9223372036854775807, minimum: -9223372036854775808) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function reversedBetween() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 5, maximum: 0, minimum: 10)
+end function
+
+function reversedBetweenValue() -> Integer
+  return match Range.checkInteger(value: 5, maximum: 0, minimum: 10) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function reversedOutside() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 15, maximum: 0, minimum: 10)
+end function
+
+function reversedOutsideValue() -> Integer
+  return match Range.checkInteger(value: 15, maximum: 0, minimum: 10) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function below() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: -1, maximum: 10, minimum: 0)
+end function
+
+function belowValue() -> Integer
+  return match Range.checkInteger(value: -1, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function above() -> Result[Range.CheckedInteger, Range.RangeError]
+  return Range.checkInteger(value: 11, maximum: 10, minimum: 0)
+end function
+
+function aboveValue() -> Integer
+  return match Range.checkInteger(value: 11, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function nestedInner() -> Integer
+  return match Range.checkInteger(value: 5, maximum: 10, minimum: 0) with
+    case Result.Ok(outer) ->
+      match Range.checkInteger(value: 105, maximum: 110, minimum: 100) with
+        case Result.Ok(inner) -> Range.value(value: inner)
+        case Result.Error(_) -> -99
+      end match
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function nestedOuter() -> Integer
+  return match Range.checkInteger(value: 5, maximum: 10, minimum: 0) with
+    case Result.Ok(outer) ->
+      match Range.checkInteger(value: 105, maximum: 110, minimum: 100) with
+        case Result.Ok(inner) -> Range.value(value: outer)
+        case Result.Error(_) -> -99
+      end match
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function unrelated(other: Range.CheckedInteger) -> Integer
+  return match Range.checkInteger(value: 5, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: other)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function unrelatedCaller() -> Integer
+  return match Range.checkInteger(value: 105, maximum: 110, minimum: 100) with
+    case Result.Ok(other) -> unrelated(other: other)
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function threeFields(checked: Range.CheckedInteger) -> List[Integer]
+  return [Range.minimum(value: checked), Range.maximum(value: checked), Range.value(value: checked)]
+end function
+
+function increment() -> Integer
+  return match Range.checkInteger(value: 9, maximum: 9, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked) + 1
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function incrementOverflow() -> Integer
+  return match Range.checkInteger(value: 9223372036854775807, maximum: 9223372036854775807, minimum: 9223372036854775807) with
+    case Result.Ok(checked) -> Range.value(value: checked) + 1
+    case Result.Error(_) -> -99
+  end match
+end function
+
+function lowerOnlyOk() -> Integer
+  return match Range.checkInteger(value: 0, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function upperOnlyOk() -> Integer
+  return match Range.checkInteger(value: 10, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function singletonOnlyOk() -> Integer
+  return match Range.checkInteger(value: 7, maximum: 7, minimum: 7) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function integerMinOnlyOk() -> Integer
+  return match Range.checkInteger(value: -9223372036854775808, maximum: 9223372036854775807, minimum: -9223372036854775808) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function integerMaxOnlyOk() -> Integer
+  return match Range.checkInteger(value: 9223372036854775807, maximum: 9223372036854775807, minimum: -9223372036854775808) with
+    case Result.Ok(checked) -> Range.value(value: checked)
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function incrementOnlyOk() -> Integer
+  return match Range.checkInteger(value: 9, maximum: 9, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: checked) + 1
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function incrementOverflowOnlyOk() -> Integer
+  return match Range.checkInteger(value: 9223372036854775807, maximum: 9223372036854775807, minimum: 9223372036854775807) with
+    case Result.Ok(checked) -> Range.value(value: checked) + 1
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function lowerFields() -> List[Integer]
+  return match Range.checkInteger(value: 0, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> [Range.minimum(value: checked), Range.maximum(value: checked), Range.value(value: checked)]
+    case Result.Error(_) -> []
+  end match
+end function
+
+function upperFields() -> List[Integer]
+  return match Range.checkInteger(value: 10, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> [Range.minimum(value: checked), Range.maximum(value: checked), Range.value(value: checked)]
+    case Result.Error(_) -> []
+  end match
+end function
+
+function singletonFields() -> List[Integer]
+  return match Range.checkInteger(value: 7, maximum: 7, minimum: 7) with
+    case Result.Ok(checked) -> [Range.minimum(value: checked), Range.maximum(value: checked), Range.value(value: checked)]
+    case Result.Error(_) -> []
+  end match
+end function
+
+function integerMinFields() -> List[Integer]
+  return match Range.checkInteger(value: -9223372036854775808, maximum: 9223372036854775807, minimum: -9223372036854775808) with
+    case Result.Ok(checked) -> [Range.minimum(value: checked), Range.maximum(value: checked), Range.value(value: checked)]
+    case Result.Error(_) -> []
+  end match
+end function
+
+function integerMaxFields() -> List[Integer]
+  return match Range.checkInteger(value: 9223372036854775807, maximum: 9223372036854775807, minimum: -9223372036854775808) with
+    case Result.Ok(checked) -> [Range.minimum(value: checked), Range.maximum(value: checked), Range.value(value: checked)]
+    case Result.Error(_) -> []
+  end match
+end function
+
+function nestedInnerOnlyOk() -> Integer
+  return match Range.checkInteger(value: 5, maximum: 10, minimum: 0) with
+    case Result.Ok(outer) ->
+      match Range.checkInteger(value: 105, maximum: 110, minimum: 100) with
+        case Result.Ok(inner) -> Range.value(value: inner)
+        case Result.Error(_) -> return -99
+      end match
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function nestedOuterOnlyOk() -> Integer
+  return match Range.checkInteger(value: 5, maximum: 10, minimum: 0) with
+    case Result.Ok(outer) ->
+      match Range.checkInteger(value: 105, maximum: 110, minimum: 100) with
+        case Result.Ok(inner) -> Range.value(value: outer)
+        case Result.Error(_) -> return -99
+      end match
+    case Result.Error(_) -> return -99
+  end match
+end function
+
+function unrelatedOnlyOk(other: Range.CheckedInteger) -> Integer
+  return match Range.checkInteger(value: 5, maximum: 10, minimum: 0) with
+    case Result.Ok(checked) -> Range.value(value: other)
+    case Result.Error(_) -> return -99
+  end match
+end function
+

@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Range
+function checkInteger(minimum: Integer, maximum: Integer, value: Integer) -> Integer
+ return value
+end function
+function sample(value: Integer) -> Integer
+ return match Range.checkInteger(value: value, maximum: 0, minimum: 0) with
+ case Result.Ok(c) -> 1 div Range.value(value: c)
+ case Result.Error(_) -> return -99
+ end match
+end function

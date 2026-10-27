@@ -15,6 +15,10 @@ use crate::types::builtin::{
 use crate::types::*;
 use std::collections::{BTreeMap, BTreeSet};
 
+// parser の MAX_DEPTH=1000 に対し、容器・短絡などの追加段も数えるため4096とする。
+// 交換では同じ fuel を明示入力にし、深さ停止を比較対象から区別する（設計書 02-05「区間解析の式の識別」）。
+const INTERVAL_ANALYSIS_FUEL: u32 = 4096;
+
 /// 定義の型パラメータの番号。囲む定義の分を先に置く（`types` のモジュールの説明）。
 #[derive(Clone, Default)]
 pub(super) struct Scope {
@@ -30,6 +34,9 @@ pub(super) struct Decls<'a> {
     pub resolved: &'a ResolveOutput,
     pub out: TypeckOutput,
     pub checked_args: super::checked_args::CheckedArgsState,
+    pub interval: super::interval::AnalysisState<'a>,
+    /// 宣言の検査を終えた後の本体間で共有する、読み取り専用の実装索引。
+    pub impl_index: Option<std::rc::Rc<super::traits::ImplTable>>,
     pub const_origins: BindingMap<BTreeSet<BindingId>>,
     pub diagnostics: Vec<Diagnostic>,
     pub scopes: BTreeMap<NodeId, Scope>,
@@ -91,6 +98,8 @@ impl<'a> Decls<'a> {
             resolved,
             out: TypeckOutput::default(),
             checked_args: super::checked_args::CheckedArgsState::default(),
+            interval: super::interval::AnalysisState::new(asts, modules, resolved),
+            impl_index: None,
             const_origins: BindingMap::default(),
             diagnostics: vec![],
             scopes: BTreeMap::new(),
@@ -827,6 +836,18 @@ pub(super) fn check(
     resolved: &ResolveOutput,
     require_main: bool,
 ) -> (TypeckOutput, Vec<Diagnostic>) {
+    check_recorded(modules, asts, sources, resolved, require_main, None)
+}
+
+/// 検査の寿命内だけ記録先を借用し、既存の型検査の出力と診断の組を保つ。
+pub(super) fn check_recorded(
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    resolved: &ResolveOutput,
+    require_main: bool,
+    observations: Option<&mut Vec<serde_json::Value>>,
+) -> (TypeckOutput, Vec<Diagnostic>) {
     let mut d = declaration_context(modules, asts, sources, resolved, require_main);
     if d.type_limit
         || d.diagnostics
@@ -835,6 +856,9 @@ pub(super) fn check(
     {
         return (d.out, d.diagnostics);
     }
+    // 宣言中の補助検査には可変の集合を使い、本体へ入る直前にだけ固定する
+    // （設計書 02-05「型クラスの制約の解決」）。
+    d.impl_index = Some(super::traits::shared_table(&d));
     super::consts::check(&mut d);
     for ast in asts {
         for top in &ast.decls {
@@ -856,6 +880,24 @@ pub(super) fn check(
             }
         }
     }
+    let tables = super::interval::input::InputTables {
+        resolved,
+        constants: &d.out.consts,
+        literals: &d.out.lit_values,
+        range_bounds: &d.out.range_bounds,
+        schemes: &d.out.decl_types,
+    };
+    d.out.interval = match observations {
+        Some(sink) => d.interval.analyze_recorded(
+            &tables,
+            INTERVAL_ANALYSIS_FUEL,
+            &mut d.diagnostics,
+            Some(sink),
+        ),
+        None => d
+            .interval
+            .analyze(&tables, INTERVAL_ANALYSIS_FUEL, &mut d.diagnostics),
+    };
     if d.diagnostics.iter().any(Diagnostic::is_error) {
         d.out.main = None;
     }

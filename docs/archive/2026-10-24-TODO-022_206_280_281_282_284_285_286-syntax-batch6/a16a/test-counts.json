@@ -1,0 +1,351 @@
+{
+  "body_exit": 0,
+  "timer_exit": 1,
+  "seconds": 445.605,
+  "maximum_resident_set_size": null,
+  "memory_limitation": "sysctl kern.clockrate: Operation not permitted",
+  "lib": {
+    "unit": "lib_default",
+    "target": "lib",
+    "passed": 1306,
+    "failed": 0,
+    "ignored": 21,
+    "seconds": 69.52
+  },
+  "integration": {
+    "targets": 40,
+    "passed": 387,
+    "failed": 0,
+    "ignored": 10
+  },
+  "details": [
+    {
+      "unit": "lib_default",
+      "target": "lib",
+      "passed": 1306,
+      "failed": 0,
+      "ignored": 21,
+      "seconds": 69.52
+    },
+    {
+      "unit": "tests_related",
+      "target": "build_info",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 5,
+      "seconds": 0.0
+    },
+    {
+      "unit": "tests_related",
+      "target": "call_allocations",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 10.19
+    },
+    {
+      "unit": "tests_related",
+      "target": "checked_args",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 6.64
+    },
+    {
+      "unit": "tests_related",
+      "target": "cli_process",
+      "passed": 34,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 11.95
+    },
+    {
+      "unit": "tests_related",
+      "target": "coverage_export",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 1,
+      "seconds": 1.07
+    },
+    {
+      "unit": "tests_related",
+      "target": "declarations",
+      "passed": 31,
+      "failed": 0,
+      "ignored": 1,
+      "seconds": 16.97
+    },
+    {
+      "unit": "tests_related",
+      "target": "desugar_export",
+      "passed": 30,
+      "failed": 0,
+      "ignored": 1,
+      "seconds": 3.21
+    },
+    {
+      "unit": "tests_related",
+      "target": "external_signals",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 1.28
+    },
+    {
+      "unit": "tests_related",
+      "target": "fmt_command",
+      "passed": 21,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.15
+    },
+    {
+      "unit": "tests_related",
+      "target": "golden",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 53.04
+    },
+    {
+      "unit": "tests_related",
+      "target": "http_descriptor_exhaustion",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.33
+    },
+    {
+      "unit": "tests_related",
+      "target": "http_exchange_release",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.78
+    },
+    {
+      "unit": "tests_related",
+      "target": "interrupt_process",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 9.86
+    },
+    {
+      "unit": "tests_related",
+      "target": "io_modes",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 1.08
+    },
+    {
+      "unit": "tests_related",
+      "target": "l10_console_clock_process",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.79
+    },
+    {
+      "unit": "tests_related",
+      "target": "l13_external_commands",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 6.18
+    },
+    {
+      "unit": "tests_related",
+      "target": "l21_json",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.22
+    },
+    {
+      "unit": "tests_related",
+      "target": "l23_csv",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.14
+    },
+    {
+      "unit": "tests_related",
+      "target": "l24_time",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.11
+    },
+    {
+      "unit": "tests_related",
+      "target": "l30_http_server",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 2.66
+    },
+    {
+      "unit": "tests_related",
+      "target": "l31_http_serve_and_helpers",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.63
+    },
+    {
+      "unit": "tests_related",
+      "target": "l32_http_client",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 9.8
+    },
+    {
+      "unit": "tests_related",
+      "target": "named_arguments",
+      "passed": 22,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 2.41
+    },
+    {
+      "unit": "tests_related",
+      "target": "network_faults",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.57
+    },
+    {
+      "unit": "tests_related",
+      "target": "open_062",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 2.2
+    },
+    {
+      "unit": "tests_related",
+      "target": "open_062_http",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.59
+    },
+    {
+      "unit": "tests_related",
+      "target": "package_command",
+      "passed": 16,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 1.11
+    },
+    {
+      "unit": "tests_related",
+      "target": "property_library",
+      "passed": 15,
+      "failed": 0,
+      "ignored": 2,
+      "seconds": 8.03
+    },
+    {
+      "unit": "tests_related",
+      "target": "random_programs",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 43.58
+    },
+    {
+      "unit": "tests_related",
+      "target": "reference_examples",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 3.36
+    },
+    {
+      "unit": "tests_related",
+      "target": "runtime_builtins",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 2.19
+    },
+    {
+      "unit": "tests_related",
+      "target": "skill_docs",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.09
+    },
+    {
+      "unit": "tests_related",
+      "target": "skill_examples",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 3.93
+    },
+    {
+      "unit": "tests_related",
+      "target": "spec_examples",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 3.08
+    },
+    {
+      "unit": "tests_related",
+      "target": "stdlib_doc_examples",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 2.55
+    },
+    {
+      "unit": "tests_related",
+      "target": "test_command",
+      "passed": 52,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 4.13
+    },
+    {
+      "unit": "tests_related",
+      "target": "verify",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 62.58
+    },
+    {
+      "unit": "tests_related",
+      "target": "vm_handlers",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 12.09
+    },
+    {
+      "unit": "tests_related",
+      "target": "vm_lazy",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.45
+    },
+    {
+      "unit": "tests_related",
+      "target": "vm_reference_cells",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 5.64
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "baseline": "56af9133e2a354770ac8d0dcd1c41a685cd02966",
+  "state": "U03R working tree",
+  "files": [
+    {
+      "path": "docs/reference/benitoite.md",
+      "sha256": "0d14f9b1cec62ab19406d85bafbd281da251675e090bb111db609b1596604496",
+      "blocks": [
+        {
+          "startLine": 267,
+          "endLine": 277,
+          "kind": "table",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            276
+          ],
+          "text": "| `intervalAnalysis` field | Meaning |\n|---|---|\n| `basis` | `\"localIntervals\"`. |\n| `coverage` | `\"all\"`, `\"some\"`, or `\"none\"`, as defined below. |\n| `inputDefinitions` | Original definitions that passed type checking and were supplied to the analysis; separately analyzed lambda and handler bodies do not add to this count. |\n| `unsupportedBodies` | Body results containing unsupported syntax in the body or one of its independently analyzed inputs; counted once per body result, including stopped bodies. |\n| `bodyBudgetExceeded` | Body results stopped by a body budget, excluding stops during expression identification. |\n| `wholeBudgetSkipped` | Incomplete ranges caused by the whole-check budget: stopped body results, discovered bodies left unanalyzed, remaining valid original definitions, or original definitions whose body discovery or preparation is incomplete. Repeated phase stops in the same original definition do not multiply its incomplete range. |\n| `unidentifiedBodies` | Body results stopped by a budget during expression identification, whether the body or whole-check budget caused the stop. |\n| `phaseStops` | Separate stop counts for preparation, body discovery, queue construction, nested-body control, and whole-check control. `exceeded` and `unidentified` each contain `bodyOperations`, `bodyItems`, `wholeOperations`, and `wholeItems`; `depth` and `other` count the remaining stop kinds. |\n| `usage` | `operations`, `savedItems`, `peakItems`, `maxBodyOperations`, and `maxBodyItems`: actual analysis work, retained items, peak simultaneously held items, and the two body maxima. Items are analysis budget units, not bytes. |\n",
+          "sha256": "7ea54230fbb99b112fa2f67a0482fcf1ffb29ffeaa88778369f8670672d79279"
+        },
+        {
+          "startLine": 281,
+          "endLine": 281,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            281
+          ],
+          "text": "For one check, `\"all\"` means analysis started and left no unsupported or stopped range, invalid body, pending input, or incomplete preparation, discovery, or queue. `\"some\"` means analysis started but such a range remains, including a mix of valid and invalid bodies. `\"none\"` means analysis did not start, including failure before type checking or a check with one or more bodies all invalidated by type checking. A checked target with no bodies at all is a zero-count `\"all\"`. Zero counts alone do not establish `\"all\"`. Even `\"all\"` with no warnings is not proof of safety, successful outside operations, reachability, or termination.\n",
+          "sha256": "52e57f071ec8dee3570d7a42cb7ab3d3091c13770b6b1b55088cee53c524526b"
+        },
+        {
+          "startLine": 1800,
+          "endLine": 1800,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1800
+          ],
+          "text": "The formal guarantee concerns normal-value membership and conditional failure at warning locations in an **evaluation relation for the target fragment**. Agreement with the compiler, standard-library source, and VM is checked on selected finite inputs; some results, such as returned intervals, are not compared. This is not a proof for all programs. The project's formal-semantics design document records the trusted rules and comparison limits. No warning-free result is a proof that execution succeeds.\n",
+          "sha256": "c987e10f9057f76aa8526fb0bdeae52fffa17d438053827282a3020508bf5ed6"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "sha256": "297c3c582c36daac7211e4ea15e0e6c7c21ea35cb1e18df4eef8046d088d8329",
+      "blocks": [
+        {
+          "startLine": 571,
+          "endLine": 571,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / HTTP",
+          "changedLines": [
+            571
+          ],
+          "text": "For HTTP values and fields outside local interval analysis, see [HTTP values are not tracked](#http-values-are-not-tracked).\n",
+          "sha256": "2e64c8afab51962d9d8eb1a90c7f60969b3224a854f140c1d1f8862aa4066fc9"
+        },
+        {
+          "startLine": 837,
+          "endLine": 841,
+          "kind": "table",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            841
+          ],
+          "text": "| Warning | Explanation to give |\n|---|---|\n| W0401 at `divisor` | In the `divisor = 0` branch the divisor interval is `[0,0]`. If the division is reached with normal operands, it divides by zero. |\n| W0402 at `value + 10s8` | The comparison narrows `value` to `[120,127]`. The mathematical sum `[130,137]` lies wholly outside Integer8's `[-128,127]`. |\n| W0404 at the argument expression `n` (the value in `n: n`) | The shift-count interval `[64,9223372036854775807]` lies wholly outside Integer's allowed `[0,63]`. This concerns the count, not bits discarded by a left shift. |\n",
+          "sha256": "746b6e812430f343e1cc965248cc7acc98926490c0a0cf16c6d66622c991008f"
+        },
+        {
+          "startLine": 875,
+          "endLine": 875,
+          "kind": "heading",
+          "heading": "Benitoite idioms / Explaining local interval warnings / HTTP values are not tracked",
+          "changedLines": [
+            875
+          ],
+          "text": "### HTTP values are not tracked\n",
+          "sha256": "7fc397bb197f6cf46f332a4c9a2e4772f5e29b02ffba81b6ac5a90ed0a7cf6ad"
+        },
+        {
+          "startLine": 877,
+          "endLine": 877,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings / HTTP values are not tracked",
+          "changedLines": [
+            877
+          ],
+          "text": "`Http.text`, `Http.html`, and `Http.json` construct response values; local interval analysis treats their results as unknown and does not recover `Response.status` from them. Explicit HTTP record construction, local storage, and updates do not carry field facts either. This example passes `check` without W0404; it sends no response:\n",
+          "sha256": "3a29d248aa2024d8fd82037f970a2a609403389e1eb0555fb609b6d4a3d17672"
+        },
+        {
+          "startLine": 879,
+          "endLine": 886,
+          "kind": "code",
+          "heading": "Benitoite idioms / Explaining local interval warnings / HTTP values are not tracked",
+          "changedLines": [
+            879,
+            880,
+            882,
+            883,
+            884,
+            885,
+            886
+          ],
+          "text": "```benitoite check\nimport Benitoite.Unofficial.Network.Http\n\nfunction main() -> Unit\n  bind response <- Http.text(status: 700, s: \"example\")\n  bind _ <- Http.Response(..response, status: 701)\nend function\n```\n",
+          "sha256": "6a8881cb4d40dbf5e79c1905d9edda3f5d4ec38c6036a2b4f0201d0d17e4cae1"
+        },
+        {
+          "startLine": 888,
+          "endLine": 888,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings / HTTP values are not tracked",
+          "changedLines": [
+            888
+          ],
+          "text": "The default `Http.respond` implementation still checks for status 200..599 at runtime. W0404 applies only to direct standard shift-count arguments, not `Process.exit`, HTTP operations, or their record fields: language handlers can replace an operation's default behavior. Missing warnings validate neither a response nor a network permission. Read the generated [HTTP reference](stdlib/Network.Http.md) for API contracts.\n",
+          "sha256": "8732b3a58b16b5d74567e48f6e1b743d2e1f019aed2ce00f95325aab8956df9e"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/inspection.md",
+      "sha256": "78a6248aec631683b77df9d0ec910e35bb0391380eb455fbc22761f79285ab15",
+      "blocks": [
+        {
+          "startLine": 100,
+          "endLine": 109,
+          "kind": "table",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            102
+          ],
+          "text": "| Field in `intervalAnalysis` | Meaning |\n|---|---|\n| `coverage` | `all` when analysis has no unsupported or unfinished range or invalid body; `some` when analysis started but such a range remains, including a mix of valid and invalid bodies; `none` before analysis, including failures before type checking and targets with one or more bodies all invalidated by type checking. A checked target with no bodies at all is a zero-count `all`. |\n| `inputDefinitions` | Type-checked original definitions supplied to analysis; separately analyzed lambda/lazy/clause bodies do not add to this count. |\n| `unsupportedBodies` | Body outputs whose parent or saved independent input contains unsupported syntax, including stopped outputs; at most one per body output. |\n| `bodyBudgetExceeded` | Body outputs stopped by an ordinary body-budget overrun; excludes stops classified as unidentified. |\n| `wholeBudgetSkipped` | Ranges left unanalyzed due to the whole-check budget: stopped outputs, discovered pending bodies, remaining valid original definitions, and incomplete discovery or control for an original definition. Undiscovered nested bodies are not estimated. |\n| `unidentifiedBodies` | Body outputs stopped by a budget overrun during numbering, whether the body or whole-check limit caused it. Other stops that leave numbers unavailable do not enter this count. |\n| `phaseStops` | Stop events in entry preparation, discovery, queues, nested-body control, and whole-check control. `exceeded` and `unidentified` each contain `bodyOperations`, `bodyItems`, `wholeOperations`, and `wholeItems`. `depth` and `other` count the remaining stop kinds. These are events, not a count of unanalyzed bodies. |\n| `usage` | `operations`, `savedItems`, `peakItems`, `maxBodyOperations`, and `maxBodyItems`: consumed operations, retained items, peak simultaneous items, maximum body operations, and maximum simultaneous body items. These are analysis-budget units, not allocated bytes. |\n",
+          "sha256": "dc49109a0de70ec01f01d068767ec448fe394b3ddf253a12110748d385ade541"
+        }
+      ]
+    }
+  ]
+}

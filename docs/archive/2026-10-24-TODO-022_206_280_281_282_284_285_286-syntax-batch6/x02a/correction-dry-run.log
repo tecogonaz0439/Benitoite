@@ -1,0 +1,8 @@
+== plan: level work against 2878da41c88ad296c7d6d4e2a6eec63c64412bcb (changed files not classified) (partial selection: --only fmt,lint_default,tests_related)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test desugar_export
+   later: stage checks named connections; change covers full regression; release checks the candidate

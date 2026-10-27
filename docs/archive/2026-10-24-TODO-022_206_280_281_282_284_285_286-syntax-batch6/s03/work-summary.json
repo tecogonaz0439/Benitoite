@@ -1,0 +1,19 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "661dbdd34a27576a3ddbc982d1f0f6bf8c5bdbf0",
+    "--only",
+    "policy_selftest,advisories"
+  ],
+  "environment": {
+    "CARGO_HOME": "<tmp>",
+    "BENITOITE_ADVISORY_DB_PATH": "<repo>/target/check-advisories-db"
+  },
+  "dry_run_exit": 0,
+  "work_exit": 0,
+  "time_exit": 1,
+  "elapsed_seconds": 19.957415875000002
+}

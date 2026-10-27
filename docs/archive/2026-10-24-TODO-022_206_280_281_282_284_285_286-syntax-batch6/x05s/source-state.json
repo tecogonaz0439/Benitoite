@@ -1,0 +1,49 @@
+{
+  "base": "51dc0fefe2fc7a75df915a19640afb436d051e9e",
+  "head": "51dc0fefe2fc7a75df915a19640afb436d051e9e",
+  "branch": "mod012/X05S",
+  "implementation": {
+    "formal/tests/interval_source_compare.py": "3b7f1c32f7d6fca49e5ec8145ecd846bd029d511ebc1b98befb8802c92aa7fe0",
+    "scripts/check/interval_artifacts.py": "b84d466ce9fb56f685266065097be3463a3f1bcb02a6843ae8ce5ddc752deb3d",
+    "scripts/check/test_policy.py": "8711bd2919d1fe06bcdb07d663c6fcd2bd44230a6b3df2e84d18d5f1a0539913"
+  },
+  "diff": "10\t4\tformal/tests/interval_source_compare.py\n1\t1\tscripts/check/interval_artifacts.py\n4\t0\tscripts/check/test_policy.py",
+  "status": "M formal/tests/interval_source_compare.py\n M scripts/check/interval_artifacts.py\n M scripts/check/test_policy.py\n?? docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/",
+  "executables": {
+    "formal/.lake/build/bin/desugarDiff": "25d8339f07727f9ff49e1acd0f1157b00b7533b7937e11bb25789a7ddfc9de43",
+    "formal/.lake/build/bin/builtinCheck": "b56f6605d67b881280f52e1570e3d5312211a4b7fe2729ff548f3dae21d26ffc",
+    "formal/.lake/build/bin/coverageDiff": "eb6fb56054d5ef0c3801ab4ec8b2c16cc921279b658a17d976e808aa6d79b4c4",
+    "formal/.lake/build/bin/coverageProgramDiff": "0fc629848801e07060cc05ef3e51363819680927a1edcae21f918a8b2f733ae5",
+    "formal/.lake/build/bin/surfaceCheck": "a9783f9597b7717ad763420c8565f6de1ccc65dc60a7575c0b8819368ed192a1",
+    "formal/.lake/build/bin/surfaceCheckAll": "81131a19ce18f6c42fde4a5b707c759388b4ee781a2907e1cb4627f1b48610e2",
+    "formal/.lake/build/bin/intervalDiff": "cd35d8e89b247dfdbaced47bd8fe44b6d173968ece02a20de6f698e472ce4eec",
+    "target/debug/benitoite": "e11417d6298ddc3c2419f1785764fb97021589b895e38f629e25d90b7f74342c"
+  },
+  "python": "3.9.6 (default, Aug 25 2026, 21:26:21) \n[Clang 21.0.0 (clang-2100.3.34.2)]",
+  "environment": {
+    "rustc": {
+      "exit": 0,
+      "output": "rustc 1.98.1 (48a229cea 2026-09-01)\n"
+    },
+    "cargo": {
+      "exit": 0,
+      "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n"
+    },
+    "lean": {
+      "exit": 0,
+      "output": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)\n"
+    },
+    "lake": {
+      "exit": 0,
+      "output": "Lake version 5.0.0-src+eb6cafb (Lean version 4.35.0)\n"
+    },
+    "elan": {
+      "exit": 0,
+      "output": "elan 4.2.4 (227caca13 2026-08-25)\n"
+    },
+    "sw_vers": {
+      "exit": 0,
+      "output": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434\n"
+    }
+  }
+}

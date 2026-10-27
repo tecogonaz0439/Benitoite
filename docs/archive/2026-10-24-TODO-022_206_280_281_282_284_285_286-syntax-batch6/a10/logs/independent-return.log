@@ -1,0 +1,17 @@
+warning[W0401]: this divides by zero
+  --> <tmp>/benitoite-a10-independent-return.bnt:10:17
+   |
+10 |   return 10 div zero
+   |                 ^^^^ the divisor is always 0
+   |
+  ::: <tmp>/benitoite-a10-independent-return.bnt:9:3
+   |
+ 9 |   bind zero <- 0
+   |   -------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred divisor interval is [0,0]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning: 1 warning emitted
+        1.20 real         0.07 user         0.02 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1014, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1007, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir, args.vm_dir, args.cli)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 659, in exercise
+    interval_shift_vm.exercise(shift_runner, Path(vm_dir)/'shifts', cli)
+  File "<repo>/formal/tests/interval_shift_vm.py", line 96, in exercise
+    binding, = [s for s in original['standards'] if s['declaration'] == spec['declaration']]
+ValueError: not enough values to unpack (expected 1, got 0)

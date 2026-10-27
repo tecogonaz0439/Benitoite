@@ -1,0 +1,14 @@
+final input routing: 1791 inputs, identifiers, exclusions, scopes and coverage agree
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/legacy_audit.py", line 105, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05s/legacy_audit.py", line 83, in main
+    tools['check_special_rejections'](output, corpus, tables)
+  File "<repo>/crates/benitoite/tests/desugar_export/check_named.py", line 388, in check_special_rejections
+    report = run("surfaceCheck", [path, *single_tables, item["group"], item["name"]],
+  File "<repo>/crates/benitoite/tests/desugar_export/check_named.py", line 31, in run
+    require(process.returncode == status,
+  File "<repo>/crates/benitoite/tests/desugar_export/check_named.py", line 23, in require
+    raise AssertionError(message)
+AssertionError: surfaceCheck: expected 1, got 2: surfaceCheck: Natural number expected
+

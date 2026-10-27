@@ -1,0 +1,11 @@
+diff --git a/formal/Benitoite/Interval/Eval.lean b/formal/Benitoite/Interval/Eval.lean
+--- a/formal/Benitoite/Interval/Eval.lean
++++ b/formal/Benitoite/Interval/Eval.lean
+@@ -381,6 +381,7 @@
+ /-- 標準の直接 call の頭だけを読む。関数値・穴・パイプは認定しない。 -/
+ def standardCallHead : Expr → Option FunName
+   | .funName declaration _ _ => some declaration
++  | .opName declaration _ => some declaration
+   | _ => none
+ 
+ /-- Range と固定域の標準宣言を、元のキー・宣言・引数位置で認定する。 -/

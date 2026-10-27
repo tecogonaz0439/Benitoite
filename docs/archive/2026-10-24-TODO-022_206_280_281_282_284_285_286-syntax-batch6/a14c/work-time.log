@@ -1,0 +1,83 @@
+{"command": ["scripts/check.sh", "--level", "work", "--base", "c60e47fe6782b21e49f2e5465c37feaba8d96781"], "exit": 1, "seconds": 96.837}
+selection_stops_instead_of_repeating_cleanup ... ok
+test vm::dispatch::tasks::tests::lazy_waits_and_retries_without_evaluating_twice ... ok
+test vm::dispatch::tests::builtin_exit_finishes_the_stop_procedure_with_its_status ... ok
+test vm::dispatch::tests::registered_builtin_arguments_fit_inline_operands ... ok
+test vm::dispatch::tests::width_constants_preserve_fields_through_vm_io ... ok
+test vm::dispatch::traits::tests::constant_dictionary_is_shared_and_method_constraints_are_arguments ... ok
+test vm::dispatch::tasks::tests::cancellation::timeouts_wait_for_cancellation_and_remove_obsolete_timers ... ok
+test vm::dispatch::traits::tests::dictionary_instructions_reject_wrong_values_and_missing_entries ... ok
+test vm::dispatch::traits::tests::method_calls_report_stack_limits_at_the_call_site ... ok
+test vm::dispatch::traits::tests::superclass_recipes_select_the_correct_dictionary ... ok
+test vm::dispatch::traits::tests::tail_methods_repeat_a_million_times_and_resize_windows ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::dispatch::unwinding::tests::escalation_preserves_progress_log_and_resource_wait ... ok
+test vm::dispatch::unwinding::tests::stopping_inside_nested_drop_keeps_progress_and_uses_stop_cause ... ok
+test vm::dispatch::unwinding::tests::traversal_segments_and_clause_return_value_remain_roots_across_collection ... ok
+test vm::dispatch::unwinding::tests::traversal_selects_call_then_wrapper_then_own_release_then_call ... ok
+test vm::miri_tests::builder_roots_survive_wait_and_clear_before_frame_return ... ok
+test vm::miri_tests::continuation_capture_resume_and_discard ... ok
+test vm::miri_tests::io_completion_reads_saved_arguments_after_collection ... ok
+test vm::miri_tests::lazy_result_and_cell_write_survive_collection ... ok
+test vm::miri_tests::resource_loan_returns_after_worker_completion ... ok
+test vm::miri_tests::safepoint_clears_dead_registers_and_keeps_live_values ... ok
+test vm::miri_tests::waiting_parent_register_is_a_root_during_child_collection ... ok
+test vm::state::tests::begin_close_returns_release_failure_once_for_immediate_and_blocking_resources ... ok
+test vm::dispatch::tasks::tests::update_retries_after_another_task_sets_the_cell ... ok
+test vm::state::tests::default_begin_close_maps_the_existing_release_reply ... ok
+test vm::state::tests::u3_runtime_views_reborrow_the_vm_runtime_and_resources ... ok
+test vm::dispatch::tasks::tests::timer_wakes_only_at_the_virtual_deadline ... ok
+test vm::tests::arithmetic_stops_preserve_instruction_and_frames ... ok
+test vm::tests::arithmetic_and_comparisons_follow_language_rules ... ok
+test vm::tests::budget_requests_preserve_saved_remaining_and_calls_execute_once ... ok
+test vm::state::tests::deep_spawn_chain_can_be_dropped_without_recursion ... ok
+test vm::tests::branches_use_constructor_tags_and_relative_offsets ... ok
+test vm::tests::caller_registers_and_frame_function_keep_their_values_and_release_them ... ok
+test vm::tests::calls_read_two_arguments_and_flattened_captures ... ok
+test vm::tests::conr_matches_con_and_rejects_invalid_candidates ... ok
+test vm::tests::consecutive_calls_keep_returned_heap_arguments_at_pre_call_safepoints ... ok
+test vm::dispatch::tasks::tests::stopping_finishes_when_switching_cannot_make_progress ... ok
+test vm::tests::constants_data_and_main_outcomes ... ok
+test vm::tests::deep_returns_collect_requested_allocations_without_rust_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる
+test vm::tests::exit_report_tests::exit_report_owns_strings_in_both_execution_modes ... ok
+test vm::dispatch::tasks::tests::stopping_escalates_a_blocked_drop_traversal_and_keeps_earlier_release_failures ... ok
+test vm::tests::exit_report_tests::exit_report_runtime_result_distinguishes_an_ordinary_exit ... ok
+test vm::tests::exit_report_tests::request_exit_report_does_not_replace_an_adopted_stop ... ok
+test vm::tests::exit_report_tests::request_exit_report_survives_collection_and_is_consumed_once ... ok
+test vm::tests::exit_report_tests::exit_report_runtime_checks_unverified_operands ... ok
+test vm::tests::heap_constants_keep_identity_when_only_the_cache_roots_them ... ok
+test vm::tests::invalid_operands_and_unknown_instructions_stop_and_disassembly_lists_all ... ok
+test vm::tests::dead_large_list_is_reclaimed_after_its_last_use ... ok
+test vm::tests::io_modes_write_the_same_output_and_finish_reports_sink_failure ... ok
+test vm::tests::loadk_rejects_constant_indices_outside_the_table ... ok
+test vm::tests::non_tail_recursion_stops_at_meter_limit ... ok
+test vm::tests::recorded_heap_fault_becomes_internal_stop ... ok
+test vm::tests::invalid_safepoint_information_is_conservative_or_an_internal_stop ... ok
+test vm::tests::roots_constants_and_waiting_arguments_survive_collection ... ok
+test vm::tests::suspended_callers_release_old_arguments_and_results_before_collection ... ok
+test vm::tests::tail_window_old_objects_are_cleared_at_collection ... ok
+test vm::tests::verification_tests::conr_argument_alias_keeps_original_node_and_never_creates_self_edge ... ok
+test vm::dispatch::tasks::tests::cancellation::regex_find_all_times_out_between_matches ... ok
+test vm::dispatch::traits::tests::constrained_dictionary_and_call_frame_survive_collection ... ok
+test vm::tests::overlapping_tail_arguments_preserve_many_heap_values_in_order ... ok
+test vm::tests::verification_tests::conr_constructs_each_node_and_preserves_shared_chain ... ok
+test vm::tests::builder_tests::cancelling_waiting_task_discards_builder_slots_and_stack_cost ... ok
+test vm::tests::verification_tests::workload_results_and_output_agree_with_and_without_stress ... ok
+test vm::tests::builder_tests::dedicated_builders_survive_handle_resume_drop_and_nested_bodies ... ok
+test vm::tests::tail_calls_keep_one_frame_and_resize_both_ways ... ok
+test typeck::tests::width_operators_accept_matching_types_and_reject_invalid_uses ... ok
+test typeck::traits::tests::dictionary_budget_preserves_small_dictionaries_and_reports_the_use ... ok
+test bytecode::codegen::tests::corpus_prototype_entries_use_only_parameters has been running for over 60 seconds
+test bytecode::codegen::tests::corpus_prototype_entries_use_only_parameters ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::comparisons_refine_only_the_selected_branch_and_merge_normal_values
+
+test result: FAILED. 1306 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 71.07s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+FAILED: lib_default
+
+       96.85 real       425.00 user        26.51 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,1594 @@
+Benitoite/Interval/CallReach.lean:31:64: error: unsolved goals
+case mk
+sources✝ : List Expr
+allows✝ : OperationKey → IntervalWarning → Prop
+⊢ { sources := [].append sources✝, allows := fun key warning => allows✝ key warning } =
+    { sources := sources✝, allows := allows✝ }
+Benitoite/Interval/CallReach.lean:33:60: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [HAppend.hAppend, Append.append, append, empty, List.length_nil, advanceKey_zero, false_or]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallReach.lean:36:64: error: unsolved goals
+case mk
+sources✝ : List Expr
+allows✝ : OperationKey → IntervalWarning → Prop
+⊢ { sources := sources✝.append [], allows := fun key warning => allows✝ key warning } =
+    { sources := sources✝, allows := allows✝ }
+Benitoite/Interval/CallReach.lean:38:60: warning: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [HAppend.hAppend, Append.append, append, empty, or_false]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallReach.lean:40:81: error: unsolved goals
+case mk.mk.mk
+sources✝² : List Expr
+allows✝² : OperationKey → IntervalWarning → Prop
+sources✝¹ : List Expr
+allows✝¹ : OperationKey → IntervalWarning → Prop
+sources✝ : List Expr
+allows✝ : OperationKey → IntervalWarning → Prop
+⊢ { sources := (sources✝².append sources✝¹).append sources✝,
+      allows := fun key warning =>
+        allows✝² key warning ∨
+          allows✝¹ (advanceKey key sources✝².length) warning ∨
+            allows✝ (advanceKey key (sources✝².append sources✝¹).length) warning } =
+    { sources := sources✝².append (sources✝¹.append sources✝),
+      allows := fun key warning =>
+        allows✝² key warning ∨
+          allows✝¹ (advanceKey key sources✝².length) warning ∨
+            allows✝ (advanceKey key (sources✝².length + sources✝¹.length)) warning }
+Benitoite/Interval/CallReach.lean:42:53: warning: This simp argument is unused:
+  List.append_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [HAppend.hAppend, Append.append, append, List.length_append, advanceKey_add, or_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallReach.lean:43:4: warning: This simp argument is unused:
+  List.length_append
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [HAppend.hAppend, Append.append, append, List.append_assoc, advanceKey_add, or_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallReach.lean:49:17: warning: Variable name `labels` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _labels
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Benitoite/Interval/CallReach.lean:49:24: warning: Variable name `positions` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _positions
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Benitoite/Interval/CallReach.lean:93:35: error: `simp` made no progress
+Benitoite/Interval/CallReach.lean:93:35: error: `simp` made no progress
+Benitoite/Interval/CallReach.lean:94:46: error: `simp` made no progress
+Benitoite/Interval/CallReach.lean:94:46: error: `simp` made no progress
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.local i✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.local i✝)) warning } ++
+      expr env (Expr.local i✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.local i✝) :: surfacePreorder (Expr.local i✝)
+
+case constE.local
+env : AbstractEnv
+ty✝ : Ty
+i✝ : Nat
+⊢ ({ sources := [Expr.constE ty✝ (Expr.local i✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.local i✝)) warning } ++
+        expr env (Expr.local i✝)).sources =
+    Expr.constE ty✝ (Expr.local i✝) :: surfacePreorder (Expr.local i✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.builderOp op✝ i✝ args✝ kind✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.builderOp op✝ i✝ args✝ kind✝)) warning } ++
+      expr env (Expr.builderOp op✝ i✝ args✝ kind✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.builderOp op✝ i✝ args✝ kind✝) :: surfacePreorder (Expr.builderOp op✝ i✝ args✝ kind✝)
+
+case constE.builderOp
+env : AbstractEnv
+ty✝ : Ty
+op✝ : BuilderOp
+i✝ : Nat
+args✝ : Exprs
+kind✝ : BuilderKind
+⊢ ({ sources := [Expr.constE ty✝ (Expr.builderOp op✝ i✝ args✝ kind✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.builderOp op✝ i✝ args✝ kind✝)) warning } ++
+        expr env (Expr.builderOp op✝ i✝ args✝ kind✝)).sources =
+    Expr.constE ty✝ (Expr.builderOp op✝ i✝ args✝ kind✝) :: surfacePreorder (Expr.builderOp op✝ i✝ args✝ kind✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝¹ (Expr.constE ty✝ body✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝¹ (Expr.constE ty✝ body✝)) warning } ++
+      expr env (Expr.constE ty✝ body✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝¹ (Expr.constE ty✝ body✝) :: surfacePreorder (Expr.constE ty✝ body✝)
+
+case constE.constE
+env : AbstractEnv
+ty✝¹ ty✝ : Ty
+body✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝¹ (Expr.constE ty✝ body✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝¹ (Expr.constE ty✝ body✝)) warning } ++
+        expr env (Expr.constE ty✝ body✝)).sources =
+    Expr.constE ty✝¹ (Expr.constE ty✝ body✝) :: surfacePreorder (Expr.constE ty✝ body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.funName f✝ tys✝ effs✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.funName f✝ tys✝ effs✝)) warning } ++
+      expr env (Expr.funName f✝ tys✝ effs✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.funName f✝ tys✝ effs✝) :: surfacePreorder (Expr.funName f✝ tys✝ effs✝)
+
+case constE.funName
+env : AbstractEnv
+ty✝ : Ty
+f✝ : FunName
+tys✝ : List Ty
+effs✝ : List Eff
+⊢ ({ sources := [Expr.constE ty✝ (Expr.funName f✝ tys✝ effs✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.funName f✝ tys✝ effs✝)) warning } ++
+        expr env (Expr.funName f✝ tys✝ effs✝)).sources =
+    Expr.constE ty✝ (Expr.funName f✝ tys✝ effs✝) :: surfacePreorder (Expr.funName f✝ tys✝ effs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)) warning } ++
+      expr env (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝) ::
+    surfacePreorder (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)
+
+case constE.funDicts
+env : AbstractEnv
+ty✝ : Ty
+f✝ : FunName
+tys✝ : List Ty
+effs✝ : List Eff
+dicts✝ : List DictEv
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)) warning } ++
+        expr env (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources =
+    Expr.constE ty✝ (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝) ::
+      surfacePreorder (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)) warning } ++
+      expr env (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝) ::
+    surfacePreorder (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)
+
+case constE.methName
+env : AbstractEnv
+ty✝ : Ty
+dict✝ : DictEv
+m✝ : MethName
+tys✝ : List Ty
+effs✝ : List Eff
+dicts✝ : List DictEv
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)) warning } ++
+        expr env (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources =
+    Expr.constE ty✝ (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝) ::
+      surfacePreorder (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.primName b✝ tys✝ effs✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.primName b✝ tys✝ effs✝)) warning } ++
+      expr env (Expr.primName b✝ tys✝ effs✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.primName b✝ tys✝ effs✝) :: surfacePreorder (Expr.primName b✝ tys✝ effs✝)
+
+case constE.primName
+env : AbstractEnv
+ty✝ : Ty
+b✝ : PrimName
+tys✝ : List Ty
+effs✝ : List Eff
+⊢ ({ sources := [Expr.constE ty✝ (Expr.primName b✝ tys✝ effs✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.primName b✝ tys✝ effs✝)) warning } ++
+        expr env (Expr.primName b✝ tys✝ effs✝)).sources =
+    Expr.constE ty✝ (Expr.primName b✝ tys✝ effs✝) :: surfacePreorder (Expr.primName b✝ tys✝ effs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.opName o✝ tys✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.opName o✝ tys✝)) warning } ++
+      expr env (Expr.opName o✝ tys✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.opName o✝ tys✝) :: surfacePreorder (Expr.opName o✝ tys✝)
+
+case constE.opName
+env : AbstractEnv
+ty✝ : Ty
+o✝ : OpName
+tys✝ : List Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.opName o✝ tys✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.opName o✝ tys✝)) warning } ++
+        expr env (Expr.opName o✝ tys✝)).sources =
+    Expr.constE ty✝ (Expr.opName o✝ tys✝) :: surfacePreorder (Expr.opName o✝ tys✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)) warning } ++
+      expr env (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝) ::
+    surfacePreorder (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)
+
+case constE.opDicts
+env : AbstractEnv
+ty✝ : Ty
+o✝ : OpName
+tys✝ : List Ty
+dicts✝ : List DictEv
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)) warning } ++
+        expr env (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)).sources =
+    Expr.constE ty✝ (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝) ::
+      surfacePreorder (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.raise result✝ error✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.raise result✝ error✝)) warning } ++
+      expr env (Expr.raise result✝ error✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.raise result✝ error✝) :: surfacePreorder (Expr.raise result✝ error✝)
+
+case constE.raise
+env : AbstractEnv
+ty✝ result✝ error✝ : Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.raise result✝ error✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.raise result✝ error✝)) warning } ++
+        expr env (Expr.raise result✝ error✝)).sources =
+    Expr.constE ty✝ (Expr.raise result✝ error✝) :: surfacePreorder (Expr.raise result✝ error✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.handleFail error✝ result✝ body✝ clause✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.handleFail error✝ result✝ body✝ clause✝)) warning } ++
+      expr env (Expr.handleFail error✝ result✝ body✝ clause✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.handleFail error✝ result✝ body✝ clause✝) ::
+    surfacePreorder (Expr.handleFail error✝ result✝ body✝ clause✝)
+
+case constE.handleFail
+env : AbstractEnv
+ty✝ error✝ result✝ : Ty
+body✝ clause✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (Expr.handleFail error✝ result✝ body✝ clause✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.handleFail error✝ result✝ body✝ clause✝)) warning } ++
+        expr env (Expr.handleFail error✝ result✝ body✝ clause✝)).sources =
+    Expr.constE ty✝ (Expr.handleFail error✝ result✝ body✝ clause✝) ::
+      surfacePreorder (Expr.handleFail error✝ result✝ body✝ clause✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.nullCon c✝ tys✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.nullCon c✝ tys✝)) warning } ++
+      expr env (Expr.nullCon c✝ tys✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.nullCon c✝ tys✝) :: surfacePreorder (Expr.nullCon c✝ tys✝)
+
+case constE.nullCon
+env : AbstractEnv
+ty✝ : Ty
+c✝ : ConName
+tys✝ : List Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.nullCon c✝ tys✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.nullCon c✝ tys✝)) warning } ++
+        expr env (Expr.nullCon c✝ tys✝)).sources =
+    Expr.constE ty✝ (Expr.nullCon c✝ tys✝) :: surfacePreorder (Expr.nullCon c✝ tys✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.conValue c✝ tys✝ names✝ params✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.conValue c✝ tys✝ names✝ params✝)) warning } ++
+      expr env (Expr.conValue c✝ tys✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.conValue c✝ tys✝ names✝ params✝) :: surfacePreorder (Expr.conValue c✝ tys✝ names✝ params✝)
+
+case constE.conValue
+env : AbstractEnv
+ty✝ : Ty
+c✝ : ConName
+tys✝ : List Ty
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [Expr.constE ty✝ (Expr.conValue c✝ tys✝ names✝ params✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.conValue c✝ tys✝ names✝ params✝)) warning } ++
+        expr env (Expr.conValue c✝ tys✝ names✝ params✝)).sources =
+    Expr.constE ty✝ (Expr.conValue c✝ tys✝ names✝ params✝) :: surfacePreorder (Expr.conValue c✝ tys✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.literal l✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.literal l✝)) warning } ++
+      expr env (Expr.literal l✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.literal l✝) :: surfacePreorder (Expr.literal l✝)
+
+case constE.literal
+env : AbstractEnv
+ty✝ : Ty
+l✝ : Literal
+⊢ ({ sources := [Expr.constE ty✝ (Expr.literal l✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.literal l✝)) warning } ++
+        expr env (Expr.literal l✝)).sources =
+    Expr.constE ty✝ (Expr.literal l✝) :: surfacePreorder (Expr.literal l✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negInt n✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInt n✝)) warning } ++
+      expr env (Expr.negInt n✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negInt n✝) :: surfacePreorder (Expr.negInt n✝)
+
+case constE.negInt
+env : AbstractEnv
+ty✝ : Ty
+n✝ : Integer64Magnitude
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negInt n✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInt n✝)) warning } ++
+        expr env (Expr.negInt n✝)).sources =
+    Expr.constE ty✝ (Expr.negInt n✝) :: surfacePreorder (Expr.negInt n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negFloat x✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negFloat x✝)) warning } ++
+      expr env (Expr.negFloat x✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negFloat x✝) :: surfacePreorder (Expr.negFloat x✝)
+
+case constE.negFloat
+env : AbstractEnv
+ty✝ : Ty
+x✝ : Float
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negFloat x✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negFloat x✝)) warning } ++
+        expr env (Expr.negFloat x✝)).sources =
+    Expr.constE ty✝ (Expr.negFloat x✝) :: surfacePreorder (Expr.negFloat x✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negDecimal n✝ scale✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negDecimal n✝ scale✝)) warning } ++
+      expr env (Expr.negDecimal n✝ scale✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negDecimal n✝ scale✝) :: surfacePreorder (Expr.negDecimal n✝ scale✝)
+
+case constE.negDecimal
+env : AbstractEnv
+ty✝ : Ty
+n✝ : Int
+scale✝ : Nat
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negDecimal n✝ scale✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negDecimal n✝ scale✝)) warning } ++
+        expr env (Expr.negDecimal n✝ scale✝)).sources =
+    Expr.constE ty✝ (Expr.negDecimal n✝ scale✝) :: surfacePreorder (Expr.negDecimal n✝ scale✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negInteger8 n✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInteger8 n✝)) warning } ++
+      expr env (Expr.negInteger8 n✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negInteger8 n✝) :: surfacePreorder (Expr.negInteger8 n✝)
+
+case constE.negInteger8
+env : AbstractEnv
+ty✝ : Ty
+n✝ : Nat
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negInteger8 n✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInteger8 n✝)) warning } ++
+        expr env (Expr.negInteger8 n✝)).sources =
+    Expr.constE ty✝ (Expr.negInteger8 n✝) :: surfacePreorder (Expr.negInteger8 n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negInteger16 n✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInteger16 n✝)) warning } ++
+      expr env (Expr.negInteger16 n✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negInteger16 n✝) :: surfacePreorder (Expr.negInteger16 n✝)
+
+case constE.negInteger16
+env : AbstractEnv
+ty✝ : Ty
+n✝ : Nat
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negInteger16 n✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInteger16 n✝)) warning } ++
+        expr env (Expr.negInteger16 n✝)).sources =
+    Expr.constE ty✝ (Expr.negInteger16 n✝) :: surfacePreorder (Expr.negInteger16 n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negInteger32 n✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInteger32 n✝)) warning } ++
+      expr env (Expr.negInteger32 n✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negInteger32 n✝) :: surfacePreorder (Expr.negInteger32 n✝)
+
+case constE.negInteger32
+env : AbstractEnv
+ty✝ : Ty
+n✝ : Nat
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negInteger32 n✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negInteger32 n✝)) warning } ++
+        expr env (Expr.negInteger32 n✝)).sources =
+    Expr.constE ty✝ (Expr.negInteger32 n✝) :: surfacePreorder (Expr.negInteger32 n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.negFloat32 bits✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negFloat32 bits✝)) warning } ++
+      expr env (Expr.negFloat32 bits✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.negFloat32 bits✝) :: surfacePreorder (Expr.negFloat32 bits✝)
+
+case constE.negFloat32
+env : AbstractEnv
+ty✝ : Ty
+bits✝ : UInt32
+⊢ ({ sources := [Expr.constE ty✝ (Expr.negFloat32 bits✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.negFloat32 bits✝)) warning } ++
+        expr env (Expr.negFloat32 bits✝)).sources =
+    Expr.constE ty✝ (Expr.negFloat32 bits✝) :: surfacePreorder (Expr.negFloat32 bits✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ Expr.unit],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ Expr.unit) warning } ++
+      expr env Expr.unit).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ Expr.unit :: surfacePreorder Expr.unit
+
+case constE.unit
+env : AbstractEnv
+ty✝ : Ty
+⊢ ({ sources := [Expr.constE ty✝ Expr.unit],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ Expr.unit) warning } ++
+        expr env Expr.unit).sources =
+    Expr.constE ty✝ Expr.unit :: surfacePreorder Expr.unit
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ e✝.paren],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ e✝.paren) warning } ++
+      expr env e✝.paren).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ e✝.paren :: surfacePreorder e✝.paren
+
+case constE.paren
+env : AbstractEnv
+ty✝ : Ty
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ e✝.paren],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ e✝.paren) warning } ++
+        expr env e✝.paren).sources =
+    Expr.constE ty✝ e✝.paren :: surfacePreorder e✝.paren
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.block body✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.block body✝)) warning } ++
+      expr env (Expr.block body✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.block body✝) :: surfacePreorder (Expr.block body✝)
+
+case constE.block
+env : AbstractEnv
+ty✝ : Ty
+body✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (Expr.block body✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.block body✝)) warning } ++
+        expr env (Expr.block body✝)).sources =
+    Expr.constE ty✝ (Expr.block body✝) :: surfacePreorder (Expr.block body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.conCall c✝ tys✝ args✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.conCall c✝ tys✝ args✝)) warning } ++
+      expr env (Expr.conCall c✝ tys✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.conCall c✝ tys✝ args✝) :: surfacePreorder (Expr.conCall c✝ tys✝ args✝)
+
+case constE.conCall
+env : AbstractEnv
+ty✝ : Ty
+c✝ : ConName
+tys✝ : List Ty
+args✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.conCall c✝ tys✝ args✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.conCall c✝ tys✝ args✝)) warning } ++
+        expr env (Expr.conCall c✝ tys✝ args✝)).sources =
+    Expr.constE ty✝ (Expr.conCall c✝ tys✝ args✝) :: surfacePreorder (Expr.conCall c✝ tys✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.record c✝ tys✝ positions✝ args✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.record c✝ tys✝ positions✝ args✝)) warning } ++
+      expr env (Expr.record c✝ tys✝ positions✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.record c✝ tys✝ positions✝ args✝) :: surfacePreorder (Expr.record c✝ tys✝ positions✝ args✝)
+
+case constE.record
+env : AbstractEnv
+ty✝ : Ty
+c✝ : ConName
+tys✝ : List Ty
+positions✝ : List Nat
+args✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.record c✝ tys✝ positions✝ args✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.record c✝ tys✝ positions✝ args✝)) warning } ++
+        expr env (Expr.record c✝ tys✝ positions✝ args✝)).sources =
+    Expr.constE ty✝ (Expr.record c✝ tys✝ positions✝ args✝) :: surfacePreorder (Expr.record c✝ tys✝ positions✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)) warning } ++
+      expr env (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝) ::
+    surfacePreorder (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)
+
+case constE.recordUpdate
+env : AbstractEnv
+ty✝ : Ty
+c✝ : ConName
+tys✝ : List Ty
+n✝ : Nat
+positions✝ : List Nat
+base✝ : Expr
+args✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)) warning } ++
+        expr env (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)).sources =
+    Expr.constE ty✝ (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝) ::
+      surfacePreorder (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (callee✝.call labels✝ positions✝ args✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (callee✝.call labels✝ positions✝ args✝)) warning } ++
+      expr env (callee✝.call labels✝ positions✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (callee✝.call labels✝ positions✝ args✝) :: surfacePreorder (callee✝.call labels✝ positions✝ args✝)
+
+case constE.call
+env : AbstractEnv
+ty✝ : Ty
+callee✝ : Expr
+labels✝ : List (Option String)
+positions✝ : List Nat
+args✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (callee✝.call labels✝ positions✝ args✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (callee✝.call labels✝ positions✝ args✝)) warning } ++
+        expr env (callee✝.call labels✝ positions✝ args✝)).sources =
+    Expr.constE ty✝ (callee✝.call labels✝ positions✝ args✝) :: surfacePreorder (callee✝.call labels✝ positions✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (lhs✝.pipe rhs✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (lhs✝.pipe rhs✝)) warning } ++
+      expr env (lhs✝.pipe rhs✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (lhs✝.pipe rhs✝) :: surfacePreorder (lhs✝.pipe rhs✝)
+
+case constE.pipe
+env : AbstractEnv
+ty✝ : Ty
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (lhs✝.pipe rhs✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (lhs✝.pipe rhs✝)) warning } ++
+        expr env (lhs✝.pipe rhs✝)).sources =
+    Expr.constE ty✝ (lhs✝.pipe rhs✝) :: surfacePreorder (lhs✝.pipe rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (callee✝.partialCall names✝ args✝ ret✝ eff✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (callee✝.partialCall names✝ args✝ ret✝ eff✝)) warning } ++
+      expr env (callee✝.partialCall names✝ args✝ ret✝ eff✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (callee✝.partialCall names✝ args✝ ret✝ eff✝) ::
+    surfacePreorder (callee✝.partialCall names✝ args✝ ret✝ eff✝)
+
+case constE.partialCall
+env : AbstractEnv
+ty✝ : Ty
+callee✝ : Expr
+names✝ : List String
+args✝ : HoleArgs
+ret✝ : Ty
+eff✝ : Eff
+⊢ ({ sources := [Expr.constE ty✝ (callee✝.partialCall names✝ args✝ ret✝ eff✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (callee✝.partialCall names✝ args✝ ret✝ eff✝)) warning } ++
+        expr env (callee✝.partialCall names✝ args✝ ret✝ eff✝)).sources =
+    Expr.constE ty✝ (callee✝.partialCall names✝ args✝ ret✝ eff✝) ::
+      surfacePreorder (callee✝.partialCall names✝ args✝ ret✝ eff✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.partialCon c✝ tys✝ args✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.partialCon c✝ tys✝ args✝)) warning } ++
+      expr env (Expr.partialCon c✝ tys✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.partialCon c✝ tys✝ args✝) :: surfacePreorder (Expr.partialCon c✝ tys✝ args✝)
+
+case constE.partialCon
+env : AbstractEnv
+ty✝ : Ty
+c✝ : ConName
+tys✝ : List Ty
+args✝ : HoleArgs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.partialCon c✝ tys✝ args✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.partialCon c✝ tys✝ args✝)) warning } ++
+        expr env (Expr.partialCon c✝ tys✝ args✝)).sources =
+    Expr.constE ty✝ (Expr.partialCon c✝ tys✝ args✝) :: surfacePreorder (Expr.partialCon c✝ tys✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)) warning } ++
+      expr env (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.binary op✝ operandTy✝ lhs✝ rhs✝) :: surfacePreorder (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)
+
+case constE.binary
+env : AbstractEnv
+ty✝ : Ty
+op✝ : BinOp
+operandTy✝ : Ty
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)) warning } ++
+        expr env (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)).sources =
+    Expr.constE ty✝ (Expr.binary op✝ operandTy✝ lhs✝ rhs✝) :: surfacePreorder (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.neg operandTy✝ e✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.neg operandTy✝ e✝)) warning } ++
+      expr env (Expr.neg operandTy✝ e✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.neg operandTy✝ e✝) :: surfacePreorder (Expr.neg operandTy✝ e✝)
+
+case constE.neg
+env : AbstractEnv
+ty✝ operandTy✝ : Ty
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.neg operandTy✝ e✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.neg operandTy✝ e✝)) warning } ++
+        expr env (Expr.neg operandTy✝ e✝)).sources =
+    Expr.constE ty✝ (Expr.neg operandTy✝ e✝) :: surfacePreorder (Expr.neg operandTy✝ e✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ e✝.not],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ e✝.not) warning } ++
+      expr env e✝.not).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ e✝.not :: surfacePreorder e✝.not
+
+case constE.not
+env : AbstractEnv
+ty✝ : Ty
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ e✝.not],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ e✝.not) warning } ++
+        expr env e✝.not).sources =
+    Expr.constE ty✝ e✝.not :: surfacePreorder e✝.not
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (lhs✝.and rhs✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (lhs✝.and rhs✝)) warning } ++
+      expr env (lhs✝.and rhs✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (lhs✝.and rhs✝) :: surfacePreorder (lhs✝.and rhs✝)
+
+case constE.and
+env : AbstractEnv
+ty✝ : Ty
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (lhs✝.and rhs✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (lhs✝.and rhs✝)) warning } ++
+        expr env (lhs✝.and rhs✝)).sources =
+    Expr.constE ty✝ (lhs✝.and rhs✝) :: surfacePreorder (lhs✝.and rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (lhs✝.or rhs✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (lhs✝.or rhs✝)) warning } ++
+      expr env (lhs✝.or rhs✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (lhs✝.or rhs✝) :: surfacePreorder (lhs✝.or rhs✝)
+
+case constE.or
+env : AbstractEnv
+ty✝ : Ty
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (lhs✝.or rhs✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (lhs✝.or rhs✝)) warning } ++
+        expr env (lhs✝.or rhs✝)).sources =
+    Expr.constE ty✝ (lhs✝.or rhs✝) :: surfacePreorder (lhs✝.or rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.list elemTy✝ elems✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.list elemTy✝ elems✝)) warning } ++
+      expr env (Expr.list elemTy✝ elems✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.list elemTy✝ elems✝) :: surfacePreorder (Expr.list elemTy✝ elems✝)
+
+case constE.list
+env : AbstractEnv
+ty✝ elemTy✝ : Ty
+elems✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.list elemTy✝ elems✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.list elemTy✝ elems✝)) warning } ++
+        expr env (Expr.list elemTy✝ elems✝)).sources =
+    Expr.constE ty✝ (Expr.list elemTy✝ elems✝) :: surfacePreorder (Expr.list elemTy✝ elems✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)) warning } ++
+      expr env (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝) ::
+    surfacePreorder (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)
+
+case constE.listSpread
+env : AbstractEnv
+ty✝ elemTy✝ : Ty
+concat✝ : Expr
+before✝ : Exprs
+spread✝ : Expr
+after✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)) warning } ++
+        expr env (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)).sources =
+    Expr.constE ty✝ (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝) ::
+      surfacePreorder (Expr.listSpread elemTy✝ concat✝ before✝ spread✝ after✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.interpolation parts✝ es✝ converters✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.interpolation parts✝ es✝ converters✝)) warning } ++
+      expr env (Expr.interpolation parts✝ es✝ converters✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.interpolation parts✝ es✝ converters✝) ::
+    surfacePreorder (Expr.interpolation parts✝ es✝ converters✝)
+
+case constE.interpolation
+env : AbstractEnv
+ty✝ : Ty
+parts✝ : List InterpPart
+es✝ converters✝ : Exprs
+⊢ ({ sources := [Expr.constE ty✝ (Expr.interpolation parts✝ es✝ converters✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.interpolation parts✝ es✝ converters✝)) warning } ++
+        expr env (Expr.interpolation parts✝ es✝ converters✝)).sources =
+    Expr.constE ty✝ (Expr.interpolation parts✝ es✝ converters✝) ::
+      surfacePreorder (Expr.interpolation parts✝ es✝ converters✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.lam names✝ params✝ ret✝ eff✝ body✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.lam names✝ params✝ ret✝ eff✝ body✝)) warning } ++
+      expr env (Expr.lam names✝ params✝ ret✝ eff✝ body✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.lam names✝ params✝ ret✝ eff✝ body✝) :: surfacePreorder (Expr.lam names✝ params✝ ret✝ eff✝ body✝)
+
+case constE.lam
+env : AbstractEnv
+ty✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : Eff
+body✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (Expr.lam names✝ params✝ ret✝ eff✝ body✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.lam names✝ params✝ ret✝ eff✝ body✝)) warning } ++
+        expr env (Expr.lam names✝ params✝ ret✝ eff✝ body✝)).sources =
+    Expr.constE ty✝ (Expr.lam names✝ params✝ ret✝ eff✝ body✝) ::
+      surfacePreorder (Expr.lam names✝ params✝ ret✝ eff✝ body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (cond✝.ite yes✝ no✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (cond✝.ite yes✝ no✝)) warning } ++
+      expr env (cond✝.ite yes✝ no✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (cond✝.ite yes✝ no✝) :: surfacePreorder (cond✝.ite yes✝ no✝)
+
+case constE.ite
+env : AbstractEnv
+ty✝ : Ty
+cond✝ : Expr
+yes✝ no✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (cond✝.ite yes✝ no✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (cond✝.ite yes✝ no✝)) warning } ++
+        expr env (cond✝.ite yes✝ no✝)).sources =
+    Expr.constE ty✝ (cond✝.ite yes✝ no✝) :: surfacePreorder (cond✝.ite yes✝ no✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (cond✝.elseIf yes✝ no✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (cond✝.elseIf yes✝ no✝)) warning } ++
+      expr env (cond✝.elseIf yes✝ no✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (cond✝.elseIf yes✝ no✝) :: surfacePreorder (cond✝.elseIf yes✝ no✝)
+
+case constE.elseIf
+env : AbstractEnv
+ty✝ : Ty
+cond✝ : Expr
+yes✝ : Block
+no✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (cond✝.elseIf yes✝ no✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (cond✝.elseIf yes✝ no✝)) warning } ++
+        expr env (cond✝.elseIf yes✝ no✝)).sources =
+    Expr.constE ty✝ (cond✝.elseIf yes✝ no✝) :: surfacePreorder (cond✝.elseIf yes✝ no✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (cond✝.ifOnly yes✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (cond✝.ifOnly yes✝)) warning } ++
+      expr env (cond✝.ifOnly yes✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (cond✝.ifOnly yes✝) :: surfacePreorder (cond✝.ifOnly yes✝)
+
+case constE.ifOnly
+env : AbstractEnv
+ty✝ : Ty
+cond✝ : Expr
+yes✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (cond✝.ifOnly yes✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (cond✝.ifOnly yes✝)) warning } ++
+        expr env (cond✝.ifOnly yes✝)).sources =
+    Expr.constE ty✝ (cond✝.ifOnly yes✝) :: surfacePreorder (cond✝.ifOnly yes✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.matchE resultTy✝ scrutinee✝ arms✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.matchE resultTy✝ scrutinee✝ arms✝)) warning } ++
+      expr env (Expr.matchE resultTy✝ scrutinee✝ arms✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.matchE resultTy✝ scrutinee✝ arms✝) :: surfacePreorder (Expr.matchE resultTy✝ scrutinee✝ arms✝)
+
+case constE.matchE
+env : AbstractEnv
+ty✝ resultTy✝ : Ty
+scrutinee✝ : Expr
+arms✝ : Arms
+⊢ ({ sources := [Expr.constE ty✝ (Expr.matchE resultTy✝ scrutinee✝ arms✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.matchE resultTy✝ scrutinee✝ arms✝)) warning } ++
+        expr env (Expr.matchE resultTy✝ scrutinee✝ arms✝)).sources =
+    Expr.constE ty✝ (Expr.matchE resultTy✝ scrutinee✝ arms✝) :: surfacePreorder (Expr.matchE resultTy✝ scrutinee✝ arms✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.returnE resultTy✝ e✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.returnE resultTy✝ e✝)) warning } ++
+      expr env (Expr.returnE resultTy✝ e✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.returnE resultTy✝ e✝) :: surfacePreorder (Expr.returnE resultTy✝ e✝)
+
+case constE.returnE
+env : AbstractEnv
+ty✝ resultTy✝ : Ty
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.returnE resultTy✝ e✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.returnE resultTy✝ e✝)) warning } ++
+        expr env (Expr.returnE resultTy✝ e✝)).sources =
+    Expr.constE ty✝ (Expr.returnE resultTy✝ e✝) :: surfacePreorder (Expr.returnE resultTy✝ e✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.tryResult retArgs✝ ok✝ err✝ e✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.tryResult retArgs✝ ok✝ err✝ e✝)) warning } ++
+      expr env (Expr.tryResult retArgs✝ ok✝ err✝ e✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.tryResult retArgs✝ ok✝ err✝ e✝) :: surfacePreorder (Expr.tryResult retArgs✝ ok✝ err✝ e✝)
+
+case constE.tryResult
+env : AbstractEnv
+ty✝ : Ty
+retArgs✝ : List Ty
+ok✝ err✝ : ConName
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.tryResult retArgs✝ ok✝ err✝ e✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.tryResult retArgs✝ ok✝ err✝ e✝)) warning } ++
+        expr env (Expr.tryResult retArgs✝ ok✝ err✝ e✝)).sources =
+    Expr.constE ty✝ (Expr.tryResult retArgs✝ ok✝ err✝ e✝) :: surfacePreorder (Expr.tryResult retArgs✝ ok✝ err✝ e✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)) warning } ++
+      expr env (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝) ::
+    surfacePreorder (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)
+
+case constE.tryOption
+env : AbstractEnv
+ty✝ : Ty
+retArgs✝ : List Ty
+someCon✝ noneCon✝ : ConName
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)) warning } ++
+        expr env (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)).sources =
+    Expr.constE ty✝ (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝) ::
+      surfacePreorder (Expr.tryOption retArgs✝ someCon✝ noneCon✝ e✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝))
+            warning } ++
+      expr env (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝) ::
+    surfacePreorder (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)
+
+case constE.tryResultDie
+env : AbstractEnv
+ty✝ successTy✝ : Ty
+ok✝ err✝ : ConName
+dict✝ : DictEv
+showMethod✝ : MethName
+exit✝ : PrimName
+e✝ : Expr
+message✝ : Option Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)],
+          allows := fun key warning =>
+            RootWarning key
+              (Expr.constE ty✝ (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)) warning } ++
+        expr env (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)).sources =
+    Expr.constE ty✝ (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝) ::
+      surfacePreorder (Expr.tryResultDie successTy✝ ok✝ err✝ dict✝ showMethod✝ exit✝ e✝ message✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝)],
+        allows := fun key warning =>
+          RootWarning key (Expr.constE ty✝ (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝))
+            warning } ++
+      expr env (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝) ::
+    surfacePreorder (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝)
+
+case constE.tryOptionDie
+env : AbstractEnv
+ty✝ successTy✝ : Ty
+someCon✝ noneCon✝ : ConName
+exit✝ : PrimName
+e✝ : Expr
+message✝ : Option Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝)],
+          allows := fun key warning =>
+            RootWarning key (Expr.constE ty✝ (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝))
+              warning } ++
+        expr env (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝)).sources =
+    Expr.constE ty✝ (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝) ::
+      surfacePreorder (Expr.tryOptionDie successTy✝ someCon✝ noneCon✝ exit✝ e✝ message✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.withE o✝ e✝ body✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.withE o✝ e✝ body✝)) warning } ++
+      expr env (Expr.withE o✝ e✝ body✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.withE o✝ e✝ body✝) :: surfacePreorder (Expr.withE o✝ e✝ body✝)
+
+case constE.withE
+env : AbstractEnv
+ty✝ : Ty
+o✝ : OpaqueName
+e✝ : Expr
+body✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (Expr.withE o✝ e✝ body✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.withE o✝ e✝ body✝)) warning } ++
+        expr env (Expr.withE o✝ e✝ body✝)).sources =
+    Expr.constE ty✝ (Expr.withE o✝ e✝ body✝) :: surfacePreorder (Expr.withE o✝ e✝ body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.lazyE body✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.lazyE body✝)) warning } ++
+      expr env (Expr.lazyE body✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.lazyE body✝) :: surfacePreorder (Expr.lazyE body✝)
+
+case constE.lazyE
+env : AbstractEnv
+ty✝ : Ty
+body✝ : Block
+⊢ ({ sources := [Expr.constE ty✝ (Expr.lazyE body✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.lazyE body✝)) warning } ++
+        expr env (Expr.lazyE body✝)).sources =
+    Expr.constE ty✝ (Expr.lazyE body✝) :: surfacePreorder (Expr.lazyE body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.handleE body✝ clauses✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.handleE body✝ clauses✝)) warning } ++
+      expr env (Expr.handleE body✝ clauses✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.handleE body✝ clauses✝) :: surfacePreorder (Expr.handleE body✝ clauses✝)
+
+case constE.handleE
+env : AbstractEnv
+ty✝ : Ty
+body✝ : Block
+clauses✝ : Clauses
+⊢ ({ sources := [Expr.constE ty✝ (Expr.handleE body✝ clauses✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.handleE body✝ clauses✝)) warning } ++
+        expr env (Expr.handleE body✝ clauses✝)).sources =
+    Expr.constE ty✝ (Expr.handleE body✝ clauses✝) :: surfacePreorder (Expr.handleE body✝ clauses✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.constE ty✝ (Expr.resume k✝ e✝)],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.resume k✝ e✝)) warning } ++
+      expr env (Expr.resume k✝ e✝)).sources
+is not definitionally equal to the right-hand side
+  Expr.constE ty✝ (Expr.resume k✝ e✝) :: surfacePreorder (Expr.resume k✝ e✝)
+
+case constE.resume
+env : AbstractEnv
+ty✝ : Ty
+k✝ : Nat
+e✝ : Expr
+⊢ ({ sources := [Expr.constE ty✝ (Expr.resume k✝ e✝)],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ (Expr.resume k✝ e✝)) warning } ++
+        expr env (Expr.resume k✝ e✝)).sources =
+    Expr.constE ty✝ (Expr.resume k✝ e✝) :: surfacePreorder (Expr.resume k✝ e✝)
+Benitoite/Interval/CallReach.lean:95:12: error: too many variable names provided
+Benitoite/Interval/CallReach.lean:95:36: error(lean.unknownIdentifier): Unknown identifier `message`
+Benitoite/Interval/CallReach.lean:95:30: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.1691
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case unit
+env : AbstractEnv
+x✝ : ?m.1691
+⊢ ({ sources := [Expr.unit], allows := fun key warning => RootWarning key Expr.unit warning } ++
+        { sources := [], allows := fun x x_1 => False }).sources =
+    [Expr.unit]
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.local i✝).paren], allows := fun key warning => RootWarning key (Expr.local i✝).paren warning } ++
+      expr env (Expr.local i✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.local i✝).paren :: surfacePreorder (Expr.local i✝)
+
+case paren.local
+env : AbstractEnv
+i✝ : Nat
+⊢ ({ sources := [(Expr.local i✝).paren], allows := fun key warning => RootWarning key (Expr.local i✝).paren warning } ++
+        expr env (Expr.local i✝)).sources =
+    (Expr.local i✝).paren :: surfacePreorder (Expr.local i✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.builderOp op✝ i✝ args✝ kind✝).paren],
+        allows := fun key warning => RootWarning key (Expr.builderOp op✝ i✝ args✝ kind✝).paren warning } ++
+      expr env (Expr.builderOp op✝ i✝ args✝ kind✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.builderOp op✝ i✝ args✝ kind✝).paren :: surfacePreorder (Expr.builderOp op✝ i✝ args✝ kind✝)
+
+case paren.builderOp
+env : AbstractEnv
+op✝ : BuilderOp
+i✝ : Nat
+args✝ : Exprs
+kind✝ : BuilderKind
+⊢ ({ sources := [(Expr.builderOp op✝ i✝ args✝ kind✝).paren],
+          allows := fun key warning => RootWarning key (Expr.builderOp op✝ i✝ args✝ kind✝).paren warning } ++
+        expr env (Expr.builderOp op✝ i✝ args✝ kind✝)).sources =
+    (Expr.builderOp op✝ i✝ args✝ kind✝).paren :: surfacePreorder (Expr.builderOp op✝ i✝ args✝ kind✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.constE ty✝ body✝).paren],
+        allows := fun key warning => RootWarning key (Expr.constE ty✝ body✝).paren warning } ++
+      expr env (Expr.constE ty✝ body✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.constE ty✝ body✝).paren :: surfacePreorder (Expr.constE ty✝ body✝)
+
+case paren.constE
+env : AbstractEnv
+ty✝ : Ty
+body✝ : Expr
+⊢ ({ sources := [(Expr.constE ty✝ body✝).paren],
+          allows := fun key warning => RootWarning key (Expr.constE ty✝ body✝).paren warning } ++
+        expr env (Expr.constE ty✝ body✝)).sources =
+    (Expr.constE ty✝ body✝).paren :: surfacePreorder (Expr.constE ty✝ body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.funName f✝ tys✝ effs✝).paren],
+        allows := fun key warning => RootWarning key (Expr.funName f✝ tys✝ effs✝).paren warning } ++
+      expr env (Expr.funName f✝ tys✝ effs✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.funName f✝ tys✝ effs✝).paren :: surfacePreorder (Expr.funName f✝ tys✝ effs✝)
+
+case paren.funName
+env : AbstractEnv
+f✝ : FunName
+tys✝ : List Ty
+effs✝ : List Eff
+⊢ ({ sources := [(Expr.funName f✝ tys✝ effs✝).paren],
+          allows := fun key warning => RootWarning key (Expr.funName f✝ tys✝ effs✝).paren warning } ++
+        expr env (Expr.funName f✝ tys✝ effs✝)).sources =
+    (Expr.funName f✝ tys✝ effs✝).paren :: surfacePreorder (Expr.funName f✝ tys✝ effs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝).paren],
+        allows := fun key warning =>
+          RootWarning key (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝).paren warning } ++
+      expr env (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝).paren ::
+    surfacePreorder (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)
+
+case paren.funDicts
+env : AbstractEnv
+f✝ : FunName
+tys✝ : List Ty
+effs✝ : List Eff
+dicts✝ : List DictEv
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [(Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝).paren],
+          allows := fun key warning =>
+            RootWarning key (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝).paren warning } ++
+        expr env (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources =
+    (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝).paren ::
+      surfacePreorder (Expr.funDicts f✝ tys✝ effs✝ dicts✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝).paren],
+        allows := fun key warning =>
+          RootWarning key (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝).paren warning } ++
+      expr env (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝).paren ::
+    surfacePreorder (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)
+
+case paren.methName
+env : AbstractEnv
+dict✝ : DictEv
+m✝ : MethName
+tys✝ : List Ty
+effs✝ : List Eff
+dicts✝ : List DictEv
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [(Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝).paren],
+          allows := fun key warning =>
+            RootWarning key (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝).paren warning } ++
+        expr env (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)).sources =
+    (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝).paren ::
+      surfacePreorder (Expr.methName dict✝ m✝ tys✝ effs✝ dicts✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.primName b✝ tys✝ effs✝).paren],
+        allows := fun key warning => RootWarning key (Expr.primName b✝ tys✝ effs✝).paren warning } ++
+      expr env (Expr.primName b✝ tys✝ effs✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.primName b✝ tys✝ effs✝).paren :: surfacePreorder (Expr.primName b✝ tys✝ effs✝)
+
+case paren.primName
+env : AbstractEnv
+b✝ : PrimName
+tys✝ : List Ty
+effs✝ : List Eff
+⊢ ({ sources := [(Expr.primName b✝ tys✝ effs✝).paren],
+          allows := fun key warning => RootWarning key (Expr.primName b✝ tys✝ effs✝).paren warning } ++
+        expr env (Expr.primName b✝ tys✝ effs✝)).sources =
+    (Expr.primName b✝ tys✝ effs✝).paren :: surfacePreorder (Expr.primName b✝ tys✝ effs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.opName o✝ tys✝).paren],
+        allows := fun key warning => RootWarning key (Expr.opName o✝ tys✝).paren warning } ++
+      expr env (Expr.opName o✝ tys✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.opName o✝ tys✝).paren :: surfacePreorder (Expr.opName o✝ tys✝)
+
+case paren.opName
+env : AbstractEnv
+o✝ : OpName
+tys✝ : List Ty
+⊢ ({ sources := [(Expr.opName o✝ tys✝).paren],
+          allows := fun key warning => RootWarning key (Expr.opName o✝ tys✝).paren warning } ++
+        expr env (Expr.opName o✝ tys✝)).sources =
+    (Expr.opName o✝ tys✝).paren :: surfacePreorder (Expr.opName o✝ tys✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝).paren],
+        allows := fun key warning => RootWarning key (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝).paren warning } ++
+      expr env (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝).paren :: surfacePreorder (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)
+
+case paren.opDicts
+env : AbstractEnv
+o✝ : OpName
+tys✝ : List Ty
+dicts✝ : List DictEv
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [(Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝).paren],
+          allows := fun key warning => RootWarning key (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝).paren warning } ++
+        expr env (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)).sources =
+    (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝).paren :: surfacePreorder (Expr.opDicts o✝ tys✝ dicts✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.raise result✝ error✝).paren],
+        allows := fun key warning => RootWarning key (Expr.raise result✝ error✝).paren warning } ++
+      expr env (Expr.raise result✝ error✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.raise result✝ error✝).paren :: surfacePreorder (Expr.raise result✝ error✝)
+
+case paren.raise
+env : AbstractEnv
+result✝ error✝ : Ty
+⊢ ({ sources := [(Expr.raise result✝ error✝).paren],
+          allows := fun key warning => RootWarning key (Expr.raise result✝ error✝).paren warning } ++
+        expr env (Expr.raise result✝ error✝)).sources =
+    (Expr.raise result✝ error✝).paren :: surfacePreorder (Expr.raise result✝ error✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.handleFail error✝ result✝ body✝ clause✝).paren],
+        allows := fun key warning => RootWarning key (Expr.handleFail error✝ result✝ body✝ clause✝).paren warning } ++
+      expr env (Expr.handleFail error✝ result✝ body✝ clause✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.handleFail error✝ result✝ body✝ clause✝).paren :: surfacePreorder (Expr.handleFail error✝ result✝ body✝ clause✝)
+
+case paren.handleFail
+env : AbstractEnv
+error✝ result✝ : Ty
+body✝ clause✝ : Block
+⊢ ({ sources := [(Expr.handleFail error✝ result✝ body✝ clause✝).paren],
+          allows := fun key warning => RootWarning key (Expr.handleFail error✝ result✝ body✝ clause✝).paren warning } ++
+        expr env (Expr.handleFail error✝ result✝ body✝ clause✝)).sources =
+    (Expr.handleFail error✝ result✝ body✝ clause✝).paren ::
+      surfacePreorder (Expr.handleFail error✝ result✝ body✝ clause✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.nullCon c✝ tys✝).paren],
+        allows := fun key warning => RootWarning key (Expr.nullCon c✝ tys✝).paren warning } ++
+      expr env (Expr.nullCon c✝ tys✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.nullCon c✝ tys✝).paren :: surfacePreorder (Expr.nullCon c✝ tys✝)
+
+case paren.nullCon
+env : AbstractEnv
+c✝ : ConName
+tys✝ : List Ty
+⊢ ({ sources := [(Expr.nullCon c✝ tys✝).paren],
+          allows := fun key warning => RootWarning key (Expr.nullCon c✝ tys✝).paren warning } ++
+        expr env (Expr.nullCon c✝ tys✝)).sources =
+    (Expr.nullCon c✝ tys✝).paren :: surfacePreorder (Expr.nullCon c✝ tys✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.conValue c✝ tys✝ names✝ params✝).paren],
+        allows := fun key warning => RootWarning key (Expr.conValue c✝ tys✝ names✝ params✝).paren warning } ++
+      expr env (Expr.conValue c✝ tys✝ names✝ params✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.conValue c✝ tys✝ names✝ params✝).paren :: surfacePreorder (Expr.conValue c✝ tys✝ names✝ params✝)
+
+case paren.conValue
+env : AbstractEnv
+c✝ : ConName
+tys✝ : List Ty
+names✝ : List String
+params✝ : List Ty
+⊢ ({ sources := [(Expr.conValue c✝ tys✝ names✝ params✝).paren],
+          allows := fun key warning => RootWarning key (Expr.conValue c✝ tys✝ names✝ params✝).paren warning } ++
+        expr env (Expr.conValue c✝ tys✝ names✝ params✝)).sources =
+    (Expr.conValue c✝ tys✝ names✝ params✝).paren :: surfacePreorder (Expr.conValue c✝ tys✝ names✝ params✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.literal l✝).paren],
+        allows := fun key warning => RootWarning key (Expr.literal l✝).paren warning } ++
+      expr env (Expr.literal l✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.literal l✝).paren :: surfacePreorder (Expr.literal l✝)
+
+case paren.literal
+env : AbstractEnv
+l✝ : Literal
+⊢ ({ sources := [(Expr.literal l✝).paren],
+          allows := fun key warning => RootWarning key (Expr.literal l✝).paren warning } ++
+        expr env (Expr.literal l✝)).sources =
+    (Expr.literal l✝).paren :: surfacePreorder (Expr.literal l✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negInt n✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negInt n✝).paren warning } ++
+      expr env (Expr.negInt n✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negInt n✝).paren :: surfacePreorder (Expr.negInt n✝)
+
+case paren.negInt
+env : AbstractEnv
+n✝ : Integer64Magnitude
+⊢ ({ sources := [(Expr.negInt n✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negInt n✝).paren warning } ++
+        expr env (Expr.negInt n✝)).sources =
+    (Expr.negInt n✝).paren :: surfacePreorder (Expr.negInt n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negFloat x✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negFloat x✝).paren warning } ++
+      expr env (Expr.negFloat x✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negFloat x✝).paren :: surfacePreorder (Expr.negFloat x✝)
+
+case paren.negFloat
+env : AbstractEnv
+x✝ : Float
+⊢ ({ sources := [(Expr.negFloat x✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negFloat x✝).paren warning } ++
+        expr env (Expr.negFloat x✝)).sources =
+    (Expr.negFloat x✝).paren :: surfacePreorder (Expr.negFloat x✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negDecimal n✝ scale✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negDecimal n✝ scale✝).paren warning } ++
+      expr env (Expr.negDecimal n✝ scale✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negDecimal n✝ scale✝).paren :: surfacePreorder (Expr.negDecimal n✝ scale✝)
+
+case paren.negDecimal
+env : AbstractEnv
+n✝ : Int
+scale✝ : Nat
+⊢ ({ sources := [(Expr.negDecimal n✝ scale✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negDecimal n✝ scale✝).paren warning } ++
+        expr env (Expr.negDecimal n✝ scale✝)).sources =
+    (Expr.negDecimal n✝ scale✝).paren :: surfacePreorder (Expr.negDecimal n✝ scale✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negInteger8 n✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negInteger8 n✝).paren warning } ++
+      expr env (Expr.negInteger8 n✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negInteger8 n✝).paren :: surfacePreorder (Expr.negInteger8 n✝)
+
+case paren.negInteger8
+env : AbstractEnv
+n✝ : Nat
+⊢ ({ sources := [(Expr.negInteger8 n✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negInteger8 n✝).paren warning } ++
+        expr env (Expr.negInteger8 n✝)).sources =
+    (Expr.negInteger8 n✝).paren :: surfacePreorder (Expr.negInteger8 n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negInteger16 n✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negInteger16 n✝).paren warning } ++
+      expr env (Expr.negInteger16 n✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negInteger16 n✝).paren :: surfacePreorder (Expr.negInteger16 n✝)
+
+case paren.negInteger16
+env : AbstractEnv
+n✝ : Nat
+⊢ ({ sources := [(Expr.negInteger16 n✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negInteger16 n✝).paren warning } ++
+        expr env (Expr.negInteger16 n✝)).sources =
+    (Expr.negInteger16 n✝).paren :: surfacePreorder (Expr.negInteger16 n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negInteger32 n✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negInteger32 n✝).paren warning } ++
+      expr env (Expr.negInteger32 n✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negInteger32 n✝).paren :: surfacePreorder (Expr.negInteger32 n✝)
+
+case paren.negInteger32
+env : AbstractEnv
+n✝ : Nat
+⊢ ({ sources := [(Expr.negInteger32 n✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negInteger32 n✝).paren warning } ++
+        expr env (Expr.negInteger32 n✝)).sources =
+    (Expr.negInteger32 n✝).paren :: surfacePreorder (Expr.negInteger32 n✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.negFloat32 bits✝).paren],
+        allows := fun key warning => RootWarning key (Expr.negFloat32 bits✝).paren warning } ++
+      expr env (Expr.negFloat32 bits✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.negFloat32 bits✝).paren :: surfacePreorder (Expr.negFloat32 bits✝)
+
+case paren.negFloat32
+env : AbstractEnv
+bits✝ : UInt32
+⊢ ({ sources := [(Expr.negFloat32 bits✝).paren],
+          allows := fun key warning => RootWarning key (Expr.negFloat32 bits✝).paren warning } ++
+        expr env (Expr.negFloat32 bits✝)).sources =
+    (Expr.negFloat32 bits✝).paren :: surfacePreorder (Expr.negFloat32 bits✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [Expr.unit.paren], allows := fun key warning => RootWarning key Expr.unit.paren warning } ++
+      expr env Expr.unit).sources
+is not definitionally equal to the right-hand side
+  Expr.unit.paren :: surfacePreorder Expr.unit
+
+case paren.unit
+env : AbstractEnv
+⊢ ({ sources := [Expr.unit.paren], allows := fun key warning => RootWarning key Expr.unit.paren warning } ++
+        expr env Expr.unit).sources =
+    Expr.unit.paren :: surfacePreorder Expr.unit
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [e✝.paren.paren], allows := fun key warning => RootWarning key e✝.paren.paren warning } ++
+      expr env e✝.paren).sources
+is not definitionally equal to the right-hand side
+  e✝.paren.paren :: surfacePreorder e✝.paren
+
+case paren.paren
+env : AbstractEnv
+e✝ : Expr
+⊢ ({ sources := [e✝.paren.paren], allows := fun key warning => RootWarning key e✝.paren.paren warning } ++
+        expr env e✝.paren).sources =
+    e✝.paren.paren :: surfacePreorder e✝.paren
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.block body✝).paren],
+        allows := fun key warning => RootWarning key (Expr.block body✝).paren warning } ++
+      expr env (Expr.block body✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.block body✝).paren :: surfacePreorder (Expr.block body✝)
+
+case paren.block
+env : AbstractEnv
+body✝ : Block
+⊢ ({ sources := [(Expr.block body✝).paren],
+          allows := fun key warning => RootWarning key (Expr.block body✝).paren warning } ++
+        expr env (Expr.block body✝)).sources =
+    (Expr.block body✝).paren :: surfacePreorder (Expr.block body✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.conCall c✝ tys✝ args✝).paren],
+        allows := fun key warning => RootWarning key (Expr.conCall c✝ tys✝ args✝).paren warning } ++
+      expr env (Expr.conCall c✝ tys✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.conCall c✝ tys✝ args✝).paren :: surfacePreorder (Expr.conCall c✝ tys✝ args✝)
+
+case paren.conCall
+env : AbstractEnv
+c✝ : ConName
+tys✝ : List Ty
+args✝ : Exprs
+⊢ ({ sources := [(Expr.conCall c✝ tys✝ args✝).paren],
+          allows := fun key warning => RootWarning key (Expr.conCall c✝ tys✝ args✝).paren warning } ++
+        expr env (Expr.conCall c✝ tys✝ args✝)).sources =
+    (Expr.conCall c✝ tys✝ args✝).paren :: surfacePreorder (Expr.conCall c✝ tys✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.record c✝ tys✝ positions✝ args✝).paren],
+        allows := fun key warning => RootWarning key (Expr.record c✝ tys✝ positions✝ args✝).paren warning } ++
+      expr env (Expr.record c✝ tys✝ positions✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.record c✝ tys✝ positions✝ args✝).paren :: surfacePreorder (Expr.record c✝ tys✝ positions✝ args✝)
+
+case paren.record
+env : AbstractEnv
+c✝ : ConName
+tys✝ : List Ty
+positions✝ : List Nat
+args✝ : Exprs
+⊢ ({ sources := [(Expr.record c✝ tys✝ positions✝ args✝).paren],
+          allows := fun key warning => RootWarning key (Expr.record c✝ tys✝ positions✝ args✝).paren warning } ++
+        expr env (Expr.record c✝ tys✝ positions✝ args✝)).sources =
+    (Expr.record c✝ tys✝ positions✝ args✝).paren :: surfacePreorder (Expr.record c✝ tys✝ positions✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝).paren],
+        allows := fun key warning =>
+          RootWarning key (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝).paren warning } ++
+      expr env (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝).paren ::
+    surfacePreorder (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)
+
+case paren.recordUpdate
+env : AbstractEnv
+c✝ : ConName
+tys✝ : List Ty
+n✝ : Nat
+positions✝ : List Nat
+base✝ : Expr
+args✝ : Exprs
+⊢ ({ sources := [(Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝).paren],
+          allows := fun key warning =>
+            RootWarning key (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝).paren warning } ++
+        expr env (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)).sources =
+    (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝).paren ::
+      surfacePreorder (Expr.recordUpdate c✝ tys✝ n✝ positions✝ base✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(callee✝.call labels✝ positions✝ args✝).paren],
+        allows := fun key warning => RootWarning key (callee✝.call labels✝ positions✝ args✝).paren warning } ++
+      expr env (callee✝.call labels✝ positions✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  (callee✝.call labels✝ positions✝ args✝).paren :: surfacePreorder (callee✝.call labels✝ positions✝ args✝)
+
+case paren.call
+env : AbstractEnv
+callee✝ : Expr
+labels✝ : List (Option String)
+positions✝ : List Nat
+args✝ : Exprs
+⊢ ({ sources := [(callee✝.call labels✝ positions✝ args✝).paren],
+          allows := fun key warning => RootWarning key (callee✝.call labels✝ positions✝ args✝).paren warning } ++
+        expr env (callee✝.call labels✝ positions✝ args✝)).sources =
+    (callee✝.call labels✝ positions✝ args✝).paren :: surfacePreorder (callee✝.call labels✝ positions✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(lhs✝.pipe rhs✝).paren],
+        allows := fun key warning => RootWarning key (lhs✝.pipe rhs✝).paren warning } ++
+      expr env (lhs✝.pipe rhs✝)).sources
+is not definitionally equal to the right-hand side
+  (lhs✝.pipe rhs✝).paren :: surfacePreorder (lhs✝.pipe rhs✝)
+
+case paren.pipe
+env : AbstractEnv
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [(lhs✝.pipe rhs✝).paren],
+          allows := fun key warning => RootWarning key (lhs✝.pipe rhs✝).paren warning } ++
+        expr env (lhs✝.pipe rhs✝)).sources =
+    (lhs✝.pipe rhs✝).paren :: surfacePreorder (lhs✝.pipe rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(callee✝.partialCall names✝ args✝ ret✝ eff✝).paren],
+        allows := fun key warning => RootWarning key (callee✝.partialCall names✝ args✝ ret✝ eff✝).paren warning } ++
+      expr env (callee✝.partialCall names✝ args✝ ret✝ eff✝)).sources
+is not definitionally equal to the right-hand side
+  (callee✝.partialCall names✝ args✝ ret✝ eff✝).paren :: surfacePreorder (callee✝.partialCall names✝ args✝ ret✝ eff✝)
+
+case paren.partialCall
+env : AbstractEnv
+callee✝ : Expr
+names✝ : List String
+args✝ : HoleArgs
+ret✝ : Ty
+eff✝ : Eff
+⊢ ({ sources := [(callee✝.partialCall names✝ args✝ ret✝ eff✝).paren],
+          allows := fun key warning => RootWarning key (callee✝.partialCall names✝ args✝ ret✝ eff✝).paren warning } ++
+        expr env (callee✝.partialCall names✝ args✝ ret✝ eff✝)).sources =
+    (callee✝.partialCall names✝ args✝ ret✝ eff✝).paren :: surfacePreorder (callee✝.partialCall names✝ args✝ ret✝ eff✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.partialCon c✝ tys✝ args✝).paren],
+        allows := fun key warning => RootWarning key (Expr.partialCon c✝ tys✝ args✝).paren warning } ++
+      expr env (Expr.partialCon c✝ tys✝ args✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.partialCon c✝ tys✝ args✝).paren :: surfacePreorder (Expr.partialCon c✝ tys✝ args✝)
+
+case paren.partialCon
+env : AbstractEnv
+c✝ : ConName
+tys✝ : List Ty
+args✝ : HoleArgs
+⊢ ({ sources := [(Expr.partialCon c✝ tys✝ args✝).paren],
+          allows := fun key warning => RootWarning key (Expr.partialCon c✝ tys✝ args✝).paren warning } ++
+        expr env (Expr.partialCon c✝ tys✝ args✝)).sources =
+    (Expr.partialCon c✝ tys✝ args✝).paren :: surfacePreorder (Expr.partialCon c✝ tys✝ args✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.binary op✝ operandTy✝ lhs✝ rhs✝).paren],
+        allows := fun key warning => RootWarning key (Expr.binary op✝ operandTy✝ lhs✝ rhs✝).paren warning } ++
+      expr env (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.binary op✝ operandTy✝ lhs✝ rhs✝).paren :: surfacePreorder (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)
+
+case paren.binary
+env : AbstractEnv
+op✝ : BinOp
+operandTy✝ : Ty
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [(Expr.binary op✝ operandTy✝ lhs✝ rhs✝).paren],
+          allows := fun key warning => RootWarning key (Expr.binary op✝ operandTy✝ lhs✝ rhs✝).paren warning } ++
+        expr env (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)).sources =
+    (Expr.binary op✝ operandTy✝ lhs✝ rhs✝).paren :: surfacePreorder (Expr.binary op✝ operandTy✝ lhs✝ rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.neg operandTy✝ e✝).paren],
+        allows := fun key warning => RootWarning key (Expr.neg operandTy✝ e✝).paren warning } ++
+      expr env (Expr.neg operandTy✝ e✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.neg operandTy✝ e✝).paren :: surfacePreorder (Expr.neg operandTy✝ e✝)
+
+case paren.neg
+env : AbstractEnv
+operandTy✝ : Ty
+e✝ : Expr
+⊢ ({ sources := [(Expr.neg operandTy✝ e✝).paren],
+          allows := fun key warning => RootWarning key (Expr.neg operandTy✝ e✝).paren warning } ++
+        expr env (Expr.neg operandTy✝ e✝)).sources =
+    (Expr.neg operandTy✝ e✝).paren :: surfacePreorder (Expr.neg operandTy✝ e✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [e✝.not.paren], allows := fun key warning => RootWarning key e✝.not.paren warning } ++
+      expr env e✝.not).sources
+is not definitionally equal to the right-hand side
+  e✝.not.paren :: surfacePreorder e✝.not
+
+case paren.not
+env : AbstractEnv
+e✝ : Expr
+⊢ ({ sources := [e✝.not.paren], allows := fun key warning => RootWarning key e✝.not.paren warning } ++
+        expr env e✝.not).sources =
+    e✝.not.paren :: surfacePreorder e✝.not
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(lhs✝.and rhs✝).paren], allows := fun key warning => RootWarning key (lhs✝.and rhs✝).paren warning } ++
+      expr env (lhs✝.and rhs✝)).sources
+is not definitionally equal to the right-hand side
+  (lhs✝.and rhs✝).paren :: surfacePreorder (lhs✝.and rhs✝)
+
+case paren.and
+env : AbstractEnv
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [(lhs✝.and rhs✝).paren], allows := fun key warning => RootWarning key (lhs✝.and rhs✝).paren warning } ++
+        expr env (lhs✝.and rhs✝)).sources =
+    (lhs✝.and rhs✝).paren :: surfacePreorder (lhs✝.and rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(lhs✝.or rhs✝).paren], allows := fun key warning => RootWarning key (lhs✝.or rhs✝).paren warning } ++
+      expr env (lhs✝.or rhs✝)).sources
+is not definitionally equal to the right-hand side
+  (lhs✝.or rhs✝).paren :: surfacePreorder (lhs✝.or rhs✝)
+
+case paren.or
+env : AbstractEnv
+lhs✝ rhs✝ : Expr
+⊢ ({ sources := [(lhs✝.or rhs✝).paren], allows := fun key warning => RootWarning key (lhs✝.or rhs✝).paren warning } ++
+        expr env (lhs✝.or rhs✝)).sources =
+    (lhs✝.or rhs✝).paren :: surfacePreorder (lhs✝.or rhs✝)
+Benitoite/Interval/CallReach.lean:95:48: error: Tactic `rfl` failed: The left-hand side
+  ({ sources := [(Expr.list elemTy✝ elems✝).paren],
+        allows := fun key warning => RootWarning key (Expr.list elemTy✝ elems✝).paren warning } ++
+      expr env (Expr.list elemTy✝ elems✝)).sources
+is not definitionally equal to the right-hand side
+  (Expr.list elemTy✝ elems✝).paren :: surfacePreorder (Expr.list elemTy✝ elems✝)
+
+case paren.list
+env : AbstractEnv
+elemTy✝ : Ty
+elems✝ : Exprs
+⊢ ({ sources := [(Expr.list elemTy✝ elems✝).paren],
+          allows := fun key warning => RootWarning key (Expr.list elemTy✝ elems✝).paren warning } ++
+        expr env (Expr.list elemTy✝ elems✝)).sources =
+    (Expr.list elemTy✝ elems✝).paren :: surfacePreorder (Expr.list elemTy✝ elems✝)
+Benitoite/Interval/CallReach.lean:95:48: error: maximum number of errors (100; from option `maxErrors`) reached, exiting

@@ -1,0 +1,1404 @@
+{
+  "categoryMaxima": {
+    "skill-handwritten": {
+      "operations": 2381,
+      "peakItems": 507,
+      "maxBodyOperations": 985,
+      "maxBodyItems": 210,
+      "expandedTreeNodes": 99
+    },
+    "skill-generated": {
+      "operations": 470,
+      "peakItems": 93,
+      "maxBodyOperations": 469,
+      "maxBodyItems": 76,
+      "expandedTreeNodes": 46
+    },
+    "standard-doc": {
+      "operations": 470,
+      "peakItems": 93,
+      "maxBodyOperations": 469,
+      "maxBodyItems": 76,
+      "expandedTreeNodes": 46
+    },
+    "golden-or-fixture": {
+      "operations": 44256,
+      "peakItems": 5374,
+      "maxBodyOperations": 5899,
+      "maxBodyItems": 1184,
+      "expandedTreeNodes": 652
+    },
+    "golden-package": {
+      "operations": 44256,
+      "peakItems": 5374,
+      "maxBodyOperations": 5114,
+      "maxBodyItems": 495,
+      "expandedTreeNodes": 235
+    },
+    "test-file": {
+      "operations": 7311,
+      "peakItems": 621,
+      "maxBodyOperations": 1064,
+      "maxBodyItems": 198,
+      "expandedTreeNodes": 106
+    },
+    "reference": {
+      "operations": 2381,
+      "peakItems": 507,
+      "maxBodyOperations": 822,
+      "maxBodyItems": 190,
+      "expandedTreeNodes": 86
+    },
+    "bench-input": {
+      "operations": 36119,
+      "peakItems": 4477,
+      "maxBodyOperations": 16604,
+      "maxBodyItems": 805,
+      "expandedTreeNodes": 419
+    },
+    "tool-input": {
+      "operations": 11223,
+      "peakItems": 2032,
+      "maxBodyOperations": 2436,
+      "maxBodyItems": 418,
+      "expandedTreeNodes": 194
+    }
+  },
+  "normalTotals": {
+    "wholeOperations": 769606,
+    "observedBodyOperations": 768162,
+    "discoveryQueueOperations": 216146,
+    "embeddedBodyOperations": 75015
+  },
+  "independentCandidates": [
+    {
+      "id": "crates/benitoite/testdata/eval/int_overflow_add.bnt",
+      "target": "<repo>/crates/benitoite/testdata/eval/int_overflow_add.bnt",
+      "definition": ".main",
+      "start": "6",
+      "candidate": {
+        "cause": "overflow",
+        "node": 7,
+        "operation": "Binary(Add)",
+        "originSpan": [
+          0,
+          199,
+          222
+        ],
+        "preorder": "6",
+        "primary": [
+          0,
+          199,
+          222
+        ]
+      },
+      "classification": "closed arithmetic under call argument; no outer branch",
+      "sourceSha256": "ce6c15784635f1c2e1abcffd76fdd79f128b921a122bb458f2d00651539ff883"
+    },
+    {
+      "id": "crates/benitoite/testdata/eval/int_overflow_mul.bnt",
+      "target": "<repo>/crates/benitoite/testdata/eval/int_overflow_mul.bnt",
+      "definition": ".main",
+      "start": "6",
+      "candidate": {
+        "cause": "overflow",
+        "node": 7,
+        "operation": "Binary(Mul)",
+        "originSpan": [
+          0,
+          199,
+          222
+        ],
+        "preorder": "6",
+        "primary": [
+          0,
+          199,
+          222
+        ]
+      },
+      "classification": "closed arithmetic under call argument; no outer branch",
+      "sourceSha256": "1fc20a440dee185083384c5bf7f75faa708384cdfab5026aa1731c030453f1af"
+    },
+    {
+      "id": "crates/benitoite/testdata/eval/int_overflow_neg.bnt",
+      "target": "<repo>/crates/benitoite/testdata/eval/int_overflow_neg.bnt",
+      "definition": ".main",
+      "start": "6",
+      "candidate": {
+        "cause": "overflow",
+        "node": 8,
+        "operation": "Neg",
+        "originSpan": [
+          0,
+          199,
+          222
+        ],
+        "preorder": "6",
+        "primary": [
+          0,
+          199,
+          222
+        ]
+      },
+      "classification": "closed arithmetic under call argument; no outer branch",
+      "sourceSha256": "f58a6a4be2186582346edd23d8ce241a75b448901c0e9f648050a833d1c9accf"
+    },
+    {
+      "id": "crates/benitoite/testdata/eval/int_overflow_sub.bnt",
+      "target": "<repo>/crates/benitoite/testdata/eval/int_overflow_sub.bnt",
+      "definition": ".main",
+      "start": "6",
+      "candidate": {
+        "cause": "overflow",
+        "node": 8,
+        "operation": "Binary(Sub)",
+        "originSpan": [
+          0,
+          199,
+          223
+        ],
+        "preorder": "6",
+        "primary": [
+          0,
+          199,
+          223
+        ]
+      },
+      "classification": "closed arithmetic under call argument; no outer branch",
+      "sourceSha256": "6a16fa49d2d2891be057c77bdf4d6f8869567f91dcbaa883ff7eaeb426870fef"
+    },
+    {
+      "id": "crates/benitoite/testdata/runner/run-stopped.bnt",
+      "target": "<repo>/crates/benitoite/testdata/runner/run-stopped.bnt",
+      "definition": ".main",
+      "start": "5",
+      "candidate": {
+        "cause": "zeroDivisor",
+        "node": 7,
+        "operation": "Binary(IntDiv)",
+        "originSpan": [
+          0,
+          171,
+          178
+        ],
+        "preorder": "5",
+        "primary": [
+          0,
+          177,
+          178
+        ]
+      },
+      "classification": "closed arithmetic under call argument; no outer branch",
+      "sourceSha256": "cd2a859f68fd215de477b3712144318b4cf7f3d80abb93514a61074445d2ba6b"
+    }
+  ],
+  "bodiesWithoutIdentity": [
+    {
+      "id": "crates/benitoite/skill/references/common-mistakes.md:325:32",
+      "target": "<repo>/work/m012/records/u01a/examples/18/main.bnt",
+      "coverage": "None",
+      "definition": ".greet"
+    },
+    {
+      "id": "crates/benitoite/skill/references/common-mistakes.md:365:36",
+      "target": "<repo>/work/m012/records/u01a/examples/20/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/skill/references/common-mistakes.md:398:40",
+      "target": "<repo>/work/m012/records/u01a/examples/22/main.bnt",
+      "coverage": "None",
+      "definition": ".next"
+    },
+    {
+      "id": "crates/benitoite/skill/references/common-mistakes.md:491:50",
+      "target": "<repo>/work/m012/records/u01a/examples/27/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/skill/references/stdlib/Scope.md:41:3",
+      "target": "<repo>/work/m012/records/u01a/examples/75/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/src/prelude/stdlib/Scope.bnt:35:2",
+      "target": "<repo>/work/m012/records/u01a/examples/93/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/acceptance/effect_violation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/acceptance/effect_violation.bnt",
+      "coverage": "None",
+      "definition": ".pure_caller"
+    },
+    {
+      "id": "crates/benitoite/testdata/acceptance/nonexhaustive.bnt",
+      "target": "<repo>/crates/benitoite/testdata/acceptance/nonexhaustive.bnt",
+      "coverage": "None",
+      "definition": ".is_on"
+    },
+    {
+      "id": "crates/benitoite/testdata/acceptance/type_error_check.bnt",
+      "target": "<repo>/crates/benitoite/testdata/acceptance/type_error_check.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/acceptance/type_error_run.bnt",
+      "target": "<repo>/crates/benitoite/testdata/acceptance/type_error_run.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-handler-incomplete.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-handler-incomplete.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-high-impact-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-high-impact-missing.bnt",
+      "coverage": "None",
+      "definition": ".save"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-high-impact-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-high-impact-missing.bnt",
+      "coverage": "None",
+      "definition": ".finish"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-lazy-effect.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-lazy-effect.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-nonoperation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-nonoperation.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-reference-equality.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-reference-equality.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-resume-type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-resume-type.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-state-no-cascade.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-state-no-cascade.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-taskgroup-outside-with.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-taskgroup-outside-with.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-try-not-result.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-try-not-result.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/c11-with-not-resource.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/c11-with-not-resource.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/choose_io_violation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/choose_io_violation.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/effect_var_rigid.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/effect_var_rigid.bnt",
+      "coverage": "None",
+      "definition": ".use_effect"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/f2-lazy-failure.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/f2-lazy-failure.bnt",
+      "coverage": "None",
+      "definition": ".deferred"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/f2-unconstrained-rest.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/f2-unconstrained-rest.bnt",
+      "coverage": "None",
+      "definition": ".convert"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/lambda_uses_violation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/lambda_uses_violation.bnt",
+      "coverage": "None",
+      "definition": ".invalid_lambda"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/map_with_io_pure_violation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/map_with_io_pure_violation.bnt",
+      "coverage": "None",
+      "definition": ".map_and_print"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/outermost_only.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/outermost_only.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/p1-duplicate-failure.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/p1-duplicate-failure.bnt",
+      "coverage": "None",
+      "definition": ".duplicate"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/pure_calls_io.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/pure_calls_io.bnt",
+      "coverage": "None",
+      "definition": ".greet"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/r41-task-state-required.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/r41-task-state-required.bnt",
+      "coverage": "None",
+      "definition": ".raceOnly"
+    },
+    {
+      "id": "crates/benitoite/testdata/effects/r41-task-state-required.bnt",
+      "target": "<repo>/crates/benitoite/testdata/effects/r41-task-state-required.bnt",
+      "coverage": "None",
+      "definition": ".timeoutOnly"
+    },
+    {
+      "id": "crates/benitoite/testdata/fmt/width-literals.bnt",
+      "target": "<repo>/crates/benitoite/testdata/fmt/width-literals.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-ambiguous.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-ambiguous.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-annotation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-annotation.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-effects.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-effects.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-else-if.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-else-if.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-expected-type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-expected-type.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-function-value.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-function-value.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-if.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-if.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-partial.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-partial.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-pipe.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-pipe.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-join-result-type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-result-type.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-mixed.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-mixed.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-builtin-value.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-builtin-value.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-instantiation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-instantiation.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/f1-resume.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/f1-resume.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-closure.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-closure.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+      "coverage": "None",
+      "definition": ".run"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-result.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-result.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "coverage": "None",
+      "definition": ".first"
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "target": "<repo>/crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "coverage": "None",
+      "definition": ".second"
+    },
+    {
+      "id": "crates/benitoite/testdata/modules/c11-orphan/[package]",
+      "target": "<repo>/crates/benitoite/testdata/modules/c11-orphan/main.bnt",
+      "coverage": "None",
+      "definition": "%impl:0:0:echo"
+    },
+    {
+      "id": "crates/benitoite/testdata/modules/c11-orphan/main.bnt",
+      "target": "<repo>/crates/benitoite/testdata/modules/c11-orphan/main.bnt",
+      "coverage": "None",
+      "definition": "%impl:0:0:echo"
+    },
+    {
+      "id": "crates/benitoite/testdata/packages/d6c-extensible-missing/[package]",
+      "target": "<repo>/crates/benitoite/testdata/packages/d6c-extensible-missing/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/packages/d6c-extensible-missing/main.bnt",
+      "target": "<repo>/crates/benitoite/testdata/packages/d6c-extensible-missing/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/c11-empty-range.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/c11-empty-range.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/c11-guard-effect.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/c11-guard-effect.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/c11-refutable-bind.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/c11-refutable-bind.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "coverage": "None",
+      "definition": ".ioKind"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "coverage": "None",
+      "definition": ".networkKind"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "coverage": "None",
+      "definition": ".jsonError"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/d7-stdlib-extensible.bnt",
+      "coverage": "None",
+      "definition": ".csvError"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/match_on_error_type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/match_on_error_type.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/nonexhaustive_adt.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/nonexhaustive_adt.bnt",
+      "coverage": "None",
+      "definition": ".describe"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+      "coverage": "None",
+      "definition": ".int_case"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+      "coverage": "None",
+      "definition": ".string_case"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+      "coverage": "None",
+      "definition": ".char_case"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/nonexhaustive_option.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/nonexhaustive_option.bnt",
+      "coverage": "None",
+      "definition": ".describe"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/p1-character-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/p1-character-missing.bnt",
+      "coverage": "None",
+      "definition": ".incomplete"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/pattern_arity.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/pattern_arity.bnt",
+      "coverage": "None",
+      "definition": ".area"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/todo178-guarded-alternative-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/todo178-guarded-alternative-duplicate.bnt",
+      "coverage": "None",
+      "definition": ".choose"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/todo195-coverage-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/todo195-coverage-budget.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/unreachable_after_wild.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/unreachable_after_wild.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/patterns/unreachable_covering_many.bnt",
+      "target": "<repo>/crates/benitoite/testdata/patterns/unreachable_covering_many.bnt",
+      "coverage": "None",
+      "definition": ".classify"
+    },
+    {
+      "id": "crates/benitoite/testdata/runner/check-error.bnt",
+      "target": "<repo>/crates/benitoite/testdata/runner/check-error.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/stdlib/bytes_l03_no_show.bnt",
+      "target": "<repo>/crates/benitoite/testdata/stdlib/bytes_l03_no_show.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/syntax/todo250-die-no-show.bnt",
+      "target": "<repo>/crates/benitoite/testdata/syntax/todo250-die-no-show.bnt",
+      "coverage": "None",
+      "definition": ".value"
+    },
+    {
+      "id": "crates/benitoite/testdata/syntax/todo250-die-no-uses.bnt",
+      "target": "<repo>/crates/benitoite/testdata/syntax/todo250-die-no-uses.bnt",
+      "coverage": "None",
+      "definition": ".value"
+    },
+    {
+      "id": "crates/benitoite/testdata/test/check_error/[package]",
+      "target": "<repo>/crates/benitoite/testdata/test/check_error/a_broken.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/test/check_error/a_broken.bnt",
+      "target": "<repo>/crates/benitoite/testdata/test/check_error/a_broken.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-builtin-constraint.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-builtin-constraint.bnt",
+      "coverage": "None",
+      "definition": ".equal"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-builtin-propagation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-builtin-propagation.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-constraint-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-constraint-missing.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-hk-arity.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-hk-arity.bnt",
+      "coverage": "None",
+      "definition": "%impl:1:0:map"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-key-float.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-key-float.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-key-strength.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-key-strength.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-method-no-cascade.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-method-no-cascade.bnt",
+      "coverage": "None",
+      "definition": "%impl:1:0:echo"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-no-instance.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-no-instance.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-overlap.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-overlap.bnt",
+      "coverage": "None",
+      "definition": "%impl:2:0:echo"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-supertrait-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/c11-supertrait-missing.bnt",
+      "coverage": "None",
+      "definition": "%impl:3:0:value"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-alias-impl-target.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-alias-impl-target.bnt",
+      "coverage": "None",
+      "definition": "%impl:2:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-alias-impl-target.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-alias-impl-target.bnt",
+      "coverage": "None",
+      "definition": ".use"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-e0711-parameter-names.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-e0711-parameter-names.bnt",
+      "coverage": "None",
+      "definition": "%impl:2:0:wrap"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt",
+      "coverage": "None",
+      "definition": "%impl:1:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+      "coverage": "None",
+      "definition": "%impl:1:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+      "coverage": "None",
+      "definition": ".use"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-orphan-standard.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo178-orphan-standard.bnt",
+      "coverage": "None",
+      "definition": "%impl:0:0:show"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo195-dictionary-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/todo195-dictionary-budget.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "coverage": "None",
+      "definition": "%impl:2:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "coverage": "None",
+      "definition": "%impl:5:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "coverage": "None",
+      "definition": "%impl:8:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+      "coverage": "None",
+      "definition": "%impl:11:0:score"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/arity-single.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/arity-single.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/arity.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/arity.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/batch4-provenance.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/batch4-provenance.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/batch4-type-names/[package]",
+      "target": "<repo>/crates/benitoite/testdata/types/batch4-type-names/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/batch4-type-names/main.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/batch4-type-names/main.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-byte-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-byte-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-byte-no-conversion.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-byte-no-conversion.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-constant-call.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-constant-call.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-constant-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-constant-duplicate.bnt",
+      "coverage": "None",
+      "definition": ".m"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-constant-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-constant-duplicate.bnt",
+      "coverage": "None",
+      "definition": ".s"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-constant-fails.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-constant-fails.bnt",
+      "coverage": "None",
+      "definition": ".n"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-constant-runtime.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-constant-runtime.bnt",
+      "coverage": "None",
+      "definition": ".n"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-decimal-div.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-decimal-div.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-decimal-range.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-decimal-range.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-decimal-scale.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-decimal-scale.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-record-duplicate.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-record-duplicate.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-record-missing.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-record-missing.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/c11-record-update-type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/c11-record-update-type.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/condition_not_bool.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/condition_not_bool.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/discarded_value.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/discarded_value.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/duplicate_in_uses.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/duplicate_in_uses.bnt",
+      "coverage": "None",
+      "definition": ".duplicate"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/effect_var_unused.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/effect_var_unused.bnt",
+      "coverage": "None",
+      "definition": ".unused"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/equality_function.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/equality_function.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/equality_ioerror.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/equality_ioerror.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/equality_summary.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/equality_summary.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/errors_across_functions.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/errors_across_functions.bnt",
+      "coverage": "None",
+      "definition": ".first"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/errors_across_functions.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/errors_across_functions.bnt",
+      "coverage": "None",
+      "definition": ".second"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/f20-interpolation-no-import.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/f20-interpolation-no-import.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/f20-interpolation-no-show.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/f20-interpolation-no-show.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/f20-interpolation-show-alias.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/f20-interpolation-show-alias.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/f20-interpolation-show.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/f20-interpolation-show.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/f20-record-unknown-field.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/f20-record-unknown-field.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/final-expression-reassign.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/final-expression-reassign.bnt",
+      "coverage": "None",
+      "definition": ".probe"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/final-expression-return.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/final-expression-return.bnt",
+      "coverage": "None",
+      "definition": ".doubleNext"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/float_literal_help.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/float_literal_help.bnt",
+      "coverage": "None",
+      "definition": ".scale"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/float_literal_range.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/float_literal_range.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/if_without_else_not_unit.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/if_without_else_not_unit.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/independent_errors.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/independent_errors.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/infinite_type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/infinite_type.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/int_literal_range.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/int_literal_range.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/k2-constant-regex.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/k2-constant-regex.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/mismatch_call_arg.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/mismatch_call_arg.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/mismatch_call_arg_undetermined.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/mismatch_call_arg_undetermined.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/mismatch_if_branches.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/mismatch_if_branches.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/mismatch_let_annotation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/mismatch_let_annotation.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/named-required-pipe.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/named-required-pipe.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/no_cascade.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/no_cascade.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/no_let_polymorphism.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/no_let_polymorphism.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/not_a_function.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/not_a_function.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/nullary_ctor_parens.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/nullary_ctor_parens.bnt",
+      "coverage": "None",
+      "definition": ".bad_pattern"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/nullary_ctor_parens.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/nullary_ctor_parens.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/operator_on_type_param.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/operator_on_type_param.bnt",
+      "coverage": "None",
+      "definition": ".less"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/operator_set.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/operator_set.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/prelude_shadowed_type.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/prelude_shadowed_type.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/rem_operands.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/rem_operands.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/returned-binding-mismatch.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/returned-binding-mismatch.bnt",
+      "coverage": "None",
+      "definition": ".probe"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/string_plus_int.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/string_plus_int.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-alias-after.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-alias-after.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-alias-after.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-alias-after.bnt",
+      "coverage": "None",
+      "definition": ".use"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-alias-annotation.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-alias-annotation.bnt",
+      "coverage": "None",
+      "definition": ".use"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-alias-before.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-alias-before.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-alias-before.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-alias-before.bnt",
+      "coverage": "None",
+      "definition": ".use"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-alias-independent.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-alias-independent.bnt",
+      "coverage": "None",
+      "definition": ".use"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-e0439-handle-body.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-e0439-handle-body.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-e0439-handle-clause.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-e0439-handle-clause.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-e0439-once.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-e0439-once.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-e0439-try-match.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-e0439-try-match.bnt",
+      "coverage": "None",
+      "definition": ".f"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-placeholder-return-error.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-placeholder-return-error.bnt",
+      "coverage": "None",
+      "definition": ".make"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-placeholder-try-error.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-placeholder-try-error.bnt",
+      "coverage": "None",
+      "definition": ".probe"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/too_many_effect_vars.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/too_many_effect_vars.bnt",
+      "coverage": "None",
+      "definition": ".combine"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/type_arg_count.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/type_arg_count.bnt",
+      "coverage": "None",
+      "definition": ".no_list_argument"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/type_arg_count.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/type_arg_count.bnt",
+      "coverage": "None",
+      "definition": ".too_many_option_arguments"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/undetermined.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/undetermined.bnt",
+      "coverage": "None",
+      "definition": ".bad"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".signed8"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".signed16"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".signed32"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".unsigned16"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".unsigned32"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".unsigned64"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".divide"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".modulo"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+      "coverage": "None",
+      "definition": ".duplicate"
+    },
+    {
+      "id": "crates/benitoite/testdata/warnings/c11-mixed-count.bnt",
+      "target": "<repo>/crates/benitoite/testdata/warnings/c11-mixed-count.bnt",
+      "coverage": "None",
+      "definition": ".main"
+    },
+    {
+      "id": "docs/reference/benitoite.md:1078:43",
+      "target": "<repo>/work/m012/records/u01a/examples/114/main.bnt",
+      "coverage": "None",
+      "definition": ".greet"
+    }
+  ],
+  "independentCandidatesInBranchesUnreachableByOuterFacts": 0
+}

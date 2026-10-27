@@ -1,0 +1,60 @@
+== plan: level work against 3104373ac4660b2c64701c02b088ea3f03ab8697 (14 changed file(s))
+   [fmt] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/src/typeck/interval/budget.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/flow/independent.rs:133:21
+    |
+133 |                     _ => return Err(IdentityStop::Unmapped(source.id())),
+    |                     ^ help: try: `Expr::Lit(_) | Expr::Interp(_) | Expr::Name(_) | Expr::Unit(_) | Expr::Paren(_) | Expr::List(_) | Expr::Call(_) | Expr::Record(_) | Expr::Binary(_) | Expr::Unary(_) | Expr::Pipe(_) | Expr::If(_) | Expr::Match(_) | Expr::Return(_) | Expr::Try(_) | Expr::Block(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) | Expr::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+    = note: requested on the command line with `-D clippy::wildcard-enum-match-arm`
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/flow.rs:998:21
+    |
+998 |                     pattern => super::discovery::pattern_env(
+    |                     ^^^^^^^ help: try: `pattern @ Pattern::Lit(_) | pattern @ Pattern::Unit(_) | pattern @ Pattern::Ctor(_) | pattern @ Pattern::Record(_) | pattern @ Pattern::Range(_) | pattern @ Pattern::List(_) | pattern @ Pattern::Error(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: could not compile `benitoite` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: wildcard match will also match any future added variants
+  --> crates/benitoite/src/typeck/interval/tests/budget_reference.rs:37:9
+   |
+37 |         other => panic!("予算以外の入力停止: {other:?}"),
+   |         ^^^^^ help: try: `other @ IdentityStop::NumberOverflow | other @ IdentityStop::Input(_) | other @ IdentityStop::MissingReference(_) | other @ IdentityStop::MissingScheme(_) | other @ IdentityStop::MissingConstant(_) | other @ IdentityStop::MissingLiteral(_) | other @ IdentityStop::MissingTryKind(_) | other @ IdentityStop::Unmapped(_)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/typeck/interval/tests/budget_reference.rs:193:21
+    |
+193 |                     _ => 0,
+    |                     ^ help: try: `Coverage::None | Coverage::Prepared`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: could not compile `benitoite` (lib test) due to 4 previous errors
+FAILED: lint_default
+       11.76 real        14.76 user         1.02 sys
+time: sysctl kern.clockrate: Operation not permitted

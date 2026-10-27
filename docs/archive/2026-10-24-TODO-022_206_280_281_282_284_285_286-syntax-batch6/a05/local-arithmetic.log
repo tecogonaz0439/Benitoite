@@ -1,0 +1,98 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.97s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 11 tests
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+
+thread 'typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates' (2169894) panicked at crates/benitoite/src/typeck/interval/tests.rs:52:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0115,
+        ),
+        message: "malformed integer literal `1i8`",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1905,
+                    ),
+                    end: BytePos(
+                        1908,
+                    ),
+                },
+                text: "a number must not be directly followed by a letter, a digit of another base, or `_`; separate words with a space, such as `2 mod 3`",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0115,
+        ),
+        message: "malformed integer literal `2i8`",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1911,
+                    ),
+                    end: BytePos(
+                        1914,
+                    ),
+                },
+                text: "a number must not be directly followed by a letter, a digit of another base, or `_`; separate words with a space, such as `2 mod 3`",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates ... FAILED
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... ok
+test typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts ... ok
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+test typeck::interval::tests::arithmetic_candidates_survive_later_budget_stops ... ok
+test typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope ... ok
+test typeck::interval::tests::local_environment_is_released_at_every_budget_stop ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates
+
+test result: FAILED. 10 passed; 1 failed; 0 ignored; 0 measured; 1301 filtered out; finished in 0.32s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+A05_COMMAND_EXIT_STATUS=101
+       13.36 real        26.49 user         1.43 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A05_OUTER_EXIT_STATUS=1
+A05_ELAPSED_SECONDS=13.368

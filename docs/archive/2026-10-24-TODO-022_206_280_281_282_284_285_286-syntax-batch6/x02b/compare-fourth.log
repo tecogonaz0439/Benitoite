@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 992, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 985, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 651, in exercise
+    summaries.append(interval_source_compare.exercise(source_runner, rust_dir))
+  File "<repo>/formal/tests/interval_source_compare.py", line 273, in exercise
+    d['expected'] = expected_for(d['name'])
+  File "<repo>/formal/tests/interval_source_compare.py", line 270, in expected_for
+    return expectation(obs[name], entries[name], sites) if name in obs else dict(notAnalyzed=unproduced(name, m['whole']))
+  File "<repo>/formal/tests/interval_source_compare.py", line 117, in expectation
+    result.update(warnings=[candidate(c, name, entries, sites) for c in row['candidates']],
+  File "<repo>/formal/tests/interval_source_compare.py", line 117, in <listcomp>
+    result.update(warnings=[candidate(c, name, entries, sites) for c in row['candidates']],
+  File "<repo>/formal/tests/interval_source_compare.py", line 86, in candidate
+    assert 'name: "Benitoite.'+declaration+'"' in c['operation']
+AssertionError

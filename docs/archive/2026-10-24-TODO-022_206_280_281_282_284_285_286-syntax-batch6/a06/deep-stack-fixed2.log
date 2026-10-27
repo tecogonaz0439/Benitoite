@@ -1,0 +1,23 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.47s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+A06 temporary stack probe: (1 + , 450
+A06 temporary stack probe: (, 900
+A06 temporary stack probe: lambda()
+ bind _ <- , 300
+A06 temporary stack probe: if true then , 450
+
+thread 'typeck::pattern_ext::tests::deep_expressions_stay_within_the_normal_stack' (2239520) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+error: test failed, to rerun pass `-p benitoite --lib`
+
+Caused by:
+  process didn't exit successfully: `<repo>/target/debug/deps/benitoite-c8302b65d3cacd4e deep_expressions_stay_within_the_normal_stack --nocapture` (signal: 6, SIGABRT: process abort signal)
+A06_COMMAND_EXIT_STATUS=101
+        9.92 real        16.53 user         1.17 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A06_OUTER_EXIT_STATUS=1
+A06_WALL_SECONDS=9.928

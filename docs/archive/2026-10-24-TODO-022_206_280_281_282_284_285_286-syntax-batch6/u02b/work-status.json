@@ -1,0 +1,23 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "8cff73ac4139560f8af6876d887151ecadb8ad27",
+    "--only",
+    "spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples"
+  ],
+  "timingCommand": "/usr/bin/time -l python3 <tmp>/run_check.py <results>/work-check-status.json <check command>",
+  "timeExit": 1,
+  "check": {
+    "exit": 1,
+    "elapsedSeconds": 22.933554916000002
+  },
+  "elapsedSeconds": 22.96019275,
+  "maximumResidentSetSizeAvailable": false
+}

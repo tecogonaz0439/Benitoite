@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.60s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 1 test
+5000 constants, 1000 diagnostics: 1.325947667s, 279821846 allocated bytes
+
+thread 'repeated_constant_diagnostics_share_bounded_origin_work' (1962950) panicked at crates/benitoite/tests/call_allocations.rs:246:5:
+repeated origin traversal regression: 279821846
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test repeated_constant_diagnostics_share_bounded_origin_work ... FAILED
+
+failures:
+
+failures:
+    repeated_constant_diagnostics_share_bounded_origin_work
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.33s
+
+error: test failed, to rerun pass `-p benitoite --test call_allocations`
+A02_OUTER_EXIT_STATUS=101
+A02_OUTER_ELAPSED_SECONDS=16.87

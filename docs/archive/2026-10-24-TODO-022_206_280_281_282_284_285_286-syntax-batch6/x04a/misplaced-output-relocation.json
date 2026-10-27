@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "from pathlib import Path; import shutil; source=Path(\"crates/benitoite/target/interval-diff/x04a-local\"); destination=Path(\"target/interval-diff/x04a-misplaced-export\"); shutil.move(source,destination); print(\"misplaced local export moved under root target; source inputs unchanged\")"
+  ],
+  "exit": 0,
+  "seconds": 0.023,
+  "cargoHome": "<tmp>/benitoite-a01a-cargo"
+}

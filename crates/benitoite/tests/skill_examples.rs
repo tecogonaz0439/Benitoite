@@ -40,6 +40,31 @@ fn code_examples_in_hand_written_documents_behave_as_written() {
     assert!(count > 0);
 }
 
+// 関門: 警告を含むため通常の文書例検査が読まない本文を、診断のゴールデン入力と
+// 結び付ける。例だけを変更して診断の期待が古いまま残る退行を検出する。
+// コード・一次位置・区間と文言は golden の CLI 境界で一度だけ検査する。
+#[test]
+fn local_interval_warning_example_matches_the_golden_input() {
+    let idioms = fs::read_to_string(skill_dir().join("references/idioms.md")).unwrap();
+    let section = idioms
+        .split_once("## Explaining local interval warnings\n")
+        .unwrap()
+        .1
+        .split("\n## ")
+        .next()
+        .unwrap();
+    let blocks = benitoite::cli::tools::doc_examples::blocks(section).unwrap();
+    let source = &blocks
+        .iter()
+        .find(|block| block.info == "text")
+        .unwrap()
+        .body;
+    assert_eq!(
+        source,
+        include_str!("../testdata/warnings/skill-local-intervals.bnt")
+    );
+}
+
 /// `SKILL.md` に並べる参照の文書の一覧を取り出す（`` `references/....md` `` の形。型板の `<…>` を含むものは除く）。
 fn listed_references(skill: &str) -> Vec<String> {
     skill

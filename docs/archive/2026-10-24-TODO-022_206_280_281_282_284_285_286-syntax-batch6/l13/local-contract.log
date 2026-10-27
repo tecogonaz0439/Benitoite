@@ -1,0 +1,24 @@
+$ lake env lean -M 12288 <tmp>/benitoite-l13/contracts.lean
+
+import Benitoite
+open Benitoite.Interval Benitoite.Release Benitoite.Surface
+example : IntegerValue .integer64 = Integer64Value := rfl
+example (a b : Integer64Value) : IntKind.checkedAdd .integer64 a b = checkedAdd a b := rfl
+example (op : BinOp) (a b : Integer64Value) :
+    IntKind.checkedDivMod .integer64 op a b = checkedDivMod op a b := rfl
+#print axioms Benitoite.Interval.integerKind_value_in_top
+#print axioms Benitoite.Interval.mem_normalize
+#print axioms Benitoite.Interval.IntKind.tmod_bounds
+#print axioms Benitoite.Interval.add_normal_sound
+#print axioms Benitoite.Interval.divMod_always_zero_sound
+#print axioms Benitoite.Interval.analyzeBase_normal_sound
+#print axioms Benitoite.Interval.analyzeBase_warning_sound
+
+'Benitoite.Interval.integerKind_value_in_top' depends on axioms: [propext]
+'Benitoite.Interval.mem_normalize' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.IntKind.tmod_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.add_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.divMod_always_zero_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0; elapsed=0.650s

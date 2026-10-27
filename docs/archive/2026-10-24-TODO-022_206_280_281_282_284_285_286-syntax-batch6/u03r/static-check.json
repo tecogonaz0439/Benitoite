@@ -1,0 +1,91 @@
+{
+  "crates/benitoite/skill/references/idioms.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "crates/benitoite/skill/references/inspection.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "docs/design/01-spec/01-04-types-basic.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "docs/design/02-impl/02-05-typechecker.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "docs/design/02-impl/02-10-diagnostics.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "docs/design/06-tooling/06-01-cli.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "docs/reference/benitoite.md": {
+    "codeFencesUnchangedAsMultiset": true,
+    "existingHeadingsRetained": true,
+    "linkRestrictions": true
+  },
+  "additionalExamples": {
+    "count": 4,
+    "sameSourceAsBWork": true,
+    "executesUserPrograms": false
+  },
+  "testAudit": {
+    "contract": "通常のpipelineと観測付き型検査の集計一致（拒否時の有効な本体を含む）",
+    "regression": "観測による消費の変更・部分結果の取りこぼし",
+    "existingOwner": "既存interval_inventory_matches_pipelineを維持。新規の重複テストはない",
+    "productionSeamAdded": false,
+    "productionRustAddedLines": 0,
+    "productionRustRemovedLines": 0,
+    "testRustAddedLines": 3,
+    "testRustRemovedLines": 6
+  },
+  "final": {
+    "workExit": 0,
+    "timeExit": 1,
+    "maximumResidentSetSize": "取得不能: sysctl kern.clockrate: Operation not permitted",
+    "checkedInputsUnchangedAfterWork": true,
+    "generatedFilesUnchanged": true,
+    "testCounts": [
+      [
+        1333,
+        0,
+        21
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        8,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        7,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ]
+    ]
+  }
+}

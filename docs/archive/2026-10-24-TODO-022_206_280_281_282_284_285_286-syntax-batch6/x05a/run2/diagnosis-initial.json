@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "error": "KeyError: input",
+  "cause": "記録用の読み取り器が型検査失敗の行にも input 欄を要求した",
+  "correction": "型検査失敗の行の欠落した input を get で読む。K1 と比較器は変更しない"
+}

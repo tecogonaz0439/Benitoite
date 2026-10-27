@@ -1,0 +1,58 @@
+Benitoite/Interval/CallReachWhole.lean:56:4: error: `dsimp` made no progress
+Benitoite/Interval/CallReachWhole.lean:55:15: warning: This simp argument is unused:
+  prepared
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/CallReachWhole.lean:102:10: error: Type mismatch
+  saved
+has type
+  ∀ (output : DefinitionOutput),
+    output ∈ (definitions limits fuel input.definitions report).definitionsRev → output.CallsRecognized
+but is expected to have type
+  ∀ (output : DefinitionOutput),
+    output ∈
+        {
+            definitionsRev :=
+              (definitions limits fuel input.definitions
+                  { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                    remainingModules := report.remainingModules, stopped := report.stopped,
+                    after := finishBody ready✝ }).definitionsRev,
+            remainingDefinitions :=
+              (definitions limits fuel input.definitions
+                  { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                    remainingModules := report.remainingModules, stopped := report.stopped,
+                    after := finishBody ready✝ }).remainingDefinitions,
+            remainingModules := rest,
+            stopped :=
+              (definitions limits fuel input.definitions
+                  { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                    remainingModules := report.remainingModules, stopped := report.stopped,
+                    after := finishBody ready✝ }).stopped,
+            after :=
+              (definitions limits fuel input.definitions
+                  { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+                    remainingModules := report.remainingModules, stopped := report.stopped,
+                    after := finishBody ready✝ }).after }.definitionsRev →
+      output.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:103:21: error: Application type mismatch: The argument
+  saved
+has type
+  ∀ (output : DefinitionOutput),
+    output ∈ (definitions limits fuel input.definitions report).definitionsRev → output.CallsRecognized
+but is expected to have type
+  ∀ (output : DefinitionOutput),
+    output ∈
+        (definitions limits fuel input.definitions
+            { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+              remainingModules := report.remainingModules, stopped := report.stopped,
+              after := finishBody ready✝ }).definitionsRev →
+      output.CallsRecognized
+in the application
+  ih
+    (definitions limits fuel input.definitions
+      { definitionsRev := report.definitionsRev, remainingDefinitions := report.remainingDefinitions,
+        remainingModules := report.remainingModules, stopped := report.stopped, after := finishBody ready✝ })
+    saved

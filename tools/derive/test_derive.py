@@ -71,6 +71,23 @@ class Project:
 
 
 class FileEffects(Project, unittest.TestCase):
+    pure_features = {
+        'property': {'generator': 'genPerson', 'shrinker': 'shrinkPerson'},
+        'json': {'encode': 'encodePerson', 'decode': 'decodePerson'},
+    }
+    pure_imports = ('import Benitoite.Unofficial.Test.Property as P\n'
+                    'import Benitoite.Unofficial.IO.Random\n'
+                    'import Benitoite.Unofficial.Json as J\n'
+                    'import Benitoite.Unofficial.Json.Codec as C\n')
+
+    def reject_generation_unchanged(self, out, message):
+        before = self.files()
+        for operation in (lambda: self.preview(out), self.manager.check):
+            with self.assertRaisesRegex(ValueError, message):
+                operation()
+            self.assertEqual(self.files(), before)
+            self.assertFalse((self.root / out).exists())
+
     # 作成時の関門: 実inventoryと編集・通常checkの境界で、元バイト位置、
     # importの順序と合併後の純粋さを守る。既存例にはファイルusesがなく、
     # 誤った挿入や個別usesだけの署名でも通る。専用APIや段の置換は要らない。
@@ -124,6 +141,10 @@ class FileEffects(Project, unittest.TestCase):
         helper = self.root / 'Helpers.bnt'
         helper.write_text('public function encode(value: String) -> String\n return value\nend function\n'
                           'public function decode(value: String) -> String\n return value\nend function\n')
+        # Showだけなら純粋さの事前検査を通るため、独立したimportの配置の
+        # 拒否を引き続き確かめられる（設計書 03-06「外部生成の管理と照合」）。
+        self.config_value['targets'][0].pop('json')
+        self.config_value['targets'][0]['show'] = True
         self.config_value['targets'][0]['fields'] = {
             'name': {'encode': 'Helpers.encode', 'decode': 'Helpers.decode'}}
         self.save_config()
@@ -155,26 +176,89 @@ class FileEffects(Project, unittest.TestCase):
                     if self.manager.record.exists():
                         self.manager.record.unlink()
 
-    def test_generated_property_functions_keep_file_effects(self):
-        self.config_value['targets'][0] = {
-            'source': 'People.bnt', 'type': 'People.Person', 'region': 'person',
-            'property': {'generator': 'genPerson', 'shrinker': 'shrinkPerson'}}
-        self.save_config()
-        self.source.write_text('import Benitoite.Unofficial.Test.Property as P\n'
-                               'import Benitoite.Unofficial.IO.Random\nuses Log\n'
+    def test_generated_pure_functions_reject_file_effects_without_writes(self):
+        # 作成時の関門: preview/checkの純粋さの契約と非書き込みを守る。
+        # 旧テストは生成後のE0401を許していた。必要なimportを揃え、
+        # 拒否の欠落・JSONだけの漏れ・遅い拒否を実inventoryで捕まえる。
+        # 既存の表を置き換え、本番の差し込み口や段の置換は追加しない。
+        self.source.write_text('//! 日本語の説明\n' + self.pure_imports + 'uses Log\n'
                                'public record Person\n name: String\nend record\n'
                                'function main() -> Unit\n ()\nend function\n')
+        data = self.source.read_bytes()
+        start = data.index(b'uses Log')
+        self.manager = derive.Manager(self.root, self.config)
+        for effect, selected in ((effect, selected) for effect in ('Log', 'State')
+                                 for selected in (('property',), ('json',), ('property', 'json'))):
+            with self.subTest(effect=effect, features=selected):
+                use = f'uses {effect}'.encode()
+                self.source.write_bytes(data.replace(b'uses Log', use))
+                self.config_value['targets'][0] = {
+                    'source': 'People.bnt', 'type': 'People.Person', 'region': 'person',
+                    **{key: self.pure_features[key] for key in selected}}
+                self.save_config()
+                before = self.files()
+                out = 'refused-' + effect + '-' + '-'.join(selected)
+                for operation in (lambda: self.preview(out), self.manager.check):
+                    with self.assertRaisesRegex(ValueError, 'derive.file_effects') as caught:
+                        operation()
+                    message = str(caught.exception)
+                    self.assertIn('target People.Person', message)
+                    for feature in selected:
+                        self.assertIn(feature, message)
+                    self.assertIn(f'People.bnt [{start},{start + len(use)}): {use.decode()}', message)
+                    self.assertIn('pure', message)
+                    self.assertIn('top-level', message)
+                    self.assertEqual(self.files(), before)
+                    self.assertFalse((self.root / out).exists())
+
+    # 作成時の関門: 拒否の対象と受理の境界を実生成で確かめる。
+    # 全usesの拒否、依存先の宣言による拒否、複数対象の一部だけの適用を
+    # 捕まえる。既存の純粋な入力だけの表では届かず、本番APIの追加は不要である。
+    def test_trait_selections_with_file_effects_are_accepted(self):
+        self.manager = derive.Manager(self.root, self.config)
+        for selected in (('show',), ('order',), ('show', 'order')):
+            with self.subTest(features=selected):
+                self.source.write_text('import Benitoite.Trait as T\nuses Log\n'
+                                       'public record Person\n name: String\nend record\n'
+                                       'function main() -> Unit\n ()\nend function\n')
+                self.manager.record.unlink(missing_ok=True)
+                self.config_value['targets'][0] = {
+                    'source': 'People.bnt', 'type': 'People.Person', 'region': 'person',
+                    **{feature: True for feature in selected}}
+                self.save_config()
+                manifest, checksum = self.preview('traits-' + '-'.join(selected))
+                self.assertEqual(self.manager.apply(manifest, checksum), 1)
+                self.manager.check()
+                result = subprocess.run([derive.BENITOITE, 'check', self.source], capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr.decode())
+                row = derive.read_json(self.manager.record.read_bytes())['targets'][0]
+                self.assertEqual(set(row['templates']), set(selected))
+
+    def test_effectful_dependency_is_refused_only_when_targeted_and_can_be_repaired(self):
+        helper = self.root / 'Helpers.bnt'
+        helper.write_text(self.pure_imports + 'uses State\n'
+                          'public record Item\n value: Integer\nend record\n'
+                          'public function touch() -> Unit\n ()\nend function\n')
+        self.source.write_text('import Helpers\n' + self.pure_imports +
+                               'public record Person\n name: String\nend record\n'
+                               'function main() -> Unit\n ()\nend function\n')
+        self.config_value['targets'][0].update(self.pure_features)
+        self.save_config()
         self.manager = derive.Manager(self.root, self.config)
         self.install()
         self.manager.check()
-        data = self.source.read_bytes()
-        self.assertLess(data.index(b'uses Log'), data.index(b'function genPerson'))
-        result = subprocess.run([derive.BENITOITE, 'check', self.source], capture_output=True)
-        self.assertEqual(result.returncode, 2, result.stderr.decode())
-        self.assertIn('E0401', result.stderr.decode())
-        self.assertIn('uses Log', result.stderr.decode())
-        self.assertNotIn('E0414', result.stderr.decode())
-        self.source.write_bytes(data.replace(b'uses Log\n', b''))
+        self.config_value['targets'].append({
+            'source': 'Helpers.bnt', 'type': 'Helpers.Item', 'region': 'item',
+            'json': {'encode': 'encodeItem', 'decode': 'decodeItem'},
+            'property': {'generator': 'genItem', 'shrinker': 'shrinkItem'}})
+        self.save_config()
+        self.reject_generation_unchanged('refused-dependency', 'target Helpers.Item: derive.file_effects')
+        # ファイルの宣言を個別の関数へ移せば、同じ設定で再生成できる。
+        helper.write_text(helper.read_text().replace('uses State\n', '')
+                          .replace('touch() -> Unit', 'touch() -> Unit uses State'))
+        manifest, checksum = self.preview('repaired')
+        self.assertEqual(self.manager.apply(manifest, checksum), 1)
+        self.manager.check()
         result = subprocess.run([derive.BENITOITE, 'check', self.source], capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr.decode())
 
@@ -427,6 +511,17 @@ class Management(Project, unittest.TestCase):
         (self.root / 'Other.bnt').write_bytes(b'public record Other\n  value: Integer\nend record\n')
         self.config_value['targets'] += [second, third]
         self.save_config()
+        self.manager = derive.Manager(self.root, self.config)
+        other = self.root / 'Other.bnt'
+        # 最後の対象だけが不正でも、先行対象の成果物を残さない。
+        other.write_bytes(b'uses Log\n' + other.read_bytes())
+        before = self.files()
+        for operation in (self.preview, self.manager.check):
+            with self.assertRaisesRegex(ValueError, 'target Other.Other: derive.file_effects'):
+                operation()
+            self.assertEqual(self.files(), before)
+            self.assertFalse((self.root / 'preview').exists())
+        other.write_bytes(other.read_bytes().replace(b'uses Log\n', b'', 1))
         manifest, checksum = self.preview()
         self.assertEqual(self.manager.apply(manifest, checksum), 2)
         self.manager.check()
@@ -746,6 +841,8 @@ end function
 
 
     def test_public_cli_empty_workflow_and_argument_errors(self):
+        # 対象がなければ、ソースにファイルの宣言があっても生成は不要である。
+        self.source.write_bytes(b'uses Log\n' + self.source.read_bytes())
         self.config_value['targets'] = []
         self.save_config()
 
@@ -1020,20 +1117,27 @@ public function dec(value: Json.Value) -> Result[String, Codec.ConversionError]
   return Codec.decodeString(value)
 end function
 ''')
-        original = self.source.read_text()
-        self.config_value['targets'][0]['fields'] = {'name': {'encode': 'People.enc', 'decode': 'People.dec'}}
+        original = self.source.read_text().replace('public record Person\n  name: String\nend record\n', '')
+        custom = self.root / 'Custom.bnt'
+        self.source.write_text('import Custom\npublic record Person\n  name: String\nend record\n')
+        self.config_value['targets'][0]['fields'] = {'name': {'encode': 'Custom.enc', 'decode': 'Custom.dec'}}
         self.save_config()
-        for change in [
-            ('enc(value: String)', 'enc(value: Integer)'),
-            ('-> Result[Json.Value, Codec.ConversionError]', '-> Result[String, Codec.ConversionError]'),
-            ('-> Result[String, Codec.ConversionError]', '-> Result[String, Codec.ConversionError] uses IO.All'),
-            ('enc(value: String)', 'enc[T](value: String)'),
-            ('public record Person', 'uses Log\npublic record Person'),
+        custom_error = 'custom .*must be pure'
+        for old, new, explanation in [
+            ('enc(value: String)', 'enc(value: Integer)', custom_error),
+            ('-> Result[Json.Value, Codec.ConversionError]', '-> Result[String, Codec.ConversionError]', custom_error),
+            ('-> Result[String, Codec.ConversionError]', '-> Result[String, Codec.ConversionError] uses IO.All', custom_error),
+            ('enc(value: String)', 'enc[T](value: String)', custom_error),
+            # Contract: file-level uses in a separate callback module must be
+            # merged into its signature and rejected as impure before writes.
+            # Individual uses rows cannot catch a regression that drops this
+            # merge. The real inventory/preview boundary needs no test-only API.
+            ('public function', 'uses Log\npublic function', custom_error),
         ]:
-            with self.subTest(change=change):
-                self.source.write_text(original.replace(*change))
+            with self.subTest(change=new):
+                custom.write_text(original.replace(old, new, 1))
                 before = self.files()
-                with self.assertRaisesRegex(ValueError, 'custom .*must be pure'):
+                with self.assertRaisesRegex(ValueError, explanation):
                     self.preview('bad-signature')
                 self.assertEqual(self.files(), before)
 
@@ -1261,20 +1365,28 @@ public function customShrink() -> Property.Shrinker[String]
   return Property.shrinkString()
 end function
 '''
-        self.config_value['targets'][0]['fields'] = {'name': {'gen': 'People.customGen', 'shrink': 'People.customShrink'}}
+        original = original.replace('public record Person\n  name: String\nend record\n', '')
+        custom = self.root / 'Custom.bnt'
+        self.source.write_text('import Custom\npublic record Person\n  name: String\nend record\n')
+        self.config_value['targets'][0]['fields'] = {'name': {'gen': 'Custom.customGen', 'shrink': 'Custom.customShrink'}}
         self.save_config()
-        for old, new in [
-            ('customGen()', 'customGen(value: Integer)'),
-            ('-> Property.Gen[String]', '-> Property.Gen[Integer]'),
-            ('-> Property.Shrinker[String]', '-> Property.Shrinker[Integer]'),
-            ('-> Property.Gen[String]', '-> Property.Gen[String] uses IO.All'),
-            ('customGen()', 'customGen[T]()'),
-            ('public record Person', 'uses Log\npublic record Person'),
+        custom_error = 'custom .*must be pure and monomorphic'
+        for old, new, explanation in [
+            ('customGen()', 'customGen(value: Integer)', custom_error),
+            ('-> Property.Gen[String]', '-> Property.Gen[Integer]', custom_error),
+            ('-> Property.Shrinker[String]', '-> Property.Shrinker[Integer]', custom_error),
+            ('-> Property.Gen[String]', '-> Property.Gen[String] uses IO.All', custom_error),
+            ('customGen()', 'customGen[T]()', custom_error),
+            # Contract: file-level uses in a separate callback module must be
+            # merged into its signature and rejected as impure before writes.
+            # Individual uses rows cannot catch a regression that drops this
+            # merge. The real inventory/preview boundary needs no test-only API.
+            ('public function', 'uses Log\npublic function', custom_error),
         ]:
             with self.subTest(change=new):
-                self.source.write_text(original.replace(old, new))
+                custom.write_text(original.replace(old, new, 1))
                 before = self.files()
-                with self.assertRaisesRegex(ValueError, 'custom .*must be pure and monomorphic'):
+                with self.assertRaisesRegex(ValueError, explanation):
                     self.preview('custom')
                 self.assertEqual(self.files(), before)
 

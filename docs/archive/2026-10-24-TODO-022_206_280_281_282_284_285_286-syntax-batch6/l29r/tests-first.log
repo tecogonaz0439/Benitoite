@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 786, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 779, in main
+    exercise(args.output.resolve(), executable)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 762, in exercise
+    assert p.returncode == 2 and message in p.stderr, (index, p.returncode, p.stderr)
+AssertionError: (3, 2, 'intervalDiff: no such file or directory (error code: 2)\n  file: absent\n')

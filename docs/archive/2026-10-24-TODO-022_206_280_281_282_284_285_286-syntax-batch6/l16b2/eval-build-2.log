@@ -1,0 +1,783 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✖ [52/52] Building Benitoite.Interval.Eval (7.1s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Eval.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Eval.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Eval.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Eval.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Eval.setup.json --json
+error: Benitoite/Interval/Eval.lean:1294:65: unsolved goals
+case neg
+env : ConcreteEnv
+key✝ : OperationKey
+source✝ : Expr
+value✝ : Integer64Value
+trace✝ : EvalTrace
+eval✝ :
+  EvalPartial env { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer value✝)) trace✝
+unsupported :
+  match IntKind.ofType (Ty.base BaseTy.integer) with
+  | some kind => 0 ≤ kind.min
+  | none => True
+⊢ False
+
+case negAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+source✝ : Expr
+unsupported :
+  match IntKind.ofType (Ty.base BaseTy.integer) with
+  | some kind => 0 ≤ kind.min
+  | none => True
+abrupt✝ : outcome.Abrupt
+eval✝ : EvalPartial env { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case add
+env : ConcreteEnv
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+⊢ False
+
+case addLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+left✝ right✝ : Expr
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case addRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+
+case sub
+env : ConcreteEnv
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+⊢ False
+
+case subLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+left✝ right✝ : Expr
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case subRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+
+case mul
+env : ConcreteEnv
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+⊢ False
+
+case mulLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+left✝ right✝ : Expr
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case mulRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+
+case divMod
+env : ConcreteEnv
+key✝ : OperationKey
+op✝ : BinOp
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+target✝ : IntegerDivisionOp op✝
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+⊢ False
+
+case divModLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+op✝ : BinOp
+left✝ right✝ : Expr
+target✝ : IntegerDivisionOp op✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case divModRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+op✝ : BinOp
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+target✝ : IntegerDivisionOp op✝
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+
+case compare
+env : ConcreteEnv
+key✝ : OperationKey
+op✝ : Comparison
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (Everror: build failed
+alOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+⊢ False
+
+case compareLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+op✝ : Comparison
+left✝ right✝ : Expr
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case compareRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+op✝ : Comparison
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unsupported : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+
+case widthBinary
+env : ConcreteEnv
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ b✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ b✝)) rightTrace✝
+unsupported :
+  ¬(match op✝ with
+        | WidthBinary.add => BinOp.add
+        | WidthBinary.sub => BinOp.sub
+        | WidthBinary.mul => BinOp.mul
+        | WidthBinary.intDiv => BinOp.intDiv
+        | WidthBinary.mod => BinOp.mod
+        | WidthBinary.compare op => op.binOp) =
+        BinOp.add ∧
+    ¬(match op✝ with
+          | WidthBinary.add => BinOp.add
+          | WidthBinary.sub => BinOp.sub
+          | WidthBinary.mul => BinOp.mul
+          | WidthBinary.intDiv => BinOp.intDiv
+          | WidthBinary.mod => BinOp.mod
+          | WidthBinary.compare op => op.binOp) =
+          BinOp.sub ∧
+      ¬(match op✝ with
+            | WidthBinary.add => BinOp.add
+            | WidthBinary.sub => BinOp.sub
+            | WidthBinary.mul => BinOp.mul
+            | WidthBinary.intDiv => BinOp.intDiv
+            | WidthBinary.mod => BinOp.mod
+            | WidthBinary.compare op => op.binOp) =
+            BinOp.mul ∧
+        ¬IntegerDivisionOp
+              (match op✝ with
+              | WidthBinary.add => BinOp.add
+              | WidthBinary.sub => BinOp.sub
+              | WidthBinary.mul => BinOp.mul
+              | WidthBinary.intDiv => BinOp.intDiv
+              | WidthBinary.mod => BinOp.mod
+              | WidthBinary.compare op => op.binOp) ∧
+          Comparison.ofBinOp
+              (match op✝ with
+              | WidthBinary.add => BinOp.add
+              | WidthBinary.sub => BinOp.sub
+              | WidthBinary.mul => BinOp.mul
+              | WidthBinary.intDiv => BinOp.intDiv
+              | WidthBinary.mod => BinOp.mod
+              | WidthBinary.compare op => op.binOp) =
+            none
+⊢ False
+
+case widthBinaryLeftAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+trace : EvalTrace
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+not64✝ : ¬kind✝ = IntKind.integer64
+unsupported :
+  ¬(match op✝ with
+        | WidthBinary.add => BinOp.add
+        | WidthBinary.sub => BinOp.sub
+        | WidthBinary.mul => BinOp.mul
+        | WidthBinary.intDiv => BinOp.intDiv
+        | WidthBinary.mod => BinOp.mod
+        | WidthBinary.compare op => op.binOp) =
+        BinOp.add ∧
+    ¬(match op✝ with
+          | WidthBinary.add => BinOp.add
+          | WidthBinary.sub => BinOp.sub
+          | WidthBinary.mul => BinOp.mul
+          | WidthBinary.intDiv => BinOp.intDiv
+          | WidthBinary.mod => BinOp.mod
+          | WidthBinary.compare op => op.binOp) =
+          BinOp.sub ∧
+      ¬(match op✝ with
+            | WidthBinary.add => BinOp.add
+            | WidthBinary.sub => BinOp.sub
+            | WidthBinary.mul => BinOp.mul
+            | WidthBinary.intDiv => BinOp.intDiv
+            | WidthBinary.mod => BinOp.mod
+            | WidthBinary.compare op => op.binOp) =
+            BinOp.mul ∧
+        ¬IntegerDivisionOp
+              (match op✝ with
+              | WidthBinary.add => BinOp.add
+              | WidthBinary.sub => BinOp.sub
+              | WidthBinary.mul => BinOp.mul
+              | WidthBinary.intDiv => BinOp.intDiv
+              | WidthBinary.mod => BinOp.mod
+              | WidthBinary.compare op => op.binOp) ∧
+          Comparison.ofBinOp
+              (match op✝ with
+              | WidthBinary.add => BinOp.add
+              | WidthBinary.sub => BinOp.sub
+              | WidthBinary.mul => BinOp.mul
+              | WidthBinary.intDiv => BinOp.intDiv
+              | WidthBinary.mod => BinOp.mod
+              | WidthBinary.compare op => op.binOp) =
+            none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] } outcome trace
+⊢ trace = []
+
+case widthBinaryRightAbrupt
+env : ConcreteEnv
+outcome : EvalOutcome
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+unsupported :
+  ¬(match op✝ with
+        | WidthBinary.add => BinOp.add
+        | WidthBinary.sub => BinOp.sub
+        | WidthBinary.mul => BinOp.mul
+        | WidthBinary.intDiv => BinOp.intDiv
+        | WidthBinary.mod => BinOp.mod
+        | WidthBinary.compare op => op.binOp) =
+        BinOp.add ∧
+    ¬(match op✝ with
+          | WidthBinary.add => BinOp.add
+          | WidthBinary.sub => BinOp.sub
+          | WidthBinary.mul => BinOp.mul
+          | WidthBinary.intDiv => BinOp.intDiv
+          | WidthBinary.mod => BinOp.mod
+          | WidthBinary.compare op => op.binOp) =
+          BinOp.sub ∧
+      ¬(match op✝ with
+            | WidthBinary.add => BinOp.add
+            | WidthBinary.sub => BinOp.sub
+            | WidthBinary.mul => BinOp.mul
+            | WidthBinary.intDiv => BinOp.intDiv
+            | WidthBinary.mod => BinOp.mod
+            | WidthBinary.compare op => op.binOp) =
+            BinOp.mul ∧
+        ¬IntegerDivisionOp
+              (match op✝ with
+              | WidthBinary.add => BinOp.add
+              | WidthBinary.sub => BinOp.sub
+              | WidthBinary.mul => BinOp.mul
+              | WidthBinary.intDiv => BinOp.intDiv
+              | WidthBinary.mod => BinOp.mod
+              | WidthBinary.compare op => op.binOp) ∧
+          Comparison.ofBinOp
+              (match op✝ with
+              | WidthBinary.add => BinOp.add
+              | WidthBinary.sub => BinOp.sub
+              | WidthBinary.mul => BinOp.mul
+              | WidthBinary.intDiv => BinOp.intDiv
+              | WidthBinary.mod => BinOp.mod
+              | WidthBinary.compare op => op.binOp) =
+            none
+abrupt✝ : outcome.Abrupt
+evalRight✝ : EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ leftTrace✝ = [] ∧ rightTrace✝ = []
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case neg
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+source✝ : Expr
+value✝ : Integer64Value
+trace✝ : EvalTrace
+eval✝ :
+  EvalPartial env { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer value✝)) trace✝
+unknown :
+  match IntKind.ofType (Ty.base BaseTy.integer) with
+  | some kind => 0 ≤ kind.min
+  | none => True
+resultEq : EvalOutcome.normal value = (checkedNeg value✝).outcome
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case negAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+source✝ : Expr
+unknown :
+  match IntKind.ofType (Ty.base BaseTy.integer) with
+  | some kind => 0 ≤ kind.min
+  | none => True
+abrupt✝ : outcome.Abrupt
+eval✝ : EvalPartial env { source := source✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case add
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+resultEq : EvalOutcome.normal value = (checkedAdd a✝ b✝).outcome
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case addLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case addRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case sub
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+resultEq : EvalOutcome.normal value = (checkedSub a✝ b✝).outcome
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case subLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case subRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case mul
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+resultEq : EvalOutcome.normal value = (checkedMul a✝ b✝).outcome
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case mulLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case mulRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case divMod
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+op✝ : BinOp
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+target✝ : IntegerDivisionOp op✝
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+resultEq : EvalOutcome.normal value = (checkedDivMod op✝ a✝ b✝).outcome
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case divModLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+op✝ : BinOp
+left✝ right✝ : Expr
+target✝ : IntegerDivisionOp op✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case divModRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+op✝ : BinOp
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+target✝ : IntegerDivisionOp op✝
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (Ty.base BaseTy.integer)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case compare
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+op✝ : Comparison
+left✝ right✝ : Expr
+a✝ b✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.integer b✝)) rightTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+resultEq : EvalOutcome.normal value = (checkedCompare op✝ a✝ b✝).outcome
+⊢ (unknownAnalysis (Ty.base BaseTy.boolean)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case compareLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+op✝ : Comparison
+left✝ right✝ : Expr
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (Ty.base BaseTy.boolean)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case compareRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+op✝ : Comparison
+left✝ right✝ : Expr
+a✝ : Integer64Value
+leftTrace✝ rightTrace✝ : EvalTrace
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := Ty.base BaseTy.integer, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.integer a✝)) leftTrace✝
+unknown : IntKind.ofType (Ty.base BaseTy.integer) = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ :
+  EvalPartial env { source := right✝, type := Ty.base BaseTy.integer, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (Ty.base BaseTy.boolean)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case widthBinary
+env : ConcreteEnv
+value : ConcreteValue
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ b✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+evalRight✝ :
+  EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ b✝)) rightTrace✝
+unknown :
+  ¬op✝.op = BinOp.add ∧
+    ¬op✝.op = BinOp.sub ∧ ¬op✝.op = BinOp.mul ∧ ¬IntegerDivisionOp op✝.op ∧ Comparison.ofBinOp op✝.op = none
+resultEq : EvalOutcome.normal value = (op✝.apply kind✝ a✝ b✝).outcome
+⊢ (unknownAnalysis (op✝.type kind✝)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case widthBinaryLeftAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+trace : EvalTrace
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+not64✝ : ¬kind✝ = IntKind.integer64
+unknown :
+  ¬op✝.op = BinOp.add ∧
+    ¬op✝.op = BinOp.sub ∧ ¬op✝.op = BinOp.mul ∧ ¬IntegerDivisionOp op✝.op ∧ Comparison.ofBinOp op✝.op = none
+abrupt✝ : outcome.Abrupt
+evalLeft✝ : EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] } outcome trace
+⊢ (unknownAnalysis (op✝.type kind✝)).normal value
+error: Benitoite/Interval/Eval.lean:1389:6: unsolved goals
+case widthBinaryRightAbrupt
+env : ConcreteEnv
+value : ConcreteValue
+outcome : EvalOutcome
+resultEq : EvalOutcome.normal value = outcome
+key✝ : OperationKey
+kind✝ : IntKind
+op✝ : WidthBinary
+left✝ right✝ : Expr
+a✝ : IntegerValue kind✝
+leftTrace✝ rightTrace✝ : EvalTrace
+not64✝ : ¬kind✝ = IntKind.integer64
+evalLeft✝ :
+  EvalPartial env { source := left✝, type := kind✝.type, key := childKey key✝ [] }
+    (EvalOutcome.normal (ConcreteValue.ofInteger kind✝ a✝)) leftTrace✝
+unknown :
+  ¬op✝.op = BinOp.add ∧
+    ¬op✝.op = BinOp.sub ∧ ¬op✝.op = BinOp.mul ∧ ¬IntegerDivisionOp op✝.op ∧ Comparison.ofBinOp op✝.op = none
+abrupt✝ : outcome.Abrupt
+evalRight✝ : EvalPartial env { source := right✝, type := kind✝.type, key := childKey key✝ [left✝] } outcome rightTrace✝
+⊢ (unknownAnalysis (op✝.type kind✝)).normal value
+error: Benitoite/Interval/Eval.lean:1408:2: Missing cases:
+_, _, (EvalOutcome.failed Failure.unknown), (EvalPartial.widthBinaryRightAbrupt (ConcreteEnv.mk _ _ _) (OperationKey.mk (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) _) IntKind.integer8 WidthBinary.add _ _ (Subtype.mk (Int.ofNat _) (And.intro (Int.NonNeg.mk _) _)) (EvalOutcome.failed Failure.unknown) _ _ _ _ _ True.intro), _
+_, _, (EvalOutcome.failed Failure.overflow), (EvalPartial.widthBinaryRightAbrupt (ConcreteEnv.mk _ _ _) (OperationKey.mk (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) _) IntKind.integer8 WidthBinary.add _ _ (Subtype.mk (Int.ofNat _) (And.intro (Int.NonNeg.mk _) _)) (EvalOutcome.failed Failure.overflow) _ _ _ _ _ True.intro), _
+_, _, (EvalOutcome.failed Failure.zeroDivisor), (EvalPartial.widthBinaryRightAbrupt (ConcreteEnv.mk _ _ _) (OperationKey.mk (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) _) IntKind.integer8 WidthBinary.add _ _ (Subtype.mk (Int.ofNat _) (And.intro (Int.NonNeg.mk _) _)) (EvalOutcome.failed Failure.zeroDivisor) _ _ _ _ _ True.intro), _
+_, _, (EvalOutcome.failed Failure.outsideDomain), (EvalPartial.widthBinaryRightAbrupt (ConcreteEnv.mk _ _ _) (OperationKey.mk (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) _) IntKind.integer8 WidthBinary.add _ _ (Subtype.mk (Int.ofNat _) (And.intro (Int.NonNeg.mk _) _)) (EvalOutcome.failed Failure.outsideDomain) _ _ _ _ _ True.intro), _
+_, _, (EvalOutcome.failed (Failure.invalidBounds (Int.ofNat _) (Int.ofNat _))), (EvalPartial.widthBinaryRightAbrupt (ConcreteEnv.mk _ _ _) (OperationKey.mk (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) _) IntKind.integer8 WidthBinary.add _ _ (Subtype.mk (Int.ofNat _) (And.intro (Int.NonNeg.mk _) _)) (EvalOutcome.failed (Failure.invalidBounds (Int.ofNat _) (Int.ofNat _))) _ _ _ _ _ True.intro), _
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+error: Benitoite/Interval/Eval.lean:1402:8: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Some required targets logged failures:
+- Benitoite.Interval.Eval

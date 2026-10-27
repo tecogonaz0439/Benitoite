@@ -1,0 +1,74 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.82s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 4 tests
+test typeck::interval::tests::range_calls::range_projection_does_not_warn_on_error_reversed_or_out_of_range ... ok
+
+thread 'typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge' (5233366) panicked at crates/benitoite/src/typeck/interval/identity/tests.rs:73:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0338,
+        ),
+        message: "pattern variable `wrapped` hides a local name",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        327,
+                    ),
+                    end: BytePos(
+                        334,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        227,
+                    ),
+                    end: BytePos(
+                        234,
+                    ),
+                },
+                text: "`wrapped` is bound here",
+            },
+        ],
+        notes: [],
+        helps: [
+            Help {
+                message: "choose another name",
+                edits: [],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge ... FAILED
+test typeck::interval::tests::range_calls::range_projection_preserves_original_binding_and_distinct_nested_origins ... ok
+test typeck::interval::tests::range_calls::range_projection_matches_lean_bounds_and_following_arithmetic ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_projection_forgets_aliases_boundaries_and_both_kinds_of_merge
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.95s
+
+error: test failed, to rerun pass `-p benitoite --lib`

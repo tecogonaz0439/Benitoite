@@ -1,0 +1,18 @@
+{
+  "normalEntries": 1216,
+  "existingDedicatedBudget": [
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "group": "golden-or-fixture",
+      "path": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "sha256": "8320ecc875f747722f575404929b180b9153a92618492268843f229e3ad29203",
+      "command": "check",
+      "originalMode": "check",
+      "originalOptions": []
+    }
+  ],
+  "evidence": "crates/benitoite/testdata/types/todo178-const-budget.diag.json",
+  "evidenceSha256": "3ad12764d18b13cf5b4120fdb0754d97409eac928c4094af133c3b022b838241",
+  "intent": "existing constant-evaluation 64 MiB budget overflow; interval body budget also reached",
+  "inputRewrites": []
+}

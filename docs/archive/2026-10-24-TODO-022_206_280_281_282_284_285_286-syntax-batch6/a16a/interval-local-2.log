@@ -1,0 +1,42 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.30s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 34 tests
+test typeck::interval::identity::tests::embedded_constants_use_original_types_and_multiple_occurrences ... ok
+test typeck::interval::identity::tests::boundaries_keep_original_preorders_and_clause_order ... ok
+test typeck::interval::identity::tests::direct_negative_minima_and_zero_are_single_surface_occurrences ... ok
+test typeck::interval::identity::tests::failure_clause_and_empty_lambda_keep_body_ranges ... ok
+test typeck::interval::identity::tests::numbering_stops_with_prefix_instead_of_renumbering ... ok
+test typeck::interval::identity::tests::source_order_negative_literals_and_return_keep_surface_keys ... ok
+test typeck::interval::identity::tests::unknown_children_and_synthetic_functions_have_source_origins ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::identity::tests::builder_slots_try_actions_and_nested_with_do_not_invent_ast_children ... ok
+test typeck::interval::tests::arithmetic_extensions::integer64_extensions_preserve_normal_ranges_and_failure_boundaries ... ok
+test typeck::interval::tests::arithmetic_candidates_survive_later_budget_stops ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+test typeck::interval::tests::budget_reference::unrelated_function_preserves_diagnostics_below_whole_limits ... ok
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+test typeck::interval::tests::comparisons_refine_only_the_selected_branch_and_merge_normal_values ... ok
+test typeck::interval::tests::budget_reference::range_scans_charge_direct_calls_and_borrow_only_three_arguments ... ok
+test typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts ... ok
+test typeck::interval::tests::discovery_and_queue_keep_reference_costs_and_pending_entries ... ok
+test typeck::interval::tests::independent_inputs_keep_postorder_results_and_release_every_temporary_scope ... ok
+test typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates ... ok
+test typeck::interval::flow::widths::tests::typed_literals_bindings_and_joins_keep_each_integer_domain ... ok
+test typeck::interval::flow::widths::tests::typed_environment_costs_and_stops_match_lean ... ok
+test typeck::interval::flow::widths::tests::independent_inputs_and_separate_bodies_forget_integer_facts_but_keep_kind ... ok
+test typeck::interval::tests::branch_scopes_release_temporary_state_and_keep_candidates_on_budget_stop ... ok
+test typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope ... ok
+test typeck::interval::tests::local_environment_is_released_at_every_budget_stop ... ok
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... ok
+test typeck::interval::tests::warnings_merge_parent_and_independent_inputs_in_preorder ... ok
+test typeck::interval::flow::widths::tests::arithmetic_keeps_each_width_and_intermediate_failure ... ok
+test typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees ... ok
+test typeck::interval::tests::budget_reference::whole_budget_matches_lean_through_discovery_queue_and_embedded_bodies ... ok
+test typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 1293 filtered out; finished in 6.82s
+

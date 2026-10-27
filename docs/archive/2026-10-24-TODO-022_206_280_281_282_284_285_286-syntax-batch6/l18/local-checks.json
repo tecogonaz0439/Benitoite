@@ -1,0 +1,58 @@
+[
+  {
+    "command": [
+      "lake",
+      "build",
+      "Benitoite.Interval.Range"
+    ],
+    "log": "range-build-final.log",
+    "exit": 0,
+    "seconds": 0.46114175
+  },
+  {
+    "command": [
+      "lake",
+      "build",
+      "Benitoite"
+    ],
+    "log": "default-library.log",
+    "exit": 0,
+    "seconds": 0.77409175
+  },
+  {
+    "command": [
+      "lake",
+      "--no-build",
+      "build"
+    ],
+    "log": "default-up-to-date.log",
+    "exit": 0,
+    "seconds": 0.15237762499999996
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/l18/axioms.lean"
+    ],
+    "log": "axioms.log",
+    "exit": 0,
+    "seconds": 0.6152406250000002
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Interval/Range.lean"
+    ],
+    "log": "range-file.log",
+    "exit": 0,
+    "seconds": 0.3588987920000002
+  }
+]

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1008, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 1001, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir, args.vm_dir, args.cli)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 653, in exercise
+    interval_range_vm.exercise(range_runner, Path(vm_dir)/'range', cli)
+  File "<repo>/formal/tests/interval_range_vm.py", line 168, in exercise
+    report = runner.invoke('range-closed', 'eval', corpus, 0)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 398, in invoke
+    assert p.returncode == code, (label, p.returncode, code, p.stdout, p.stderr)
+AssertionError: ('range-closed', 2, 0, '', 'intervalDiff: fixed domain requires domain profile\n')

@@ -1,0 +1,38 @@
+== plan: level work against d3f7c3e5327b7e97c57d959c46ce62997bf9f009 (changed files not classified) (partial selection: --only fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally,policy_selftest,formal_build)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test desugar_export --test external_signals --test fmt_command --test golden --test http_descriptor_exhaustion --test http_exchange_release --test interrupt_process --test io_modes --test l10_console_clock_process --test l13_external_commands --test l21_json --test l23_csv --test l24_time --test l30_http_server --test l31_http_serve_and_helpers --test l32_http_client --test named_arguments --test network_faults --test open_062 --test open_062_http --test package_command --test property_library --test random_programs --test reference_examples --test runtime_builtins --test skill_docs --test skill_examples --test spec_examples --test stdlib_doc_examples --test test_command --test verify --test vm_handlers --test vm_lazy --test vm_reference_cells
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [policy_selftest] because of --only (estimate: seconds to 1 min)
+      command: python3 -B scripts/check/test_policy.py
+   [formal_build] because of --only (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+Diff in <repo>/crates/benitoite/tests/desugar_export/interval/manifest.rs:121:
+         });
+         observed_diagnostics.sort_by_key(|(_, primary)| {
+             primary.map_or(
+[31m-                (true, benitoite::base::FileId(0), benitoite::base::BytePos(0)),
+(B[m[32m+                (
+(B[m[32m+                    true,
+(B[m[32m+                    benitoite::base::FileId(0),
+(B[m[32m+                    benitoite::base::BytePos(0),
+(B[m[32m+                ),
+(B[m                 |span| (false, span.file, span.start),
+             )
+         });
+FAILED: fmt
+X05T body exit: 1
+        2.47 real         2.39 user         0.06 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "2b415cac2ee1ae95fc1a8c5ca44f1d94c9fbb283",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated",
+    "--test",
+    "*",
+    "--dry-run"
+  ],
+  "cwd": "<repo>",
+  "exit_code": 0,
+  "time_exit_code": 1,
+  "elapsed_seconds": 0.032
+}

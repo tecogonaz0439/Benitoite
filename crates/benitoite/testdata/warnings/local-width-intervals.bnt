@@ -1,0 +1,40 @@
+import Benitoite.Unofficial.IO.Console
+
+// 幅ごとの型域と、UnsignedInteger64 の最大値の二乗を診断に表示する。
+function signed8() -> Integer8
+  bind n <- 127s8
+  return n + 1s8
+end function
+function signed16() -> Integer16
+  bind n <- -32768s16
+  return n - 1s16
+end function
+function signed32() -> Integer32
+  bind n <- -2147483648s32
+  return -n
+end function
+function signed64(flag: Boolean) -> Integer
+  bind n <- if flag then -9223372036854775808 else -9223372036854775807 end if
+  return n * 2
+end function
+function unsigned16() -> UnsignedInteger16
+  bind n <- 0u16
+  return n - 1u16
+end function
+function unsigned32() -> UnsignedInteger32
+  bind n <- 4294967295u32
+  return 2u32 * n
+end function
+function unsigned64() -> UnsignedInteger64
+  bind n <- 18446744073709551615u64
+  return n * n
+end function
+function guarded(x: UnsignedInteger32) -> UnsignedInteger32
+  return match x with
+    case v if v = 0u32 -> 1u32 div v
+    case _ -> 1u32
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine("ran")
+end function

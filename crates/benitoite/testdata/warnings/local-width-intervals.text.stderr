@@ -1,0 +1,117 @@
+warning[W0402]: this calculation overflows `Integer8`
+  --> testdata/warnings/local-width-intervals.bnt:6:10
+   |
+ 6 |   return n + 1s8
+   |          ^^^^^^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:5:3
+   |
+ 5 |   bind n <- 127s8
+   |   --------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [128,128]
+   = note: the range of `Integer8` is [-128,127]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `Integer16`
+  --> testdata/warnings/local-width-intervals.bnt:10:10
+   |
+10 |   return n - 1s16
+   |          ^^^^^^^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:9:3
+   |
+ 9 |   bind n <- -32768s16
+   |   ------------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [-32769,-32769]
+   = note: the range of `Integer16` is [-32768,32767]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `Integer32`
+  --> testdata/warnings/local-width-intervals.bnt:14:10
+   |
+14 |   return -n
+   |          ^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:13:3
+   |
+13 |   bind n <- -2147483648s32
+   |   ------------------------ this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [2147483648,2147483648]
+   = note: the range of `Integer32` is [-2147483648,2147483647]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `Integer`
+  --> testdata/warnings/local-width-intervals.bnt:18:10
+   |
+18 |   return n * 2
+   |          ^^^^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:17:3
+   |
+17 |   bind n <- if flag then -9223372036854775808 else -9223372036854775807 end if
+   |   ---------------------------------------------------------------------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [-18446744073709551616,-18446744073709551614]
+   = note: the range of `Integer` is [-9223372036854775808,9223372036854775807]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `UnsignedInteger16`
+  --> testdata/warnings/local-width-intervals.bnt:22:10
+   |
+22 |   return n - 1u16
+   |          ^^^^^^^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:21:3
+   |
+21 |   bind n <- 0u16
+   |   -------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [-1,-1]
+   = note: the range of `UnsignedInteger16` is [0,65535]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `UnsignedInteger32`
+  --> testdata/warnings/local-width-intervals.bnt:26:10
+   |
+26 |   return 2u32 * n
+   |          ^^^^^^^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:25:3
+   |
+25 |   bind n <- 4294967295u32
+   |   ----------------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [8589934590,8589934590]
+   = note: the range of `UnsignedInteger32` is [0,4294967295]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `UnsignedInteger64`
+  --> testdata/warnings/local-width-intervals.bnt:30:10
+   |
+30 |   return n * n
+   |          ^^^^^ always overflows
+   |
+  ::: testdata/warnings/local-width-intervals.bnt:29:3
+   |
+29 |   bind n <- 18446744073709551615u64
+   |   --------------------------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [340282366920938463426481119284349108225,340282366920938463426481119284349108225]
+   = note: the range of `UnsignedInteger64` is [0,18446744073709551615]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0401]: this divides by zero
+  --> testdata/warnings/local-width-intervals.bnt:34:36
+   |
+34 |     case v if v = 0u32 -> 1u32 div v
+   |                                    ^ the divisor is always 0
+   |          - this binding or comparison contributes to the inferred interval
+   |               -------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred divisor interval is [0,0]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning: 8 warnings emitted

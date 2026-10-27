@@ -1,0 +1,12 @@
+error[E0241]: a guard is written with `if`
+  --> testdata/warnings/local-width-intervals.bnt:34:12
+   |
+34 |     case v when v = 0u32 -> 1u32 div v
+   |            ^^^^
+   |
+   = help: write `case v if v = 0u32 ->`
+   |
+34 |     case v if v = 0u32 -> 1u32 div v
+   |            ~~
+
+error: could not check testdata/warnings/local-width-intervals.bnt due to 1 previous error

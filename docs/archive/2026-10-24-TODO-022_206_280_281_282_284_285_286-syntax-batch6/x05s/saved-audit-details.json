@@ -1,0 +1,1564 @@
+{
+  "archives": [
+    {
+      "run": 1,
+      "archive": "docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05a/k1-records.zip",
+      "sha256": "626efcbc9da93ea323317016ab72f7cfa970893a0ad9858f004bfe55af695583",
+      "persisted": 1879,
+      "omitted": [
+        "interval/programs/interval-manifest-corpus.json",
+        "interval/programs/interval-manifest.json",
+        "interval/programs/interval-material.json",
+        "interval/programs/interval-observations.json",
+        "desugar/named-programs-builtins.json",
+        "desugar/named-programs-corpus.json",
+        "desugar/named-programs-interval/interval-manifest-corpus.json",
+        "desugar/named-programs-interval/interval-manifest.json",
+        "desugar/named-programs-interval/interval-material.json",
+        "desugar/named-programs-interval/interval-observations.json",
+        "coverage/future-corpus.json",
+        "coverage/named-all-corpus.json"
+      ],
+      "shapes": [
+        {
+          "directory": "identity",
+          "inputs": 24,
+          "succeeded": 24,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0404)"
+          ]
+        },
+        {
+          "directory": "manifest/manifest-interval",
+          "inputs": 10,
+          "succeeded": 9,
+          "outside": 0,
+          "warningCodes": []
+        },
+        {
+          "directory": "range/interval",
+          "inputs": 11,
+          "succeeded": 11,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/original",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/instrumented",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/range/original",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/range/instrumented",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)"
+          ]
+        },
+        {
+          "directory": "vm/shifts/original",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0404)"
+          ]
+        },
+        {
+          "directory": "vm/shifts/instrumented",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0404)"
+          ]
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "archive": "work/m012/records/x05a-run2-k1-records.zip",
+      "sha256": "5aaaffc02becc497da7e34840c5e6330f18dc14f77575e4a369af1e3d88fb1b8",
+      "persisted": 7859,
+      "omitted": [
+        "desugar/named-programs-builtins.json",
+        "desugar/named-programs-corpus.json",
+        "desugar/named-programs-interval/interval-manifest-corpus.json",
+        "desugar/named-programs-interval/interval-manifest.json",
+        "desugar/named-programs-interval/interval-material.json",
+        "desugar/named-programs-interval/interval-observations.json",
+        "coverage/future-corpus.json",
+        "coverage/named-all-corpus.json"
+      ],
+      "shapes": [
+        {
+          "directory": "identity",
+          "inputs": 24,
+          "succeeded": 24,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0404)"
+          ]
+        },
+        {
+          "directory": "manifest/manifest-interval",
+          "inputs": 16,
+          "succeeded": 15,
+          "outside": 12,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "range/interval",
+          "inputs": 11,
+          "succeeded": 11,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/original",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/instrumented",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/range/original",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)",
+            "Some(W0402)"
+          ]
+        },
+        {
+          "directory": "vm/range/instrumented",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0401)"
+          ]
+        },
+        {
+          "directory": "vm/shifts/original",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0404)"
+          ]
+        },
+        {
+          "directory": "vm/shifts/instrumented",
+          "inputs": 1,
+          "succeeded": 1,
+          "outside": 0,
+          "warningCodes": [
+            "Some(W0404)"
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "directory": "target/desugar-diff/x05a-k1-run2-20261027/named-programs-interval",
+      "totals": {
+        "manifestInputs": 1791,
+        "succeeded": 1402,
+        "allBodies": 100004,
+        "analyzedBodies": 100004,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 74942,
+        "checkerFailed": 389,
+        "checkerSucceeded": 1402,
+        "constantDefinitions": 12153,
+        "depthBodies": 0,
+        "excludedBodies": 16,
+        "excludedDefinitions": 12,
+        "functionDefinitions": 51870,
+        "informativeBodies": 78977,
+        "inputDefinitions": 64023,
+        "methodDefinitions": 10018,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 12,
+        "phaseDepth": 0,
+        "sourceModules": 1501,
+        "topBodies": 21011,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 71223,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 23,
+        "irrelevantOnlyInputs": 2,
+        "userWarningsInputs": 21,
+        "externalTypeInputs": 4,
+        "mixedInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "golden:testdata/effects/choose_example.bnt",
+          "index": 28,
+          "codes": [
+            "Some(W0501)"
+          ]
+        },
+        "irrelevantOnly": {
+          "input": "golden:testdata/effects/choose_example.bnt",
+          "index": 28,
+          "codes": [
+            "Some(W0501)"
+          ]
+        },
+        "userWarnings": {
+          "input": "golden:testdata/eval/c12-lazy-deferred.bnt",
+          "index": 40,
+          "codes": [
+            "Some(W0401)"
+          ]
+        },
+        "externalType": {
+          "input": "golden:testdata/external/resource",
+          "index": 164,
+          "codes": []
+        },
+        "mixed": {
+          "input": "golden:testdata/warnings/width-arithmetic.bnt",
+          "index": 401,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0403)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "definition": ".sum"
+        },
+        "after": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "definition": ".sum"
+        },
+        "context": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "definition": ".sum"
+        },
+        "next": {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "definition": ".sum"
+        },
+        "warnings": {
+          "input": "golden:testdata/eval/c12-lazy-deferred.bnt",
+          "definition": ".main%body:7:0"
+        },
+        "independent": {
+          "input": "golden:testdata/eval/int_overflow_add.bnt",
+          "definition": ".main"
+        }
+      },
+      "selected": [
+        {
+          "input": "golden:testdata/acceptance/adt_list_sum.bnt",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next"
+          ]
+        },
+        {
+          "input": "golden:testdata/effects/choose_example.bnt",
+          "index": 28,
+          "reasons": [
+            "anyWarning",
+            "irrelevantOnly"
+          ]
+        },
+        {
+          "input": "golden:testdata/eval/c12-lazy-deferred.bnt",
+          "index": 40,
+          "reasons": [
+            "warnings",
+            "userWarnings"
+          ]
+        },
+        {
+          "input": "golden:testdata/eval/int_overflow_add.bnt",
+          "index": 71,
+          "reasons": [
+            "independent"
+          ]
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "index": 164,
+          "reasons": [
+            "externalType"
+          ]
+        },
+        {
+          "input": "golden:testdata/warnings/width-arithmetic.bnt",
+          "index": 401,
+          "reasons": [
+            "mixed"
+          ]
+        }
+      ],
+      "inputOrderSha256": "8ba2c9b05645412110d7a15b32a3b5024f0579492e0b57fdb4e9ff4d4ac93e47"
+    },
+    {
+      "directory": "target/desugar-diff/x05a-k1-run2-20261027/independent-program-interval",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 1,
+        "analyzedBodies": 1,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 1,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 1,
+        "informativeBodies": 1,
+        "inputDefinitions": 1,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 0,
+        "wholeBudgetSkipped": 0
+      },
+      "first": {},
+      "selections": {
+        "integer": {
+          "input": "golden:independent-program",
+          "definition": ".identity"
+        },
+        "after": {
+          "input": "golden:independent-program",
+          "definition": ".identity"
+        },
+        "context": {
+          "input": "golden:independent-program",
+          "definition": ".identity"
+        },
+        "next": {
+          "input": "golden:independent-program",
+          "definition": ".identity"
+        }
+      },
+      "selected": [
+        {
+          "input": "golden:independent-program",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next"
+          ]
+        }
+      ],
+      "inputOrderSha256": "32226a51e0e5ec558e1b09c62e323dc1d265b96058023eb4cc99c82859e9abe4"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/identity",
+      "totals": {
+        "manifestInputs": 24,
+        "succeeded": 24,
+        "allBodies": 198,
+        "analyzedBodies": 198,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 192,
+        "checkerFailed": 0,
+        "checkerSucceeded": 24,
+        "constantDefinitions": 3,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 192,
+        "informativeBodies": 195,
+        "inputDefinitions": 195,
+        "methodDefinitions": 2,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 24,
+        "topBodies": 3,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 16,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 12,
+        "userWarningsInputs": 12
+      },
+      "first": {
+        "anyWarning": {
+          "input": "interval:division",
+          "index": 1,
+          "codes": [
+            "Some(W0401)"
+          ]
+        },
+        "userWarnings": {
+          "input": "interval:division",
+          "index": 1,
+          "codes": [
+            "Some(W0401)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "interval:point",
+          "definition": ".point"
+        },
+        "after": {
+          "input": "interval:point",
+          "definition": ".point"
+        },
+        "context": {
+          "input": "interval:point",
+          "definition": ".point"
+        },
+        "next": {
+          "input": "interval:point",
+          "definition": ".point"
+        },
+        "warnings": {
+          "input": "interval:division",
+          "definition": ".division"
+        },
+        "independent": {
+          "input": "interval:independent",
+          "definition": ".independent"
+        }
+      },
+      "selected": [
+        {
+          "input": "interval:point",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next"
+          ]
+        },
+        {
+          "input": "interval:division",
+          "index": 1,
+          "reasons": [
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        },
+        {
+          "input": "interval:independent",
+          "index": 3,
+          "reasons": [
+            "independent"
+          ]
+        }
+      ],
+      "inputOrderSha256": "e18fa81dc1fbcd02bbd8dc507b95c48a833d22f550e868c270d929575782df5f"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/manifest/manifest-interval",
+      "totals": {
+        "manifestInputs": 16,
+        "succeeded": 15,
+        "allBodies": 347,
+        "analyzedBodies": 341,
+        "bodyBudgetExceeded": 10,
+        "bottomBodies": 238,
+        "checkerFailed": 1,
+        "checkerSucceeded": 15,
+        "constantDefinitions": 48,
+        "depthBodies": 0,
+        "excludedBodies": 16,
+        "excludedDefinitions": 12,
+        "functionDefinitions": 215,
+        "informativeBodies": 249,
+        "inputDefinitions": 263,
+        "methodDefinitions": 20,
+        "notAnalyzedBodies": 6,
+        "outsideDefinitions": 12,
+        "phaseDepth": 0,
+        "sourceModules": 32,
+        "topBodies": 76,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 255,
+        "wholeBudgetSkipped": 7,
+        "stop-discovery": 10,
+        "stop-queue": 10,
+        "stop-embedded": 1,
+        "externalTypeInputs": 4,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "discovery": {
+          "input": "interval-budget:bodyBudget",
+          "definition": ".many0"
+        },
+        "queue": {
+          "input": "interval-budget:bodyBudget",
+          "definition": ".many0"
+        },
+        "externalType": {
+          "input": "golden:testdata/external/resource",
+          "index": 10,
+          "codes": []
+        },
+        "anyWarning": {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "index": 14,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0401)"
+          ]
+        },
+        "userWarnings": {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "index": 14,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0401)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "manifest:top",
+          "definition": ".top"
+        },
+        "after": {
+          "input": "manifest:top",
+          "definition": ".top"
+        },
+        "context": {
+          "input": "manifest:top",
+          "definition": ".top"
+        },
+        "next": {
+          "input": "manifest:top",
+          "definition": ".top"
+        },
+        "warnings": {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "definition": ".signed8"
+        }
+      },
+      "selected": [
+        {
+          "input": "manifest:top",
+          "index": 1,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next"
+          ]
+        },
+        {
+          "input": "interval-budget:bodyBudget",
+          "index": 8,
+          "reasons": [
+            "discovery",
+            "queue"
+          ]
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "index": 10,
+          "reasons": [
+            "externalType"
+          ]
+        },
+        {
+          "input": "golden:testdata/warnings/local-width-intervals.bnt",
+          "index": 14,
+          "reasons": [
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "573151ef8d4c30a36ea5ea84753867b0654d194262a596743bc391fc0a5f9992"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/range/interval",
+      "totals": {
+        "manifestInputs": 11,
+        "succeeded": 11,
+        "allBodies": 65,
+        "analyzedBodies": 65,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 65,
+        "checkerFailed": 0,
+        "checkerSucceeded": 11,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 65,
+        "informativeBodies": 65,
+        "inputDefinitions": 65,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 11,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 13,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 4,
+        "userWarningsInputs": 4
+      },
+      "first": {
+        "anyWarning": {
+          "input": "interval-range:range",
+          "index": 0,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        },
+        "userWarnings": {
+          "input": "interval-range:range",
+          "index": 0,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "interval-range:range",
+          "definition": ".lower"
+        },
+        "after": {
+          "input": "interval-range:range",
+          "definition": ".lower"
+        },
+        "context": {
+          "input": "interval-range:range",
+          "definition": ".lower"
+        },
+        "next": {
+          "input": "interval-range:range",
+          "definition": ".lower"
+        },
+        "warnings": {
+          "input": "interval-range:range",
+          "definition": ".incrementOverflow"
+        },
+        "independent": {
+          "input": "interval-range:rangeUnrecognized",
+          "definition": ".sample"
+        }
+      },
+      "selected": [
+        {
+          "input": "interval-range:range",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        },
+        {
+          "input": "interval-range:rangeUnrecognized",
+          "index": 10,
+          "reasons": [
+            "independent"
+          ]
+        }
+      ],
+      "inputOrderSha256": "e845bfcca1635ec548761cdb0073887481cac9b0022ff120c9ae1dc06be85db1"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/vm/original",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 39,
+        "analyzedBodies": 39,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 39,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 39,
+        "informativeBodies": 39,
+        "inputDefinitions": 39,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 0,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "vm:arithmetic",
+          "index": 0,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        },
+        "userWarnings": {
+          "input": "vm:arithmetic",
+          "index": 0,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "after": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "context": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "next": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "warnings": {
+          "input": "vm:arithmetic",
+          "definition": ".overflow"
+        }
+      },
+      "selected": [
+        {
+          "input": "vm:arithmetic",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "2491fd06a0480553d7b72c5151bed9cba8686a464cfe18886b21eb30f07d8f51"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/vm/instrumented",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 39,
+        "analyzedBodies": 39,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 39,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 39,
+        "informativeBodies": 39,
+        "inputDefinitions": 39,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 37,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "vm:arithmetic",
+          "index": 0,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        },
+        "userWarnings": {
+          "input": "vm:arithmetic",
+          "index": 0,
+          "codes": [
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "after": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "context": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "next": {
+          "input": "vm:arithmetic",
+          "definition": ".addition"
+        },
+        "warnings": {
+          "input": "vm:arithmetic",
+          "definition": ".overflow"
+        }
+      },
+      "selected": [
+        {
+          "input": "vm:arithmetic",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "2491fd06a0480553d7b72c5151bed9cba8686a464cfe18886b21eb30f07d8f51"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/vm/range/original",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 46,
+        "analyzedBodies": 46,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 46,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 46,
+        "informativeBodies": 46,
+        "inputDefinitions": 46,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 7,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "vm:range",
+          "index": 0,
+          "codes": [
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        },
+        "userWarnings": {
+          "input": "vm:range",
+          "index": 0,
+          "codes": [
+            "Some(W0401)",
+            "Some(W0401)",
+            "Some(W0402)",
+            "Some(W0402)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "after": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "context": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "next": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "warnings": {
+          "input": "vm:range",
+          "definition": ".incrementOverflow"
+        }
+      },
+      "selected": [
+        {
+          "input": "vm:range",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "d10e1bc496c26b751621f1de5a89f62114fe31f790b43a13d590ad3095d776a6"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/vm/range/instrumented",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 46,
+        "analyzedBodies": 46,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 46,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 46,
+        "informativeBodies": 46,
+        "inputDefinitions": 46,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 45,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "vm:range",
+          "index": 0,
+          "codes": [
+            "Some(W0401)",
+            "Some(W0401)"
+          ]
+        },
+        "userWarnings": {
+          "input": "vm:range",
+          "index": 0,
+          "codes": [
+            "Some(W0401)",
+            "Some(W0401)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "after": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "context": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "next": {
+          "input": "vm:range",
+          "definition": ".lower"
+        },
+        "warnings": {
+          "input": "vm:range",
+          "definition": ".firstArgumentFailure"
+        }
+      },
+      "selected": [
+        {
+          "input": "vm:range",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "d10e1bc496c26b751621f1de5a89f62114fe31f790b43a13d590ad3095d776a6"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/vm/shifts/original",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 108,
+        "analyzedBodies": 108,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 108,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 108,
+        "informativeBodies": 108,
+        "inputDefinitions": 108,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 16,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "vm:shifts",
+          "index": 0,
+          "codes": [
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)"
+          ]
+        },
+        "userWarnings": {
+          "input": "vm:shifts",
+          "index": 0,
+          "codes": [
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "after": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "context": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "next": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "warnings": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        }
+      },
+      "selected": [
+        {
+          "input": "vm:shifts",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "3c34650f927a2a2067160e81e00425a5c8cd1a29b9f1cb9264279e780b431c8b"
+    },
+    {
+      "directory": "target/interval-diff/x05a-k1-run2-20261027/vm/shifts/instrumented",
+      "totals": {
+        "manifestInputs": 1,
+        "succeeded": 1,
+        "allBodies": 108,
+        "analyzedBodies": 108,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 108,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 108,
+        "informativeBodies": 108,
+        "inputDefinitions": 108,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 108,
+        "wholeBudgetSkipped": 0,
+        "anyWarningInputs": 1,
+        "userWarningsInputs": 1
+      },
+      "first": {
+        "anyWarning": {
+          "input": "vm:shifts",
+          "index": 0,
+          "codes": [
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)"
+          ]
+        },
+        "userWarnings": {
+          "input": "vm:shifts",
+          "index": 0,
+          "codes": [
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)",
+            "Some(W0404)"
+          ]
+        }
+      },
+      "selections": {
+        "integer": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "after": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "context": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "next": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        },
+        "warnings": {
+          "input": "vm:shifts",
+          "definition": ".shiftByteLeftnegative"
+        }
+      },
+      "selected": [
+        {
+          "input": "vm:shifts",
+          "index": 0,
+          "reasons": [
+            "integer",
+            "after",
+            "context",
+            "next",
+            "warnings",
+            "anyWarning",
+            "userWarnings"
+          ]
+        }
+      ],
+      "inputOrderSha256": "3c34650f927a2a2067160e81e00425a5c8cd1a29b9f1cb9264279e780b431c8b"
+    }
+  ]
+}

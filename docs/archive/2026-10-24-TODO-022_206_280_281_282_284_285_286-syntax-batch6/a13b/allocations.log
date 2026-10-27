@@ -1,0 +1,13 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.53s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 2 tests
+20000 constants: 8.543009792s, 442662821 allocated bytes
+test long_constant_chain_has_bounded_check_allocations ... ok
+5000 constants, 1000 diagnostics: 1.310160291s, 254897076 allocated bytes
+test repeated_constant_diagnostics_share_bounded_origin_work ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 9.86s
+

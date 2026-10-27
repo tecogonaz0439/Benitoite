@@ -1,0 +1,16 @@
+{"command": "lake env lean -M 12288 Benitoite/Interval/BudgetAnalysisExamples.lean", "inner_exit": 0, "time_exit": 1, "wall_seconds": 0.695}
+        0.69 real         0.52 user         0.17 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+{"command": "lake env lean -M 12288 Benitoite/Interval/BudgetChildrenExamples.lean", "inner_exit": 0, "time_exit": 1, "wall_seconds": 0.45}
+        0.44 real         0.30 user         0.14 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+{"command": "lake env lean -M 12288 Benitoite/Interval/BudgetWholeExamples.lean", "inner_exit": 0, "time_exit": 1, "wall_seconds": 0.369}
+        0.36 real         0.22 user         0.13 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+{"command": "lake env lean -M 12288 ../docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a11/budget-reference.lean", "inner_exit": 0, "time_exit": 1, "wall_seconds": 4.19}
+標準出力の数値の行は21708行。固定期待値の抽出先は crates/benitoite/testdata/interval-budget/body.tsv と whole.tsv。
+        4.18 real         4.83 user         0.17 sys
+time: sysctl kern.clockrate: Operation not permitted

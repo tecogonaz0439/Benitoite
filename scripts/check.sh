@@ -19,8 +19,9 @@
 # Rust の work は lib_default、change は test_default_all に既定の lib を含める。
 # 水準なしの旧 only/full は従来の集合を保つ。default_lib は旧名のまま名指しできる。
 # 旧 full は heap/formal や二構成 all-targets を追加せず、change/release の別名ではない。
-# stage は名指しの接続のみ。release は release_stack と、別途行う候補・証拠の手動照合。
+# stage は名指しの接続のみ。release は release_stack・advisories と候補・証拠の手動照合。
 # 指定の誤りは 2、分類不能・基準不明は dry-run も 3、検査失敗・道具不在は 1、選択の成功は 0。
+# advisories は勧告あり・取得不能・道具不在を表示して0、設定・実行器の誤りを1とする。
 # level と only の併用は分類しない部分選択で、base は表示にだけ使う。
 # 言語仕様と付録の例は、cargo test の tests/spec_examples.rs で検査する。
 set -euo pipefail
@@ -38,12 +39,12 @@ level=""
 tests=()
 seen_options=" "
 check_names="rust default_lib long release_stack licenses heap spec_examples reference_examples skill spec_coverage skill_eval python formal policy_selftest"
-work_names="fmt lint_default lint_heap doc_default lib_default tests_related source_rules skill_generated spec_tally spec_examples reference_examples skill_docs python_syntax migrate_selftests skill_eval_selftest licenses policy_selftest heap_local stress_local heap_checks formal_build release_stack"
-stage_names="tests_related heap_local stress_local policy_selftest"
-change_names="fmt lint_default lint_heap test_default_all test_heap_all test_stress doc_default source_rules skill_generated spec_tally spec_examples reference_examples skill_docs python_syntax migrate_selftests skill_eval_selftest licenses policy_selftest long_only heap_checks formal_build release_stack"
-release_names="release_stack"
+work_names="fmt lint_default lint_heap doc_default lib_default tests_related source_rules skill_generated spec_tally spec_examples reference_examples skill_docs python_syntax migrate_selftests skill_eval_selftest licenses policy_selftest heap_local stress_local heap_checks formal_build release_stack advisories"
+stage_names="tests_related heap_local stress_local policy_selftest advisories"
+change_names="fmt lint_default lint_heap test_default_all test_heap_all test_stress doc_default source_rules skill_generated spec_tally spec_examples reference_examples skill_docs python_syntax migrate_selftests skill_eval_selftest licenses policy_selftest long_only heap_checks formal_build release_stack advisories"
+release_names="release_stack advisories"
 # work の既存の実行順を保ち、change 固有の全件検査を lib の位置へ並べる。
-unit_names="fmt lint_default lint_heap lib_default tests_related test_default_all test_heap_all test_stress doc_default source_rules skill_generated spec_tally spec_examples reference_examples skill_docs python_syntax migrate_selftests skill_eval_selftest licenses policy_selftest heap_local stress_local long_only heap_checks formal_build release_stack"
+unit_names="fmt lint_default lint_heap lib_default tests_related test_default_all test_heap_all test_stress doc_default source_rules skill_generated spec_tally spec_examples reference_examples skill_docs python_syntax migrate_selftests skill_eval_selftest licenses policy_selftest heap_local stress_local long_only heap_checks formal_build release_stack advisories"
 
 usage() {
     printf 'error: %s\n' "$1" >&2
@@ -110,6 +111,10 @@ run_check() {
 
     printf 'FAILED: %s\n' "$check_name" >&2
     exit 1
+}
+
+check_advisories() {
+    python3 -B scripts/check/advisories.py
 }
 
 check_licenses() {
@@ -291,7 +296,11 @@ classify() {
             unclassified="$unclassified $file" ;;
         Cargo.toml|Cargo.lock|deny.toml|crates/*/Cargo.toml)
             select_check rust "$file"
-            select_check licenses "$file" ;;
+            select_check licenses "$file"
+            select_check advisories "$file" ;;
+        fuzz/Cargo.toml|fuzz/Cargo.lock)
+            select_check rust "$file"
+            select_check advisories "$file" ;;
         crates/benitoite/src/runtime/heap/*)
             select_check rust "$file"
             select_check long "$file"
@@ -382,6 +391,7 @@ if [ -n "$only" ]; then
     fi
 elif [ "$level" = release ]; then
     select_check release_stack "release candidate (regardless of changed files)"
+    select_check advisories "release candidate (regardless of changed files)"
 elif [ "$full" -eq 0 ]; then
     if ! git rev-parse --verify --quiet "$base^{commit}" >/dev/null; then
         needs_decision="base $base is not a commit"
@@ -405,10 +415,10 @@ if [ "$full" -eq 1 ]; then
     done
 fi
 
-# ファイルの分類は従来のままにし、種類の和集合だけを水準の実行単位へ対応させる。
+# ファイルの種類の和集合を、水準ごとの実行単位へ対応させる。
 if { [ "$level" = work ] || [ "$level" = change ]; } && [ -z "$only" ]; then
     kinds=()
-    for check in $check_names; do
+    for check in $check_names advisories; do
         if has "$check"; then kinds+=("$check" "$(reason "$check")"); fi
         unset "sel_$check"
     done
@@ -429,7 +439,7 @@ if { [ "$level" = work ] || [ "$level" = change ]; } && [ -z "$only" ]; then
             skill_eval) units=skill_eval_selftest ;;
             skill) units="skill_generated skill_docs" ;;
             spec_coverage) units=spec_tally ;;
-            licenses|spec_examples|reference_examples|policy_selftest) units="$kind" ;;
+            advisories|licenses|spec_examples|reference_examples|policy_selftest) units="$kind" ;;
         esac
         if [ "$level" = change ]; then
             case "$kind" in
@@ -441,6 +451,10 @@ if { [ "$level" = work ] || [ "$level" = change ]; } && [ -z "$only" ]; then
         fi
         for unit in $units; do select_check "$unit" "$cause"; done
     done
+fi
+
+if [ "$level" = change ] && [ -z "$only" ]; then
+    select_check advisories "change (regardless of changed files)"
 fi
 
 if [ -n "$level" ] && [ -z "$needs_decision" ]; then
@@ -497,6 +511,15 @@ unit_command() {
             check_licenses)
                 printf '%s\n' '      command: check_licenses (Python compares deny.toml and scripts/release/about.toml; cargo deny --version; cargo deny check licenses)'
                 return ;;
+            check_advisories)
+                printf '%s\n' '      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)' \
+                    '        cargo deny --version' \
+                    '        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories' \
+                    '        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories'
+                if [ -n "${BENITOITE_ADVISORY_DB_PATH:-}" ]; then
+                    printf '        DB override: %q (copy deny.toml; add db-path only; both commands use the copy)\n' "$BENITOITE_ADVISORY_DB_PATH"
+                fi
+                return ;;
             check_python_tools)
                 printf '%s\n' '      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,source-migrate,try-actions-migrate,derive}/*.py)'
                 return ;;
@@ -533,12 +556,13 @@ run_units() {
                 heap_checks) estimate='long: nightly Miri, ~10 min' ;;
                 release_stack) estimate='long: ~5 min plus builds' ;;
                 policy_selftest) estimate='seconds to 1 min' ;;
+                advisories) estimate='~1-3 min; initial DB fetch unknown' ;;
             esac
             printf '   [%s] because of %s (estimate: %s)\n' "$unit" "$(reason "$unit")" "$estimate"
         fi
         case "$unit" in
             fmt) unit_command "$action" "$unit" cargo fmt --all --check ;;
-            lint_default) unit_command "$action" "$unit" cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep ;;
+            lint_default) unit_command "$action" "$unit" cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep ;;
             lint_heap) unit_command "$action" "$unit" cargo clippy --workspace --all-targets --no-default-features --features "$features",alloc-stats ;;
             lib_default) unit_command "$action" "$unit" cargo test -p benitoite --lib ;;
             tests_related) unit_command "$action" "$unit" cargo test -p benitoite "${targets[@]}" ;;
@@ -563,6 +587,7 @@ run_units() {
                 unit_command "$action" "$unit" python3 -B tools/try-actions-migrate/test_migrate.py ;;
             skill_eval_selftest) unit_command "$action" "$unit" python3 tools/skill-eval/skill_eval.py --self-test ;;
             licenses) unit_command "$action" "$unit" check_licenses ;;
+            advisories) unit_command "$action" "$unit" check_advisories ;;
             policy_selftest) unit_command "$action" "$unit" python3 -B scripts/check/test_policy.py ;;
             heap_checks) unit_command "$action" "$unit" scripts/check-heap.sh ;;
             formal_build) unit_command "$action" "$unit" check_formal ;;

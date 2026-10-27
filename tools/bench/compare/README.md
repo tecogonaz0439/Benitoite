@@ -53,6 +53,19 @@ python3 tools/bench/compare/run.py --tier full --confirm-full \
 
 選んだ全節を、計時の前に照合する。準備1回の後、状態順を正順・逆順と交互にして N 標本を取る。各組で空 main を前後交互に測る。全標本、中央値、全幅の半分を保存する。差し引きの絶対値が両標本集合の半幅の和以下なら判定不能とし、その差から比を作らない。型エラーの系列は診断コードと終了値も検査する。深さ上限で拒否された成功入力は別に記録し、成功の時間へ入れない。
 
+局所区間解析の check 費用を比べる入力は、既存の `16.2`（functions）と `16.3`（constraints）に含める。追加入力はすべて check 専用で、正常域内の算術だけを使う。HTTP はレコードを構築し、通信を呼ばない。
+
+| 系列 | quick の追加点 | short の追加点・対照 | 出力の照合 |
+|---|---|---|---|
+| `functions-main` | 1/8/32 関数 | 64/256 関数。既存の0関数を対照に使う | 終了0・標準出力なし・診断なし |
+| `interval-bind` / `interval-add` / `interval-flow` | 1/8/32 単位 | 64/256 単位。`control-16.3` を対照に使う | 同上 |
+| `interval-width-<型名>`（算術を持つ整数七種） | 各幅1/8/32 群 | 各幅64/256 群。`control-16.3` を対照に使う | 同上 |
+| `interval-range` / `interval-http` | 0/1/8/32 単位 | 0/64/256 単位。0は同じ import だけを持つ空 main | 同上 |
+
+`n` は関数宣言数、別名束縛数、加算数、比較と合流を伴う束縛数、幅ごとの算術式群数、成功する Range の match 数、Response/ClientRequest の組数を表す。AST の節点数や解析の操作数ではない。`Case.params` の `input_unit` と `source_bytes` に反復単位と生成した UTF-8 バイト数を残す。constraints の追加系列は `control_case` で対照を指定する。標準ソースの固定費は Range/HTTP の0単位と、import のない空 main を別々に読んで確認する。既存系列の点と拒否入力は保つ。
+
+全族の short は既存の15分の事前見積もりで止める。最初の quick/short で実入力から校正し、上限を超える場合は採取前に代表点を減らした理由を記録する。check 全体の CLI 時間と、既存 probe の `load_parse` / `resolve` / `typeck` は別の観測として扱う。short は従来どおり段別の補助実行を省くため、段別時間は未取得である。解析の操作回数・補助記憶の消費もこの入力生成器では取得せず、0として表示しない。
+
 縮小は候補順、反例、message、shrinks/shrinkWork、予算0/1の境界、Unicode スカラー値、Map の鍵順、record の欄順を照合する。Q1 の93個の quick 入力と同じ生成を保つ。構築器は String/List/Bytes の append/appendAll/copy と既存関数の比較を含み、速さを合否にはしない。実行時族の期待出力は Python で独立に計算する。
 
 段別時間は公開 API だけを使う `timing_probe.rs` の別バイナリで取る。公開 API の変化でコンパイルできない場合は未取得を記録し、CLI の比較を続ける。load_parse は公開 loader の区間、resolve/typeck はその後の区間、reparse は同じバイト列を再解析する別の区間であり、load_parse と加減しない。RSS は親の `rss.py`、alloc は別構成の別実行で取得する。Fail 正規化の内部訪問節数と縮小内部の生成/比較回数は未取得。CPU プロファイルは出力の `profile.sh` で別に取得し、取得していない原因分析を実測とは扱わない。

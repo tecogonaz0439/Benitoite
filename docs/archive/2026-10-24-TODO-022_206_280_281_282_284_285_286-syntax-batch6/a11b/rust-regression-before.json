@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "unrelated_function_preserves_diagnostics_below_whole_limits",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "<repo>",
+  "exit_code": 101,
+  "time_exit_code": 1,
+  "elapsed_seconds": 12.288
+}

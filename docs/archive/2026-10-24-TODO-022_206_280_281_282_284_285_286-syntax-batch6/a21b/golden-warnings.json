@@ -1,0 +1,18 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "env",
+    "BENITOITE_GOLDEN_FILTER=warnings",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "golden",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 0.525
+}

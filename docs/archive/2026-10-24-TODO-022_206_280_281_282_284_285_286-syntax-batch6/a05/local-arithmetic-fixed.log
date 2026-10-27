@@ -1,0 +1,25 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.69s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 11 tests
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... ok
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+test typeck::interval::tests::integer_arithmetic_keeps_successful_values_and_conditional_failure_candidates ... ok
+test typeck::interval::tests::local_environment_is_released_at_every_budget_stop ... ok
+test typeck::interval::tests::arithmetic_candidates_survive_later_budget_stops ... ok
+test typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts ... ok
+test typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 1301 filtered out; finished in 0.32s
+
+A05_COMMAND_EXIT_STATUS=0
+       11.05 real        20.85 user         1.30 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A05_OUTER_EXIT_STATUS=1
+A05_ELAPSED_SECONDS=11.058

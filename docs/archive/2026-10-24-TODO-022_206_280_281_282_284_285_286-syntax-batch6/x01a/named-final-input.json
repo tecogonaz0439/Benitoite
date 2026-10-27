@@ -1,0 +1,172 @@
+{
+  "inputs": [
+    {
+      "apiAt": [],
+      "constants": [
+        {
+          "body": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 42
+                }
+              }
+            }
+          },
+          "name": "const:43",
+          "package": "root",
+          "ty": {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        }
+      ],
+      "fuel": "200",
+      "initial": {
+        "body": {
+          "operations": "0",
+          "peak": "0",
+          "saved": "0",
+          "temporary": "0"
+        },
+        "whole": {
+          "operations": "0",
+          "peak": "0",
+          "saved": "0"
+        }
+      },
+      "limits": {
+        "body": {
+          "items": "100000",
+          "operations": "100000"
+        },
+        "whole": {
+          "items": "1000000",
+          "operations": "1000000"
+        }
+      },
+      "modules": [
+        {
+          "definitions": [
+            {
+              "body": {
+                "last": {
+                  "expr": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 42
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "expected": {
+                "after": {
+                  "body": {
+                    "operations": "0",
+                    "peak": "0",
+                    "saved": "0",
+                    "temporary": "0"
+                  },
+                  "whole": {
+                    "operations": "8",
+                    "peak": "7",
+                    "saved": "3"
+                  }
+                },
+                "boolean": [
+                  false,
+                  false
+                ],
+                "coverage": "complete",
+                "integer": {
+                  "closed": [
+                    "42",
+                    "42"
+                  ]
+                },
+                "mayFail": false,
+                "other": false,
+                "warnings": [],
+                "context": {
+                  "budget": {
+                    "body": {
+                      "operations": "7",
+                      "temporary": "0",
+                      "saved": "3",
+                      "peak": "7"
+                    },
+                    "whole": {
+                      "operations": "8",
+                      "saved": "0",
+                      "peak": "7"
+                    }
+                  },
+                  "next": [
+                    "M.point",
+                    "2"
+                  ],
+                  "identities": [
+                    [
+                      "M.point",
+                      "0"
+                    ],
+                    [
+                      "M.point",
+                      "1"
+                    ]
+                  ],
+                  "unsupported": false
+                }
+              },
+              "kind": "constant",
+              "name": "M.point",
+              "params": [],
+              "sourceKeys": [],
+              "type": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "types": [
+                {
+                  "key": [
+                    "M.point",
+                    "0"
+                  ],
+                  "type": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                },
+                {
+                  "key": [
+                    "M.point",
+                    "1"
+                  ],
+                  "type": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "name": "M"
+        }
+      ],
+      "name": "named-module",
+      "standards": []
+    }
+  ],
+  "kind": "interval-corpus",
+  "profile": "base",
+  "surfaceVersion": 14,
+  "traversalVersion": 1,
+  "version": 1
+}

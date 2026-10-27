@@ -1,0 +1,33 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.87s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 2 tests
+
+thread 'typeck::interval::tests::arithmetic_extensions::extension_warnings_keep_the_operation_range_and_source' (3878131) panicked at crates/benitoite/src/typeck/interval/tests/arithmetic_extensions.rs:61:9:
+assertion `left == right` failed: function sample() -> Integer
+ bind n <- -9223372036854775808
+ return n - 1
+end function
+: []
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::arithmetic_extensions::extension_warnings_keep_the_operation_range_and_source ... FAILED
+
+thread 'typeck::interval::tests::arithmetic_extensions::integer64_extensions_preserve_normal_ranges_and_failure_boundaries' (3878132) panicked at crates/benitoite/src/typeck/interval/tests/arithmetic_extensions.rs:42:9:
+assertion `left == right` failed: difference
+  left: Some((-9223372036854775808, 9223372036854775807))
+ right: Some((-5, 2))
+test typeck::interval::tests::arithmetic_extensions::integer64_extensions_preserve_normal_ranges_and_failure_boundaries ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::arithmetic_extensions::extension_warnings_keep_the_operation_range_and_source
+    typeck::interval::tests::arithmetic_extensions::integer64_extensions_preserve_normal_ranges_and_failure_boundaries
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1323 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

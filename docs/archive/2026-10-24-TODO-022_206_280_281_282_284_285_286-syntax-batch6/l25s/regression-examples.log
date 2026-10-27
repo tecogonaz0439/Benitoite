@@ -1,0 +1,43 @@
+Benitoite/Interval/DomainExamples.lean:181:0: error: Expression
+  [(exitSource, exitBinding), (listenSource, listenBinding)].all fun x =>
+    match x with
+    | (source, binding) =>
+      let env := abstract [binding] [AbstractSlot.unknown (some (Ty.base BaseTy.string))] binding.declaration;
+      decide
+        (warningView env source = [] ∧
+          (rangeCallBinding (rangeTables env) { source := source, type := Ty.base BaseTy.unit, key := key }).isNone =
+            true)
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:187:0: error: Expression
+  let binding := identityBinding;
+  let source := call binding [0, 1] [one, literal ⟨64, ⋯⟩] [none, none] true;
+  decide
+    (warningView (abstract [binding] [] binding.declaration) source = [] ∧
+      (observe (concrete [binding] [] binding.declaration) source (Ty.base BaseTy.integer)).isNone = true)
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:199:83: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.11 = ?m.11
+but is expected to have type
+  match { source := exitSource, type := value.type, key := key }.source with
+  | callee.call labels positions args =>
+    rangeCallBinding env { source := exitSource, type := value.type, key := key } = none
+  | x =>
+    classify { source := exitSource, type := value.type, key := key }.source = FragmentClass.api ∧
+      env.standardAt { source := exitSource, type := value.type, key := key }.key = none
+in the application
+  Or.inr rfl
+Benitoite/Interval/DomainExamples.lean:200:87: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.19 = ?m.19
+but is expected to have type
+  match { source := listenSource, type := value.type, key := key }.source with
+  | callee.call labels positions args =>
+    rangeCallBinding env { source := listenSource, type := value.type, key := key } = none
+  | x =>
+    classify { source := listenSource, type := value.type, key := key }.source = FragmentClass.api ∧
+      env.standardAt { source := listenSource, type := value.type, key := key }.key = none
+in the application
+  Or.inr rfl

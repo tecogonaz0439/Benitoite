@@ -1,0 +1,46 @@
+Benitoite/Interval/BudgetCallReach.lean:223:4: error: Type mismatch
+  within_unknown fuel env ?m.226 ?m.227 extra limits ready
+has type
+  Spec
+    (do
+      unknownChildren (expr fuel) (block fuel) fuel env ?m.226
+      unsupported)
+    limits ready (fun x => True) (fun warning => extra warning ∨ Scope.allows ?m.227 ready.next warning) fun x => True
+but is expected to have type
+  Spec
+    (match none with
+    | none => do
+      unknownChildren (expr fuel) (block fuel) fuel env (callee.call labels positions sources)
+      unsupported
+    | some val => do
+      skipExpr fuel callee
+      let values ← arguments fuel env sources
+      let output ←
+        scan
+            (BudgetScan.rangeValue env
+              { source := callee.call labels positions sources, type := Ty.base BaseTy.integer, key := key })
+      pure (baseThen values output))
+    limits ready (fun x => True)
+    (fun warning => extra warning ∨ (CallReach.expr env (callee.call labels positions sources)).allows ctx.next warning)
+    fun x => True
+Benitoite/Interval/BudgetCallReach.lean:236:6: error: Type mismatch
+  within_bind (walk_scan ?m.315) (within_scan ?m.315 ?m.323) fun x => within_pure (?m.322 x) ?m.323
+has type
+  Within
+    (do
+      let x ← scan ?m.315
+      pure (?m.322 x))
+    (empty ++ empty) ?m.323
+but is expected to have type
+  Within
+    (do
+      let output ←
+        scan
+            (BudgetScan.rangeValue env
+              { source := callee.call labels positions sources, type := Ty.base BaseTy.integer, key := key })
+      pure (baseThen values output))
+    empty extra
+Benitoite/Interval/BudgetCallReach.lean:242:6: error: 'change' tactic failed, pattern
+  ?m.362 ∧ ?m.363
+is not definitionally equal to target
+  (CallReach.expr env (callee.call labels positions sources)).allows ctx.next warning

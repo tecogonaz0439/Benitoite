@@ -1,0 +1,58 @@
+diff --git a/formal/Benitoite/Interval/BudgetWhole.lean b/formal/Benitoite/Interval/BudgetWhole.lean
+index 607c15d9..b4f30b6f 100644
+--- a/formal/Benitoite/Interval/BudgetWhole.lean
++++ b/formal/Benitoite/Interval/BudgetWhole.lean
+@@ -202,7 +202,8 @@ def definitions (limits : Limits) (fuel : Nat) (inputs : List Definition) (repor
+         let next := { report with definitionsRev := output :: report.definitionsRev, after := output.embedded.after }
+         definitions limits fuel rest next
+ 
+-/-- モジュールを平坦化せず、ソース順の二つの列を逐次読む。 -/
++/-- モジュールを平坦化せず、ソース順の二つの列を逐次読む。
++分類の消費は全体へ残し、先頭の定義に本体消費を引き継がない。 -/
+ def modules (limits : Limits) (fuel : Nat) (inputs : List Module) (report : Report) : Report :=
+   match inputs with
+   | [] => report
+@@ -214,7 +215,7 @@ def modules (limits : Limits) (fuel : Nat) (inputs : List Module) (report : Repo
+           BudgetScan.tick .classification).run limits report.after with
+       | .stopped reason last => { report with remainingModules := inputs, stopped := some (.budget reason), after := finishBody last }
+       | .ok _ ready =>
+-        let next := definitions limits fuel input.definitions { report with after := ready }
++        let next := definitions limits fuel input.definitions { report with after := finishBody ready }
+         match next.stopped with
+         | some _ => { next with remainingModules := rest }
+         | none => modules limits fuel rest next
+diff --git a/formal/Benitoite/Interval/BudgetWholeExamples.lean b/formal/Benitoite/Interval/BudgetWholeExamples.lean
+index b502d596..1313f8ad 100644
+--- a/formal/Benitoite/Interval/BudgetWholeExamples.lean
++++ b/formal/Benitoite/Interval/BudgetWholeExamples.lean
+@@ -56,6 +56,22 @@ private def summary (r : Report) : List (String × List (Nat × WarningCause)) :
+ #guard ((analyze { body := ⟨30, 10000⟩ } {} 100 sources).definitionsRev.reverse.map
+   fun d => d.input.name) = ["First.a", "First.b", "Second.c"]
+ #guard (analyze {} {} 100 sources).after.whole.operations = 93
++
++-- モジュールの分類を先頭本体へ残すと、本体上限11で先頭だけ候補を失う。
++-- 分類の消費は全体へ残し、元定義の先頭と二番目で同じ本体予算を使う。
++#guard
++  let sample := input "First.sample" (.last division)
++  let unrelated := input "First.unrelated" .empty
++  let rows := ([10, 11, 12] : List Nat).map fun cap =>
++    ([[sample], [unrelated, sample]] : List (List Definition)).map fun inputs =>
++      let r := analyze { body := ⟨cap, 1000⟩ } {} 100 [⟨inputs⟩]
++      (bodyOutputs r).filterMap fun b =>
++        if b.definition == sample.name then
++          some (b.output.context.budget.body.operations, warningKeys b)
++        else none
++  rows = [ [[(10, [])], [(10, [])]],
++    [[(11, [(1, .zeroDivisor)])], [(11, [(1, .zeroDivisor)])]],
++    [[(11, [(1, .zeroDivisor)])], [(11, [(1, .zeroDivisor)])]] ]
+ #guard (excludedBodies (analyze {} {} 0 sources)).length = 3
+ #guard stopCount .depth (bodyStops (analyze {} {} 0 sources)) = 3
+ #guard stopCount .depth (phaseStops (analyze {} {} 0 sources)) = 3
+@@ -75,6 +91,6 @@ private def summary (r : Report) : List (String × List (Nat × WarningCause)) :
+   (reports.map fun r => (inputDefinitionCount r, unsupportedBodies r,
+     bodyBudgetExceeded r, wholeBudgetSkipped r, unidentifiedBodies r)) =
+     [(3, 1, 0, 0, 0), (3, 0, 0, 3, 0), (3, 0, 0, 3, 0),
+-      (3, 0, 0, 2, 1), (3, 0, 2, 0, 1)]
++      (3, 0, 0, 2, 1), (3, 0, 0, 0, 3)]
+ 
+ end Benitoite.Interval.BudgetWhole

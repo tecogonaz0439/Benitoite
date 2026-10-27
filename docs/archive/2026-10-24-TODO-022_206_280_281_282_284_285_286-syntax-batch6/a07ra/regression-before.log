@@ -1,0 +1,28 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.84s
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 1 test
+
+thread 'constant_intervals_analyze_bodies_and_merge_original_warning_locations' (2744099) panicked at crates/benitoite/tests/declarations.rs:1751:9:
+assertion `left == right` failed: const debug: Boolean = false
+function sample() -> Integer
+ bind z <- 0
+ return if debug then 10 div z else 1 end if
+end function
+: [Diagnostic { kind: Check, severity: Warning, code: Some(W0401), message: "this divides by zero", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(100), end: BytePos(101) }, text: "the divisor is always 0" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(59), end: BytePos(70) }, text: "this binding or comparison contributes to the inferred interval" }], notes: ["the inferred divisor interval is [0,0]", "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: [W0401]
+ right: []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test constant_intervals_analyze_bodies_and_merge_original_warning_locations ... FAILED
+
+failures:
+
+failures:
+    constant_intervals_analyze_bodies_and_merge_original_warning_locations
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.08s
+
+error: test failed, to rerun pass `-p benitoite --test declarations`
+
+recorded command exit=101; elapsed=8.720s

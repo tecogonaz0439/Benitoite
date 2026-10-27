@@ -1,0 +1,39 @@
+{
+  "lib": [
+    1332,
+    0,
+    21
+  ],
+  "integrationTargets": 40,
+  "integrationTotals": [
+    393,
+    0,
+    10
+  ],
+  "correction": [
+    [
+      33,
+      0,
+      1
+    ]
+  ],
+  "toolchains": {
+    "rust": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "python": "Python 3.9.6"
+  },
+  "afterInitialChanges": [
+    "crates/benitoite/tests/desugar_export.rs",
+    "crates/benitoite/tests/desugar_export/interval.rs",
+    "crates/benitoite/tests/desugar_export/interval/README.md",
+    "crates/benitoite/tests/desugar_export/interval/source.rs",
+    "crates/benitoite/tests/desugar_export/interval/check-manifest.py",
+    "crates/benitoite/tests/desugar_export/interval/manifest.rs"
+  ],
+  "productionUnchangedAfterInitialCheck": true,
+  "budgetSourceHashes": {
+    "bodyBudget": "e831a99b9ac1cf79e4342e356dbed004c7cf2663df536c546a66a9d7e2ffc8be",
+    "wholeBudget": "394d5e20976e86fd2ce02e8823cb6da25cb7b0c7eee6392acb731646336095bb"
+  },
+  "budgetInputsUnchanged": true
+}

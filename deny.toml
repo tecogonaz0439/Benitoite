@@ -3,3 +3,7 @@ allow = ["MIT", "Apache-2.0", "ISC", "BSD-3-Clause", "Apache-2.0 WITH LLVM-excep
 
 [graph]
 targets = ["aarch64-apple-darwin", "x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[advisories]
+db-urls = ["https://github.com/RustSec/advisory-db"]
+ignore = []

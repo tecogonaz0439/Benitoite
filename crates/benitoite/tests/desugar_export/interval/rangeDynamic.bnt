@@ -1,0 +1,6 @@
+function sample(bound: Integer) -> Integer
+ return match Range.checkInteger(value: 5, maximum: bound, minimum: 0) with
+ case Result.Ok(c) -> Range.value(value: c)
+ case Result.Error(_) -> return -99
+ end match
+end function

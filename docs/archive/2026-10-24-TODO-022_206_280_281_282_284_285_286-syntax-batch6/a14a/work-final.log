@@ -1,0 +1,748 @@
+== plan: level work against 58d2fcb5f7449db6011972947b665dda04033f80 (changed files not classified) (partial selection: --only fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+    Checking benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.39s
+== tests_related
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/build_info.rs (target/debug/deps/build_info-74284aae04ee09e8)
+
+running 5 tests
+test build_inputs_and_git_collection ... ignored, long: builds a temporary crate for the build input and Git acceptance table
+test git_failures ... ignored, long: builds temporary crates to check Git collection failures
+test git_states ... ignored, long: builds temporary crates to check Git state and recollection
+test loose_ref_refresh ... ignored, long: builds temporary crates to check Git state and recollection
+test packed_ref_refresh ... ignored, long: builds temporary crates to check Git state and recollection
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 3 tests
+test long_constant_chain_has_bounded_check_allocations ... ok
+test ordinary_calls_and_returns_allocate_only_for_capacity_growth ... ok
+test repeated_constant_diagnostics_share_bounded_origin_work ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.12s
+
+     Running tests/checked_args.rs (target/debug/deps/checked_args-be3cae742fe14985)
+
+running 10 tests
+test log_record_parameter_is_an_ordinary_contextual_name ... ok
+test constant_origins_follow_cached_transitive_values ... ok
+test constant_origin_labels_are_bounded_and_keep_chain_endpoints ... ok
+test range_checked_integer_hides_all_representation_operations ... ok
+test regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion ... ok
+test source_location_requires_the_standard_direct_zero_argument_call ... ok
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test regex_constants_reject_only_known_direct_standard_calls ... ok
+test additional_budgets_fall_back_to_runtime_and_do_not_reset_per_body ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.65s
+
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 33 tests
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test log_default_output_runs_through_the_real_cli_in_both_modes ... ok
+test log_main_report_and_effect_limits_keep_schema_one ... ok
+test file_effects_reach_main_reports_and_limit_origins ... ok
+test failure_entry_help_uses_resolved_standard_effect ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test cli_process_contracts ... ok
+test main_check_reports_warnings_without_execution ... ok
+test main_check_reports_sources_without_execution ... ok
+test main_check_reports_failures_without_execution ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test run_failure_contracts_are_checked_before_effect_limits ... ok
+test skill_document_output_failures_exit_one ... ok
+test main_check_reports_contracts_without_execution ... ok
+test shared_decisions_are_accepted_by_all_cli_modes ... ok
+test skill_documents_need_no_writable_directory ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test tool_panics_are_internal_reports ... ok
+test main_check_reports_shell_without_execution ... ok
+test test_doc_uses_version_two_and_keeps_check_nonexecuting ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_type_limits ... ok
+test interval_reports_keep_coverage_and_counts_independent_of_acceptance ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.70s
+
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-dfd1484753d40198)
+
+running 4 tests
+test export_coverage ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_named_coverage ... ok
+test export_batch4_integer ... ok
+test scalar_source_arms_preserve_selection ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 28 tests
+test diagnosed_binding_chain_scales_with_input_length ... ignored, long: checks near-linear recovery of a long chain of diagnosed bindings
+test config_rejects_duplicate_unknown_and_incomplete_settings ... ok
+test declarations_do_not_resolve_check_or_evaluate_bodies ... ok
+test diagnosed_recovery_keeps_pending_call_escape ... ok
+test diagnosed_recovery_does_not_infer_values_from_callback_requirements ... ok
+test diagnosed_recovery_skips_coverage_without_a_known_pattern_shape ... ok
+test file_uses_failure_no_fail_is_enforced_at_calls ... ok
+test file_uses_external_declarations_check_the_effective_contract ... ok
+test file_uses_inventory_keeps_original_ast_and_effect_origins ... ok
+test file_uses_imports_and_higher_order_values_use_merged_contracts ... ok
+test file_uses_loading_merges_functions_and_rejects_config_declarations ... ok
+test declaration_errors_are_rejected_at_the_same_stage_as_check ... ok
+test constant_intervals_analyze_bodies_and_merge_original_warning_locations ... ok
+test inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries ... ok
+test inventory_json_preserves_resolved_types_order_spans_and_input_hashes ... ok
+test file_uses_visibility_reports_once_and_repairs_all_public_functions ... ok
+test checked_lists_hide_representation_and_bind_indices_to_their_list ... ok
+test opaque_declarations_keep_representation_and_owner_but_hide_its_contract ... ok
+test diagnosed_binding_recovery_preserves_own_contracts ... ok
+test file_uses_contracts_preserve_existing_restrictions ... ok
+test log_standard_declarations_and_effect_identity ... ok
+test opaque_types_keep_nominal_equality_and_nonempty_coverage ... ok
+test log_standard_handlers_keep_the_outer_effect_contract ... ok
+test interpolation_formats_preserve_recovery ... ok
+test diagnosed_recovery_preserves_independent_later_checks ... ok
+test interval_boundaries_forget_outer_facts_and_keep_inner_warnings ... ok
+test diagnosed_recovery_preserves_partial_structure ... ok
+test local_intervals_report_only_reached_arithmetic_failures ... ok
+
+test result: ok. 27 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 5.32s
+
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 31 tests
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch3::export_batch3_solve ... ok
+test batch5::export_batch5_formats ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test batch3::export_batch4_log_standard ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_batch2_character ... ok
+test export_independent_program_exchange ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_named_declarations_smoke ... ok
+test export_batch2_failure ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test export_width_smoke ... ok
+test export_named_types_smoke ... ok
+test named::export_extensible_package ... ok
+test named::export_extensible_source ... ok
+test named::export_hole_argument_plans ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_named_calls_smoke ... ok
+test named::export_named_static_calls_smoke ... ok
+test named::export_generated_record_property ... ok
+test export_batch2_op ... ok
+test named::export_general_named_programs ... ok
+test batch3::export_batch3_builders ... ok
+
+test result: ok. 30 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.28s
+
+     Running tests/external_signals.rs (target/debug/deps/external_signals-ea7ec4ae24524f87)
+
+running 3 tests
+test wasmtime_process_probe ... ok
+test rust_stack_overflow_after_wasm_call_is_detected ... ok
+test interrupts_during_wasm_have_exit_status_130 ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.23s
+
+     Running tests/fmt_command.rs (target/debug/deps/fmt_command-7bb132e1501eefba)
+
+running 21 tests
+test check_escapes_terminal_controls_in_the_file_name ... ok
+test check_reports_without_rewriting ... ok
+test execute_permission_is_kept ... ok
+test directory_walk_formats_package_settings ... ok
+test a_link_given_directly_rewrites_its_target_and_keeps_the_link ... ok
+test directory_expands_to_sorted_bnt_files_only ... ok
+test fmt_rejects_a_fifo_without_blocking ... ok
+test opaque_attribute_survives_formatting_with_docs_and_visibility ... ok
+test rewrites_changed_files_and_leaves_canonical_files_untouched ... ok
+test file_effect_declarations_keep_source_contracts ... ok
+test syntax_errors_and_unreadable_files_do_not_stop_other_files ... ok
+test preserves_static_interpolation_formats ... ok
+test unreadable_directory_is_reported_and_other_paths_continue ... ok
+test unwritable_directory_keeps_the_original_and_leaves_no_temp_file ... ok
+test json_diagnostics_are_one_object_per_line ... ok
+test usage_errors_have_two_lines_and_exit_two ... ok
+test fmt_refuses_read_only_and_hard_linked_targets_but_check_does_not ... ok
+test block_expressions_format_nested_statements_and_keep_values ... ok
+test saves_short_lambdas_on_their_original_line ... ok
+test builder_annotations_and_direct_operations_survive_formatting ... ok
+test fmt_keeps_parenthesized_effectful_function_type_arguments ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/golden.rs (target/debug/deps/golden-7190357a94580310)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 54.91s
+
+     Running tests/http_descriptor_exhaustion.rs (target/debug/deps/http_descriptor_exhaustion-df465bef20f90de2)
+
+running 1 test
+test descriptor_exhaustion_preserves_server_and_recovers_in_both_modes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running tests/http_exchange_release.rs (target/debug/deps/http_exchange_release-a1b457383d0948a8)
+
+running 3 tests
+test runtime_error_after_partial_response_finishes ... ok
+test one_sigint_after_partial_response_finishes ... ok
+test cancelled_responses_release_and_leave_file_workers_available ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+
+     Running tests/interrupt_process.rs (target/debug/deps/interrupt_process-3c7fa7c12fec49de)
+
+running 11 tests
+test sigint_interrupts_stdin_and_preserves_output_after_the_ready_line ... ok
+test sigint_interrupts_with_an_open_reader ... ok
+test second_sigint_terminates_during_file_writer_release ... ok
+test first_signal_releases_buffered_file_writer ... ok
+test sigterm_interrupts_timers_in_parent_and_child_tasks ... ok
+test sigint_interrupts_external_wasm_without_a_trap_report ... ok
+test second_sigint_terminates_without_waiting_for_blocked_stdout ... ok
+test sigint_interrupts_regex_find_all_between_matches ... ok
+test sigint_interrupts_tail_recursive_computation ... ok
+test sigint_at_sort_end_overrides_a_result_error_return ... ok
+test sigint_at_sort_end_overrides_a_unit_return ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.90s
+
+     Running tests/io_modes.rs (target/debug/deps/io_modes-4ca7874bcf3ce9f4)
+
+running 11 tests
+test log_default_output_is_ordered_escaped_and_filtered_in_both_modes ... ok
+test log_sink_failure_stops_before_the_next_sink ... ok
+test log_standard_handlers_preserve_order_attributes_and_outer_effects ... ok
+test concurrent_file_operations_collect_results_in_action_order ... ok
+test runtime_error_during_reader_io_has_the_same_stop_report ... ok
+test stdin_prompts_are_transferred_before_each_read ... ok
+test reader_waits_alongside_computation ... ok
+test typed_failure_converted_in_children_keeps_io_and_action_order ... ok
+test file_uses_failure_contract_connects_to_io_handlers ... ok
+test virtual_sleep_and_file_write_complete_in_either_order ... ok
+test inherited_handlers_intercept_or_pass_through_builtin_operations ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.09s
+
+     Running tests/l10_console_clock_process.rs (target/debug/deps/l10_console_clock_process-a604957de93742f9)
+
+running 3 tests
+test command_defaults_record_update_and_instant_accessor ... ok
+test real_clock_reads_tz_without_changing_parent_environment ... ok
+test result_conversion_does_not_hide_release_failure_or_die ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+     Running tests/l13_external_commands.rs (target/debug/deps/l13_external_commands-0fada77aa6017f35)
+
+running 7 tests
+test captured_attached_output_follows_console_and_uses_command_input ... ok
+test cli_survives_child_closing_input_early ... ok
+test cli_attached_inherits_streams_and_command_input_overrides_stdin ... ok
+test cli_preserves_inherited_loader_environment_and_allows_other_names ... ok
+test cli_rejects_explicit_loader_environment_before_starting_child ... ok
+test attached_output_larger_than_buffer_keeps_later_writes_in_order ... ok
+test timeout_returns_before_child_finishes_and_child_is_not_terminated ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.17s
+
+     Running tests/l21_json.rs (target/debug/deps/l21_json-b23fe1f810ae73e9)
+
+running 4 tests
+test total_amount_and_parse_error_accessors ... ok
+test source_queries_and_value_equality ... ok
+test codec_extra_key_path_escapes_untrusted_key ... ok
+test codec_roundtrips_strict_numbers_and_relative_paths ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/l23_csv.rs (target/debug/deps/l23_csv-1468f7923eeef67f)
+
+running 1 test
+test parse_error_accessors_read_the_constructed_record ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/l24_time.rs (target/debug/deps/l24_time-7fcfd84595cd8bcb)
+
+running 1 test
+test record_accessors_and_map_keys_follow_source_declarations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/l30_http_server.rs (target/debug/deps/l30_http_server-62505e6788aaeef4)
+
+running 12 tests
+test accepting_allows_computation_and_sleep_and_can_be_interrupted ... ok
+test invalid_and_slow_connections_do_not_stop_the_same_accept ... ok
+test closing_listener_wakes_its_waiting_accept ... ok
+test relay_of_chunked_response_uses_content_length_in_both_modes ... ok
+test expect_continue_arrives_before_body_and_final_response_in_both_modes ... ok
+test disconnected_exchange_release_does_not_stop_the_program ... ok
+test exchange_scope_sends_500_and_explicit_close_returns_success ... ok
+test rejected_connections_preserve_responses_with_unread_body_in_both_modes ... ok
+test respond_twice_and_access_after_close_are_runtime_errors ... ok
+test response_framing_uses_request_method_and_status_in_both_modes ... ok
+test roundtrip_content_length_and_chunked_in_both_modes ... ok
+test integration_scripts_compile ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.67s
+
+     Running tests/l31_http_serve_and_helpers.rs (target/debug/deps/l31_http_serve_and_helpers-7aad19a347f89901)
+
+running 6 tests
+test serve_returns_network_error_when_port_is_in_use ... ok
+test serve_inherits_tail_resuming_handler ... ok
+test serve_responds_to_all_simultaneous_requests ... ok
+test computing_handler_allows_another_request_to_run ... ok
+test handler_runtime_error_and_non_tail_inherited_clause_stop_every_task ... ok
+test route_and_helpers_work_with_listen_and_serve_in_both_modes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+     Running tests/l32_http_client.rs (target/debug/deps/l32_http_client-098889df410f9255)
+
+running 9 tests
+test closed_listener_port_returns_connection_refused ... ok
+test invalid_request_body_and_methods_return_invalid_input ... ok
+test maximum_integer_timeout_receives_response ... ok
+test real_timeout_returns_timed_out_without_server_response ... ok
+test redirects_follow_ten_and_return_other_on_eleventh ... ok
+test status_headers_post_and_source_defaults_roundtrip ... ok
+test redirect_connection_reuse_host_change_and_missing_location ... ok
+test redirect_methods_relative_locations_and_headers_are_preserved ... ok
+test malformed_and_oversized_redirect_bodies_return_errors ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.91s
+
+     Running tests/named_arguments.rs (target/debug/deps/named_arguments-4cc393dac98db971)
+
+running 22 tests
+test deferred_list_elements_determine_named_callback_contracts ... ok
+test final_higher_order_contracts_preserve_parameter_order ... ok
+test known_local_values_and_explicit_higher_order_contracts_keep_their_names ... ok
+test class_implementations_require_declaration_names_in_order ... ok
+test builders_require_import_in_the_using_module ... ok
+test nested_dictionary_arguments_wait_for_numeric_defaulting ... ok
+test constructor_function_values_and_direct_holes_keep_the_original_parameter_names ... ok
+test positional_callbacks_preserve_core_contracts ... ok
+test named_partial_application_keeps_return_try_and_resume_inside_its_lambda ... ok
+test new_contract_boundaries_check_implementations_in_imported_modules ... ok
+test record_syntax_checks_constructor_kind_and_keeps_real_record_errors ... ok
+test final_call_rules_reject_positional_arguments_in_all_three_paths ... ok
+test unresolved_contracts_suppress_dependent_class_ambiguity_and_keep_child_errors ... ok
+test unresolved_special_calls_explain_where_to_put_the_contract ... ok
+test block_expressions_preserve_scope_effects_and_escape_diagnostics ... ok
+test ordinary_named_calls_report_exact_causes_at_the_public_boundary ... ok
+test unresolved_contracts_wait_for_the_same_body_and_never_invent_names ... ok
+test binary_traits_preserve_error_types_kinds_and_callback_names ... ok
+test operations_use_declared_names_and_handlers_bind_independent_local_names ... ok
+test named_holes_and_pipe_insertion_keep_exact_contracts_and_causes ... ok
+test string_builders_keep_second_class_values_and_capture_boundaries ... ok
+test list_and_bytes_builders_keep_types_and_boundaries ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.42s
+
+     Running tests/network_faults.rs (target/debug/deps/network_faults-4b6fba212933d442)
+
+running 3 tests
+test an_unmatched_host_reaches_the_loopback_server ... ok
+test listen_and_serve_return_host_not_found_before_listening ... ok
+test get_and_send_expose_all_four_fault_kinds_through_run_and_cli ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s
+
+     Running tests/open_062.rs (target/debug/deps/open_062-4dd0345666867525)
+
+running 8 tests
+test open_062_r01_handled_race_requires_state ... ok
+test open_062_r04_blocked_stdout_does_not_block_timers_stderr_or_interrupts ... ok
+test open_062_r13_ready_line_arrives_while_another_task_computes ... ok
+test open_062_r13_prompt_arrives_before_stdin_work_starts ... ok
+test open_062_r02_request_mode_starts_io_while_another_task_computes ... ok
+test open_062_r03_handle_waits_for_or_cancels_grandchildren ... ok
+test open_062_r05_cancelled_read_returns_and_releases_the_reader_once ... ok
+test open_062_r01_pure_all_values_agree_and_stops_are_runtime_errors ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.23s
+
+     Running tests/open_062_http.rs (target/debug/deps/open_062_http-4e71efa35fe0c753)
+
+running 4 tests
+test open_062_r14_client_header_returns_invalid_http_data ... ok
+test open_062_r14_server_header_rejects_invalid_utf8 ... ok
+test open_062_r14_query_rejects_invalid_utf8_and_keeps_malformed_escape ... ok
+test open_062_r04_blocked_stdout_does_not_block_http_accept ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+     Running tests/package_command.rs (target/debug/deps/package_command-282300bdfc18d55a)
+
+running 16 tests
+test explicit_missing_config_and_directory_move_do_not_edit_the_entry ... ok
+test command_preconditions_reject_unwritable_or_missing_destinations_and_package_dependencies ... ok
+test components_are_reported_and_invalid_components_do_not_prevent_add ... ok
+test config_destination_root_only_and_unhashed_dependencies ... ok
+test move_appends_to_comment_only_config_without_reformatting_comments ... ok
+test move_preserves_check_results_and_rolls_back_when_entry_is_read_only ... ok
+test package_syntax_errors_and_hash_errors_abort_updates_atomically ... ok
+test adding_to_existing_headers_ignores_unrelated_import_errors_and_bulk_updates_are_atomic ... ok
+test add_and_update_record_hashes_effect_deltas_and_unchanged_state ... ok
+test file_uses_package_records_deltas_without_type_checking ... ok
+test usage_errors_and_terminal_controls_do_not_change_other_files ... ok
+test add_validates_only_the_target_dependency_config_and_marks_proposed_locations ... ok
+test rejected_commands_do_not_write_files_and_support_json_diagnostics ... ok
+test update_repairs_malformed_effects_and_reports_unknown_previous_contract ... ok
+test file_uses_package_counts_only_files_with_public_top_level_functions ... ok
+test package_identifies_log_consistently_in_individual_and_file_uses ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.14s
+
+     Running tests/property_library.rs (target/debug/deps/property_library-9eb81d6b42debf5d)
+
+running 17 tests
+test maximum_shrinks_budget_drives_yield_continuations_without_stack_growth ... ignored, long: drives 100000 Yield candidates through Ok continuation and Error restart
+test maximum_work_budget_advances_skip_sequences_without_stack_growth ... ignored, long: drives the public maxShrinkWork upper bound of 1000000
+test interruption_remains_a_runtime_stop_during_property_trials ... ok
+test cyclic_equal_and_zero_budget_shrinkers_stop_without_equality_on_inputs ... ok
+test explicit_state_size_and_map_duplicate_contracts ... ok
+test inclusive_integers_finite_floats_unicode_and_empty_containers ... ok
+test duplicate_map_keys_keep_first_and_consume_each_draw ... ok
+test builtin_shrinkers_have_ordered_distinct_candidates ... ok
+test obsolete_list_shrinkers_and_incomplete_config_are_rejected ... ok
+test shrink_steps_preserve_single_transitions_and_defer_callbacks ... ok
+test shrinking_preserves_messages_counts_all_candidates_and_replays ... ok
+test unknown_continuation_at_exact_budget_reports_limit ... ok
+test work_budget_counts_generation_continuations_and_trials_without_peeking ... ok
+test configuration_is_validated_before_any_callback ... ok
+test effectful_callbacks_are_rejected_at_the_public_contract ... ok
+test runtime_failures_from_each_callback_propagate ... ok
+test deeply_composed_skip_sequences_advance_without_stack_growth ... ok
+
+test result: ok. 15 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 8.03s
+
+     Running tests/random_programs.rs (target/debug/deps/random_programs-83bf775e37def9dc)
+
+running 7 tests
+test shared_bridge_values_are_compared_with_small_observations ... ok
+test row_fallback_preserves_guard_alternatives_and_list_bindings ... ok
+test seed_reproduces_source ... ok
+test shared_decisions_execute_previous_exponential_cases ... ok
+test detects_and_shrinks_changed_output ... ok
+test constrained_operation_call_forms_differential ... ok
+test random_differential ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 44.19s
+
+     Running tests/reference_examples.rs (target/debug/deps/reference_examples-37c744dcd0b23c60)
+
+running 1 test
+test code_examples_in_the_language_reference_behave_as_written ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.37s
+
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-a938f8f1251b1df6)
+
+running 23 tests
+test format_invalid_internal_arguments_are_internal_errors ... ok
+test format_integer_radices_signs_and_zero_padding ... ok
+test format_fractional_rounding_uses_each_values_exact_representation ... ok
+test format_all_fourteen_heads_have_fixed_contracts_and_execute ... ok
+test format_special_values_and_display_width_alignment ... ok
+test injected_parts_wait_for_output_before_reading_stdin ... ok
+test checked_lists_share_elements_and_map_effects_in_order ... ok
+test log_scalar_conversions_use_explicit_instances_and_evaluate_inputs_once ... ok
+test checked_lists_preserve_inputs_and_error_boundaries ... ok
+test explicit_and_implicit_try_return_have_the_same_success_and_failure ... ok
+test formatted_interpolation_connects_constants_and_both_evaluators ... ok
+test map_and_set_standard_traits_show_combine_and_empty ... ok
+test process_exit_finishes_output_and_returns_the_requested_status ... ok
+test opaque_failures_show_their_messages_in_both_io_modes ... ok
+test display_width_functions_preserve_content_and_pad_in_both_modes ... ok
+test narrow_integer_conversions_preserve_values_and_reject_invalid_input ... ok
+test narrow_integer_standard_functions_keep_floor_and_truncation_distinct ... ok
+test scope_checked_values_preserve_inputs_and_runtime_errors ... ok
+test log_large_records_share_console_buffer_and_final_flush ... ok
+test display_width_padding_rejects_oversized_dynamic_targets ... ok
+test fixed_width_integer_standard_functions_report_overflow_and_zero_divisors ... ok
+test log_output_failure_uses_the_console_stop_and_exit_status ... ok
+test map_and_set_source_functions_call_in_key_order_once_and_use_the_results ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.21s
+
+     Running tests/skill_docs.rs (target/debug/deps/skill_docs-5b49ceaf91734838)
+
+running 8 tests
+test syntax_chapter_without_the_heading_is_rejected ... ok
+test every_file_under_skill_is_embedded ... ok
+test generated_documents_are_up_to_date ... ok
+test declarations_keep_extensible_and_omit_implementation_details ... ok
+test embedded_files_cover_every_skill_file ... ok
+test each_module_has_a_file_with_its_import_name ... ok
+test grammar_has_no_japanese_notes_and_keeps_every_rule ... ok
+test diagnostics_list_every_code_and_no_retired_code ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/skill_examples.rs (target/debug/deps/skill_examples-cf66a301ffe96469)
+
+running 3 tests
+test skill_md_is_short_and_lists_every_reference_document ... ok
+test example_checker_reports_document_and_line_of_a_wrong_output ... ok
+test code_examples_in_hand_written_documents_behave_as_written ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.95s
+
+     Running tests/spec_examples.rs (target/debug/deps/spec_examples-b7d1eaef83e2d734)
+
+running 7 tests
+test unextracted_text_fences_are_rejected ... ok
+test loading_errors_are_counted_as_failures ... ok
+test broken_syntax_example_is_counted_as_unreadable ... ok
+test expected_failure_must_still_be_invalid ... ok
+test local_binding_violations_are_counted_and_fragment_shadow_is_allowed ... ok
+test numeric_spec_examples_behave_as_written ... ok
+test spec_and_appendix_examples_are_readable ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.15s
+
+     Running tests/stdlib_doc_examples.rs (target/debug/deps/stdlib_doc_examples-d023dc849acf58a7)
+
+running 1 test
+test standard_doc_examples_behave_as_written ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.57s
+
+     Running tests/test_command.rs (target/debug/deps/test_command-3358157b9881c5d2)
+
+running 52 tests
+test an_unreadable_directory_runs_no_tests ... ok
+test check_rejects_explicit_execution_options_even_at_their_defaults ... ok
+test check_is_accepted_and_missing_paths_still_report_usage_errors ... ok
+test all_passing_tests_end_with_ok_and_no_failures_section ... ok
+test an_interrupt_request_ends_with_the_interrupted_summary ... ok
+test check_observes_interrupts_only_before_each_file ... ok
+test a_file_with_check_errors_is_not_run_but_others_are ... ok
+test check_report_usage_errors_scan_options_in_both_orders ... ok
+test check_report_keeps_completed_and_unstarted_targets_on_interrupt ... ok
+test check_report_preserves_contracts_descriptions_locations_and_source_identity ... ok
+test check_report_keeps_success_after_errors_and_diagnostic_indices ... ok
+test check_report_preserves_warning_promotion_and_program_shell_scope ... ok
+test deny_warnings_skips_a_file_with_warnings ... ok
+test a_file_without_tests_writes_only_the_summary ... ok
+test deadlock_reports_name_the_first_task_after_the_test_function ... ok
+test directory_walk_skips_settings_and_nested_package_roots ... ok
+test check_keeps_diagnostics_and_checks_files_after_errors ... ok
+test check_does_not_run_user_code_or_write_result_lines ... ok
+test die_source_fails_one_test_and_keeps_running ... ok
+test doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs ... ok
+test doc_report_preserves_partial_unknowns_and_option_rejections ... ok
+test doc_examples_use_public_imports_without_inheriting_private_names ... ok
+test a_directory_is_expanded_in_path_order_with_itself_as_the_root ... ok
+test doc_text_reports_escape_control_characters_in_example_ids ... ok
+test doc_expectations_fail_per_example_and_keep_running ... ok
+test doc_modes_share_discovery_and_version_two_reports ... ok
+test limited_test_options_reject_invalid_or_check_only_invocations ... ok
+test json_lines_have_the_fields_in_order ... ok
+test failure_entry_contracts_are_checked_before_test_execution ... ok
+test doc_run_checks_unhandled_effects_and_exact_stderr ... ok
+test exit_status_prioritizes_internal_and_check_errors_over_test_failures ... ok
+test limited_test_control_flow_matches_reported_effects ... ok
+test log_default_events_are_captured_once_by_the_test_runner ... ok
+test file_effects_reach_test_contracts_but_not_outer_doc_examples ... ok
+test log_handlers_receive_expanded_source_locations ... ok
+test mixed_results_are_reported_in_the_text_form ... ok
+test ordinary_test_does_not_parse_documentation_examples ... ok
+test max_call_stack_limits_each_test ... ok
+test log_test_report_and_effect_limits_use_the_canonical_name ... ok
+test prepared_sources_are_reused_and_the_next_file_is_prepared_after_execution ... ok
+test result_lines_escape_file_names_only_in_text_output ... ok
+test limited_tests_recheck_reported_contracts_after_changes ... ok
+test process_interrupt::sigint_stops_the_runner_with_the_interrupted_summary ... ok
+test limited_tests_consume_the_prepared_artifacts_in_order ... ok
+test doc_prepares_all_entries_and_limits_before_any_execution ... ok
+test tests_of_imported_modules_run_only_when_their_file_is_given ... ok
+test property_results_use_ordinary_test_reports_and_check_never_runs_callbacks ... ok
+test task_origins_end_at_the_test_function ... ok
+test source_locations_execute_at_written_sites_and_original_doc_comments ... ok
+test check_report_and_execution_select_the_same_entries_and_functions ... ok
+test limited_tests_reject_every_entry_before_any_execution ... ok
+test external_session_shares_preparation_and_isolates_each_test ... ok
+
+test result: ok. 52 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.06s
+
+     Running tests/verify.rs (target/debug/deps/verify-93b1dbc573e190ff)
+
+running 3 tests
+test dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses ... ok
+test reference_sets_depend_on_successful_size_checked_combination ... ok
+test golden_programs_and_seeded_single_site_mutations has been running for over 60 seconds
+test golden_programs_and_seeded_single_site_mutations ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 63.07s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-27bc3607989d7d5a)
+
+running 5 tests
+test file_uses_failure_contract_connects_to_vm_handlers ... ok
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.17s
+
+     Running tests/vm_lazy.rs (target/debug/deps/vm_lazy-e28ee8ac02564c37)
+
+running 1 test
+test scripts_execute_nested_captured_and_repeated_lazy_bodies ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+     Running tests/vm_reference_cells.rs (target/debug/deps/vm_reference_cells-ee912349211b319a)
+
+running 2 tests
+test retried_update_trace_keeps_the_update_call_site ... ok
+test scripts_update_values_return_unit_and_release_frames_and_cycles ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.63s
+
+== source_rules
+== source_rules
+== skill_generated
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-03 位置の式
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 ファイル単位のエフェクトの宣言
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Logの通常宣言とハンドラの具体例
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 区間解析のInteger64の減算・乗算・一般の負号の接続
+  01-12 区間解析のInteger64加算
+  01-12 区間解析のInteger64除算と剰余
+  01-12 区間解析のIntegerパターンと腕入口
+  01-12 区間解析のguardとreturnの局所規則
+  01-12 区間解析の予算の状態と計上
+  01-12 区間解析の予算付きの別本体の発見
+  01-12 区間解析の予算付きの局所走査
+  01-12 区間解析の予算付きの式とフロー
+  01-12 区間解析の単一ifと正常値の合流
+  01-12 区間解析の土台の解析と健全性
+  01-12 区間解析の定数倍
+  01-12 区間解析の対象構文の評価関係
+  01-12 区間解析の局所環境と本体境界
+  01-12 区間解析の本体の識別と元の出現の対応
+  01-12 区間解析の束縛保存と単一比較
+  01-12 区間解析の検査全体の駆動
+  01-12 区間解析の減算と符号付き負号
+  01-12 区間解析の独立入力の保存と保証
+  01-12 区間解析の短絡と複合条件
+  01-12 区間解析の閉じた対象入力の評価
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 整数の閉区間の領域
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層のブロック式
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+selected checks passed
+A14a check result: {"command": ["scripts/check.sh", "--level", "work", "--base", "58d2fcb5f7449db6011972947b665dda04033f80", "--only", "fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally", "--test", "*"], "exit_code": 0, "wall_seconds": 329.151}
+      329.17 real       858.11 user        12.86 sys
+time: sysctl kern.clockrate: Operation not permitted

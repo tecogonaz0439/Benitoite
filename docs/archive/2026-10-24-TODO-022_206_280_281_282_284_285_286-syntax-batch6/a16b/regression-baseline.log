@@ -1,0 +1,48 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 26.10s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 6 tests
+test typeck::interval::tests::range_calls::nested_unrecognized_call_keeps_its_warning_in_the_independent_input ... ok
+
+thread 'typeck::interval::tests::range_calls::range_value_argument_uses_parent_environment_without_projecting_bounds' (5103078) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:131:9:
+assertion `left == right` failed
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::range_calls::range_value_argument_uses_parent_environment_without_projecting_bounds ... FAILED
+
+thread 'typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples' (5103075) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:64:17:
+assertion `left == right` failed: import Benitoite.Unofficial.Range
+function sample(x: Integer) -> Unit
+ bind _ <- Range.checkInteger(minimum: x div 0, maximum: 0, value: 1)
+end function
+
+  left: []
+ right: [3]
+
+thread 'typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown' (5103074) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:87:13:
+assertion `left == right` failed
+  left: 0
+ right: 1
+test typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples ... FAILED
+
+thread 'typeck::interval::tests::range_calls::range_calls_skip_remaining_arguments_after_abrupt_value_in_source_order' (5103077) panicked at crates/benitoite/src/typeck/interval/tests/range_calls.rs:112:13:
+assertion `left == right` failed
+  left: []
+ right: [3]
+test typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown ... FAILED
+test typeck::interval::tests::range_calls::range_calls_skip_remaining_arguments_after_abrupt_value_in_source_order ... FAILED
+test typeck::interval::tests::range_calls::range_calls_exclude_function_values_holes_pipes_and_parenthesized_callees ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_and_source_order_without_marking_unknown
+    typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples
+    typeck::interval::tests::range_calls::range_calls_skip_remaining_arguments_after_abrupt_value_in_source_order
+    typeck::interval::tests::range_calls::range_value_argument_uses_parent_environment_without_projecting_bounds
+
+test result: FAILED. 2 passed; 4 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.44s
+
+error: test failed, to rerun pass `-p benitoite --lib`

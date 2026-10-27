@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.11 (<tmp>/benitoite-a11-baseline.2cnmmdbm/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 29.88s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+
+thread 'typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary' (3079877) panicked at crates/benitoite/src/typeck/interval/tests/budget_reference.rs:96:17:
+assertion `left == right` failed: function sample() -> Unit
+ 
+end function
+
+  left: "empty\t0\t2\t2\t1\t3\t1\t3\t\t\t0"
+ right: "empty\t0\t2\t2\t1\t3\t1\t1\t\t\t0"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::tests::budget_reference::body_budget_matches_lean_at_every_small_boundary
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1316 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

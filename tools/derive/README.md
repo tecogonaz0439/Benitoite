@@ -71,6 +71,42 @@ and custom signature compatibility before producing review artifacts.
 The inventory reads declarations without resolving or checking bodies. Its
 success is not a successful normal `check`, `test --check`, or an effects report.
 
+## File-level effects on generation targets
+
+JSON and Property generation require a target module without file-level `uses`.
+Generated top-level functions inherit that declaration even when their bodies
+perform no effects, which violates the templates' pure-function contracts.
+`preview`, initial `apply`, and derive `check` refuse such a target with
+`derive.file_effects` before writing review artifacts, source, or records. The
+explanation identifies the target, selected features, and original declaration
+text and byte interval. If one target is refused, the entire request is refused.
+Show/Order-only targets remain accepted, subject to the usual dictionary and
+import checks. An empty target list or a file-level declaration only in an
+untargeted dependency does not trigger this refusal.
+
+Choose one of these remedies:
+
+- Remove the file-level declaration and write individual `uses` on the functions
+  that need those effects. Keep generated JSON/Property helpers pure.
+- Move the type definition and its derive target to a model module without
+  file-level `uses`, then import that module from the code that performs effects.
+  For an already managed target, follow the
+  [target relocation procedure](#verification-and-recovery) before generating again.
+
+Changing only the target's `source` is insufficient: it must match the record's
+declaring module. There is no separate generated-output destination setting.
+Custom JSON/Property callbacks must also have pure merged signatures.
+
+This check also applies to previously generated targets that used to pass derive
+`check`; reorganize them before making a new preview. The refusal enforces the
+existing purity contract without changing accepted inputs' generated bodies,
+semantic hashes, or records. Generator rules remain `3.1.0-syntax-batch5`,
+inventory remains `3`, and this check adds no language-version E0908 entry.
+It does not make an earlier manifest reusable: `apply` authenticates the tool
+sources and binaries as inputs. Finish any pending apply/recovery with the saved
+old tool **before** updating it; after updating, make and review a fresh preview
+and apply its exact reviewed manifest hash.
+
 ## JSON conversion contracts
 
 Import `Benitoite.Unofficial.Json.Codec` for pure `Result` conversions.
@@ -286,14 +322,14 @@ cannot receive new imports, even before the first ordinary declaration. A region
 before `uses` cannot be rewritten with generated declarations; move the whole
 managed region after `uses`, preserve its body, and preview again after providing
 any needed handwritten imports. With the needed handwritten imports in place, new regions and regions after
-`uses` can be generated normally.
+`uses` can be generated for Show/Order-only targets. JSON/Property targets are
+refused under the [file-level effect rule](#file-level-effects-on-generation-targets),
+even when every required import is already present.
 
 Generated top-level functions receive the file's effects like handwritten ones.
 Custom JSON/Property functions are validated using their merged signatures.
 Generation and derive `check` do not check bodies: the harness must also run
-normal `benitoite check`/`test`. For example, Property helpers generated in a file
-with `uses Log` can fail the normal pure-function check even when derive `check`
-passes. Put pure helpers in a source without the file declaration.
+normal `benitoite check`/`test` after apply and inspect the reports before execution.
 
 Existing regions are edited only between the marker lines. Original
 UTF-8 byte offsets are used; handwritten bytes, CRLF line endings, and marker
@@ -439,6 +475,17 @@ To stop managing a target, manually keep the generated body and remove:
 
 Then run derive check for remaining targets and normal check/test for the source.
 These manual changes also invalidate older reviewed manifests and receipts.
+
+To relocate an already managed type to a pure model module, first finish any
+pending apply/recovery with the tool that created its manifest. Stop managing
+the old target using the three steps above, keeping the old body for review.
+Move the type definition, update imports and references, and remove obsolete
+generated helpers or implementations as part of the reviewed source edit.
+Configure a new target with the new declaring `source` and resolved type name;
+do not transfer the old markers or generation-record entry as approval for the
+new target. Review a fresh preview and record, apply its exact manifest hash,
+and have the harness run normal check/test and derive check for all remaining
+and new targets. No automatic region or type relocation is provided.
 
 ## Diagnostics and self-tests
 

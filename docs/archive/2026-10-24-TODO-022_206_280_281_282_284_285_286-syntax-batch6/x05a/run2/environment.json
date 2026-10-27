@@ -1,0 +1,65 @@
+[
+  {
+    "command": [
+      "rustc",
+      "--version"
+    ],
+    "exit": 0,
+    "output": "rustc 1.98.1 (48a229cea 2026-09-01)\n"
+  },
+  {
+    "command": [
+      "cargo",
+      "--version"
+    ],
+    "exit": 0,
+    "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n"
+  },
+  {
+    "command": [
+      "lean",
+      "--version"
+    ],
+    "exit": 0,
+    "output": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)\n"
+  },
+  {
+    "command": [
+      "lake",
+      "--version"
+    ],
+    "exit": 0,
+    "output": "Lake version 5.0.0-src+eb6cafb (Lean version 4.35.0)\n"
+  },
+  {
+    "command": [
+      "elan",
+      "--version"
+    ],
+    "exit": 0,
+    "output": "elan 4.2.4 (227caca13 2026-08-25)\n"
+  },
+  {
+    "command": [
+      "python3",
+      "--version"
+    ],
+    "exit": 0,
+    "output": "Python 3.9.6\n"
+  },
+  {
+    "command": [
+      "sw_vers"
+    ],
+    "exit": 0,
+    "output": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434\n"
+  },
+  {
+    "command": [
+      "uname",
+      "-m"
+    ],
+    "exit": 0,
+    "output": "arm64\n"
+  }
+]

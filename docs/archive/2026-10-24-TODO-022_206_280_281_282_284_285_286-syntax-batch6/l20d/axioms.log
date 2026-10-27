@@ -1,0 +1,98 @@
+'Benitoite.Interval.analyzeDivMod_normal_sound' depends on axioms: [propext]
+'Benitoite.Interval.analyzeDivMod_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_property' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_located' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_independent_segment' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_independent_located' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_independent_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_independent_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_warning_located' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyze_warning_located' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyze_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_warning_syntactic_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyze_warning_syntactic_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_syntactic_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyze_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeGuardedBody_unreachable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_warning_located' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.analyzeBase_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_save_result_of_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_match_at_evaluated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.baseResultArmEnv_ranges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.baseRangeCall_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_value_origin_evaluated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_value_origin_total' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.expr_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.block_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.arguments_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.resultArmList_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.expr_causal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.block_causal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.arguments_causal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.resultArmList_causal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.bodyWork_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.bodyWork_causal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analysis_walk_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analysis_located_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analysis_within_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analysis_savesInputs_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analysis_inputWalk_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_positions_three_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_arguments_one_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.range_arguments_three_iff' depends on axioms: [propext, Quot.sound]
+'Benitoite.Interval.borrowRangeArgs_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.borrowRangeArgs_isSome' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.borrowRangeArgs_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.borrowValueArg_isSome' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.borrow_range_call_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.borrow_range_origin_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.borrow_range_value_call_eq' depends on axioms: [propext]
+'Benitoite.Interval.BudgetScan.rangeLength_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeThree_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeOne_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeThreeExprs_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeOneExprs_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeBorrowCheck_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeBorrowValue_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeEntry_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeStandard_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeStandardAt_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeFixed_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeCall_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeOrigin_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeResultSource_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeNames_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangePattern_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeOk_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangePatterns_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeArms_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeMatch_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeChecked_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeValueSource_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeValue_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeBind_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.readRangeArm_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetScan.rangeArm_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]

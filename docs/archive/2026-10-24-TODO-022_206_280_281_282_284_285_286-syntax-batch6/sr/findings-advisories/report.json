@@ -1,0 +1,1977 @@
+{
+  "started": "2026-10-24T21:24:29.869999+00:00",
+  "config": "deny.toml",
+  "targets": [
+    {
+      "name": "workspace",
+      "manifest": "Cargo.toml",
+      "lock": "Cargo.lock",
+      "lock_sha256": "1e927633cff09381e6947b65130b7c897d7df07c3124686d98e8cc1077d07b84",
+      "lock_sha256_after": "1e927633cff09381e6947b65130b7c897d7df07c3124686d98e8cc1077d07b84",
+      "state": "advisories",
+      "reason": "completed",
+      "count": 19,
+      "ids": [
+        "RUSTSEC-2026-0346",
+        "RUSTSEC-2026-0347",
+        "RUSTSEC-2026-0348",
+        "RUSTSEC-2026-0349",
+        "RUSTSEC-2026-0353",
+        "RUSTSEC-2026-0354",
+        "RUSTSEC-2026-0355",
+        "RUSTSEC-2026-0356",
+        "RUSTSEC-2026-0357",
+        "RUSTSEC-2026-0358",
+        "RUSTSEC-2026-0359",
+        "RUSTSEC-2026-0360",
+        "RUSTSEC-2026-0361",
+        "RUSTSEC-2026-0362",
+        "RUSTSEC-2026-0363",
+        "RUSTSEC-2026-0364",
+        "RUSTSEC-2026-0378",
+        "RUSTSEC-2026-0379",
+        "RUSTSEC-2026-0382"
+      ],
+      "advisories": [
+        {
+          "id": "RUSTSEC-2026-0346",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0346",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0346",
+            "The `Debug` implementations of `Tls12ClientSessionValue` and\n`Tls13ClientSessionValue` were derived, and so included the TLS 1.2 master\nsecret or TLS 1.3 resumption PSK in their output.\n\nCustom `ClientSessionStore` implementations that format these values with\n`Debug` (for example, when logging) could disclose these secrets to readers of\nthe logs. This conflicts with rustls's\n[key-material redaction policy](https://github.com/rustls/rustls/blob/99f2358cae2954837dbb866faf6727de75489ab9/SECURITY.md#boundary-public-api).\n\nOrdinary connection and built-in session cache `Debug` output is redacted and\nis not affected.",
+            "Announcement: https://github.com/rustls/rustls/pull/3299",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0346.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0347",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0347",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0347",
+            "When a server rejects Encrypted Client Hello (ECH), the client completes the\nhandshake using the outer ClientHello and authenticates the server against the\nECH config's `public_name`. At the end of that handshake, rustls encrypted and\nqueued any application data buffered via `ClientConnection::writer()` *before*\nqueueing the `ech_required` alert.\n\nThe application correctly receives\n`Error::PeerIncompatible(ServerRejectedEncryptedClientHello)`, but the next\n`write_tls()` call (needed to send the alert) also sends the buffered\napplication data. Plaintext meant for the inner server therefore goes to the\nclient-facing server named by `public_name`.\n\nThat server is authenticated, so this is not exploitable by an unauthenticated\nparty, but it violates RFC 9849 section 6.1.6, which requires the client to\nabort with `ech_required` \"before sending any application data to the server\".\n\nThis affects only clients that:\n\n- use `EchMode::Enable` (GREASE ECH is not affected),\n- write application data before the handshake completes, and\n- connect to a server that rejects their ECH config (for example, because it is stale).\n\nThe underlying ordering bug is older, but before 0.23.44 the client checked\nthe server certificate against the inner server name rather than `public_name`,\nso certificate verification failed first and no data was sent.",
+            "Announcement: https://github.com/rustls/rustls/pull/3300",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0347.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0348",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0348",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0348",
+            "The built-in Brotli certificate decompressor (enabled by the non-default\n`brotli` crate feature) bounded the size of the decompressed output, but\naccepted a peer-selected history window. Brotli's large-window extension was\nenabled, so a five-byte header could cause an allocation of 1 GiB. A peer can\nabort a process whose allocator cannot satisfy that request.\n\nNo trusted certificate is required by the attacker. Affected configurations are:\n\n- clients that enable the `brotli` feature and connect to a malicious server, and\n- servers that enable the `brotli` feature and request client certificates.\n\nApplications that do not enable the `brotli` feature are not affected.",
+            "Announcement: https://github.com/rustls/rustls/pull/3297",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0348.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0349",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0349",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0349",
+            "The client recorded the server-selected key exchange group for each server\nname when processing the ServerHello, before the server was authenticated.\nThis record is used to predict which key share to send in future ClientHellos\nto that server name.\n\nA network attacker can answer one connection attempt with a ServerHello\nselecting X25519, and then close the connection. Later ClientHellos for that\nname carry only an X25519 key share, while `supported_groups` still lists\nX25519MLKEM768 first. If the genuine server accepts that share rather than\nsending a HelloRetryRequest for its preferred hybrid group, the handshake\ncompletes with classical-only key exchange and no error. This persists for as\nlong as the entry stays in the client's session store.\n\nThe impact is loss of post-quantum confidentiality for affected connections\n(\"harvest now, decrypt later\"). There is no key compromise and no\nauthentication bypass.\n\nThe following are not affected:\n\n- connections to servers which send a HelloRetryRequest for their preferred group,\n- clients with resumption disabled (as nothing is stored), and\n- other server names.\n\nThis behaviour is discussed in\n[draft-ietf-tls-key-share-prediction](https://www.ietf.org/archive/id/draft-ietf-tls-key-share-prediction-01.html#name-security-considerations),\nso the practical impact depends largely on server policy.",
+            "Announcement: https://github.com/rustls/rustls/pull/3355",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0349.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0382",
+          "package": "rustls-webpki",
+          "versions": [
+            "0.103.15"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0382",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0382",
+            "Affected versions may accept certificate paths containing distrusted emSign\nintermediate public keys when the configured trust anchors allow such paths.\nThe private keys corresponding to these intermediates are now well known.\n\nVersions 0.103.16 and 0.104.0-alpha.8 reject paths containing these public keys.",
+            "Announcement: https://github.com/rustls/webpki/pull/546",
+            "Solution: Upgrade to >=0.103.16, <0.104.0-alpha.1 OR >=0.104.0-alpha.8 (try `cargo update -p rustls-webpki`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls-webpki",
+                "version": "0.103.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "rustls",
+                    "version": "0.23.45"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      }
+                    },
+                    {
+                      "Krate": {
+                        "name": "rustls-graviola",
+                        "version": "0.4.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "rustls-platform-verifier",
+                        "version": "0.7.1"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "ureq",
+                            "version": "3.4.2"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "benitoite",
+                                "version": "0.0.11"
+                              },
+                              "repeat": true
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0382.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0353",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0353",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0353",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-m6w2-jwq2-cv2c\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14737",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0353.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0354",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0354",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0354",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-3r89-v5mq-j5xf\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14741",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0354.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0355",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0355",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0355",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-63h4-6cx9-pjfj\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14733",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0355.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0356",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0356",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0356",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-7v24-42x9-pxf7\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14739",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0356.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0357",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0357",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0357",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-93g3-36p8-x2gc\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14740",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0357.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0358",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0358",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0358",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-5hhx-4wrr-3j9g\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14620",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0358.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0359",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0359",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0359",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-wjc8-633q-pwxr\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14735",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0359.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0360",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0360",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0360",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-54p9-vhhq-8f7q\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14730",
+            "Solution: Upgrade to >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0360.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0361",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0361",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0361",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-hmwq-g22x-qjw5\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14736",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0361.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0362",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0362",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0362",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-vcg5-q8m5-8379\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14734",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0362.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0363",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0363",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0363",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-q554-3cjc-rx7p\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14732",
+            "Solution: Upgrade to >=36.0.18, <37.0.0 OR >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0363.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0364",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0364",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0364",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-p79w-pv2r-29qp\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14731",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0364.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0378",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0378",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0378",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-9pvw-hwfg-92h5\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14827",
+            "Solution: Upgrade to >=48.0.7, <49.0.0 OR >=49.0.4 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0378.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0379",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0379",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0379",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-mghf-wjfp-p5xm\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14826",
+            "Solution: Upgrade to >=36.0.19, <37.0.0 OR >=48.0.7, <49.0.0 OR >=49.0.4 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  }
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0379.html"
+        }
+      ],
+      "raw": {
+        "command": [
+          "cargo",
+          "deny",
+          "--format",
+          "json",
+          "--log-level",
+          "debug",
+          "--manifest-path",
+          "Cargo.toml",
+          "--config",
+          "<repo>/target/check-advisories/20261024T212429Z-biggkyle/deny.effective.toml",
+          "--locked",
+          "check",
+          "advisories"
+        ],
+        "started": "2026-10-24T21:24:29.893298+00:00",
+        "finished": "2026-10-24T21:24:30.698242+00:00",
+        "exit": 1,
+        "error": null,
+        "stdout": "workspace.stdout",
+        "stderr": "workspace.stderr"
+      },
+      "databases": [
+        {
+          "url": "https://github.com/RustSec/advisory-db",
+          "fetched": "2026-10-24T21:24:30.61798Z"
+        },
+        {
+          "path": "<tmp>/benitoite-sr-c8u5wqk9/db/advisory-db-3157b0e258782691",
+          "commit": "21d909e4c8bd4e14c7aea58bf980c881a0053ab1"
+        }
+      ]
+    },
+    {
+      "name": "fuzz",
+      "manifest": "fuzz/Cargo.toml",
+      "lock": "fuzz/Cargo.lock",
+      "lock_sha256": "b8876de35ae690e2b0c8aa366b58549f1b52b0b1d77ff27f2f90ed76c1373798",
+      "lock_sha256_after": "b8876de35ae690e2b0c8aa366b58549f1b52b0b1d77ff27f2f90ed76c1373798",
+      "state": "advisories",
+      "reason": "completed",
+      "count": 19,
+      "ids": [
+        "RUSTSEC-2026-0346",
+        "RUSTSEC-2026-0347",
+        "RUSTSEC-2026-0348",
+        "RUSTSEC-2026-0349",
+        "RUSTSEC-2026-0353",
+        "RUSTSEC-2026-0354",
+        "RUSTSEC-2026-0355",
+        "RUSTSEC-2026-0356",
+        "RUSTSEC-2026-0357",
+        "RUSTSEC-2026-0358",
+        "RUSTSEC-2026-0359",
+        "RUSTSEC-2026-0360",
+        "RUSTSEC-2026-0361",
+        "RUSTSEC-2026-0362",
+        "RUSTSEC-2026-0363",
+        "RUSTSEC-2026-0364",
+        "RUSTSEC-2026-0378",
+        "RUSTSEC-2026-0379",
+        "RUSTSEC-2026-0382"
+      ],
+      "advisories": [
+        {
+          "id": "RUSTSEC-2026-0346",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0346",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0346",
+            "The `Debug` implementations of `Tls12ClientSessionValue` and\n`Tls13ClientSessionValue` were derived, and so included the TLS 1.2 master\nsecret or TLS 1.3 resumption PSK in their output.\n\nCustom `ClientSessionStore` implementations that format these values with\n`Debug` (for example, when logging) could disclose these secrets to readers of\nthe logs. This conflicts with rustls's\n[key-material redaction policy](https://github.com/rustls/rustls/blob/99f2358cae2954837dbb866faf6727de75489ab9/SECURITY.md#boundary-public-api).\n\nOrdinary connection and built-in session cache `Debug` output is redacted and\nis not affected.",
+            "Announcement: https://github.com/rustls/rustls/pull/3299",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0346.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0347",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0347",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0347",
+            "When a server rejects Encrypted Client Hello (ECH), the client completes the\nhandshake using the outer ClientHello and authenticates the server against the\nECH config's `public_name`. At the end of that handshake, rustls encrypted and\nqueued any application data buffered via `ClientConnection::writer()` *before*\nqueueing the `ech_required` alert.\n\nThe application correctly receives\n`Error::PeerIncompatible(ServerRejectedEncryptedClientHello)`, but the next\n`write_tls()` call (needed to send the alert) also sends the buffered\napplication data. Plaintext meant for the inner server therefore goes to the\nclient-facing server named by `public_name`.\n\nThat server is authenticated, so this is not exploitable by an unauthenticated\nparty, but it violates RFC 9849 section 6.1.6, which requires the client to\nabort with `ech_required` \"before sending any application data to the server\".\n\nThis affects only clients that:\n\n- use `EchMode::Enable` (GREASE ECH is not affected),\n- write application data before the handshake completes, and\n- connect to a server that rejects their ECH config (for example, because it is stale).\n\nThe underlying ordering bug is older, but before 0.23.44 the client checked\nthe server certificate against the inner server name rather than `public_name`,\nso certificate verification failed first and no data was sent.",
+            "Announcement: https://github.com/rustls/rustls/pull/3300",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0347.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0348",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0348",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0348",
+            "The built-in Brotli certificate decompressor (enabled by the non-default\n`brotli` crate feature) bounded the size of the decompressed output, but\naccepted a peer-selected history window. Brotli's large-window extension was\nenabled, so a five-byte header could cause an allocation of 1 GiB. A peer can\nabort a process whose allocator cannot satisfy that request.\n\nNo trusted certificate is required by the attacker. Affected configurations are:\n\n- clients that enable the `brotli` feature and connect to a malicious server, and\n- servers that enable the `brotli` feature and request client certificates.\n\nApplications that do not enable the `brotli` feature are not affected.",
+            "Announcement: https://github.com/rustls/rustls/pull/3297",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0348.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0349",
+          "package": "rustls",
+          "versions": [
+            "0.23.45"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0349",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0349",
+            "The client recorded the server-selected key exchange group for each server\nname when processing the ServerHello, before the server was authenticated.\nThis record is used to predict which key share to send in future ClientHellos\nto that server name.\n\nA network attacker can answer one connection attempt with a ServerHello\nselecting X25519, and then close the connection. Later ClientHellos for that\nname carry only an X25519 key share, while `supported_groups` still lists\nX25519MLKEM768 first. If the genuine server accepts that share rather than\nsending a HelloRetryRequest for its preferred hybrid group, the handshake\ncompletes with classical-only key exchange and no error. This persists for as\nlong as the entry stays in the client's session store.\n\nThe impact is loss of post-quantum confidentiality for affected connections\n(\"harvest now, decrypt later\"). There is no key compromise and no\nauthentication bypass.\n\nThe following are not affected:\n\n- connections to servers which send a HelloRetryRequest for their preferred group,\n- clients with resumption disabled (as nothing is stored), and\n- other server names.\n\nThis behaviour is discussed in\n[draft-ietf-tls-key-share-prediction](https://www.ietf.org/archive/id/draft-ietf-tls-key-share-prediction-01.html#name-security-considerations),\nso the practical impact depends largely on server policy.",
+            "Announcement: https://github.com/rustls/rustls/pull/3355",
+            "Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls",
+                "version": "0.23.45"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-graviola",
+                    "version": "0.4.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "ureq",
+                    "version": "3.4.2"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0349.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0382",
+          "package": "rustls-webpki",
+          "versions": [
+            "0.103.15"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0382",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0382",
+            "Affected versions may accept certificate paths containing distrusted emSign\nintermediate public keys when the configured trust anchors allow such paths.\nThe private keys corresponding to these intermediates are now well known.\n\nVersions 0.103.16 and 0.104.0-alpha.8 reject paths containing these public keys.",
+            "Announcement: https://github.com/rustls/webpki/pull/546",
+            "Solution: Upgrade to >=0.103.16, <0.104.0-alpha.1 OR >=0.104.0-alpha.8 (try `cargo update -p rustls-webpki`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "rustls-webpki",
+                "version": "0.103.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "rustls",
+                    "version": "0.23.45"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite",
+                        "version": "0.0.11"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite-fuzz",
+                            "version": "0.0.0"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "rustls-graviola",
+                        "version": "0.4.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "benitoite",
+                            "version": "0.0.11"
+                          },
+                          "repeat": true
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "rustls-platform-verifier",
+                        "version": "0.7.1"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "ureq",
+                            "version": "3.4.2"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "benitoite",
+                                "version": "0.0.11"
+                              },
+                              "repeat": true
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "ureq",
+                        "version": "3.4.2"
+                      },
+                      "repeat": true
+                    }
+                  ]
+                },
+                {
+                  "Krate": {
+                    "name": "rustls-platform-verifier",
+                    "version": "0.7.1"
+                  },
+                  "repeat": true
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0382.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0353",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0353",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0353",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-m6w2-jwq2-cv2c\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14737",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0353.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0354",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0354",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0354",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-3r89-v5mq-j5xf\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14741",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0354.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0355",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0355",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0355",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-63h4-6cx9-pjfj\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14733",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0355.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0356",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0356",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0356",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-7v24-42x9-pxf7\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14739",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0356.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0357",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0357",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0357",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-93g3-36p8-x2gc\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14740",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0357.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0358",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0358",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0358",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-5hhx-4wrr-3j9g\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14620",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0358.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0359",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0359",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0359",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-wjc8-633q-pwxr\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14735",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0359.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0360",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0360",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0360",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-54p9-vhhq-8f7q\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14730",
+            "Solution: Upgrade to >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0360.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0361",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0361",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0361",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-hmwq-g22x-qjw5\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14736",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0361.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0362",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0362",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0362",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-vcg5-q8m5-8379\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14734",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0362.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0363",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0363",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0363",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-q554-3cjc-rx7p\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14732",
+            "Solution: Upgrade to >=36.0.18, <37.0.0 OR >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0363.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0364",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0364",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0364",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-p79w-pv2r-29qp\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14731",
+            "Solution: Upgrade to >=48.0.6, <49.0.0 OR >=49.0.3 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0364.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0378",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0378",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0378",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-9pvw-hwfg-92h5\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14827",
+            "Solution: Upgrade to >=48.0.7, <49.0.0 OR >=49.0.4 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0378.html"
+        },
+        {
+          "id": "RUSTSEC-2026-0379",
+          "package": "wasmtime",
+          "versions": [
+            "49.0.2"
+          ],
+          "notes": [
+            "ID: RUSTSEC-2026-0379",
+            "Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0379",
+            "This is an entry in the RustSec database for the Wasmtime security advisory\nlocated at\nhttps://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-mghf-wjfp-p5xm\nFor more information see the GitHub-hosted security advisory.",
+            "Announcement: https://github.com/bytecodealliance/wasmtime/pull/14826",
+            "Solution: Upgrade to >=36.0.19, <37.0.0 OR >=48.0.7, <49.0.0 OR >=49.0.4 (try `cargo update -p wasmtime`)"
+          ],
+          "graphs": [
+            {
+              "Krate": {
+                "name": "wasmtime",
+                "version": "49.0.2"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "benitoite",
+                    "version": "0.0.11"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "benitoite-fuzz",
+                        "version": "0.0.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0379.html"
+        }
+      ],
+      "raw": {
+        "command": [
+          "cargo",
+          "deny",
+          "--format",
+          "json",
+          "--log-level",
+          "debug",
+          "--manifest-path",
+          "fuzz/Cargo.toml",
+          "--config",
+          "<repo>/target/check-advisories/20261024T212429Z-biggkyle/deny.effective.toml",
+          "--locked",
+          "check",
+          "advisories"
+        ],
+        "started": "2026-10-24T21:24:30.707762+00:00",
+        "finished": "2026-10-24T21:24:31.504691+00:00",
+        "exit": 1,
+        "error": null,
+        "stdout": "fuzz.stdout",
+        "stderr": "fuzz.stderr"
+      },
+      "databases": [
+        {
+          "url": "https://github.com/RustSec/advisory-db",
+          "fetched": "2026-10-24T21:24:31.42353Z"
+        },
+        {
+          "path": "<tmp>/benitoite-sr-c8u5wqk9/db/advisory-db-3157b0e258782691",
+          "commit": "21d909e4c8bd4e14c7aea58bf980c881a0053ab1"
+        }
+      ]
+    }
+  ],
+  "exit": 0,
+  "config_sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+  "db_path_override": "<tmp>/benitoite-sr-c8u5wqk9/db",
+  "effective_config": "<repo>/target/check-advisories/20261024T212429Z-biggkyle/deny.effective.toml",
+  "effective_config_sha256": "89b6aa1e238c6da38bf91d7a6ecf3a566030353532bae5872fd1ed58bd87b74b",
+  "version": {
+    "command": [
+      "cargo",
+      "deny",
+      "--version"
+    ],
+    "started": "2026-10-24T21:24:29.870377+00:00",
+    "finished": "2026-10-24T21:24:29.893139+00:00",
+    "exit": 0,
+    "error": null,
+    "stdout": "version.stdout",
+    "stderr": "version.stderr"
+  },
+  "cargo_deny": "cargo-deny 0.20.2",
+  "finished": "2026-10-24T21:24:31.512749+00:00",
+  "path_redaction": {
+    "applied": true,
+    "placeholders": [
+      "<repo>",
+      "<home>",
+      "<tmp>"
+    ],
+    "config_sha256": "before path redaction"
+  }
+}

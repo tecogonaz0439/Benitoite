@@ -1,0 +1,17 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, State, Process.Exit
+  with writer = try File.openWriter(path: "work/m012/scratch/s2/file-sink.txt", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Log.Record.message(record)) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.debug(message: "filtered", attributes: [], location: SourceLocation.here())
+      Log.info(message: "first", attributes: [], location: SourceLocation.here())
+      Log.warn(message: "second", attributes: [], location: SourceLocation.here())
+    end lambda)
+    return ()
+  end with
+end function

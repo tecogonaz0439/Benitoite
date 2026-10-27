@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.76s
+     Running tests/golden.rs (target/debug/deps/golden-7190357a94580310)
+
+running 2 tests
+BENITOITE_GOLDEN_FILTER="warnings,network,status,shift"
+golden: 0 cases; differential (golden run and bench): 0 matched
+check mode core IR: 0 matched
+gc-stress excluded: 0
+formatter properties: 0 checked, 0 excluded
+BENITOITE_GOLDEN_FILTER matched no test: "warnings,network,status,shift"
+test golden_suite ... FAILED
+test testdata_components_match_their_text ... ok
+
+failures:
+
+failures:
+    golden_suite
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p benitoite --test golden`

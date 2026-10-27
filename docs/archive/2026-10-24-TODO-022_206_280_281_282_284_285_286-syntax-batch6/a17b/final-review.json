@@ -1,0 +1,31 @@
+{
+  "timestamp_utc": "2026-10-25T20:15:47+00:00",
+  "head": "0aa2bd66829f6a3f1f5c3ec23d7290c4ea13ec64",
+  "baseline": "0aa2bd66829f6a3f1f5c3ec23d7290c4ea13ec64",
+  "frozen_files_match": 31,
+  "protected_paths_unchanged": [
+    "formal",
+    "Cargo.toml",
+    "Cargo.lock",
+    "fuzz/Cargo.lock",
+    "crates/benitoite/Cargo.toml",
+    "crates/benitoite/testdata/interval-budget",
+    "crates/benitoite/skill",
+    "crates/benitoite/src/cli/tools/skill/bundle.rs"
+  ],
+  "index_unchanged": true,
+  "diff_check": true,
+  "results_links_exist": 16,
+  "headings_unchanged": {
+    "docs/design/02-impl/02-05-typechecker.md": true,
+    "docs/design/03-interop/03-06-stdlib.md": true
+  },
+  "local_paths_redacted": true,
+  "changed_tracked_files": [
+    "crates/benitoite/src/typeck/interval/flow.rs",
+    "crates/benitoite/src/typeck/interval/flow/range.rs",
+    "crates/benitoite/src/typeck/interval/tests/range_calls.rs",
+    "docs/design/02-impl/02-05-typechecker.md",
+    "docs/design/03-interop/03-06-stdlib.md"
+  ]
+}

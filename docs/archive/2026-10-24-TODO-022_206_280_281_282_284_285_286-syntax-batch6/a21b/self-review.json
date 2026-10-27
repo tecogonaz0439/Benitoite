@@ -1,0 +1,22 @@
+{
+  "input_hashes_unchanged": true,
+  "tracked_changes_limited": [
+    "crates/benitoite/src/typeck/interval/diagnostics.rs",
+    "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.diag.json",
+    "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.diag.json",
+    "crates/benitoite/tests/cli_process.rs"
+  ],
+  "python_syntax": "ok",
+  "local_paths_redacted": true,
+  "diff_check": "ok",
+  "initial_work_exit": 1,
+  "final_work_exit": 0,
+  "successful_units_across_runs": 7,
+  "source_since_initial_work": "two test comments only",
+  "existing_runtime_expectations": "preserved byte for byte",
+  "call_allocations": [
+    3,
+    0,
+    0
+  ]
+}

@@ -6,6 +6,10 @@ Refer to its declarations as `Integer32.<name>`, for example `Integer32.fromInte
 
 Functions on `Integer32`, the integers from -2147483648 to 2147483647.
 
+For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,31]`.
+The warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.
+Intersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.
+
 ## Type
 
 Type: `Integer32`. Canonical name: `Integer32`. Displayed as `Integer32`.

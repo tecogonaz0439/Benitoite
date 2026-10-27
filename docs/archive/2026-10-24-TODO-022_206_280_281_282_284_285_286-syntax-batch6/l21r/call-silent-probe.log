@@ -1,0 +1,11 @@
+Benitoite.Interval.BudgetAnalysis.analyzeExpr_warning_syntactic_reach (limits : Limits) (state : Budget.State)
+  (fuel : Nat) (env : AbstractEnv) (key : OperationKey) (source : Expr) (warning : IntervalWarning)
+  (member : warning ∈ (analyzeExpr limits state fuel env key source).approx.warnings) :
+  InSyntacticReach key (syntacticReachExpr source) warning
+Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_syntactic_reach (limits : Limits) (state : Budget.State)
+  (fuel : Nat) (definition : String) (seed : BodySeed) (warning : IntervalWarning)
+  (member : warning ∈ (analyzeBody limits state fuel definition seed).approx.warnings) :
+  InSyntacticReach (bodyRootKey definition) (syntacticReachExpr (bodyRoot seed.body)) warning
+'Benitoite.Interval.BudgetAnalysis.expr_unrecognized_call_silent_at' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

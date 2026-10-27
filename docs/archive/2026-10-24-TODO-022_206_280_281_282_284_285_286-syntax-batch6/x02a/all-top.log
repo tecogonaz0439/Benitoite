@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 146, in <module>
+    main()
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 139, in main
+    result = dict(realSource=check_source(args.source_dir, args.output, executable, args.legacy_corpus, args.supplemental_group),
+  File "<repo>/crates/benitoite/tests/desugar_export/interval/check-manifest.py", line 41, in check_source
+    assert counts['informativeBodies'] > 0, 'allTop source observations'
+AssertionError: allTop source observations

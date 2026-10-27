@@ -1,0 +1,17 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=target/interval-diff/x03b",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "desugar_export",
+    "export_interval_vm",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 4.647
+}

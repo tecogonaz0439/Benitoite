@@ -1,0 +1,2098 @@
+{
+  "baseline": "706d7ca3d16fc27d67e2ded0f7b1fee371aeb8a8",
+  "head": "89c7a777c664bc0cd5b728019f0ce983bda4c0cf",
+  "scope": [
+    "docs/reference",
+    "crates/benitoite/skill"
+  ],
+  "files": [
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "generated": false,
+      "sha256": "fb676fd45ad8cdf5c86300f541c589044b63b59c4c061cc98bf7b5a61b09e31f",
+      "blocks": [
+        {
+          "startLine": 37,
+          "endLine": 37,
+          "kind": "list",
+          "heading": "Benitoite / Workflow for a script",
+          "changedLines": [
+            37
+          ],
+          "text": "3. Read the diagnostics on standard error and fix the script. A diagnostic gives a code such as `E0230`; when its meaning is unclear, look the code up in `references/diagnostics.md`. For W0401, W0402, or W0404 with a local-analysis note, use [Explaining local interval warnings](references/idioms.md#explaining-local-interval-warnings) to explain the cause and its conditions before choosing a correction.\n",
+          "sha256": "49ac72588cabf6c0af77c0412da62cd1a6e931a05133a480a4a119524386fda2"
+        },
+        {
+          "startLine": 59,
+          "endLine": 59,
+          "kind": "paragraph",
+          "heading": "Benitoite / Before running",
+          "changedLines": [
+            59
+          ],
+          "text": "The harness must read `intervalAnalysis` on inspection reports and targets separately from `complete`. Its `basis: \"localIntervals\"` and `coverage: \"all\"`, `\"some\"`, or `\"none\"` describe the range of local interval analysis and do not participate in report acceptance. Keep the acceptance rules below; no warnings does not mean safe, even with `all`. For counts, budget stops, usage, and aggregation, see [Local interval analysis](references/inspection.md#local-interval-analysis).\n",
+          "sha256": "2a57e42ba36306d436bcc33c740d36138ead111fb19ef705aa156a1d629a8970"
+        },
+        {
+          "startLine": 61,
+          "endLine": 61,
+          "kind": "paragraph",
+          "heading": "Benitoite / Before running",
+          "changedLines": [
+            61
+          ],
+          "text": "Unknown values, unsupported forms, and exhausted analysis budgets do not by themselves require a code change or a larger `uses` bound. Keep runtime checks and failure handling. Local warnings describe failure only if execution reaches the reported operation or call and every operand or argument evaluates successfully. W0404 covers direct standard shift-count arguments; effect operations and HTTP record fields are outside its scope. See [the examples and analysis boundaries](references/idioms.md#explaining-local-interval-warnings) before interpreting missing warnings.\n",
+          "sha256": "a48e49d0050fac8d15ef39df095c16d895ba4bdbe8adda8a0ffb4b94babb8af5"
+        },
+        {
+          "startLine": 65,
+          "endLine": 65,
+          "kind": "list",
+          "heading": "Benitoite / Before running",
+          "changedLines": [
+            65
+          ],
+          "text": "1. Accept an inspection only after checking the complete single JSON object, a known `schemaVersion` and `kind`, `status: \"ok\"`, `complete: true`, and exit status 0. Read its declared upper bound (`targets[0].main.effects.expanded` for scripts, or each selected test's `effects`, and `aggregateEffects`) and tell the user, in the words of the table below, what kinds of operations the program declares. Compare it with each function's `uses` and the file-level `uses` when explaining the code. Declared but unused effects and additions from the file still count. Unknown or failed results are not an empty set, and the bound does not authorize itself. The existing required fields and acceptance rules are described in the processor's [version-pinned English reference (v0.0.11, checkReport 1 and testCheckReport 1/2)](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/reference/benitoite.md#inspection-reports); the added interval summary is described in [inspection](references/inspection.md#local-interval-analysis).\n",
+          "sha256": "d33a22eb0dc4041abe9432e07bf637c7539e46ea1aafd7d6d7a3d53bee98ddee"
+        },
+        {
+          "startLine": 174,
+          "endLine": 174,
+          "kind": "paragraph",
+          "heading": "Benitoite / Checked values and local builders",
+          "changedLines": [
+            174
+          ],
+          "text": "For an already-open file sink, capture the Writer inside its `with` block and pass `Log.formatRecord(record: record)` to `File.writeLine`. For JSON lines, convert the record in application code. See [File and JSON log sinks](references/idioms.md#file-and-json-log-sinks) for executable examples, duplicate attributes, numeric values, and flush/close failures. Ask the harness to review the remaining sink effects before running.\n",
+          "sha256": "06c4a0822b6f9cb3f4c9d63e1733bcc6447bb6529fbcc2ac67a687f86a0a9b59"
+        },
+        {
+          "startLine": 228,
+          "endLine": 282,
+          "kind": "paragraph",
+          "heading": "Benitoite / Reference documents",
+          "changedLines": [
+            265,
+            266,
+            267,
+            268,
+            269,
+            270,
+            271,
+            272,
+            273,
+            274,
+            275,
+            276,
+            277,
+            278
+          ],
+          "text": "For pure property trials, import `Benitoite.Unofficial.Test.Property` and call\n`Property.check(config: ..., gen: ..., shrinker: ..., property: ...)` from one\nordinary `@test`. The property returns `Result[Unit, String]` and all\ncallbacks are pure; runtime stops and interruptions propagate normally. Match\nan Error and return `Property.formatFailure(failure: ..., show: ...)` as the\ntest's String error; show has type `function(value: T) -> String`. `test --check` executes no\ncallbacks. Config uses an explicit seed and inclusive budgets: trials 1..10000,\nsize 0..10000, maxShrinks 0..100000, maxShrinkWork 0..1000000. Supply\nall five Config fields; start with maxShrinkWork: 10000 for small examples\n(the recommendation remains subject to performance measurement). Invalid settings\ncall no callbacks. Shrinker.candidates returns ShrinkStep (Done/Yield/Skip),\nnot List; write deferred continuations rather than collecting a whole list.\nThe initial candidates call and each continuation cost one work unit; each\ncandidate property call costs one work unit and one shrink. Either zero budget\nskips the shrinker, and both counters accumulate after failing candidates restart.\nAn exhausted budget never calls a continuation just to discover Done. These\nbudgets do not bound time or allocation within a callback.\nInteger generators include both endpoints, Float generators are finite, and\nnested container sizes are not total resource bounds. Shrinking counts all\ncandidate trials, even cycles; the reduced input is not promised minimal.\nKeep the config, libraryVersion (2.0.0), GENERATOR_VERSION for generated code,\nhandwritten sources, original/reduced input and messages for replay. The same\nseed alone does not reproduce counterexamples across library versions.\nSee `references/stdlib/Test.Property.md` for Gen/Shrinker fields and each API.\nThe source repository includes a development derive tool for record codecs,\nGen/Shrinker functions, and explicitly requested Show/Order implementations\n(see `tools/derive/README.md`). Show/Order target flags are independent booleans;\nProperty and Show/Order support value type parameters and regular recursive\nrecords within one module; JSON retains its monomorphic, noncyclic scope. Pass\nGen/Shrinker arguments only for used type parameters, in declaration order.\nGenerated Show/Order implementations carry the required parameter constraints;\nevery field needs the corresponding dictionary. Recursive shrinkers defer their\nwork, deleting recursive containers before shrinking one field at a time.\nShow uses field order and each field's quoting;\nOrder stops at the first non-Equal field. Neither supplies builtin equality,\nkey constraints, or a serialization format. Existing handwritten implementations\nare protected. An opaque record may explicitly request Show/Order in its owner\nmodule; review the proposed opaque display before applying it. JSON/Property\ngeneration refuses a target module with file-level `uses`; Show/Order-only\ntargets remain accepted. Replace the file declaration with individual `uses` on\nthe functions that need effects, or move the type definition and derive target\nto a pure model module and import it from effectful code. Changing only the\nconfigured `source` cannot move generated output away from its declaring type.\nFor existing regions, follow the target removal/relocation procedure in\n`tools/derive/README.md` before making a fresh preview.\nThe derive tool's declaration inventory uses version 3; manifests, receipts, generation records\nand semantic hashes use version 3 with generator rules `3.1.0-syntax-batch5`;\nsettings remain version 1. Finish pending apply/recovery with the saved old tool\nbefore updating it. Authenticate old body hashes, then review a fresh preview\nand apply its exact reviewed manifest hash. Even with the same generator version,\ntool input hashes can invalidate an earlier manifest. The same seed alone does not reproduce\nan old generation distribution. Use handwritten checked construction for\nopaque types (including custom codecs/generators for opaque fields). In an environment with\nonly the distributed executable and Skill, write these functions directly using\nCodec and Property APIs.\n",
+          "sha256": "6358771c6fcc8684ec1c47f08f824b18de5961ee3c88bb1bc68c767f89764d84"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "replace",
+          "oldStart": 37,
+          "oldEnd": 37,
+          "newStart": 37,
+          "newEnd": 37
+        },
+        {
+          "kind": "insert",
+          "oldStart": 59,
+          "oldEnd": 58,
+          "newStart": 59,
+          "newEnd": 62
+        },
+        {
+          "kind": "replace",
+          "oldStart": 61,
+          "oldEnd": 61,
+          "newStart": 65,
+          "newEnd": 65
+        },
+        {
+          "kind": "insert",
+          "oldStart": 170,
+          "oldEnd": 169,
+          "newStart": 174,
+          "newEnd": 175
+        },
+        {
+          "kind": "replace",
+          "oldStart": 259,
+          "oldEnd": 263,
+          "newStart": 265,
+          "newEnd": 278
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "generated": true,
+      "sha256": "aea580bd94877a86addcd5f93866b707298b70f2b305f0bfc2cc301c51ddf53a",
+      "blocks": [
+        {
+          "startLine": 2693,
+          "endLine": 2693,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0401",
+          "changedLines": [
+            2693
+          ],
+          "text": "- `inferred_range`: the inferred divisor interval is {interval}\n",
+          "sha256": "8d909679d9f5c4b303a1b970207061dc0791590b6736a8a86f709c717fd33c0f"
+        },
+        {
+          "startLine": 2694,
+          "endLine": 2694,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0401",
+          "changedLines": [
+            2694
+          ],
+          "text": "- `local_analysis`: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully\n",
+          "sha256": "7b760664be0c9d72b1a2f76d28afa72fb3437fd75f6b8278d6579d2f8929cc1c"
+        },
+        {
+          "startLine": 2695,
+          "endLine": 2695,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0401",
+          "changedLines": [
+            2695
+          ],
+          "text": "- `origin`: this binding or comparison contributes to the inferred interval\n",
+          "sha256": "34c48c0e587d20a738f5c10afc0568c233dc0448f2b4137b0c85bcfd9a8bb009"
+        },
+        {
+          "startLine": 2697,
+          "endLine": 2697,
+          "kind": "paragraph",
+          "heading": "Benitoite diagnostic codes / W0401",
+          "changedLines": [
+            2697
+          ],
+          "text": "Constant evaluation or local interval analysis shows that the divisor is always zero. If execution reaches this operation and all operands are evaluated successfully, the division stops the program at runtime.\n",
+          "sha256": "fdfe55d6ca2cf0c96828e13ce62293d743fc1eac729c98e7de31d488457e8688"
+        },
+        {
+          "startLine": 2704,
+          "endLine": 2704,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0402",
+          "changedLines": [
+            2704
+          ],
+          "text": "- `inferred_range`: the inferred result interval before the range check is {interval}\n",
+          "sha256": "292a9cd30f32418050cb8d3aa6cc64914985ce68b7f0dc26e671579cbffe3686"
+        },
+        {
+          "startLine": 2705,
+          "endLine": 2705,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0402",
+          "changedLines": [
+            2705
+          ],
+          "text": "- `allowed_range`: the range of `{ty}` is {range}\n",
+          "sha256": "529955aa91ebff7940eb0e7ed683c063c9ef3221586e9ece56e408ce41e8ab8f"
+        },
+        {
+          "startLine": 2706,
+          "endLine": 2706,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0402",
+          "changedLines": [
+            2706
+          ],
+          "text": "- `local_analysis`: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully\n",
+          "sha256": "7b760664be0c9d72b1a2f76d28afa72fb3437fd75f6b8278d6579d2f8929cc1c"
+        },
+        {
+          "startLine": 2707,
+          "endLine": 2707,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0402",
+          "changedLines": [
+            2707
+          ],
+          "text": "- `origin`: this binding or comparison contributes to the inferred interval\n",
+          "sha256": "34c48c0e587d20a738f5c10afc0568c233dc0448f2b4137b0c85bcfd9a8bb009"
+        },
+        {
+          "startLine": 2709,
+          "endLine": 2709,
+          "kind": "paragraph",
+          "heading": "Benitoite diagnostic codes / W0402",
+          "changedLines": [
+            2709
+          ],
+          "text": "Constant evaluation or local interval analysis shows that the result does not fit the type. If execution reaches this operation and all operands are evaluated successfully, the calculation stops the program at runtime.\n",
+          "sha256": "aa0ca56ae88afe67b9b09b22937a92ef1822308984c2a0f85a7539dbe88f650f"
+        },
+        {
+          "startLine": 2720,
+          "endLine": 2720,
+          "kind": "heading",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2720
+          ],
+          "text": "## W0404\n",
+          "sha256": "0b5d0f5990de0f5ac40545c61017137d2a3542806f9a59628b33f9663a022d48"
+        },
+        {
+          "startLine": 2722,
+          "endLine": 2722,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2722
+          ],
+          "text": "- Kind: check (warning)\n",
+          "sha256": "1473c6b5e6b55ea7bcd9a0e4ab6f47d4d12abd09f499701e25bed51be3141fa5"
+        },
+        {
+          "startLine": 2723,
+          "endLine": 2723,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2723
+          ],
+          "text": "- Message: argument `{parameter}` to `{function}` is always out of range\n",
+          "sha256": "35e4112f5add06a46f878b41267b42319cc09df2aca21982ec72d1e4be755750"
+        },
+        {
+          "startLine": 2724,
+          "endLine": 2724,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2724
+          ],
+          "text": "- Label: always out of range\n",
+          "sha256": "2ed97927f4d1fcb43192a59b2ad2131fbc1bbff6fe090d3982c6f22c0b62af25"
+        },
+        {
+          "startLine": 2725,
+          "endLine": 2725,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2725
+          ],
+          "text": "- `inferred_range`: the inferred interval is {interval}\n",
+          "sha256": "274c59346b12bad3efe3ef61dfbdb4caa884ceb44dff275981e9b25e94ad1533"
+        },
+        {
+          "startLine": 2726,
+          "endLine": 2726,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2726
+          ],
+          "text": "- `allowed_range`: the allowed range is {range}\n",
+          "sha256": "aeeff2dbe8e7cb8530fb70026cec6d9acbb3a276686e251f2e4bf627869bb8f7"
+        },
+        {
+          "startLine": 2727,
+          "endLine": 2727,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2727
+          ],
+          "text": "- `local_analysis`: this local analysis applies only if execution reaches this call and all arguments are evaluated successfully\n",
+          "sha256": "e1c291414969f199590a064c7cd52103c8e7ad8186c0677151b66a1b29f2f06f"
+        },
+        {
+          "startLine": 2728,
+          "endLine": 2728,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2728
+          ],
+          "text": "- `origin`: this binding or comparison contributes to the inferred interval\n",
+          "sha256": "34c48c0e587d20a738f5c10afc0568c233dc0448f2b4137b0c85bcfd9a8bb009"
+        },
+        {
+          "startLine": 2730,
+          "endLine": 2730,
+          "kind": "paragraph",
+          "heading": "Benitoite diagnostic codes / W0404",
+          "changedLines": [
+            2730
+          ],
+          "text": "Local interval analysis shows that the argument is always out of range. If execution reaches this call and all arguments are evaluated successfully, the call stops the program at runtime.\n",
+          "sha256": "c7c0d29046035ffcf75adfce9bb3abb539a1063ea91c66ff30e1f4a82dde3b39"
+        },
+        {
+          "startLine": 2894,
+          "endLine": 2894,
+          "kind": "list",
+          "heading": "Benitoite diagnostic codes / R0906",
+          "changedLines": [
+            2894
+          ],
+          "text": "- `component_handles`: the external function `{function}` exceeded the limit of {limit} component handles\n",
+          "sha256": "cd0201b228e8f135310fd0d59cf21175233e177632dd61ca35e31b95423a2d25"
+        },
+        {
+          "startLine": 2896,
+          "endLine": 2896,
+          "kind": "paragraph",
+          "heading": "Benitoite diagnostic codes / R0906",
+          "changedLines": [
+            2896
+          ],
+          "text": "Each Store limits core instances, memories, and tables to 16 each, each guest table to 10,000 elements, and simultaneously live component handles to 100,000. Stateful calls retain the live handle count across calls; dropping a handle returns capacity. Reduce the component's resource requirements.\n",
+          "sha256": "a467255382e90f632e1eed73f94c1fa665f706f6a8b184c739bdeb378f677a3a"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 2693,
+          "oldEnd": 2692,
+          "newStart": 2693,
+          "newEnd": 2695
+        },
+        {
+          "kind": "replace",
+          "oldStart": 2694,
+          "oldEnd": 2694,
+          "newStart": 2697,
+          "newEnd": 2697
+        },
+        {
+          "kind": "insert",
+          "oldStart": 2701,
+          "oldEnd": 2700,
+          "newStart": 2704,
+          "newEnd": 2707
+        },
+        {
+          "kind": "replace",
+          "oldStart": 2702,
+          "oldEnd": 2702,
+          "newStart": 2709,
+          "newEnd": 2709
+        },
+        {
+          "kind": "insert",
+          "oldStart": 2712,
+          "oldEnd": 2711,
+          "newStart": 2719,
+          "newEnd": 2730
+        },
+        {
+          "kind": "insert",
+          "oldStart": 2875,
+          "oldEnd": 2874,
+          "newStart": 2894,
+          "newEnd": 2894
+        },
+        {
+          "kind": "replace",
+          "oldStart": 2876,
+          "oldEnd": 2876,
+          "newStart": 2896,
+          "newEnd": 2896
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "generated": false,
+      "sha256": "c31af52c583ca057449f8bb9591b5b11ad75d79a3c41152875d166d52c221aeb",
+      "blocks": [
+        {
+          "startLine": 35,
+          "endLine": 35,
+          "kind": "list",
+          "heading": "Benitoite idioms / Contents",
+          "changedLines": [
+            35
+          ],
+          "text": "- [Explaining local interval warnings](#explaining-local-interval-warnings)\n",
+          "sha256": "ccc701da3e39be7bebd9722970902f324ee4cbbc566e2958458b9c7f2bd95ee6"
+        },
+        {
+          "startLine": 37,
+          "endLine": 37,
+          "kind": "list",
+          "heading": "Benitoite idioms / Contents",
+          "changedLines": [
+            37
+          ],
+          "text": "- [File and JSON log sinks](#file-and-json-log-sinks)\n",
+          "sha256": "b5f1543d86c769ed16658b2c2d31b7184d265c04e9103499f4bcec22a7d6f69c"
+        },
+        {
+          "startLine": 502,
+          "endLine": 502,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / HTTP",
+          "changedLines": [
+            502
+          ],
+          "text": "`Http.text`, `Http.html`, and `Http.json` construct response values; local interval analysis treats their results as unknown and does not recover `Response.status` from them. Explicit HTTP record construction, local storage, and updates do not carry field facts either. This example passes `check` without W0404; it sends no response:\n",
+          "sha256": "3a29d248aa2024d8fd82037f970a2a609403389e1eb0555fb609b6d4a3d17672"
+        },
+        {
+          "startLine": 504,
+          "endLine": 511,
+          "kind": "code",
+          "heading": "Benitoite idioms / HTTP",
+          "changedLines": [
+            504,
+            505,
+            507,
+            508,
+            509,
+            510,
+            511
+          ],
+          "text": "```benitoite check\nimport Benitoite.Unofficial.Network.Http\n\nfunction main() -> Unit\n  bind response <- Http.text(status: 700, s: \"example\")\n  bind _ <- Http.Response(..response, status: 701)\nend function\n```\n",
+          "sha256": "6a8881cb4d40dbf5e79c1905d9edda3f5d4ec38c6036a2b4f0201d0d17e4cae1"
+        },
+        {
+          "startLine": 513,
+          "endLine": 513,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / HTTP",
+          "changedLines": [
+            513
+          ],
+          "text": "The default `Http.respond` implementation still checks for status 200..599 at runtime. W0404 applies only to direct standard shift-count arguments, not `Process.exit`, HTTP operations, or their record fields: language handlers can replace an operation's default behavior. Missing warnings validate neither a response nor a network permission. Read the generated [HTTP reference](stdlib/Network.Http.md) for API contracts.\n",
+          "sha256": "8732b3a58b16b5d74567e48f6e1b743d2e1f019aed2ce00f95325aab8956df9e"
+        },
+        {
+          "startLine": 812,
+          "endLine": 812,
+          "kind": "heading",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            812
+          ],
+          "text": "## Explaining local interval warnings\n",
+          "sha256": "6c461d0469496f4e8ad3eea9d1eba7e7849755baef7a90ba4f71a1783e9ef33c"
+        },
+        {
+          "startLine": 814,
+          "endLine": 814,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            814
+          ],
+          "text": "For a local W0401, W0402, or W0404, read the primary location, inferred interval, allowed range when present, and the local-analysis note. Follow the secondary binding/comparison locations to explain why the value has that interval; at most eight are shown. Explain failure only if execution reaches that operation or call and all operands or arguments evaluate successfully. The analysis does not prove that execution reaches it. An existing constant warning can take precedence and have fewer notes.\n",
+          "sha256": "9173832169ba2b26181c1c9add85fc47eccc02f8655b271889a320056cf7b449"
+        },
+        {
+          "startLine": 816,
+          "endLine": 816,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            816
+          ],
+          "text": "The following complete script produces these three warnings during `check`, even though `main` calls none of the functions. Inspect it without executing it:\n",
+          "sha256": "1f1329c390f88a3883525d0985f6b85229bb35f62a2031f04a3ce6a94e369881"
+        },
+        {
+          "startLine": 818,
+          "endLine": 846,
+          "kind": "code",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            818,
+            819,
+            820,
+            821,
+            822,
+            823,
+            824,
+            825,
+            827,
+            828,
+            829,
+            830,
+            831,
+            832,
+            833,
+            835,
+            836,
+            837,
+            838,
+            839,
+            840,
+            841,
+            843,
+            844,
+            845,
+            846
+          ],
+          "text": "```text\nfunction divide(value: Integer, divisor: Integer) -> Integer\n  if divisor = 0 then\n    return value div divisor\n  else\n    return value\n  end if\nend function\n\nfunction increase(value: Integer8) -> Integer8\n  if value >= 120s8 then\n    return value + 10s8\n  else\n    return value\n  end if\nend function\n\nfunction shift(n: Integer) -> Integer\n  if n >= 64 then\n    return Integer.shiftLeft(a: 1, n: n)\n  else\n    return 1\n  end if\nend function\n\nfunction main() -> Unit\n  return ()\nend function\n```\n",
+          "sha256": "42f55b020345efeaa550f5469687904962ae2c52a85658a600662efbb5bc8bda"
+        },
+        {
+          "startLine": 848,
+          "endLine": 852,
+          "kind": "table",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            848,
+            849,
+            850,
+            851,
+            852
+          ],
+          "text": "| Warning | Explanation to give |\n|---|---|\n| W0401 at `divisor` | In the `divisor = 0` branch the divisor interval is `[0,0]`. If the division is reached with normal operands, it divides by zero. |\n| W0402 at `value + 10s8` | The comparison narrows `value` to `[120,127]`. The mathematical sum `[130,137]` lies wholly outside Integer8's `[-128,127]`. |\n| W0404 at `n: n` | The shift-count interval `[64,9223372036854775807]` lies wholly outside Integer's allowed `[0,63]`. This concerns the count, not bits discarded by a left shift. |\n",
+          "sha256": "81e77d2e99d98c2c5156a2565bb0f2330da6498b6e843d3976d2bd640d997c9e"
+        },
+        {
+          "startLine": 854,
+          "endLine": 854,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            854
+          ],
+          "text": "W0404 recognizes direct standard integer and Byte shift calls, including import aliases of the same declaration. Calls through function values, holes, pipes, or user functions with the same name are outside this recognition.\n",
+          "sha256": "b83fb06fd901ca066b229f39debe973031981134191ba6aa77237bd7883ac894"
+        },
+        {
+          "startLine": 856,
+          "endLine": 856,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            856
+          ],
+          "text": "Choose a correction from the intended behavior: for example, reject a zero divisor, validate an input before arithmetic, or check a shift count. Do not automatically shrink constants, change numeric types, or enlarge `uses` to silence a warning. Review warnings separately when using `--deny-warnings`, which promotes them to check errors. Ordinary checks still accept these warnings; runtime checks remain.\n",
+          "sha256": "c6d0df1fd418aa70f97b0b2fa059f35addc8d1d4a7389672aaa63af4a71a075d"
+        },
+        {
+          "startLine": 858,
+          "endLine": 858,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings",
+          "changedLines": [
+            858
+          ],
+          "text": "Absence of a warning does not prove success. An interval partly overlapping the allowed range, a divisor that may be either zero or nonzero, general multiplication, and values returned by ordinary functions can leave the outcome unknown. Unknown normal integer values use the full type range; they differ from an expression with no normal value. Function, lambda, lazy, and handler-clause bodies begin without caller or capture facts. Independently analyzed children of unsupported forms also forget outside facts, so explain a warning using that input's local facts rather than claiming the whole program reaches it. Unknown values, unsupported forms, and exhausted budgets alone require neither a code change nor an effect-contract change. Keep failure handling and runtime checks; read [coverage](inspection.md#local-interval-analysis) separately from report acceptance.\n",
+          "sha256": "8c16ec1c1258e87f4b15e5fa16f24a893525a3382676d1b70b1e133fd9d7b77a"
+        },
+        {
+          "startLine": 860,
+          "endLine": 860,
+          "kind": "heading",
+          "heading": "Benitoite idioms / Explaining local interval warnings / Range success values",
+          "changedLines": [
+            860
+          ],
+          "text": "### Range success values\n",
+          "sha256": "731bde8ffa5e5d223408305012608b2954a3e9f9abbbb235b72ebf605a3349e0"
+        },
+        {
+          "startLine": 862,
+          "endLine": 862,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings / Range success values",
+          "changedLines": [
+            862
+          ],
+          "text": "Use `Range.checkInteger` and match its `Result` when a value must satisfy inclusive bounds. The following helper saves the result once, matches it, and calculates from a direct `Range.value` call on the same `Ok` value before wrapping the result:\n",
+          "sha256": "aa2eace71c1c336aa93678044d024943981503a7101c4599ecf1e8c6f23a5ceb"
+        },
+        {
+          "startLine": 864,
+          "endLine": 882,
+          "kind": "code",
+          "heading": "Benitoite idioms / Explaining local interval warnings / Range success values",
+          "changedLines": [
+            864,
+            865,
+            867,
+            868,
+            869,
+            870,
+            871,
+            872,
+            873,
+            874,
+            875,
+            877,
+            878,
+            879,
+            880,
+            881,
+            882
+          ],
+          "text": "```benitoite test\nimport Benitoite.Unofficial.Range\n\nfunction checkedIncrement(value: Integer) -> Result[Integer, Range.RangeError]\n  bind result <- Range.checkInteger(minimum: 0, maximum: 10, value: value)\n  return match result with\n    case Result.Ok(checked) ->\n      bind incremented <- Range.value(checked) + 1\n      Result.Ok(incremented)\n    case Result.Error(error) -> Result.Error(error)\n  end match\nend function\n\n@test(\"checked increment handles both range outcomes\")\nfunction checkedIncrementWorks() -> Unit uses Assert.Check\n  Assert.equal(actual: checkedIncrement(10), expected: Result.Ok(11))\n  Assert.equal(actual: checkedIncrement(11), expected: Result.Error(Range.RangeError.OutOfRange(0, 10, 11)))\nend function\n```\n",
+          "sha256": "6f8dbace1347280f1009a09af8d7d60d4fefa27b3783818e7d1ab3a3224add9e"
+        },
+        {
+          "startLine": 884,
+          "endLine": 884,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / Explaining local interval warnings / Range success values",
+          "changedLines": [
+            884
+          ],
+          "text": "For direct standard `Range.checkInteger`/`Range.value` calls with fixed Integer bounds, a function summary can retain the bounds for that success value. Import aliases of the same declaration work. Dynamic bounds, copied aliases of the success value, merges (including condition-environment merges), rewrapping, other instances, function values, holes, and pipes do not preserve this information. There is no general analysis across function calls: the caller of `checkedIncrement` does not inherit a result interval. Checked lengths, indices, and nonempty lists do not have this summary. Invalid bounds and out-of-range inputs still return `Result.Error`, including constants, without a new interval warning. See the generated [Range reference](stdlib/Range.md) for construction and projection contracts.\n",
+          "sha256": "f8e6a7a2612026b400c0c4b7747dbd1713952fe79b48e6bebe6232443feeb79c"
+        },
+        {
+          "startLine": 969,
+          "endLine": 969,
+          "kind": "heading",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            969
+          ],
+          "text": "## File and JSON log sinks\n",
+          "sha256": "41733ef97959a5d7c8e026bb85321345584d8cc1ab5dddbc69c35998a6324e37"
+        },
+        {
+          "startLine": 971,
+          "endLine": 971,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            971
+          ],
+          "text": "Open the Writer once and capture it in the sink. `Log.formatRecord` is pure: it keeps the default text format and escaping, but adds no newline and filters no levels. `withSinks` filters Debug here; `File.writeLine` adds the newline. Common attributes precede event attributes, including duplicate keys.\n",
+          "sha256": "95cf111f9bf43d62ff1511e3a8210ae880af7e98878a45e642cab34813f7d3db"
+        },
+        {
+          "startLine": 973,
+          "endLine": 973,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            973
+          ],
+          "text": "Both examples construct a fixed `Location` so their output is reproducible. For the actual call site, pass `SourceLocation.here()` directly to each logging call instead.\n",
+          "sha256": "38c3b69fdb5a85ce4cf8c4a41953163543a80a4daa9920ed15c47c3e5765d7bc"
+        },
+        {
+          "startLine": 975,
+          "endLine": 998,
+          "kind": "code",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            975,
+            976,
+            977,
+            978,
+            980,
+            981,
+            982,
+            983,
+            984,
+            985,
+            986,
+            987,
+            988,
+            989,
+            990,
+            991,
+            992,
+            993,
+            994,
+            995,
+            996,
+            997,
+            998
+          ],
+          "text": "```benitoite\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.IO.Process\n\nfunction main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit\n  bind location <- SourceLocation.Location(file: \"app/Main.bnt\", line: 12, column: 3)\n  with writer = try File.openWriter(path: \"events.log\", mode: File.WriteMode.Replace) or die do\n    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit\n      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die\n      return ()\n    end lambda\n    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()\n      Log.withAttributes(attributes: [Log.attribute(key: \"tag\", value: \"common\")], body: lambda()\n        Log.debug(message: \"filtered\", attributes: [], location: location)\n        Log.info(message: \"first\\n\\\"quoted\\\"\", attributes: [Log.attribute(key: \"tag\", value: \"event\")], location: location)\n        Log.warn(message: \"second\", attributes: [Log.attribute(key: \"n\", value: 42)], location: location)\n      end lambda)\n    end lambda)\n    ()\n  end with\n  Console.write(try File.readText(\"events.log\") or die)\nend function\n```\n",
+          "sha256": "c5480bba1fa736d0cfebd66d2ac8468b48e9b018de5e5372d6039989906b2d4a"
+        },
+        {
+          "startLine": 999,
+          "endLine": 1002,
+          "kind": "code",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            999,
+            1000,
+            1001,
+            1002
+          ],
+          "text": "```output\nlevel=INFO source=\"app/Main.bnt:12:3\" message=\"first\\n\\\"quoted\\\"\" attr.\"tag\"=\"common\" attr.\"tag\"=\"event\"\nlevel=WARN source=\"app/Main.bnt:12:3\" message=\"second\" attr.\"tag\"=\"common\" attr.\"n\"=42\n```\n",
+          "sha256": "99fc9f2bff08d4cf22fc2e88f539ade0b484b0427638402144cbc2d66e75628e"
+        },
+        {
+          "startLine": 1004,
+          "endLine": 1004,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            1004
+          ],
+          "text": "Keep the sink and all its calls inside the Writer's `with` block; using the captured Writer after release is a runtime error. The Writer is buffered: a successful `writeLine` does not guarantee a successful flush at release. Write failures propagate through `or die`; a flush failure at `end with` is a resource-release runtime error. If a write error is handled as a value, the Writer remains failed and release still reports it. To handle the close result explicitly, call `File.closeWriter` and inspect its Result before leaving the block. These follow the File and resource rules; the example does not guarantee that each event has reached storage.\n",
+          "sha256": "bd564ddcdf4c1111ef6376d995d248a1b5a1f0d5f60e458919e5f90bb2feb052"
+        },
+        {
+          "startLine": 1006,
+          "endLine": 1006,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            1006
+          ],
+          "text": "The readback happens after release so the checked output includes both writes. File.Read and Console.Write are needed only for this readback and display. Ask the harness to inspect the declared upper bound before running: File.Write, File.Read, Console.Write, State for release, and Process.Exit for `or die`. The complete handler removes the body's Log effect. A file-level `uses Log` would still add Log to main's declaration. These declarations do not enforce path-specific runtime permissions.\n",
+          "sha256": "0d587b013991daf67cd752dd5abd89645074d774690f5b062b55c754fd6209bb"
+        },
+        {
+          "startLine": 1008,
+          "endLine": 1008,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            1008
+          ],
+          "text": "For JSON lines, define an application format with a pure conversion function. Keep attributes as an array of `{key, value}` objects: converting them to a Map keyed by attribute name would lose duplicates and their order. This example includes level and location, encodes unsigned integers as `{\"unsignedInteger\":\"...\"}` to preserve the full u64 range, and encodes non-finite Float values as `{\"nonFiniteFloat\":\"...\"}`. `Json.Value` has no unsigned-integer constructor; directly stringifying a non-finite `Json.Value.Float` would produce null. The `Float.isNaN(number - number)` test identifies non-finite values using existing APIs. The executed example includes NaN; it does not exercise positive or negative infinity. This is an application format, not a standard Log JSON schema.\n",
+          "sha256": "d7e930e03f0f204c7e69e9b147d14014b645a817b16aa4d0642772c251fc6b98"
+        },
+        {
+          "startLine": 1010,
+          "endLine": 1077,
+          "kind": "code",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            1010,
+            1011,
+            1012,
+            1013,
+            1014,
+            1016,
+            1017,
+            1018,
+            1019,
+            1020,
+            1021,
+            1022,
+            1023,
+            1024,
+            1025,
+            1026,
+            1027,
+            1028,
+            1029,
+            1030,
+            1032,
+            1033,
+            1034,
+            1035,
+            1036,
+            1037,
+            1039,
+            1040,
+            1041,
+            1042,
+            1043,
+            1044,
+            1045,
+            1046,
+            1047,
+            1048,
+            1049,
+            1050,
+            1051,
+            1052,
+            1053,
+            1054,
+            1055,
+            1056,
+            1057,
+            1059,
+            1060,
+            1061,
+            1062,
+            1063,
+            1064,
+            1065,
+            1066,
+            1067,
+            1068,
+            1069,
+            1070,
+            1071,
+            1072,
+            1073,
+            1074,
+            1075,
+            1076,
+            1077
+          ],
+          "text": "```benitoite\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.IO.Process\nimport Benitoite.Unofficial.Json\n\nfunction jsonScalar(value: Log.Value) -> Json.Value\n  return match value with\n    case Log.Value.Text(text) -> Json.Value.String(text)\n    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)\n    case Log.Value.Integer(number) -> Json.Value.Integer(number)\n    case Log.Value.UnsignedInteger(number) ->\n      Json.Value.Object(Map.fromList([Pair(\"unsignedInteger\", Json.Value.String(UnsignedInteger64.toString(number)))]))\n    case Log.Value.Float(number) ->\n      if Float.isNaN(number - number) then\n        Json.Value.Object(Map.fromList([Pair(\"nonFiniteFloat\", Json.Value.String(Float.toString(number)))]))\n      else\n        Json.Value.Float(number)\n      end if\n  end match\nend function\n\nfunction jsonAttribute(value: Log.Attribute) -> Json.Value\n  return Json.Value.Object(Map.fromList([\n    Pair(\"key\", Json.Value.String(Log.Attribute.key(value))),\n    Pair(\"value\", jsonScalar(Log.Attribute.value(value)))\n  ]))\nend function\n\nfunction jsonRecord(record: Log.Record) -> Json.Value\n  bind level <- match Log.Record.level(record) with\n    case Log.Level.Debug -> \"debug\"\n    case Log.Level.Info -> \"info\"\n    case Log.Level.Warn -> \"warn\"\n    case Log.Level.Error -> \"error\"\n  end match\n  bind location <- Log.Record.location(record)\n  return Json.Value.Object(Map.fromList([\n    Pair(\"level\", Json.Value.String(level)),\n    Pair(\"message\", Json.Value.String(Log.Record.message(record))),\n    Pair(\"attributes\", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),\n    Pair(\"location\", Json.Value.Object(Map.fromList([\n      Pair(\"file\", Json.Value.String(SourceLocation.Location.file(location))),\n      Pair(\"line\", Json.Value.Integer(SourceLocation.Location.line(location))),\n      Pair(\"column\", Json.Value.Integer(SourceLocation.Location.column(location)))\n    ])))\n  ]))\nend function\n\nfunction main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit\n  bind location <- SourceLocation.Location(file: \"app/Main.bnt\", line: 12, column: 3)\n  with writer = try File.openWriter(path: \"events.jsonl\", mode: File.WriteMode.Replace) or die do\n    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit\n      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die\n      return ()\n    end lambda\n    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()\n      Log.withAttributes(attributes: [Log.attribute(key: \"tag\", value: \"common\")], body: lambda()\n        Log.debug(message: \"filtered\", attributes: [], location: location)\n        Log.info(message: \"first\\n\\\"quoted\\\"\", attributes: [Log.attribute(key: \"tag\", value: \"event\"), Log.attribute(key: \"n\", value: 42)], location: location)\n        Log.warn(message: \"second\", attributes: [Log.attribute(key: \"flag\", value: true), Log.attribute(key: \"unsigned\", value: 18446744073709551615u64), Log.attribute(key: \"finite\", value: 1.5), Log.attribute(key: \"nan\", value: Float.squareRoot(-1.0))], location: location)\n      end lambda)\n    end lambda)\n    ()\n  end with\n  Console.write(try File.readText(\"events.jsonl\") or die)\nend function\n```\n",
+          "sha256": "1c11082ca407d9eb6b7d8c54d8aa0d7ea4e83a124159264ce0fb3240158fd00e"
+        },
+        {
+          "startLine": 1078,
+          "endLine": 1081,
+          "kind": "code",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            1078,
+            1079,
+            1080,
+            1081
+          ],
+          "text": "```output\n{\"attributes\":[{\"key\":\"tag\",\"value\":\"common\"},{\"key\":\"tag\",\"value\":\"event\"},{\"key\":\"n\",\"value\":42}],\"level\":\"info\",\"location\":{\"column\":3,\"file\":\"app/Main.bnt\",\"line\":12},\"message\":\"first\\n\\\"quoted\\\"\"}\n{\"attributes\":[{\"key\":\"tag\",\"value\":\"common\"},{\"key\":\"flag\",\"value\":true},{\"key\":\"unsigned\",\"value\":{\"unsignedInteger\":\"18446744073709551615\"}},{\"key\":\"finite\",\"value\":1.5},{\"key\":\"nan\",\"value\":{\"nonFiniteFloat\":\"NaN\"}}],\"level\":\"warn\",\"location\":{\"column\":3,\"file\":\"app/Main.bnt\",\"line\":12},\"message\":\"second\"}\n```\n",
+          "sha256": "7ebb2cc40538f72c4a5962b1ef8b906cea8fc1f3a66c8dbb24f6e5f345aaa24c"
+        },
+        {
+          "startLine": 1083,
+          "endLine": 1083,
+          "kind": "paragraph",
+          "heading": "Benitoite idioms / File and JSON log sinks",
+          "changedLines": [
+            1083
+          ],
+          "text": "The message's newline and quotes are escaped within one JSON line. The same lifetime, failure, and effect rules as the text sink apply. Import Json in the application; no Json dependency or dedicated file/JSON handler is added to Log.\n",
+          "sha256": "1a30c8c3a9598ae70bbc05fd26a6c5fe53ec2ed502d4dedd981ed9e95ce54c07"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 35,
+          "oldEnd": 34,
+          "newStart": 35,
+          "newEnd": 35
+        },
+        {
+          "kind": "insert",
+          "oldStart": 36,
+          "oldEnd": 35,
+          "newStart": 37,
+          "newEnd": 37
+        },
+        {
+          "kind": "insert",
+          "oldStart": 500,
+          "oldEnd": 499,
+          "newStart": 502,
+          "newEnd": 514
+        },
+        {
+          "kind": "insert",
+          "oldStart": 797,
+          "oldEnd": 796,
+          "newStart": 812,
+          "newEnd": 885
+        },
+        {
+          "kind": "insert",
+          "oldStart": 880,
+          "oldEnd": 879,
+          "newStart": 969,
+          "newEnd": 1084
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/inspection.md",
+      "generated": false,
+      "sha256": "7032913f648ea668668d5a745a6a5999dee0f7bf398a98732af48e17fc23f2bc",
+      "blocks": [
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution",
+          "changedLines": [
+            3
+          ],
+          "text": "The harness uses inspection reports to explain declared effects to the user before execution. While editing, use ordinary `benitoite check main.bnt` or non-executing `benitoite test --check tests/` and fix the diagnostics. Once the checks pass, obtain one JSON report immediately before confirmation. Inspect that report, explain the declared effects to the user using the Skill's confirmation rules, then pass the accepted set to execution:\n",
+          "sha256": "1a57dd8c6ec93e38aafd83d5d7fce6e2f239f44931dcf4c004d5d87b4eb09b63"
+        },
+        {
+          "startLine": 27,
+          "endLine": 38,
+          "kind": "table",
+          "heading": "Inspecting before execution",
+          "changedLines": [
+            38
+          ],
+          "text": "| Field | Meaning |\n|---|---|\n| `kind` | `checkReport` for main, `testCheckReport` for tests; use `schemaVersion: 1` by default; `test --doc` uses version 2. |\n| `producer` | `{name, version, build}`, matching the version query. |\n| `executed` | Always `false`; no user function ran. |\n| `targetsComplete` | Entry selection or discovery finished; this alone does not mean checks succeeded. |\n| `requestedTargets`, `targets` | Supplied paths with their indices, and selected entries with `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`, `status`, and `complete`. |\n| `main`, `tests` on a target | Main's symbol, location, effects, and shell reference; or a declaration-ordered list of test function names, descriptions, locations, and effects. Failed or uninspected contracts are `null`. |\n| `aggregateEffects` | Main's declared effects or the union of all selected tests' declared effects; `null` unless the whole inspection is complete. |\n| `sources`, `sourceSets` | Source IDs, display paths, kinds, and hashes, with source IDs grouped by target. |\n| `diagnostics`, `diagnosticTargets` | Diagnostic objects and their target associations; discovery-wide and usage errors have no target. |\n| `intervalAnalysis` on the report and each target | Additional local interval analysis summary, described below; independent of `complete` and report acceptance. |\n",
+          "sha256": "f568f25d067a7c712a0955b080d589112e8c29cef19d21f44782e3ae93cb03de"
+        },
+        {
+          "startLine": 44,
+          "endLine": 44,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution",
+          "changedLines": [
+            44
+          ],
+          "text": "File-level `uses` is merged with the individual declaration in the checked Scheme. After accepting the whole report under the rules above, show `targets[0].main.effects.expanded` as main's declared upper bound; tests use each selected test's effects and their aggregate. Even an empty body retains shared Console.Write or Log. Reading only main's source line can miss that bound. Do not turn a report into automatic permission. Ordinary `check` still writes no standard output. The processor owns the existing required fields and acceptance rules: see the [v0.0.11 English reference](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/reference/benitoite.md#inspection-reports), with checkReport 1 and testCheckReport 1/2. The additional `intervalAnalysis` field below preserves those versions and rules.\n",
+          "sha256": "376e3724a8b745553431501dc2acf6752862e960e8510eba9c49aa906b65aea3"
+        },
+        {
+          "startLine": 94,
+          "endLine": 94,
+          "kind": "heading",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            94
+          ],
+          "text": "## Local interval analysis\n",
+          "sha256": "4812ecaa12a6a6c692257b31728896aacfa6c8e2051d2605153651e395a01f83"
+        },
+        {
+          "startLine": 96,
+          "endLine": 96,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            96
+          ],
+          "text": "The report and each target carry an additional `intervalAnalysis` object with `basis: \"localIntervals\"`. It describes the range covered by local interval analysis. `complete` still describes type/effect checking and contract extraction. The harness must keep the report acceptance rules above: `coverage` does not participate in acceptance. A report can have `complete: true` with `coverage: \"some\"`, or `complete: false` with `coverage: \"all\"`. No warnings does not mean safe, even with `all`; runtime checks remain necessary.\n",
+          "sha256": "5e2ac171026d42e7d518315d0c8bd11e96b9ff83e9661ea0c92ff55139f1ccc0"
+        },
+        {
+          "startLine": 98,
+          "endLine": 98,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            98
+          ],
+          "text": "Do not require `coverage: \"all\"` to accept an otherwise successful inspection, or use `all` to accept a failed one. Explain an unknown value or an unsupported or unfinished range as a limit of this analysis. These limits add no check error and do not by themselves call for code changes or expanded effect declarations. Read diagnostics separately: W0401/W0402/W0404 with a local-analysis note describe conditional failure at the reported position, not failure of the whole program. See [Explaining local interval warnings](idioms.md#explaining-local-interval-warnings) for examples, Range success values, and HTTP fields that are not tracked.\n",
+          "sha256": "b648b52cdbe68ab8fc665b9dac2b01bd949eea95540e2f631207c2a708be0726"
+        },
+        {
+          "startLine": 100,
+          "endLine": 109,
+          "kind": "table",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109
+          ],
+          "text": "| Field in `intervalAnalysis` | Meaning |\n|---|---|\n| `coverage` | `all` when analysis has no unsupported or unfinished range; `some` when analysis started but such a range remains; `none` before analysis, including failures before type checking and targets with no valid bodies after type checking. |\n| `inputDefinitions` | Type-checked original definitions supplied to analysis; separately analyzed lambda/lazy/clause bodies do not add to this count. |\n| `unsupportedBodies` | Body outputs whose parent or saved independent input contains unsupported syntax, including stopped outputs; at most one per body output. |\n| `bodyBudgetExceeded` | Body outputs stopped by an ordinary body-budget overrun; excludes stops classified as unidentified. |\n| `wholeBudgetSkipped` | Ranges left unanalyzed due to the whole-check budget: stopped outputs, discovered pending bodies, remaining valid original definitions, and incomplete discovery or control for an original definition. Undiscovered nested bodies are not estimated. |\n| `unidentifiedBodies` | Body outputs stopped by a budget overrun during numbering, whether the body or whole-check limit caused it. Other stops that leave numbers unavailable do not enter this count. |\n| `phaseStops` | Stop events in entry preparation, discovery, queues, nested-body control, and whole-check control. `exceeded` and `unidentified` each contain `bodyOperations`, `bodyItems`, `wholeOperations`, and `wholeItems`. `depth` and `other` count the remaining stop kinds. These are events, not a count of unanalyzed bodies. |\n| `usage` | `operations`, `savedItems`, `peakItems`, `maxBodyOperations`, and `maxBodyItems`: consumed operations, retained items, peak simultaneous items, maximum body operations, and maximum simultaneous body items. These are analysis-budget units, not allocated bytes. |\n",
+          "sha256": "7ff5bf56ca4c8f9d76925ca658982b70907579d030b7716b0a9d191d9fe278b8"
+        },
+        {
+          "startLine": 111,
+          "endLine": 111,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            111
+          ],
+          "text": "Counts and usage are nonnegative JSON integers. Entry/control stops without a body output appear in `phaseStops`, not in `bodyBudgetExceeded` or `unidentifiedBodies`. `wholeBudgetSkipped` does not count the same original definition's incomplete range again for each control stop, or add an unidentified output to its ordinary-overrun count. The four body/range counts need not partition `inputDefinitions`: nested bodies are separate outputs, and a stopped output may also contain unsupported syntax.\n",
+          "sha256": "990077ee0b0e57828c62be6df0ec1fe8073452d73e04d102cebf8fb3299a7e1d"
+        },
+        {
+          "startLine": 113,
+          "endLine": 113,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            113
+          ],
+          "text": "`some` includes body and phase stops, remaining original inputs, unprepared entries, unfinished discovery or queues, and discovered pending bodies. Zero counts alone do not establish `all`. For test reports, counts are summed across targets, including duplicate entries as separate checks. Coverage is `none` when every target is `none`, `some` when otherwise any target is not `all`, and `all` otherwise. Successful empty discovery is `all` with zero counts; usage errors and discovery failures are `none`.\n",
+          "sha256": "62531f54304236e86322062981a1e503cc7210e14d35dfa45b9915a85bdabca2"
+        },
+        {
+          "startLine": 115,
+          "endLine": 115,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            115
+          ],
+          "text": "For main, the report summary equals the target summary. For doc tests, each target combines its ordinary entry with all generated examples, including check/error examples; unfinished example discovery leaves an uninspected range. This does not add check/error examples to execution effects. Aggregate usage sums `operations` and `savedItems`, and takes the maximum of `peakItems`, `maxBodyOperations`, and `maxBodyItems`. Body maxima cover only bodies with saved outputs; an original definition includes entry, parent analysis, discovery, and queue work. Consumption from phase stops without an output still remains in overall usage.\n",
+          "sha256": "7ab01befed8e22ce1557d867c78d974ac0d393ad02a9477ff691e026bd6e1d5b"
+        },
+        {
+          "startLine": 117,
+          "endLine": 117,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            117
+          ],
+          "text": "`--deny-warnings` preserves the analysis summary even when promoted warnings make inspection fail. Adding unrelated definitions can exhaust the whole-check budget and remove later interval warnings, changing acceptance under `--deny-warnings`. Existing constant warnings and interval warnings already obtained remain. The harness must not describe an unsupported or unanalyzed range as safe. The added summary preserves main/ordinary-test schema version 1 and doc-test version 2, existing required fields, statuses, and effect-report acceptance rules.\n",
+          "sha256": "4944d49d57c95c41a2aeb72549af3e5a5579623245028d25dbe37342beafe4b0"
+        },
+        {
+          "startLine": 119,
+          "endLine": 119,
+          "kind": "paragraph",
+          "heading": "Inspecting before execution / Local interval analysis",
+          "changedLines": [
+            119
+          ],
+          "text": "For the processor's definition of these additional fields and their aggregation, use the [v0.0.12 English reference](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#interval-analysis-coverage). Its [local warning rules](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#local-interval-warnings) define the analysis scope; the executable's embedded Skill supplies the documentation for the installed version.\n",
+          "sha256": "c642a3d56872aed5284ffd0e248e91c6c75c5f003180b502c08d00b9c543ee89"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "replace",
+          "oldStart": 3,
+          "oldEnd": 3,
+          "newStart": 3,
+          "newEnd": 3
+        },
+        {
+          "kind": "insert",
+          "oldStart": 38,
+          "oldEnd": 37,
+          "newStart": 38,
+          "newEnd": 38
+        },
+        {
+          "kind": "replace",
+          "oldStart": 43,
+          "oldEnd": 43,
+          "newStart": 44,
+          "newEnd": 44
+        },
+        {
+          "kind": "insert",
+          "oldStart": 92,
+          "oldEnd": 91,
+          "newStart": 93,
+          "newEnd": 119
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Byte.md",
+      "generated": true,
+      "sha256": "cc9b19cc0d48324dc4a2c95ce3e2e2d64068380f83cfe5ddccc7c5f153f77486",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.Byte",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,7]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "c86e206451ec2ed270ee80f31c2952ad9285285d49a9c5d87dfd414546f4d501"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer.md",
+      "generated": true,
+      "sha256": "cd377ab0dca126bb49f3d42565981be719d86519fab3238853e5081a35d4c0c1",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.Integer",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,63]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "2374be1f6240bae11dc77d462b8d7a8953e2bdae593b02405d3b42fdaabbebc8"
+        },
+        {
+          "startLine": 13,
+          "endLine": 14,
+          "kind": "paragraph",
+          "heading": "Benitoite.Integer",
+          "changedLines": [
+            13,
+            14
+          ],
+          "text": "W0404 applies only to direct arguments of standard shift functions, including the fixed-width and Byte modules and their aliases.\nIt does not apply to Process.exit, Http.Listen.listen, Http.Listen.respond, Http.Connect.send, or HTTP record fields: language handlers can replace these operations.\n",
+          "sha256": "3210e3d173921e7302a16c1318c01f0a640ad4374ace38241bd4737906aae7f7"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 14
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer16.md",
+      "generated": true,
+      "sha256": "7e2c14d8f01e82f53e87888ac238ce19a278c71d6c68df00527c0a5ea2b4c3ea",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.Integer16",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,15]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "0c5f9b45d1ea8ff9bfc15a10a6dd508c555950d2404af64a746a1eef0d5d5868"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer32.md",
+      "generated": true,
+      "sha256": "ffb8ffc52ba8698302b895b72da7895f5b5c3d78489a9661174da81e9e4772e9",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.Integer32",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,31]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "77ff0f1354bf5eff7c936c16a45d4c77ee9dede72a07a5712da99e8bda78cef9"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer64.md",
+      "generated": true,
+      "sha256": "4f0a008d5c5fc1424b3810f8239835984cd38ece3d802706e1a8d3ef6331e715",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.Integer64",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,63]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "2374be1f6240bae11dc77d462b8d7a8953e2bdae593b02405d3b42fdaabbebc8"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer8.md",
+      "generated": true,
+      "sha256": "9e259698d1832a6788ba5918b791ed21a7d588c60a792b3c65a18620e1dbb6de",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.Integer8",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,7]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "c86e206451ec2ed270ee80f31c2952ad9285285d49a9c5d87dfd414546f4d501"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Log.md",
+      "generated": true,
+      "sha256": "f0758f9e7ea65b7ab6514c938f66ad7f81a06178cf05e88cfcab909918cc21ab",
+      "blocks": [
+        {
+          "startLine": 103,
+          "endLine": 105,
+          "kind": "code",
+          "heading": "Benitoite.Log",
+          "changedLines": [
+            104,
+            105
+          ],
+          "text": "```benitoite\npublic function formatRecord(record: Record) -> String\n```\n",
+          "sha256": "a45149e81683add4336a1548dc278e48382c075da04da0e6115212970752839a"
+        },
+        {
+          "startLine": 107,
+          "endLine": 114,
+          "kind": "paragraph",
+          "heading": "Benitoite.Log",
+          "changedLines": [
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114
+          ],
+          "text": "Formats any record, including Debug, in the default text format without emitting it.\nThis pure function neither filters levels nor appends a newline.\nFields appear as level, source, message, then attributes in list order, preserving duplicate keys.\nLevels are DEBUG/INFO/WARN/ERROR; source is the quoted file:line:column location.\nSource, message, attribute keys, and Text values use JSON quoting and escaping.\nBoolean values are true/false; integers are decimal; finite Float values use Float.toString.\nNon-finite Float values are nan/inf/-inf. No timestamp is added; the result is not JSON.\nString size limits apply during formatting, as for the default handler and withTextLogger.\n",
+          "sha256": "f0f4244ec1157237cc08132ddfe6b5554595cc82066b261d6ea29ffc58549ce4"
+        },
+        {
+          "startLine": 116,
+          "endLine": 122,
+          "kind": "code",
+          "heading": "Benitoite.Log",
+          "changedLines": [
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122
+          ],
+          "text": "```benitoite test\n@test\nfunction formatRecordExample() -> Unit uses Assert.Check\n  bind record <- Log.Record(level: Log.Level.Debug, message: \"done\\n\\\"ok\\\"\", attributes: [Log.attribute(key: \"tag\", value: \"first\"), Log.attribute(key: \"tag\", value: true)], location: SourceLocation.Location(file: \"app/Main.bnt\", line: 12, column: 3))\n  Assert.equal(actual: Log.formatRecord(record: record), expected: \"level=DEBUG source=\\\"app/Main.bnt:12:3\\\" message=\\\"done\\\\n\\\\\\\"ok\\\\\\\"\\\" attr.\\\"tag\\\"=\\\"first\\\" attr.\\\"tag\\\"=true\")\nend function\n```\n",
+          "sha256": "d96536200c5898f23b0be75349327928c76c0a268b2f25b1c5a300170736eb28"
+        },
+        {
+          "startLine": 124,
+          "endLine": 126,
+          "kind": "code",
+          "heading": "Benitoite.Log",
+          "changedLines": [
+            124
+          ],
+          "text": "```benitoite\npublic function withAttributes[T, effect E](attributes: List[Attribute], body: function() -> T uses Log, E) -> T uses Log, E\n```\n",
+          "sha256": "63e2243e82fd8986483bca224466bddfeec0a7529f9303d170a348a809db5043"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 104,
+          "oldEnd": 103,
+          "newStart": 104,
+          "newEnd": 124
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Range.md",
+      "generated": true,
+      "sha256": "795ce678b6f068d1aa81fb6848477c1c74cdfc1013ac63ecbf6abadd1a8a9121",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 10,
+          "kind": "paragraph",
+          "heading": "Benitoite.Range",
+          "changedLines": [
+            9,
+            10
+          ],
+          "text": "Local interval analysis recognizes direct calls to the standard checkInteger and value functions, including import aliases. With fixed Integer64 bounds, it can retain the bounds through a direct match or one local binding of the Result. In a single Ok(checked) pattern, a direct Range.value(checked) can supply that interval to later arithmetic.\nThe analysis does not carry this information through aliases, repackaging, value joins, function boundaries, or dynamic bounds. A join of condition environments also forgets it, including information from outside the condition. It adds no warning for Range errors and keeps all runtime checks. This analysis does not extend to CheckedLength or CheckedIndex.\n",
+          "sha256": "dad425d2367093021fad81a2456a8e35bfbea05278c7ad643497500359682be8"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 10
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger.md",
+      "generated": true,
+      "sha256": "c8bc608f549273eaf022e429e7033aa19b54fc4ab7b2ce11befc510d213d9b27",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.UnsignedInteger",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,63]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "2374be1f6240bae11dc77d462b8d7a8953e2bdae593b02405d3b42fdaabbebc8"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger16.md",
+      "generated": true,
+      "sha256": "ba55f0c5a28332139fbe92456264883f65af5e8e45f2772742f6bdcc976502e0",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.UnsignedInteger16",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,15]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "0c5f9b45d1ea8ff9bfc15a10a6dd508c555950d2404af64a746a1eef0d5d5868"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger32.md",
+      "generated": true,
+      "sha256": "cea1a5c03ca9b3d845339bdbe11a76ea4dc2b2152f96f0cc577247dc7f80efa8",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.UnsignedInteger32",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,31]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "77ff0f1354bf5eff7c936c16a45d4c77ee9dede72a07a5712da99e8bda78cef9"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger64.md",
+      "generated": true,
+      "sha256": "b07afcdab2be83937203fa9708f57f37088fc1b6c4302b13540a89b94042f571",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.UnsignedInteger64",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,63]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "2374be1f6240bae11dc77d462b8d7a8953e2bdae593b02405d3b42fdaabbebc8"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger8.md",
+      "generated": true,
+      "sha256": "0d14e7b0238d667eee2426bb445d6a0fb3a4a436e1f0dbe49c8e4229476aa84f",
+      "blocks": [
+        {
+          "startLine": 9,
+          "endLine": 11,
+          "kind": "paragraph",
+          "heading": "Benitoite.UnsignedInteger8",
+          "changedLines": [
+            9,
+            10,
+            11
+          ],
+          "text": "For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,7]`.\nThe warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.\nIntersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.\n",
+          "sha256": "c86e206451ec2ed270ee80f31c2952ad9285285d49a9c5d87dfd414546f4d501"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 8,
+          "oldEnd": 7,
+          "newStart": 8,
+          "newEnd": 11
+        }
+      ]
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "generated": false,
+      "sha256": "90892aa782ee6e968dccdbce46ce7a811c40650dc251138686d297023bccea37",
+      "blocks": [
+        {
+          "startLine": 217,
+          "endLine": 232,
+          "kind": "table",
+          "heading": "Benitoite Language Reference / 2. The command line / Inspection reports",
+          "changedLines": [
+            232
+          ],
+          "text": "| Common field | Meaning |\n|---|---|\n| `schemaVersion`, `kind` | Integer `1` for `\"checkReport\"` and ordinary `\"testCheckReport\"`; integer `2` for `test --doc` inspection. |\n| `producer` | `{name, version, build}`, with the same version and build information as the version query. |\n| `status` | `\"ok\"`, `\"checkError\"`, `\"usageError\"`, or `\"internalError\"`; test inspection can also return `\"interrupted\"`. |\n| `complete` | True only when selection, every target's check, and contract extraction have succeeded. |\n| `targetsComplete` | Whether entry selection or directory discovery finished; independent of type-checking success. |\n| `executed` | Always `false`. |\n| `requestedTargets` | `[{requestIndex, path}]`, in argument order, with zero-based indices and the supplied paths, including invalid ones. |\n| `targets` | Entries in discovery order: explicit argument order, and lexical file order within each directory. |\n| `sources` | `[{sourceId, displayPath, kind, contentHash}]`, in target order and then source-file ID order. `kind` is `\"user\"` or `\"prelude\"`; the latter includes all embedded standard-library sources. |\n| `sourceSets` | `[{targetId, sourceIds}]`, one row per target, including an empty source-ID array for an uninspected target. |\n| `aggregateEffects` | An Effects object for `main`, or the union of all selected tests' effects, only when the whole report is complete; otherwise `null`. |\n| `diagnostics` | An array of the diagnostic objects described in [Diagnostics](#18-diagnostics). |\n| `diagnosticTargets` | One `{diagnosticIndex, targetId}` per diagnostic. Discovery-wide and usage errors have `targetId: null`. |\n| `intervalAnalysis` | Additional local interval analysis information, described under [Interval analysis coverage](#interval-analysis-coverage). It does not change report acceptance. |\n",
+          "sha256": "5e5e5c61f0f98e1c58a4ffd51afc90f2722f3b248443d4cc8300c199627d5e76"
+        },
+        {
+          "startLine": 234,
+          "endLine": 234,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Inspection reports",
+          "changedLines": [
+            234
+          ],
+          "text": "Every target has `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`, `status`, and `complete`, plus the additional `intervalAnalysis` field. `entry` and `root` are display paths; `sourceId` is `null` if the entry's bytes were not retained. Main targets have `kind: \"main\"` and a `main` field. Test targets have `kind: \"tests\"` and a `tests` field, without `main`.\n",
+          "sha256": "415416c806a8131d6ea643f6d2dff51733ac4608395d9c06170214e0993a9707"
+        },
+        {
+          "startLine": 263,
+          "endLine": 263,
+          "kind": "heading",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            263
+          ],
+          "text": "### Interval analysis coverage\n",
+          "sha256": "507395c5a066120e7da6a1faf9fd8b4953256b5b42e37bee647bde25972c018b"
+        },
+        {
+          "startLine": 265,
+          "endLine": 265,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            265
+          ],
+          "text": "The report and each target include an `intervalAnalysis` object with `basis: \"localIntervals\"`. It describes how much of the [local interval analysis](#local-interval-warnings) ran. The existing report acceptance rule still requires a complete single JSON object, an understood schema version and kind, `status: \"ok\"`, `complete: true`, and exit status 0. The harness must not add a required `coverage: \"all\"` check. `complete` concerns type and effect checking and contract extraction; `coverage` concerns this additional analysis. A successful report can have `coverage: \"some\"`. A report rejected by `--deny-warnings` can retain `coverage: \"all\"`.\n",
+          "sha256": "4fbd2de38713350bc1ca9cf829fd7e6cd8e828664d748eb685f6a4e88ed89a50"
+        },
+        {
+          "startLine": 267,
+          "endLine": 277,
+          "kind": "table",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            267,
+            268,
+            269,
+            270,
+            271,
+            272,
+            273,
+            274,
+            275,
+            276,
+            277
+          ],
+          "text": "| `intervalAnalysis` field | Meaning |\n|---|---|\n| `basis` | `\"localIntervals\"`. |\n| `coverage` | `\"all\"`, `\"some\"`, or `\"none\"`, as defined below. |\n| `inputDefinitions` | Original definitions that passed type checking and were supplied to the analysis; separately analyzed lambda and handler bodies do not add to this count. |\n| `unsupportedBodies` | Body results containing unsupported syntax in the body or one of its independently analyzed inputs; counted once per body result, including stopped bodies. |\n| `bodyBudgetExceeded` | Body results stopped by a body budget, excluding stops during expression identification. |\n| `wholeBudgetSkipped` | Incomplete ranges caused by the whole-check budget: stopped body results, discovered bodies left unanalyzed, remaining valid original definitions, or original definitions whose body discovery or preparation is incomplete. Repeated phase stops in the same original definition do not multiply its incomplete range. |\n| `unidentifiedBodies` | Body results stopped by a budget during expression identification, whether the body or whole-check budget caused the stop. |\n| `phaseStops` | Separate stop counts for preparation, body discovery, queue construction, and analysis control. `exceeded` and `unidentified` each contain `bodyOperations`, `bodyItems`, `wholeOperations`, and `wholeItems`; `depth` and `other` count the remaining stop kinds. |\n| `usage` | `operations`, `savedItems`, `peakItems`, `maxBodyOperations`, and `maxBodyItems`: actual analysis work, retained items, peak simultaneously held items, and the two body maxima. Items are analysis budget units, not bytes. |\n",
+          "sha256": "cc8549cdc1cef3e4a8f403d97595590a6e9ffbf633e2a103ce61b55a19e36cd4"
+        },
+        {
+          "startLine": 279,
+          "endLine": 279,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            279
+          ],
+          "text": "All counts and usage values are nonnegative JSON integers. `wholeBudgetSkipped` does not count bodies that have not yet been discovered or count the same body's whole-budget identification stop again. A stop before a body result exists contributes to `phaseStops`, rather than `bodyBudgetExceeded` or `unidentifiedBodies`. Phase stops count events; adding them does not give a count of unanalyzed bodies.\n",
+          "sha256": "c617ca10df22eaf71797d34d29118cbe14093ea8c6431b905c96cf2dc9cb863d"
+        },
+        {
+          "startLine": 281,
+          "endLine": 281,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            281
+          ],
+          "text": "For one check, `\"all\"` means analysis started and left no unsupported or stopped range, pending input, or incomplete preparation, discovery, or queue. `\"some\"` means analysis started but such a range remains. `\"none\"` means analysis did not start, including failure before type checking or a check with no valid bodies. Zero counts alone do not establish `\"all\"`. Even `\"all\"` with no warnings is not proof of safety, successful outside operations, reachability, or termination.\n",
+          "sha256": "fe2b9593164374211ed007b6c917cd03568ed44816e8713991f8d947ba4219dc"
+        },
+        {
+          "startLine": 283,
+          "endLine": 283,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            283
+          ],
+          "text": "For test inspection, the overall coverage is `\"none\"` when every target is `\"none\"`, `\"all\"` when every target is `\"all\"`, and `\"some\"` otherwise. Successful discovery of an empty directory is a zero-count `\"all\"`; usage and discovery failures are `\"none\"`. Counts, `usage.operations`, and `usage.savedItems` are summed across targets; `usage.peakItems`, `usage.maxBodyOperations`, and `usage.maxBodyItems` use the maximum. Repeated explicit entries remain separate checks. With `--doc`, the target includes analysis of ordinary code and all generated examples, including check/error examples. This does not add check/error examples to `aggregateEffects`.\n",
+          "sha256": "4fae1deceaa7cffc558b2216bc3ac7a21412beb176883324ecca8044999102ac"
+        },
+        {
+          "startLine": 285,
+          "endLine": 285,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 2. The command line / Interval analysis coverage",
+          "changedLines": [
+            285
+          ],
+          "text": "Already collected analysis information remains available when `--deny-warnings` rejects a check. A whole-check budget can prevent warnings from later bodies, so adding an unrelated definition can change acceptance under `--deny-warnings`. Unknown or unanalyzed code is not reported as safe. These additional fields leave the main and ordinary test report versions at 1, the doc test report version at 2, and diagnostic JSON Lines at version 1. No analysis summary line is appended to diagnostic JSON Lines.\n",
+          "sha256": "2de45ecd423b0ce5ab36b3dc412ac3b795a6b4d04241e2b1947a12fec1aa84a7"
+        },
+        {
+          "startLine": 1152,
+          "endLine": 1152,
+          "kind": "heading",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1152
+          ],
+          "text": "#### File and JSON log sinks\n",
+          "sha256": "b5d620098858d4050159babe3ff8f799cdb9e3770ac5a9cdcfe9f4406be885a9"
+        },
+        {
+          "startLine": 1154,
+          "endLine": 1154,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1154
+          ],
+          "text": "Open the Writer once and capture it in the sink. `Log.formatRecord` is pure: it keeps the default text format and escaping, but adds no newline and filters no levels. `withSinks` filters Debug here; `File.writeLine` adds the newline. Common attributes precede event attributes, including duplicate keys.\n",
+          "sha256": "95cf111f9bf43d62ff1511e3a8210ae880af7e98878a45e642cab34813f7d3db"
+        },
+        {
+          "startLine": 1156,
+          "endLine": 1156,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1156
+          ],
+          "text": "Both examples construct a fixed `Location` so their output is reproducible. For the actual call site, pass `SourceLocation.here()` directly to each logging call instead.\n",
+          "sha256": "38c3b69fdb5a85ce4cf8c4a41953163543a80a4daa9920ed15c47c3e5765d7bc"
+        },
+        {
+          "startLine": 1158,
+          "endLine": 1181,
+          "kind": "code",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1158,
+            1159,
+            1160,
+            1161,
+            1163,
+            1164,
+            1165,
+            1166,
+            1167,
+            1168,
+            1169,
+            1170,
+            1171,
+            1172,
+            1173,
+            1174,
+            1175,
+            1176,
+            1177,
+            1178,
+            1179,
+            1180,
+            1181
+          ],
+          "text": "```benitoite\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.IO.Process\n\nfunction main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit\n  bind location <- SourceLocation.Location(file: \"app/Main.bnt\", line: 12, column: 3)\n  with writer = try File.openWriter(path: \"events.log\", mode: File.WriteMode.Replace) or die do\n    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit\n      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die\n      return ()\n    end lambda\n    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()\n      Log.withAttributes(attributes: [Log.attribute(key: \"tag\", value: \"common\")], body: lambda()\n        Log.debug(message: \"filtered\", attributes: [], location: location)\n        Log.info(message: \"first\\n\\\"quoted\\\"\", attributes: [Log.attribute(key: \"tag\", value: \"event\")], location: location)\n        Log.warn(message: \"second\", attributes: [Log.attribute(key: \"n\", value: 42)], location: location)\n      end lambda)\n    end lambda)\n    ()\n  end with\n  Console.write(try File.readText(\"events.log\") or die)\nend function\n```\n",
+          "sha256": "c5480bba1fa736d0cfebd66d2ac8468b48e9b018de5e5372d6039989906b2d4a"
+        },
+        {
+          "startLine": 1182,
+          "endLine": 1185,
+          "kind": "code",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1182,
+            1183,
+            1184,
+            1185
+          ],
+          "text": "```output\nlevel=INFO source=\"app/Main.bnt:12:3\" message=\"first\\n\\\"quoted\\\"\" attr.\"tag\"=\"common\" attr.\"tag\"=\"event\"\nlevel=WARN source=\"app/Main.bnt:12:3\" message=\"second\" attr.\"tag\"=\"common\" attr.\"n\"=42\n```\n",
+          "sha256": "99fc9f2bff08d4cf22fc2e88f539ade0b484b0427638402144cbc2d66e75628e"
+        },
+        {
+          "startLine": 1187,
+          "endLine": 1187,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1187
+          ],
+          "text": "Keep the sink and all its calls inside the Writer's `with` block; using the captured Writer after release is a runtime error. The Writer is buffered: a successful `writeLine` does not guarantee a successful flush at release. Write failures propagate through `or die`; a flush failure at `end with` is a resource-release runtime error. If a write error is handled as a value, the Writer remains failed and release still reports it. To handle the close result explicitly, call `File.closeWriter` and inspect its Result before leaving the block. These follow the File and resource rules; the example does not guarantee that each event has reached storage.\n",
+          "sha256": "bd564ddcdf4c1111ef6376d995d248a1b5a1f0d5f60e458919e5f90bb2feb052"
+        },
+        {
+          "startLine": 1189,
+          "endLine": 1189,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1189
+          ],
+          "text": "The readback happens after release so the checked output includes both writes. File.Read and Console.Write are needed only for this readback and display. Ask the harness to inspect the declared upper bound before running: File.Write, File.Read, Console.Write, State for release, and Process.Exit for `or die`. The complete handler removes the body's Log effect. A file-level `uses Log` would still add Log to main's declaration. These declarations do not enforce path-specific runtime permissions.\n",
+          "sha256": "0d587b013991daf67cd752dd5abd89645074d774690f5b062b55c754fd6209bb"
+        },
+        {
+          "startLine": 1191,
+          "endLine": 1191,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1191
+          ],
+          "text": "For JSON lines, define an application format with a pure conversion function. Keep attributes as an array of `{key, value}` objects: converting them to a Map keyed by attribute name would lose duplicates and their order. This example includes level and location, encodes unsigned integers as `{\"unsignedInteger\":\"...\"}` to preserve the full u64 range, and encodes non-finite Float values as `{\"nonFiniteFloat\":\"...\"}`. `Json.Value` has no unsigned-integer constructor; directly stringifying a non-finite `Json.Value.Float` would produce null. The `Float.isNaN(number - number)` test identifies non-finite values using existing APIs. The executed example includes NaN; it does not exercise positive or negative infinity. This is an application format, not a standard Log JSON schema.\n",
+          "sha256": "d7e930e03f0f204c7e69e9b147d14014b645a817b16aa4d0642772c251fc6b98"
+        },
+        {
+          "startLine": 1193,
+          "endLine": 1260,
+          "kind": "code",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1193,
+            1194,
+            1195,
+            1196,
+            1197,
+            1199,
+            1200,
+            1201,
+            1202,
+            1203,
+            1204,
+            1205,
+            1206,
+            1207,
+            1208,
+            1209,
+            1210,
+            1211,
+            1212,
+            1213,
+            1215,
+            1216,
+            1217,
+            1218,
+            1219,
+            1220,
+            1222,
+            1223,
+            1224,
+            1225,
+            1226,
+            1227,
+            1228,
+            1229,
+            1230,
+            1231,
+            1232,
+            1233,
+            1234,
+            1235,
+            1236,
+            1237,
+            1238,
+            1239,
+            1240,
+            1242,
+            1243,
+            1244,
+            1245,
+            1246,
+            1247,
+            1248,
+            1249,
+            1250,
+            1251,
+            1252,
+            1253,
+            1254,
+            1255,
+            1256,
+            1257,
+            1258,
+            1259,
+            1260
+          ],
+          "text": "```benitoite\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.IO.Process\nimport Benitoite.Unofficial.Json\n\nfunction jsonScalar(value: Log.Value) -> Json.Value\n  return match value with\n    case Log.Value.Text(text) -> Json.Value.String(text)\n    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)\n    case Log.Value.Integer(number) -> Json.Value.Integer(number)\n    case Log.Value.UnsignedInteger(number) ->\n      Json.Value.Object(Map.fromList([Pair(\"unsignedInteger\", Json.Value.String(UnsignedInteger64.toString(number)))]))\n    case Log.Value.Float(number) ->\n      if Float.isNaN(number - number) then\n        Json.Value.Object(Map.fromList([Pair(\"nonFiniteFloat\", Json.Value.String(Float.toString(number)))]))\n      else\n        Json.Value.Float(number)\n      end if\n  end match\nend function\n\nfunction jsonAttribute(value: Log.Attribute) -> Json.Value\n  return Json.Value.Object(Map.fromList([\n    Pair(\"key\", Json.Value.String(Log.Attribute.key(value))),\n    Pair(\"value\", jsonScalar(Log.Attribute.value(value)))\n  ]))\nend function\n\nfunction jsonRecord(record: Log.Record) -> Json.Value\n  bind level <- match Log.Record.level(record) with\n    case Log.Level.Debug -> \"debug\"\n    case Log.Level.Info -> \"info\"\n    case Log.Level.Warn -> \"warn\"\n    case Log.Level.Error -> \"error\"\n  end match\n  bind location <- Log.Record.location(record)\n  return Json.Value.Object(Map.fromList([\n    Pair(\"level\", Json.Value.String(level)),\n    Pair(\"message\", Json.Value.String(Log.Record.message(record))),\n    Pair(\"attributes\", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),\n    Pair(\"location\", Json.Value.Object(Map.fromList([\n      Pair(\"file\", Json.Value.String(SourceLocation.Location.file(location))),\n      Pair(\"line\", Json.Value.Integer(SourceLocation.Location.line(location))),\n      Pair(\"column\", Json.Value.Integer(SourceLocation.Location.column(location)))\n    ])))\n  ]))\nend function\n\nfunction main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit\n  bind location <- SourceLocation.Location(file: \"app/Main.bnt\", line: 12, column: 3)\n  with writer = try File.openWriter(path: \"events.jsonl\", mode: File.WriteMode.Replace) or die do\n    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit\n      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die\n      return ()\n    end lambda\n    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()\n      Log.withAttributes(attributes: [Log.attribute(key: \"tag\", value: \"common\")], body: lambda()\n        Log.debug(message: \"filtered\", attributes: [], location: location)\n        Log.info(message: \"first\\n\\\"quoted\\\"\", attributes: [Log.attribute(key: \"tag\", value: \"event\"), Log.attribute(key: \"n\", value: 42)], location: location)\n        Log.warn(message: \"second\", attributes: [Log.attribute(key: \"flag\", value: true), Log.attribute(key: \"unsigned\", value: 18446744073709551615u64), Log.attribute(key: \"finite\", value: 1.5), Log.attribute(key: \"nan\", value: Float.squareRoot(-1.0))], location: location)\n      end lambda)\n    end lambda)\n    ()\n  end with\n  Console.write(try File.readText(\"events.jsonl\") or die)\nend function\n```\n",
+          "sha256": "1c11082ca407d9eb6b7d8c54d8aa0d7ea4e83a124159264ce0fb3240158fd00e"
+        },
+        {
+          "startLine": 1261,
+          "endLine": 1264,
+          "kind": "code",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1261,
+            1262,
+            1263,
+            1264
+          ],
+          "text": "```output\n{\"attributes\":[{\"key\":\"tag\",\"value\":\"common\"},{\"key\":\"tag\",\"value\":\"event\"},{\"key\":\"n\",\"value\":42}],\"level\":\"info\",\"location\":{\"column\":3,\"file\":\"app/Main.bnt\",\"line\":12},\"message\":\"first\\n\\\"quoted\\\"\"}\n{\"attributes\":[{\"key\":\"tag\",\"value\":\"common\"},{\"key\":\"flag\",\"value\":true},{\"key\":\"unsigned\",\"value\":{\"unsignedInteger\":\"18446744073709551615\"}},{\"key\":\"finite\",\"value\":1.5},{\"key\":\"nan\",\"value\":{\"nonFiniteFloat\":\"NaN\"}}],\"level\":\"warn\",\"location\":{\"column\":3,\"file\":\"app/Main.bnt\",\"line\":12},\"message\":\"second\"}\n```\n",
+          "sha256": "7ebb2cc40538f72c4a5962b1ef8b906cea8fc1f3a66c8dbb24f6e5f345aaa24c"
+        },
+        {
+          "startLine": 1266,
+          "endLine": 1266,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 10. Effects / Structured logging and source locations / File and JSON log sinks",
+          "changedLines": [
+            1266
+          ],
+          "text": "The message's newline and quotes are escaped within one JSON line. The same lifetime, failure, and effect rules as the text sink apply. Import Json in the application; no Json dependency or dedicated file/JSON handler is added to Log.\n",
+          "sha256": "1a30c8c3a9598ae70bbc05fd26a6c5fe53ec2ed502d4dedd981ed9e95ce54c07"
+        },
+        {
+          "startLine": 1780,
+          "endLine": 1780,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics",
+          "changedLines": [
+            1780
+          ],
+          "text": "Width-specific integer helpers also report W0401 for a constant zero divisor, even with an unknown dividend, and W0402 for constant overflow. Signed minimum absolute/floorDivide(minimum, -1) warn; floorModulo(minimum, -1) = 0 does not. These constant-evaluation warnings remain separate from the local analysis below. Declaration-derived constraints suppress duplicate downstream errors while independent errors remain; distinct same-named types include their module in diagnostics.\n",
+          "sha256": "d012cf5a7c1564d372af04276f5f1adb6c804a22e054453665c8b6cb3c95b1b8"
+        },
+        {
+          "startLine": 1782,
+          "endLine": 1782,
+          "kind": "heading",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1782
+          ],
+          "text": "### Local interval warnings\n",
+          "sha256": "6bde179e7be995f18294c5258dc854475423b45b47b63be75d8b5d300309afd5"
+        },
+        {
+          "startLine": 1784,
+          "endLine": 1784,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1784
+          ],
+          "text": "Local interval analysis tracks inclusive integer bounds through `bind`, `shadow`, comparisons with constants, `if`, short-circuiting `and`/`or`, and `match` guards. It covers `Integer8`, `Integer16`, `Integer32`, `Integer64`, `UnsignedInteger16`, `UnsignedInteger32`, and `UnsignedInteger64`, including their aliases. Integer64 patterns can use literals and ranges; the other six types still require bindings or wildcards with guards. The analysis adds no range annotations or changes to the type and effect rules.\n",
+          "sha256": "af076f50db4d236a0ecf082cc9f728623f2d69f42bfb416e8ff50600384c1f08"
+        },
+        {
+          "startLine": 1786,
+          "endLine": 1790,
+          "kind": "table",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1786,
+            1787,
+            1788,
+            1789,
+            1790
+          ],
+          "text": "| Code | Condition found by local analysis |\n|---|---|\n| W0401 | The divisor of `div` or `mod` has the single-value interval `[0,0]`. |\n| W0402 | The nonempty mathematical result interval is wholly outside the type's range for addition, subtraction, signed negation, or multiplication with a single-value interval on at least one side. |\n| W0404 | The nonempty interval for the direct shift-count argument `n` is wholly outside `[0,width−1]`, and every argument has a normal value. |\n",
+          "sha256": "5bc45cec3cf737e92c0bef99603a2dfe892a88353f372e989d0299901cd8822a"
+        },
+        {
+          "startLine": 1792,
+          "endLine": 1792,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1792
+          ],
+          "text": "W0404 applies to direct calls to the standard `shiftLeft` and `shiftRight` functions on all integer types, including `Byte`/`UnsignedInteger8`, and `shiftRightUnsigned` on signed integers. Aliases and import aliases of the same standard declaration are recognized. Calls through function values, holes, pipes, and user functions with the same name are outside this recognition. Bits discarded by a left shift do not count as overflow. Effect operations and HTTP record fields are outside W0404: a language handler can replace an operation's default behavior.\n",
+          "sha256": "cf48aa204ad865906fa9f639e4292bfdd04ae4ed322783213e7dea985b994c52"
+        },
+        {
+          "startLine": 1794,
+          "endLine": 1794,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1794
+          ],
+          "text": "These warnings describe failure only **if execution reaches the operation or call and every operand or argument evaluates successfully**. They do not establish that the program reaches that point or fails as a whole. Local analysis adds no warning for a parent operation when a child has no normal value. Notes show the inferred interval, the allowed range where applicable, and this condition; up to eight contributing bindings or comparisons appear as secondary locations. An existing constant warning takes precedence when both analyses find the same failure, and no automatic numeric replacement is proposed.\n",
+          "sha256": "d59ae28c93fc4741e57598669409f8f752acd11b93022f83c54876f9988b9a96"
+        },
+        {
+          "startLine": 1796,
+          "endLine": 1796,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1796
+          ],
+          "text": "The analysis does not track correlations between variables or propagate intervals between functions. General multiplication and the result intervals of division and remainder become unknown; Byte arithmetic remains a type error. A result interval partly overlapping the type's range, or a divisor interval containing both zero and other values, does not produce a new interval warning. Unknown normal integer values use the type's full range and are distinct from having no normal value. Function, lambda, lazy, and handler-clause bodies start without facts from callers or captures. Independently analyzed children of unsupported expressions also discard outside facts, while retaining facts found inside the child.\n",
+          "sha256": "7cb4e5ded43331498f53026fe4a3a63d066e41baaf0b795f84a0825cb49d6ef0"
+        },
+        {
+          "startLine": 1798,
+          "endLine": 1798,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1798
+          ],
+          "text": "Each body has limits of 100,000 analysis operations and 100,000 simultaneously held items; one check has limits of 1,000,000 for each. Unsupported forms and exhausted budgets add no check error, and runtime checks remain in place. Already collected warnings remain available. The harness should explain [coverage](#interval-analysis-coverage) and warnings separately, and review additional warnings when using `--deny-warnings`.\n",
+          "sha256": "98762f6a3e5467d354224e42b9b8c12f0d9f026093914e719ffbe6b4655e7328"
+        },
+        {
+          "startLine": 1800,
+          "endLine": 1800,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 18. Diagnostics / Local interval warnings",
+          "changedLines": [
+            1800
+          ],
+          "text": "The formal guarantee concerns normal-value membership and conditional failure at warning locations in an **evaluation relation for the target fragment**. Agreement with the compiler, standard-library source, and VM is checked on finite inputs, rather than proved for all programs. The project's formal-semantics design document records the trusted rules and comparison limits. No warning-free result is a proof that execution succeeds.\n",
+          "sha256": "b458a3a62d2ad38c8b8dc57c871f81214678e324d0d9c7ed042b11a22ab4f113"
+        },
+        {
+          "startLine": 1894,
+          "endLine": 1894,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 19. The standard library / IO and network behavior",
+          "changedLines": [
+            1894
+          ],
+          "text": "Local interval analysis treats `Http.text`, `Http.html`, and `Http.json` as ordinary functions with unknown results. It does not infer `Response.status` facts from their returned records. It also does not track HTTP fields through explicit record construction, local storage, or updates. For example, this script passes `check` without W0404 even though the statuses are outside the default `Http.respond` range:\n",
+          "sha256": "d45b0407ce335cefd36f1e5c660c3f3a0dc0792d060c004cc3f1e3807f49341c"
+        },
+        {
+          "startLine": 1896,
+          "endLine": 1907,
+          "kind": "code",
+          "heading": "Benitoite Language Reference / 19. The standard library / IO and network behavior",
+          "changedLines": [
+            1896,
+            1897,
+            1898,
+            1900,
+            1901,
+            1902,
+            1903,
+            1904,
+            1905,
+            1906,
+            1907
+          ],
+          "text": "```benitoite check\nimport Benitoite.Unofficial.Network.Http\nimport Benitoite.Unofficial.Json\n\nfunction main() -> Unit\n  bind plain <- Http.text(status: 700, s: \"example\")\n  bind _ <- Http.html(status: 700, s: \"<p>example</p>\")\n  bind _ <- Http.json(status: 700, value: Json.Value.Null)\n  bind _ <- Http.Response(status: 700, headers: [], body: Bytes.empty())\n  bind _ <- Http.Response(..plain, status: 701)\nend function\n```\n",
+          "sha256": "48158e9e4104f7ee5edf9ffd5996e8191abad598a935e29006a0156bd43364a0"
+        },
+        {
+          "startLine": 1909,
+          "endLine": 1909,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 19. The standard library / IO and network behavior",
+          "changedLines": [
+            1909
+          ],
+          "text": "This example constructs values only; it sends no response. The default `Http.respond` implementation still checks the status at runtime. Absence of a warning does not validate a response or authorize a network operation.\n",
+          "sha256": "472916bb60a753e7e77ef91ccd9166f0804cacf1cc5864f26d82ae12e545c911"
+        },
+        {
+          "startLine": 2349,
+          "endLine": 2359,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 21. Experimental: packages and external functions / JSON record conversion",
+          "changedLines": [
+            2349,
+            2350,
+            2351,
+            2352,
+            2353,
+            2354,
+            2355,
+            2356,
+            2357,
+            2358,
+            2359
+          ],
+          "text": "JSON and Property generation refuse target modules with file-level `uses`,\nincluding previously generated targets; Show/Order-only generation remains\naccepted. Generated top-level functions inherit the file declaration, so they\ncannot satisfy the required pure-function contracts. Remove the file declaration\nand write individual `uses` on functions that need effects, or move the type\ndefinition and derive target to a pure model module imported by the effectful\ncode. Merely changing the configured `source` cannot redirect generated output:\nit must match the type's declaring module. For existing regions, follow the\n[target removal and relocation procedure](../../tools/derive/README.md#verification-and-recovery).\nThe whole request is refused before writing review artifacts, source, or records\nwhen any target violates this rule.\n",
+          "sha256": "08562ffd84d762e237ec42385c061f50bf8d8b423af37595e46216290e84dca0"
+        },
+        {
+          "startLine": 2402,
+          "endLine": 2402,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 21. Experimental: packages and external functions / Record generators and shrinkers",
+          "changedLines": [
+            2402
+          ],
+          "text": "Custom fields.gen/fields.shrink remain paired, fully qualified pure monomorphic zero-argument functions replacing an entire field. Save the version 3 `.generated.json` record (`generatorVersion: 3.1.0-syntax-batch5`), config, libraryVersion 2.0.0, source, concrete failures, and custom functions. Inventory is version 3, configuration stays 1. Finish pending apply/recovery with the saved old tool before updating it. Verify old body hashes, review a fresh preview and record, then apply its exact reviewed manifest hash. Tool input hashes can invalidate an earlier manifest even when the generator version stays the same. A seed alone cannot reproduce distributions across generator versions. Have the harness run normal check/test and derive check after apply; see the [derive tool](../../tools/derive/README.md) for the full workflow and recovery.\n",
+          "sha256": "cced11ce413fabafce865f52b9f2aa13da9ae3360acbe5fa3b8916d95942de91"
+        },
+        {
+          "startLine": 2421,
+          "endLine": 2421,
+          "kind": "paragraph",
+          "heading": "Benitoite Language Reference / 21. Experimental: packages and external functions / Range",
+          "changedLines": [
+            2421
+          ],
+          "text": "Local interval analysis uses a **function summary** for direct standard `Range.checkInteger` and `Range.value` calls. With fixed Integer bounds, it can retain the bounds through a directly matched result or a result saved once in a local binding, and use them for direct `Range.value` on the same `Ok` value. It recognizes the resolved standard declarations, including import aliases. Dynamic bounds, copied aliases of the success value, merged or rewrapped values, other instances, function-value calls, holes, and pipes do not carry this information. Merging condition environments also discards the success-value information. It does not generate summaries for arbitrary functions or extend this rule to checked lengths, indices, or nonempty lists. Invalid bounds and out-of-range inputs still return `Result.Error` without a new interval warning.\n",
+          "sha256": "e8a761f7f279bb1e7b1a72007cda26adb85496b9245c0de9368a17a5b74baf48"
+        }
+      ],
+      "changes": [
+        {
+          "kind": "insert",
+          "oldStart": 232,
+          "oldEnd": 231,
+          "newStart": 232,
+          "newEnd": 232
+        },
+        {
+          "kind": "replace",
+          "oldStart": 233,
+          "oldEnd": 233,
+          "newStart": 234,
+          "newEnd": 234
+        },
+        {
+          "kind": "insert",
+          "oldStart": 261,
+          "oldEnd": 260,
+          "newStart": 262,
+          "newEnd": 285
+        },
+        {
+          "kind": "insert",
+          "oldStart": 1127,
+          "oldEnd": 1126,
+          "newStart": 1152,
+          "newEnd": 1267
+        },
+        {
+          "kind": "replace",
+          "oldStart": 1639,
+          "oldEnd": 1639,
+          "newStart": 1780,
+          "newEnd": 1800
+        },
+        {
+          "kind": "insert",
+          "oldStart": 1732,
+          "oldEnd": 1731,
+          "newStart": 1893,
+          "newEnd": 1909
+        },
+        {
+          "kind": "insert",
+          "oldStart": 2171,
+          "oldEnd": 2170,
+          "newStart": 2349,
+          "newEnd": 2360
+        },
+        {
+          "kind": "replace",
+          "oldStart": 2212,
+          "oldEnd": 2212,
+          "newStart": 2402,
+          "newEnd": 2402
+        },
+        {
+          "kind": "insert",
+          "oldStart": 2230,
+          "oldEnd": 2229,
+          "newStart": 2420,
+          "newEnd": 2421
+        }
+      ]
+    }
+  ]
+}

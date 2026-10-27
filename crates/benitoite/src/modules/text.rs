@@ -49,3 +49,7 @@ pub(super) const SYNTAX_BATCH4_MIGRATION: &str = "rename identifiers spelled `bl
 
 pub(super) const SYNTAX_BATCH5_CHANGE: &str = "derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations";
 pub(super) const SYNTAX_BATCH5_MIGRATION: &str = "recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md";
+
+pub(super) const SYNTAX_BATCH6_CHANGE: &str =
+    "each WASM Store limits live component handles to 100,000; excess allocation stops with R0906";
+pub(super) const SYNTAX_BATCH6_MIGRATION: &str = "review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md";

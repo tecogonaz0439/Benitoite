@@ -1,0 +1,26 @@
+[
+  {
+    "command": [
+      "../../target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "testdata/warnings/local-width-intervals.bnt"
+    ],
+    "cwd": "crates/benitoite",
+    "exit": 0,
+    "seconds": 0.9510747909999999,
+    "stdout": ""
+  },
+  {
+    "command": [
+      "../../target/debug/benitoite",
+      "check",
+      "--diagnostics=text",
+      "testdata/warnings/local-width-intervals.bnt"
+    ],
+    "cwd": "crates/benitoite",
+    "exit": 0,
+    "seconds": 0.057300999999999935,
+    "stdout": ""
+  }
+]

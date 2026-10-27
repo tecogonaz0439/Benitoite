@@ -1,0 +1,17 @@
+✖ [53/53] Building Benitoite.Interval.Range (344ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Range.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.setup.json --json
+error: Benitoite/Interval/Range.lean:226:9: Application type mismatch: The argument
+  EvalPartial.local ?m.22 ?m.23 ?m.24 ?m.25 ?m.28
+has type
+  EvalPartial ?m.22 { source := Expr.local ?m.24, type := ConcreteValue.type ?m.25, key := ?m.23 }
+    (EvalOutcome.normal ?m.25) []
+but is expected to have type
+  EvalPartial
+    { locals := [some (ConcreteValue.other (Ty.opaque owner) ⋯ ⋯ ⋯)], standards := [], apiAt := fun x => none }
+    { source := Expr.local 0, type := Ty.opaque owner, key := key }
+    (EvalOutcome.normal (ConcreteValue.other (Ty.opaque owner) ⋯ ⋯ ⋯)) []
+in the application
+  And.intro (EvalPartial.local ?m.22 ?m.23 ?m.24 ?m.25 ?m.28)
+Some required targets logged failures:
+- Benitoite.Interval.Range
+error: build failed

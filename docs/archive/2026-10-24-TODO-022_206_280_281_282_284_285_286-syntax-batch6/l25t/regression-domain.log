@@ -1,0 +1,113 @@
+Benitoite/Interval/DomainExamples.lean:89:0: error: Expression
+  widths.all fun x =>
+    match x with
+    | (moduleName, operand, upper, primitive) =>
+      (directions operand).all fun direction =>
+        let binding := shift operand direction moduleName;
+        [false, true].all fun reversed =>
+          let source := shiftCall binding reversed primitive;
+          decide
+            (List.map
+                (fun interval =>
+                  warningView
+                    (abstract [binding] [AbstractSlot.integer interval, AbstractSlot.unknown (some operand.type)]
+                      binding.declaration)
+                    source)
+                [normalize 0 upper, normalize (-2) (-1), normalize (upper + 1) (upper + 2), normalize (-1) 0,
+                  normalize upper (upper + 1), top, Interval.bottom] =
+              [[], [(key, WarningCause.outsideDomain)], [(key, WarningCause.outsideDomain)], [], [], [], []])
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:100:0: error: Expression
+  widths.all fun x =>
+    match x with
+    | (moduleName, operand, upper, primitive) =>
+      (directions operand).all fun direction =>
+        let binding := shift operand direction moduleName;
+        [false, true].all fun reversed =>
+          [(-1, Failure.outsideDomain), (0, Failure.unknown), (upper, Failure.unknown),
+                (upper + 1, Failure.outsideDomain)].all
+            fun x =>
+            match x with
+            | (amount, reason) =>
+              let env := concrete [binding] [number amount, shiftValue operand] binding.declaration;
+              match observe env (shiftCall binding reversed primitive) operand.type with
+              |
+              some
+                  (OutcomeView.failed actual,
+                    [{ site := 10, arguments := [value, some actualAmount],
+                        outcome := OutcomeView.failed eventReason }]) =>
+                decide
+                  (actual = reason ∧
+                    eventReason = reason ∧
+                      actualAmount = amount ∧
+                        value = if operand = ShiftOperand.integer IntKind.integer64 then some 0 else none)
+              | x => decide False
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:113:0: error: Expression
+  let binding := shift (ShiftOperand.integer IntKind.integer64) ShiftOperation.left;
+  let source := shiftCall binding false;
+  (warningView
+        (abstract [binding] [AbstractSlot.integer (normalize 1 1), AbstractSlot.integer (normalize max64 max64)]
+          binding.declaration)
+        source).isEmpty &&
+    match observe (concrete [binding] [number 1, number max64] binding.declaration) source (Ty.base BaseTy.integer) with
+    |
+    some
+        (OutcomeView.failed Failure.unknown,
+          [{ site := 10, arguments := [some 9223372036854775807, some 1],
+              outcome := OutcomeView.failed Failure.unknown }]) =>
+      true
+    | x => false
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:152:0: error: Expression
+  let binding := shift (ShiftOperand.integer IntKind.integer64) ShiftOperation.left;
+  let env := concrete [binding] [] binding.declaration;
+  decide
+    (List.map (fun source => observe env source (Ty.base BaseTy.boolean))
+        [call binding [1, 0] [bad, Expr.funName "unreachable" [] []] [some "n", some "a"],
+          call binding [0, 1] [bad, Expr.funName "unreachable" [] []] [none, none]] =
+      [some
+          (OutcomeView.failed Failure.zeroDivisor,
+            [{ site := 12, arguments := [some 1, some 0], outcome := OutcomeView.failed Failure.zeroDivisor }]),
+        some
+          (OutcomeView.failed Failure.zeroDivisor,
+            [{ site := 12, arguments := [some 1, some 0], outcome := OutcomeView.failed Failure.zeroDivisor }])])
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:160:0: error: Expression
+  let binding := shift (ShiftOperand.integer IntKind.integer64) ShiftOperation.left;
+  let env := concrete [binding] [] binding.declaration;
+  decide
+    (List.map (fun source => observe env source (Ty.base BaseTy.boolean))
+        [call binding [0, 1] [ret, bad] [none, none],
+          call binding [1, 0] [ret, Expr.funName "unreachable" [] []] [some "n", some "a"]] =
+      [some (OutcomeView.returned (some 1), []), some (OutcomeView.returned (some 1), [])])
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:167:0: error: Expression
+  let binding := shift (ShiftOperand.integer IntKind.integer64) ShiftOperation.left;
+  let source := call binding [0, 1] [Expr.binary BinOp.add (Ty.base BaseTy.integer) one one, bad] [none, none];
+  decide
+    (observe (concrete [binding] [] binding.declaration) source (Ty.base BaseTy.unit) =
+        some
+          (OutcomeView.failed Failure.zeroDivisor,
+            [{ site := 12, arguments := [some 1, some 1], outcome := OutcomeView.normal },
+              { site := 15, arguments := [some 1, some 0], outcome := OutcomeView.failed Failure.zeroDivisor }]) ∧
+      warningView (abstract [binding] [] binding.declaration) source =
+        [({ definition := "C4.domain", surfacePreorder := 15 }, WarningCause.zeroDivisor)])
+did not evaluate to `true`
+Benitoite/Interval/DomainExamples.lean:206:39: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Eff.var`
+
+Note: Inferred this name from the expected resulting type of `.var`:
+  Eff
+Benitoite/Interval/DomainExamples.lean:206:39: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.EffR.var`
+
+Note: Inferred this name from the expected resulting type of `.var`:
+  Eff
+Benitoite/Interval/DomainExamples.lean:208:38: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Eff.var`
+
+Note: Inferred this name from the expected resulting type of `.var`:
+  Eff
+Benitoite/Interval/DomainExamples.lean:208:38: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.EffR.var`
+
+Note: Inferred this name from the expected resulting type of `.var`:
+  Eff
+Benitoite/Interval/DomainExamples.lean:202:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors

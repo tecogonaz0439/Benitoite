@@ -1,0 +1,24 @@
+build default/before: ac992bde2cb3 (built)
+build default/after: 2d563be9d72a (built)
+16.2: output verification passed
+16.3: output verification passed
+16.4: output verification passed
+16.5: output verification passed
+runtime: output verification passed
+16.6: output verification passed
+16.7: output verification passed
+16.8: output verification passed
+16.9: output verification passed
+{"model": "actual verification \u00d7 (warmup + paired CLI/control samples + resources), 2x safety margin + 60s", "verification_seconds": 4.254864127999895, "samples": 5, "cached_total_seconds": 157.86187494399758, "budget_seconds": 900, "excludes": "builds; not a runtime upper bound"}
+16.2: 17 cases measured
+16.3: 37 cases measured
+16.4: 17 cases measured
+16.5: 11 cases measured
+runtime: 8 cases measured
+16.6: 1 cases measured
+16.7: 1 cases measured
+16.8: 1 cases measured
+16.9: 1 cases measured
+<repo>/tools/bench/results/2026-10-25-2d563be9-syntax-batch6-a07
+      215.64 real      1081.48 user        45.24 sys
+exit 0

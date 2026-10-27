@@ -202,6 +202,15 @@ pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic
             .arg("size", size.to_string())
             .arg("limit", limit.to_string())
             .note("component"),
+        Stop::Resource(ResourceError::ExternalComponentHandles {
+            function,
+            component,
+            limit,
+        }) => DiagBuilder::new(DiagCode::R0906)
+            .arg("function", function.clone())
+            .arg("component", component.clone())
+            .arg("limit", limit.to_string())
+            .note("component"),
         Stop::Resource(ResourceError::ExternalValueTooLarge {
             function,
             size,
@@ -298,6 +307,11 @@ pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic
         })
     ) {
         builder.build_variant("adapter_allocation")
+    } else if matches!(
+        &info.stop,
+        Stop::Resource(ResourceError::ExternalComponentHandles { .. })
+    ) {
+        builder.build_variant("component_handles")
     } else {
         builder.build()
     };

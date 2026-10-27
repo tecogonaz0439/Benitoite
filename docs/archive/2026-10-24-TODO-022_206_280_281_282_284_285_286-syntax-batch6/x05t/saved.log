@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved.py", line 179, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/saved.py", line 54, in main
+    current = whole.counts(roots)
+  File "<repo>/scripts/check/formal_interval.py", line 193, in counts
+    actual = comparison_evidence(expected, report, observation)
+  File "<repo>/scripts/check/interval_artifacts.py", line 99, in comparison_evidence
+    independent += non_top(child, entry['type'])
+  File "<repo>/scripts/check/interval_artifacts.py", line 68, in non_top
+    kind = ty.get('base', {}).get('name')
+AttributeError: 'str' object has no attribute 'get'

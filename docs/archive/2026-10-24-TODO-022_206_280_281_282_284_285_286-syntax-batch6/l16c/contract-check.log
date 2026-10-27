@@ -1,0 +1,160 @@
+B_WORK = 7d7b34c5fb73a06282956043d9f972fbcb3dea57
+HEAD = 7d7b34c5fb73a06282956043d9f972fbcb3dea57
+{
+  "formal/Benitoite/Interval/BudgetAnalyze.lean": {
+    "existing_public_unchanged": 10,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": []
+  },
+  "formal/Benitoite/Interval/BudgetCause.lean": {
+    "existing_public_unchanged": 44,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "causal_kindArm_selected"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetIndependentPosition.lean": {
+    "existing_public_unchanged": 28,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "analysis_inputWalk_kind"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetIndependentSound.lean": {
+    "existing_public_unchanged": 31,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "analysis_savesInputs_kind"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetLocated.lean": {
+    "existing_public_unchanged": 38,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "analysis_located_kind"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetNormal.lean": {
+    "existing_public_unchanged": 29,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "armListKind_normal"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetPatterns.lean": {
+    "existing_public_unchanged": 16,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "alternativeKind_agrees",
+      "alternativesKind_agrees",
+      "armKindCore_agrees",
+      "armKind_agrees",
+      "armKind_integer64",
+      "armTemplateKind_agrees",
+      "patternSlotsKindScan_agrees",
+      "scrutineeKind_agrees"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetReach.lean": {
+    "existing_public_unchanged": 30,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "analysis_within_kind",
+      "syntacticReach_analysis_walk_kind"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetSound.lean": {
+    "existing_public_unchanged": 34,
+    "private_auxiliary_statements_changed": [
+      "armHead_walk",
+      "armHead_absent"
+    ],
+    "new_theorems": [
+      "armListKind_causal",
+      "kindArmHead_absent",
+      "kindArmHead_walk",
+      "kindArms_absent"
+    ]
+  },
+  "formal/Benitoite/Interval/BudgetTraversal.lean": {
+    "existing_public_unchanged": 41,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "analysis_walk_kind"
+    ]
+  },
+  "formal/Benitoite/Interval/Environment.lean": {
+    "existing_public_unchanged": 39,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "matchKindPatternSlots_length",
+      "matchKindPatternSlots_models"
+    ]
+  },
+  "formal/Benitoite/Interval/Eval.lean": {
+    "existing_public_unchanged": 46,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "widthArms_divMod_event",
+      "widthArms_trace_keys"
+    ]
+  },
+  "formal/Benitoite/Interval/EvalClosed.lean": {
+    "existing_public_unchanged": 8,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": []
+  },
+  "formal/Benitoite/Interval/Examples.lean": {
+    "existing_public_unchanged": 0,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": []
+  },
+  "formal/Benitoite/Interval/Flow.lean": {
+    "existing_public_unchanged": 38,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "integerKindPatternLocals_values",
+      "integerKindPatternRange_sound",
+      "matchKindAlternativesEnv_models",
+      "models_matchKindAlternativeEnv",
+      "models_matchKindArmEnv",
+      "models_matchKindArmEnvCore",
+      "models_matchKindArmTemplate",
+      "models_matchKindScrutineeEnv"
+    ]
+  },
+  "formal/Benitoite/Interval/Sound.lean": {
+    "existing_public_unchanged": 47,
+    "private_auxiliary_statements_changed": [],
+    "new_theorems": [
+      "Good.absentKindArm",
+      "Good.kindArm",
+      "Good.matchingThen",
+      "absent_kindArm",
+      "base_kindArms_warning_bounds",
+      "base_kindArms_warning_located",
+      "base_widthArms_normal_sound",
+      "base_widthArms_warning_sound",
+      "kindArm_warning",
+      "localValueIndex_sound",
+      "matchKind_contains",
+      "matchKind_integer64",
+      "matchKind_some_integer64_iff",
+      "matchKind_warning",
+      "match_width_selection_models",
+      "noninteger_matchKind_none",
+      "onlyWidth_contains",
+      "widthArms_normal_typed"
+    ]
+  }
+}
+NormalSoundness/WarningSoundness: full definition bodies identical
+Existing public theorem statements: identical; no new axiom/sorry/admit
+Outside Interval: no Lean changes; lakefile -M 12288 and three fixed tables: identical
+Document headings/text fences: identical
+Fixed SHA-256: {
+  "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f",
+  "crates/benitoite/testdata/interval-budget/body.tsv": "e7643a1893f4a5a024b7a1b5eb845e4f213a14c9cdd992f02f9d5d416e0b56c1",
+  "crates/benitoite/testdata/interval-budget/whole.tsv": "01ac37e5e84f9645722a54388434304e6311aea898d7126568653b3c8de823c4",
+  "crates/benitoite/testdata/interval-budget/summary.tsv": "cfb261ab4fc794d8acdd3e089781e5e32b2b550bc4e45217fdc2865275c4a1bd"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "c52acdd1bd1da5a15b2d56e771629c11e7e45f20",
+    "--only",
+    "fmt,tests_related,source_rules,skill_generated,spec_tally",
+    "--test",
+    "*",
+    "--dry-run"
+  ],
+  "exit": 0,
+  "seconds": 0.015
+}

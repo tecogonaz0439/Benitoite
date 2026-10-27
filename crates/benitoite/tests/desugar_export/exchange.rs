@@ -358,6 +358,7 @@ struct Surface<'a> {
     type_order: Vec<usize>,
     // [対象箇所数, 元の注釈が R と異なる箇所数]。対象外の関数も含む。
     annotations: BTreeMap<&'static str, [usize; 2]>,
+    record_origins: bool,
 }
 impl Surface<'_> {
     fn new(p: &CheckedProgram, ret: Option<Ty>, type_order: Vec<usize>) -> Surface<'_> {
@@ -372,6 +373,7 @@ impl Surface<'_> {
             clause_types: Vec::new(),
             type_order,
             annotations: BTreeMap::new(),
+            record_origins: false,
         }
     }
     fn eff(&mut self, e: &EffectSet) -> Value {
@@ -1017,7 +1019,35 @@ impl Surface<'_> {
     fn expr(&mut self, e: &a::Expr, env: &[SurfaceSlot]) -> Value {
         self.expr_at(e, env, Position::Other)
     }
+    fn located(&mut self, node: NodeId, span: benitoite::base::Span, value: Value) -> Value {
+        if !self.record_origins {
+            return value;
+        }
+        let ty = self.node_ty(node);
+        let value = if value.get("$interval").is_some() {
+            value["expr"].clone()
+        } else {
+            value
+        };
+        self.located_type(node, span, ty, value)
+    }
+    fn located_type(
+        &self,
+        node: NodeId,
+        span: benitoite::base::Span,
+        ty: Value,
+        value: Value,
+    ) -> Value {
+        if !self.record_origins {
+            return value;
+        }
+        json!({"$interval":{"node":node.0,"span":[span.file.0,span.start.0,span.end.0],"type":ty},"expr":value})
+    }
     fn expr_at(&mut self, e: &a::Expr, env: &[SurfaceSlot], position: Position) -> Value {
+        let value = self.expr_unlocated(e, env, position);
+        self.located(e.id(), e.span(), value)
+    }
+    fn expr_unlocated(&mut self, e: &a::Expr, env: &[SurfaceSlot], position: Position) -> Value {
         self.node_ty(e.id());
         if let Some(args) = self.p.types.type_args.get(e.id()) {
             self.args(args);
@@ -1169,6 +1199,9 @@ impl Surface<'_> {
                         panic!("invalid List.concatenate binding: {kind:?}")
                     };
                     let concat = tagged(tag, json!({"name":name,"tys":[elem.clone()],"effs":effs}));
+                    let list_ty = self.node_ty(v.id);
+                    let concat_ty = json!({"fn":{"names":scheme.param_names,"params":[list_ty,list_ty],"ret":list_ty,"eff":[]}});
+                    let concat = self.located_type(v.id, v.span, concat_ty, concat);
                     tagged(
                         "listSpread",
                         json!({"elem":elem,"concat":concat,"before":before,"spread":spread,"after":after}),
@@ -1315,16 +1348,28 @@ impl Surface<'_> {
                             "kind":kind,"align":align,"sign":sign,"alternate":spec.alternate,
                             "zero":spec.zero,"width":spec.width,"precision":spec.precision}}),
                         ));
-                        converters
-                            .push(tagged("primName", json!({"name":name,"tys":[],"effs":[]})));
+                        let converter = tagged("primName", json!({"name":name,"tys":[],"effs":[]}));
+                        let converter_ty = json!({"fn":{"names":["value"],"params":[self.ty(ty)],"ret":{"base":{"name":"String"}},"eff":[]}});
+                        converters.push(self.located_type(
+                            s.expr.id(),
+                            s.span,
+                            converter_ty,
+                            converter,
+                        ));
                     } else if *b == BuiltinTypeId::STRING {
                         parts.push(json!("stringExpr"));
                     } else {
                         let id = table::interpolation_builtin(*b).unwrap();
                         let name = builtins::builtin_decl(id).unwrap().name;
                         parts.push(tagged("converted", json!({"ty":self.ty(ty)})));
-                        converters
-                            .push(tagged("primName", json!({"name":name,"tys":[],"effs":[]})));
+                        let converter = tagged("primName", json!({"name":name,"tys":[],"effs":[]}));
+                        let converter_ty = json!({"fn":{"names":["value"],"params":[self.ty(ty)],"ret":{"base":{"name":"String"}},"eff":[]}});
+                        converters.push(self.located_type(
+                            s.expr.id(),
+                            s.span,
+                            converter_ty,
+                            converter,
+                        ));
                     }
                     parts.push(tagged("text", json!({"value":s.tail})));
                 }
@@ -1480,7 +1525,12 @@ impl Surface<'_> {
                 } else {
                     Position::Result
                 };
-                self.with_binds(&v.binds, &v.body, env, body_position)
+                let result_ty = if self.record_origins {
+                    self.node_ty(v.id)
+                } else {
+                    Value::Null
+                };
+                self.with_binds(&v.binds, &v.body, env, body_position, &result_ty)
             }
             a::Expr::Handle(v) => {
                 let body = self.block(&v.body, env, Position::Other);
@@ -1560,6 +1610,7 @@ impl Surface<'_> {
         block: &a::Block,
         env: &[SurfaceSlot],
         position: Position,
+        result_ty: &Value,
     ) -> Value {
         let Some((first, rest)) = binds.split_first() else {
             return self.block(block, env, position);
@@ -1575,10 +1626,11 @@ impl Surface<'_> {
         let body = if rest.is_empty() {
             self.block(block, &local, position)
         } else {
-            let expr = self.with_binds(rest, block, &local, position);
+            let expr = self.with_binds(rest, block, &local, position, result_ty);
             tagged("last", json!({"expr":expr}))
         };
-        tagged("withE", json!({"o":o,"bound":bound,"body":body}))
+        let value = tagged("withE", json!({"o":o,"bound":bound,"body":body}));
+        self.located_type(first.id, first.span, result_ty.clone(), value)
     }
     fn call(&mut self, v: &a::CallExpr, env: &[SurfaceSlot]) -> Value {
         if let Some(op) = self.p.types.builder_ops.get(v.id).cloned() {
@@ -1638,7 +1690,7 @@ impl Surface<'_> {
         self.node_ty(v.id);
         let cond = self.expr(&v.cond, env);
         let yes = self.block(&v.then_block, env, position);
-        match &v.else_branch {
+        let value = match &v.else_branch {
             Some(a::ElseBranch::Block(b)) => {
                 let no = self.block(b, env, position);
                 tagged("ite", json!({"cond":cond,"yes":yes,"no":no}))
@@ -1648,7 +1700,8 @@ impl Surface<'_> {
                 tagged("elseIf", json!({"cond":cond,"yes":yes,"no":no}))
             }
             None => tagged("ifOnly", json!({"cond":cond,"yes":yes})),
-        }
+        };
+        self.located(v.id, v.span, value)
     }
     fn block(&mut self, b: &a::Block, env: &[SurfaceSlot], position: Position) -> Value {
         self.statements(&b.stmts, env, position)
@@ -2371,10 +2424,11 @@ fn getter_definition(
 }
 
 // 表層の本体は名前だけを保持する。依存先の範囲判定は使用時に伝播する。
-fn constant_table(
+fn constant_table_recorded(
     p: &CheckedProgram,
     core: &c::CoreProgram,
     coverage: &mut CoverageExport,
+    record_origins: bool,
 ) -> ConstantTable {
     let mut entries = BTreeMap::new();
     for d in &core.consts {
@@ -2395,6 +2449,7 @@ fn constant_table(
         assert_eq!(p.types.decl_types.get(d.binding).unwrap().ret, d.ty);
         let mut s = Surface::new(p, None, Vec::new());
         s.closed_constant = true;
+        s.record_origins = record_origins;
         let ty = s.ty(&d.ty);
         let body = s.expr(&decl.value, &[]);
         for item in s
@@ -2434,13 +2489,109 @@ fn constant_table(
     table
 }
 
+/// 独立交換用。既存六入口の本文・sidecarへ対応や解析結果を混ぜない。
+fn interval_definitions(p: &CheckedProgram, constants: &ConstantTable) -> Vec<Value> {
+    let mut output = Vec::new();
+    for (index, ast) in p.asts.iter().enumerate() {
+        let module = p
+            .modules
+            .get(ModuleId(u32::try_from(index).unwrap()))
+            .unwrap();
+        // この入口は既存交換と同じ利用者定義の範囲を返す。
+        // 全関係定義の manifest と対象外の件数の集計は、この材料の利用側で行う。
+        if matches!(
+            module.kind,
+            benitoite::modules::ModuleKind::Prelude | benitoite::modules::ModuleKind::Stdlib
+        ) {
+            continue;
+        }
+        let module_name = module.name.dotted();
+        for (position, decl) in ast.decls.iter().enumerate() {
+            let mut emit = |node,
+                            method: Option<usize>,
+                            function: Option<&a::FnDecl>,
+                            constant: Option<&a::ConstDecl>| {
+                let binding = *p.resolved.decls.get(node).unwrap();
+                let scheme = p.types.decl_types.get(binding).unwrap();
+                let declaration = p.resolved.bindings.get(binding).unwrap();
+                let name = match method {
+                    Some(method) => format!(
+                        "{module_name}%impl:{position}:{method}:{}",
+                        declaration.name
+                    ),
+                    None => format!("{module_name}.{}", declaration.name),
+                };
+                let mut surface = Surface::new(p, Some(scheme.ret.clone()), Vec::new());
+                surface.constants = Some(constants);
+                surface.record_origins = true;
+                let params: Vec<_> = scheme.params.iter().map(|ty| surface.ty(ty)).collect();
+                let ty = surface.ty(&scheme.ret);
+                let body = if let Some(f) = function {
+                    let mut env: Vec<_> = (0..scheme.class_constraints.len())
+                        .map(SurfaceSlot::Dictionary)
+                        .collect();
+                    env.extend(
+                        f.params
+                            .iter()
+                            .map(|param| SurfaceSlot::Local(surface.declaration(param.id))),
+                    );
+                    surface.block(f.body.as_ref().unwrap(), &env, Position::Tail)
+                } else {
+                    tagged(
+                        "last",
+                        json!({"expr":surface.expr(&constant.unwrap().value, &[])}),
+                    )
+                };
+                output.push(json!({"module":module_name,"name":name,"kind":if constant.is_some(){"constant"}else{"function"},
+                    "params":params,"type":ty,"body":body,"constants":constants.json(),"outside":surface.outside}));
+            };
+            match &decl.item {
+                a::Item::Fn(f) if f.body.is_some() => emit(f.id, None, Some(f), None),
+                a::Item::Const(c) => emit(c.id, None, None, Some(c)),
+                a::Item::Impl(i) => {
+                    for (method, f) in i.fns.iter().enumerate() {
+                        if f.decl.body.is_some() {
+                            emit(f.decl.id, Some(method), Some(&f.decl), None);
+                        }
+                    }
+                }
+                a::Item::Fn(_)
+                | a::Item::Data(_)
+                | a::Item::Alias(_)
+                | a::Item::ExternalType(_)
+                | a::Item::Record(_)
+                | a::Item::Trait(_)
+                | a::Item::Effect(_)
+                | a::Item::Error(_) => {}
+            }
+        }
+    }
+    output
+}
+
 /// 表層とコアの定義、定数、網羅性の入力を最終形式で書き出す。
 pub fn definitions(
     p: &CheckedProgram,
     core: &c::CoreProgram,
 ) -> (Vec<Value>, Value, CoverageExport) {
+    definitions_recorded(p, core, false)
+}
+
+/// 対応を記録する場合は独立交換の材料を返す。既存の入口は記録なしの本文を使う。
+pub(super) fn definitions_recorded(
+    p: &CheckedProgram,
+    core: &c::CoreProgram,
+    record_origins: bool,
+) -> (Vec<Value>, Value, CoverageExport) {
     let mut coverage = CoverageExport::default();
-    let constants = constant_table(p, core, &mut coverage);
+    let constants = constant_table_recorded(p, core, &mut coverage, record_origins);
+    if record_origins {
+        return (
+            interval_definitions(p, &constants),
+            constants.json(),
+            coverage,
+        );
+    }
     let mut result = Vec::new();
     for d in &core.defs {
         if d.origin != c::DefOrigin::User {

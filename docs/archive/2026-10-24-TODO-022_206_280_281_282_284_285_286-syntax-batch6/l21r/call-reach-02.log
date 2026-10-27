@@ -1,0 +1,16 @@
+Benitoite/Interval/CallReach.lean:122:11: error: Tactic `rfl` failed: The left-hand side
+  (armList env Arms.nil).sources
+is not definitionally equal to the right-hand side
+  preorderArms Arms.nil
+
+case nil
+env : AbstractEnv
+⊢ (armList env Arms.nil).sources = preorderArms Arms.nil
+Benitoite/Interval/CallReach.lean:104:83: warning: This simp argument is unused:
+  empty
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [expr, children, root, append_sources, gate, outside, expr_sources, block_sources, armList_sources,
+    exprs_sources, surfacePreorder, List.singleton_append, List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

@@ -1,0 +1,211 @@
+{
+  "source": "crates/benitoite/tests/desugar_export/batch3/range.bnt",
+  "expectation": "formal/Benitoite/Interval/Eval.lean StandardRule.argumentType/resultType",
+  "decoder": "formal/Benitoite/Exchange/Syntax.lean:71-72 (data と opaque を別々に読む)",
+  "rangeNames": {
+    "RoundingMode": "data:85",
+    "Option": "data:203",
+    "Result": "data:212",
+    "Pair": "data:222",
+    "Triple": "data:226",
+    "IOErrorKind": "data:234",
+    "ByteOrder": "data:283",
+    "NetworkErrorKind": "data:289",
+    "Location": "data:474",
+    "Level": "data:479",
+    "Value": "data:1903",
+    "Attribute": "data:490",
+    "Record": "data:493",
+    "CheckedInteger": "data:525",
+    "RangeError": "data:529",
+    "CheckedLength": "data:537",
+    "LengthError": "data:542",
+    "CheckedIndex": "data:550",
+    "IndexError": "data:554",
+    "Ordering": "data:577",
+    "Instant": "data:680",
+    "DateTime": "data:682",
+    "Info": "data:1898",
+    "EntryKind": "data:1899",
+    "WriteMode": "data:1900",
+    "Command": "data:1901",
+    "Output": "data:1902",
+    "ParseError": "data:1905",
+    "Request": "data:1906",
+    "Response": "data:1907",
+    "ClientRequest": "data:1908",
+    "PathPart": "data:1909",
+    "ConversionError": "data:1910",
+    "Gen": "data:1911",
+    "Shrinker": "data:1912",
+    "ShrinkStep": "data:1913",
+    "Config": "data:1914",
+    "Counterexample": "data:1915",
+    "CheckFailure": "data:1916",
+    "CheckedHost": "data:1917",
+    "CheckedPath": "data:1918",
+    "CheckedEndpoint": "data:1919",
+    "ScopeError": "data:1920",
+    "NonEmptyList": "data:1921",
+    "EmptyListError": "data:1922"
+  },
+  "checkedIntegerDeclaration": {
+    "builtin": "ordinary",
+    "ctors": [
+      {
+        "args": [
+          {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        ],
+        "constructorName": "CheckedInteger",
+        "fields": [
+          "minimum",
+          "maximum",
+          "value"
+        ],
+        "name": "con:525:0"
+      }
+    ],
+    "extensible": false,
+    "isRecord": true,
+    "name": "data:525",
+    "ntys": 0,
+    "package": "stdlib",
+    "typeName": "CheckedInteger"
+  },
+  "comparisons": [
+    {
+      "function": "Range.checkInteger",
+      "field": "resultType",
+      "actual": {
+        "data": {
+          "args": [
+            {
+              "data": {
+                "args": [],
+                "name": "data:525"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "data:529"
+              }
+            }
+          ],
+          "name": "data:212"
+        }
+      },
+      "expected": {
+        "data": {
+          "name": "data:212",
+          "args": [
+            {
+              "data": {
+                "name": "data:525",
+                "args": []
+              }
+            },
+            {
+              "data": {
+                "name": "data:529",
+                "args": []
+              }
+            }
+          ]
+        }
+      },
+      "equal": true
+    },
+    {
+      "function": "Range.checkInteger",
+      "field": "argumentType",
+      "actual": [
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        }
+      ],
+      "expected": [
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        }
+      ],
+      "equal": true
+    },
+    {
+      "function": "Range.value",
+      "field": "resultType",
+      "actual": {
+        "base": {
+          "name": "Integer"
+        }
+      },
+      "expected": {
+        "base": {
+          "name": "Integer"
+        }
+      },
+      "equal": true
+    },
+    {
+      "function": "Range.value",
+      "field": "argumentType",
+      "actual": [
+        {
+          "data": {
+            "args": [],
+            "name": "data:525"
+          }
+        }
+      ],
+      "expected": [
+        {
+          "data": {
+            "name": "data:525",
+            "args": []
+          }
+        }
+      ],
+      "equal": true
+    }
+  ],
+  "allEqual": true,
+  "leanDefinitionSourceSha256": "5d00bcf504291d11299abac16767a02aeadc8014e09deb517352ac5cdd60ef34"
+}

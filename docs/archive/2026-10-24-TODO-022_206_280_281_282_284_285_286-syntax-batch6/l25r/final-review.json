@@ -1,0 +1,65 @@
+{
+  "base": "62949b1d91bd2cd0c8e5aa546deb79614274cbb6",
+  "head": "62949b1d91bd2cd0c8e5aa546deb79614274cbb6",
+  "checked_at": "2026-10-26T13:18:17.182759+09:00",
+  "changed_files": {
+    "docs/design/01-spec/01-12-core-calculus.md": "b718ae0babad54cc18d43e593e0833d63510243f0af10e922aa8187f467e4bc5",
+    "docs/design/07-quality/07-04-formal-semantics.md": "57a600379f640f21df5d4a5b43ac425884c838b22599db79287a8e2e2cac4d40",
+    "formal/Benitoite.lean": "459a4b6719e6561f0164c25901ab8f7bf80a5a152d11c1c22888f2eceb2a0ab1",
+    "formal/Benitoite/Interval/BudgetAnalysisExamples.lean": "b0c813de56711a6d80b25d174623f5062758db9240e05f985b66dc8b8f7cf33d",
+    "formal/Benitoite/Interval/BudgetAnalyze.lean": "e05a3fb0c3ad0388a27d3945cff574a14aef4b5ea5f14e7d62802f42c0687087",
+    "formal/Benitoite/Interval/BudgetCallReach.lean": "4862d7a46b25b00ad1b7fe6080b1a5b969761b1de34313eeced564d4ae6b230c",
+    "formal/Benitoite/Interval/BudgetHttp.lean": null,
+    "formal/Benitoite/Interval/BudgetIndependentPosition.lean": "80f8eeaca6fbe4c3a584cf087fe2ea4215e8922a5d6144dbc7ea08bd4ff1b09d",
+    "formal/Benitoite/Interval/BudgetIndependentSound.lean": "a165b1b4f457649edfbc2a1582ef4c04a74f5d5cb4539eabdecf5ce5c5d75e19",
+    "formal/Benitoite/Interval/BudgetLocated.lean": "eb3a2dcc786a110e5d47d1a2a7e23e31c551c98b7020bd05d7003434001e51fc",
+    "formal/Benitoite/Interval/BudgetNormal.lean": "37c7eaf6e0a71bef46fa45be517e5127f58834b8257a3ac04281a0754da234aa",
+    "formal/Benitoite/Interval/BudgetRange.lean": "dd46fa879e5619aadd8a84461ac08616f7fc93273c201ab705fb158a2e4d70e3",
+    "formal/Benitoite/Interval/BudgetSelect.lean": "b8c73c92c78a339eb98efd973ba8867b27371e35bcfdb6a4b2f39e4420220959",
+    "formal/Benitoite/Interval/BudgetSound.lean": "4760c370182cf47d2a33d640925d19e486ae0038c0935b87f4b3b8eb3dff8953",
+    "formal/Benitoite/Interval/BudgetTraversal.lean": "58c4e88aac57fbf0e31e4efd5df2a69b45aa9adc51babdeab1fe4a5ac8cc0b97",
+    "formal/Benitoite/Interval/CallReach.lean": "10729ead489c5ed756abcf8ffdfe1df2969c3d3091e2753d137674a5a9e7c1f4",
+    "formal/Benitoite/Interval/CallReachIndependent.lean": "ebb33a0b70860795db943d4c215046c336460a435f2b41016a147208b28017db",
+    "formal/Benitoite/Interval/CallTables.lean": "de7a0e5e4e772f0a3ce6399eb5241e2da2204fd061fb709fecedb134670f4988",
+    "formal/Benitoite/Interval/DomainExamples.lean": "7d8b33a039983bbd0a7be3eb369626150e010114e42cc783f5557334e4223001",
+    "formal/Benitoite/Interval/Eval.lean": "1eafc065433f9691af1e6c3c8f7edc633ac9b7e9455b984f5c9e9dd2f22e983a",
+    "formal/Benitoite/Interval/EvalClosed.lean": "6f88fad451c1a270fc8839c69756fac187f1b1d7c99b1835716df18fb17daec6",
+    "formal/Benitoite/Interval/FixedDomain.lean": "c8b784c69a46a4fae5d01135689332302f2952fd735e9618b6dd98488378a75e",
+    "formal/Benitoite/Interval/FixedDomainExamples.lean": "6edc82c309903e55c6b10bdd5b20bad80a0fa9068b8080f6736aac0103987430",
+    "formal/Benitoite/Interval/HttpRecordExamples.lean": null,
+    "formal/Benitoite/Interval/HttpUpdateExamples.lean": null,
+    "formal/Benitoite/Interval/Range.lean": "41b931f0badcdc6728a8150e67d6fddb8b836d6ac91494059e73693d426b8c00",
+    "formal/Benitoite/Interval/RangeState.lean": "2aee9ea60f9b0ba33396561bf1dc3a361ad4f79876bf17d6c5342dc539dd53d9",
+    "formal/Benitoite/Interval/Sound.lean": "38b615e9e169ae3c473295702b5f156fd238c3e665eb0b182bedad627419860c",
+    "formal/Benitoite/Interval/SyntacticReach.lean": "da3d469f523ebe1a47a38735a78d3da8796404afe30e309e65bba3f3e6c7438e",
+    "formal/Benitoite/Interval/SyntacticReachExamples.lean": "744f414eff2e057160d332605d600585a6c290fe2a9f9aa0844c3ebe11065a47"
+  },
+  "archive_files": 344,
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "62949b1d91bd2cd0c8e5aa546deb79614274cbb6",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "check_exit": 0,
+    "seconds": 65.252
+  },
+  "final_formal": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "62949b1d91bd2cd0c8e5aa546deb79614274cbb6",
+      "--only",
+      "formal_build"
+    ],
+    "check_exit": 0,
+    "seconds": 0.161
+  },
+  "result_sha256": "1030faee8ae5f873846b778aa0e133ead835059bc9d910716c554f957c587bb5"
+}

@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.11`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.12`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.11`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.12`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
@@ -156,7 +156,7 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "unicodeVersion": "17.0.0",
   "displayWidthUnicodeVersion": "17.0.0",
   "build": {
@@ -229,8 +229,9 @@ Each report is one UTF-8 JSON object followed by LF on standard output. It inclu
 | `aggregateEffects` | An Effects object for `main`, or the union of all selected tests' effects, only when the whole report is complete; otherwise `null`. |
 | `diagnostics` | An array of the diagnostic objects described in [Diagnostics](#18-diagnostics). |
 | `diagnosticTargets` | One `{diagnosticIndex, targetId}` per diagnostic. Discovery-wide and usage errors have `targetId: null`. |
+| `intervalAnalysis` | Additional local interval analysis information, described under [Interval analysis coverage](#interval-analysis-coverage). It does not change report acceptance. |
 
-Every target has `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`, `status`, and `complete`. `entry` and `root` are display paths; `sourceId` is `null` if the entry's bytes were not retained. Main targets have `kind: "main"` and a `main` field. Test targets have `kind: "tests"` and a `tests` field, without `main`.
+Every target has `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`, `status`, and `complete`, plus the additional `intervalAnalysis` field. `entry` and `root` are display paths; `sourceId` is `null` if the entry's bytes were not retained. Main targets have `kind: "main"` and a `main` field. Test targets have `kind: "tests"` and a `tests` field, without `main`.
 
 A successful `main` is `{symbol: "main", location, effects, processShellReference, shellReferenceScope}`. Each item in `tests` is `{function, description, location, effects}` in declaration order. An omitted test description is `null`; an explicitly empty description is `""`. `location` identifies the function name, using `{file, start, end, label: ""}`; start and end contain one-based `line` and `column` and a zero-based byte `offset` in the original source.
 
@@ -258,6 +259,30 @@ Usage errors have `complete: false`, `targetsComplete: false`, empty `targets`, 
 Check for a complete single JSON object, an understood `schemaVersion` and `kind`, `status: "ok"`, `complete: true`, and exit status 0 before using the aggregate as a confirmed set. A warning promoted by `--deny-warnings` makes the report a `checkError`. For multiple test-inspection failures, precedence is interrupted, internal error, usage error, then check error.
 
 Report assembly and serialization finish before output starts. A write or flush failure takes precedence and exits with 1, without appending or resending another report. OS writes are not guaranteed to be indivisible. Initialization failures, failures outside the report boundary, a failure while building the failure report itself, aborts, forced termination, and broken output do not guarantee a complete report. Test inspection observes interruption before starting each file, not continuously during checking; a request during the last file may go unreported. Main inspection leaves signals to the OS default behavior.
+
+### Interval analysis coverage
+
+The report and each target include an `intervalAnalysis` object with `basis: "localIntervals"`. It describes how much of the [local interval analysis](#local-interval-warnings) ran. The existing report acceptance rule still requires a complete single JSON object, an understood schema version and kind, `status: "ok"`, `complete: true`, and exit status 0. The harness must not add a required `coverage: "all"` check. `complete` concerns type and effect checking and contract extraction; `coverage` concerns this additional analysis. A successful report can have `coverage: "some"`. A report rejected by `--deny-warnings` can retain `coverage: "all"`.
+
+| `intervalAnalysis` field | Meaning |
+|---|---|
+| `basis` | `"localIntervals"`. |
+| `coverage` | `"all"`, `"some"`, or `"none"`, as defined below. |
+| `inputDefinitions` | Original definitions that passed type checking and were supplied to the analysis; separately analyzed lambda and handler bodies do not add to this count. |
+| `unsupportedBodies` | Body results containing unsupported syntax in the body or one of its independently analyzed inputs; counted once per body result, including stopped bodies. |
+| `bodyBudgetExceeded` | Body results stopped by a body budget, excluding stops during expression identification. |
+| `wholeBudgetSkipped` | Incomplete ranges caused by the whole-check budget: stopped body results, discovered bodies left unanalyzed, remaining valid original definitions, or original definitions whose body discovery or preparation is incomplete. Repeated phase stops in the same original definition do not multiply its incomplete range. |
+| `unidentifiedBodies` | Body results stopped by a budget during expression identification, whether the body or whole-check budget caused the stop. |
+| `phaseStops` | Separate stop counts for preparation, body discovery, queue construction, nested-body control, and whole-check control. `exceeded` and `unidentified` each contain `bodyOperations`, `bodyItems`, `wholeOperations`, and `wholeItems`; `depth` and `other` count the remaining stop kinds. |
+| `usage` | `operations`, `savedItems`, `peakItems`, `maxBodyOperations`, and `maxBodyItems`: actual analysis work, retained items, peak simultaneously held items, and the two body maxima. Items are analysis budget units, not bytes. |
+
+All counts and usage values are nonnegative JSON integers. `wholeBudgetSkipped` does not count bodies that have not yet been discovered or count the same body's whole-budget identification stop again. A stop before a body result exists contributes to `phaseStops`, rather than `bodyBudgetExceeded` or `unidentifiedBodies`. Phase stops count events; adding them does not give a count of unanalyzed bodies.
+
+For one check, `"all"` means analysis started and left no unsupported or stopped range, invalid body, pending input, or incomplete preparation, discovery, or queue. `"some"` means analysis started but such a range remains, including a mix of valid and invalid bodies. `"none"` means analysis did not start, including failure before type checking or a check with one or more bodies all invalidated by type checking. A checked target with no bodies at all is a zero-count `"all"`. Zero counts alone do not establish `"all"`. Even `"all"` with no warnings is not proof of safety, successful outside operations, reachability, or termination.
+
+For test inspection, the overall coverage is `"none"` when every target is `"none"`, `"all"` when every target is `"all"`, and `"some"` otherwise. Successful discovery of an empty directory is a zero-count `"all"`; usage and discovery failures are `"none"`. Counts, `usage.operations`, and `usage.savedItems` are summed across targets; `usage.peakItems`, `usage.maxBodyOperations`, and `usage.maxBodyItems` use the maximum. Repeated explicit entries remain separate checks. With `--doc`, the target includes analysis of ordinary code and all generated examples, including check/error examples. This does not add check/error examples to `aggregateEffects`.
+
+Already collected analysis information remains available when `--deny-warnings` rejects a check. A whole-check budget can prevent warnings from later bodies, so adding an unrelated definition can change acceptance under `--deny-warnings`. Unknown or unanalyzed code is not reported as safe. These additional fields leave the main and ordinary test report versions at 1, the doc test report version at 2, and diagnostic JSON Lines at version 1. No analysis summary line is appended to diagnostic JSON Lines.
 
 ### Effect limits before execution
 
@@ -1124,6 +1149,122 @@ Unhandled Log uses the default logger: Info and above go to stderr as `level=INF
 
 Log is independent of IO.All, Console.Write, and HTTP. Declare `uses Log` and include canonical `Log` in `--allow-effects` when it remains in the declared upper bound: `benitoite run --allow-effects=Log script.bnt`. A complete handler may remove Log while leaving the declared effects of its output. Inspection reports declared upper bounds, including unused entries; it does not infer permission from a level being disabled.
 
+#### File and JSON log sinks
+
+Open the Writer once and capture it in the sink. `Log.formatRecord` is pure: it keeps the default text format and escaping, but adds no newline and filters no levels. `withSinks` filters Debug here; `File.writeLine` adds the newline. Common attributes precede event attributes, including duplicate keys.
+
+Both examples construct a fixed `Location` so their output is reproducible. For the actual call site, pass `SourceLocation.here()` directly to each logging call instead.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.log", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event")], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "n", value: 42)], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.log") or die)
+end function
+```
+```output
+level=INFO source="app/Main.bnt:12:3" message="first\n\"quoted\"" attr."tag"="common" attr."tag"="event"
+level=WARN source="app/Main.bnt:12:3" message="second" attr."tag"="common" attr."n"=42
+```
+
+Keep the sink and all its calls inside the Writer's `with` block; using the captured Writer after release is a runtime error. The Writer is buffered: a successful `writeLine` does not guarantee a successful flush at release. Write failures propagate through `or die`; a flush failure at `end with` is a resource-release runtime error. If a write error is handled as a value, the Writer remains failed and release still reports it. To handle the close result explicitly, call `File.closeWriter` and inspect its Result before leaving the block. These follow the File and resource rules; the example does not guarantee that each event has reached storage.
+
+The readback happens after release so the checked output includes both writes. File.Read and Console.Write are needed only for this readback and display. Ask the harness to inspect the declared upper bound before running: File.Write, File.Read, Console.Write, State for release, and Process.Exit for `or die`. The complete handler removes the body's Log effect. A file-level `uses Log` would still add Log to main's declaration. These declarations do not enforce path-specific runtime permissions.
+
+For JSON lines, define an application format with a pure conversion function. Keep attributes as an array of `{key, value}` objects: converting them to a Map keyed by attribute name would lose duplicates and their order. This example includes level and location, encodes unsigned integers as `{"unsignedInteger":"..."}` to preserve the full u64 range, and encodes non-finite Float values as `{"nonFiniteFloat":"..."}`. `Json.Value` has no unsigned-integer constructor; directly stringifying a non-finite `Json.Value.Float` would produce null. The `Float.isNaN(number - number)` test identifies non-finite values using existing APIs. The executed example includes NaN; it does not exercise positive or negative infinity. This is an application format, not a standard Log JSON schema.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+
+function jsonScalar(value: Log.Value) -> Json.Value
+  return match value with
+    case Log.Value.Text(text) -> Json.Value.String(text)
+    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)
+    case Log.Value.Integer(number) -> Json.Value.Integer(number)
+    case Log.Value.UnsignedInteger(number) ->
+      Json.Value.Object(Map.fromList([Pair("unsignedInteger", Json.Value.String(UnsignedInteger64.toString(number)))]))
+    case Log.Value.Float(number) ->
+      if Float.isNaN(number - number) then
+        Json.Value.Object(Map.fromList([Pair("nonFiniteFloat", Json.Value.String(Float.toString(number)))]))
+      else
+        Json.Value.Float(number)
+      end if
+  end match
+end function
+
+function jsonAttribute(value: Log.Attribute) -> Json.Value
+  return Json.Value.Object(Map.fromList([
+    Pair("key", Json.Value.String(Log.Attribute.key(value))),
+    Pair("value", jsonScalar(Log.Attribute.value(value)))
+  ]))
+end function
+
+function jsonRecord(record: Log.Record) -> Json.Value
+  bind level <- match Log.Record.level(record) with
+    case Log.Level.Debug -> "debug"
+    case Log.Level.Info -> "info"
+    case Log.Level.Warn -> "warn"
+    case Log.Level.Error -> "error"
+  end match
+  bind location <- Log.Record.location(record)
+  return Json.Value.Object(Map.fromList([
+    Pair("level", Json.Value.String(level)),
+    Pair("message", Json.Value.String(Log.Record.message(record))),
+    Pair("attributes", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),
+    Pair("location", Json.Value.Object(Map.fromList([
+      Pair("file", Json.Value.String(SourceLocation.Location.file(location))),
+      Pair("line", Json.Value.Integer(SourceLocation.Location.line(location))),
+      Pair("column", Json.Value.Integer(SourceLocation.Location.column(location)))
+    ])))
+  ]))
+end function
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.jsonl", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event"), Log.attribute(key: "n", value: 42)], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "flag", value: true), Log.attribute(key: "unsigned", value: 18446744073709551615u64), Log.attribute(key: "finite", value: 1.5), Log.attribute(key: "nan", value: Float.squareRoot(-1.0))], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.jsonl") or die)
+end function
+```
+```output
+{"attributes":[{"key":"tag","value":"common"},{"key":"tag","value":"event"},{"key":"n","value":42}],"level":"info","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"first\n\"quoted\""}
+{"attributes":[{"key":"tag","value":"common"},{"key":"flag","value":true},{"key":"unsigned","value":{"unsignedInteger":"18446744073709551615"}},{"key":"finite","value":1.5},{"key":"nan","value":{"nonFiniteFloat":"NaN"}}],"level":"warn","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"second"}
+```
+
+The message's newline and quotes are escaped within one JSON line. The same lifetime, failure, and effect rules as the text sink apply. Import Json in the application; no Json dependency or dedicated file/JSON handler is added to Log.
+
 ## 11. Effect handlers
 
 You can declare your own effects. An `effect` declaration lists its operations, which are called like functions. `handle body with case operation(arguments) -> clause end handle` runs `body` and, whenever the body calls one of the listed operations, runs the clause instead. In the clause, `resume(value)` continues the body, with `value` as the result of the operation. A clause that does not call `resume` ends the `handle` with its own value. `resume` is written directly in the clause; it cannot appear in a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders (a `handle` written there can resume its own clauses).
@@ -1636,7 +1777,27 @@ handled: bad
 
 `Result.andThen`/`flatMap` chains existing Result values; it does not catch Fail. The conversion help is specific to the standard Fail. Other user effects, such as Log or a user-defined effect named Fail, need their own handler.
 
-Width-specific integer helpers also report W0401 for a known zero divisor, even with an unknown dividend, and W0402 for known overflow. Signed minimum absolute/floorDivide(minimum, -1) warn; floorModulo(minimum, -1) = 0 does not. Runtime Result and stop behavior is unchanged. Under `--deny-warnings`, review these new warnings before running. Declaration-derived constraints suppress duplicate downstream errors while independent errors remain; distinct same-named types include their module in diagnostics.
+Width-specific integer helpers also report W0401 for a constant zero divisor, even with an unknown dividend, and W0402 for constant overflow. Signed minimum absolute/floorDivide(minimum, -1) warn; floorModulo(minimum, -1) = 0 does not. These constant-evaluation warnings remain separate from the local analysis below. Declaration-derived constraints suppress duplicate downstream errors while independent errors remain; distinct same-named types include their module in diagnostics.
+
+### Local interval warnings
+
+Local interval analysis tracks inclusive integer bounds through `bind`, `shadow`, comparisons with constants, `if`, short-circuiting `and`/`or`, and `match` guards. It covers `Integer8`, `Integer16`, `Integer32`, `Integer64`, `UnsignedInteger16`, `UnsignedInteger32`, and `UnsignedInteger64`, including their aliases. Integer64 patterns can use literals and ranges; the other six types still require bindings or wildcards with guards. The analysis adds no range annotations or changes to the type and effect rules.
+
+| Code | Condition found by local analysis |
+|---|---|
+| W0401 | The divisor of `div` or `mod` has the single-value interval `[0,0]`. |
+| W0402 | The nonempty mathematical result interval is wholly outside the type's range for addition, subtraction, signed negation, or multiplication with a single-value interval on at least one side. |
+| W0404 | The nonempty interval for the direct shift-count argument `n` is wholly outside `[0,width−1]`, and every argument has a normal value. |
+
+W0404 applies to direct calls to the standard `shiftLeft` and `shiftRight` functions on all integer types, including `Byte`/`UnsignedInteger8`, and `shiftRightUnsigned` on signed integers. Aliases and import aliases of the same standard declaration are recognized. Calls through function values, holes, pipes, and user functions with the same name are outside this recognition. Bits discarded by a left shift do not count as overflow. Effect operations and HTTP record fields are outside W0404: a language handler can replace an operation's default behavior.
+
+These warnings describe failure only **if execution reaches the operation or call and every operand or argument evaluates successfully**. They do not establish that the program reaches that point or fails as a whole. Local analysis adds no warning for a parent operation when a child has no normal value. Notes show the inferred interval, the allowed range where applicable, and this condition; up to eight contributing bindings or comparisons appear as secondary locations. An existing constant warning takes precedence when both analyses find the same failure, and no automatic numeric replacement is proposed.
+
+The analysis does not track correlations between variables or propagate intervals between functions. General multiplication and the result intervals of division and remainder become unknown; Byte arithmetic remains a type error. A result interval partly overlapping the type's range, or a divisor interval containing both zero and other values, does not produce a new interval warning. Unknown normal integer values use the type's full range and are distinct from having no normal value. Function, lambda, lazy, and handler-clause bodies start without facts from callers or captures. Independently analyzed children of unsupported expressions also discard outside facts, while retaining facts found inside the child.
+
+Each body has limits of 100,000 analysis operations and 100,000 simultaneously held items; one check has limits of 1,000,000 for each. Unsupported forms and exhausted budgets add no check error, and runtime checks remain in place. Already collected warnings remain available. The harness should explain [coverage](#interval-analysis-coverage) and warnings separately, and review additional warnings when using `--deny-warnings`.
+
+The formal guarantee concerns normal-value membership and conditional failure at warning locations in an **evaluation relation for the target fragment**. Agreement with the compiler, standard-library source, and VM is checked on selected finite inputs; some results, such as returned intervals, are not compared. This is not a proof for all programs. The project's formal-semantics design document records the trusted rules and comparison limits. No warning-free result is a proof that execution succeeds.
 
 ### Calls, function contracts, and lambdas
 
@@ -1729,6 +1890,23 @@ A few behaviors worth knowing:
 - The HTTP server accepts targets beginning with `/` (including `//a`), absolute targets beginning with `http://` or `https://` (case-insensitive), `*` for uppercase `OPTIONS` only, and authority targets for uppercase `CONNECT` only. A `CONNECT` target must consist of a non-empty host made of ASCII letters, digits, and `-._~!$&'()*+,;=:[]%`, followed by `:` and one or more ASCII digits with a value from 0 to 65535; other forms, including `/path` and absolute targets, are rejected for `CONNECT`. Other target forms, and any target containing a literal `"`, `<`, `>`, or a non-ASCII character, receive 400 without calling the handler. Percent-encode these characters. Literal `[`, `]`, `\`, `^`, `` ` ``, `{`, `|`, and `}` are accepted in paths and queries. A `%` that is not followed by two hexadecimal digits is accepted and kept as is.
 - The HTTP server answers 400 to a request target containing `#` and does not pass it to the handler. Omit the fragment or encode a literal `#` as `%23`; the `path` keeps percent encoding. For an uppercase `OPTIONS` request, an absolute target with neither a path nor a query component (`OPTIONS http://host`) gives `path` `*` and an empty `query`; `OPTIONS http://host/`, `OPTIONS http://host?x=1`, and `OPTIONS http://host?` give `path` `/`. Other methods, such as `GET http://host` or `options http://host`, give `path` `/` for an empty absolute path.
 - `Http.get` and `Http.send` accept only the standard methods (`GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE`, `PATCH`, in uppercase). Another method, or a non-empty body with `GET`, `HEAD`, or `CONNECT`, gives `NetworkErrorKind.InvalidInput` without sending anything. A host name that cannot be resolved gives `NetworkErrorKind.HostNotFound`.
+
+Local interval analysis treats `Http.text`, `Http.html`, and `Http.json` as ordinary functions with unknown results. It does not infer `Response.status` facts from their returned records. It also does not track HTTP fields through explicit record construction, local storage, or updates. For example, this script passes `check` without W0404 even though the statuses are outside the default `Http.respond` range:
+
+```benitoite check
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Json
+
+function main() -> Unit
+  bind plain <- Http.text(status: 700, s: "example")
+  bind _ <- Http.html(status: 700, s: "<p>example</p>")
+  bind _ <- Http.json(status: 700, value: Json.Value.Null)
+  bind _ <- Http.Response(status: 700, headers: [], body: Bytes.empty())
+  bind _ <- Http.Response(..plain, status: 701)
+end function
+```
+
+This example constructs values only; it sends no response. The default `Http.respond` implementation still checks the status at runtime. Absence of a warning does not validate a response or authorize a network operation.
 
 This example reads a JSON file and sums the amounts per category:
 
@@ -1835,6 +2013,12 @@ Operations require direct calls; function values, holes, and pipes are rejected 
 
 ## 20. Compatibility
 
+### Migrating to 0.0.12
+
+Have the harness review the [0.0.12 migration guide](../../CHANGELOG.md#0012-san-benito) before updating `language` and dependency hashes. Each WASM Store now limits live component handles to 100,000; guests must drop handles they no longer need, including across stateful calls. Review extended W0401/W0402 and new W0404 when using `--deny-warnings`. Runtime checks and failure handling remain necessary; missing warnings or full analysis coverage do not prove success. Update strict inspection-report readers to allow `intervalAnalysis` on the report and each target while preserving the existing acceptance checks.
+
+JSON/Property derive targets with file-level `uses` are refused before writing artifacts. Use individual effect declarations or move the type and target to a pure model module; follow the derive tool's relocation and recovery procedure for existing regions. Generator and record versions remain unchanged, but old preview hashes cannot approve new inputs. Rebuild the executable and reinstall its embedded Skill together. After reviewing source and dependencies, set `language "0.0.12"` and run `benitoite package update`.
+
 ### Migrating to 0.0.11
 
 Read the [0.0.11 migration guide](../../CHANGELOG.md#0011-san-benito) before updating `language` and dependency hashes. Rebuild the executable and reinstall its embedded Skill together. Derive inventory 3 and generator 3.1.0 require a fresh preview with original body/hash verification and a newly reviewed apply hash. try-actions inventory/manifest 2 require regenerated, reviewed candidates; unknown effective contracts and unmapped file declarations remain held. Review package update's Log records and effect additions/removals, including unchanged sources with individual Log declarations. Only then update language declarations to 0.0.11 and dependency hashes.
@@ -1860,7 +2044,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.11` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.12` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1872,7 +2056,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.11"
+language "0.0.12"
 
 package Textkit
   license "MIT"
@@ -1890,7 +2074,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.11"
+language "0.0.12"
 
 dependency Textkit
   path "packages/textkit"
@@ -1922,7 +2106,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.11"
+language "0.0.12"
 ```
 
 ```benitoite check
@@ -1933,7 +2117,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.11`, a declaration of `0.0.11` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.12`, a declaration of `0.0.12` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -2104,6 +2288,8 @@ When an external value is collected, its handle is queued for destruction before
 
 External calls run synchronously. Functions that pass external types share one stateful component instance per component in each execution; other functions create a fresh instance on every call. During a call, other Benitoite tasks do not run and `Task.withTimeout` cannot cancel it. `SIGINT` and `SIGTERM` can interrupt Wasm execution and end the process with status 130. By default, each call has a fuel limit of 10^10, a total linear-memory limit of 64 MiB (over the lifetime of a stateful instance), and a value-transfer budget of 256 MiB in each direction. Fuel limits computation, not elapsed time. Each call also limits core instances, memories, and tables to 16 each, and each guest table to 10,000 elements. A `memory.grow` beyond the memory's own declared maximum returns -1 as in Wasm.
 
+Each Store limits simultaneously live component handles to 100,000, separately from core table elements and linear memory. Stateful instances retain this count across calls. Exceeding it stops execution with R0906, without a reported required count, and `--wasm-stats` records `component_handles` in `reached_limits`. This security limit narrows the accepted guest behavior compared with 0.0.11; guests should drop handles they no longer need. A guest `resource.drop` returns capacity for reuse. It counts Wasmtime component handles, not just external handles represented as Benitoite values.
+
 The checker selects a transfer route before execution. It calls the original guest function once and never retries through another route after a failure:
 
 | Route in statistics | When used | Transfer accounting |
@@ -2168,6 +2354,18 @@ implicit defaults. `json.keys` renames keys. Nested Option and unsupported types
 need whole-field custom encode/decode; optional decodeMissing handles absence.
 Custom conversions must be pure and satisfy the intended roundtrip law.
 
+JSON and Property generation refuse target modules with file-level `uses`,
+including previously generated targets; Show/Order-only generation remains
+accepted. Generated top-level functions inherit the file declaration, so they
+cannot satisfy the required pure-function contracts. Remove the file declaration
+and write individual `uses` on functions that need effects, or move the type
+definition and derive target to a pure model module imported by the effectful
+code. Merely changing the configured `source` cannot redirect generated output:
+it must match the type's declaring module. For existing regions, follow the
+[target removal and relocation procedure](../../tools/derive/README.md#verification-and-recovery).
+The whole request is refused before writing review artifacts, source, or records
+when any target violates this rule.
+
 Use preview, review its diff/manifest, apply with the reviewed manifest hash,
 then run ordinary check/test and **derive check**. Normal check does not read the
 generation record and cannot detect all stale encoders after fields are added.
@@ -2209,7 +2407,7 @@ Generators need a finite base and regular recursive type arguments. The size bud
 
 Shrinkers delete recursive container contents before shrinking one field at a time in declaration order. A required record field shrinks itself; it does not replace its parent with a child. Standard leaves/containers discard self candidates and do not increase recursive node count. A custom Shrinker supplied for an unconstrained type parameter must exclude its own input. Custom callback termination and global minimality are not guaranteed. Show/Order constraints propagate through the declaration graph; Order does not imply builtin equality.
 
-Custom fields.gen/fields.shrink remain paired, fully qualified pure monomorphic zero-argument functions replacing an entire field. Save the version 3 `.generated.json` record (`generatorVersion: 3.0.0-syntax-batch4`), config, libraryVersion 2.0.0, source, concrete failures, and custom functions. Inventory stays 2, configuration stays 1. Verify old body hashes before a new preview; old manifests cannot authorize new apply. A seed alone cannot reproduce distributions across generator versions. See the [derive tool](../../tools/derive/README.md) for preview/review/apply/check and recovery.
+Custom fields.gen/fields.shrink remain paired, fully qualified pure monomorphic zero-argument functions replacing an entire field. Save the version 3 `.generated.json` record (`generatorVersion: 3.1.0-syntax-batch5`), config, libraryVersion 2.0.0, source, concrete failures, and custom functions. Inventory is version 3, configuration stays 1. Finish pending apply/recovery with the saved old tool before updating it. Verify old body hashes, review a fresh preview and record, then apply its exact reviewed manifest hash. Tool input hashes can invalidate an earlier manifest even when the generator version stays the same. A seed alone cannot reproduce distributions across generator versions. Have the harness run normal check/test and derive check after apply; see the [derive tool](../../tools/derive/README.md) for the full workflow and recovery.
 
 ### Range
 
@@ -2227,6 +2425,8 @@ The check first returns `Result.Error(RangeError.InvalidBounds(minimum, maximum)
 Equal bounds describe a single value. Both Integer endpoints, -9223372036854775808 and 9223372036854775807, are supported without adding one to the upper bound. There is no implicit conversion to Integer or range-aware arithmetic. Bounds can differ between values of the same `CheckedInteger` type: inspect them or call `checkInteger` again with the required bounds. Use `Result.ok` when an Option is sufficient.
 
 Range returns ordinary `Result.Error` even for invalid constant arguments. It is excluded from the extra static checks for Scope and Regex. This does not extend the expressions allowed in a top-level `const`.
+
+Local interval analysis uses a **function summary** for direct standard `Range.checkInteger` and `Range.value` calls. With fixed Integer bounds, it can retain the bounds through a directly matched result or a result saved once in a local binding, and use them for direct `Range.value` on the same `Ok` value. It recognizes the resolved standard declarations, including import aliases. Dynamic bounds, copied aliases of the success value, merged or rewrapped values, other instances, function-value calls, holes, and pipes do not carry this information. Merging condition environments also discards the success-value information. It does not generate summaries for arbitrary functions or extend this rule to checked lengths, indices, or nonempty lists. Invalid bounds and out-of-range inputs still return `Result.Error` without a new interval warning.
 
 ```benitoite
 import Benitoite.Trait

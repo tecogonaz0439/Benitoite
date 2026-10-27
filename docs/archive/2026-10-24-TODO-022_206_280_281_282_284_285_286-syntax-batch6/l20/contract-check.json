@@ -1,0 +1,52 @@
+{
+  "base": "2fd371c49190ab914c05963f83fdd23d833d6e80",
+  "head": "2fd371c49190ab914c05963f83fdd23d833d6e80",
+  "changed_tracked": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite/Interval/Range.lean"
+  ],
+  "unchanged_formal_files": 306,
+  "preserved_named_declarations_in_range": 61,
+  "added_declarations": [
+    "rangeValueCall",
+    "rangeValueInterval",
+    "rangeValueOrigin",
+    "range_value_at_normal_integer",
+    "range_value_call_normal_mem",
+    "range_value_call_source",
+    "range_value_call_table",
+    "range_value_forget_top",
+    "range_value_interval_mem",
+    "range_value_origin_evaluated",
+    "range_value_origin_mem",
+    "range_value_origin_source",
+    "range_value_origin_total"
+  ],
+  "central_definition_sha256": {
+    "NormalSoundness": "06ba7536b776c538ca79334db702fd4c756eb1871d51d234cc86df4e8c4db2bf",
+    "WarningSoundness": "3707732b57cb8e8aa1583845575e574c5c327d7b2ea1067d4fd8ace0e999ec80"
+  },
+  "axiom_dependencies_checked": 140,
+  "no_added_sorry_axiom_admit": true,
+  "fixed_file_sha256": {
+    "crates/benitoite/testdata/interval-budget/README.md": "81ab1b102c663831f574e08f3a4b31cab5f4c2c2770fe4cb5647718aafae8e57",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "009fc2505bfe75db7542dde9f900339cad79297fb88703663c95b1577cc79b08",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "13a356ca1a8e5519c74a4fd72bd9dc70234a4593b02c2722240b34798a84eb9a",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "53e669cb0943aed3b291aa70e346e4a1ee66dc45bda80c57aa0cc119979cfd06",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "7b65e2c9f212da23ae918326ef0cbc17258d305255971a1e3d113de0589556ae",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "1f9dfcb600cdd4696720afc76dc3a02ea112de58d5bd7f5a698c94c09bc6f5fb",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "8835d3a79436418a7c883e41f5d84f0218b2b041f778f3e8560cf5821c833d2b",
+    "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f"
+  },
+  "final_inputs_sha256": {
+    "docs/design/01-spec/01-12-core-calculus.md": "4fada41d56682079c175056965bdf62e26ac79e749a749878676658d5fc74798",
+    "docs/design/07-quality/07-04-formal-semantics.md": "bc175be18c46013e23fe0d91a645bc4429ea938c3c96f5e8de081ecb41e90219",
+    "formal/Benitoite/Interval/Range.lean": "e9ddfc71ecaed41201dab56dd356845ff39dd638825f6e8ad6631ae71fa6f1bd"
+  },
+  "diff_numstat": [
+    "35\t0\tdocs/design/01-spec/01-12-core-calculus.md",
+    "5\t0\tdocs/design/07-quality/07-04-formal-semantics.md",
+    "339\t8\tformal/Benitoite/Interval/Range.lean"
+  ]
+}

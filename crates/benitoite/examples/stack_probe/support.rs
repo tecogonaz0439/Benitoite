@@ -15,10 +15,17 @@ pub const SHAPES: &[(&str, usize, usize)] = &[
     ("if", 2, 4),
     // 各 else if は一段、最後の else のブロックと文まで n + 6。
     ("else-if", 1, 6),
+    // 比較と整数の照合で区間解析の環境の絞り込みも通す。
+    ("if-comparison", 2, 4),
+    ("else-if-comparison", 1, 6),
     // 分岐・ブロック・文で三段、最後の false の本体まで 3n + 5。
     ("match-body", 3, 5),
     // 対象で一段、最後の false の本体まで n + 7。
     ("match-subject", 1, 7),
+    ("match-integer-body", 3, 5),
+    ("match-integer-subject", 1, 7),
+    // 呼び出しの引数ごとに一段増える。
+    ("call", 1, 4),
     // Mk(x, _) は三節、最後の _ と match の式文で 3n + 5。
     ("guards", 3, 5),
     // 構成子 n 節と葉の _ 一節を match の式文に加える。
@@ -120,6 +127,27 @@ pub fn source(shape: &str, n: usize) -> Result<String, String> {
             " with\ncase true -> true\ncase false -> false\nend match",
             n,
         ),
+        "if-comparison" => nest("if x = 0 then ", "()", " else () end if", n),
+        "else-if-comparison" => format!(
+            "if x = 0 then (){} else () end if",
+            " else if x = 1 then ()".repeat(n)
+        ),
+        "match-integer-body" => nest(
+            "match x with\ncase 0 -> ",
+            "()",
+            "\ncase _ -> ()\nend match",
+            n,
+        ),
+        "match-integer-subject" => nest(
+            "match ",
+            "x",
+            " with\ncase 0 -> 0\ncase _ -> 1\nend match",
+            n,
+        ),
+        "call" => {
+            declarations = "function id(x: Integer) -> Integer\n return x\nend function\n".into();
+            nest("id(", "x", ")", n)
+        }
         "guards" => {
             declarations = "data L\n Mk(Integer, Integer)\nend data\n".into();
             format!(
@@ -190,6 +218,17 @@ pub fn source(shape: &str, n: usize) -> Result<String, String> {
     } else if shape == "try" {
         Ok(format!(
             "{declarations}function f() -> Result[Unit, String]\n bind _ <- {expr}\n return Result.Ok(())\nend function\n"
+        ))
+    } else if matches!(
+        shape,
+        "if-comparison"
+            | "else-if-comparison"
+            | "match-integer-body"
+            | "match-integer-subject"
+            | "call"
+    ) {
+        Ok(format!(
+            "{declarations}function f(x: Integer) -> Unit\n bind _ <- {expr}\nend function\n"
         ))
     } else {
         Ok(format!(

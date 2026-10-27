@@ -1,0 +1,152 @@
+{
+  "entries": [
+    {
+      "id": "reference-http",
+      "summary": {
+        "bodyBudgetExceeded": 0,
+        "coverage": "Some",
+        "inputDefinitions": 1,
+        "maxBodyItems": 50,
+        "maxBodyOperations": 170,
+        "operations": 171,
+        "peakItems": 50,
+        "phaseStops": {
+          "depth": 0,
+          "exceeded": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          },
+          "other": 0,
+          "unidentified": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          }
+        },
+        "savedItems": 37,
+        "unidentifiedBodies": 0,
+        "wholeBudgetSkipped": 0
+      }
+    },
+    {
+      "id": "skill-http",
+      "summary": {
+        "bodyBudgetExceeded": 0,
+        "coverage": "Some",
+        "inputDefinitions": 1,
+        "maxBodyItems": 24,
+        "maxBodyOperations": 62,
+        "operations": 63,
+        "peakItems": 24,
+        "phaseStops": {
+          "depth": 0,
+          "exceeded": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          },
+          "other": 0,
+          "unidentified": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          }
+        },
+        "savedItems": 14,
+        "unidentifiedBodies": 0,
+        "wholeBudgetSkipped": 0
+      }
+    },
+    {
+      "id": "skill-range",
+      "summary": {
+        "bodyBudgetExceeded": 0,
+        "coverage": "Some",
+        "inputDefinitions": 2,
+        "maxBodyItems": 51,
+        "maxBodyOperations": 254,
+        "operations": 376,
+        "peakItems": 73,
+        "phaseStops": {
+          "depth": 0,
+          "exceeded": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          },
+          "other": 0,
+          "unidentified": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          }
+        },
+        "savedItems": 56,
+        "unidentifiedBodies": 0,
+        "wholeBudgetSkipped": 0
+      }
+    },
+    {
+      "id": "skill-warnings",
+      "summary": {
+        "bodyBudgetExceeded": 0,
+        "coverage": "All",
+        "inputDefinitions": 4,
+        "maxBodyItems": 28,
+        "maxBodyOperations": 117,
+        "operations": 306,
+        "peakItems": 55,
+        "phaseStops": {
+          "depth": 0,
+          "exceeded": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          },
+          "other": 0,
+          "unidentified": {
+            "bodyItems": 0,
+            "bodyOperations": 0,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          }
+        },
+        "savedItems": 48,
+        "unidentifiedBodies": 0,
+        "wholeBudgetSkipped": 0
+      }
+    }
+  ],
+  "bodies": 8,
+  "maxima": {
+    "maxBodyOperations": {
+      "value": 254,
+      "id": "skill-range"
+    },
+    "maxBodyItems": {
+      "value": 51,
+      "id": "skill-range"
+    },
+    "operations": {
+      "value": 376,
+      "id": "skill-range"
+    },
+    "peakItems": {
+      "value": 73,
+      "id": "skill-range"
+    }
+  },
+  "budgetStoppedTargets": 0,
+  "depthStops": 0,
+  "otherStops": 0,
+  "manifestSha256": "d540577d5bea85754029aa70c3569e3e321f377073b20945b6da7449fe822f72",
+  "observationsSha256": "a60bc05273d178a4c6f639b39efc96e6f0b5bc8090d06fe4492deae577b87db1"
+}

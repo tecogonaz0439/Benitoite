@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 708, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 701, in main
+    exercise(args.output.resolve(), executable)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 515, in exercise
+    exercise_profiles(runner, corpora)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 455, in exercise_profiles
+    assert r['informativeCount'] == '0' and 'allTop' in r['acceptanceReasons']
+AssertionError

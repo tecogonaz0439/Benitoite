@@ -1,0 +1,128 @@
+== plan: level stage against 61e04c646797d045d8bf876800c2e8cba690db59 (changed files not classified) (partial selection: --only tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test checked_args --test named_arguments --test golden --test cli_process --test l30_http_server --test l32_http_client
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== tests_related
+
+running 10 tests
+test constant_origins_follow_cached_transitive_values ... ok
+test log_record_parameter_is_an_ordinary_contextual_name ... ok
+test constant_origin_labels_are_bounded_and_keep_chain_endpoints ... ok
+test regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion ... ok
+test range_checked_integer_hides_all_representation_operations ... ok
+test source_location_requires_the_standard_direct_zero_argument_call ... ok
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test regex_constants_reject_only_known_direct_standard_calls ... ok
+test additional_budgets_fall_back_to_runtime_and_do_not_reset_per_body ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.68s
+
+
+running 37 tests
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test log_default_output_runs_through_the_real_cli_in_both_modes ... ok
+test handled_process_exit_outside_default_range_has_no_domain_warning ... ok
+test file_effects_reach_main_reports_and_limit_origins ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test failure_entry_help_uses_resolved_standard_effect ... ok
+test log_main_report_and_effect_limits_keep_schema_one ... ok
+test cli_process_contracts ... ok
+test main_check_reports_warnings_without_execution ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test main_check_reports_sources_without_execution ... ok
+test main_check_reports_failures_without_execution ... ok
+test run_failure_contracts_are_checked_before_effect_limits ... ok
+test shift_domain_warning_does_not_duplicate_a_child_overflow ... ok
+test main_check_reports_contracts_without_execution ... ok
+test skill_document_output_failures_exit_one ... ok
+test shared_decisions_are_accepted_by_all_cli_modes ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test main_check_reports_shell_without_execution ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test skill_documents_need_no_writable_directory ... ok
+test tool_panics_are_internal_reports ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test test_doc_uses_version_two_and_keeps_check_nonexecuting ... ok
+test width_interval_warnings_preserve_cli_acceptance_and_prevent_denied_execution ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_type_limits ... ok
+test shift_domain_warnings_reach_cli_renderers_only_for_disjoint_arguments ... ok
+test interval_reports_keep_coverage_and_counts_independent_of_acceptance ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.29s
+
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.40s
+
+
+running 12 tests
+test expect_continue_arrives_before_body_and_final_response_in_both_modes ... ok
+test disconnected_exchange_release_does_not_stop_the_program ... ok
+test closing_listener_wakes_its_waiting_accept ... ok
+test accepting_allows_computation_and_sleep_and_can_be_interrupted ... ok
+test relay_of_chunked_response_uses_content_length_in_both_modes ... ok
+test invalid_and_slow_connections_do_not_stop_the_same_accept ... ok
+test exchange_scope_sends_500_and_explicit_close_returns_success ... ok
+test rejected_connections_preserve_responses_with_unread_body_in_both_modes ... ok
+test respond_twice_and_access_after_close_are_runtime_errors ... ok
+test response_framing_uses_request_method_and_status_in_both_modes ... ok
+test roundtrip_content_length_and_chunked_in_both_modes ... ok
+test integration_scripts_compile ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.69s
+
+
+running 9 tests
+test closed_listener_port_returns_connection_refused ... ok
+test maximum_integer_timeout_receives_response ... ok
+test invalid_request_body_and_methods_return_invalid_input ... ok
+test real_timeout_returns_timed_out_without_server_response ... ok
+test redirects_follow_ten_and_return_other_on_eleventh ... ok
+test status_headers_post_and_source_defaults_roundtrip ... ok
+test redirect_connection_reuse_host_change_and_missing_location ... ok
+test redirect_methods_relative_locations_and_headers_are_preserved ... ok
+test malformed_and_oversized_redirect_bodies_return_errors ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.86s
+
+
+running 22 tests
+test deferred_list_elements_determine_named_callback_contracts ... ok
+test known_local_values_and_explicit_higher_order_contracts_keep_their_names ... ok
+test final_higher_order_contracts_preserve_parameter_order ... ok
+test class_implementations_require_declaration_names_in_order ... ok
+test builders_require_import_in_the_using_module ... ok
+test nested_dictionary_arguments_wait_for_numeric_defaulting ... ok
+test constructor_function_values_and_direct_holes_keep_the_original_parameter_names ... ok
+test named_partial_application_keeps_return_try_and_resume_inside_its_lambda ... ok
+test positional_callbacks_preserve_core_contracts ... ok
+test new_contract_boundaries_check_implementations_in_imported_modules ... ok
+test record_syntax_checks_constructor_kind_and_keeps_real_record_errors ... ok
+test unresolved_contracts_suppress_dependent_class_ambiguity_and_keep_child_errors ... ok
+test final_call_rules_reject_positional_arguments_in_all_three_paths ... ok
+test unresolved_special_calls_explain_where_to_put_the_contract ... ok
+test block_expressions_preserve_scope_effects_and_escape_diagnostics ... ok
+test unresolved_contracts_wait_for_the_same_body_and_never_invent_names ... ok
+test ordinary_named_calls_report_exact_causes_at_the_public_boundary ... ok
+test binary_traits_preserve_error_types_kinds_and_callback_names ... ok
+test operations_use_declared_names_and_handlers_bind_independent_local_names ... ok
+test named_holes_and_pipe_insertion_keep_exact_contracts_and_causes ... ok
+test string_builders_keep_second_class_values_and_capture_boundaries ... ok
+test list_and_bytes_builders_keep_types_and_boundaries ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s
+
+selected checks passed

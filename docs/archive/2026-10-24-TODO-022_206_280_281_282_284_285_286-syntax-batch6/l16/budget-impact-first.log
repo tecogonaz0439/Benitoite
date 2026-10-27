@@ -1,0 +1,19 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+<tmp>/BudgetImpact.lean:346:28: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable probe
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+<tmp>/BudgetImpact.lean:343:6: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  ForIn IO (List Bool) Prop
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+<tmp>/BudgetImpact.lean:347:22: error: Application type mismatch: The argument
+  probe
+has type
+  Prop
+but is expected to have type
+  Bool
+in the application
+  bodyRow probe
+PROBE_EXIT_STATUS=1
+ELAPSED_SECONDS=0.501

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "first",
+    "command": "target/debug/benitoite check --report=json <tmp>/a11-boundary-repro/first.bnt",
+    "inner_exit": 0,
+    "time_exit": 1,
+    "wall_seconds": 0.093
+  },
+  {
+    "name": "prefixed",
+    "command": "target/debug/benitoite check --report=json <tmp>/a11-boundary-repro/prefixed.bnt",
+    "inner_exit": 0,
+    "time_exit": 1,
+    "wall_seconds": 0.081
+  }
+]

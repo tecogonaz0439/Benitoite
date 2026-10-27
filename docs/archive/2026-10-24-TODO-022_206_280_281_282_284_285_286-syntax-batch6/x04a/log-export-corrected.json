@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "import os, subprocess; from pathlib import Path; subprocess.run([\"cargo\",\"test\",\"--test\",\"desugar_export\",\"export_batch4_log_standard\",\"--\",\"--nocapture\"],env=dict(os.environ,BENITOITE_DESUGAR_DIFF_DIR=str(Path(\"target/desugar-diff/x04a-local\").resolve())),check=True)"
+  ],
+  "exit": 0,
+  "seconds": 0.562,
+  "cargoHome": "<tmp>/benitoite-a01a-cargo"
+}

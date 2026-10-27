@@ -1,0 +1,289 @@
+== plan: level work against 5a1d90a38ae4a053f216205040f14b98eff6bb76 (changed files not classified) (partial selection: --only spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test skill_examples --test stdlib_doc_examples
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [reference_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test reference_examples
+   [skill_docs] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test skill_docs
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== tests_related
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling serde_core v1.0.229
+   Compiling foldhash v0.2.0
+   Compiling libc v0.2.190
+   Compiling log v0.4.34
+   Compiling libm v0.2.16
+   Compiling serde v1.0.229
+   Compiling equivalent v1.0.2
+   Compiling typenum v1.20.1
+   Compiling hashbrown v0.17.1
+   Compiling cfg-if v1.0.5
+   Compiling version_check v0.9.5
+   Compiling wasmtime-internal-core v49.0.4
+   Compiling generic-array v0.14.7
+   Compiling cranelift-srcgen v0.136.4
+   Compiling leb128fmt v0.1.0
+   Compiling cranelift-assembler-x64-meta v0.136.4
+   Compiling memchr v2.8.3
+   Compiling thiserror v2.0.21
+   Compiling heck v0.5.0
+   Compiling itoa v1.0.18
+   Compiling bitflags v2.13.2
+   Compiling cranelift-isle v0.136.4
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling allocator-api2 v0.2.21
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling bumpalo v3.20.3
+   Compiling cranelift-codegen-shared v0.136.4
+   Compiling zmij v1.0.23
+   Compiling target-lexicon v0.13.5
+   Compiling cpufeatures v0.2.17
+   Compiling cranelift-bitset v0.136.4
+   Compiling cranelift-assembler-x64 v0.136.4
+   Compiling digest v0.10.7
+   Compiling semver v1.0.28
+   Compiling hashbrown v0.16.1
+   Compiling anyhow v1.0.104
+   Compiling fnv v1.0.7
+   Compiling indexmap v2.14.2
+   Compiling sha2 v0.10.9
+   Compiling serde_json v1.0.151
+   Compiling rustc-hash v2.1.3
+   Compiling crc32fast v1.5.2
+   Compiling arbitrary v1.5.0
+   Compiling wasmparser v0.258.3
+   Compiling gimli v0.33.0
+   Compiling zeroize v1.9.1
+   Compiling cranelift-control v0.136.4
+   Compiling rustversion v1.0.23
+   Compiling rustls-pki-types v1.15.1
+   Compiling errno v0.3.14
+   Compiling once_cell v1.21.4
+   Compiling termcolor v1.4.1
+   Compiling untrusted v0.9.0
+   Compiling rustls v0.23.46
+   Compiling core-foundation-sys v0.8.7
+   Compiling wasmtime-internal-component-util v49.0.4
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling id-arena v2.3.0
+   Compiling rustls-webpki v0.103.16
+   Compiling object v0.40.0
+   Compiling wasm-encoder v0.258.3
+   Compiling pulley-macros v49.0.4
+   Compiling wasmtime-internal-versioned-export-macros v49.0.4
+   Compiling pulley-interpreter v49.0.4
+   Compiling hybrid-array v0.4.15
+   Compiling subtle v2.6.1
+   Compiling getrandom v0.3.4
+   Compiling httparse v1.10.1
+   Compiling cobs v0.3.0
+   Compiling find-msvc-tools v0.1.14
+   Compiling wasmtime-internal-unwinder v49.0.4
+   Compiling shlex v2.0.1
+   Compiling cc v1.6.0
+   Compiling encoding_rs v0.8.42
+   Compiling security-framework-sys v2.17.0
+   Compiling cranelift-codegen-meta v0.136.4
+   Compiling core-foundation v0.10.1
+   Compiling signal-hook v0.4.5
+   Compiling either v1.19.0
+   Compiling bytes v1.12.1
+   Compiling wasmtime-internal-component-macro v49.0.4
+   Compiling rustix v1.1.5
+   Compiling wasmtime-internal-cranelift v49.0.4
+   Compiling smallvec v1.16.3
+   Compiling postcard v1.1.3
+   Compiling wasmtime v49.0.4
+   Compiling regalloc2 v0.15.2
+   Compiling http v1.5.0
+   Compiling cranelift-entity v0.136.4
+   Compiling cranelift-bforest v0.136.4
+   Compiling cranelift-codegen v0.136.4
+   Compiling wit-parser v0.258.3
+   Compiling wasm-metadata v0.258.3
+   Compiling itertools v0.14.0
+   Compiling security-framework v3.7.0
+   Compiling wit-component v0.258.3
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling signal-hook-registry v1.4.8
+   Compiling aho-corasick v1.1.5
+   Compiling unicode-width v0.2.2
+   Compiling regex-syntax v0.8.11
+   Compiling wasmprinter v0.258.3
+   Compiling wasmtime-internal-wit-bindgen v49.0.4
+   Compiling base64 v0.23.1
+   Compiling multiversion_no_op v1.0.0
+   Compiling getrandom v0.4.3
+   Compiling simdutf8 v0.1.5
+   Compiling scopeguard v1.2.0
+   Compiling regex-automata v0.4.18
+   Compiling ureq-proto v0.6.4
+   Compiling wasmtime-environ v49.0.4
+   Compiling digest v0.11.3
+   Compiling graviola v0.4.1
+   Compiling rustls-platform-verifier v0.7.1
+   Compiling wasmtime-internal-jit-icache-coherence v49.0.4
+   Compiling async-trait v0.1.92
+   Compiling mio v1.2.4
+   Compiling cpufeatures v0.3.1
+   Compiling jiff-core v0.1.1
+   Compiling mach2 v0.6.0
+   Compiling percent-encoding v2.3.2
+   Compiling utf8-zero v0.8.1
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+   Compiling ureq v3.4.2
+   Compiling rustls-graviola v0.4.0
+   Compiling jiff v0.2.37
+   Compiling sha2 v0.11.0
+   Compiling signal-hook-mio v0.3.0
+   Compiling regex v1.13.1
+   Compiling csv-core v0.1.13
+   Compiling wasm-encoder v0.261.0
+   Compiling wast v261.0.0
+   Compiling wat v1.261.0
+   Compiling cranelift-native v0.136.4
+   Compiling cranelift-frontend v0.136.4
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 53.74s
+     Running tests/skill_examples.rs (target/debug/deps/skill_examples-cf66a301ffe96469)
+
+running 3 tests
+test skill_md_is_short_and_lists_every_reference_document ... ok
+test example_checker_reports_document_and_line_of_a_wrong_output ... ok
+test code_examples_in_hand_written_documents_behave_as_written ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.97s
+
+     Running tests/stdlib_doc_examples.rs (target/debug/deps/stdlib_doc_examples-d023dc849acf58a7)
+
+running 1 test
+test standard_doc_examples_behave_as_written ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.58s
+
+== skill_generated
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-03 位置の式
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 ファイル単位のエフェクトの宣言
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Logの通常宣言とハンドラの具体例
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 区間解析のInteger64の減算・乗算・一般の負号の接続
+  01-12 区間解析のInteger64加算
+  01-12 区間解析のInteger64除算と剰余
+  01-12 区間解析のIntegerパターンと腕入口
+  01-12 区間解析のRangeの表層評価とResultの腕選択
+  01-12 区間解析のRangeの評価規則と小モデル
+  01-12 区間解析のResultの保存とOk束縛
+  01-12 区間解析のguardとreturnの局所規則
+  01-12 区間解析の予算の状態と計上
+  01-12 区間解析の予算付きの別本体の発見
+  01-12 区間解析の予算付きの局所走査
+  01-12 区間解析の予算付きの式とフロー
+  01-12 区間解析の単一ifと正常値の合流
+  01-12 区間解析の同じ成功値の直接射影
+  01-12 区間解析の土台の解析と健全性
+  01-12 区間解析の定数倍
+  01-12 区間解析の対象構文の評価関係
+  01-12 区間解析の局所環境と本体境界
+  01-12 区間解析の本体の識別と元の出現の対応
+  01-12 区間解析の束縛保存と単一比較
+  01-12 区間解析の検査全体の駆動
+  01-12 区間解析の減算と符号付き負号
+  01-12 区間解析の独立交換の読者
+  01-12 区間解析の独立入力の保存と保証
+  01-12 区間解析の直接引数と固定の定義域
+  01-12 区間解析の短絡と複合条件
+  01-12 区間解析の閉じた対象入力の評価
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 整数の閉区間の領域
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層のブロック式
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+== spec_examples
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.11s
+
+== reference_examples
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.41s
+
+== skill_docs
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+selected checks passed
+       75.04 real       422.26 user        18.89 sys
+time: sysctl kern.clockrate: Operation not permitted

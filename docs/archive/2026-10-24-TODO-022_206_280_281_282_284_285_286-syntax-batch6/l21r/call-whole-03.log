@@ -1,0 +1,38 @@
+Benitoite/Interval/CallReachWhole.lean:64:22: error: Type mismatch: After simplification, term
+  runBody_call_reach limits ready.budget fuel input.name seed
+ has type
+  (runBody limits ready.budget fuel input.name seed).CallsRecognized
+but is expected to have type
+  ∀ (body : BodyOutput),
+    (match result✝ with
+          | Except.error reason =>
+            { input := input, prepared := Except.ok seed,
+              root := some (runBody limits ready.budget fuel input.name seed),
+              discovery :=
+                some
+                  (BudgetDiscovery.discover limits
+                    (runBody limits ready.budget fuel input.name seed).output.context.budget fuel input.name seed),
+              queue := some (Except.error reason), embedded := { after := finishBody final✝.budget } }
+          | Except.ok entries =>
+            { input := input, prepared := Except.ok seed,
+              root := some (runBody limits ready.budget fuel input.name seed),
+              discovery :=
+                some
+                  (BudgetDiscovery.discover limits
+                    (runBody limits ready.budget fuel input.name seed).output.context.budget fuel input.name seed),
+              queue := some (Except.ok entries),
+              embedded := runEntries limits fuel entries (finishBody final✝.budget) }).root =
+        some body →
+      body.CallsRecognized
+Benitoite/Interval/CallReachWhole.lean:64:98: error: `simp` made no progress
+Benitoite/Interval/CallReachWhole.lean:65:10: error: No goals to be solved
+Benitoite/Interval/CallReachWhole.lean:100:44: error: Application type mismatch: The argument
+  ready
+has type
+  (BudgetScan.region fun x => BudgetScan.frame fun x => BudgetScan.tick Operation.classification).run limits
+      report.after =
+    BudgetScan.Outcome.ok value✝ value
+of sort `Prop` but is expected to have type
+  Budget.State
+of sort `Type` in the application
+  finishBody ready

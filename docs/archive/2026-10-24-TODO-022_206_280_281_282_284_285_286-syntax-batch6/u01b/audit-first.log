@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u01b/audit.py", line 113, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/u01b/audit.py", line 40, in main
+    assert summary['maxBodyOperations'] == max([int(b['usage']['operations']) for b in bodies] or [0])
+AssertionError

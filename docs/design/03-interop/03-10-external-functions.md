@@ -10,9 +10,11 @@ WASM のコンポーネントから外部の関数の本体を与える宣言、
 
 WIT はコンポーネントの取り込みと書き出しを記述する言語であり、world はその両方の契約をまとめる（出典: [Component Model の WIT 仕様](https://github.com/WebAssembly/component-model/blob/6c48079b/design/mvp/WIT.md#the-wit-text-format)、[WIT Worlds](https://github.com/WebAssembly/component-model/blob/6c48079b/design/mvp/WIT.md#wit-worlds)）。
 
-実行系は Wasmtime 49.0.2 に固定し、`default-features = false` と `runtime`・`component-model`・`std`・`cranelift` を使う。補助のバイナリは wasm-encoder 0.258.3 の安全な公開 API で生成し、生成後に `Component::from_binary` で検証する。wasm-encoder は既定機能を無効にして `std`・`component-model` だけを使い、その任意依存の wasmparser は有効にしない。元ゲストのインスタンス数の見積もりには、別の直接依存の wasmparser 0.258.3（既定機能なし、`std`・`component-model`）を使う。WAT の解析はテストのゲストだけに使い、本番では行わない。
+実行系は Wasmtime 49.0.4 に固定し、`default-features = false` と `runtime`・`component-model`・`std`・`cranelift` を使う。補助のバイナリは wasm-encoder 0.258.3 の安全な公開 API で生成し、生成後に `Component::from_binary` で検証する。wasm-encoder は既定機能を無効にして `std`・`component-model` だけを使い、その任意依存の wasmparser は有効にしない。元ゲストのインスタンス数の見積もりには、別の直接依存の wasmparser 0.258.3（既定機能なし、`std`・`component-model`）を使う。WAT の解析はテストのゲストだけに使い、本番では行わない。
 
-各クレートの配布物の Cargo.toml により、Wasmtime は `Apache-2.0 WITH LLVM-exception`、wasm-encoder と wasmparser は `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`、生成器の必須依存 leb128fmt 0.1.0 は `MIT OR Apache-2.0` であることを確認した。[依存のライセンスの規則](03-01-library-structure.md#依存のライセンス)の許可範囲に含まれる（出典: [Wasmtime 49.0.2](https://docs.rs/crate/wasmtime/49.0.2/source/Cargo.toml)、[wasm-encoder 0.258.3](https://docs.rs/crate/wasm-encoder/0.258.3/source/Cargo.toml)、[wasmparser 0.258.3](https://docs.rs/crate/wasmparser/0.258.3/source/Cargo.toml)、[leb128fmt 0.1.0](https://docs.rs/crate/leb128fmt/0.1.0/source/Cargo.toml)）。
+この構成では `async`・`component-model-async`・WASI を有効にしない。非同期のコンポーネント関数、future・stream の型を含むゲストは検証で拒否し、E1004 と検証器の理由を報告する。例外機能の設定は Wasmtime の既定に従う。49.0.4 では例外の既定値が Cargo の `gc` 機能に連動するため、`gc` を含まないこの構成では例外を使うゲストも E1004 となる（出典: [Config の機能の既定値](https://github.com/bytecodealliance/wasmtime/blob/v49.0.4/crates/wasmtime/src/config.rs#L2547-L2568)、2026-10-25 確認）。
+
+各クレートの配布物の Cargo.toml により、Wasmtime は `Apache-2.0 WITH LLVM-exception`、wasm-encoder と wasmparser は `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`、生成器の必須依存 leb128fmt 0.1.0 は `MIT OR Apache-2.0` であることを確認した。[依存のライセンスの規則](03-01-library-structure.md#依存のライセンス)の許可範囲に含まれる（出典: [Wasmtime 49.0.4](https://docs.rs/crate/wasmtime/49.0.4/source/Cargo.toml)、[wasm-encoder 0.258.3](https://docs.rs/crate/wasm-encoder/0.258.3/source/Cargo.toml)、[wasmparser 0.258.3](https://docs.rs/crate/wasmparser/0.258.3/source/Cargo.toml)、[leb128fmt 0.1.0](https://docs.rs/crate/leb128fmt/0.1.0/source/Cargo.toml)）。
 
 ## 仕様
 
@@ -117,7 +119,7 @@ public function newCell(start: Integer) -> Cell uses State
 
 【決定】標準の `Pair`・`Triple` を先に束縛の番号で識別する。それ以外の一構成子の `data` は、WIT が tuple なら引数の数・順・型で照合し、構成子の名前は比べない。1 要素と 4 要素以上も受け付け、0 要素の tuple とレコードの tuple への対応は受け付けない。WIT が variant なら、同じ一構成子の宣言にも variant の規則を使う。variant の引数 0 個はペイロードなし、1 個はその型、2 個以上は平らな tuple とし、一般の `Unit` の引数は省かない。理由: 一つの WIT のペイロードを複数の言語の欄へ対応させ、戻り値を宣言した構成子へ直接組み直すためである。
 
-【決定】flags は項目の数・宣言順・正規化した名前を `Set[D]` の D の構成子と照合し、構成子のタグと WIT の項目番号の対応を保存する。選択の空集合は許す。型の項目が 0 個または 33 個以上なら E1010 とし、理由と 1〜32 個の範囲を示す。補助の記憶域と転送形式は 1〜8 項目で 1 バイト、9〜16 項目で 2 バイト、17〜32 項目で 4 バイト、平らな引数は i32 一つである。戻り値の余分な上位ビットは捨て、宣言した項目だけを Set にする。理由: Wasmtime 49.0.2 が使う wasmparser 0.258.3 の検証器が受理する flags の範囲に合わせる（出典: [flags の検証](https://docs.rs/crate/wasmparser/0.258.3/source/src/validator/component.rs)）。
+【決定】flags は項目の数・宣言順・正規化した名前を `Set[D]` の D の構成子と照合し、構成子のタグと WIT の項目番号の対応を保存する。選択の空集合は許す。型の項目が 0 個または 33 個以上なら E1010 とし、理由と 1〜32 個の範囲を示す。補助の記憶域と転送形式は 1〜8 項目で 1 バイト、9〜16 項目で 2 バイト、17〜32 項目で 4 バイト、平らな引数は i32 一つである。戻り値の余分な上位ビットは捨て、宣言した項目だけを Set にする。理由: Wasmtime 49.0.4 が使う wasmparser 0.258.3 の検証器が受理する flags の範囲に合わせる（出典: [flags の検証](https://docs.rs/crate/wasmparser/0.258.3/source/src/validator/component.rs)）。
 
 【決定】map の鍵 K は `Boolean`・符号付きと符号なしの各幅の整数・`Character`・`String` に限る。`Decimal`・`Bytes`・`Unit`・data・レコードなど、言語内で鍵になるほかの型も境界では E1010 とする。V は受け渡せる非再帰の型とし、外部の型を含む場合は状態を持つ動的な経路を使う。行きは Map のカーソルから鍵の順に一意な組を渡す。帰りは元の順で全組を検査し、重複した鍵は後の値を採り、結果を鍵の順にする。重複で消える値も検査と予算に含め、外部の型の対象は管理の表へ登録する。中間の `List[Pair]` は作らない。理由: WIT の鍵の範囲と、言語の Map の後勝ちと鍵順を保ち、不正な値が重複の縮約で検査を逃れないようにするためである。
 
@@ -215,7 +217,7 @@ wasm-tools component wit ../wasm/fuzzy.wasm
 
 【決定】外部の型を受け渡す関数は、実行ごと・コンポーネントごとに一つの状態を持つインスタンスで呼ぶ。外部の型の値が回収されたら解放待ちの列へ番号を入れ、次にそのインスタンスへ入る前に解放する。解放の時期は回収の時期に依存するため、共有の状態を読むメソッドの結果と資源の消費量は回収の時期によって変わりうる。明示の解放の関数は持たない。解放は回収を待つため、外部でない値が多く生きている間は、外部の型の値を作り捨てても状態を持つインスタンスの線形メモリの上限（既定 64 MiB）に達しうる。解放待ちの列のデストラクタのトラップ・燃料切れ・中断は、次の呼び出しの失敗として報告する。トラップの報告の書き出し名には、`[resource-drop]cell` のように解放する型を示す。型に外部の型を含まない関数（`[static]` を含む）は呼び出しごとのインスタンスで呼ぶので、状態を持つインスタンスの状態を見られない。実行の終わり・中断・呼び出しの失敗では状態を捨てる。参照インタプリタはこの経路を扱わず、差分テストから除く。理由: 外部の型の値を呼び出しをまたいで使い、回収された値のゲストの領域を使い回せるようにするためである。
 
-【決定】インターフェースの中の関数は、照合で決めた完全なインターフェースの名前を `Component::get_export_index` で引き、得た索引を親として関数の名前の索引を引く。world の直下なら親の索引を指定しない。索引は実行系がコンパイルしたコンポーネントから呼び出しごとに得て、そのコンポーネントから作ったインスタンスの `get_func` に渡す。`get_export_index` は完全一致を先に探すので、照合で完全一致を確かめた名前は同じ書き出しを返す（出典: Wasmtime 49.0.2 の [NameMap::get](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/environ/src/component/names.rs#L180-L202) と [Component::get_export_index](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/component/component.rs#L794-L806)）。理由: 索引はコンパイルしたコンポーネントに属するため、検査のときの別のコンポーネントの索引を使わないためである。
+【決定】インターフェースの中の関数は、照合で決めた完全なインターフェースの名前を `Component::get_export_index` で引き、得た索引を親として関数の名前の索引を引く。world の直下なら親の索引を指定しない。索引は実行系がコンパイルしたコンポーネントから呼び出しごとに得て、そのコンポーネントから作ったインスタンスの `get_func` に渡す。`get_export_index` は完全一致を先に探すので、照合で完全一致を確かめた名前は同じ書き出しを返す（出典: Wasmtime 49.0.4 の [NameMap::get](https://github.com/bytecodealliance/wasmtime/blob/v49.0.4/crates/environ/src/component/names.rs#L180-L202) と [Component::get_export_index](https://github.com/bytecodealliance/wasmtime/blob/v49.0.4/crates/wasmtime/src/runtime/component/component.rs#L794-L806)）。理由: 索引はコンパイルしたコンポーネントに属するため、検査のときの別のコンポーネントの索引を使わないためである。
 
 【決定】一回の呼び出しの燃料は既定で 10^10、線形メモリは呼び出し全体の合計で既定 64 MiB（状態を持つインスタンスではその寿命の合計）を上限とする。`run` と `test` の `--wasm-memory`・`--wasm-fuel`・`--wasm-transfer` で上限を変更できる。大きさはバイト数か `KiB`・`MiB`・`GiB` つきの整数とし、線形メモリと受け渡しの予算は 1 MiB 以上 4 GiB 以下、燃料は 1 以上 2^64−1 以下の整数とする。範囲の外は使い方の誤りとして実行前に拒否する。コアのインスタンス・メモリ・表の数はそれぞれ 16、表一つは 10,000 要素を上限とする。燃料は計算量の上限であり、実時間の上限ではない。理由: 上限を実行する利用者が決められるようにし、既定の燃料は試験用の Fuzzy の 3,000 文字どうしの距離の計算が消費した 549,697,585 の約 18.2 倍に保つためである。
 
@@ -240,9 +242,9 @@ wasm-tools component wit ../wasm/fuzzy.wasm
 
 【決定】補助のホストとの呼び出し型は `TypedFunc<(&[u8],), (Vec<u8>,)>` に固定する。内部の転送形式の版 1 は、32 バイトのヘッダに `BNTW` の四バイト・版 u32・全長 u32・根の個数 u32・転送上限 u64・構築上限 u64 をリトルエンディアンで置き、その後に根の固定部を置く。引数の根は位置順、戻り値の根は 0 個か 1 個である。固定部は正準 ABI（canonical ABI）の memory32 の配置を使い、string・list・map の参照は相対位置 u32 と長さ u32 とする。map の参照先は鍵と値の tuple の列である。詰め物と非選択の領域は零とし、動的な参照先は深さ優先・宣言順に詰める。list/map の固定部全体を先に予約し、空の参照は位置 0 とする。
 
-固定部の数は幅どおりに置き、bool は 1 バイト、char は Unicode のスカラー値の u32、record/tuple は宣言順の整列した欄、enum は場合数に応じた判別子、variant/option/result は判別子と選択したペイロードとする。ABI の平らな形では s/u8・16・32、bool・char・enum・flags は i32、s/u64 は i64、f32/f64 はその幅、string/list/map は i32 二つ、record/tuple は子の列の連結にする。variant は判別子を先頭に置き、各場合の列を位置ごとに合流する。同じ種類ならその型、i32 と f32 の混合は i32、それ以外の幅・種類の混合は i64 とし、数値変換をせずビットを再解釈する。理由: 数値変換によって整数や NaN のビットを変えないためである（出典: [Wasmtime 49.0.2 の ABI の配置と平らな型](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/environ/src/component/types.rs)）。
+固定部の数は幅どおりに置き、bool は 1 バイト、char は Unicode のスカラー値の u32、record/tuple は宣言順の整列した欄、enum は場合数に応じた判別子、variant/option/result は判別子と選択したペイロードとする。ABI の平らな形では s/u8・16・32、bool・char・enum・flags は i32、s/u64 は i64、f32/f64 はその幅、string/list/map は i32 二つ、record/tuple は子の列の連結にする。variant は判別子を先頭に置き、各場合の列を位置ごとに合流する。同じ種類ならその型、i32 と f32 の混合は i32、それ以外の幅・種類の混合は i64 とし、数値変換をせずビットを再解釈する。理由: 数値変換によって整数や NaN のビットを変えないためである（出典: [Wasmtime 49.0.4 の ABI の配置](https://github.com/bytecodealliance/wasmtime/blob/v49.0.4/crates/environ/src/component/types.rs)と[平らな型の合流](https://github.com/bytecodealliance/wasmtime/blob/v49.0.4/crates/environ/src/component/types_builder.rs#L970-L980)）。
 
-【決定】各実行は Store・Instance・外部ハンドル・解放待ち・実行番号を新しく持つ。stateful の同じ実行内の Store は保持し、別のテストへ渡さない。燃料と転送予算は呼び出しごとに戻し、メモリの計数は Store の寿命で保持する。中断の見張りは CLI 全体の SIGINT/SIGTERM の印に対して一つだけ作り、共有 Engine の epoch を進める。各 Store に期限を設定し、中断後のテストは始めない。最後の所有者の破棄で見張りを unpark/join する。個別のタイムアウトと並行実行は導入しない。理由: 全体の中断を維持しつつ、共有した Engine に実行ごとの制限や状態を置かないためである。
+【決定】各実行は Store・Instance・外部ハンドル・解放待ち・実行番号を新しく持つ。stateful の同じ実行内の Store は保持し、別のテストへ渡さない。燃料と転送予算は呼び出しごとに戻し、メモリの計数は Store の寿命で保持する。生存するコンポーネントハンドル（component handle）は Store ごとに 100,000 個を上限とし、呼び出しごとに生存数を戻さない。`resource.drop` で解放した分は再利用でき、この上限は補助を含む全経路の共通の Store の作成時に設定する。中断の見張りは CLI 全体の SIGINT/SIGTERM の印に対して一つだけ作り、共有 Engine の epoch を進める。各 Store に期限を設定し、中断後のテストは始めない。最後の所有者の破棄で見張りを unpark/join する。個別のタイムアウトと並行実行は導入しない。理由: 全体の中断を維持しつつ、共有した Engine に実行ごとの制限や状態を置かないためである。
 
 転送形式の正は `external/adapter/wire.rs` とする。復号では版・magic・全長・根の個数・両予算をホストの指定値と照合し、整列と次の未使用位置を確認する。共有・重なり・後方参照・範囲外・余分な末尾・加算の溢れ・零でない詰め物と非選択の領域を拒否する。全体を検査した後に言語の値を作る。補助は memory32・同期・UTF-8 を使い、平らな引数が 16 個を超える場合は引数の record の位置一つを渡す。lower した結果が一個を超える場合は、呼び出し側が用意した結果領域の位置を末尾の引数に加える。lift と lower の間接の結果の向きを分けて生成する。元ゲストの UTF-16 などの符号化と post-return は Component Model に任せる。元の関数を一度だけ呼び、結果を補助のメモリへ移してから詰め直す。外側の `TypedFunc::call` も post-return を行うので追加で呼ばない。理由: 元ゲストのポインタとホスト用の相対位置を分け、ゲストの後処理後も結果を保持するためである。
 
@@ -270,9 +272,9 @@ wasm-tools component wit ../wasm/fuzzy.wasm
 
 燃料の消費量は、呼び出しのために設定した値から `Store::get_fuel()` の残量を引く。インスタンス化と解放待ちの列の処理も含む。線形メモリは制限器が受け付けた成長の合計を使い、ゲスト自身の maximum による拒否を含めない。確保が後で失敗しても計数は戻さない。最大は呼び出しごとの合計（状態を持つインスタンスでは寿命の合計）の最大、合計は各呼び出しの成長分の和とし、同じインスタンスのメモリを重ねて加えない。
 
-引数の受け渡しの量は予算の検査で数えた値を使う。戻り値の量は、取得した戻り値を前述の規則で数える。Wasmtime 49.0.2 の公開の `Store::hostcall_fuel()` は設定値を返し、残量を返さないためである（出典: [Store の実装](https://docs.rs/crate/wasmtime/49.0.2/source/src/runtime/component/store.rs)、[持ち上げの局所の予算](https://docs.rs/crate/wasmtime/49.0.2/source/src/runtime/component/func/options.rs)）。値を取得する前の失敗などで計数できなかった呼び出しは `incomplete_calls` に数え、その方向の合計と最大には加えない。失敗した呼び出しの部分的な持ち上げの消費量は取得できない。
+引数の受け渡しの量は予算の検査で数えた値を使う。戻り値の量は、取得した戻り値を前述の規則で数える。Wasmtime 49.0.4 の公開の `Store::hostcall_fuel()` は設定値を返し、残量を返さないためである（出典: [Store の実装](https://docs.rs/crate/wasmtime/49.0.4/source/src/runtime/component/store.rs)、[持ち上げの局所の予算](https://docs.rs/crate/wasmtime/49.0.4/source/src/runtime/component/func/options.rs)）。値を取得する前の失敗などで計数できなかった呼び出しは `incomplete_calls` に数え、その方向の合計と最大には加えない。失敗した呼び出しの部分的な持ち上げの消費量は取得できない。
 
-型付きと動的な経路の文字列の統計は処理系の UTF-8 表現のバイト数を使う。補助の統計は UTF-8 に変換済みの転送形式の全長を使い、文字列だけの量へ分けない。型付きと動的な経路で戻り値を UTF-16 または Compact UTF-16 で持ち上げる場合、Wasmtime はゲストの符号化されたバイト数を数えるため、UTF-8 の統計と実際の hostcall fuel の消費量が異なることがある。UTF-16 はコード単位ごとに 2 バイト、Compact UTF-16 は Latin-1 の場合に 1 バイト、それ以外は UTF-16 のコード単位ごとに 2 バイトを数える（出典: [Wasmtime 49.0.2 の WasmStr::new](https://docs.rs/crate/wasmtime/49.0.2/source/src/runtime/component/func/typed.rs)）。
+型付きと動的な経路の文字列の統計は処理系の UTF-8 表現のバイト数を使う。補助の統計は UTF-8 に変換済みの転送形式の全長を使い、文字列だけの量へ分けない。型付きと動的な経路で戻り値を UTF-16 または Compact UTF-16 で持ち上げる場合、Wasmtime はゲストの符号化されたバイト数を数えるため、UTF-8 の統計と実際の hostcall fuel の消費量が異なることがある。UTF-16 はコード単位ごとに 2 バイト、Compact UTF-16 は Latin-1 の場合に 1 バイト、それ以外は UTF-16 のコード単位ごとに 2 バイトを数える（出典: [Wasmtime 49.0.4 の WasmStr::new](https://docs.rs/crate/wasmtime/49.0.4/source/src/runtime/component/func/typed.rs)）。
 
 | JSON の欄 | 内容 |
 |---|---|
@@ -286,10 +288,10 @@ wasm-tools component wit ../wasm/fuzzy.wasm
 | `fallback_reasons` | 動的への事前の振り分けの理由ごとの試行回数 |
 | `adapter_failures` | 補助の報告番号 `code`・要求量 `requested`・上限 `limit`・回数 `calls` の列 |
 | `functions` | コンポーネントの表示用パスと宣言の関数名を `"<component>#<function>"` で結んだ鍵ごとの回数・各消費量・達した上限。欄は起動全体のものと同じ |
-| `reached_limits` | 停止を起こした上限名から回数への表。名前は `fuel`・`memory`・`transfer`、または `core_instances`・`core_memories`・`core_tables`・`table_elements` |
+| `reached_limits` | 停止を起こした上限名から回数への表。名前は `fuel`・`memory`・`transfer`、または `core_instances`・`core_memories`・`core_tables`・`table_elements`・`component_handles` |
 | `stateful_instances` | インスタンスごとの `instance`（起動内の通し番号）・`component`（表示用パス）・`maximum`（寿命の線形メモリの最大） |
 
-【決定】ゲストのトラップとコンポーネントの ABI 違反・資源の上限以外の元ゲストのインスタンス化の失敗は実行時エラー R0601、燃料の上限は資源の不足 R0904、線形メモリ・受け渡し・構築の予算の上限は R0905（線形メモリか受け渡しの予算かを注記し、構築の上限も受け渡しの予算として示す）、表の要素数とコアのインスタンス・メモリ・表の数の上限は R0906、戻り値から作る値の上限は R0902 として停止する。コンポーネントの `Result.Error` は宣言の型に従った値であり、トラップとは区別する。ゲストの panic と Rust のメモリ不足も `unreachable` のトラップとして現れうる。経路によって Wasmtime のトラップの文言が変わる場合も、分類は同じである。生成コードの検証失敗、補助形式・変換表と値の不一致、ゲストのトラップや資源の上限ではない補助のインスタンス化の失敗は処理系の不具合とする。
+【決定】ゲストのトラップとコンポーネントの ABI 違反・資源の上限以外の元ゲストのインスタンス化の失敗は実行時エラー R0601、燃料の上限は資源の不足 R0904、線形メモリ・受け渡し・構築の予算の上限は R0905（線形メモリか受け渡しの予算かを注記し、構築の上限も受け渡しの予算として示す）、表の要素数とコアのインスタンス・メモリ・表の数、およびコンポーネントハンドルの上限は R0906、戻り値から作る値の上限は R0902 として停止する。コンポーネントハンドルの超過では必要数を取得できないため、資源名・上限・超過の事実を示す。コンポーネントの `Result.Error` は宣言の型に従った値であり、トラップとは区別する。ゲストの panic と Rust のメモリ不足も `unreachable` のトラップとして現れうる。経路によって Wasmtime のトラップの文言が変わる場合も、分類は同じである。生成コードの検証失敗、補助形式・変換表と値の不一致、ゲストのトラップや資源の上限ではない補助のインスタンス化の失敗は処理系の不具合とする。
 
 内部の報告関数の番号 1/2 は引数/結果の転送、3/4 は引数/結果の構築、5 は既存の値の大きさ、6 は realloc のメモリ不足、7 は補助形式・配置の不一致である。1〜4 と 6 は R0905、5 は R0902、7 と未知の番号は処理系の不具合とする。ホストは専用の Rust のエラー型で受け取り、失敗後に診断用の Wasm 関数を呼び直さない。燃料・中断・Store の制限器の失敗は既存の分類を優先する。
 

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit.py", line 85, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/audit.py", line 62, in main
+    assert (path.parent/target).exists(), (path.relative_to(ROOT).as_posix(), target)
+AssertionError: ('docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05t/results.md', 'source-state-complete.json')

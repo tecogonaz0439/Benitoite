@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.92s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 1 test
+
+thread 'export_interval_identity' (7628301) panicked at crates/benitoite/tests/desugar_export/interval.rs:355:9:
+assertion `left == right` failed: heads: [Diagnostic { kind: Check, severity: Error, code: Some(E0301), message: "cannot find `Process` in this scope", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(143), end: BytePos(150) }, text: "not found" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0332), message: "the module `Process` is not imported", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(162), end: BytePos(169) }, text: "" }), secondary: [], notes: [], helps: [Help { message: "add `import Benitoite.Unofficial.IO.Process` at the start of the file", edits: [Edit { span: Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, replacement: "import Benitoite.Unofficial.IO.Process\n" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 2
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_interval_identity ... FAILED
+
+failures:
+
+failures:
+    export_interval_identity
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 32 filtered out; finished in 2.53s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

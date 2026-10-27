@@ -1,0 +1,6446 @@
+[
+  {
+    "id": "crates/benitoite/testdata/external/interface-diagnostics/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/interface-diagnostics/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/interface-diagnostics/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 6,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/interface/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/interface/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/interface/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 71,
+          "maxBodyOperations": 185,
+          "operations": 224,
+          "peakItems": 75,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 61,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/interface/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/interface/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/interface/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 71,
+          "maxBodyOperations": 185,
+          "operations": 224,
+          "peakItems": 75,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 61,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/large-table/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/large-table/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/large-table/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 12,
+          "maxBodyOperations": 31,
+          "operations": 32,
+          "peakItems": 12,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/large-table/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/large-table/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/large-table/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 12,
+          "maxBodyOperations": 31,
+          "operations": 32,
+          "peakItems": 12,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/memory/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/memory/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/memory/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 11,
+          "maxBodyOperations": 27,
+          "operations": 28,
+          "peakItems": 11,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/memory/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/memory/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/memory/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 11,
+          "maxBodyOperations": 27,
+          "operations": 28,
+          "peakItems": 11,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/missing/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/missing/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/missing/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/missing/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/missing/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/missing/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/record-mismatch/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/record-mismatch/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/record-mismatch/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 4,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/record-mismatch/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/record-mismatch/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/record-mismatch/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 4,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/records/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/records/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/records/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 310,
+          "maxBodyOperations": 1474,
+          "operations": 1475,
+          "peakItems": 310,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 283,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/records/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/records/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/records/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 310,
+          "maxBodyOperations": 1474,
+          "operations": 1475,
+          "peakItems": 310,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 283,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/resource-effect/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/resource-effect/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/resource-effect/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/resource-effect/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/resource-effect/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/resource-effect/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/resource/Lib/Cell.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/resource/Lib/Cell.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/resource/Lib/Cell.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 1,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/resource/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/resource/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/resource/Lib/Cell.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 1,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      },
+      {
+        "id": "crates/benitoite/testdata/external/resource/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/resource/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 101,
+          "maxBodyOperations": 401,
+          "operations": 612,
+          "peakItems": 132,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 111,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/resource/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/resource/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/resource/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 101,
+          "maxBodyOperations": 401,
+          "operations": 612,
+          "peakItems": 132,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 111,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/root/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/root/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/root/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 126,
+          "maxBodyOperations": 384,
+          "operations": 667,
+          "peakItems": 185,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 171,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 6
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/root/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/root/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/root/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 126,
+          "maxBodyOperations": 384,
+          "operations": 667,
+          "peakItems": 185,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 171,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 6
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/roundtrip/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/roundtrip/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/roundtrip/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 246,
+          "maxBodyOperations": 825,
+          "operations": 845,
+          "peakItems": 246,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 225,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/roundtrip/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/roundtrip/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/roundtrip/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 246,
+          "maxBodyOperations": 825,
+          "operations": 845,
+          "peakItems": 246,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 225,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package-outside/Calc.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package-outside/Calc.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package-outside/Calc.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 2,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package-outside/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package-outside/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package-outside/Calc.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 2,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      },
+      {
+        "id": "crates/benitoite/testdata/external/self-package-outside/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package-outside/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 16,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package-outside/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package-outside/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package-outside/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 16,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package-outside/package.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package/Calc.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package/Calc.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package/Calc.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 2,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package/Calc.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 2,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      },
+      {
+        "id": "crates/benitoite/testdata/external/self-package/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 16,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 16,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/self-package/package.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/self-package/package.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/self-package/package.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/trap/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/trap/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/trap/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 11,
+          "maxBodyOperations": 27,
+          "operations": 28,
+          "peakItems": 11,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/trap/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/trap/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/trap/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 11,
+          "maxBodyOperations": 27,
+          "operations": 28,
+          "peakItems": 11,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 6,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/unsupported-inner/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/unsupported-inner/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/unsupported-inner/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/unsupported-inner/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/unsupported-inner/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/unsupported-inner/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-docs-declarations/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-docs-declarations/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-docs-declarations/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 65,
+          "maxBodyOperations": 183,
+          "operations": 184,
+          "peakItems": 65,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 49,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-docs-declarations/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-docs-declarations/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-docs-declarations/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 65,
+          "maxBodyOperations": 183,
+          "operations": 184,
+          "peakItems": 65,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 49,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-docs-values/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-docs-values/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-docs-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 239,
+          "maxBodyOperations": 988,
+          "operations": 989,
+          "peakItems": 239,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 207,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-docs-values/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-docs-values/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-docs-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 239,
+          "maxBodyOperations": 988,
+          "operations": 989,
+          "peakItems": 239,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 207,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-flags-boundaries/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-flags-boundaries/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-flags-boundaries/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 450,
+          "maxBodyOperations": 2658,
+          "operations": 2659,
+          "peakItems": 450,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 367,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-flags-boundaries/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-flags-boundaries/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-flags-boundaries/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 450,
+          "maxBodyOperations": 2658,
+          "operations": 2659,
+          "peakItems": 450,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 367,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-generic-recursive.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-generic-recursive.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-generic-recursive.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-generic-values/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-generic-values/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-generic-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 98,
+          "maxBodyOperations": 278,
+          "operations": 279,
+          "peakItems": 98,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 79,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-generic-values/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-generic-values/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-generic-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 98,
+          "maxBodyOperations": 278,
+          "operations": 279,
+          "peakItems": 98,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 79,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-map-values/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-map-values/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-map-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 98,
+          "maxBodyOperations": 352,
+          "operations": 353,
+          "peakItems": 98,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 78,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-map-values/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-map-values/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-map-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 98,
+          "maxBodyOperations": 352,
+          "operations": 353,
+          "peakItems": 98,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 78,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-numbers-lists/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-numbers-lists/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-numbers-lists/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 236,
+          "maxBodyOperations": 734,
+          "operations": 735,
+          "peakItems": 236,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 214,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-numbers-lists/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-numbers-lists/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-numbers-lists/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 236,
+          "maxBodyOperations": 734,
+          "operations": 735,
+          "peakItems": 236,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 214,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-numbers-mismatch/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-numbers-mismatch/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-numbers-mismatch/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 4,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-numbers-mismatch/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-numbers-mismatch/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-numbers-mismatch/main.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 4,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-numbers-scalar/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-numbers-scalar/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-numbers-scalar/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 310,
+          "maxBodyOperations": 1015,
+          "operations": 1016,
+          "peakItems": 310,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 286,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-numbers-scalar/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-numbers-scalar/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-numbers-scalar/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 310,
+          "maxBodyOperations": 1015,
+          "operations": 1016,
+          "peakItems": 310,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 286,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-tuple-values/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-tuple-values/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-tuple-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 172,
+          "maxBodyOperations": 457,
+          "operations": 458,
+          "peakItems": 172,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 141,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-tuple-values/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-tuple-values/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-tuple-values/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 172,
+          "maxBodyOperations": 457,
+          "operations": 458,
+          "peakItems": 172,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 141,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-variant-fields/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-variant-fields/[package]",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-variant-fields/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 122,
+          "maxBodyOperations": 361,
+          "operations": 362,
+          "peakItems": 122,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 106,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/external/wit-variant-fields/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/external/wit-variant-fields/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/external/wit-variant-fields/main.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 122,
+          "maxBodyOperations": 361,
+          "operations": 362,
+          "peakItems": 122,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 106,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/blank_lines.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/blank_lines.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/blank_lines.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 3,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/blank_lines_comments.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/blank_lines_comments.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/blank_lines_comments.bnt",
+        "accepted": false,
+        "stage": "resolve",
+        "errors": 7,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/check_canonical.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/check_canonical.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/check_canonical.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/check_changed.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/check_changed.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/check_changed.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 7,
+          "maxBodyOperations": 13,
+          "operations": 14,
+          "peakItems": 7,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/comments.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/comments.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/comments.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/directory/Util.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/directory/Util.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/directory/Util.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 9,
+          "maxBodyOperations": 17,
+          "operations": 18,
+          "peakItems": 9,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 4,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/directory/[package]",
+    "group": "golden-package",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/directory/[package]",
+        "target": "<repo>/crates/benitoite/testdata/fmt/directory/Util.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 9,
+          "maxBodyOperations": 17,
+          "operations": 18,
+          "peakItems": 9,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 4,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      },
+      {
+        "id": "crates/benitoite/testdata/fmt/directory/[package]",
+        "target": "<repo>/crates/benitoite/testdata/fmt/directory/main.bnt",
+        "accepted": false,
+        "stage": "resolve",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/directory/main.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/directory/main.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/directory/main.bnt",
+        "accepted": false,
+        "stage": "resolve",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/example.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/example.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/example.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/external.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/external.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/external.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 1,
+          "peakItems": 1,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/header.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/header.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/header.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/indent.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/indent.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/indent.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/line_ends.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/line_ends.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/line_ends.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/multiline_string.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/multiline_string.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/multiline_string.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/package-visibility-newline.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/package-visibility-newline.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/package-visibility-newline.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 9,
+          "maxBodyOperations": 17,
+          "operations": 18,
+          "peakItems": 9,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 4,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/package-visibility.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/package-visibility.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/package-visibility.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "All",
+          "inputDefinitions": 1,
+          "maxBodyItems": 9,
+          "maxBodyOperations": 17,
+          "operations": 18,
+          "peakItems": 9,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 4,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/spaces.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/spaces.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/spaces.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/syntax_error.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/syntax_error.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/syntax_error.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/try-actions.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/try-actions.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/try-actions.bnt",
+        "accepted": false,
+        "stage": "resolve",
+        "errors": 17,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/fmt/width-literals.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/fmt/width-literals.bnt",
+        "target": "<repo>/crates/benitoite/testdata/fmt/width-literals.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 3,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/c12-builtin-port.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/c12-builtin-port.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/c12-builtin-port.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 59,
+          "maxBodyOperations": 198,
+          "operations": 445,
+          "peakItems": 113,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 97,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 95,
+          "maxBodyOperations": 414,
+          "operations": 454,
+          "peakItems": 101,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 88,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/c12-nested-forward.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/c12-nested-forward.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/c12-nested-forward.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 55,
+          "maxBodyOperations": 226,
+          "operations": 282,
+          "peakItems": 75,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 58,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/c12-non-tail-resume.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/c12-non-tail-resume.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/c12-non-tail-resume.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 55,
+          "maxBodyOperations": 212,
+          "operations": 308,
+          "peakItems": 81,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 63,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/c12-resume-twice.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/c12-resume-twice.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/c12-resume-twice.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 44,
+          "maxBodyOperations": 159,
+          "operations": 219,
+          "peakItems": 62,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 47,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/c12-tail-deep.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/c12-tail-deep.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/c12-tail-deep.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 43,
+          "maxBodyOperations": 151,
+          "operations": 174,
+          "peakItems": 51,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 39,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f04_log.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f04_log.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f04_log.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 51,
+          "maxBodyOperations": 146,
+          "operations": 383,
+          "peakItems": 97,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 86,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 5
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-ambiguous.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-ambiguous.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-ambiguous.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-annotation.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-annotation.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-annotation.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-effects.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-effects.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-effects.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-else-if.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-else-if.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-else-if.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-expected-type.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-expected-type.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-expected-type.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-function-value.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-function-value.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-function-value.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 15,
+          "maxBodyOperations": 35,
+          "operations": 46,
+          "peakItems": 15,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 9,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-if.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-if.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-if.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-partial.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-partial.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-partial.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-pipe.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-pipe.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-pipe.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-join-result-type.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-join-result-type.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-join-result-type.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-mixed.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-mixed.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-mixed.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-builtin-value.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-builtin-value.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-builtin-value.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 29,
+          "maxBodyOperations": 73,
+          "operations": 118,
+          "peakItems": 39,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 27,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 20,
+          "maxBodyOperations": 45,
+          "operations": 56,
+          "peakItems": 20,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 11,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-instantiation.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-instantiation.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-instantiation.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 29,
+          "maxBodyOperations": 74,
+          "operations": 192,
+          "peakItems": 52,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 40,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 23,
+          "maxBodyOperations": 55,
+          "operations": 66,
+          "peakItems": 23,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 12,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-resume.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-resume.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-resume.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 5,
+          "maxBodyOperations": 9,
+          "operations": 11,
+          "peakItems": 6,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 3,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f1-typed-failure.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f1-typed-failure.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f1-typed-failure.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 421,
+          "maxBodyOperations": 5473,
+          "operations": 6244,
+          "peakItems": 455,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 383,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 17
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/f2-result-conversion.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/f2-result-conversion.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/f2-result-conversion.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 67,
+          "maxBodyOperations": 232,
+          "operations": 303,
+          "peakItems": 92,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 82,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/first-release-log.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/first-release-log.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/first-release-log.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 42,
+          "maxBodyOperations": 157,
+          "operations": 337,
+          "peakItems": 88,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 77,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/first-release-parse-all.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/first-release-parse-all.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/first-release-parse-all.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 60,
+          "maxBodyOperations": 213,
+          "operations": 296,
+          "peakItems": 71,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 60,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/first-release-port.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/first-release-port.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/first-release-port.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 59,
+          "maxBodyOperations": 198,
+          "operations": 382,
+          "peakItems": 98,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 86,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 5
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-clause-local.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-clause-local.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-clause-local.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 156,
+          "maxBodyOperations": 830,
+          "operations": 1423,
+          "peakItems": 273,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 257,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 10
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-closure.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-closure.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-closure.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 14,
+          "maxBodyOperations": 26,
+          "operations": 28,
+          "peakItems": 15,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 8,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-result.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-result.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-result.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 2,
+          "maxBodyOperations": 1,
+          "operations": 2,
+          "peakItems": 2,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 1,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+        "accepted": false,
+        "stage": "typecheck",
+        "errors": 2,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 17,
+          "maxBodyOperations": 44,
+          "operations": 56,
+          "peakItems": 17,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 12,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/todo190-guard-local-handler.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/todo190-guard-local-handler.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/todo190-guard-local-handler.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 68,
+          "maxBodyOperations": 254,
+          "operations": 436,
+          "peakItems": 109,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 95,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/handlers/todo190-guard-resume.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/handlers/todo190-guard-resume.bnt",
+        "target": "<repo>/crates/benitoite/testdata/handlers/todo190-guard-resume.bnt",
+        "accepted": false,
+        "stage": "load",
+        "errors": 1,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "None",
+          "inputDefinitions": 0,
+          "maxBodyItems": 0,
+          "maxBodyOperations": 0,
+          "operations": 0,
+          "peakItems": 0,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 0,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 0
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-close-reader-twice.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-close-reader-twice.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-close-reader-twice.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 94,
+          "maxBodyOperations": 394,
+          "operations": 424,
+          "peakItems": 97,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 84,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-process-exit-flush.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-process-exit-flush.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-process-exit-flush.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 99,
+          "maxBodyOperations": 304,
+          "operations": 357,
+          "peakItems": 108,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 95,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-reader-lines.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-reader-lines.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-reader-lines.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 195,
+          "maxBodyOperations": 950,
+          "operations": 1126,
+          "peakItems": 235,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 216,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 6
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-stdin-invalid-utf8.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-stdin-invalid-utf8.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-stdin-invalid-utf8.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 35,
+          "maxBodyOperations": 98,
+          "operations": 99,
+          "peakItems": 35,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 19,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-stdin-lines.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-stdin-lines.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-stdin-lines.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 156,
+          "maxBodyOperations": 730,
+          "operations": 859,
+          "peakItems": 188,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 171,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 5
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-stdin-remaining.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-stdin-remaining.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-stdin-remaining.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 121,
+          "maxBodyOperations": 446,
+          "operations": 534,
+          "peakItems": 141,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 126,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-with-reader-release.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-with-reader-release.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-with-reader-release.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 124,
+          "maxBodyOperations": 489,
+          "operations": 554,
+          "peakItems": 132,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 117,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-with-return-release.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-with-return-release.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-with-return-release.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 58,
+          "maxBodyOperations": 210,
+          "operations": 427,
+          "peakItems": 101,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 85,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-with-try-release.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-with-try-release.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-with-try-release.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 63,
+          "maxBodyOperations": 213,
+          "operations": 453,
+          "peakItems": 106,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 90,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/c12-write-append.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/c12-write-append.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/c12-write-append.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 95,
+          "maxBodyOperations": 277,
+          "operations": 347,
+          "peakItems": 116,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 105,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-clock-handled.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-clock-handled.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-clock-handled.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 91,
+          "maxBodyOperations": 377,
+          "operations": 577,
+          "peakItems": 154,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 134,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 6
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-clock-sleep.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-clock-sleep.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-clock-sleep.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 46,
+          "maxBodyOperations": 127,
+          "operations": 128,
+          "peakItems": 46,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 24,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-console-bytes.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-console-bytes.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-console-bytes.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 99,
+          "maxBodyOperations": 353,
+          "operations": 406,
+          "peakItems": 111,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 98,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-console-lines.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-console-lines.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-console-lines.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 112,
+          "maxBodyOperations": 451,
+          "operations": 539,
+          "peakItems": 135,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 120,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-file-paths.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-file-paths.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-file-paths.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 632,
+          "maxBodyOperations": 3842,
+          "operations": 4703,
+          "peakItems": 755,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 726,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 17
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-file-resources.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-file-resources.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-file-resources.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 3,
+          "maxBodyItems": 447,
+          "maxBodyOperations": 2046,
+          "operations": 2827,
+          "peakItems": 613,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 592,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 18
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-json-total.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-json-total.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-json-total.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 119,
+          "maxBodyOperations": 452,
+          "operations": 697,
+          "peakItems": 158,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 146,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 5
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-process-attached.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-process-attached.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-process-attached.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 71,
+          "maxBodyOperations": 242,
+          "operations": 272,
+          "peakItems": 76,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 63,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 2
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-process-commands.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-process-commands.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-process-commands.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 183,
+          "maxBodyOperations": 916,
+          "operations": 993,
+          "peakItems": 193,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 176,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 3
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-process-environment.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-process-environment.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-process-environment.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 145,
+          "maxBodyOperations": 589,
+          "operations": 677,
+          "peakItems": 166,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 151,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 4
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-random-handled.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-random-handled.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-random-handled.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 2,
+          "maxBodyItems": 131,
+          "maxBodyOperations": 618,
+          "operations": 916,
+          "peakItems": 219,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 199,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 12
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/l40-random-seeded.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/l40-random-seeded.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/l40-random-seeded.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 205,
+          "maxBodyOperations": 1114,
+          "operations": 1115,
+          "peakItems": 205,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 148,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/main_err.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/main_err.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/main_err.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 20,
+          "maxBodyOperations": 45,
+          "operations": 46,
+          "peakItems": 20,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 11,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/main_ok.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/main_ok.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/main_ok.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 20,
+          "maxBodyOperations": 45,
+          "operations": 46,
+          "peakItems": 20,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 11,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/main_unit.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/main_unit.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/main_unit.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 15,
+          "maxBodyOperations": 37,
+          "operations": 38,
+          "peakItems": 15,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 9,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/print_println_eprintln.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/print_println_eprintln.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/print_println_eprintln.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 28,
+          "maxBodyOperations": 71,
+          "operations": 72,
+          "peakItems": 28,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 18,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/process_args.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/process_args.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/process_args.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 28,
+          "maxBodyOperations": 59,
+          "operations": 60,
+          "peakItems": 28,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 16,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  },
+  {
+    "id": "crates/benitoite/testdata/io/read_text_bom_kept.bnt",
+    "group": "golden-or-fixture",
+    "targets": [
+      {
+        "id": "crates/benitoite/testdata/io/read_text_bom_kept.bnt",
+        "target": "<repo>/crates/benitoite/testdata/io/read_text_bom_kept.bnt",
+        "accepted": true,
+        "stage": "typecheck",
+        "errors": 0,
+        "summary": {
+          "bodyBudgetExceeded": 0,
+          "coverage": "Some",
+          "inputDefinitions": 1,
+          "maxBodyItems": 35,
+          "maxBodyOperations": 99,
+          "operations": 100,
+          "peakItems": 35,
+          "phaseStops": {
+            "depth": 0,
+            "exceeded": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            },
+            "other": 0,
+            "unidentified": {
+              "bodyItems": 0,
+              "bodyOperations": 0,
+              "wholeItems": 0,
+              "wholeOperations": 0
+            }
+          },
+          "savedItems": 19,
+          "unidentifiedBodies": 0,
+          "wholeBudgetSkipped": 0
+        },
+        "bodies": 1
+      }
+    ]
+  }
+]

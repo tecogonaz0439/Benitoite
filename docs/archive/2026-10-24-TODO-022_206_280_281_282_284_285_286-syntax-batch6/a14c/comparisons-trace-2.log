@@ -1,0 +1,362 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.27s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 1 test
+read name Span { file: FileId(0), start: BytePos(115), end: BytePos(116) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+read name Span { file: FileId(0), start: BytePos(183), end: BytePos(184) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(587)) Some(2)
+refine Integer8 BindingId(587) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(196), end: BytePos(197) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(183), end: BytePos(190) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(587)) Some(2)
+refine Integer8 BindingId(587) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(294), end: BytePos(295) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(588) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(301), end: BytePos(302) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(288), end: BytePos(295) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(588) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(393), end: BytePos(394) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(589)) Some(-128)
+refine Integer8 BindingId(589) Interval { bounds: Some((-128, 127)) } -128 true
+read name Span { file: FileId(0), start: BytePos(410), end: BytePos(411) } Some(IntegerKind(Integer8, Interval { bounds: Some((-127, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(393), end: BytePos(404) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(589)) Some(-128)
+refine Integer8 BindingId(589) Interval { bounds: Some((-128, 127)) } -128 false
+read name Span { file: FileId(0), start: BytePos(502), end: BytePos(503) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(590)) Some(127)
+refine Integer8 BindingId(590) Interval { bounds: Some((-128, 127)) } 127 true
+read name Span { file: FileId(0), start: BytePos(518), end: BytePos(519) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 126)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(502), end: BytePos(512) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(590)) Some(127)
+refine Integer8 BindingId(590) Interval { bounds: Some((-128, 127)) } 127 false
+read name Span { file: FileId(0), start: BytePos(610), end: BytePos(611) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(591)) Some(2)
+refine Integer8 BindingId(591) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(624), end: BytePos(625) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(610), end: BytePos(618) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(591)) Some(2)
+refine Integer8 BindingId(591) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(716), end: BytePos(717) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(592)) Some(3)
+refine Integer8 BindingId(592) Interval { bounds: Some((-128, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(729), end: BytePos(730) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(716), end: BytePos(723) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(592)) Some(3)
+refine Integer8 BindingId(592) Interval { bounds: Some((-128, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(827), end: BytePos(828) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(593) Interval { bounds: Some((-128, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(834), end: BytePos(835) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(821), end: BytePos(828) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(593) Interval { bounds: Some((-128, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(926), end: BytePos(927) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(594)) Some(3)
+refine Integer8 BindingId(594) Interval { bounds: Some((-128, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(940), end: BytePos(941) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 3)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(926), end: BytePos(934) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(594)) Some(3)
+refine Integer8 BindingId(594) Interval { bounds: Some((-128, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(1032), end: BytePos(1033) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(595)) Some(2)
+refine Integer8 BindingId(595) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(1045), end: BytePos(1046) } Some(IntegerKind(Integer8, Interval { bounds: Some((3, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1032), end: BytePos(1039) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(595)) Some(2)
+refine Integer8 BindingId(595) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(1137), end: BytePos(1138) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(596)) Some(2)
+refine Integer8 BindingId(596) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(1151), end: BytePos(1152) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1137), end: BytePos(1145) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(596)) Some(2)
+refine Integer8 BindingId(596) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(1244), end: BytePos(1245) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(597)) Some(127)
+refine Integer8 BindingId(597) Interval { bounds: Some((-128, 127)) } 127 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(597)) Some(127)
+refine Integer8 BindingId(597) Interval { bounds: Some((-128, 127)) } 127 false
+read name Span { file: FileId(0), start: BytePos(1352), end: BytePos(1353) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(598)) Some(-128)
+refine Integer8 BindingId(598) Interval { bounds: Some((-128, 127)) } -128 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(598)) Some(-128)
+refine Integer8 BindingId(598) Interval { bounds: Some((-128, 127)) } -128 false
+read name Span { file: FileId(0), start: BytePos(1466), end: BytePos(1467) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(599)) Some(2)
+refine Integer8 BindingId(599) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(1481), end: BytePos(1482) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1466), end: BytePos(1474) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(599)) Some(2)
+refine Integer8 BindingId(599) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(1574), end: BytePos(1575) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(1587), end: BytePos(1588) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1574), end: BytePos(1582) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(3)
+refine Integer8 BindingId(600) Interval { bounds: Some((2, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(1601), end: BytePos(1602) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 3)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1587), end: BytePos(1595) }, Span { file: FileId(0), start: BytePos(1574), end: BytePos(1582) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 2 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(2)
+refine Integer8 BindingId(600) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(600)) Some(3)
+refine Integer8 BindingId(600) Interval { bounds: Some((2, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(1694), end: BytePos(1695) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(1705), end: BytePos(1706) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1694), end: BytePos(1701) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(3)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(1718), end: BytePos(1719) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 3)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(2)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(601)) Some(3)
+refine Integer8 BindingId(601) Interval { bounds: Some((-128, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(1816), end: BytePos(1817) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(1827), end: BytePos(1828) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1816), end: BytePos(1823) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(3)
+refine Integer8 BindingId(602) Interval { bounds: Some((2, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(1841), end: BytePos(1842) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 3)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1827), end: BytePos(1834) }, Span { file: FileId(0), start: BytePos(1816), end: BytePos(1823) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 2 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(2)
+refine Integer8 BindingId(602) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(602)) Some(3)
+refine Integer8 BindingId(602) Interval { bounds: Some((2, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(1939), end: BytePos(1940) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(1952), end: BytePos(1953) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(1939), end: BytePos(1947) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 false
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(3)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 3 false
+read name Span { file: FileId(0), start: BytePos(1967), end: BytePos(1968) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 3)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(2)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 2 true
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(603)) Some(3)
+refine Integer8 BindingId(603) Interval { bounds: Some((-128, 127)) } 3 true
+read name Span { file: FileId(0), start: BytePos(2060), end: BytePos(2061) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(604)) Some(2)
+refine Integer8 BindingId(604) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(2077), end: BytePos(2078) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2060), end: BytePos(2071) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(604)) Some(2)
+refine Integer8 BindingId(604) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(2180), end: BytePos(2181) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(605) Interval { bounds: Some((-128, 127)) } 2 true
+read name Span { file: FileId(0), start: BytePos(2187), end: BytePos(2188) } Some(IntegerKind(Integer8, Interval { bounds: Some((2, 2)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2170), end: BytePos(2181) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands None None
+refine Integer8 BindingId(605) Interval { bounds: Some((-128, 127)) } 2 false
+read name Span { file: FileId(0), start: BytePos(2283), end: BytePos(2284) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+read name Span { file: FileId(0), start: BytePos(2300), end: BytePos(2301) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2295), end: BytePos(2296) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(1399)) Some(0)
+refine Integer8 BindingId(1399) Interval { bounds: Some((-128, 127)) } 0 true
+read name Span { file: FileId(0), start: BytePos(2319), end: BytePos(2320) } Some(IntegerKind(Integer8, Interval { bounds: Some((0, 0)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2300), end: BytePos(2307) }, Span { file: FileId(0), start: BytePos(2295), end: BytePos(2296) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 2 }))))
+read name Span { file: FileId(0), start: BytePos(2417), end: BytePos(2418) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+read name Span { file: FileId(0), start: BytePos(2435), end: BytePos(2436) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2430), end: BytePos(2431) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+comparison kind Some(Integer8)
+comparison operands Some(BindingId(607)) Some(0)
+refine Integer8 BindingId(607) Interval { bounds: Some((-128, 127)) } 0 true
+read name Span { file: FileId(0), start: BytePos(2454), end: BytePos(2455) } Some(IntegerKind(Integer8, Interval { bounds: Some((0, 0)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2435), end: BytePos(2442) }, Span { file: FileId(0), start: BytePos(2430), end: BytePos(2431) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 2 }))))
+read name Span { file: FileId(0), start: BytePos(2551), end: BytePos(2552) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+read name Span { file: FileId(0), start: BytePos(2568), end: BytePos(2569) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(Some(Positions { spans: [Span { file: FileId(0), start: BytePos(2563), end: BytePos(2564) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }], len: 1 }))))
+read name Span { file: FileId(0), start: BytePos(2657), end: BytePos(2658) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+read name Span { file: FileId(0), start: BytePos(2811), end: BytePos(2812) } Some(IntegerKind(Integer8, Interval { bounds: Some((-128, 127)) }, Provenance(None)))
+read name Span { file: FileId(0), start: BytePos(2828), end: BytePos(2829) } Some(Unknown)
+
+thread 'typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees' (4105903) panicked at crates/benitoite/src/typeck/interval/flow/widths/tests.rs:687:13:
+assertion `left == right` failed: Integer8: return if x = 2s8 then x else 1s8 div 0s8 end if: Analysis {
+    value: Ok(
+        Approx {
+            normal: Interval {
+                bounds: None,
+            },
+            provenance: Provenance(
+                None,
+            ),
+            returned: Interval {
+                bounds: None,
+            },
+            live: false,
+            only_integer: false,
+            non_integer_other: false,
+            boolean: (
+                false,
+                false,
+            ),
+            may_fail: true,
+            unsupported: false,
+            widths: Empty,
+            returned_widths: Known(
+                [
+                    Interval {
+                        bounds: Some(
+                            (
+                                -128,
+                                127,
+                            ),
+                        ),
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                    Interval {
+                        bounds: None,
+                    },
+                ],
+            ),
+        },
+    ),
+    candidates: [
+        Candidate {
+            preorder: 7,
+            origin: Origin {
+                node: NodeId(
+                    23,
+                ),
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        203,
+                    ),
+                    end: BytePos(
+                        214,
+                    ),
+                },
+            },
+            primary: Span {
+                file: FileId(
+                    0,
+                ),
+                start: BytePos(
+                    211,
+                ),
+                end: BytePos(
+                    214,
+                ),
+            },
+            operation: Binary(
+                IntDiv,
+            ),
+            cause: ZeroDivisor,
+            kind: Integer8,
+            left: Interval {
+                bounds: Some(
+                    (
+                        1,
+                        1,
+                    ),
+                ),
+            },
+            right: Interval {
+                bounds: Some(
+                    (
+                        0,
+                        0,
+                    ),
+                ),
+            },
+            origins: Provenance(
+                None,
+            ),
+        },
+    ],
+    independent: [],
+    unsupported: false,
+}
+  left: Some((-128, 127))
+ right: Some((2, 2))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::flow::widths::tests::comparisons_and_match_keep_each_width_and_unknown_scrutinees
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --lib`

@@ -1,0 +1,29 @@
+Benitoite/Interval/FixedDomain.lean:232:6: error: Tactic `split` failed: Could not split an `if` or `match` expression in the type
+  (owner = decl.owner ∧ positions.Perm (List.range decl.kind.parameters.length) ∧ sources.length = positions.length) ∧
+    decl = declaration
+of `identified`
+
+Hint: If you meant to destruct this conjunction, use the `cases` tactic instead
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case some.data.nil
+declarations : List HttpRecordDecl
+declaration : HttpRecordDecl
+constructor : ConName
+positions : List Nat
+sources : Exprs
+decl : HttpRecordDecl
+found : List.find? (fun decl => decl.constructor == constructor) declarations = some decl
+owner : DataName
+identified :
+  (owner = decl.owner ∧ positions.Perm (List.range decl.kind.parameters.length) ∧ sources.length = positions.length) ∧
+    decl = declaration
+⊢ declaration ∈ declarations
+Benitoite/Interval/FixedDomain.lean:224:24: warning: This simp argument is unused:
+  httpRecordAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp at identified
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

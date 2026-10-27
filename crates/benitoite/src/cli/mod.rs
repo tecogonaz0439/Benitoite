@@ -793,6 +793,7 @@ fn prepare_script(
                     sources,
                     entry: checked.entry,
                     diagnostics: checked.diagnostics,
+                    interval_analysis: checked.interval_analysis,
                     program: None,
                 };
                 PreparedScript {
@@ -1960,6 +1961,7 @@ mod tests {
         let mut result = CheckResult {
             sources: Arc::new(table),
             entry: Some(user),
+            interval_analysis: Default::default(),
             program: None,
             diagnostics: vec![
                 crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0301)

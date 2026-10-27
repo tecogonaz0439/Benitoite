@@ -135,6 +135,12 @@ pub enum ResourceError {
         size: u64,
         limit: u64,
     },
+    /// Store ごとの生存するコンポーネントハンドル（component handle）の上限。必要数は取得できない。
+    ExternalComponentHandles {
+        function: String,
+        component: String,
+        limit: u64,
+    },
     ExternalValueTooLarge {
         function: String,
         size: u64,

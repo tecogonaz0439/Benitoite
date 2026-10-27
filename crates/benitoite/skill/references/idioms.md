@@ -9,7 +9,8 @@ How the code examples in this file are checked (tests/skill_examples.rs):
 - A `benitoite test` block is run with `benitoite test`; all its tests must pass.
 - A `benitoite error` block must fail `benitoite check`, and every line of the `diagnostic` block after it must appear in the report.
 - A `files` block before an example creates a file next to the script: the first line is `name: <file name>`, the rest is the content.
-- Blocks with other info strings (such as `text` and `sh`) are not checked.
+- The `text` script under "Explaining local interval warnings" must match the warning golden-test input; its diagnostic codes, locations, intervals, and wording are checked by `tests/golden.rs`.
+- Other blocks with info strings such as `text` and `sh` are not checked.
 -->
 
 Working programs for common tasks. Copy one and change it. Every example is checked against the current `benitoite`.
@@ -32,7 +33,9 @@ All examples import the IO modules under `Benitoite.Unofficial`, because those m
 - [Writing tests](#writing-tests)
 - [Static interpolation formats](#static-interpolation-formats)
 - [Numeric widths and conversions](#numeric-widths-and-conversions)
+- [Explaining local interval warnings](#explaining-local-interval-warnings)
 - [WASM external functions and WIT types](#wasm-external-functions-and-wit-types)
+- [File and JSON log sinks](#file-and-json-log-sinks)
 
 ## Concrete and generic containers
 
@@ -566,6 +569,8 @@ function main() -> Result[Unit, String] uses Http.Listen, State
 end function
 ```
 
+For HTTP values and fields outside local interval analysis, see [HTTP values are not tracked](#http-values-are-not-tracked).
+
 ## Collections
 
 Lists, maps, and sets are persistent: functions return new collections and never change the old one. Maps and sets are ordered by their keys, not by insertion order, so `Map.forEach` and `Set.toList` visit keys in sorted order.
@@ -794,6 +799,95 @@ end function
 1.5 255
 ```
 
+## Explaining local interval warnings
+
+For a local W0401, W0402, or W0404, read the primary location, inferred interval, allowed range when present, and the local-analysis note. Follow the secondary binding/comparison locations to explain why the value has that interval; at most eight are shown. Explain failure only if execution reaches that operation or call and all operands or arguments evaluate successfully. The analysis does not prove that execution reaches it. An existing constant warning can take precedence and have fewer notes.
+
+The following complete script produces these three warnings during `check`, even though `main` calls none of the functions. Inspect it without executing it:
+
+```text
+function divide(value: Integer, divisor: Integer) -> Integer
+  if divisor = 0 then
+    return value div divisor
+  else
+    return value
+  end if
+end function
+
+function increase(value: Integer8) -> Integer8
+  if value >= 120s8 then
+    return value + 10s8
+  else
+    return value
+  end if
+end function
+
+function shift(n: Integer) -> Integer
+  if n >= 64 then
+    return Integer.shiftLeft(a: 1, n: n)
+  else
+    return 1
+  end if
+end function
+
+function main() -> Unit
+  return ()
+end function
+```
+
+| Warning | Explanation to give |
+|---|---|
+| W0401 at `divisor` | In the `divisor = 0` branch the divisor interval is `[0,0]`. If the division is reached with normal operands, it divides by zero. |
+| W0402 at `value + 10s8` | The comparison narrows `value` to `[120,127]`. The mathematical sum `[130,137]` lies wholly outside Integer8's `[-128,127]`. |
+| W0404 at the argument expression `n` (the value in `n: n`) | The shift-count interval `[64,9223372036854775807]` lies wholly outside Integer's allowed `[0,63]`. This concerns the count, not bits discarded by a left shift. |
+
+W0404 recognizes direct standard integer and Byte shift calls, including import aliases of the same declaration. Calls through function values, holes, pipes, or user functions with the same name are outside this recognition.
+
+Choose a correction from the intended behavior: for example, reject a zero divisor, validate an input before arithmetic, or check a shift count. Do not automatically shrink constants, change numeric types, or enlarge `uses` to silence a warning. Review warnings separately when using `--deny-warnings`, which promotes them to check errors. Ordinary checks still accept these warnings; runtime checks remain.
+
+Absence of a warning does not prove success. An interval partly overlapping the allowed range, a divisor that may be either zero or nonzero, general multiplication, and values returned by ordinary functions can leave the outcome unknown. Unknown normal integer values use the full type range; they differ from an expression with no normal value. Function, lambda, lazy, and handler-clause bodies begin without caller or capture facts. Independently analyzed children of unsupported forms also forget outside facts, so explain a warning using that input's local facts rather than claiming the whole program reaches it. Unknown values, unsupported forms, and exhausted budgets alone require neither a code change nor an effect-contract change. Keep failure handling and runtime checks; read [coverage](inspection.md#local-interval-analysis) separately from report acceptance.
+
+### Range success values
+
+Use `Range.checkInteger` and match its `Result` when a value must satisfy inclusive bounds. The following helper saves the result once, matches it, and calculates from a direct `Range.value` call on the same `Ok` value before wrapping the result:
+
+```benitoite test
+import Benitoite.Unofficial.Range
+
+function checkedIncrement(value: Integer) -> Result[Integer, Range.RangeError]
+  bind result <- Range.checkInteger(minimum: 0, maximum: 10, value: value)
+  return match result with
+    case Result.Ok(checked) ->
+      bind incremented <- Range.value(checked) + 1
+      Result.Ok(incremented)
+    case Result.Error(error) -> Result.Error(error)
+  end match
+end function
+
+@test("checked increment handles both range outcomes")
+function checkedIncrementWorks() -> Unit uses Assert.Check
+  Assert.equal(actual: checkedIncrement(10), expected: Result.Ok(11))
+  Assert.equal(actual: checkedIncrement(11), expected: Result.Error(Range.RangeError.OutOfRange(0, 10, 11)))
+end function
+```
+
+For direct standard `Range.checkInteger`/`Range.value` calls with fixed Integer bounds, a function summary can retain the bounds for that success value. Import aliases of the same declaration work. Dynamic bounds, copied aliases of the success value, merges (including condition-environment merges), rewrapping, other instances, function values, holes, and pipes do not preserve this information. There is no general analysis across function calls: the caller of `checkedIncrement` does not inherit a result interval. Checked lengths, indices, and nonempty lists do not have this summary. Invalid bounds and out-of-range inputs still return `Result.Error`, including constants, without a new interval warning. See the generated [Range reference](stdlib/Range.md) for construction and projection contracts.
+
+### HTTP values are not tracked
+
+`Http.text`, `Http.html`, and `Http.json` construct response values; local interval analysis treats their results as unknown and does not recover `Response.status` from them. Explicit HTTP record construction, local storage, and updates do not carry field facts either. This example passes `check` without W0404; it sends no response:
+
+```benitoite check
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit
+  bind response <- Http.text(status: 700, s: "example")
+  bind _ <- Http.Response(..response, status: 701)
+end function
+```
+
+The default `Http.respond` implementation still checks for status 200..599 at runtime. W0404 applies only to direct standard shift-count arguments, not `Process.exit`, HTTP operations, or their record fields: language handlers can replace an operation's default behavior. Missing warnings validate neither a response nor a network permission. Read the generated [HTTP reference](stdlib/Network.Http.md) for API contracts.
+
 ## WASM external functions and WIT types
 
 Declare external functions without a body or `end function`, and check the component's actual WIT contract before calling. The component must be a binary, import-free Component Model component, with no WASI or host functions. Paths are relative to the root that owns the declaration; package components must be under `wasm/`. The export is a world function or `interface#function`, matching the full interface name including its version. The declaration is monomorphic and uses concrete types. Functions containing external resource types in their actual parameter/result fields need `uses State`; others are pure.
@@ -854,6 +948,8 @@ Default limits are 10^10 fuel, 64 MiB total guest/adapter linear memory, 16 each
 
 Use `--wasm-stats` on `run` or `test` to inspect routes, fallback reasons, transfer, `construction_bytes` (the sum of both directions), and adapter failures. `--wasm-memory`, `--wasm-fuel`, and `--wasm-transfer` change limits without changing the function contract. Fuel exhaustion reports R0904, transfer/construction/memory exhaustion R0905, object limits R0906, and returned-value-size limits R0902. Traps and guest ABI violations report R0601; a declared `Result.Error` is an ordinary value. These runtime failures cannot be caught with `match` or `try`. `runtime_compilations.normal` and `runtime_compilations.adapter` count successful additions of runtime Components to their respective caches; `test_declaration_compilations` separately counts compilation attempts for static declaration checks of test entries and documentation examples.
 
+Each Store limits simultaneously live component handles to 100,000, separately from core table elements and linear memory. Stateful instances retain this count across calls. Exceeding it stops execution with R0906, without a reported required count, and `--wasm-stats` records `component_handles` in `reached_limits`. This security limit narrows the accepted guest behavior compared with 0.0.11; guests should drop handles they no longer need. A guest `resource.drop` returns capacity for reuse. It counts Wasmtime component handles, not just external handles represented as Benitoite values.
+
 ## Local construction and logging
 
 Use a block to return the immutable snapshot while keeping its builder local. No State is added by the dedicated operations.
@@ -876,6 +972,122 @@ hello world
 ```
 
 Use Log and SourceLocation from the prelude. Pass message, attributes and location explicitly; IO.All does not include Log. Use a complete handler or add Log to the accepted declared effects. For checked lengths/indices and nonempty lists, use the Range and NonEmptyList module references.
+
+## File and JSON log sinks
+
+Open the Writer once and capture it in the sink. `Log.formatRecord` is pure: it keeps the default text format and escaping, but adds no newline and filters no levels. `withSinks` filters Debug here; `File.writeLine` adds the newline. Common attributes precede event attributes, including duplicate keys.
+
+Both examples construct a fixed `Location` so their output is reproducible. For the actual call site, pass `SourceLocation.here()` directly to each logging call instead.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.log", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event")], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "n", value: 42)], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.log") or die)
+end function
+```
+```output
+level=INFO source="app/Main.bnt:12:3" message="first\n\"quoted\"" attr."tag"="common" attr."tag"="event"
+level=WARN source="app/Main.bnt:12:3" message="second" attr."tag"="common" attr."n"=42
+```
+
+Keep the sink and all its calls inside the Writer's `with` block; using the captured Writer after release is a runtime error. The Writer is buffered: a successful `writeLine` does not guarantee a successful flush at release. Write failures propagate through `or die`; a flush failure at `end with` is a resource-release runtime error. If a write error is handled as a value, the Writer remains failed and release still reports it. To handle the close result explicitly, call `File.closeWriter` and inspect its Result before leaving the block. These follow the File and resource rules; the example does not guarantee that each event has reached storage.
+
+The readback happens after release so the checked output includes both writes. File.Read and Console.Write are needed only for this readback and display. Ask the harness to inspect the declared upper bound before running: File.Write, File.Read, Console.Write, State for release, and Process.Exit for `or die`. The complete handler removes the body's Log effect. A file-level `uses Log` would still add Log to main's declaration. These declarations do not enforce path-specific runtime permissions.
+
+For JSON lines, define an application format with a pure conversion function. Keep attributes as an array of `{key, value}` objects: converting them to a Map keyed by attribute name would lose duplicates and their order. This example includes level and location, encodes unsigned integers as `{"unsignedInteger":"..."}` to preserve the full u64 range, and encodes non-finite Float values as `{"nonFiniteFloat":"..."}`. `Json.Value` has no unsigned-integer constructor; directly stringifying a non-finite `Json.Value.Float` would produce null. The `Float.isNaN(number - number)` test identifies non-finite values using existing APIs. The executed example includes NaN; it does not exercise positive or negative infinity. This is an application format, not a standard Log JSON schema.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+
+function jsonScalar(value: Log.Value) -> Json.Value
+  return match value with
+    case Log.Value.Text(text) -> Json.Value.String(text)
+    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)
+    case Log.Value.Integer(number) -> Json.Value.Integer(number)
+    case Log.Value.UnsignedInteger(number) ->
+      Json.Value.Object(Map.fromList([Pair("unsignedInteger", Json.Value.String(UnsignedInteger64.toString(number)))]))
+    case Log.Value.Float(number) ->
+      if Float.isNaN(number - number) then
+        Json.Value.Object(Map.fromList([Pair("nonFiniteFloat", Json.Value.String(Float.toString(number)))]))
+      else
+        Json.Value.Float(number)
+      end if
+  end match
+end function
+
+function jsonAttribute(value: Log.Attribute) -> Json.Value
+  return Json.Value.Object(Map.fromList([
+    Pair("key", Json.Value.String(Log.Attribute.key(value))),
+    Pair("value", jsonScalar(Log.Attribute.value(value)))
+  ]))
+end function
+
+function jsonRecord(record: Log.Record) -> Json.Value
+  bind level <- match Log.Record.level(record) with
+    case Log.Level.Debug -> "debug"
+    case Log.Level.Info -> "info"
+    case Log.Level.Warn -> "warn"
+    case Log.Level.Error -> "error"
+  end match
+  bind location <- Log.Record.location(record)
+  return Json.Value.Object(Map.fromList([
+    Pair("level", Json.Value.String(level)),
+    Pair("message", Json.Value.String(Log.Record.message(record))),
+    Pair("attributes", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),
+    Pair("location", Json.Value.Object(Map.fromList([
+      Pair("file", Json.Value.String(SourceLocation.Location.file(location))),
+      Pair("line", Json.Value.Integer(SourceLocation.Location.line(location))),
+      Pair("column", Json.Value.Integer(SourceLocation.Location.column(location)))
+    ])))
+  ]))
+end function
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.jsonl", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event"), Log.attribute(key: "n", value: 42)], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "flag", value: true), Log.attribute(key: "unsigned", value: 18446744073709551615u64), Log.attribute(key: "finite", value: 1.5), Log.attribute(key: "nan", value: Float.squareRoot(-1.0))], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.jsonl") or die)
+end function
+```
+```output
+{"attributes":[{"key":"tag","value":"common"},{"key":"tag","value":"event"},{"key":"n","value":42}],"level":"info","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"first\n\"quoted\""}
+{"attributes":[{"key":"tag","value":"common"},{"key":"flag","value":true},{"key":"unsigned","value":{"unsignedInteger":"18446744073709551615"}},{"key":"finite","value":1.5},{"key":"nan","value":{"nonFiniteFloat":"NaN"}}],"level":"warn","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"second"}
+```
+
+The message's newline and quotes are escaped within one JSON line. The same lifetime, failure, and effect rules as the text sink apply. Import Json in the application; no Json dependency or dedicated file/JSON handler is added to Log.
 
 ## File-level effects and pure helpers
 

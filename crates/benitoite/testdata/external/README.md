@@ -9,6 +9,9 @@ wasm-tools parse path/to/x.wat -o path/to/x.wasm
 
 `cargo test -p benitoite --test golden testdata_components_match_their_text`
 verifies that the checked-in binaries match their text.
+`component-handles.wat` and its adjacent binary are inputs for the component
+handle limit unit tests in `external::runtime::tests`. The binary was initially
+generated with the locked `wat` crate; the command above can regenerate it.
 The Rust Fuzzy component has its own source and build instructions in
 `../packages/libraries.files/fuzzy/README.md`.
 

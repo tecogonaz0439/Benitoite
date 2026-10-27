@@ -1,0 +1,11 @@
+基準の本番コード（cd0c7fc538999427c73a4eb9898abe9cd8d26d3f）に、保存数の契約のアサーションだけを追加して実行した。
+コマンド: rtk proxy cargo test -p benitoite --lib typeck::interval::tests::branch_scopes_release_temporary_state_and_keep_candidates_on_budget_stop -- --exact --nocapture
+
+running 1 test
+assertion `left == right` failed: items=false, limit=96
+  left: 27
+ right: 26
+0 passed; 1 failed; 0 ignored; 0 measured; 1311 filtered out; finished in 0.10s
+終了101。識別対応と候補一件ずつの保存に、補助位置の一件が加わっていた。
+
+直前の短いフィルタに --exact を付けた試行は成功0件だった。上の完全修飾名で再実行し、成功の証拠に使っていない。

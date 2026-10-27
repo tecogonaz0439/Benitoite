@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "crates/benitoite/tests/desugar_export/interval/check-manifest.py",
+    "--source-dir",
+    "target/x02a-scope/manifest-interval",
+    "--independent-dir",
+    "target/x02a-exchange",
+    "--legacy-corpus",
+    "target/x02a-scope/manifest-corpus.json",
+    "--output",
+    "target/x02a-scope-check"
+  ],
+  "exit": 1,
+  "seconds": 0.253
+}

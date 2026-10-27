@@ -1,0 +1,6 @@
+[([coverage=Benitoite.Interval.BudgetAnalysis.Coverage.stopped
+  (Benitoite.Interval.BudgetAnalysis.Halt.budget
+    (Benitoite.Interval.Budget.StopReason.exceeded
+      { scope := Benitoite.Interval.Budget.Scope.body, resource := Benitoite.Interval.Budget.Resource.operations })); warnings=0; body={ operations := 100000, temporary := 0, saved := 554, peak := 1988 }], { operations := 100000, saved := 554, peak := 1988 }), ([coverage=Benitoite.Interval.BudgetAnalysis.Coverage.complete; warnings=1; body={ operations := 100000, temporary := 0, saved := 555, peak := 1988 }], { operations := 100010, saved := 557, peak := 1990 })]
+        0.82 real         0.65 user         0.17 sys
+time: sysctl kern.clockrate: Operation not permitted

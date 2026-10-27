@@ -1,0 +1,37 @@
+Benitoite/Interval/FixedDomain.lean:338:2: error: Dependent elimination failed: Failed to solve equation
+  some fact =
+    match state.lookup index, fun fact =>
+      match Ty.data d✝ owner with
+      | Ty.data owner [] => if owner = fact.declaration.owner then some fact else none
+      | x => none with
+    | none, x => none
+    | some a, f => f a
+case data
+declarations : List HttpRecordDecl
+state : HttpRecordState
+concrete : ConcreteEnv
+index : Nat
+slots : List AbstractSlot
+fact : HttpRecordFact
+value : ConcreteValue
+related : state.Models concrete
+atValue : concrete.locals[index]? = some (some value)
+saved : HttpRecordFact
+found : state.lookup index = some saved
+d✝ : DataName
+args✝ : List Ty
+known✝ :
+  (match Expr.local index with
+    | Expr.local index => do
+      let fact ← state.lookup index
+      match Ty.data d✝ args✝ with
+        | Ty.data owner [] => if owner = fact.declaration.owner then some fact else none
+        | x => none
+    | x => httpRecordConstruct declarations (Ty.data d✝ args✝) (Expr.local index) slots) =
+    some fact
+known :
+  (match Ty.data d✝ args✝ with
+    | Ty.data owner [] => if owner = saved.declaration.owner then some saved else none
+    | x => none) =
+    some fact
+⊢ fact.Models value

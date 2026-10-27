@@ -1,0 +1,173 @@
+{
+  "requiredProfiles": [
+    "base",
+    "flow",
+    "width",
+    "range",
+    "domain"
+  ],
+  "profiles": [
+    {
+      "mode": "analyze",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "base",
+      "inputCount": "8",
+      "excludedCount": "0",
+      "definitionCount": "8",
+      "comparedCount": "8",
+      "bodyCount": "8"
+    },
+    {
+      "mode": "eval",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "base",
+      "inputCount": "8",
+      "excludedCount": "0",
+      "definitionCount": "8",
+      "comparedCount": "8",
+      "bodyCount": "8"
+    },
+    {
+      "mode": "analyze",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "flow",
+      "inputCount": "9",
+      "excludedCount": "0",
+      "definitionCount": "9",
+      "comparedCount": "10",
+      "bodyCount": "10"
+    },
+    {
+      "mode": "eval",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "flow",
+      "inputCount": "9",
+      "excludedCount": "3",
+      "definitionCount": "9",
+      "comparedCount": "7",
+      "bodyCount": "10"
+    },
+    {
+      "mode": "analyze",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "width",
+      "inputCount": "41",
+      "excludedCount": "0",
+      "definitionCount": "41",
+      "comparedCount": "41",
+      "bodyCount": "41"
+    },
+    {
+      "mode": "eval",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "width",
+      "inputCount": "41",
+      "excludedCount": "0",
+      "definitionCount": "41",
+      "comparedCount": "41",
+      "bodyCount": "41"
+    },
+    {
+      "mode": "analyze",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "range",
+      "inputCount": "7",
+      "excludedCount": "0",
+      "definitionCount": "7",
+      "comparedCount": "7",
+      "bodyCount": "7"
+    },
+    {
+      "mode": "eval",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "range",
+      "inputCount": "7",
+      "excludedCount": "0",
+      "definitionCount": "7",
+      "comparedCount": "7",
+      "bodyCount": "7"
+    },
+    {
+      "mode": "analyze",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "domain",
+      "inputCount": "108",
+      "excludedCount": "0",
+      "definitionCount": "108",
+      "comparedCount": "108",
+      "bodyCount": "108"
+    },
+    {
+      "mode": "eval",
+      "requiredProfiles": [
+        "base",
+        "flow",
+        "width",
+        "range",
+        "domain"
+      ],
+      "profile": "domain",
+      "inputCount": "108",
+      "excludedCount": "62",
+      "definitionCount": "108",
+      "comparedCount": "46",
+      "bodyCount": "108"
+    }
+  ],
+  "rustAnalysisCompared": false,
+  "vmCompared": false
+}

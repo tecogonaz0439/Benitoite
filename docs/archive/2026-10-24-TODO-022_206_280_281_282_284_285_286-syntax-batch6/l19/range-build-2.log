@@ -1,0 +1,195 @@
+⚠ [54/55] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:870:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:870:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1079:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [55/55] Building Benitoite.Interval.Range (412ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Range.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Range.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Range.setup.json --json
+error: Benitoite/Interval/Range.lean:271:2: Dependent elimination failed: Failed to solve equation
+  EvalOutcome.normal result =
+    match actual.rule, output with
+    | StandardRule.rangeCheck names, OperationResult.normal value =>
+      EvalOutcome.normal
+        (ConcreteValue.con names.result [Ty.opaque names.owner, Ty.data names.error []] names.ok [value])
+    | StandardRule.rangeCheck names, OperationResult.rejected (Failure.invalidBounds lo hi) =>
+      EvalOutcome.normal
+        (ConcreteValue.con names.result [Ty.opaque names.owner, Ty.data names.error []] names.err
+          [ConcreteValue.rangeError names.error names.invalidBounds (Checked.Range.RangeError.invalidBounds lo hi)])
+    | StandardRule.rangeCheck names, OperationResult.rejected (Failure.outOfRange lo hi value) =>
+      EvalOutcome.normal
+        (ConcreteValue.con names.result [Ty.opaque names.owner, Ty.data names.error []] names.err
+          [ConcreteValue.rangeError names.error names.outOfRange (Checked.Range.RangeError.outOfRange lo hi value)])
+    | x, OperationResult.normal value => EvalOutcome.normal value
+    | x, OperationResult.rejected reason => EvalOutcome.failed reason
+error: Benitoite/Interval/Range.lean:295:4: Type mismatch: After simplification, term
+  Integer64Value.toInt_bounds number
+ has type
+  min64 ≤ number.toInt ∧ number.toInt ≤ max64
+but is expected to have type
+  Checked.Range.IntegerRepresentable number.toInt
+error: Benitoite/Interval/Range.lean:303:14: Tactic `contradiction` failed
+
+case error.invalidBounds
+origin : RangeOrigin
+result payload : ConcreteValue
+matched : origin.names.IsOk result payload
+number : Integer64Value
+same :
+  result =
+    ConcreteValue.con origin.names.result [Ty.opaque origin.names.owner, Ty.data origin.names.error []] origin.names.ok
+      [payload]
+typed : payload.type = Ty.opaque origin.names.owner
+lo✝ hi✝ : Int
+made :
+  Checked.Range.make origin.minimum.toInt origin.maximum.toInt number.toInt =
+    Except.error (Checked.Range.RangeError.invalidBounds lo✝ hi✝)
+output :
+  True ∧
+    True ∧
+      origin.names.err = origin.names.ok ∧
+        ConcreteValue.rangeError origin.names.error origin.names.invalidBounds
+              (Checked.Range.RangeError.invalidBounds lo✝ hi✝) =
+            payload ∧
+          True
+payloadEq :
+  ConcreteValue.rangeError origin.names.error origin.names.invalidBounds
+      (Checked.Range.RangeError.invalidBounds lo✝ hi✝) =
+    payload
+this :
+  Ty.data origin.names.error [] =
+    match payload with
+    | ConcreteValue.integer value => Ty.base BaseTy.integer
+    | ConcreteValue.integer8 value => Ty.base BaseTy.integer8
+    | ConcreteValue.integer16 value => Ty.base BaseTy.integer16
+    | ConcreteValue.integer32 value => Ty.base BaseTy.integer32
+    | ConcreteValue.unsignedInteger16 value => Ty.base BaseTy.unsignedInteger16
+    | ConcreteValue.unsignedInteger32 value => Ty.base BaseTy.unsignedInteger32
+    | ConcreteValue.unsignedInteger64 value => Ty.base BaseTy.unsignedInteger64
+    | ConcreteValue.boolean value => Ty.base BaseTy.boolean
+    | ConcreteValue.unit => Ty.base BaseTy.unit
+    | ConcreteValue.other t notInteger notBoolean notUnit => t
+    | ConcreteValue.checkedRange owner origin value => Ty.opaque owner
+    | ConcreteValue.rangeError owner name error => Ty.data owner []
+    | ConcreteValue.con owner ts name args => Ty.data owner ts
+⊢ origin.CheckedModels payload
+error: Benitoite/Interval/Range.lean:303:14: Tactic `contradiction` failed
+
+case error.outOfRange
+origin : RangeOrigin
+result payload : ConcreteValue
+matched : origin.names.IsOk result payload
+number : Integer64Value
+same :
+  result =
+    ConcreteValue.con origin.names.result [Ty.opaque origin.names.owner, Ty.data origin.names.error []] origin.names.ok
+      [payload]
+typed : payload.type = Ty.opaque origin.names.owner
+lo✝ hi✝ value✝ : Int
+made :
+  Checked.Range.make origin.minimum.toInt origin.maximum.toInt number.toInt =
+    Except.error (Checked.Range.RangeError.outOfRange lo✝ hi✝ value✝)
+output :
+  True ∧
+    True ∧
+      origin.names.err = origin.names.ok ∧
+        ConcreteValue.rangeError origin.names.error origin.names.outOfRange
+              (Checked.Range.RangeError.outOfRange lo✝ hi✝ value✝) =
+            payload ∧
+          True
+payloadEq :
+  ConcreteValue.rangeError origin.names.error origin.names.outOfRange
+      (Checked.Range.RangeError.outOfRange lo✝ hi✝ value✝) =
+    payload
+this :
+  Ty.data origin.names.error [] =
+    match payload with
+    | ConcreteValue.integer value => Ty.base BaseTy.integer
+    | ConcreteValue.integer8 value => Ty.base BaseTy.integer8
+    | ConcreteValue.integer16 value => Ty.base BaseTy.integer16
+    | ConcreteValue.integer32 value => Ty.base BaseTy.integer32
+    | ConcreteValue.unsignedInteger16 value => Ty.base BaseTy.unsignedInteger16
+    | ConcreteValue.unsignedInteger32 value => Ty.base BaseTy.unsignedInteger32
+    | ConcreteValue.unsignedInteger64 value => Ty.base BaseTy.unsignedInteger64
+    | ConcreteValue.boolean value => Ty.base BaseTy.boolean
+    | ConcreteValue.unit => Ty.base BaseTy.unit
+    | ConcreteValue.other t notInteger notBoolean notUnit => t
+    | ConcreteValue.checkedRange owner origin value => Ty.opaque owner
+    | ConcreteValue.rangeError owner name error => Ty.data owner []
+    | ConcreteValue.con owner ts name args => Ty.data owner ts
+⊢ origin.CheckedModels payload
+warning: Benitoite/Interval/Range.lean:302:45: This simp argument is unused:
+  typed
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ConcreteValue.type] at this
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Range.lean:311:2: Type mismatch: After simplification, term
+  checked.bounded
+ has type
+  Checked.Range.InRange origin.minimum.toInt origin.maximum.toInt checked.value
+but is expected to have type
+  origin.minimum.toInt ≤ checked.value ∧ checked.value ≤ origin.maximum.toInt
+error: Benitoite/Interval/Range.lean:497:10: Tactic `split` failed: Could not split an `if` or `match` expression in the type
+  (do
+      let id ← some id
+      if successId = id then some old else none) =
+    some origin
+of `known`
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case some.some.some.checked
+state : RangeState
+env : ConcreteEnv
+index : Nat
+origin : RangeOrigin
+payload : ConcreteValue
+related : state.Models env
+read : env.locals[index]? = some (some payload)
+id : Nat
+atId : state.scope.idAt index = some id
+old : RangeOrigin
+successId : Nat
+atFact : state.facts[index]? = some (some (RangeLocalFact.checked old successId))
+known :
+  (do
+      let id ← some id
+      if successId = id then some old else none) =
+    some origin
+⊢ origin.CheckedModels payload
+warning: Benitoite/Interval/Range.lean:496:29: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [atFact] at known
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Interval.Range
+error: build failed
+
+exit=1, seconds=0.561

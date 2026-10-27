@@ -1,0 +1,224 @@
+warning: fields `name`, `order`, `coverage`, `usage`, `numbered`, and `flow` are never read
+  --> crates/benitoite/src/typeck/interval/mod.rs:35:9
+   |
+34 | pub(in crate::typeck) struct BodyReport {
+   |                              ---------- fields in this struct
+35 |     pub name: String,
+   |         ^^^^
+36 |     pub order: SourceOrder,
+   |         ^^^^^
+37 |     pub coverage: Coverage,
+   |         ^^^^^^^^
+38 |     pub usage: BodyState,
+   |         ^^^^^
+39 |     pub numbered: u64,
+   |         ^^^^^^^^
+40 |     pub flow: Option<Box<flow::Analysis>>,
+   |         ^^^^
+   |
+   = note: `BodyReport` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: multiple fields are never read
+  --> crates/benitoite/src/typeck/interval/arithmetic.rs:19:9
+   |
+18 | pub(in crate::typeck) struct Candidate {
+   |                              --------- fields in this struct
+19 |     pub preorder: u64,
+   |         ^^^^^^^^
+20 |     pub origin: Origin,
+   |         ^^^^^^
+21 |     pub primary: Span,
+   |         ^^^^^^^
+22 |     pub operation: BinOp,
+   |         ^^^^^^^^^
+23 |     pub cause: Cause,
+   |         ^^^^^
+24 |     pub left: Interval,
+   |         ^^^^
+25 |     pub right: Interval,
+   |         ^^^^^
+   |
+   = note: `Candidate` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: variants `JoinItem` and `Origin` are never constructed
+  --> crates/benitoite/src/typeck/interval/budget.rs:83:5
+   |
+79 | pub(in crate::typeck) enum Operation {
+   |                            --------- variants in this enum
+...
+83 |     JoinItem,
+   |     ^^^^^^^^
+84 |     Origin,
+   |     ^^^^^^
+   |
+   = note: `Operation` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variants `RangeOrigin` and `RecordField` are never constructed
+  --> crates/benitoite/src/typeck/interval/budget.rs:93:5
+   |
+91 | pub(in crate::typeck) enum Item {
+   |                            ---- variants in this enum
+92 |     Environment,
+93 |     RangeOrigin,
+   |     ^^^^^^^^^^^
+94 |     RecordField,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Item` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: methods `contains` and `is_subset_of` are never used
+  --> crates/benitoite/src/typeck/interval/domain.rs:50:12
+   |
+12 | impl Interval {
+   | ------------- methods in this implementation
+...
+50 |     pub fn contains(self, value: i128) -> bool {
+   |            ^^^^^^^^
+...
+56 |     pub fn is_subset_of(self, other: Self) -> bool {
+   |            ^^^^^^^^^^^^
+
+warning: field `candidates` is never read
+   --> crates/benitoite/src/typeck/interval/flow.rs:108:9
+    |
+106 | pub(in crate::typeck) struct Analysis {
+    |                              -------- field in this struct
+107 |     pub value: Result<Approx, IdentityStop>,
+108 |     pub candidates: Vec<Candidate>,
+    |         ^^^^^^^^^^
+    |
+    = note: `Analysis` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: struct `OperationKey` is never constructed
+  --> crates/benitoite/src/typeck/interval/identity.rs:16:30
+   |
+16 | pub(in crate::typeck) struct OperationKey<'a> {
+   |                              ^^^^^^^^^^^^
+
+warning: fields `owner`, `ordinal`, `kind`, and `body` are never read
+  --> crates/benitoite/src/typeck/interval/identity.rs:71:9
+   |
+70 | pub(in crate::typeck) struct EmbeddedBody<'ast> {
+   |                              ------------ fields in this struct
+71 |     pub owner: u64,
+   |         ^^^^^
+72 |     pub ordinal: usize,
+   |         ^^^^^^^
+73 |     pub kind: BoundaryKind,
+   |         ^^^^
+74 |     pub body: &'ast Block,
+   |         ^^^^
+   |
+   = note: `EmbeddedBody` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: methods `definition` and `parent_key` are never used
+  --> crates/benitoite/src/typeck/interval/identity.rs:80:12
+   |
+79 | impl EmbeddedBody<'_> {
+   | --------------------- methods in this implementation
+80 |     pub fn definition(&self, original: &str) -> String {
+   |            ^^^^^^^^^^
+...
+85 |     pub fn parent_key<'a>(&self, original: &'a str, index: u64) -> Option<OperationKey<'a>> {
+   |            ^^^^^^^^^^
+
+warning: struct `NumberingBudget` is never constructed
+   --> crates/benitoite/src/typeck/interval/identity.rs:100:30
+    |
+100 | pub(in crate::typeck) struct NumberingBudget {
+    |                              ^^^^^^^^^^^^^^^
+
+warning: variants `Operations` and `Saved` are never constructed
+   --> crates/benitoite/src/typeck/interval/identity.rs:107:5
+    |
+106 | pub(in crate::typeck) enum NumberingResource {
+    |                            ----------------- variants in this enum
+107 |     Operations,
+    |     ^^^^^^^^^^
+108 |     Saved,
+    |     ^^^^^
+    |
+    = note: `NumberingResource` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variant `Budget` is never constructed
+   --> crates/benitoite/src/typeck/interval/identity.rs:114:5
+    |
+113 | pub(in crate::typeck) enum IdentityStop {
+    |                            ------------ variant in this enum
+114 |     Budget(NumberingResource),
+    |     ^^^^^^
+    |
+    = note: `IdentityStop` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `definition` is never read
+   --> crates/benitoite/src/typeck/interval/identity.rs:187:9
+    |
+186 | pub(in crate::typeck) struct IdentityMap<'ast> {
+    |                              ----------- field in this struct
+187 |     pub definition: String,
+    |         ^^^^^^^^^^
+
+warning: method `get` is never used
+   --> crates/benitoite/src/typeck/interval/identity.rs:273:12
+    |
+257 | impl<'ast> Occurrences<'ast> {
+    | ---------------------------- method in this implementation
+...
+273 |     pub fn get(&self, index: usize) -> Option<Occurrence<'ast>> {
+    |            ^^^
+
+warning: method `key` is never used
+   --> crates/benitoite/src/typeck/interval/identity.rs:375:12
+    |
+348 | impl<'ast> IdentityMap<'ast> {
+    | ---------------------------- method in this implementation
+...
+375 |     pub fn key(&self, preorder: u64) -> Option<OperationKey<'_>> {
+    |            ^^^
+
+warning: method `span` is never used
+  --> crates/benitoite/src/typeck/interval/input.rs:45:12
+   |
+30 | impl<'ast> BodySource<'ast> {
+   | --------------------------- method in this implementation
+...
+45 |     pub fn span(self) -> Span {
+   |            ^^^^
+
+warning: field `operand_types` is never read
+   --> crates/benitoite/src/typeck/interval/input.rs:170:5
+    |
+167 | pub(in crate::typeck) struct BodyInput<'ast> {
+    |                              --------- field in this struct
+...
+170 |     operand_types: Vec<(NodeId, Ty)>,
+    |     ^^^^^^^^^^^^^
+
+warning: method `operand_type` is never used
+   --> crates/benitoite/src/typeck/interval/input.rs:250:12
+    |
+177 | impl<'ast> BodyInput<'ast> {
+    | -------------------------- method in this implementation
+...
+250 |     pub fn operand_type(&self, node: NodeId) -> Result<&Ty, InputError> {
+    |            ^^^^^^^^^^^^
+
+warning: enum `Handling` is never used
+   --> crates/benitoite/src/typeck/interval/input.rs:359:28
+    |
+359 | pub(in crate::typeck) enum Handling {
+    |                            ^^^^^^^^
+
+warning: method `handling` is never used
+   --> crates/benitoite/src/typeck/interval/input.rs:370:12
+    |
+369 | impl SurfaceForm {
+    | ---------------- method in this implementation
+370 |     pub fn handling(self) -> Handling {
+    |            ^^^^^^^^
+
+error: `benitoite` (lib) generated 20 warnings
+error: warnings are denied by `build.warnings` configuration
+        0.09 real         0.04 user         0.04 sys
+time: sysctl kern.clockrate: Operation not permitted

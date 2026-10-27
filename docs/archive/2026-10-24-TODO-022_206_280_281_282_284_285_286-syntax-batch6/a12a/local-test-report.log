@@ -1,0 +1,16 @@
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.25s
+     Running tests/test_command.rs (target/debug/deps/test_command-3358157b9881c5d2)
+
+running 7 tests
+test check_report_usage_errors_scan_options_in_both_orders ... ok
+test check_report_preserves_contracts_descriptions_locations_and_source_identity ... ok
+test check_report_keeps_success_after_errors_and_diagnostic_indices ... ok
+test check_report_preserves_warning_promotion_and_program_shell_scope ... ok
+test check_report_keeps_completed_and_unstarted_targets_on_interrupt ... ok
+test limited_tests_recheck_reported_contracts_after_changes ... ok
+test check_report_and_execution_select_the_same_entries_and_functions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 45 filtered out; finished in 2.08s
+

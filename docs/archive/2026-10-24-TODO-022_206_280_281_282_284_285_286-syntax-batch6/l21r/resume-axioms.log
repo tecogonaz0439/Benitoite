@@ -1,0 +1,36 @@
+Benitoite.Interval.BudgetAnalysis.analyzeExpr_warning_syntactic_reach (limits : Budget.Limits) (state : Budget.State)
+  (fuel : Nat) (env : AbstractEnv) (key : OperationKey) (source : Benitoite.Surface.Expr) (warning : IntervalWarning)
+  (member : warning ∈ (analyzeExpr limits state fuel env key source).approx.warnings) :
+  InSyntacticReach key (syntacticReachExpr source) warning
+Benitoite.Interval.BudgetAnalysis.analyze_warning_syntactic_reach : WarningsInSyntacticReach analyze
+Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_syntactic_reach (limits : Budget.Limits) (state : Budget.State)
+  (fuel : Nat) (definition : String) (seed : BodySeed) (warning : IntervalWarning)
+  (member : warning ∈ (analyzeBody limits state fuel definition seed).approx.warnings) :
+  InSyntacticReach (bodyRootKey definition) (syntacticReachExpr (bodyRoot seed.body)) warning
+Benitoite.Interval.BudgetAnalysis.analyzeExpr_independent_sound (limits : Budget.Limits) (state : Budget.State)
+  (fuel : Nat) (env : AbstractEnv) (key : OperationKey) (source : Benitoite.Surface.Expr) (entry : IndependentResult) :
+  entry ∈ (analyzeExpr limits state fuel env key source).context.independentRev → entry.Sound
+Benitoite.Interval.BudgetAnalysis.analyzeBody_independent_sound (limits : Budget.Limits) (state : Budget.State)
+  (fuel : Nat) (definition : String) (seed : BodySeed) (entry : IndependentResult) :
+  entry ∈ (analyzeBody limits state fuel definition seed).context.independentRev → entry.Sound
+'Benitoite.Interval.BudgetAnalysis.analyze_normal_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyze_warning_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_warning_call_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyze_warning_call_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_warning_call_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_unrecognized_call_warnings' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeExpr_independent_call_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetAnalysis.analyzeBody_independent_call_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Interval.BudgetWhole.analyze_warning_call_reach' depends on axioms: [propext, Classical.choice, Quot.sound]

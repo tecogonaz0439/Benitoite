@@ -4,6 +4,8 @@ mod impls;
 mod solve;
 mod text;
 
+pub(super) use solve::{ImplTable, shared_table};
+
 use super::{
     context::{Body, IArg, reason},
     decls::{Decls, Scope},
@@ -80,11 +82,12 @@ pub(super) fn implements(
     ty: &ITy,
 ) -> bool {
     let mut parts = 0;
+    let index = solve::shared_table(ctx.decls);
     solve::resolve(
         ctx.decls,
         solver,
         &ctx.scheme,
-        &solve::table(ctx.decls),
+        &index,
         class,
         &IClassArg::Ty(ty.clone()),
         &mut parts,

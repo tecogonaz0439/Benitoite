@@ -1,0 +1,10 @@
+NormalSoundness: 本文一致 SHA-256=e1318141e4a9ff96aa44bb60ee14e8bf7c1b57f569f8a37bea9f36fe285a4a44
+WarningSoundness: 本文一致 SHA-256=9388b45b914dfa48d1a31e6ee32ff4f416049faf940b7e61ee4c09c38d3aba5d
+Eval.lean: 既存定理40件の言明一致
+Arithmetic.lean: 既存定理15件の言明一致
+Sound.lean: 既存定理24件の言明一致
+変更したLeanに sorry・admit・axiom なし
+Leanの差分はEval.leanとArithmetic.leanだけ。Sound.lean・旧主定理・Builtins.Assumptionsのファイルは変更なし
+formal/lakefile.toml の差分なし（-M 12288維持）
+git diff --check: 終了0
+設計書: 既存見出しを維持、フェンスの対を確認、新節と対応表を照合

@@ -1,0 +1,668 @@
+[
+  {
+    "id": "crates/benitoite/skill/references/idioms.md:887:52",
+    "group": "skill-handwritten",
+    "oldWarnings": 0,
+    "newWarnings": 0,
+    "added": [],
+    "removed": [],
+    "oldW": 2,
+    "newW": 0,
+    "oldR": 2,
+    "newR": 0
+  },
+  {
+    "id": "crates/benitoite/skill/references/stdlib/Log.md:116:12",
+    "group": "skill-generated",
+    "oldWarnings": 0,
+    "newWarnings": 0,
+    "added": [],
+    "removed": [],
+    "oldW": 2,
+    "newW": 0,
+    "oldR": 2,
+    "newR": 0
+  },
+  {
+    "id": "crates/benitoite/src/prelude/stdlib/Log.bnt:166:0",
+    "group": "standard-doc",
+    "oldWarnings": 0,
+    "newWarnings": 0,
+    "added": [],
+    "removed": [],
+    "oldW": 2,
+    "newW": 0,
+    "oldR": 2,
+    "newR": 0
+  },
+  {
+    "id": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+    "group": "golden-or-fixture",
+    "oldWarnings": 0,
+    "newWarnings": 1,
+    "added": [
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0404",
+        "message": "argument `n` to `Integer8.shiftRightUnsigned` is always out of range",
+        "primary": {
+          "file": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+          "start": {
+            "line": 3,
+            "column": 52,
+            "offset": 191
+          },
+          "end": {
+            "line": 3,
+            "column": 54,
+            "offset": 193
+          },
+          "label": "always out of range"
+        },
+        "secondary": [],
+        "notes": [
+          "the inferred interval is [-1,-1]",
+          "the allowed range is [0,7]",
+          "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully"
+        ],
+        "helps": []
+      }
+    ],
+    "removed": [],
+    "oldW": 0,
+    "newW": 0,
+    "oldR": 0,
+    "newR": 2
+  },
+  {
+    "id": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt",
+    "group": "golden-or-fixture",
+    "oldWarnings": 0,
+    "newWarnings": 1,
+    "added": [
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0404",
+        "message": "argument `n` to `UnsignedInteger64.shiftLeft` is always out of range",
+        "primary": {
+          "file": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt",
+          "start": {
+            "line": 3,
+            "column": 53,
+            "offset": 192
+          },
+          "end": {
+            "line": 3,
+            "column": 55,
+            "offset": 194
+          },
+          "label": "always out of range"
+        },
+        "secondary": [],
+        "notes": [
+          "the inferred interval is [64,64]",
+          "the allowed range is [0,63]",
+          "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully"
+        ],
+        "helps": []
+      }
+    ],
+    "removed": [],
+    "oldW": 0,
+    "newW": 0,
+    "oldR": 0,
+    "newR": 2
+  },
+  {
+    "id": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+    "group": "golden-or-fixture",
+    "oldWarnings": 0,
+    "newWarnings": 8,
+    "added": [
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `Integer8`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 6,
+            "column": 10,
+            "offset": 192
+          },
+          "end": {
+            "line": 6,
+            "column": 17,
+            "offset": 199
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 5,
+              "column": 3,
+              "offset": 167
+            },
+            "end": {
+              "line": 5,
+              "column": 18,
+              "offset": 182
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [128,128]",
+          "the range of `Integer8` is [-128,127]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `Integer16`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 10,
+            "column": 10,
+            "offset": 277
+          },
+          "end": {
+            "line": 10,
+            "column": 18,
+            "offset": 285
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 9,
+              "column": 3,
+              "offset": 248
+            },
+            "end": {
+              "line": 9,
+              "column": 22,
+              "offset": 267
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [-32769,-32769]",
+          "the range of `Integer16` is [-32768,32767]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `Integer32`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 14,
+            "column": 10,
+            "offset": 368
+          },
+          "end": {
+            "line": 14,
+            "column": 12,
+            "offset": 370
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 13,
+              "column": 3,
+              "offset": 334
+            },
+            "end": {
+              "line": 13,
+              "column": 27,
+              "offset": 358
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [2147483648,2147483648]",
+          "the range of `Integer32` is [-2147483648,2147483647]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `Integer`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 18,
+            "column": 10,
+            "offset": 516
+          },
+          "end": {
+            "line": 18,
+            "column": 15,
+            "offset": 521
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 17,
+              "column": 3,
+              "offset": 430
+            },
+            "end": {
+              "line": 17,
+              "column": 79,
+              "offset": 506
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [-18446744073709551616,-18446744073709551614]",
+          "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `UnsignedInteger16`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 22,
+            "column": 10,
+            "offset": 604
+          },
+          "end": {
+            "line": 22,
+            "column": 18,
+            "offset": 612
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 21,
+              "column": 3,
+              "offset": 580
+            },
+            "end": {
+              "line": 21,
+              "column": 17,
+              "offset": 594
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [-1,-1]",
+          "the range of `UnsignedInteger16` is [0,65535]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `UnsignedInteger32`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 26,
+            "column": 10,
+            "offset": 704
+          },
+          "end": {
+            "line": 26,
+            "column": 18,
+            "offset": 712
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 25,
+              "column": 3,
+              "offset": 671
+            },
+            "end": {
+              "line": 25,
+              "column": 26,
+              "offset": 694
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [8589934590,8589934590]",
+          "the range of `UnsignedInteger32` is [0,4294967295]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0402",
+        "message": "this calculation overflows `UnsignedInteger64`",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 30,
+            "column": 10,
+            "offset": 814
+          },
+          "end": {
+            "line": 30,
+            "column": 15,
+            "offset": 819
+          },
+          "label": "always overflows"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 29,
+              "column": 3,
+              "offset": 771
+            },
+            "end": {
+              "line": 29,
+              "column": 36,
+              "offset": 804
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred result interval before the range check is [340282366920938463426481119284349108225,340282366920938463426481119284349108225]",
+          "the range of `UnsignedInteger64` is [0,18446744073709551615]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0401",
+        "message": "this divides by zero",
+        "primary": {
+          "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+          "start": {
+            "line": 34,
+            "column": 36,
+            "offset": 950
+          },
+          "end": {
+            "line": 34,
+            "column": 37,
+            "offset": 951
+          },
+          "label": "the divisor is always 0"
+        },
+        "secondary": [
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 34,
+              "column": 15,
+              "offset": 929
+            },
+            "end": {
+              "line": 34,
+              "column": 23,
+              "offset": 937
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          },
+          {
+            "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+            "start": {
+              "line": 34,
+              "column": 10,
+              "offset": 924
+            },
+            "end": {
+              "line": 34,
+              "column": 11,
+              "offset": 925
+            },
+            "label": "this binding or comparison contributes to the inferred interval"
+          }
+        ],
+        "notes": [
+          "the inferred divisor interval is [0,0]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "helps": []
+      }
+    ],
+    "removed": [],
+    "oldW": 0,
+    "newW": 0,
+    "oldR": 0,
+    "newR": 2
+  },
+  {
+    "id": "crates/benitoite/tests/desugar_export/batch4/log-standard.bnt",
+    "group": "test-file",
+    "oldWarnings": 0,
+    "newWarnings": 0,
+    "added": [],
+    "removed": [],
+    "oldW": 2,
+    "newW": 0,
+    "oldR": 2,
+    "newR": 0
+  },
+  {
+    "id": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+    "group": "test-file",
+    "oldWarnings": 0,
+    "newWarnings": 2,
+    "added": [
+      {
+        "code": "W0402",
+        "helps": [],
+        "kind": "check",
+        "message": "this calculation overflows `Integer`",
+        "notes": [
+          "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+          "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "primary": {
+          "end": {
+            "column": 63,
+            "line": 151,
+            "offset": 5518
+          },
+          "file": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+          "label": "always overflows",
+          "start": {
+            "column": 32,
+            "line": 151,
+            "offset": 5487
+          }
+        },
+        "secondary": [],
+        "severity": "warning"
+      },
+      {
+        "code": "W0402",
+        "helps": [],
+        "kind": "check",
+        "message": "this calculation overflows `Integer`",
+        "notes": [
+          "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+          "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "primary": {
+          "end": {
+            "column": 63,
+            "line": 200,
+            "offset": 7334
+          },
+          "file": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+          "label": "always overflows",
+          "start": {
+            "column": 32,
+            "line": 200,
+            "offset": 7303
+          }
+        },
+        "secondary": [],
+        "severity": "warning"
+      }
+    ],
+    "removed": [],
+    "oldW": 0,
+    "newW": 0,
+    "oldR": 0,
+    "newR": 2
+  },
+  {
+    "id": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+    "group": "test-file",
+    "oldWarnings": 18,
+    "newWarnings": 20,
+    "added": [
+      {
+        "code": "W0402",
+        "helps": [],
+        "kind": "check",
+        "message": "this calculation overflows `Integer`",
+        "notes": [
+          "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+          "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "primary": {
+          "end": {
+            "column": 18,
+            "line": 23,
+            "offset": 509
+          },
+          "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+          "label": "always overflows",
+          "start": {
+            "column": 10,
+            "line": 23,
+            "offset": 501
+          }
+        },
+        "secondary": [
+          {
+            "end": {
+              "column": 39,
+              "line": 22,
+              "offset": 491
+            },
+            "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+            "label": "this binding or comparison contributes to the inferred interval",
+            "start": {
+              "column": 3,
+              "line": 22,
+              "offset": 455
+            }
+          }
+        ],
+        "severity": "warning"
+      },
+      {
+        "code": "W0402",
+        "helps": [],
+        "kind": "check",
+        "message": "this calculation overflows `Integer32`",
+        "notes": [
+          "the inferred result interval before the range check is [2147483648,2147483648]",
+          "the range of `Integer32` is [-2147483648,2147483647]",
+          "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+        ],
+        "primary": {
+          "end": {
+            "column": 16,
+            "line": 78,
+            "offset": 1854
+          },
+          "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+          "label": "always overflows",
+          "start": {
+            "column": 10,
+            "line": 78,
+            "offset": 1848
+          }
+        },
+        "secondary": [
+          {
+            "end": {
+              "column": 31,
+              "line": 77,
+              "offset": 1838
+            },
+            "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+            "label": "this binding or comparison contributes to the inferred interval",
+            "start": {
+              "column": 3,
+              "line": 77,
+              "offset": 1810
+            }
+          }
+        ],
+        "severity": "warning"
+      }
+    ],
+    "removed": [],
+    "oldW": 0,
+    "newW": 0,
+    "oldR": 2,
+    "newR": 2
+  },
+  {
+    "id": "docs/reference/benitoite.md:1133:46",
+    "group": "reference",
+    "oldWarnings": 0,
+    "newWarnings": 0,
+    "added": [],
+    "removed": [],
+    "oldW": 2,
+    "newW": 0,
+    "oldR": 2,
+    "newR": 0
+  }
+]

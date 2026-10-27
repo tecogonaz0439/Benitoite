@@ -1,0 +1,37 @@
+{
+  "base": "d2d9954264daea806db0bf202449938bd1dd0291",
+  "head": "d2d9954264daea806db0bf202449938bd1dd0291",
+  "changed_tracked": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Interval/Eval.lean"
+  ],
+  "new_lean_module": "formal/Benitoite/Interval/Range.lean",
+  "eval_change": "EvalStandard の3構成子の追加だけ。既存の全宣言・証明本体が一致",
+  "unchanged_formal_files": 304,
+  "unchanged_named_theorems_in_those_files": 2656,
+  "central_definition_sha256": {
+    "NormalSoundness": "06ba7536b776c538ca79334db702fd4c756eb1871d51d234cc86df4e8c4db2bf",
+    "WarningSoundness": "3707732b57cb8e8aa1583845575e574c5c327d7b2ea1067d4fd8ace0e999ec80"
+  },
+  "axiom_dependencies_checked": 49,
+  "no_added_sorry_axiom_admit": true,
+  "fixed_file_sha256": {
+    "crates/benitoite/testdata/interval-budget/README.md": "81ab1b102c663831f574e08f3a4b31cab5f4c2c2770fe4cb5647718aafae8e57",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "009fc2505bfe75db7542dde9f900339cad79297fb88703663c95b1577cc79b08",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "13a356ca1a8e5519c74a4fd72bd9dc70234a4593b02c2722240b34798a84eb9a",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "53e669cb0943aed3b291aa70e346e4a1ee66dc45bda80c57aa0cc119979cfd06",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "7b65e2c9f212da23ae918326ef0cbc17258d305255971a1e3d113de0589556ae",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "1f9dfcb600cdd4696720afc76dc3a02ea112de58d5bd7f5a698c94c09bc6f5fb",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "8835d3a79436418a7c883e41f5d84f0218b2b041f778f3e8560cf5821c833d2b",
+    "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f"
+  },
+  "final_inputs_sha256": {
+    "docs/design/01-spec/01-12-core-calculus.md": "767fff3e1faa57e2c7192ac1156b54efba9e0f4587cdae2f20316cafc4685142",
+    "docs/design/07-quality/07-04-formal-semantics.md": "6a9e941f6ad19b369181a9059db2072d3c91b5a32edbe7ad4dd3aeddef3dff32",
+    "formal/Benitoite.lean": "45a45d972a727949f0a59b66ee41dd3756fa79c89bb2fe2cf301878935db7a77",
+    "formal/Benitoite/Interval/Eval.lean": "d3fc27406e3d4488e74ff096a2917e3d642b557d0bce071f7865bbbb05785be3",
+    "formal/Benitoite/Interval/Range.lean": "9649e82801af8ee96a62b112abc360bfe4a3861242bb4dc4d28a2962182d8d88"
+  }
+}

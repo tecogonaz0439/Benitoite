@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 131, in <module>
+    main()
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 115, in main
+    declarations = range_declarations(args.range_export, args.log_dir)
+  File "<repo>/crates/benitoite/testdata/interval-budget/regenerate-reference.py", line 100, in range_declarations
+    (log_dir / "range-bindings.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1275, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: 'docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/a18a/resume-reference-output/range-bindings.json'

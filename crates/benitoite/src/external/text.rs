@@ -52,14 +52,21 @@ pub(super) fn io_reason(error: &std::io::Error) -> &'static str {
 
 pub(super) const MEMORY_LIMIT: &str = "external memory limit exceeded";
 pub(super) const TABLE_LIMIT: &str = "external table limit exceeded";
-// Wasmtime 49.0.2 の非公開の HostcallFuelExhausted の Display と一致させる。
+// Wasmtime 49.0.4 の非公開の HostcallFuelExhausted の Display と一致させる。
 // 実際の持ち上げで予算を超えるテストが、依存を更新したときの変更を検出する。
 pub(super) const HOSTCALL_FUEL_EXHAUSTED: &str = "too much data is being copied between the host and the guest: fuel allocated for hostcalls has been exhausted";
+
+// Wasmtime 49.0.4 の HandleTable::insert が返す原因と完全一致させる。
+// 実コンポーネントの境界テストで、依存を更新したときの変更を検出する。
+pub(super) const COMPONENT_HANDLE_LIMIT: &str =
+    "cannot allocate another handle: store handle limit exceeded";
 
 pub(super) const TABLE_ELEMENTS: &str = "table elements";
 pub(super) const CORE_INSTANCES: &str = "core instances";
 pub(super) const CORE_MEMORIES: &str = "core memories";
 pub(super) const CORE_TABLES: &str = "core tables";
+// Wasmtime 49.0.4 の StoreOpaque::bump_resource_counts の原因と必要数を照合する。
+// 実際のインスタンス化の失敗を使うテストで、別のトラップの誤分類も防ぐ。
 pub(super) const OBJECT_LIMITS: &[(&str, &str)] = &[
     (
         "resource limit exceeded: instance count too high at ",

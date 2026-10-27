@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+error[E0382]: use of moved value: `entry`
+   --> crates/benitoite/src/typeck/interval/environment.rs:206:24
+    |
+189 |                 let Some(mut entry) = self.entry(base).cloned() else {
+    |                          --------- move occurs because `entry` has type `interval::environment::Entry`, which does not implement the `Copy` trait
+...
+205 |                 pending.push(entry);
+    |                              ----- value moved here
+206 |                 base = entry.tail;
+    |                        ^^^^^^^^^^ value used here after move
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+205 |                 pending.push(entry.clone());
+    |                                   ++++++++
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `benitoite` (lib test) due to 1 previous error
+
+COMMAND_EXIT_STATUS=101
+OUTER_ELAPSED_SECONDS=9.557

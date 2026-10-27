@@ -1,0 +1,16 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.38s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 8 tests
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test main_check_reports_warnings_without_execution ... ok
+test main_check_reports_sources_without_execution ... ok
+test main_check_reports_failures_without_execution ... ok
+test main_check_reports_contracts_without_execution ... ok
+test main_check_reports_shell_without_execution ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 2.45s
+

@@ -1,0 +1,28 @@
+基準・HEAD: dfdde0da4321b727c10f9fc1b894259a4a254705
+差分:
+docs/design/01-spec/01-12-core-calculus.md
+docs/design/07-quality/07-04-formal-semantics.md
+formal/Benitoite/Interval/Arithmetic.lean
+formal/Benitoite/Interval/Eval.lean
+Sound.lean の全本文は基準と一致
+formal/Benitoite/Interval/Sound.lean: 既存定理76件の言明は基準と一致
+formal/Benitoite/Interval/Eval.lean: 既存定理37件の言明は基準と一致
+formal/Benitoite/Interval/Arithmetic.lean: 既存定理33件の言明は基準と一致
+Lean は追加のみ。既存の評価関係・Unmodeled・主定理・公理・Builtins.Assumptions に変更なし。sorry/admit/axiom の追加なし
+設計書の既存見出しを維持。フェンスの対を確認
+Eval.lean の NormalSoundness の定義全文は基準と一致
+def NormalSoundness {AbstractEnv Budget : Type}
+    (Models : AbstractEnv → ConcreteEnv → Prop)
+    (analyze : AbstractEnv → EvalInput → Budget → AnalysisResult) : Prop :=
+  ∀ abstract concrete input budget value trace,
+    Models abstract concrete → EvalPartial concrete input (.normal value) trace →
+      (analyze abstract input budget).normal value
+Eval.lean の WarningSoundness の定義全文は基準と一致
+def WarningSoundness {AbstractEnv Budget : Type}
+    (Models : AbstractEnv → ConcreteEnv → Prop)
+    (analyze : AbstractEnv → EvalInput → Budget → AnalysisResult) : Prop :=
+  ∀ abstract concrete input budget outcome trace,
+    Models abstract concrete → EvalPartial concrete input outcome trace →
+      ∀ warning ∈ (analyze abstract input budget).warnings,
+        ∀ event, Reached trace warning event →
+          event.result = .rejected warning.cause.toFailure

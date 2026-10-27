@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05r/probe.py", line 16, in <module>
+    summary = source.exercise(runner, BASE/'manifest/manifest-interval')
+  File "<repo>/formal/tests/interval_source_compare.py", line 368, in exercise
+    exclusions(m, observations[m['input']])
+  File "<repo>/scripts/check/interval_artifacts.py", line 51, in exclusions
+    assert no_information(child['value']), ('excluded independent interval', name)
+AssertionError: ('excluded independent interval', '.createMany')

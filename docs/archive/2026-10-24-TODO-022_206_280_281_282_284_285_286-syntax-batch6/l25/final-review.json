@@ -1,0 +1,40 @@
+{
+  "base": "72105b49e1ad8bf3d3e7d0695284abd3e7149e36",
+  "head": "72105b49e1ad8bf3d3e7d0695284abd3e7149e36",
+  "existing_theorem_headers": 2850,
+  "unchanged_formal_files": 322,
+  "fixed_files": 7,
+  "production_lines": {
+    "added": 120,
+    "removed": 17
+  },
+  "example_lines": {
+    "added": 464,
+    "removed": 17
+  },
+  "archived_files": 348,
+  "final_input_sha256": {
+    "docs/design/01-spec/01-12-core-calculus.md": "38855442fc9a1fe6eddc27f7bf1079794895468f2385eac0f861c2c3c489db19",
+    "docs/design/07-quality/07-04-formal-semantics.md": "c346c8d695daa38b27c185a77b817816e1c167fac945723ace640cde38283f3c",
+    "formal/Benitoite.lean": "8d7e929e368d46fdd4bc7704da547f993506d843dcbede370f051b32571d512a",
+    "formal/Benitoite/Interval/DomainExamples.lean": "f29fff35c7aa51d83036e35dcaed40c1c17c1136258446c5515b7e7da64eaac4",
+    "formal/Benitoite/Interval/EvalClosed.lean": "d2830ab711b4e8a47d7427a9e6b675c95f166548d970990339942021b8274764",
+    "formal/Benitoite/Interval/HttpUpdateExamples.lean": "9501e7e8acdabd0a279edd4e81527419057b568052d20c7595b1520e2b1287ea"
+  },
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "72105b49e1ad8bf3d3e7d0695284abd3e7149e36",
+      "--only",
+      "formal_build,spec_examples,spec_tally"
+    ],
+    "check_exit": 0,
+    "seconds": 77.758
+  },
+  "paths_redacted": true,
+  "scripts_parsed": true,
+  "local_links_valid": true
+}

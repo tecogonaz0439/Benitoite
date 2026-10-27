@@ -6,6 +6,10 @@ Refer to its declarations as `Integer8.<name>`, for example `Integer8.fromIntege
 
 Functions on `Integer8`, the integers from -128 to 127.
 
+For direct calls to this module's shift functions, local interval analysis reports W0404 only when the entire inferred interval for `n` is outside `[0,7]`.
+The warning means that, if execution reaches the call and all arguments are evaluated successfully, the call stops the program at runtime.
+Intersecting or unknown intervals and calls without normal argument values do not produce W0404. Runtime range checks remain; no warning does not mean safe.
+
 ## Type
 
 Type: `Integer8`. Canonical name: `Integer8`. Displayed as `Integer8`.

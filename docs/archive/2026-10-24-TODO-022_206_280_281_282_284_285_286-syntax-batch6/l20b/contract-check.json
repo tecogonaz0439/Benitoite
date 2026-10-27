@@ -1,0 +1,1602 @@
+{
+  "base": "6eccf6254d7cc387a44b45df3722482852b72d37",
+  "head": "6eccf6254d7cc387a44b45df3722482852b72d37",
+  "changed_tracked": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite/Interval/BudgetNormal.lean",
+    "formal/Benitoite/Interval/BudgetSound.lean",
+    "formal/Benitoite/Interval/Eval.lean",
+    "formal/Benitoite/Interval/Examples.lean",
+    "formal/Benitoite/Interval/Range.lean",
+    "formal/Benitoite/Interval/Sound.lean"
+  ],
+  "unchanged_formal_files": 301,
+  "preserved_theorem_statements_in_changed_files": 307,
+  "preserved_statement_list": [
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_any"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_pure"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_throw"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_bind"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_scope"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_scan_agrees"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_unsupported"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_widthLiteral_unknown"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_widthLiteral_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "contains_warnings"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_own"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_negOwn"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_negOwnTyped"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_branch_selected"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_before"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_any_covered"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "success_unknown_after"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "own_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "expr_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "binary_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "widthBinary_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "shortCircuit_short_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "shortCircuit_right_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "block_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "armList_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "armListKind_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "shortCircuit_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "report_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "analyzeExpr_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetNormal.lean",
+      "analyze_normal_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "preorder_expr_length"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "blockSize_bind"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "blockSize_discard"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "blockSize_seq"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "blockSize_bindPat"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "Causal.parent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "causal_follow"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "causal_identified"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "silent_unsupported"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "silent_widthLiteral"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "expr_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "block_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "arms_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "kindArms_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "cause_binary_left"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "cause_binary_right"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "cause_binary_own"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "binary_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "binary_typed_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "own_compare_silent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "trace_follow"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "causal_three"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "branch_block_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "branch_expr_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "branch_pure_silent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "conditional_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "shortCircuit_body_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "guardPreorder_length"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "armSources_length"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "kindArmHead_walk"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "kindArmHead_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "guard_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "expr_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "shortCircuit_run_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "shortCircuit_absent_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "block_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "armList_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "armListKind_causal"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "analyzeExpr_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/BudgetSound.lean",
+      "analyze_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "ConcreteValue.ofInteger_type"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "ConcreteValue.ofInteger_inj"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "IntKind.tmod_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "tmod_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "Comparison.ofBinOp_binOp"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "IntKind.ofType_integer64"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "WidthBinary.supported"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "WidthBinary.modeled"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "IntKind.type_ne_integer"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "patternLocals_length"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_block"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "armsSize_cons"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_matchE"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "add_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "divMod_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "compare_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "not_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "and_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "or_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "ite_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "elseIf_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "ifOnly_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "bind_derivation_exists"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.empty"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.widen"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.append"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.parent"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.children"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.withRoot"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_not"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_neg"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_and"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_or"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_ite"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_elseIf"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "surfaceSize_ifOnly"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.follow"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "TraceKeys.selected"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "eval_trace_keys"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "block_trace_keys"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "arms_trace_keys"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "widthArms_trace_keys"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "eval_trace_keys_nodup"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "unknown_integer_mem_top"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "widthNeg_known"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "unsupported_trace_empty"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "integerKind_value_in_top"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "integer_value_in_top"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "unknown_integer_possible"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "range_success_fields"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "domain_outside_no_normal"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "unknown_analysis_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "comparison_not_division"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "eval_divMod_event"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "block_divMod_event"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "arms_divMod_event"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "widthArms_divMod_event"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "standardAt_unidentified"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_finish_ok"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_ok_identity"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_inputs_representable"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_check_result_iff"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_success_representable"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_check_small_model"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_invalid_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_out_of_range"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_exact"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_success_projection"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_evaluated_projection"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_other_possible"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_total"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_check_at_total"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_other_at_possible"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_result_at_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_result_ok_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_checked_models_mem"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_empty_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_forget_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_extend_valid"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_extend_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_fixed_integer_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_call_origin_table"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_result_source_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_saved_result_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_save_result_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_bind_ok_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_checked_origin_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_result_not_other"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_ok_payload_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_match_ok_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_bind_ok_valid"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_checked_wrong_id"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_checked_shift"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_empty_valid"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_save_result_valid"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_call_table"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_call_source"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_origin_source"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_origin_mem"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_interval_mem"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_origin_total"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_at_normal_integer"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_call_normal_mem"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_origin_evaluated"
+    ],
+    [
+      "formal/Benitoite/Interval/Range.lean",
+      "range_value_forget_top"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseWidthLiteral_warnings"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseWidthLiteral_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseIntegerKind_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "BaseApprox.contains_rangeKind"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseOwn_atKind"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseBinary_atKind"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseNeg_atKind"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseNegOwnTyped_atKind"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseShortCircuit_warnings"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseLocal_warnings"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "matchKind_some_integer64_iff"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "matchKind_integer64"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "onlyWidth_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "matchKind_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "noninteger_matchKind_none"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "eval_normal_typed"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "arms_normal_typed"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "widthArms_normal_typed"
+    ],
+    [
+      "formal/Benitoite/Interval/Eval.lean",
+      "block_normal_typed"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "unknown_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "contains_live"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "then_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "join_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "merge_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "localIndex_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "localValueIndex_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "comparisonAt_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "localIndex_kind_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "comparisonKindAt_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "atomic_condition_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "conditionEnv_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "branch_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "unknown_base"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "bind_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "unknowns_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "pattern_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseLocal_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "noninteger_not_onlyInteger"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "match_selection_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "match_width_selection_models"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedAdd_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedSub_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedMul_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedNeg_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedDiv_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedWidthBinary_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedWidthNeg_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedWidthBinaryOwn_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "checkedWidthNegOwn_contains"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_normal_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_block_normal_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_arms_normal_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_widthArms_normal_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "then_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseOwnKind_warning_origin"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "baseOwn_warning_origin"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "binary_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "negOwn_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "negOwnTyped_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "neg_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "branch_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "merge_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "arm_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "match_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "kindArm_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "matchKind_warning"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_warning_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_block_warning_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_arms_warning_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_kindArms_warning_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "negOwnTyped_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "neg_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "preorderBlock_length"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "located_context"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "located_root"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "binary_warning_origin"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_block_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_arms_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_kindArms_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "analyzeBase_warning_located"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.emptyTrace"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.noWarnings"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.subset"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.widen"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.append"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.follow"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.parent"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.root"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "widthOwn_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "widthNegOwn_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "width_own_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "width_own_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "width_neg_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "width_neg_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.widthNegating"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.widthBinary"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_bounds"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_add_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_sub_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_mul_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_neg_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_neg_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.negating"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_div_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "discard_warnings"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.thenFollow"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.binary"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.branch"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.shortCircuit"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.branches"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "branch_absent"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "absent_block"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "absent_expr"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "absent_unit"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "own_compare_good"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.matching"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.matchingThen"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.arm"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.absentArm"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.kindArm"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.absentKindArm"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "Good.guarded"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "absent_arm"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "absent_kindArm"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_block_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_arms_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "base_widthArms_warning_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "analyzeBase_normal_sound"
+    ],
+    [
+      "formal/Benitoite/Interval/Sound.lean",
+      "analyzeBase_warning_sound"
+    ]
+  ],
+  "moved_theorems": [
+    [
+      "eval_normal_typed",
+      "formal/Benitoite/Interval/Sound.lean",
+      "formal/Benitoite/Interval/Eval.lean"
+    ],
+    [
+      "arms_normal_typed",
+      "formal/Benitoite/Interval/Sound.lean",
+      "formal/Benitoite/Interval/Eval.lean"
+    ],
+    [
+      "widthArms_normal_typed",
+      "formal/Benitoite/Interval/Sound.lean",
+      "formal/Benitoite/Interval/Eval.lean"
+    ],
+    [
+      "block_normal_typed",
+      "formal/Benitoite/Interval/Sound.lean",
+      "formal/Benitoite/Interval/Eval.lean"
+    ]
+  ],
+  "central_definition_sha256": {
+    "NormalSoundness": "06ba7536b776c538ca79334db702fd4c756eb1871d51d234cc86df4e8c4db2bf",
+    "WarningSoundness": "3707732b57cb8e8aa1583845575e574c5c327d7b2ea1067d4fd8ace0e999ec80"
+  },
+  "reference_definitions": [
+    {
+      "name": "AbstractSlot",
+      "before_file": "formal/Benitoite/Interval/Environment.lean",
+      "after_file": "formal/Benitoite/Interval/Environment.lean",
+      "changed": false,
+      "before_sha256": "2b064b6d3f0762e5082869fc254a88202971f263f4d3e99d3247a9735ea2220c",
+      "after_sha256": "2b064b6d3f0762e5082869fc254a88202971f263f4d3e99d3247a9735ea2220c"
+    },
+    {
+      "name": "topSlot",
+      "before_file": "formal/Benitoite/Interval/Environment.lean",
+      "after_file": "formal/Benitoite/Interval/Environment.lean",
+      "changed": false,
+      "before_sha256": "0836d340471479072214940ff849a8feb0f5989b8525d9b5770ba06de948ab6c",
+      "after_sha256": "0836d340471479072214940ff849a8feb0f5989b8525d9b5770ba06de948ab6c"
+    },
+    {
+      "name": "SlotModels",
+      "before_file": "formal/Benitoite/Interval/Environment.lean",
+      "after_file": "formal/Benitoite/Interval/Environment.lean",
+      "changed": false,
+      "before_sha256": "dfb0a94510738a90efac34875933e647006dccd883ffead9830cd42deec94643",
+      "after_sha256": "dfb0a94510738a90efac34875933e647006dccd883ffead9830cd42deec94643"
+    },
+    {
+      "name": "Models",
+      "before_file": "formal/Benitoite/Interval/Environment.lean",
+      "after_file": "formal/Benitoite/Interval/Environment.lean",
+      "changed": false,
+      "before_sha256": "3f39b643cdf34b709e4e363b60a830e86c833edfb59727bcc32c974875c67f27",
+      "after_sha256": "3f39b643cdf34b709e4e363b60a830e86c833edfb59727bcc32c974875c67f27"
+    },
+    {
+      "name": "ConcreteValue",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "bca859b94ef98eae4f3d0c3ed4ef15bfa32e9e0a1fe75ab7c28448cdbd4b59ff",
+      "after_sha256": "bca859b94ef98eae4f3d0c3ed4ef15bfa32e9e0a1fe75ab7c28448cdbd4b59ff"
+    },
+    {
+      "name": "ConcreteValue.type",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "2843ec9c1f5f830f1863b83e708e3236234a12936ec347aa635805f64ac80dd1",
+      "after_sha256": "2843ec9c1f5f830f1863b83e708e3236234a12936ec347aa635805f64ac80dd1"
+    },
+    {
+      "name": "StandardRule",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "803bb575c7461454c16ac9cdf03f7f131810bbcdeb8c51572a515b3fadc50b49",
+      "after_sha256": "803bb575c7461454c16ac9cdf03f7f131810bbcdeb8c51572a515b3fadc50b49"
+    },
+    {
+      "name": "EvalStandard",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "c4bb148d14b6bbe211f2d966dceb7da187e72eff70840edb3db8e5d35226c5b9",
+      "after_sha256": "c4bb148d14b6bbe211f2d966dceb7da187e72eff70840edb3db8e5d35226c5b9"
+    },
+    {
+      "name": "StandardRule.finish",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "41798692857b2739f72445c00085281b7d517078fa35d6625c732cc7ab13155d",
+      "after_sha256": "41798692857b2739f72445c00085281b7d517078fa35d6625c732cc7ab13155d"
+    },
+    {
+      "name": "Unsupported",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "9315951fc95ac64a776f1eb53b927e8383dae33d48ae6f598e03255090ed8751",
+      "after_sha256": "9315951fc95ac64a776f1eb53b927e8383dae33d48ae6f598e03255090ed8751"
+    },
+    {
+      "name": "Unmodeled",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": true,
+      "before_sha256": "ea1f4c776dc5b4571d443c9e7334da3ae9f08b0d76b35ecd997171e39bb6d04c",
+      "after_sha256": "beef122eea7621b3dc996a9f3f7fedb4a8c920db58505f919f8cc24033581b78"
+    },
+    {
+      "name": "UnknownAt",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": true,
+      "before_sha256": "91576bf2a19026f60a88b6df9144120a4cd7a385ed9cbdfb6f998eabab83853d",
+      "after_sha256": "cb6e621c0e50f48ad99d8d87de5a58fb26e9d7b436016ede9be5928e58bce6c8"
+    },
+    {
+      "name": "EvalPartial",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": true,
+      "before_sha256": "07c9dea934075c3caceaa870784fe71b28f48bf4933b443a17a2d643d5eb9235",
+      "after_sha256": "7ec5485d0acf1bd582e3b0901631f79aec22d13fcbd2e6e2fc09d1dc8fbe5317"
+    },
+    {
+      "name": "EvalArms",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "80487d277ae94a7a961c73e5bdbee4bb3e89b1565b8a339c9cbca70becf96e10",
+      "after_sha256": "80487d277ae94a7a961c73e5bdbee4bb3e89b1565b8a339c9cbca70becf96e10"
+    },
+    {
+      "name": "EvalWidthArms",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "a74c3c361641d32bbd1012ed107a885550c944ef4290bdebde9516dd7c926616",
+      "after_sha256": "a74c3c361641d32bbd1012ed107a885550c944ef4290bdebde9516dd7c926616"
+    },
+    {
+      "name": "EvalBlock",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "89af0aeb997110d446892bf8e2451f6ed03aa319ca203cd251a7ab685231206e",
+      "after_sha256": "89af0aeb997110d446892bf8e2451f6ed03aa319ca203cd251a7ab685231206e"
+    },
+    {
+      "name": "Reached",
+      "before_file": "formal/Benitoite/Interval/Eval.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "14e97b5ba1cf6ddc104a205741d2e0ba5c02736cbf9a7fba5d60a6942c61f1d4",
+      "after_sha256": "14e97b5ba1cf6ddc104a205741d2e0ba5c02736cbf9a7fba5d60a6942c61f1d4"
+    },
+    {
+      "name": "RangeNames.IsOk",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "81c88bde75c08a8e67764ce3483ca98bdce096dad5f0ce7b64bd3a605a9929a7",
+      "after_sha256": "81c88bde75c08a8e67764ce3483ca98bdce096dad5f0ce7b64bd3a605a9929a7"
+    },
+    {
+      "name": "RangeOrigin",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "24aae888095297f79752347ad2eed055db0ae622f83b0a503e5a34fe7b977f88",
+      "after_sha256": "24aae888095297f79752347ad2eed055db0ae622f83b0a503e5a34fe7b977f88"
+    },
+    {
+      "name": "RangeOrigin.ResultModels",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "4da62818f42c72b8a9a2ba6cfdf893741bfccd93bfa1a32e81cd7d9b6ea3011b",
+      "after_sha256": "4da62818f42c72b8a9a2ba6cfdf893741bfccd93bfa1a32e81cd7d9b6ea3011b"
+    },
+    {
+      "name": "RangeOrigin.CheckedModels",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "23f8d8cda2da037e86049330725feaf69e8b39bdabdf7b32d3174d4cc81fef7f",
+      "after_sha256": "23f8d8cda2da037e86049330725feaf69e8b39bdabdf7b32d3174d4cc81fef7f"
+    },
+    {
+      "name": "RangeState",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "1ae8ff00c5cb9cf251a86717fe0f48b7c4ce4fa7d0efcc7c8d23a07772a9a769",
+      "after_sha256": "1ae8ff00c5cb9cf251a86717fe0f48b7c4ce4fa7d0efcc7c8d23a07772a9a769"
+    },
+    {
+      "name": "RangeState.Models",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "249c5aa99d0cee493e5d5d5c075618ae2205cd5bd1c3342420545f3c9f6088c8",
+      "after_sha256": "249c5aa99d0cee493e5d5d5c075618ae2205cd5bd1c3342420545f3c9f6088c8"
+    },
+    {
+      "name": "rangeCallOrigin",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "a7946d74390809e5698395974361924743314cee74a5607dec984a38731710b8",
+      "after_sha256": "a7946d74390809e5698395974361924743314cee74a5607dec984a38731710b8"
+    },
+    {
+      "name": "rangeSaveResult",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "45cc7a87923288902151c72349082b53c3d871bd0b0f2d0bf45fdfd7bff79d52",
+      "after_sha256": "45cc7a87923288902151c72349082b53c3d871bd0b0f2d0bf45fdfd7bff79d52"
+    },
+    {
+      "name": "rangeBindOk",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "f884bcb52b188c7685b587deb0716548d0edc0b8e109b3b476225f2a3ba03451",
+      "after_sha256": "f884bcb52b188c7685b587deb0716548d0edc0b8e109b3b476225f2a3ba03451"
+    },
+    {
+      "name": "RangeNames.OkPayload",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "ba0dd156688dcff392f245f41b80f3dc911865aed377d96ce55a05da0f6d0189",
+      "after_sha256": "ba0dd156688dcff392f245f41b80f3dc911865aed377d96ce55a05da0f6d0189"
+    },
+    {
+      "name": "rangeValueCall",
+      "before_file": "formal/Benitoite/Interval/Range.lean",
+      "after_file": "formal/Benitoite/Interval/Range.lean",
+      "changed": false,
+      "before_sha256": "46d6b6344e91da6cd035fcef2d512be08367d6614f7a06457a60dae4493d0535",
+      "after_sha256": "46d6b6344e91da6cd035fcef2d512be08367d6614f7a06457a60dae4493d0535"
+    },
+    {
+      "name": "analyzeBaseExpr",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "d4b9806219a157726e9f842f08161e533717551339e9fee25dcd08388ef0fbbe",
+      "after_sha256": "d4b9806219a157726e9f842f08161e533717551339e9fee25dcd08388ef0fbbe"
+    },
+    {
+      "name": "analyzeBaseBlock",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "a0871e1080921afd9e59f5bd4f1b5c2c787cc60caa4bb0a7cb3d98b1d3734a71",
+      "after_sha256": "a0871e1080921afd9e59f5bd4f1b5c2c787cc60caa4bb0a7cb3d98b1d3734a71"
+    },
+    {
+      "name": "analyzeBaseKindArms",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "d4faa9bbee3e9d17f619f9455e0e81f22b9573020c7b2d562308303f61cddaf6",
+      "after_sha256": "d4faa9bbee3e9d17f619f9455e0e81f22b9573020c7b2d562308303f61cddaf6"
+    },
+    {
+      "name": "analyzeBaseArms",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "031deae02c1ed2ee950b0b4293a6dea381bbc45726c0e421768b0e72e246e26e",
+      "after_sha256": "031deae02c1ed2ee950b0b4293a6dea381bbc45726c0e421768b0e72e246e26e"
+    },
+    {
+      "name": "analyzeBase",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "96fdd32664f1cb8f46e16c0cc1cccf34198a245ac7bc1888cf874111153bab84",
+      "after_sha256": "96fdd32664f1cb8f46e16c0cc1cccf34198a245ac7bc1888cf874111153bab84"
+    },
+    {
+      "name": "NormalTyped",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Eval.lean",
+      "changed": false,
+      "before_sha256": "3866da734570ad5a1bfab0ab641520012e3bdd97902b9e748d441b8b00d00fe5",
+      "after_sha256": "3866da734570ad5a1bfab0ab641520012e3bdd97902b9e748d441b8b00d00fe5"
+    },
+    {
+      "name": "targetOperationAt",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "d921c6d894e3d8f9e905217337fa9a916345087939970ae79fc3bc449c6663cf",
+      "after_sha256": "d921c6d894e3d8f9e905217337fa9a916345087939970ae79fc3bc449c6663cf"
+    },
+    {
+      "name": "WarningLocated",
+      "before_file": "formal/Benitoite/Interval/Sound.lean",
+      "after_file": "formal/Benitoite/Interval/Sound.lean",
+      "changed": false,
+      "before_sha256": "0c2ac7eab802296a66b384ff679d3ad06e275147deadeb11dc9c004e44ed5a35",
+      "after_sha256": "0c2ac7eab802296a66b384ff679d3ad06e275147deadeb11dc9c004e44ed5a35"
+    },
+    {
+      "name": "concreteRule",
+      "before_file": "formal/Benitoite/Interval/SyntacticReach.lean",
+      "after_file": "formal/Benitoite/Interval/SyntacticReach.lean",
+      "changed": false,
+      "before_sha256": "ea048a6492f2159cbcba749e8611914eca9a9a5bb3b551de51e77fbe163faec1",
+      "after_sha256": "ea048a6492f2159cbcba749e8611914eca9a9a5bb3b551de51e77fbe163faec1"
+    }
+  ],
+  "axiom_dependencies_checked": 160,
+  "no_added_sorry_axiom_admit": true,
+  "fixed_file_sha256": {
+    "crates/benitoite/testdata/interval-budget/README.md": "81ab1b102c663831f574e08f3a4b31cab5f4c2c2770fe4cb5647718aafae8e57",
+    "crates/benitoite/testdata/interval-budget/body.tsv": "009fc2505bfe75db7542dde9f900339cad79297fb88703663c95b1577cc79b08",
+    "crates/benitoite/testdata/interval-budget/budget-reference.lean": "13a356ca1a8e5519c74a4fd72bd9dc70234a4593b02c2722240b34798a84eb9a",
+    "crates/benitoite/testdata/interval-budget/regenerate-reference.py": "53e669cb0943aed3b291aa70e346e4a1ee66dc45bda80c57aa0cc119979cfd06",
+    "crates/benitoite/testdata/interval-budget/summary-reference.lean": "7b65e2c9f212da23ae918326ef0cbc17258d305255971a1e3d113de0589556ae",
+    "crates/benitoite/testdata/interval-budget/summary.tsv": "1f9dfcb600cdd4696720afc76dc3a02ea112de58d5bd7f5a698c94c09bc6f5fb",
+    "crates/benitoite/testdata/interval-budget/whole.tsv": "8835d3a79436418a7c883e41f5d84f0218b2b041f778f3e8560cf5821c833d2b",
+    "formal/lakefile.toml": "713d378053db619d835fb8dae55d98b3cbe92d764d2d2208057793de3db5425f"
+  },
+  "final_inputs_sha256": {
+    "docs/design/01-spec/01-12-core-calculus.md": "b48c24153c69307eb7ac80c9529188c8095d2e91f59f28e90fa7221cd30aa28a",
+    "docs/design/07-quality/07-04-formal-semantics.md": "b041ab2968f23cef4c625a368721f370200571d23ddf6f3ed4f2a7860c48a20a",
+    "formal/Benitoite/Interval/BudgetNormal.lean": "0b68b1523149ad04b5e8fe4d076a4bdcdc1e3a207f25febda2e1c0ac87190022",
+    "formal/Benitoite/Interval/BudgetSound.lean": "6eac19d0e48d7d3afe6ff0d46594164d8313ed358a4ed979e8ca076bd574c5d3",
+    "formal/Benitoite/Interval/Eval.lean": "70a0043616596e6a7f9e9826e8deec3a1df016d061ee43df145e4b01d89e92ff",
+    "formal/Benitoite/Interval/Examples.lean": "d1ba1e1580a33c2b575a726cf4398cab301b4735ffa3cc90e80cf0c0f8eb86a9",
+    "formal/Benitoite/Interval/Range.lean": "f3f359fa3cbead770ad76bba3c4b293c69d512d85ba9c47842a87abc4ad721bf",
+    "formal/Benitoite/Interval/Sound.lean": "5b9cc0cb0e5dee81c7460ad74f80251bd0eb884714b6381bd4178f5f25ee1197"
+  },
+  "diff_numstat": [
+    "40\t7\tdocs/design/01-spec/01-12-core-calculus.md",
+    "9\t5\tdocs/design/07-quality/07-04-formal-semantics.md",
+    "13\t1\tformal/Benitoite/Interval/BudgetNormal.lean",
+    "19\t2\tformal/Benitoite/Interval/BudgetSound.lean",
+    "530\t10\tformal/Benitoite/Interval/Eval.lean",
+    "207\t0\tformal/Benitoite/Interval/Examples.lean",
+    "346\t18\tformal/Benitoite/Interval/Range.lean",
+    "27\t109\tformal/Benitoite/Interval/Sound.lean"
+  ]
+}

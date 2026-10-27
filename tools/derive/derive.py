@@ -23,6 +23,8 @@ import source_migrate as migrate
 INVENTORY = REPO / 'target/debug/examples/derive_inventory'
 BENITOITE = REPO / 'target/debug/benitoite'
 # Includes the management protocol and template revision. Bump when rules change.
+# 純粋さの契約に既に反する生成の事前拒否は、受理入力の本文と記録を
+# 変えないため、生成規則の版を上げる変更には当たらない。
 GENERATOR_VERSION = '3.1.0-syntax-batch5'
 INVENTORY_VERSION = 3
 HASH_VERSION = 3
@@ -1008,11 +1010,21 @@ class Manager:
 
     def prepare(self):
         inventory = collect(self.root, self.config)
-        inventory['_typeGraph'] = TypeGraph(inventory, invalid)
+        modules = {m['name']: m for m in inventory['modules']}
         for target in inventory['targets']:
+            features = [k for k in ('property', 'json') if k in target['config']]
+            use = modules[target['module']]['fileUses']
+            if features and use is not None:
+                span = use['span']
+                invalid(location(target) + ': derive.file_effects: cannot generate ' + ', '.join(features)
+                        + f" with file-level effects at {span['path']} [{span['start']},{span['end']}): "
+                        + use['text'] + '; generated top-level functions must be pure, but inherit file-level effects; '
+                        'use per-function uses declarations or move the type definition and derive target '
+                        'to a module without file-level uses')
             if (target['opaque'] and any(k in target['config'] for k in ('json', 'property'))
                     or not target['canConstruct'] or not target['canInspect']):
                 invalid(location(target) + ': derive.opaque_target: opaque type requires handwritten checked construction')
+        inventory['_typeGraph'] = TypeGraph(inventory, invalid)
         old_hash = file_state(self.record)
         old = read_json(self.record.read_bytes()) if old_hash else None
         if old is not None and (old.get('version') not in (1, 2, 3) or not isinstance(old.get('targets'), list)):

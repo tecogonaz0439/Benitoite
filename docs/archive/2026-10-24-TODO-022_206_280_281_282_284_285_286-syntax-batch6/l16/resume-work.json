@@ -1,0 +1,13 @@
+{
+  "external_exit": 1,
+  "elapsed_seconds": 3.469,
+  "command": [
+    "env",
+    "CARGO_HOME=<tmp>/benitoite-a01a-cargo",
+    "/usr/bin/time",
+    "-l",
+    "/bin/zsh",
+    "-c",
+    "scripts/check.sh --level work --base 1044a4e8a7e079250ed14964dda91f7167326edb --only formal_build,spec_examples,spec_tally; check_exit=$?; print -r -- \"L16_RESUME_CHECK_EXIT_STATUS=$check_exit\"; exit \"$check_exit\""
+  ]
+}

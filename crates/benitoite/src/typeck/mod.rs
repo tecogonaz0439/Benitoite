@@ -139,6 +139,7 @@ pub struct BuilderOperation {
 /// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。各段へ渡す表は設計書 02-05「出力」で定める。
 #[derive(Debug, Default)]
 pub struct TypeckOutput {
+    pub(crate) interval: interval::Report,
     /// 第二級の値である構築器と直接操作。通常の Ty の表へ構築器を載せない。
     pub builders: NodeMap<BuilderDecl>,
     pub builder_ops: NodeMap<BuilderOperation>,
@@ -166,6 +167,13 @@ pub struct TypeckOutput {
     pub main: Option<MainInfo>,
 }
 
+impl TypeckOutput {
+    /// program の生成や警告の昇格より前に、区間解析の範囲と実消費を集計する。
+    pub fn interval_analysis(&self) -> IntervalAnalysis {
+        self.interval.summary()
+    }
+}
+
 use crate::base::SourceTable;
 use crate::diag::Diagnostic;
 use crate::modules::ModuleTable;
@@ -187,6 +195,28 @@ pub fn typecheck(
     decls::check(modules, asts, sources, resolved, require_main)
 }
 
+/// 独立交換の照合用に、呼び出しごとの区間解析の記録も返す内部用入口。
+/// 通常の型検査と同じ処理を使い、記録先がない呼び出しの確保と予算を増やさない。
+#[doc(hidden)]
+pub fn typecheck_with_interval_observations(
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    resolved: &ResolveOutput,
+    require_main: bool,
+) -> (TypeckOutput, Vec<Diagnostic>, Vec<serde_json::Value>) {
+    let mut observations = Vec::new();
+    let (output, diagnostics) = decls::check_recorded(
+        modules,
+        asts,
+        sources,
+        resolved,
+        require_main,
+        Some(&mut observations),
+    );
+    (output, diagnostics, observations)
+}
+
 mod body_map;
 mod builders;
 mod calls;
@@ -198,6 +228,11 @@ pub(crate) use decls::declarations as collect_declarations;
 mod effects;
 mod external;
 mod generate;
+mod interval;
+
+pub use interval::{
+    IntervalAnalysis, IntervalBudgetStops, IntervalCoverage, IntervalPhaseStops, IntervalUsage,
+};
 mod limits;
 mod pattern_ext;
 mod records;

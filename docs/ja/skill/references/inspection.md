@@ -1,8 +1,8 @@
 # 実行前の検査
 
-> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
-修正中は通常の `benitoite check main.bnt` または非実行の `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に JSON 報告を一度取得する。その報告を確認し、Skill の確認の規則に従って宣言したエフェクトを利用者に説明してから、了承済みの集合を実行へ渡す。
+ハーネスは検査報告を使い、実行前に宣言したエフェクトを利用者へ説明する。編集中は通常の `benitoite check main.bnt` または実行しない `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に一つの JSON 報告を得る。報告を調べ、Skill の確認の規則に従って宣言したエフェクトを利用者へ説明し、受理した集合を実行へ渡す。
 
 ```sh
 benitoite --version=json
@@ -37,12 +37,13 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 | `aggregateEffects` | main の宣言したエフェクト、または選択された全テストの宣言したエフェクトの和。検査全体が完全でなければ `null`。 |
 | `sources`, `sourceSets` | ソースの ID・表示用パス・種類・ハッシュと、対象ごとにまとめたソース ID。 |
 | `diagnostics`, `diagnosticTargets` | 診断のオブジェクトと対象への対応。探索全体の誤りと使い方の誤りには対象がない。 |
+| 報告と各対象の `intervalAnalysis` | 後述の局所の区間解析の追加集計。`complete` や報告の受理と独立である。 |
 
 Effects オブジェクトは `basis: "declaredUpperBound"` と `expanded` を持つ。`expanded` は、原子的な正規名を辞書順に並べた重複なしの配列である。本体の実行で到達するエフェクトだけでなく、使わない宣言も含む。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` に展開する。HTTP のエフェクトと `Assert.Check` は `IO.All` に含まれない。テストの契約・その和・許す集合には `Assert.Check` を残す。`main` では禁じる（E0415）。処理されない `or die` には `Process.Exit` が必要であり、完全に処理して宣言上限から取り除いた終了は含まれない。裸の `try` と `or return` は終了のエフェクトを加えない。
 
 純粋な成功は `expanded: []`、不明なエフェクトは `[]` ではなく `null` である。検査したテストなしのファイルは `tests: []`、不明なテストの一覧は `null` となる。空ディレクトリは、対象がなく集計が空である完全な成功となる。失敗したファイルがあっても、ほかの成功した契約は残すが、全体の `complete` は false、集計は null となる。探索に失敗したらどの入口も検査せずに止まり、探索済みの入口は不完全な参考情報として残る。使い方の誤りには検査した対象もソースもない。その中の診断だけは、`kind: "check"` と `code: null` を使う。この組み合わせは、通常の診断の JSON Lines を拡張しない。テストの説明を省略した場合は `null`、明示的に空の説明を書いた場合は `""` となる。
 
-ファイル単位の uses は検査済み Scheme で個別の宣言と合併する。前述の規則で報告全体を受理した後、main では targets[0].main.effects.expanded、テストでは各契約と集計を宣言上限として示す。空の本体にも共有の Console.Write や Log は残る。main の行だけを読むと上限を見落としうる。報告を自動の許可に変えない。通常の check は標準出力に何も書かない。報告規則の正は [v0.0.11 の CLI 仕様](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/design/06-tooling/06-01-cli.md#main-の非実行の検査報告)であり、checkReport 1・testCheckReport 1/2 を使う。
+ファイル単位の `uses` は、検査済みの Scheme で個別の宣言と合併する。前述の規則で報告全体を受理した後、main では `targets[0].main.effects.expanded`、テストでは選択した各テストのエフェクトとその集計を、宣言上限として示す。空の本体にも共有の Console.Write や Log は残る。main のソースの行だけを読むと上限を見落としうる。報告を自動の許可に変えない。通常の `check` は標準出力に何も書かない。既存の必須欄と受理条件の正は処理系にあり、[v0.0.12 の英語リファレンス](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)を参照する。checkReport 1・testCheckReport 1/2 を使う。後述の追加の `intervalAnalysis` 欄は、これらの版と規則を保つ。
 
 未承認のエフェクトがファイルの宣言から加わった場合、E0512 はその位置も副ラベルに含める。共有の IO.All の W0501 は各関数と共有の由来を示し、ファイルの宣言への自動編集は付けない。個別の IO.All の編集はファイルが供給するエフェクトも考慮する。doc の例は独自の取り込みと契約を持ち、外側の宣言は適用しない。
 
@@ -68,6 +69,34 @@ benitoite skill show --format=json references/stdlib/IO.Process.md
 `list` は、`schemaVersion: 1`、`kind: "skillList"`、`producer`、および `{name, byteLength, contentHash}` を辞書順に並べた `documents` 配列を返す。`show` は、`schemaVersion: 1`、`kind: "skillDocument"`、`producer`、`name`、`byteLength`、`contentHash`、`text` を返す。長さは `SKILL.md` の版の置換後の UTF-8 バイト数を数え、SHA-256 のハッシュも同じバイト列を対象とする。`install` も同一の本文を書く。これらの問い合わせは埋め込みの文書を読み、`HOME`、作業ディレクトリ、インストール済みの写しを調べない。ライセンスを含め、名前は一覧と完全に一致し、`/` で区切った各成分は大文字小文字を区別する。空の名前、先頭の `/`、空成分、`.`、`..`、バックスラッシュ、コロンは不正であり、名前を OS のパスとして開くことはない。
 
 既定の形式は text であり、`list` は一行に一つの名前、`show` は改行を追加せず文書だけを出す。JSON の問い合わせは一つのオブジェクトと末尾の LF を書く。`--format=text|json` は `=` を必須とし、一回だけ指定でき、show の名前の前後どちらにも置ける。`list` は名前を取らず、`show` は一つ要求する。これらの問い合わせはインストール用のオプションを拒否し、install/uninstall は `--format` を拒否する。成功は 0、不正な構文や未知の文書は 2 で終わる。これらの誤りでは JSON の問い合わせでも標準出力を空とし、標準エラー出力に説明を書く。処理系の不具合は 3、出力の失敗は 1 で終わる。出力がないことを空の文書と解釈しない。list と show が返す名前はすべて同じ規則を満たし、埋め込みの名前が不正または重複していれば、部分的な一覧ではなく処理系の不具合とする。
+
+
+## 局所の区間解析
+
+報告と各対象は、`basis: "localIntervals"` を持つ追加の `intervalAnalysis` オブジェクトを含む。局所の区間解析が対象とした範囲を示す。`complete` は引き続き型とエフェクトの検査と契約の抽出を表す。ハーネスは前述の報告の受理条件を保ち、`coverage` を受理条件に加えない。`complete: true` と `coverage: "some"`、または `complete: false` と `coverage: "all"` が同じ報告に現れることもある。警告がなく `all` でも安全とは限らず、実行時の検査は引き続き必要である。
+
+ほかの受理条件を満たした検査に `coverage: "all"` を要求せず、失敗した検査を `all` によって受理しない。未知の値や未対応・未完の範囲は、この解析の限界として説明する。こうした限界は検査の誤りを加えず、それ自体を理由にコードの変更やエフェクトの宣言の拡大を求めるものでもない。診断は別に読む。局所の解析の注記を持つ W0401/W0402/W0404 は、報告した位置での条件付きの失敗を示し、プログラム全体の失敗は示さない。例、Range の成功値、追跡しない HTTP のフィールドは、[局所の区間解析の警告を説明する](idioms.md#局所の区間解析の警告を説明する)を参照する。
+
+| `intervalAnalysis` の欄 | 意味 |
+|---|---|
+| `coverage` | 未対応・未完の範囲も無効な本体もなければ `all`。解析を開始したがそうした範囲が残る場合は `some` であり、有効な本体と無効な本体の混在も含む。解析前は `none` であり、型検査前の失敗や、一つ以上ある本体がすべて型検査で無効になった対象も含む。本体を一つも持たない検査済みの対象は、件数 0 の `all`。 |
+| `inputDefinitions` | 型検査を通り、解析に渡した元定義の数。別に解析するラムダ・lazy・節の本体は加算しない。 |
+| `unsupportedBodies` | 親または保存した独立入力に未対応の構文を含む本体出力の数。停止した出力も含め、各本体出力を一度だけ数える。 |
+| `bodyBudgetExceeded` | 通常の本体予算の超過で停止した本体出力の数。番号未取得に分類した停止は除く。 |
+| `wholeBudgetSkipped` | 検査全体の予算で未解析になった範囲の数。停止した出力、発見済みで保留中の本体、残る有効な元定義、発見や制御が未完の元定義を数える。未発見の入れ子の本体数は推計しない。 |
+| `unidentifiedBodies` | 番号を付ける間に予算超過で停止した本体出力の数。本体と検査全体のどちらの上限による停止も含む。ほかの原因で番号が得られない停止は数えない。 |
+| `phaseStops` | 入口の準備、発見、待ち行列、入れ子の本体の制御、検査全体の制御での停止事象。`exceeded` と `unidentified` はそれぞれ `bodyOperations`、`bodyItems`、`wholeOperations`、`wholeItems` を含む。`depth` と `other` は残る停止の種類を数える。事象の数であり、未解析の本体数ではない。 |
+| `usage` | `operations`、`savedItems`、`peakItems`、`maxBodyOperations`、`maxBodyItems`。消費した操作数、保持する項目数、同時保持項目数の最大値、本体の操作数の最大値、本体の同時保持項目数の最大値を表す。解析予算の単位であり、確保したバイト数ではない。 |
+
+件数と使用量は非負の JSON 整数である。本体出力を持たない入口・制御の停止は、`bodyBudgetExceeded` や `unidentifiedBodies` ではなく `phaseStops` に現れる。`wholeBudgetSkipped` は、同じ元定義の不完全な範囲を制御の停止ごとに重ねて数えず、番号未取得の出力を通常の超過にも加算しない。四つの本体・範囲の件数は、`inputDefinitions` を分割した数とは限らない。入れ子の本体は別の出力であり、停止した出力に未対応の構文も含まれうるためである。
+
+`some` は、本体や段の停止、残る元入力、未準備の入口、未完の発見や待ち行列、発見済みで保留中の本体を含む。件数が 0 であることだけでは `all` と判断できない。テストの報告では、重複した入口も別々の検査として対象間の件数を合計する。すべての対象が `none` なら coverage は `none`、それ以外で `all` でない対象があれば `some`、残りは `all` になる。空の探索が成功すれば件数 0 の `all`、使い方や探索の失敗は `none` である。
+
+main では、報告の集計と対象の集計は等しい。doc テストでは、各対象に通常の入口と、check/error を含むすべての生成した例を合わせる。例の探索が未完なら未検査の範囲が残る。check/error の例が実行のエフェクトに加わることはない。使用量の集計は `operations` と `savedItems` を合計し、`peakItems`、`maxBodyOperations`、`maxBodyItems` の最大値をとる。本体ごとの最大値は、出力を保存した本体だけを対象にする。元定義には入口、親の解析、発見、待ち行列の仕事量を含める。出力のない段停止で消費した量も、全体の使用量には残る。
+
+`--deny-warnings` が警告を誤りにして検査を失敗させても、解析の集計は残る。無関係な定義の追加で検査全体の予算を使い切ると、後の区間の警告がなくなり、`--deny-warnings` での受理が変わりうる。既存の定数の警告と、既に得た区間の警告は残る。ハーネスは未対応や未解析の範囲を安全と説明しない。追加の集計は、main・通常のテストのスキーマの版 1、doc テストの版 2、既存の必須欄、状態、エフェクト報告の受理条件を保つ。
+
+追加の欄と集計について処理系が定める内容は、[v0.0.12 の英語リファレンス](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#interval-analysis-coverage)を参照する。[局所の警告の規則](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#local-interval-warnings)は解析の範囲を定める。インストールした版の文書は、実行ファイルに埋め込んだ Skill から得られる。
 
 
 文書の例には、検査と実行の両方に --doc を付ける。`benitoite test --doc --check --report=json tests/` を使い、その後 `benitoite test --doc --allow-effects=<了承した集合> tests/` を実行する。版の問い合わせで testCheckReport と testResults の版 2 を要求する。--doc を省略すると版 1 になる。未知の JSON Lines の種類を、版 1 の成功として無視しない。

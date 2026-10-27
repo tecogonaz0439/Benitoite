@@ -1,0 +1,120 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.24s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 8 tests
+test typeck::interval::tests::budget_rejection_is_atomic_and_saved_items_survive_body_end ... ok
+
+thread 'typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts' (2103388) panicked at crates/benitoite/src/typeck/interval/tests.rs:57:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0303,
+        ),
+        message: "`String` has no member `length`",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        513,
+                    ),
+                    end: BytePos(
+                        519,
+                    ),
+                },
+                text: "not found in `String`",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "strings have no unit-less length; use `String.byteLength` (bytes) or `String.characterCount` (characters)",
+                edits: [],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts ... FAILED
+
+thread 'typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope' (2103390) panicked at crates/benitoite/src/typeck/interval/tests.rs:41:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0439,
+        ),
+        message: "this statement is never executed",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1157,
+                    ),
+                    end: BytePos(
+                        1170,
+                    ),
+                },
+                text: "unreachable statement",
+            },
+        ),
+        secondary: [
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1147,
+                    ),
+                    end: BytePos(
+                        1155,
+                    ),
+                },
+                text: "this always leaves the block",
+            },
+        ],
+        notes: [],
+        helps: [],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope ... FAILED
+test typeck::interval::tests::reaching_whole_limit_exactly_does_not_allocate_the_next_body ... ok
+test typeck::interval::tests::source_order_is_independent_of_constant_evaluation_and_function_checking ... ok
+test typeck::interval::tests::accepted_polymorphic_failure_calls_are_collected ... ok
+test typeck::interval::tests::invalid_body_is_not_analyzed_and_healthy_neighbor_is_prepared ... ok
+test typeck::interval::tests::body_stop_continues_but_whole_stop_keeps_remaining_inputs_without_new_outputs ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::destructured_and_mutable_contents_do_not_become_integer_facts
+    typeck::interval::tests::local_binding_values_survive_shadow_and_block_scope
+
+test result: FAILED. 6 passed; 2 failed; 0 ignored; 0 measured; 1301 filtered out; finished in 0.30s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+A04_COMMAND_EXIT_STATUS=101
+        9.63 real        17.17 user         1.15 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A04_OUTER_EXIT_STATUS=1
+A04_WALL_SECONDS=9.641

@@ -1,0 +1,16 @@
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.70s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 2 tests
+20000 constants: 8.534255708s, 446711641 allocated bytes
+test long_constant_chain_has_bounded_check_allocations ... ok
+5000 constants, 1000 diagnostics: 1.39364775s, 258945896 allocated bytes
+test repeated_constant_diagnostics_share_bounded_origin_work ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 9.94s
+
+
+COMMAND_EXIT_STATUS=0
+OUTER_ELAPSED_SECONDS=33.566

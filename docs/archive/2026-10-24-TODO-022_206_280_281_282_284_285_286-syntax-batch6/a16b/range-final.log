@@ -1,0 +1,15 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.76s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 7 tests
+test typeck::interval::tests::range_calls::nested_unrecognized_call_keeps_its_warning_in_the_independent_input ... ok
+test typeck::interval::tests::range_calls::range_value_argument_uses_parent_environment_without_projecting_bounds ... ok
+test typeck::interval::tests::range_calls::user_range_module_alias_is_not_the_standard_declaration ... ok
+test typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_without_marking_unknown ... ok
+test typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples ... ok
+test typeck::interval::tests::range_calls::range_calls_skip_remaining_arguments_after_abrupt_value_in_source_order ... ok
+test typeck::interval::tests::range_calls::range_calls_exclude_function_values_holes_pipes_and_parenthesized_callees ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.45s
+

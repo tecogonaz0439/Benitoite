@@ -1,0 +1,130 @@
+{
+  "manifestSha256": "162de8184a81e1fdecd91a62297e46d6f325f867d381a2db5971b9127d19068a",
+  "entries": 1,
+  "categories": {
+    "golden-or-fixture": {
+      "entries": 1,
+      "targets": 1,
+      "acceptedTargets": 0,
+      "typecheckedTargets": 1,
+      "unstartedTargets": 0,
+      "budgetStoppedTargets": 1,
+      "depthStops": 0,
+      "otherStops": 0,
+      "bodies": 19,
+      "embeddedBodies": 0,
+      "constantReferences": 157732,
+      "numberedNodes": 315499,
+      "independentInputs": 157733,
+      "parentCandidates": 0,
+      "independentCandidates": 0
+    }
+  },
+  "maxima": {
+    "operations": {
+      "value": 731021,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt"
+    },
+    "peakItems": {
+      "value": 473313,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt"
+    },
+    "savedItems": {
+      "value": 473254,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt"
+    },
+    "maxBodyOperations": {
+      "value": 100000,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt"
+    },
+    "maxBodyItems": {
+      "value": 75058,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt"
+    },
+    "expandedTreeNodes": {
+      "value": 32766,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".c13"
+    },
+    "body.operations": {
+      "value": 100000,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".c13"
+    },
+    "body.peak": {
+      "value": 75058,
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".main"
+    }
+  },
+  "budgetStoppedTargets": [
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "summary": {
+        "bodyBudgetExceeded": 5,
+        "coverage": "Some",
+        "inputDefinitions": 19,
+        "maxBodyItems": 75058,
+        "maxBodyOperations": 100000,
+        "operations": 731021,
+        "peakItems": 473313,
+        "phaseStops": {
+          "depth": 0,
+          "exceeded": {
+            "bodyItems": 0,
+            "bodyOperations": 6,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          },
+          "other": 0,
+          "unidentified": {
+            "bodyItems": 0,
+            "bodyOperations": 6,
+            "wholeItems": 0,
+            "wholeOperations": 0
+          }
+        },
+        "savedItems": 473254,
+        "unidentifiedBodies": 0,
+        "wholeBudgetSkipped": 0
+      }
+    }
+  ],
+  "incompleteTrees": [
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".c14"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".c15"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".c16"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".c17"
+    },
+    {
+      "id": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "target": "<repo>/crates/benitoite/testdata/types/todo178-const-budget.bnt",
+      "definition": ".main"
+    }
+  ],
+  "standardBodies": "excluded; not analyzed; consumption unacquired"
+}

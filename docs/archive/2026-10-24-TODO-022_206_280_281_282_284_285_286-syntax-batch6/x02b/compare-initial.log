@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/formal/tests/test_interval_exchange.py", line 992, in <module>
+    main()
+  File "<repo>/formal/tests/test_interval_exchange.py", line 985, in main
+    exercise(args.output.resolve(), executable, args.source_dir, args.rust_dir)
+  File "<repo>/formal/tests/test_interval_exchange.py", line 651, in exercise
+    summaries.append(interval_source_compare.exercise(source_runner, rust_dir))
+  File "<repo>/formal/tests/interval_source_compare.py", line 231, in exercise
+    assert Counter(wanted) == Counter(actual), (lean['name'], 'user warnings', wanted, actual)
+AssertionError: ('interval:flow', 'user warnings', [('W0401', (0, 109, 110))], [('W0401', (0, 136, 137)), ('W0401', (0, 109, 110))])

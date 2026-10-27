@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Json
+
+function main() -> Unit
+  bind plain <- Http.text(status: 700, s: "example")
+  bind _ <- Http.html(status: 700, s: "<p>example</p>")
+  bind _ <- Http.json(status: 700, value: Json.Value.Null)
+  bind _ <- Http.Response(status: 700, headers: [], body: Bytes.empty())
+  bind _ <- Http.Response(..plain, status: 701)
+end function

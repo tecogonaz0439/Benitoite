@@ -1,0 +1,188 @@
+Benitoite/Interval/Exchange.lean:15:26: error: unexpected token ':='; expected command
+Benitoite/Interval/Exchange.lean:124:11: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.Ty`
+Benitoite/Interval/Exchange.lean:174:11: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.BinOp`
+Benitoite/Interval/Exchange.lean:176:5: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq Ty
+
+Hint: Adding the command `deriving instance BEq for Benitoite.Release.Ty` may allow Lean to derive the missing instance.
+Benitoite/Interval/Exchange.lean:218:19: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.ConstantEntry`
+Benitoite/Interval/Exchange.lean:230:73: error: Ambiguous term
+  Expr
+Possible interpretations:
+  Surface.Expr : Type
+  
+  Lean.Expr : Type
+Benitoite/Interval/Exchange.lean:243:13: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.Block`
+Benitoite/Interval/Exchange.lean:244:2: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.validateIntegerConstants`
+Benitoite/Interval/Exchange.lean:250:32: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq Ty
+
+Hint: Adding the command `deriving instance BEq for Benitoite.Release.Ty` may allow Lean to derive the missing instance.
+Benitoite/Interval/Exchange.lean:262:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (Option TargetOperation)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:265:51: error: Ambiguous term
+  Expr
+Possible interpretations:
+  Surface.Expr : Type
+  
+  Lean.Expr : Type
+Benitoite/Interval/Exchange.lean:281:12: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.ConstantEntry`
+Benitoite/Interval/Exchange.lean:282:4: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.validateIntegerConstants`
+Benitoite/Interval/Exchange.lean:286:47: error(lean.unknownIdentifier): Unknown identifier `SurfaceExchange.expandConstant`
+Benitoite/Interval/Exchange.lean:287:79: error(lean.invalidField): Invalid field notation: Type of
+  expanded
+is not known; cannot resolve field `cache`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `HasConstCache.cache`
+  • `MonadCache.cache`
+  • `MonadHashMapCacheAdapter.cache`
+  • `Exchange.ConstantState.cache`
+  • `Core.State.cache`
+  • `Expr.ReplaceLevelImpl.cache`
+  • `Meta.State.cache`
+  • `Parser.ParserState.cache`
+  • `Std.Sat.AIG.cache`
+  • `Meta.AbstractNestedProofs.Context.cache`
+  • `Meta.Canonicalizer.State.cache`
+  • `Meta.CheckAssignment.State.cache`
+  • `Meta.Simp.Result.cache`
+  • `Meta.Simp.State.cache`
+  • `MetavarContext.LevelMVarToParam.State.cache`
+  • `MetavarContext.MkBinding.State.cache`
+  • `Std.Tactic.BVDecide.Return.cache`
+  • `Compiler.LCNF.ToLCNF.State.cache`
+  • `Elab.Tactic.Grind.State.cache`
+  • `Elab.WF.GuessLex.RecCallCache.cache`
+  • `Meta.Sym.Canon.State.cache`
+  • `Meta.Sym.DSimp.State.cache`
+  • `Std.Tactic.BVDecide.BVExpr.Return.cache`
+  • `Std.Tactic.BVDecide.BVExpr.WithCache.cache`
+  • `Meta.Grind.AC.ProofM.State.cache`
+  • `Meta.Grind.Arith.CommRing.ProofM.State.cache`
+  • `Meta.Grind.Arith.Linear.ProofM.State.cache`
+Benitoite/Interval/Exchange.lean:288:32: error(lean.invalidField): Invalid field notation: Type of
+  x✝
+is not known; cannot resolve field `name`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `AsyncConstantInfo.name`
+  • `AttributeImplCore.name`
+  • `ClassEntry.name`
+  • `ConstantInfo.name`
+  • `ConstantVal.name`
+  • `Constructor.name`
+  • `Doc.name`
+  • `FVarId.name`
+  • `InductiveType.name`
+  • `LeanOption.name`
+  • `LevelMVarId.name`
+  • `MVarId.name`
+  • `MacroScopesView.name`
+  • `ModuleSetup.name`
+  • `Option.name`
+  • `OptionDecl.name`
+  • `PersistentEnvExtension.name`
+  • `PersistentEnvExtensionDescrCore.name`
+  • `SimplePersistentEnvExtensionDescr.name`
+  • `Exchange.Atom.name`
+  • `Exchange.ClassEntry.name`
+  • `Exchange.ConstantEntry.name`
+  • `Exchange.DataTypeInfo.name`
+  • `Exchange.Definition.name`
+  • `Exchange.EffectEntry.name`
+  • `Exchange.ImplEntry.name`
+  • `Exchange.Input.name`
+  • `Exchange.MethodEntry.name`
+  • `Exchange.OpEntry.name`
+  • `Exchange.OperatorEntry.name`
+  • `Exchange.PrimOpEntry.name`
+  • `Atom.name`
+  • `BuiltinDataDecl.name`
+  • `BuiltinDataSummary.name`
+  • `Doc.CodeBlockSuggestion.name`
+  • `Doc.PostponedKind.name`
+  • `Doc.PostponedName.name`
+  • `Elab.Attribute.name`
+  • `Elab.DocElabInfo.name`
+  • `Elab.InlayHintLabel.name`
+  • `Firefox.Category.name`
+  • `Firefox.FuncTable.name`
+  • `Firefox.RawMarkerTable.name`
+  • `Firefox.Thread.name`
+  • `IR.CtorInfo.name`
+  • `IR.Decl.name`
+  • `KeyedDeclsAttribute.Def.name`
+  • `LibrarySuggestions.Suggestion.name`
+  • `Lsp.CallHierarchyItem.name`
+  • `Lsp.ClientInfo.name`
+  • `Lsp.DocumentSymbolAux.name`
+  • `Lsp.InlayHintLabel.name`
+  • `Lsp.LeanModule.name`
+  • `Lsp.ParameterInformationLabel.name`
+  • `Lsp.ServerInfo.name`
+  • `Lsp.SymbolInformation.name`
+  • `Lsp.WorkspaceFolder.name`
+  • `Meta.ElimAltInfo.name`
+  • `Meta.ExprParamInfo.name`
+  • `ScopedEnvExtension.Descr.name`
+  • `SimpleScopedEnvExtension.Descr.name`
+  • `Try.Config.name`
+  • `Widget.UserWidgetDefinition.name`
+  • `Std.Net.InterfaceAddress.name`
+  • `Std.Time.TimeZone.name`
+  • `BudgetWhole.Definition.name`
+  • `CheckTables.DataMaterial.name`
+  • `CheckTables.PrimEntry.name`
+  • `Compiler.LCNF.CtorInfo.name`
+  • `Compiler.LCNF.Pass.name`
+  • `Compiler.LCNF.Signature.name`
+  • `Doc.Data.Atom.name`
+  • `Doc.Data.Const.name`
+  • `Doc.Data.ConvTactic.name`
+  • `Doc.Data.Local.name`
+  • `Doc.Data.Option.name`
+  • `Doc.Data.SyntaxCat.name`
+  • `Doc.Data.Tactic.name`
+  • `Elab.Command.Linter.name`
+  • `Elab.Command.ModuleLinter.name`
+  • `Elab.Term.NamedArg.name`
+  • `Linter.CodeQuality.Entry.name`
+  • `PrettyPrinter.Delaborator.ParamKind.name`
+  • `Server.FileWorker.NamespaceEntry.name`
+  • `Server.References.ParentDecl.name`
+  • `Server.Watchdog.CallHierarchyItemData.name`
+  • `Std.Async.System.OSInfo.name`
+  • `Std.Http.URI.Host.name`
+  • `Std.Time.TimeZone.DaylightSavingRule.name`
+  • `Input.name`
+  • `Module.name`
+  • `Elab.Command.Structure.StructFieldInfo.name`
+  • `Elab.Command.Structure.StructFieldView.name`
+  • `Elab.Command.Structure.StructParentInfo.name`
+  • `Elab.Tactic.ElimApp.Alt.name`
+  • `Elab.Tactic.Try.TrySuggestionEntry.name`
+  • `Elab.Term.Do.JPDecl.name`
+  • `Meta.Match.Extension.Entry.name`
+  • `Meta.Sym.DSimp.SymDSimpVariantEntry.name`
+  • `Meta.Sym.Simp.SymSimpVariantEntry.name`
+  • `Elab.Tactic.Do.ProofMode.Hyp.name`
+  • `Meta.Tactic.BVDecide.Normalize.Hyp.name`
+  • `Meta.Tactic.BVDecide.Normalize.Pass.name`
+Benitoite/Interval/Exchange.lean:289:48: error(lean.invalidField): Invalid field notation: Type of
+  m
+is not known; cannot resolve field `definitions`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Exchange.Input.definitions`
+  • `BudgetWhole.definitions`
+  • `BudgetWhole.Module.definitions`
+  • `Module.definitions`
+Benitoite/Interval/Exchange.lean:308:0: error: Invalid name after `end`: Expected `Interval.Exchange.SurfaceExchange`, but found `Benitoite.Interval.Exchange`
+
+Hint: If you meant to end the outer scope(s) `Benitoite.Interval.Exchange`, you must end all the intervening scopes `Benitoite.Interval.Exchange.SurfaceExchange`:
+  end Benitoite.Interval.Exchange.̲S̲u̲r̲f̲a̲c̲e̲E̲x̲c̲h̲a̲n̲g̲e̲
+
+exit=1, seconds=0.938

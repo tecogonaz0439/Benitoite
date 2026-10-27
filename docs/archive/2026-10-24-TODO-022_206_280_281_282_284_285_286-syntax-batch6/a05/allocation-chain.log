@@ -1,0 +1,16 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.83s
+     Running tests/call_allocations.rs (target/debug/deps/call_allocations-85df9c9993286b3c)
+
+running 1 test
+20000 constants: 8.437878208s, 455816427 allocated bytes
+test long_constant_chain_has_bounded_check_allocations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.44s
+
+A05_COMMAND_EXIT_STATUS=0
+       26.13 real        38.26 user         1.71 sys
+time: sysctl kern.clockrate: Operation not permitted
+
+A05_OUTER_EXIT_STATUS=1
+A05_ELAPSED_SECONDS=26.141

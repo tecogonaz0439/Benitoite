@@ -1,0 +1,28 @@
+{"readerInputs": 195, "readerOccurrences": 1381, "sourceTargets": 227, "arithmeticKinds": 81, "shiftDeclarations": 27, "shiftHeads": {"primName": 40, "funName": 14}, "syntheticRoots": 195, "analyzedProbeBodies": 0, "acceptedPointBodies": 1}
+{"calls": 279, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow", "initial": "292", "selected": "292", "attempts": [{"fuel": "292", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "width", "initial": "580", "selected": "580", "attempts": [{"fuel": "580", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "range", "initial": "200", "selected": "200", "attempts": [{"fuel": "200", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "domain", "initial": "2192", "selected": "2192", "attempts": [{"fuel": "2192", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow-containers", "initial": "40", "selected": "80", "attempts": [{"fuel": "40", "exit": 1, "excluded": "1"}, {"fuel": "80", "exit": 0, "excluded": "0"}]}]}
+Traceback (most recent call last):
+  File "<repo>/crates/benitoite/tests/desugar_export/check_batch3.py", line 173, in <module>
+    main()
+  File "<repo>/crates/benitoite/tests/desugar_export/check_batch3.py", line 169, in main
+    check(args.rust_dir.resolve(), args.report.resolve())
+  File "<repo>/crates/benitoite/tests/desugar_export/check_batch3.py", line 94, in check
+    data, expected = BATCH3["rust_inputs"](directory)
+  File "<repo>/formal/tests/test_batch3_exchange.py", line 161, in rust_inputs
+    data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
+  File "<repo>/formal/tests/test_batch3_exchange.py", line 161, in <dictcomp>
+    data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '<repo>/target/desugar-diff/x04a-local/batch3/g2/corpus.json'
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x04a/local_probe.py", line 76, in <module>
+    main()
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x04a/local_probe.py", line 51, in main
+    subprocess.run([sys.executable, '-B', 'crates/benitoite/tests/desugar_export/check_batch3.py',
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/Library/Developer/CommandLineTools/usr/bin/python3', '-B', 'crates/benitoite/tests/desugar_export/check_batch3.py', '--rust-dir', 'target/desugar-diff/x04a-local/batch3/g2', '--report', 'target/desugar-diff/x04a-local/batch3/g2-exchange-results.json']' returned non-zero exit status 1.

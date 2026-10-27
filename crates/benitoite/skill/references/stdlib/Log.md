@@ -101,6 +101,27 @@ public function error(message: String, attributes: List[Attribute], location: So
 Emits one Error event. Argument evaluation is eager.
 
 ```benitoite
+public function formatRecord(record: Record) -> String
+```
+
+Formats any record, including Debug, in the default text format without emitting it.
+This pure function neither filters levels nor appends a newline.
+Fields appear as level, source, message, then attributes in list order, preserving duplicate keys.
+Levels are DEBUG/INFO/WARN/ERROR; source is the quoted file:line:column location.
+Source, message, attribute keys, and Text values use JSON quoting and escaping.
+Boolean values are true/false; integers are decimal; finite Float values use Float.toString.
+Non-finite Float values are nan/inf/-inf. No timestamp is added; the result is not JSON.
+String size limits apply during formatting, as for the default handler and withTextLogger.
+
+```benitoite test
+@test
+function formatRecordExample() -> Unit uses Assert.Check
+  bind record <- Log.Record(level: Log.Level.Debug, message: "done\n\"ok\"", attributes: [Log.attribute(key: "tag", value: "first"), Log.attribute(key: "tag", value: true)], location: SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3))
+  Assert.equal(actual: Log.formatRecord(record: record), expected: "level=DEBUG source=\"app/Main.bnt:12:3\" message=\"done\\n\\\"ok\\\"\" attr.\"tag\"=\"first\" attr.\"tag\"=true")
+end function
+```
+
+```benitoite
 public function withAttributes[T, effect E](attributes: List[Attribute], body: function() -> T uses Log, E) -> T uses Log, E
 ```
 

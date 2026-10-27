@@ -1,0 +1,434 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+⚠ [56/77] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [59/77] Built Benitoite.Interval.EvalClosed (1.1s)
+✔ [60/77] Built Benitoite.Interval.BudgetEnvironment (1.5s)
+✔ [61/77] Built Benitoite.Interval.BudgetPatterns (1.6s)
+⚠ [62/77] Built Benitoite.Interval.Sound (13s)
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [63/77] Built Benitoite.Interval.BudgetWalk (444ms)
+✔ [64/77] Built Benitoite.Interval.BudgetIndependentRun (267ms)
+✔ [65/77] Built Benitoite.Interval.BudgetChildren (665ms)
+✔ [66/77] Built Benitoite.Interval.BudgetAnalyze (481ms)
+✔ [67/77] Built Benitoite.Interval.BudgetProof (360ms)
+✔ [68/77] Built Benitoite.Interval.BudgetTraversal (2.4s)
+✔ [69/77] Built Benitoite.Interval.BudgetLocated (1.9s)
+✔ [70/77] Built Benitoite.Interval.SyntacticReach (1.0s)
+✖ [71/77] Building Benitoite.Interval.BudgetNormal (15s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/BudgetNormal.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetNormal.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetNormal.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetNormal.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/BudgetNormal.setup.json --json
+error: Benitoite/Interval/BudgetNormal.lean:170:16: Type mismatch: After simplification, term
+  unknown_contains normalValue
+ has type
+  baseUnknown.Contains normalValue
+but is expected to have type
+  (if ↑n✝ ≤ IntKind.integer8.max then baseIntegerKind IntKind.integer8 (normalize (↑n✝) (↑n✝) IntKind.integer8)
+      else baseUnknown).Contains
+    normalValue
+error: Benitoite/Interval/BudgetNormal.lean:170:16: Type mismatch: After simplification, term
+  unknown_contains normalValue
+ has type
+  baseUnknown.Contains normalValue
+but is expected to have type
+  (if ↑n✝ ≤ IntKind.integer16.max then baseIntegerKind IntKind.integer16 (normalize (↑n✝) (↑n✝) IntKind.integer16)
+      else baseUnknown).Contains
+    normalValue
+error: Benitoite/Interval/BudgetNormal.lean:170:16: Type mismatch: After simplification, term
+  unknown_contains normalValue
+ has type
+  baseUnknown.Contains normalValue
+but is expected to have type
+  (if ↑n✝ ≤ IntKind.integer32.max then baseIntegerKind IntKind.integer32 (normalize (↑n✝) (↑n✝) IntKind.integer32)
+      else baseUnknown).Contains
+    normalValue
+error: Benitoite/Interval/BudgetNormal.lean:170:16: Type mismatch: After simplification, term
+  unknown_contains normalValue
+ has type
+  baseUnknown.Contains normalValue
+but is expected to have type
+  (if ↑n✝ ≤ IntKind.unsignedInteger16.max then
+        baseIntegerKind IntKind.unsignedInteger16 (normalize (↑n✝) (↑n✝) IntKind.unsignedInteger16)
+      else baseUnknown).Contains
+    normalValue
+error: Benitoite/Interval/BudgetNormal.lean:170:16: Type mismatch: After simplification, term
+  unknown_contains normalValue
+ has type
+  baseUnknown.Contains normalValue
+but is expected to have type
+  (if ↑n✝ ≤ IntKind.unsignedInteger32.max then
+        baseIntegerKind IntKind.unsignedInteger32 (normalize (↑n✝) (↑n✝) IntKind.unsignedInteger32)
+      else baseUnknown).Contains
+    normalValue
+error: Benitoite/Interval/BudgetNormal.lean:170:16: Type mismatch: After simplification, term
+  unknown_contains normalValue
+ has type
+  baseUnknown.Contains normalValue
+but is expected to have type
+  (if ↑n✝ ≤ IntKind.unsignedInteger64.max then
+        baseIntegerKind IntKind.unsignedInteger64 (normalize (↑n✝) (↑n✝) IntKind.unsignedInteger64)
+      else baseUnknown).Contains
+    normalValue
+error: Benitoite/Interval/BudgetNormal.lean:152:31: unsolved goals
+case mk.negInteger8
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key : OperationKey
+x✝ : Unit
+unknownEnv : ConcreteEnv
+normalValue : ConcreteValue
+models : Models abstract unknownEnv
+type : Ty
+evalKey : OperationKey
+n✝ : Nat
+typed : normalValue.type = { source := Expr.negInteger8 n✝, type := type, key := evalKey }.type
+unsupported : 128 < ↑n✝
+⊢ Success
+    (match { source := Expr.negInteger8 n✝, type := type, key := evalKey }.source with
+    | Expr.literal (Literal.integer value) => pure (baseInteger (normalize value.toValue.toInt value.toValue.toInt))
+    | Expr.negInt value => pure (baseInteger (normalize value.negValue.toInt value.negValue.toInt))
+    | Expr.literal (Literal.integer8 value) => pure (baseWidthLiteral IntKind.integer8 ↑value)
+    | Expr.literal (Literal.integer16 value) => pure (baseWidthLiteral IntKind.integer16 ↑value)
+    | Expr.literal (Literal.integer32 value) => pure (baseWidthLiteral IntKind.integer32 ↑value)
+    | Expr.literal (Literal.unsignedInteger16 value) => pure (baseWidthLiteral IntKind.unsignedInteger16 ↑value)
+    | Expr.literal (Literal.unsignedInteger32 value) => pure (baseWidthLiteral IntKind.unsignedInteger32 ↑value)
+    | Expr.literal (Literal.unsignedInteger64 value) => pure (baseWidthLiteral IntKind.unsignedInteger64 ↑value)
+    | Expr.negInteger8 value => pure (baseWidthLiteral IntKind.integer8 (-↑value))
+    | Expr.negInteger16 value => pure (baseWidthLiteral IntKind.integer16 (-↑value))
+    | Expr.negInteger32 value => pure (baseWidthLiteral IntKind.integer32 (-↑value))
+    | Expr.literal (Literal.boolean value) => pure (baseBoolean (!value, value))
+    | Expr.unit => pure baseUnit
+    | Expr.local index => do
+      let slot ← scan (BudgetScan.read abstract index)
+      pure
+          (match slot with
+          | some (AbstractSlot.integer range) => baseInteger range true
+          | some (AbstractSlot.integerKind width range) => baseIntegerKind width range true
+          | x => baseUnknown)
+    | child.paren => expr fuel abstract child
+    | Expr.constE ty child => expr fuel (clearLocals abstract) child
+    | Expr.returnE resultTy child => do
+      let __do_lift ← expr fuel abstract child
+      pure __do_lift.abrupt
+    | Expr.neg type_1 child =>
+      if negSupported type_1 = true then do
+        let value ← expr fuel abstract child
+        let __do_lift ← negOwn key value
+        pure (baseThen value __do_lift)
+      else do
+        unknownChildren (expr fuel) (block fuel) fuel abstract
+            { source := Expr.negInteger8 n✝, type := type, key := evalKey }.source
+        BudgetAnalysis.unsupported
+    | Expr.binary op type_1 left right =>
+      if binarySupported op type_1 = true then do
+        let lhs ← expr fuel abstract left
+        if (!lhs.live) = true then do
+            skipExpr fuel right
+            pure lhs.abrupt
+          else do
+            let rhs ← expr fuel abstract right
+            if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+              else do
+                let __do_lift ← own key op type_1 lhs rhs
+                pure (baseThen lhs (baseThen rhs __do_lift))
+      else do
+        unknownChildren (expr fuel) (block fuel) fuel abstract
+            { source := Expr.negInteger8 n✝, type := type, key := evalKey }.source
+        BudgetAnalysis.unsupported
+    | left.and right => shortCircuit fuel abstract left right true
+    | left.or right => shortCircuit fuel abstract left right false
+    | Expr.matchE resultTy source arms => do
+      let tested ← expr fuel abstract source
+      if (!tested.live) = true then do
+          skipArms fuel arms
+          pure tested.abrupt
+        else
+          if tested.onlyInteger = true then do
+            let __do_lift ← armList fuel abstract source tested.integer arms
+            pure (baseMatch tested __do_lift)
+          else do
+            skipArms fuel arms
+            let __do_lift ← BudgetAnalysis.unsupported
+            pure (baseThen tested __do_lift)
+    | child.not => do
+      let value ← expr fuel abstract child
+      pure
+          (have __src := baseBoolean (value.boolean.snd, value.boolean.fst);
+          { integer := __src.integer, boolean := __src.boolean, other := __src.other, mayFail := value.mayFail,
+            warnings := __src.warnings, widths := __src.widths })
+    | Expr.block body => block fuel abstract body
+    | condition.ite yes no => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ←
+        branch abstract condition tested false (fun inner => block fuel inner no) fun x => skipBlock fuel no
+      pure (baseMerge tested positive negative)
+    | condition.elseIf yes no => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => blerror: build failed
+ock fuel inner yes) fun x => skipBlock fuel yes
+      let negative ← branch abstract condition tested false (fun inner => expr fuel inner no) fun x => skipExpr fuel no
+      pure (baseMerge tested positive negative)
+    | condition.ifOnly yes => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ← branch abstract condition tested false (fun x => pure baseUnit) fun x => pure ()
+      pure (baseMerge tested positive negative)
+    | x => do
+      unknownChildren (expr fuel) (block fuel) fuel abstract
+          { source := Expr.negInteger8 n✝, type := type, key := evalKey }.source
+      BudgetAnalysis.unsupported)
+    fun approx => NormalCovered approx (EvalOutcome.normal normalValue)
+
+case mk.negInteger16
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key : OperationKey
+x✝ : Unit
+unknownEnv : ConcreteEnv
+normalValue : ConcreteValue
+models : Models abstract unknownEnv
+type : Ty
+evalKey : OperationKey
+n✝ : Nat
+typed : normalValue.type = { source := Expr.negInteger16 n✝, type := type, key := evalKey }.type
+unsupported : 32768 < ↑n✝
+⊢ Success
+    (match { source := Expr.negInteger16 n✝, type := type, key := evalKey }.source with
+    | Expr.literal (Literal.integer value) => pure (baseInteger (normalize value.toValue.toInt value.toValue.toInt))
+    | Expr.negInt value => pure (baseInteger (normalize value.negValue.toInt value.negValue.toInt))
+    | Expr.literal (Literal.integer8 value) => pure (baseWidthLiteral IntKind.integer8 ↑value)
+    | Expr.literal (Literal.integer16 value) => pure (baseWidthLiteral IntKind.integer16 ↑value)
+    | Expr.literal (Literal.integer32 value) => pure (baseWidthLiteral IntKind.integer32 ↑value)
+    | Expr.literal (Literal.unsignedInteger16 value) => pure (baseWidthLiteral IntKind.unsignedInteger16 ↑value)
+    | Expr.literal (Literal.unsignedInteger32 value) => pure (baseWidthLiteral IntKind.unsignedInteger32 ↑value)
+    | Expr.literal (Literal.unsignedInteger64 value) => pure (baseWidthLiteral IntKind.unsignedInteger64 ↑value)
+    | Expr.negInteger8 value => pure (baseWidthLiteral IntKind.integer8 (-↑value))
+    | Expr.negInteger16 value => pure (baseWidthLiteral IntKind.integer16 (-↑value))
+    | Expr.negInteger32 value => pure (baseWidthLiteral IntKind.integer32 (-↑value))
+    | Expr.literal (Literal.boolean value) => pure (baseBoolean (!value, value))
+    | Expr.unit => pure baseUnit
+    | Expr.local index => do
+      let slot ← scan (BudgetScan.read abstract index)
+      pure
+          (match slot with
+          | some (AbstractSlot.integer range) => baseInteger range true
+          | some (AbstractSlot.integerKind width range) => baseIntegerKind width range true
+          | x => baseUnknown)
+    | child.paren => expr fuel abstract child
+    | Expr.constE ty child => expr fuel (clearLocals abstract) child
+    | Expr.returnE resultTy child => do
+      let __do_lift ← expr fuel abstract child
+      pure __do_lift.abrupt
+    | Expr.neg type_1 child =>
+      if negSupported type_1 = true then do
+        let value ← expr fuel abstract child
+        let __do_lift ← negOwn key value
+        pure (baseThen value __do_lift)
+      else do
+        unknownChildren (expr fuel) (block fuel) fuel abstract
+            { source := Expr.negInteger16 n✝, type := type, key := evalKey }.source
+        BudgetAnalysis.unsupported
+    | Expr.binary op type_1 left right =>
+      if binarySupported op type_1 = true then do
+        let lhs ← expr fuel abstract left
+        if (!lhs.live) = true then do
+            skipExpr fuel right
+            pure lhs.abrupt
+          else do
+            let rhs ← expr fuel abstract right
+            if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+              else do
+                let __do_lift ← own key op type_1 lhs rhs
+                pure (baseThen lhs (baseThen rhs __do_lift))
+      else do
+        unknownChildren (expr fuel) (block fuel) fuel abstract
+            { source := Expr.negInteger16 n✝, type := type, key := evalKey }.source
+        BudgetAnalysis.unsupported
+    | left.and right => shortCircuit fuel abstract left right true
+    | left.or right => shortCircuit fuel abstract left right false
+    | Expr.matchE resultTy source arms => do
+      let tested ← expr fuel abstract source
+      if (!tested.live) = true then do
+          skipArms fuel arms
+          pure tested.abrupt
+        else
+          if tested.onlyInteger = true then do
+            let __do_lift ← armList fuel abstract source tested.integer arms
+            pure (baseMatch tested __do_lift)
+          else do
+            skipArms fuel arms
+            let __do_lift ← BudgetAnalysis.unsupported
+            pure (baseThen tested __do_lift)
+    | child.not => do
+      let value ← expr fuel abstract child
+      pure
+          (have __src := baseBoolean (value.boolean.snd, value.boolean.fst);
+          { integer := __src.integer, boolean := __src.boolean, other := __src.other, mayFail := value.mayFail,
+            warnings := __src.warnings, widths := __src.widths })
+    | Expr.block body => block fuel abstract body
+    | condition.ite yes no => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ←
+        branch abstract condition tested false (fun inner => block fuel inner no) fun x => skipBlock fuel no
+      pure (baseMerge tested positive negative)
+    | condition.elseIf yes no => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ← branch abstract condition tested false (fun inner => expr fuel inner no) fun x => skipExpr fuel no
+      pure (baseMerge tested positive negative)
+    | condition.ifOnly yes => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ← branch abstract condition tested false (fun x => pure baseUnit) fun x => pure ()
+      pure (baseMerge tested positive negative)
+    | x => do
+      unknownChildren (expr fuel) (block fuel) fuel abstract
+          { source := Expr.negInteger16 n✝, type := type, key := evalKey }.source
+      BudgetAnalysis.unsupported)
+    fun approx => NormalCovered approx (EvalOutcome.normal normalValue)
+
+case mk.negInteger32
+abstract : AbstractEnv
+concrete : ConcreteEnv
+input : EvalInput
+outcome : EvalOutcome
+trace : EvalTrace
+eval : EvalPartial concrete input outcome trace
+fuel : Nat
+key : OperationKey
+x✝ : Unit
+unknownEnv : ConcreteEnv
+normalValue : ConcreteValue
+models : Models abstract unknownEnv
+type : Ty
+evalKey : OperationKey
+n✝ : Nat
+typed : normalValue.type = { source := Expr.negInteger32 n✝, type := type, key := evalKey }.type
+unsupported : 2147483648 < ↑n✝
+⊢ Success
+    (match { source := Expr.negInteger32 n✝, type := type, key := evalKey }.source with
+    | Expr.literal (Literal.integer value) => pure (baseInteger (normalize value.toValue.toInt value.toValue.toInt))
+    | Expr.negInt value => pure (baseInteger (normalize value.negValue.toInt value.negValue.toInt))
+    | Expr.literal (Literal.integer8 value) => pure (baseWidthLiteral IntKind.integer8 ↑value)
+    | Expr.literal (Literal.integer16 value) => pure (baseWidthLiteral IntKind.integer16 ↑value)
+    | Expr.literal (Literal.integer32 value) => pure (baseWidthLiteral IntKind.integer32 ↑value)
+    | Expr.literal (Literal.unsignedInteger16 value) => pure (baseWidthLiteral IntKind.unsignedInteger16 ↑value)
+    | Expr.literal (Literal.unsignedInteger32 value) => pure (baseWidthLiteral IntKind.unsignedInteger32 ↑value)
+    | Expr.literal (Literal.unsignedInteger64 value) => pure (baseWidthLiteral IntKind.unsignedInteger64 ↑value)
+    | Expr.negInteger8 value => pure (baseWidthLiteral IntKind.integer8 (-↑value))
+    | Expr.negInteger16 value => pure (baseWidthLiteral IntKind.integer16 (-↑value))
+    | Expr.negInteger32 value => pure (baseWidthLiteral IntKind.integer32 (-↑value))
+    | Expr.literal (Literal.boolean value) => pure (baseBoolean (!value, value))
+    | Expr.unit => pure baseUnit
+    | Expr.local index => do
+      let slot ← scan (BudgetScan.read abstract index)
+      pure
+          (match slot with
+          | some (AbstractSlot.integer range) => baseInteger range true
+          | some (AbstractSlot.integerKind width range) => baseIntegerKind width range true
+          | x => baseUnknown)
+    | child.paren => expr fuel abstract child
+    | Expr.constE ty child => expr fuel (clearLocals abstract) child
+    | Expr.returnE resultTy child => do
+      let __do_lift ← expr fuel abstract child
+      pure __do_lift.abrupt
+    | Expr.neg type_1 child =>
+      if negSupported type_1 = true then do
+        let value ← expr fuel abstract child
+        let __do_lift ← negOwn key value
+        pure (baseThen value __do_lift)
+      else do
+        unknownChildren (expr fuel) (block fuel) fuel abstract
+            { source := Expr.negInteger32 n✝, type := type, key := evalKey }.source
+        BudgetAnalysis.unsupported
+    | Expr.binary op type_1 left right =>
+      if binarySupported op type_1 = true then do
+        let lhs ← expr fuel abstract left
+        if (!lhs.live) = true then do
+            skipExpr fuel right
+            pure lhs.abrupt
+          else do
+            let rhs ← expr fuel abstract right
+            if (!rhs.live) = true then pure (baseThen lhs rhs.abrupt)
+              else do
+                let __do_lift ← own key op type_1 lhs rhs
+                pure (baseThen lhs (baseThen rhs __do_lift))
+      else do
+        unknownChildren (expr fuel) (block fuel) fuel abstract
+            { source := Expr.negInteger32 n✝, type := type, key := evalKey }.source
+        BudgetAnalysis.unsupported
+    | left.and right => shortCircuit fuel abstract left right true
+    | left.or right => shortCircuit fuel abstract left right false
+    | Expr.matchE resultTy source arms => do
+      let tested ← expr fuel abstract source
+      if (!tested.live) = true then do
+          skipArms fuel arms
+          pure tested.abrupt
+        else
+          if tested.onlyInteger = true then do
+            let __do_lift ← armList fuel abstract source tested.integer arms
+            pure (baseMatch tested __do_lift)
+          else do
+            skipArms fuel arms
+            let __do_lift ← BudgetAnalysis.unsupported
+            pure (baseThen tested __do_lift)
+    | child.not => do
+      let value ← expr fuel abstract child
+      pure
+          (have __src := baseBoolean (value.boolean.snd, value.boolean.fst);
+          { integer := __src.integer, boolean := __src.boolean, other := __src.other, mayFail := value.mayFail,
+            warnings := __src.warnings, widths := __src.widths })
+    | Expr.block body => block fuel abstract body
+    | condition.ite yes no => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ←
+        branch abstract condition tested false (fun inner => block fuel inner no) fun x => skipBlock fuel no
+      pure (baseMerge tested positive negative)
+    | condition.elseIf yes no => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ← branch abstract condition tested false (fun inner => expr fuel inner no) fun x => skipExpr fuel no
+      pure (baseMerge tested positive negative)
+    | condition.ifOnly yes => do
+      let tested ← expr fuel abstract condition
+      let positive ←
+        branch abstract condition tested true (fun inner => block fuel inner yes) fun x => skipBlock fuel yes
+      let negative ← branch abstract condition tested false (fun x => pure baseUnit) fun x => pure ()
+      pure (baseMerge tested positive negative)
+    | x => do
+      unknownChildren (expr fuel) (block fuel) fuel abstract
+          { source := Expr.negInteger32 n✝, type := type, key := evalKey }.source
+      BudgetAnalysis.unsupported)
+    fun approx => NormalCovered approx (EvalOutcome.normal normalValue)
+Some required targets logged failures:
+- Benitoite.Interval.BudgetNormal

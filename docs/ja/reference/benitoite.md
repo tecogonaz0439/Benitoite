@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.11 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,7 +16,7 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.11` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.12` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
 `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
@@ -100,7 +100,7 @@ benitoite --licenses
 | `skill` | 同梱の Agent Skill をインストール・削除する。または、インストールせずに埋め込み文書の一覧を取得し、本文を取り出す。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.11`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.12`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
 | `--version=json` | 版・ビルド・対応する形式の情報を一つの JSON オブジェクトとして出力する。最初の引数でなければならず、後続の引数は受け付けない。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
@@ -159,7 +159,7 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "unicodeVersion": "17.0.0",
   "displayWidthUnicodeVersion": "17.0.0",
   "build": {
@@ -232,8 +232,9 @@ benitoite test --check --report=json tests/
 | `aggregateEffects` | 報告全体が完全なときだけ、`main` の Effects オブジェクト、または選んだすべてのテストのエフェクトの和集合を返す。それ以外は `null`。 |
 | `diagnostics` | [診断](#18-診断)で説明する診断オブジェクトの配列。 |
 | `diagnosticTargets` | 診断ごとに一つの `{diagnosticIndex, targetId}`。探索全体の誤りと使い方の誤りでは `targetId: null`。 |
+| `intervalAnalysis` | [区間解析の範囲](#区間解析の範囲)で説明する追加の局所の区間解析の情報。報告の受理条件は変えない。 |
 
-すべての対象は、`targetId`、`requestIndex`、`entry`、`root`、`sourceId`、`kind`、`status`、`complete` を持つ。`entry` と `root` は表示用のパスである。入口のバイト列を保持していなければ、`sourceId` は `null` になる。main の対象は `kind: "main"` と `main` 欄を持つ。テストの対象は `kind: "tests"` と `tests` 欄を持ち、`main` 欄は持たない。
+すべての対象は、`targetId`、`requestIndex`、`entry`、`root`、`sourceId`、`kind`、`status`、`complete` と、追加の `intervalAnalysis` 欄を持つ。`entry` と `root` は表示用のパスである。入口のバイト列を保持していなければ、`sourceId` は `null` になる。main の対象は `kind: "main"` と `main` 欄を持つ。テストの対象は `kind: "tests"` と `tests` 欄を持ち、`main` 欄は持たない。
 
 成功した `main` は `{symbol: "main", location, effects, processShellReference, shellReferenceScope}` である。`tests` の各要素は `{function, description, location, effects}` であり、宣言順に並ぶ。テストの説明を省いた場合は `null`、空の説明を明示した場合は `""` になる。`location` は `{file, start, end, label: ""}` で関数名の位置を示す。start と end は、1 から数える `line` と `column`、元のソースでの 0 から数えるバイト位置 `offset` を含む。
 
@@ -261,6 +262,30 @@ main かテストに未処理の `Failure.Fail[E]` があれば、test --check �
 集計を確認済みの集合として使う前に、単一 JSON オブジェクトが完全に出力されていること、解釈できる `schemaVersion` と `kind` であること、`status: "ok"`、`complete: true`、終了状態 0 を確かめる。`--deny-warnings` で誤りにした警告があれば、報告は `checkError` になる。テストの非実行の検査で複数の失敗があれば、中断、処理系の不具合、使い方の誤り、検査の誤りの順に優先する。
 
 出力を始める前に、報告の組み立てと直列化を終える。書き込みや flush の失敗を優先し、終了状態 1 で終える。別の報告を追記・再送しない。OS の書き込みが分割されない保証はない。初期化の失敗、報告の境界の外の失敗、失敗報告そのものの組み立て中の失敗、abort、強制終了、出力の切断では、完全な報告を保証しない。テストの非実行の検査は、各ファイルを始める前に中断を確認し、検査中は継続的に確認しない。最後のファイルの検査中の要求は、報告されないことがある。main の非実行の検査では、シグナルを OS の既定の動作に委ねる。
+
+### 区間解析の範囲
+
+報告と各対象は、`basis: "localIntervals"` を持つ `intervalAnalysis` オブジェクトを含む。[局所の区間解析](#局所の区間解析の警告)をどこまで実行したかを示す。報告の受理には、従来どおり、完全な単一の JSON オブジェクト、解釈できるスキーマの版と種類、`status: "ok"`、`complete: true`、終了状態 0 を要求する。ハーネスは `coverage: "all"` を受理条件に加えない。`complete` は型とエフェクトの検査および契約の抽出、`coverage` は追加の区間解析を表す。成功した報告でも `coverage: "some"` になりうる。`--deny-warnings` で拒否した報告でも `coverage: "all"` が残ることがある。
+
+| `intervalAnalysis` の欄 | 意味 |
+|---|---|
+| `basis` | `"localIntervals"`。 |
+| `coverage` | 後述する `"all"`、`"some"`、`"none"`。 |
+| `inputDefinitions` | 型検査を通り、解析に渡した元定義の数。別に解析するラムダやハンドラの本体は加算しない。 |
+| `unsupportedBodies` | 本体またはその独立解析した入力に未対応の構文を含む本体結果の数。停止した本体も含め、各本体結果を一度だけ数える。 |
+| `bodyBudgetExceeded` | 本体の予算で停止した本体結果の数。式の同定中の停止を除く。 |
+| `wholeBudgetSkipped` | 検査全体の予算によって不完全になった範囲の数。停止した本体結果、発見済みで未解析の本体、残る有効な元定義、本体の発見や準備が未完の元定義を数える。同じ元定義で段停止を繰り返しても、その不完全な範囲を重ねて数えない。 |
+| `unidentifiedBodies` | 式の同定中に予算で停止した本体結果の数。本体と検査全体のどちらの予算による停止も含む。 |
+| `phaseStops` | 準備、本体の発見、待ち行列の構築、入れ子の本体の制御、検査全体の制御での停止を別に数える。`exceeded` と `unidentified` はそれぞれ `bodyOperations`、`bodyItems`、`wholeOperations`、`wholeItems` を含む。`depth` と `other` は残る停止の種類を数える。 |
+| `usage` | `operations`、`savedItems`、`peakItems`、`maxBodyOperations`、`maxBodyItems`。実際の解析の仕事量、保持する項目数、同時保持項目数の最大値、本体ごとの二つの最大値を表す。項目は解析予算の単位であり、バイト数ではない。 |
+
+件数と使用量はすべて非負の JSON 整数である。`wholeBudgetSkipped` は未発見の本体を数えず、同じ本体の全体予算による同定中の停止を重ねて数えない。本体結果ができる前の停止は、`bodyBudgetExceeded` や `unidentifiedBodies` ではなく `phaseStops` に加算する。段停止は事象の数であり、その合計は未解析の本体数にはならない。
+
+一回の検査での `"all"` は、解析を開始し、未対応や停止した範囲、無効な本体、保留中の入力、未完の準備・発見・待ち行列が残っていないことを表す。`"some"` は解析を開始したが、そうした範囲が残ることを表し、有効な本体と無効な本体の混在も含む。`"none"` は解析を開始していないことを表し、型検査前の失敗や、一つ以上ある本体がすべて型検査で無効になった検査も含む。本体を一つも持たない検査済みの対象は、件数 0 の `"all"` である。件数が 0 であることだけでは `"all"` と判断できない。警告がなく `"all"` であっても、安全性、外部操作の成功、到達性、停止性の証明にはならない。
+
+テストの非実行の検査では、すべての対象が `"none"` なら全体の coverage は `"none"`、すべて `"all"` なら `"all"`、それ以外は `"some"` になる。空のディレクトリの探索が成功した場合は件数 0 の `"all"`、使い方や探索の失敗は `"none"` である。件数、`usage.operations`、`usage.savedItems` は対象間で合計し、`usage.peakItems`、`usage.maxBodyOperations`、`usage.maxBodyItems` は最大値を使う。明示した入口の重複は別々の検査として残す。`--doc` では、通常のコードと、check/error の例を含むすべての生成した例を対象の解析に含める。これによって check/error の例が `aggregateEffects` に加わることはない。
+
+`--deny-warnings` で検査を拒否しても、収集済みの解析情報は残る。検査全体の予算で後の本体の警告が得られなくなるため、無関係な定義の追加によって `--deny-warnings` での受理が変わりうる。未知や未解析のコードを安全とは報告しない。追加の欄によって、main と通常のテストの報告の版 1、doc テストの報告の版 2、診断の JSON Lines の版 1 は変わらない。診断の JSON Lines に解析集計の行は追加しない。
 
 ### 実行前のエフェクトの上限
 
@@ -1100,6 +1125,124 @@ Log.withAttributes は共通属性を先頭へ加え、両操作を外側へ送�
 
 Log は IO.All、Console.Write、HTTP から独立している。宣言上限に残る場合は uses Log と、`--allow-effects` の正規名 Log を明記する。例は `benitoite run --allow-effects=Log script.bnt` である。完全なハンドラで Log を取り除いても、出力側の宣言エフェクトは残る。検査報告は未使用の宣言も含む上限を示し、レベルが無効であることから許可を推定しない。
 
+#### ファイルと JSON へのログの出力
+
+Writer を一度開き、出力先の関数に捕捉する。`Log.formatRecord` は純粋な関数であり、既定のテキストの書式とエスケープを保つが、改行を加えず、レベルを選別しない。この例では `withSinks` が Debug を除き、`File.writeLine` が改行を加える。共通の属性をイベントの属性より先に並べ、キーの重複も保つ。
+
+両方の例は、出力を再現できるように固定の `Location` を作る。実際の呼び出し位置を記録するには、各ログの呼び出しに `SourceLocation.here()` を直接渡す。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.log", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event")], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "n", value: 42)], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.log") or die)
+end function
+```
+
+```output
+level=INFO source="app/Main.bnt:12:3" message="first\n\"quoted\"" attr."tag"="common" attr."tag"="event"
+level=WARN source="app/Main.bnt:12:3" message="second" attr."tag"="common" attr."n"=42
+```
+
+出力先の関数とその呼び出しは、すべて Writer の `with` ブロック内に置く。解放後に捕捉した Writer を使うと実行時エラーになる。Writer はバッファを使うため、`writeLine` の成功は解放時の flush の成功を保証しない。書き込みの失敗は `or die` で伝播し、`end with` での flush の失敗はリソース解放の実行時エラーになる。書き込みのエラーを値として処理しても、Writer は失敗した状態を保ち、解放時にも報告する。close の結果を明示的に処理するには、ブロックを抜ける前に `File.closeWriter` を呼び、返された Result を調べる。これは File とリソースの規則に従うものであり、各イベントがストレージに書き込まれたことを例が保証するわけではない。
+
+解放後に読み戻すため、検査する出力には両方の書き込みが含まれる。File.Read と Console.Write は、この読み戻しと表示のためだけに必要である。実行前にハーネスへ宣言上限の確認を求める。File.Write、File.Read、Console.Write、解放のための State、`or die` のための Process.Exit が含まれる。完全なハンドラは本体の Log エフェクトを取り除く。ファイル単位の `uses Log` があれば、main の宣言には Log が加わる。これらの宣言は、パスごとの実行時の権限制御を行わない。
+
+JSON Lines には、純粋な変換関数でアプリケーションの書式を定める。属性は `{key, value}` オブジェクトの配列として保つ。属性名をキーにした Map に変換すると、重複と順序が失われる。この例はレベルと位置を含み、u64 全域を保つために符号なし整数を `{"unsignedInteger":"..."}`、有限でない Float を `{"nonFiniteFloat":"..."}` で表す。`Json.Value` は符号なし整数の構成子を持たず、有限でない `Json.Value.Float` を直接文字列化すると null になる。`Float.isNaN(number - number)` は、既存の API で有限でない値を判定する。実行する例には NaN を含むが、正負の無限大は試さない。これはアプリケーションの書式であり、Log の標準の JSON スキーマではない。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+
+function jsonScalar(value: Log.Value) -> Json.Value
+  return match value with
+    case Log.Value.Text(text) -> Json.Value.String(text)
+    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)
+    case Log.Value.Integer(number) -> Json.Value.Integer(number)
+    case Log.Value.UnsignedInteger(number) ->
+      Json.Value.Object(Map.fromList([Pair("unsignedInteger", Json.Value.String(UnsignedInteger64.toString(number)))]))
+    case Log.Value.Float(number) ->
+      if Float.isNaN(number - number) then
+        Json.Value.Object(Map.fromList([Pair("nonFiniteFloat", Json.Value.String(Float.toString(number)))]))
+      else
+        Json.Value.Float(number)
+      end if
+  end match
+end function
+
+function jsonAttribute(value: Log.Attribute) -> Json.Value
+  return Json.Value.Object(Map.fromList([
+    Pair("key", Json.Value.String(Log.Attribute.key(value))),
+    Pair("value", jsonScalar(Log.Attribute.value(value)))
+  ]))
+end function
+
+function jsonRecord(record: Log.Record) -> Json.Value
+  bind level <- match Log.Record.level(record) with
+    case Log.Level.Debug -> "debug"
+    case Log.Level.Info -> "info"
+    case Log.Level.Warn -> "warn"
+    case Log.Level.Error -> "error"
+  end match
+  bind location <- Log.Record.location(record)
+  return Json.Value.Object(Map.fromList([
+    Pair("level", Json.Value.String(level)),
+    Pair("message", Json.Value.String(Log.Record.message(record))),
+    Pair("attributes", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),
+    Pair("location", Json.Value.Object(Map.fromList([
+      Pair("file", Json.Value.String(SourceLocation.Location.file(location))),
+      Pair("line", Json.Value.Integer(SourceLocation.Location.line(location))),
+      Pair("column", Json.Value.Integer(SourceLocation.Location.column(location)))
+    ])))
+  ]))
+end function
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.jsonl", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event"), Log.attribute(key: "n", value: 42)], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "flag", value: true), Log.attribute(key: "unsigned", value: 18446744073709551615u64), Log.attribute(key: "finite", value: 1.5), Log.attribute(key: "nan", value: Float.squareRoot(-1.0))], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.jsonl") or die)
+end function
+```
+
+```output
+{"attributes":[{"key":"tag","value":"common"},{"key":"tag","value":"event"},{"key":"n","value":42}],"level":"info","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"first\n\"quoted\""}
+{"attributes":[{"key":"tag","value":"common"},{"key":"flag","value":true},{"key":"unsigned","value":{"unsignedInteger":"18446744073709551615"}},{"key":"finite","value":1.5},{"key":"nan","value":{"nonFiniteFloat":"NaN"}}],"level":"warn","location":{"column":3,"file":"app/Main.bnt","line":12},"message":"second"}
+```
+
+メッセージ内の改行と引用符は、一行の JSON 内でエスケープする。寿命・失敗・エフェクトの規則はテキストの出力先と同じである。Json はアプリケーションで取り込む。Log に Json への依存やファイル・JSON 専用のハンドラは加わらない。
+
 ## 11. エフェクトハンドラ
 
 エフェクトは自分で宣言できる。`effect` の宣言はその操作を挙げ、操作は関数と同じように呼ぶ。`handle body with case operation(arguments) -> clause end handle` は `body` を実行し、本体が挙げた操作のどれかを呼ぶたびに、代わりに節を実行する。節の中の `resume(value)` は、`value` を操作の結果として本体を続ける。`resume` を呼ばない節は、自分の値で `handle` を終える。`resume` は節の中に直接書く。ラムダ、`lazy` の本体、`match` のガード、プレースホルダ `_` を持つ呼び出しの引数の中には書けない（そこに書いた `handle` は、自分の節で `resume` できる）。
@@ -1540,7 +1683,27 @@ handled: bad
 
 `Result.andThen` / `flatMap` は既存の Result の値を連結する関数であり、Fail を捕捉しない。変換の案内は標準の Fail に限る。Log や利用者が定義した同名の Fail には、それぞれのハンドラが必要である。
 
-幅付き整数の標準関数も、被除数が未知でも既知の零除算に W0401、既知のあふれに W0402 を出す。符号付き最小値の absolute と floorDivide(minimum, -1) は警告し、floorModulo(minimum, -1) = 0 は警告しない。実行時の Result と停止の意味は変えない。--deny-warnings を使う場合は追加の警告を確認する。宣言由来の制約による下流の重複診断を抑え、独立した誤りは残す。同名の別の型はモジュールを含めて区別する。
+幅付き整数の標準関数も、被除数が未知であっても、定数の零の除数に W0401、定数のあふれに W0402 を報告する。符号付き最小値の absolute と floorDivide(minimum, -1) は警告し、floorModulo(minimum, -1) = 0 は警告しない。これらの定数評価の警告は、後述の局所の解析と区別する。宣言由来の制約による後続の重複診断を抑え、独立した誤りは残す。同名の別の型はモジュールを含めて区別する。
+
+### 局所の区間解析の警告
+
+局所の区間解析は、`bind`、`shadow`、定数との比較、`if`、短絡する `and`/`or`、`match` のガードを通して、両端を含む整数の範囲を追跡する。対象は `Integer8`、`Integer16`、`Integer32`、`Integer64`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64` とその別名である。Integer64 のパターンにはリテラルと区間を使えるが、ほかの六種には引き続き束縛かワイルドカードとガードを使う。範囲の注釈は追加せず、型とエフェクトの規則も変えない。
+
+| コード | 局所の解析で検出する条件 |
+|---|---|
+| W0401 | `div` か `mod` の除数の区間が一つの値 `[0,0]` になる。 |
+| W0402 | 加算、減算、符号付きの負号、または少なくとも片側の区間が一つの値である乗算で、空でない数学的な結果の区間が型の値域から完全に外れる。 |
+| W0404 | 直接のシフト回数の引数 `n` の空でない区間が `[0,width−1]` から完全に外れ、すべての引数が正常値を持つ。 |
+
+W0404 は、`Byte`/`UnsignedInteger8` を含むすべての整数型の標準関数 `shiftLeft`、`shiftRight` と、符号付き整数の `shiftRightUnsigned` の直接呼び出しを対象にする。同じ標準宣言の別名や取り込みの別名も識別する。関数値、穴、パイプを通した呼び出しや、同名の利用者の関数は対象外である。左シフトで捨てるビットは、あふれに数えない。エフェクトの操作と HTTP のレコードのフィールドも W0404 の対象外である。言語のハンドラが操作の既定の振る舞いを置き換えられるためである。
+
+これらの警告が示す失敗は、**実行がその演算や呼び出しへ到達し、すべてのオペランドや引数の評価が成功した場合**に限る。その位置に到達することや、プログラム全体が失敗することは示さない。子に正常値がない場合、局所の解析は親の演算に警告を追加しない。注記は推論した区間、該当する場合の許容範囲、この条件を示す。根拠となった束縛や比較を最大八つの副位置で示す。同じ失敗を両方の解析が検出した場合は既存の定数の警告を優先し、数値を自動で置き換える修正案は出さない。
+
+解析は変数間の相関を追跡せず、関数間で区間を伝播しない。一般の乗算と、除算・剰余の結果の区間は未知になる。Byte の算術演算は引き続き型の誤りである。結果の区間が型の値域と一部重なる場合や、除数の区間に零と零以外の値が含まれる場合には、新しい区間の警告は出さない。正常な整数の未知の値は型の全値域で表し、正常値がない場合と区別する。関数、ラムダ、lazy、ハンドラの節の本体は、呼び出し元や捕捉値の事実を持たずに開始する。未対応の式の子を独立に解析する場合も外の事実を捨て、子の内部で得た事実を保つ。
+
+各本体の上限は解析の操作 100,000 回と同時保持項目 100,000 件、一回の検査の上限はそれぞれ 1,000,000 である。未対応の形や予算の枯渇は検査の誤りを追加せず、実行時の検査も残る。収集済みの警告は保持する。ハーネスは[解析の範囲](#区間解析の範囲)と警告を別に説明し、`--deny-warnings` を使う場合は追加の警告を見直す。
+
+形式的な保証の対象は、**対象構文の評価関係（evaluation relation for the target fragment）**における正常値の区間への所属と、警告位置での条件付きの失敗である。コンパイラ、標準ライブラリのソース、VM との一致は、選んだ有限の入力で検査する。返された区間など、比較していない結果もある。すべてのプログラムに対する証明ではない。信頼する規則と比較の限界は、プロジェクトの形式意味論の設計書に記録している。警告がなくても、実行の成功の証明にはならない。
 
 ### 呼び出し、関数の契約、ラムダ
 
@@ -1633,6 +1796,23 @@ prelude のモジュールは取り込みが要らない。ほかのモジュー
 - HTTP のサーバは、`/` で始まる対象（`//a` を含む）、`http://` か `https://` で始まる絶対形式の対象（大文字と小文字を区別しない）、大文字の `OPTIONS` のときだけ `*`、大文字の `CONNECT` のときだけ authority 形式の対象を受け付ける。`CONNECT` の対象は、ASCII の英字、数字、`-._~!$&'()*+,;=:[]%` からなる空でないホストの後に、`:` と、値が 0 から 65535 までの一つ以上の ASCII の数字を続けたものでなければならない。`/path` や絶対形式の対象を含め、ほかの形は `CONNECT` では拒む。ほかの形の対象と、`"`、`<`、`>`、ASCII でない文字をそのまま含む対象には、ハンドラを呼ばずに 400 を返す。これらの文字はパーセント符号化する。`[`、`]`、`\`、`^`、`` ` ``、`{`、`|`、`}` は、パスとクエリにそのまま書いても受け付ける。後に 2 桁の十六進数が続かない `%` は、受け付けてそのまま残す。
 - HTTP のサーバは、`#` を含む要求の対象には 400 を返し、ハンドラに渡さない。フラグメントを省くか、`#` そのものは `%23` と符号化する。`path` はパーセント符号化を保つ。大文字の `OPTIONS` の要求では、パスもクエリも持たない絶対形式の対象（`OPTIONS http://host`）は、`path` が `*`、`query` が空になる。`OPTIONS http://host/`、`OPTIONS http://host?x=1`、`OPTIONS http://host?` は、`path` が `/` になる。`GET http://host` や `options http://host` などのほかのメソッドでは、絶対形式の空のパスは `path` が `/` になる。
 - `Http.get` と `Http.send` は、標準のメソッド（大文字の `GET`、`HEAD`、`POST`、`PUT`、`DELETE`、`CONNECT`、`OPTIONS`、`TRACE`、`PATCH`）だけを受け付ける。ほかのメソッド、または `GET`、`HEAD`、`CONNECT` での空でない本文は、何も送らずに `NetworkErrorKind.InvalidInput` を与える。解決できないホスト名は `NetworkErrorKind.HostNotFound` を与える。
+
+局所の区間解析は、`Http.text`、`Http.html`、`Http.json` を、結果が未知の通常の関数として扱う。戻り値のレコードから `Response.status` の事実は推論しない。レコードの明示的な構築、局所への保存、更新を通した HTTP のフィールドの追跡も行わない。たとえば次のスクリプトは、status が既定の `Http.respond` の範囲から外れていても、W0404 なしで `check` を通る。
+
+```benitoite check
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Json
+
+function main() -> Unit
+  bind plain <- Http.text(status: 700, s: "example")
+  bind _ <- Http.html(status: 700, s: "<p>example</p>")
+  bind _ <- Http.json(status: 700, value: Json.Value.Null)
+  bind _ <- Http.Response(status: 700, headers: [], body: Bytes.empty())
+  bind _ <- Http.Response(..plain, status: 701)
+end function
+```
+
+この例は値を作るだけであり、応答を送信しない。既定の `Http.respond` の実装は、引き続き実行時に status を検査する。警告がなくても、応答の妥当性やネットワーク操作の許可は確認できない。
 
 次の例は、JSON のファイルを読み、分類ごとに金額を合計する。
 
@@ -1737,6 +1917,12 @@ copy 後の追記は既存のコピーを変えない。ただし List[Reference
 
 ## 20. 互換性
 
+### 0.0.12 への移行
+
+language と依存ハッシュの更新前に、ハーネスを通じて [0.0.12 の移行案内](../../../CHANGELOG.md#0012-san-benito)を確認する。各 WASM Store の生存するコンポーネントハンドル（component handle）は 100,000 個までとなる。ゲストは状態を持つ呼び出し間も含め、不要なハンドルを解放する。--deny-warnings を使う場合は、拡張された W0401/W0402 と新しい W0404 を確認する。実行時の検査と失敗の処置は引き続き必要であり、警告の不在や解析範囲の all は成功を保証しない。厳密な報告の読み手は、従来の受け入れ検査を保ち、報告全体と各対象の intervalAnalysis を受け入れる。
+
+ファイル単位の uses を持つ JSON/Property の derive 対象は、生成物を書き出す前に拒否する。個別のエフェクト宣言へ変えるか、型と対象を純粋なモデルのモジュールへ移す。既存の管理領域には derive の移動と復旧の手順を使う。生成器と記録の版は変わらないが、古い preview のハッシュで新しい入力を承認できない。実行ファイルをビルドし、その埋め込み Skill を再インストールする。ソースと依存を確認した後に language を 0.0.12 へ更新し、benitoite package update を実行する。
+
 ### 0.0.11 への移行
 
 language と依存ハッシュの更新前に、[0.0.11 の移行案内](../../../CHANGELOG.md#0011-san-benito)を読む。実行ファイルをビルドし、その埋め込み Skill を再インストールする。derive の inventory3・生成器3.1.0 には元本文とハッシュを検証する新しい preview と、その確認済み apply ハッシュが必要である。try-actions の inventory/manifest2 には候補の再生成と再確認が必要であり、有効契約が不明、またはファイルの宣言の元位置に対応付けられなければ保留する。個別の Log 宣言だけを持つ既存ソースも含め、package update の Log の記録と増減を確認する。その後に language を 0.0.11 へ、依存ハッシュを現在の内容へ更新する。
@@ -1762,7 +1948,7 @@ Regex/Scope の定数拒否、Range の Error、不透明な境界、構築器�
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.1` から `0.0.11` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.12` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -1774,7 +1960,7 @@ Regex/Scope の定数拒否、Range の Error、不透明な境界、構築器�
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.11"
+language "0.0.12"
 
 package Textkit
   license "MIT"
@@ -1792,7 +1978,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.11"
+language "0.0.12"
 
 dependency Textkit
   path "packages/textkit"
@@ -1824,7 +2010,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.11"
+language "0.0.12"
 ```
 
 ```benitoite check
@@ -1835,7 +2021,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.11` では、`0.0.11` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.12` では、`0.0.12` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
@@ -2006,6 +2192,8 @@ public function bump(self: Cell, by: Integer) -> Integer uses State
 
 外部呼び出しは同期的に実行する。外部の型を渡す関数は、実行ごと、コンポーネントごとに、状態を持つ一つのコンポーネントのインスタンスを共有する。それ以外の関数は、呼び出しのたびに新しいインスタンスを作る。呼び出し中はほかの Benitoite のタスクは動かず、`Task.withTimeout` では取り消せない。`SIGINT` と `SIGTERM` は Wasm の実行を中断し、プロセスを終了状態 130 で終えられる。既定では、各呼び出しの燃料の上限は 10^10、線形メモリの合計の上限は 64 MiB（状態を持つインスタンスでは寿命全体）、値の転送量の上限は方向ごとに 256 MiB である。燃料は計算量を制限し、経過時間は制限しない。各呼び出しは、コアのインスタンス、メモリ、テーブルもそれぞれ 16 個、ゲストの各テーブルは 10,000 要素までに制限する。メモリ自身が宣言した最大値を超える `memory.grow` は、Wasm と同じく -1 を返す。
 
+各 Store は、同時に生存するコンポーネントハンドル（component handle）を、コアの表の要素や線形メモリと別に 100,000 個までに制限する。状態を持つインスタンスでは、この数を呼び出し間で保持する。上限を超えると、必要数を表示せず R0906 で実行を止め、`--wasm-stats` の `reached_limits` に `component_handles` を記録する。このセキュリティのための制限は、0.0.11 よりゲストの受理範囲を狭める。ゲストは不要になったハンドルを解放する。ゲストの `resource.drop` で解放した分は再利用できる。数えるのは Wasmtime のコンポーネントハンドルであり、Benitoite の値として表す外部ハンドルだけではない。
+
 検査器は実行前に転送の経路を選ぶ。元のゲストの関数は一度だけ呼び、失敗の後に別の経路で試し直すことはない。
 
 | 統計の経路 | 使う場合 | 転送量の数え方 |
@@ -2058,6 +2246,8 @@ end function
 
 開発用の [derive](../../../tools/derive/README.md) は、型パラメータがなく循環しないレコードについて、通常の encode/decode 関数を生成する。フィールドを宣言順に検査し、その後でキー順に最初の余分なキーを拒否する。自動の Option フィールドは、欠落と null を None に変換する。必須のフィールドに暗黙の既定値はない。json.keys でキーを改名する。入れ子の Option と非対応の型には、フィールド全体の独自の encode/decode を要する。任意の decodeMissing が欠落を扱う。独自の変換は純粋で、意図した往復則を満たさなければならない。
 
+JSON と Property の生成は、既に生成した対象も含め、ファイル単位の `uses` を持つ対象モジュールを拒否する。Show/Order だけの生成は引き続き受理する。生成したトップレベル関数はファイルの宣言を継承するため、必要な純粋関数の契約を満たせない。ファイルの宣言を取り除き、エフェクトが必要な関数に個別の `uses` を書くか、型の定義と derive の対象を純粋なモデルのモジュールへ移し、エフェクトを使うコードから取り込む。設定の `source` を変えるだけでは生成先を変えられず、型の宣言元モジュールと一致させる必要がある。既存の領域は、[対象の削除・移動の手順](../../../tools/derive/README.md#verification-and-recovery)に従う。一つでもこの規則に反する対象があれば、確認用の成果物、ソース、記録を書き込む前に要求全体を拒否する。
+
 preview の差分と manifest を確認し、確認済み manifest のハッシュで apply した後、通常の check/test と derive check を行う。通常の check は生成記録を読まず、フィールドの追加による古いエンコーダをすべては検出できない。[二段のレコードの例](../../../tools/derive/examples/People.bnt) は、通常の @test、生成した Gen/Shrinker 関数、JSON の往復を試す性質、Failure.fromResult を使う明示的なアプリケーションの境界を含む。codec 自体には Fail は不要である。JSON の文字列の解析は、引き続き ParseError を持つ別の Result である。任意の JSON の綴りと parse/stringify をまたぐ表現は、変換の往復の保証に含めない。
 
 ### Show と Order の実装の生成
@@ -2076,7 +2266,7 @@ derive の property.generator と property.shrinker は独立して指定でき�
 
 縮小器は再帰する容器の内容の削除を先行し、その後に欄順で一つの欄を縮小する。必須のレコード欄は自分自身を縮小し、親を子で置き換えない。標準の葉と容器は自己候補を除き、再帰節点数を増やさない。制約のない型パラメータに独自 Shrinker を渡す場合、その入力自身を候補から除く責任は呼び出し側にある。独自コールバックの停止と大域的な最小性は保証しない。Show/Order の制約は宣言グラフへ伝播し、Order は組み込みの等値を導かない。
 
-独自の fields.gen/fields.shrink は対にし、完全修飾した純粋・単相・零引数の関数で欄全体を置き換える。版 3 の .generated.json（generatorVersion: 3.0.0-syntax-batch4）、config、libraryVersion 2.0.0、ソース、具体的な反例と独自関数を保存する。inventory は 2、設定は 1 のままである。旧本文のハッシュを照合してから新しい preview を確認し、旧 manifest で新版を適用しない。種だけでは生成規則の版をまたぐ分布を再現できない。[derive の手順](../../../tools/derive/README.md)に従う。
+独自の fields.gen/fields.shrink は対にし、完全修飾した純粋・単相・零引数の関数でフィールド全体を置き換える。版 3 の `.generated.json` 記録（`generatorVersion: 3.1.0-syntax-batch5`）、config、libraryVersion 2.0.0、ソース、具体的な反例、独自関数を保存する。inventory は版 3、設定は版 1 である。道具を更新する前に、保存した旧道具で未完の apply と復旧を終える。旧本文のハッシュを検証し、新しい preview と記録を確認してから、その確認済み manifest の正確なハッシュで適用する。生成器の版が同じでも、道具の入力ハッシュによって以前の manifest が無効になりうる。seed だけでは生成器の版をまたぐ分布を再現できない。適用後はハーネスに通常の check/test と derive check を実行させる。全手順と復旧は、[derive の道具](../../../tools/derive/README.md)を参照する。
 
 ### Range
 
@@ -2094,6 +2284,8 @@ Benitoite.Unofficial.Range を取り込む。全関数は純粋である。Check
 同じ端点は一つの値を表す。Integer の両端 -9223372036854775808 と 9223372036854775807 にも、上端へ 1 を加えず対応する。Integer への暗黙の変換や区間を追跡する演算はない。同じ CheckedInteger 型の値でも端点は異なりうる。端点を調べるか、必要な端点で checkInteger をやり直す。Option で足りるなら Result.ok を使う。
 
 Range は不正な定数の引数にも通常の Result.Error を返し、Scope と Regex の追加の静的検査には含めない。トップレベルの const に書ける式は増えない。
+
+局所の区間解析は、標準の `Range.checkInteger` と `Range.value` の直接呼び出しに **function summary** を使う。固定した Integer の端点では、結果を直接照合するか局所の束縛に一度保存して照合することで端点を保ち、同じ `Ok` の値への直接の `Range.value` に使える。取り込みの別名も含め、解決済みの標準宣言を識別する。動的な端点、成功値をコピーした別名、合流や包み直しをした値、別のインスタンス、関数値の呼び出し、穴、パイプでは、この情報を伝えない。条件環境の合流でも成功値の情報を捨てる。任意の関数の function summary は生成せず、検査済みの長さ・添字・非空リストにもこの規則を広げない。不正な端点や範囲外の入力は引き続き `Result.Error` を返し、新しい区間の警告を出さない。
 
 ```benitoite
 import Benitoite.Trait

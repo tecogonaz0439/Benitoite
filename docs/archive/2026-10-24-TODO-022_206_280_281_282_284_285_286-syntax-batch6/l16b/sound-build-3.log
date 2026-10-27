@@ -1,0 +1,91 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+✔ [54/57] Built Benitoite.Interval.Environment (606ms)
+✔ [55/57] Built Benitoite.Interval.Analyze (516ms)
+⚠ [56/57] Built Benitoite.Interval.Flow (2.0s)
+warning: Benitoite/Interval/Flow.lean:521:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:731:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [57/57] Building Benitoite.Interval.Sound (12s)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Interval/Sound.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Interval/Sound.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.c --setup <repo>/formal/.lake/build/ir/Benitoite/Interval/Sound.setup.json --json
+warning: Benitoite/Interval/Sound.lean:69:5: Variable name `bounded` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _bounded
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Benitoite/Interval/Sound.lean:615:54: This simp argument is unused:
+  baseWidthLiteral
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+error: Benitoite/Interval/Sound.lean:680:80: Unknown identifier `value`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Sound.lean:680:11: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Some required targets logged failures:
+- Benitoite.Interval.Sound
+error: build failed

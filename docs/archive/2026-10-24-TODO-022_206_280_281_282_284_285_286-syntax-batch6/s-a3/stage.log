@@ -1,0 +1,279 @@
+== plan: level stage against d2d9954264daea806db0bf202449938bd1dd0291 (changed files not classified) (partial selection: --only tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test declarations --test named_arguments --test golden --test desugar_export
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== tests_related
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling serde_core v1.0.229
+   Compiling foldhash v0.2.0
+   Compiling libc v0.2.190
+   Compiling log v0.4.34
+   Compiling libm v0.2.16
+   Compiling serde v1.0.229
+   Compiling equivalent v1.0.2
+   Compiling typenum v1.20.1
+   Compiling cfg-if v1.0.5
+   Compiling hashbrown v0.17.1
+   Compiling wasmtime-internal-core v49.0.4
+   Compiling version_check v0.9.5
+   Compiling cranelift-srcgen v0.136.4
+   Compiling leb128fmt v0.1.0
+   Compiling memchr v2.8.3
+   Compiling thiserror v2.0.21
+   Compiling generic-array v0.14.7
+   Compiling cranelift-assembler-x64-meta v0.136.4
+   Compiling heck v0.5.0
+   Compiling bitflags v2.13.2
+   Compiling itoa v1.0.18
+   Compiling allocator-api2 v0.2.21
+   Compiling cranelift-isle v0.136.4
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling cranelift-codegen-shared v0.136.4
+   Compiling zmij v1.0.23
+   Compiling cranelift-bitset v0.136.4
+   Compiling bumpalo v3.20.3
+   Compiling target-lexicon v0.13.5
+   Compiling cranelift-assembler-x64 v0.136.4
+   Compiling block-buffer v0.10.4
+   Compiling indexmap v2.14.2
+   Compiling crypto-common v0.1.7
+   Compiling cpufeatures v0.2.17
+   Compiling semver v1.0.28
+   Compiling hashbrown v0.16.1
+   Compiling fnv v1.0.7
+   Compiling digest v0.10.7
+   Compiling anyhow v1.0.104
+   Compiling sha2 v0.10.9
+   Compiling wasmparser v0.258.3
+   Compiling gimli v0.33.0
+   Compiling serde_json v1.0.151
+   Compiling crc32fast v1.5.2
+   Compiling arbitrary v1.5.0
+   Compiling rustc-hash v2.1.3
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling pulley-macros v49.0.4
+   Compiling zeroize v1.9.1
+   Compiling pulley-interpreter v49.0.4
+   Compiling cranelift-control v0.136.4
+   Compiling rustversion v1.0.23
+   Compiling rustls-pki-types v1.15.1
+   Compiling errno v0.3.14
+   Compiling cranelift-codegen-meta v0.136.4
+   Compiling termcolor v1.4.1
+   Compiling id-arena v2.3.0
+   Compiling wasmtime-internal-component-util v49.0.4
+   Compiling untrusted v0.9.0
+   Compiling rustls v0.23.46
+   Compiling core-foundation-sys v0.8.7
+   Compiling once_cell v1.21.4
+   Compiling cobs v0.3.0
+   Compiling rustls-webpki v0.103.16
+   Compiling object v0.40.0
+   Compiling wasmtime-internal-versioned-export-macros v49.0.4
+   Compiling wasm-encoder v0.258.3
+   Compiling wit-parser v0.258.3
+   Compiling hybrid-array v0.4.15
+   Compiling cranelift-codegen v0.136.4
+   Compiling httparse v1.10.1
+   Compiling smallvec v1.16.3
+   Compiling postcard v1.1.3
+   Compiling regalloc2 v0.15.2
+   Compiling wasm-metadata v0.258.3
+   Compiling wasmtime-internal-unwinder v49.0.4
+   Compiling subtle v2.6.1
+   Compiling cranelift-entity v0.136.4
+   Compiling getrandom v0.3.4
+   Compiling cranelift-bforest v0.136.4
+   Compiling find-msvc-tools v0.1.14
+   Compiling shlex v2.0.1
+   Compiling wit-component v0.258.3
+   Compiling cc v1.6.0
+   Compiling encoding_rs v0.8.42
+   Compiling core-foundation v0.10.1
+   Compiling security-framework-sys v2.17.0
+   Compiling wasmtime-internal-component-macro v49.0.4
+   Compiling signal-hook v0.4.5
+   Compiling bytes v1.12.1
+   Compiling wasmtime-internal-cranelift v49.0.4
+   Compiling rustix v1.1.5
+   Compiling either v1.19.0
+   Compiling itertools v0.14.0
+   Compiling wasmprinter v0.258.3
+   Compiling http v1.5.0
+   Compiling security-framework v3.7.0
+   Compiling wasmtime-internal-wit-bindgen v49.0.4
+   Compiling wasmtime v49.0.4
+   Compiling wasmtime-environ v49.0.4
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling signal-hook-registry v1.4.8
+   Compiling aho-corasick v1.1.5
+   Compiling scopeguard v1.2.0
+   Compiling simdutf8 v0.1.5
+   Compiling unicode-width v0.2.2
+   Compiling base64 v0.23.1
+   Compiling multiversion_no_op v1.0.0
+   Compiling regex-syntax v0.8.11
+   Compiling getrandom v0.4.3
+   Compiling ureq-proto v0.6.4
+   Compiling digest v0.11.3
+   Compiling graviola v0.4.1
+   Compiling rustls-platform-verifier v0.7.1
+   Compiling wasmtime-internal-jit-icache-coherence v49.0.4
+   Compiling regex-automata v0.4.18
+   Compiling async-trait v0.1.92
+   Compiling cpufeatures v0.3.1
+   Compiling mio v1.2.4
+   Compiling percent-encoding v2.3.2
+   Compiling mach2 v0.6.0
+   Compiling utf8-zero v0.8.1
+   Compiling jiff-core v0.1.1
+   Compiling regex v1.13.1
+   Compiling signal-hook-mio v0.3.0
+   Compiling sha2 v0.11.0
+   Compiling ureq v3.4.2
+   Compiling rustls-graviola v0.4.0
+   Compiling jiff v0.2.37
+   Compiling csv-core v0.1.13
+   Compiling wasm-encoder v0.261.0
+   Compiling wast v261.0.0
+   Compiling wat v1.261.0
+   Compiling cranelift-frontend v0.136.4
+   Compiling cranelift-native v0.136.4
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 16s
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 32 tests
+test diagnosed_binding_chain_scales_with_input_length ... ignored, long: checks near-linear recovery of a long chain of diagnosed bindings
+test config_rejects_duplicate_unknown_and_incomplete_settings ... ok
+test declarations_do_not_resolve_check_or_evaluate_bodies ... ok
+test diagnosed_recovery_keeps_pending_call_escape ... ok
+test diagnosed_recovery_skips_coverage_without_a_known_pattern_shape ... ok
+test diagnosed_recovery_does_not_infer_values_from_callback_requirements ... ok
+test file_uses_external_declarations_check_the_effective_contract ... ok
+test file_uses_failure_no_fail_is_enforced_at_calls ... ok
+test file_uses_inventory_keeps_original_ast_and_effect_origins ... ok
+test file_uses_imports_and_higher_order_values_use_merged_contracts ... ok
+test file_uses_loading_merges_functions_and_rejects_config_declarations ... ok
+test declaration_errors_are_rejected_at_the_same_stage_as_check ... ok
+test constant_intervals_analyze_bodies_and_merge_original_warning_locations ... ok
+test checked_lists_hide_representation_and_bind_indices_to_their_list ... ok
+test file_uses_visibility_reports_once_and_repairs_all_public_functions ... ok
+test diagnosed_binding_recovery_preserves_own_contracts ... ok
+test file_uses_contracts_preserve_existing_restrictions ... ok
+test inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries ... ok
+test inventory_json_preserves_resolved_types_order_spans_and_input_hashes ... ok
+test log_standard_declarations_and_effect_identity ... ok
+test interpolation_formats_preserve_recovery ... ok
+test opaque_declarations_keep_representation_and_owner_but_hide_its_contract ... ok
+test diagnosed_recovery_preserves_independent_later_checks ... ok
+test log_standard_handlers_keep_the_outer_effect_contract ... ok
+test opaque_types_keep_nominal_equality_and_nonempty_coverage ... ok
+test interval_boundaries_forget_outer_facts_and_keep_inner_warnings ... ok
+test diagnosed_recovery_preserves_partial_structure ... ok
+test interval_widths::width_constants_merge_expansions_and_prefer_existing_warnings ... ok
+test interval_widths::standard_arithmetic_warnings_keep_constant_evaluation_contract ... ok
+test local_intervals_report_only_reached_arithmetic_failures ... ok
+test interval_widths::arithmetic_warnings_keep_the_integer_kind_range_and_primary ... ok
+test interval_widths::width_boundaries_warn_only_at_reached_operations ... ok
+
+test result: ok. 31 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 17.25s
+
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-af019e90b7a02bfc)
+
+running 32 tests
+test batch3::export_batch3_range ... ok
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch4_blocks ... ok
+test batch3::export_batch3_solve ... ok
+test batch3::export_batch4_log_standard ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test batch5::export_batch5_formats ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_batch2_character ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_independent_program_exchange ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_batch2_failure ... ok
+test export_named_declarations_smoke ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_named_types_smoke ... ok
+test export_width_smoke ... ok
+test named::export_extensible_package ... ok
+test named::export_extensible_source ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_calls_smoke ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_named_static_calls_smoke ... ok
+test export_batch2_op ... ok
+test named::export_generated_record_property ... ok
+test named::export_general_named_programs ... ok
+test batch3::export_batch3_builders ... ok
+test interval::export_interval_range ... ok
+
+test result: ok. 31 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.50s
+
+     Running tests/golden.rs (target/debug/deps/golden-7190357a94580310)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+test golden_suite ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.95s
+
+     Running tests/named_arguments.rs (target/debug/deps/named_arguments-4cc393dac98db971)
+
+running 22 tests
+test deferred_list_elements_determine_named_callback_contracts ... ok
+test known_local_values_and_explicit_higher_order_contracts_keep_their_names ... ok
+test final_higher_order_contracts_preserve_parameter_order ... ok
+test nested_dictionary_arguments_wait_for_numeric_defaulting ... ok
+test builders_require_import_in_the_using_module ... ok
+test class_implementations_require_declaration_names_in_order ... ok
+test constructor_function_values_and_direct_holes_keep_the_original_parameter_names ... ok
+test named_partial_application_keeps_return_try_and_resume_inside_its_lambda ... ok
+test positional_callbacks_preserve_core_contracts ... ok
+test new_contract_boundaries_check_implementations_in_imported_modules ... ok
+test record_syntax_checks_constructor_kind_and_keeps_real_record_errors ... ok
+test unresolved_contracts_suppress_dependent_class_ambiguity_and_keep_child_errors ... ok
+test final_call_rules_reject_positional_arguments_in_all_three_paths ... ok
+test unresolved_special_calls_explain_where_to_put_the_contract ... ok
+test block_expressions_preserve_scope_effects_and_escape_diagnostics ... ok
+test unresolved_contracts_wait_for_the_same_body_and_never_invent_names ... ok
+test ordinary_named_calls_report_exact_causes_at_the_public_boundary ... ok
+test binary_traits_preserve_error_types_kinds_and_callback_names ... ok
+test operations_use_declared_names_and_handlers_bind_independent_local_names ... ok
+test named_holes_and_pipe_insertion_keep_exact_contracts_and_causes ... ok
+test string_builders_keep_second_class_values_and_capture_boundaries ... ok
+test list_and_bytes_builders_keep_types_and_boundaries ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.54s
+
+selected checks passed
+      160.77 real       992.18 user        67.01 sys
+          3752951808  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             5450442  page reclaims
+                6264  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  72  messages sent
+                  62  messages received
+                 216  signals received
+                8900  voluntary context switches
+             3569836  involuntary context switches
+            63695284  instructions retired
+            20629612  cycles elapsed
+             1868208  peak memory footprint

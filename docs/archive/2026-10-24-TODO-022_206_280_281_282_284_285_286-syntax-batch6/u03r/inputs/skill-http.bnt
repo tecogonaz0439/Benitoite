@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit
+  bind response <- Http.text(status: 700, s: "example")
+  bind _ <- Http.Response(..response, status: 701)
+end function

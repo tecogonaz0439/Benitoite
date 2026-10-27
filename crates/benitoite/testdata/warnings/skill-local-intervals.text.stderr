@@ -1,0 +1,45 @@
+warning[W0401]: this divides by zero
+  --> testdata/warnings/skill-local-intervals.bnt:3:22
+   |
+ 3 |     return value div divisor
+   |                      ^^^^^^^ the divisor is always 0
+   |
+  ::: testdata/warnings/skill-local-intervals.bnt:2:6
+   |
+ 2 |   if divisor = 0 then
+   |      ----------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred divisor interval is [0,0]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0402]: this calculation overflows `Integer8`
+  --> testdata/warnings/skill-local-intervals.bnt:11:12
+   |
+11 |     return value + 10s8
+   |            ^^^^^^^^^^^^ always overflows
+   |
+  ::: testdata/warnings/skill-local-intervals.bnt:10:6
+   |
+10 |   if value >= 120s8 then
+   |      -------------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred result interval before the range check is [130,137]
+   = note: the range of `Integer8` is [-128,127]
+   = note: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+
+warning[W0404]: argument `n` to `Integer.shiftLeft` is always out of range
+  --> testdata/warnings/skill-local-intervals.bnt:19:39
+   |
+19 |     return Integer.shiftLeft(a: 1, n: n)
+   |                                       ^ always out of range
+   |
+  ::: testdata/warnings/skill-local-intervals.bnt:18:6
+   |
+18 |   if n >= 64 then
+   |      ------- this binding or comparison contributes to the inferred interval
+   |
+   = note: the inferred interval is [64,9223372036854775807]
+   = note: the allowed range is [0,63]
+   = note: this local analysis applies only if execution reaches this call and all arguments are evaluated successfully
+
+warning: 3 warnings emitted

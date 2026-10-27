@@ -1,0 +1,19 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "9c1d9a1e4cfbacb11be78fd12b0d1a1deaece3b9",
+    "--only",
+    "spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples"
+  ],
+  "wrapper": "/usr/bin/time -l",
+  "check_exit_code": 0,
+  "time_exit_code": 1,
+  "elapsed_seconds": 26.414
+}

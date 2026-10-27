@@ -1,0 +1,130 @@
+import Benitoite.Unofficial.IO.Console
+
+function addition() -> Integer
+  return 8 + 2
+end function
+function overflow() -> Integer
+  return 9223372036854775807 + 1
+end function
+function division() -> Integer
+  return 8 div 0
+end function
+function remainder() -> Integer
+  return 8 mod 0
+end function
+function subtraction() -> Integer
+  return -7 - 3
+end function
+function multiply() -> Integer
+  return -7 * 3
+end function
+function negation() -> Integer
+  bind minimum <- -9223372036854775808
+  return -minimum
+end function
+function divisionOverflow() -> Integer
+  return -9223372036854775808 div -1
+end function
+function moduloMinimum() -> Integer
+  return -9223372036854775808 mod -1
+end function
+function childFailure() -> Integer
+  return (9223372036854775807 + 1) div 0
+end function
+function rightFailure() -> Integer
+  return (1 + 1) + (8 div 0)
+end function
+function shortAnd() -> Boolean
+  return false and (8 div 0 = 1)
+end function
+function shortOr() -> Boolean
+  return true or (8 div 0 = 1)
+end function
+function longAnd() -> Boolean
+  return true and (8 div 2 = 4)
+end function
+function longOr() -> Boolean
+  return false or (8 div 2 = 4)
+end function
+function branch() -> Integer
+  return if 2 < 3 then 9 + 1 else 8 div 0 end if
+end function
+function shadowed() -> Integer
+  bind value <- 3
+  shadow value <- value + 4
+  return value - 2
+end function
+function guarded() -> Integer
+  return match 3 with
+    case _ if false -> 1 div 0
+    case n if true -> n * 2
+    case _ -> 8 div 0
+  end match
+end function
+function returned() -> Integer
+  bind value <- block
+    return 7 + 2
+  end block
+  return value div 0
+end function
+function signed8() -> Integer8
+  return 127s8 + 1s8
+end function
+function signed16() -> Integer16
+  return -32768s16 - 1s16
+end function
+function signed32() -> Integer32
+  bind value <- -2147483648s32
+  return -value
+end function
+function unsigned16() -> UnsignedInteger16
+  return 65535u16 * 2u16
+end function
+function unsigned32() -> UnsignedInteger32
+  return 0u32 - 1u32
+end function
+function unsigned64() -> UnsignedInteger64
+  return 18446744073709551615u64 * 2u64
+end function
+function widthValue() -> UnsignedInteger64
+  return 18446744073709551615u64 div 2u64
+end function
+function matrixinteger() -> Integer
+  return ((6 + 2) * 3 - 4) div 2 mod 3
+end function
+function matrixs8() -> Integer8
+  return ((6s8 + 2s8) * 3s8 - 4s8) div 2s8 mod 3s8
+end function
+function matrixs16() -> Integer16
+  return ((6s16 + 2s16) * 3s16 - 4s16) div 2s16 mod 3s16
+end function
+function matrixs32() -> Integer32
+  return ((6s32 + 2s32) * 3s32 - 4s32) div 2s32 mod 3s32
+end function
+function matrixu16() -> UnsignedInteger16
+  return ((6u16 + 2u16) * 3u16 - 4u16) div 2u16 mod 3u16
+end function
+function matrixu32() -> UnsignedInteger32
+  return ((6u32 + 2u32) * 3u32 - 4u32) div 2u32 mod 3u32
+end function
+function matrixu64() -> UnsignedInteger64
+  return ((6u64 + 2u64) * 3u64 - 4u64) div 2u64 mod 3u64
+end function
+function compareequal() -> Boolean
+  return 2 = 3
+end function
+function compareunequal() -> Boolean
+  return 2 <> 3
+end function
+function compareless() -> Boolean
+  return 2 < 3
+end function
+function comparelessEqual() -> Boolean
+  return 2 <= 3
+end function
+function comparegreater() -> Boolean
+  return 2 > 3
+end function
+function comparegreaterEqual() -> Boolean
+  return 2 >= 3
+end function

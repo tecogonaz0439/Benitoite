@@ -1,0 +1,30 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.08s
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 1 test
+
+thread 'local_intervals_report_only_reached_arithmetic_failures' (2900882) panicked at crates/benitoite/tests/declarations.rs:2180:9:
+assertion `left == right` failed: const zero: Integer = 0
+function sample(x: Integer, other: Integer, flag: Boolean) -> Integer
+ bind Pair(v, _) <- Pair(0, true)
+ bind z <- 0
+ return if v = 0 then match v with
+ case _ -> 10 div z end match else 1 end if
+end function
+
+  left: [W0401]
+ right: []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test local_intervals_report_only_reached_arithmetic_failures ... FAILED
+
+failures:
+
+failures:
+    local_intervals_report_only_reached_arithmetic_failures
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 26 filtered out; finished in 1.05s
+
+error: test failed, to rerun pass `-p benitoite --test declarations`
+
+exit=101; elapsed=6.900s

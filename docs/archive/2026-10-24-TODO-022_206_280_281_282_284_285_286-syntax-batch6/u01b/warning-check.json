@@ -1,0 +1,5338 @@
+{
+  "binarySha256": "0e769d5fb2cec51bab8e96c62157694a2ed972af8cd6932438ae3cd6bed3ce4d",
+  "u01aBinarySha256": "6fb84a70dcf09684d6a728c83ce77d7f0b7c19921718ff8752c1e80c4d5827c9",
+  "inputs": 10,
+  "cliRuns": 20,
+  "differencesFromU01a": 0,
+  "expectationChanges": [],
+  "rows": [
+    {
+      "id": "crates/benitoite/skill/references/idioms.md:887:52",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.87892
+        },
+        "R": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.09217
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/skill/references/stdlib/Log.md:116:12",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": "ok",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            }
+          ],
+          "seconds": 0.060234
+        },
+        "R": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": "ok",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            }
+          ],
+          "seconds": 0.060352
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/src/prelude/stdlib/Log.bnt:166:0",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": "ok",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            }
+          ],
+          "seconds": 0.06006
+        },
+        "R": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": "ok",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            }
+          ],
+          "seconds": 0.059911
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0404",
+              "message": "argument `n` to `Integer8.shiftRightUnsigned` is always out of range",
+              "primary": {
+                "file": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+                "start": {
+                  "line": 3,
+                  "column": 52,
+                  "offset": 191
+                },
+                "end": {
+                  "line": 3,
+                  "column": 54,
+                  "offset": 193
+                },
+                "label": "always out of range"
+              },
+              "secondary": [],
+              "notes": [
+                "the inferred interval is [-1,-1]",
+                "the allowed range is [0,7]",
+                "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully"
+              ],
+              "helps": []
+            }
+          ],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.057875
+        },
+        "R": {
+          "exit": 2,
+          "acquired": true,
+          "warnings": [
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0404",
+              "message": "argument `n` to `Integer8.shiftRightUnsigned` is always out of range",
+              "primary": {
+                "file": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+                "start": {
+                  "line": 3,
+                  "column": 52,
+                  "offset": 191
+                },
+                "end": {
+                  "line": 3,
+                  "column": 54,
+                  "offset": 193
+                },
+                "label": "always out of range"
+              },
+              "secondary": [],
+              "notes": [
+                "the inferred interval is [-1,-1]",
+                "the allowed range is [0,7]",
+                "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            }
+          ],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.057923
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0404",
+              "message": "argument `n` to `UnsignedInteger64.shiftLeft` is always out of range",
+              "primary": {
+                "file": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt",
+                "start": {
+                  "line": 3,
+                  "column": 53,
+                  "offset": 192
+                },
+                "end": {
+                  "line": 3,
+                  "column": 55,
+                  "offset": 194
+                },
+                "label": "always out of range"
+              },
+              "secondary": [],
+              "notes": [
+                "the inferred interval is [64,64]",
+                "the allowed range is [0,63]",
+                "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully"
+              ],
+              "helps": []
+            }
+          ],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.05823
+        },
+        "R": {
+          "exit": 2,
+          "acquired": true,
+          "warnings": [
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0404",
+              "message": "argument `n` to `UnsignedInteger64.shiftLeft` is always out of range",
+              "primary": {
+                "file": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt",
+                "start": {
+                  "line": 3,
+                  "column": 53,
+                  "offset": 192
+                },
+                "end": {
+                  "line": 3,
+                  "column": 55,
+                  "offset": 194
+                },
+                "label": "always out of range"
+              },
+              "secondary": [],
+              "notes": [
+                "the inferred interval is [64,64]",
+                "the allowed range is [0,63]",
+                "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            }
+          ],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.058041
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer8`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 6,
+                  "column": 10,
+                  "offset": 192
+                },
+                "end": {
+                  "line": 6,
+                  "column": 17,
+                  "offset": 199
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 5,
+                    "column": 3,
+                    "offset": 167
+                  },
+                  "end": {
+                    "line": 5,
+                    "column": 18,
+                    "offset": 182
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [128,128]",
+                "the range of `Integer8` is [-128,127]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer16`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 10,
+                  "column": 10,
+                  "offset": 277
+                },
+                "end": {
+                  "line": 10,
+                  "column": 18,
+                  "offset": 285
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 9,
+                    "column": 3,
+                    "offset": 248
+                  },
+                  "end": {
+                    "line": 9,
+                    "column": 22,
+                    "offset": 267
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [-32769,-32769]",
+                "the range of `Integer16` is [-32768,32767]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer32`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 14,
+                  "column": 10,
+                  "offset": 368
+                },
+                "end": {
+                  "line": 14,
+                  "column": 12,
+                  "offset": 370
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 13,
+                    "column": 3,
+                    "offset": 334
+                  },
+                  "end": {
+                    "line": 13,
+                    "column": 27,
+                    "offset": 358
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [2147483648,2147483648]",
+                "the range of `Integer32` is [-2147483648,2147483647]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 18,
+                  "column": 10,
+                  "offset": 516
+                },
+                "end": {
+                  "line": 18,
+                  "column": 15,
+                  "offset": 521
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 17,
+                    "column": 3,
+                    "offset": 430
+                  },
+                  "end": {
+                    "line": 17,
+                    "column": 79,
+                    "offset": 506
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [-18446744073709551616,-18446744073709551614]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `UnsignedInteger16`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 22,
+                  "column": 10,
+                  "offset": 604
+                },
+                "end": {
+                  "line": 22,
+                  "column": 18,
+                  "offset": 612
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 21,
+                    "column": 3,
+                    "offset": 580
+                  },
+                  "end": {
+                    "line": 21,
+                    "column": 17,
+                    "offset": 594
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [-1,-1]",
+                "the range of `UnsignedInteger16` is [0,65535]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `UnsignedInteger32`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 26,
+                  "column": 10,
+                  "offset": 704
+                },
+                "end": {
+                  "line": 26,
+                  "column": 18,
+                  "offset": 712
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 25,
+                    "column": 3,
+                    "offset": 671
+                  },
+                  "end": {
+                    "line": 25,
+                    "column": 26,
+                    "offset": 694
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [8589934590,8589934590]",
+                "the range of `UnsignedInteger32` is [0,4294967295]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0402",
+              "message": "this calculation overflows `UnsignedInteger64`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 30,
+                  "column": 10,
+                  "offset": 814
+                },
+                "end": {
+                  "line": 30,
+                  "column": 15,
+                  "offset": 819
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 29,
+                    "column": 3,
+                    "offset": 771
+                  },
+                  "end": {
+                    "line": 29,
+                    "column": 36,
+                    "offset": 804
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [340282366920938463426481119284349108225,340282366920938463426481119284349108225]",
+                "the range of `UnsignedInteger64` is [0,18446744073709551615]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "warning",
+              "code": "W0401",
+              "message": "this divides by zero",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 34,
+                  "column": 36,
+                  "offset": 950
+                },
+                "end": {
+                  "line": 34,
+                  "column": 37,
+                  "offset": 951
+                },
+                "label": "the divisor is always 0"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 34,
+                    "column": 15,
+                    "offset": 929
+                  },
+                  "end": {
+                    "line": 34,
+                    "column": 23,
+                    "offset": 937
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                },
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 34,
+                    "column": 10,
+                    "offset": 924
+                  },
+                  "end": {
+                    "line": 34,
+                    "column": 11,
+                    "offset": 925
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred divisor interval is [0,0]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "helps": []
+            }
+          ],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.060059
+        },
+        "R": {
+          "exit": 2,
+          "acquired": true,
+          "warnings": [
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer8`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 6,
+                  "column": 10,
+                  "offset": 192
+                },
+                "end": {
+                  "line": 6,
+                  "column": 17,
+                  "offset": 199
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 5,
+                    "column": 3,
+                    "offset": 167
+                  },
+                  "end": {
+                    "line": 5,
+                    "column": 18,
+                    "offset": 182
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [128,128]",
+                "the range of `Integer8` is [-128,127]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer16`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 10,
+                  "column": 10,
+                  "offset": 277
+                },
+                "end": {
+                  "line": 10,
+                  "column": 18,
+                  "offset": 285
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 9,
+                    "column": 3,
+                    "offset": 248
+                  },
+                  "end": {
+                    "line": 9,
+                    "column": 22,
+                    "offset": 267
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [-32769,-32769]",
+                "the range of `Integer16` is [-32768,32767]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer32`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 14,
+                  "column": 10,
+                  "offset": 368
+                },
+                "end": {
+                  "line": 14,
+                  "column": 12,
+                  "offset": 370
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 13,
+                    "column": 3,
+                    "offset": 334
+                  },
+                  "end": {
+                    "line": 13,
+                    "column": 27,
+                    "offset": 358
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [2147483648,2147483648]",
+                "the range of `Integer32` is [-2147483648,2147483647]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `Integer`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 18,
+                  "column": 10,
+                  "offset": 516
+                },
+                "end": {
+                  "line": 18,
+                  "column": 15,
+                  "offset": 521
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 17,
+                    "column": 3,
+                    "offset": 430
+                  },
+                  "end": {
+                    "line": 17,
+                    "column": 79,
+                    "offset": 506
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [-18446744073709551616,-18446744073709551614]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `UnsignedInteger16`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 22,
+                  "column": 10,
+                  "offset": 604
+                },
+                "end": {
+                  "line": 22,
+                  "column": 18,
+                  "offset": 612
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 21,
+                    "column": 3,
+                    "offset": 580
+                  },
+                  "end": {
+                    "line": 21,
+                    "column": 17,
+                    "offset": 594
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [-1,-1]",
+                "the range of `UnsignedInteger16` is [0,65535]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `UnsignedInteger32`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 26,
+                  "column": 10,
+                  "offset": 704
+                },
+                "end": {
+                  "line": 26,
+                  "column": 18,
+                  "offset": 712
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 25,
+                    "column": 3,
+                    "offset": 671
+                  },
+                  "end": {
+                    "line": 25,
+                    "column": 26,
+                    "offset": 694
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [8589934590,8589934590]",
+                "the range of `UnsignedInteger32` is [0,4294967295]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0402",
+              "message": "this calculation overflows `UnsignedInteger64`",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 30,
+                  "column": 10,
+                  "offset": 814
+                },
+                "end": {
+                  "line": 30,
+                  "column": 15,
+                  "offset": 819
+                },
+                "label": "always overflows"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 29,
+                    "column": 3,
+                    "offset": 771
+                  },
+                  "end": {
+                    "line": 29,
+                    "column": 36,
+                    "offset": 804
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred result interval before the range check is [340282366920938463426481119284349108225,340282366920938463426481119284349108225]",
+                "the range of `UnsignedInteger64` is [0,18446744073709551615]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            },
+            {
+              "kind": "check",
+              "severity": "error",
+              "code": "W0401",
+              "message": "this divides by zero",
+              "primary": {
+                "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                "start": {
+                  "line": 34,
+                  "column": 36,
+                  "offset": 950
+                },
+                "end": {
+                  "line": 34,
+                  "column": 37,
+                  "offset": 951
+                },
+                "label": "the divisor is always 0"
+              },
+              "secondary": [
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 34,
+                    "column": 15,
+                    "offset": 929
+                  },
+                  "end": {
+                    "line": 34,
+                    "column": 23,
+                    "offset": 937
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                },
+                {
+                  "file": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+                  "start": {
+                    "line": 34,
+                    "column": 10,
+                    "offset": 924
+                  },
+                  "end": {
+                    "line": 34,
+                    "column": 11,
+                    "offset": 925
+                  },
+                  "label": "this binding or comparison contributes to the inferred interval"
+                }
+              ],
+              "notes": [
+                "the inferred divisor interval is [0,0]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "helps": []
+            }
+          ],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.059552
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/tests/desugar_export/batch4/log-standard.bnt",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.063929
+        },
+        "R": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.063841
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "primary": {
+                "end": {
+                  "column": 63,
+                  "line": 151,
+                  "offset": 5518
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 32,
+                  "line": 151,
+                  "offset": 5487
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "primary": {
+                "end": {
+                  "column": 63,
+                  "line": 200,
+                  "offset": 7334
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 32,
+                  "line": 200,
+                  "offset": 7303
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            }
+          ],
+          "errors": [],
+          "reportStatus": "ok",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+              },
+              "displayPath": "<benitoite>/Range.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "f6fac7247c27b47f501d1d508ad2e9ab99b3f3c22bf9fc176295bb04dbe7aedf"
+              },
+              "displayPath": "<benitoite>/Trait.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s44"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s45"
+            }
+          ],
+          "seconds": 0.114651
+        },
+        "R": {
+          "exit": 2,
+          "acquired": true,
+          "warnings": [
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 63,
+                  "line": 151,
+                  "offset": 5518
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 32,
+                  "line": 151,
+                  "offset": 5487
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 63,
+                  "line": 200,
+                  "offset": 7334
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 32,
+                  "line": 200,
+                  "offset": 7303
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            }
+          ],
+          "errors": [],
+          "reportStatus": "checkError",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+              },
+              "displayPath": "<benitoite>/Range.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "f6fac7247c27b47f501d1d508ad2e9ab99b3f3c22bf9fc176295bb04dbe7aedf"
+              },
+              "displayPath": "<benitoite>/Trait.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s44"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s45"
+            }
+          ],
+          "seconds": 0.114311
+        }
+      }
+    },
+    {
+      "id": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 33,
+                  "line": 7,
+                  "offset": 162
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 7,
+                  "offset": 139
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 17,
+                  "line": 10,
+                  "offset": 223
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 16,
+                  "line": 10,
+                  "offset": 222
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 17,
+                  "line": 13,
+                  "offset": 285
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 16,
+                  "line": 13,
+                  "offset": 284
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "primary": {
+                "end": {
+                  "column": 18,
+                  "line": 23,
+                  "offset": 509
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 23,
+                  "offset": 501
+                }
+              },
+              "secondary": [
+                {
+                  "end": {
+                    "column": 39,
+                    "line": 22,
+                    "offset": 491
+                  },
+                  "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                  "label": "this binding or comparison contributes to the inferred interval",
+                  "start": {
+                    "column": 3,
+                    "line": 22,
+                    "offset": 455
+                  }
+                }
+              ],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 37,
+                  "line": 26,
+                  "offset": 598
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 26,
+                  "offset": 571
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 34,
+                  "line": 32,
+                  "offset": 766
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 11,
+                  "line": 32,
+                  "offset": 743
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 41,
+                  "line": 32,
+                  "offset": 773
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 40,
+                  "line": 32,
+                  "offset": 772
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 28,
+                  "line": 35,
+                  "offset": 849
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 27,
+                  "line": 35,
+                  "offset": 848
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 28,
+                  "line": 38,
+                  "offset": 922
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 27,
+                  "line": 38,
+                  "offset": 921
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 26,
+                  "line": 41,
+                  "offset": 996
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 25,
+                  "line": 41,
+                  "offset": 995
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 42,
+                  "line": 50,
+                  "offset": 1234
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 41,
+                  "line": 50,
+                  "offset": 1233
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 31,
+                  "line": 59,
+                  "offset": 1446
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 30,
+                  "line": 59,
+                  "offset": 1445
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 22,
+                  "line": 61,
+                  "offset": 1496
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 21,
+                  "line": 61,
+                  "offset": 1495
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 21,
+                  "line": 68,
+                  "offset": 1624
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 20,
+                  "line": 68,
+                  "offset": 1623
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer8`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 21,
+                  "line": 71,
+                  "offset": 1689
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 71,
+                  "offset": 1678
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer16`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 26,
+                  "line": 74,
+                  "offset": 1761
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 74,
+                  "offset": 1745
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer32`",
+              "notes": [
+                "the inferred result interval before the range check is [2147483648,2147483648]",
+                "the range of `Integer32` is [-2147483648,2147483647]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+              ],
+              "primary": {
+                "end": {
+                  "column": 16,
+                  "line": 78,
+                  "offset": 1854
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 78,
+                  "offset": 1848
+                }
+              },
+              "secondary": [
+                {
+                  "end": {
+                    "column": 31,
+                    "line": 77,
+                    "offset": 1838
+                  },
+                  "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                  "label": "this binding or comparison contributes to the inferred interval",
+                  "start": {
+                    "column": 3,
+                    "line": 77,
+                    "offset": 1810
+                  }
+                }
+              ],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `UnsignedInteger16`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 25,
+                  "line": 81,
+                  "offset": 1935
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 81,
+                  "offset": 1920
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `UnsignedInteger32`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 21,
+                  "line": 84,
+                  "offset": 2012
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 84,
+                  "offset": 2001
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `UnsignedInteger64`",
+              "notes": [],
+              "primary": {
+                "end": {
+                  "column": 40,
+                  "line": 87,
+                  "offset": 2108
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 87,
+                  "offset": 2078
+                }
+              },
+              "secondary": [],
+              "severity": "warning"
+            }
+          ],
+          "errors": [],
+          "reportStatus": "ok",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            }
+          ],
+          "seconds": 0.064921
+        },
+        "R": {
+          "exit": 2,
+          "acquired": true,
+          "warnings": [
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 33,
+                  "line": 7,
+                  "offset": 162
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 7,
+                  "offset": 139
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 17,
+                  "line": 10,
+                  "offset": 223
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 16,
+                  "line": 10,
+                  "offset": 222
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 17,
+                  "line": 13,
+                  "offset": 285
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 16,
+                  "line": 13,
+                  "offset": 284
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "the inferred result interval before the range check is [9223372036854775808,9223372036854775808]",
+                "the range of `Integer` is [-9223372036854775808,9223372036854775807]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 18,
+                  "line": 23,
+                  "offset": 509
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 23,
+                  "offset": 501
+                }
+              },
+              "secondary": [
+                {
+                  "end": {
+                    "column": 39,
+                    "line": 22,
+                    "offset": 491
+                  },
+                  "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                  "label": "this binding or comparison contributes to the inferred interval",
+                  "start": {
+                    "column": 3,
+                    "line": 22,
+                    "offset": 455
+                  }
+                }
+              ],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 37,
+                  "line": 26,
+                  "offset": 598
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 26,
+                  "offset": 571
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 34,
+                  "line": 32,
+                  "offset": 766
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 11,
+                  "line": 32,
+                  "offset": 743
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 41,
+                  "line": 32,
+                  "offset": 773
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 40,
+                  "line": 32,
+                  "offset": 772
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 28,
+                  "line": 35,
+                  "offset": 849
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 27,
+                  "line": 35,
+                  "offset": 848
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 28,
+                  "line": 38,
+                  "offset": 922
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 27,
+                  "line": 38,
+                  "offset": 921
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 26,
+                  "line": 41,
+                  "offset": 996
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 25,
+                  "line": 41,
+                  "offset": 995
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 42,
+                  "line": 50,
+                  "offset": 1234
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 41,
+                  "line": 50,
+                  "offset": 1233
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 31,
+                  "line": 59,
+                  "offset": 1446
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 30,
+                  "line": 59,
+                  "offset": 1445
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 22,
+                  "line": 61,
+                  "offset": 1496
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 21,
+                  "line": 61,
+                  "offset": 1495
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0401",
+              "helps": [],
+              "kind": "check",
+              "message": "this divides by zero",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 21,
+                  "line": 68,
+                  "offset": 1624
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "the divisor is always 0",
+                "start": {
+                  "column": 20,
+                  "line": 68,
+                  "offset": 1623
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer8`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 21,
+                  "line": 71,
+                  "offset": 1689
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 71,
+                  "offset": 1678
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer16`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 26,
+                  "line": 74,
+                  "offset": 1761
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 74,
+                  "offset": 1745
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `Integer32`",
+              "notes": [
+                "the inferred result interval before the range check is [2147483648,2147483648]",
+                "the range of `Integer32` is [-2147483648,2147483647]",
+                "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully",
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 16,
+                  "line": 78,
+                  "offset": 1854
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 78,
+                  "offset": 1848
+                }
+              },
+              "secondary": [
+                {
+                  "end": {
+                    "column": 31,
+                    "line": 77,
+                    "offset": 1838
+                  },
+                  "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                  "label": "this binding or comparison contributes to the inferred interval",
+                  "start": {
+                    "column": 3,
+                    "line": 77,
+                    "offset": 1810
+                  }
+                }
+              ],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `UnsignedInteger16`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 25,
+                  "line": 81,
+                  "offset": 1935
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 81,
+                  "offset": 1920
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `UnsignedInteger32`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 21,
+                  "line": 84,
+                  "offset": 2012
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 84,
+                  "offset": 2001
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            },
+            {
+              "code": "W0402",
+              "helps": [],
+              "kind": "check",
+              "message": "this calculation overflows `UnsignedInteger64`",
+              "notes": [
+                "treated as an error because of `--deny-warnings`"
+              ],
+              "primary": {
+                "end": {
+                  "column": 40,
+                  "line": 87,
+                  "offset": 2108
+                },
+                "file": "crates/benitoite/tests/desugar_export/interval/vm-arithmetic.bnt",
+                "label": "always overflows",
+                "start": {
+                  "column": 10,
+                  "line": 87,
+                  "offset": 2078
+                }
+              },
+              "secondary": [],
+              "severity": "error"
+            }
+          ],
+          "errors": [],
+          "reportStatus": "checkError",
+          "loadedStandard": [
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+              },
+              "displayPath": "<benitoite>/Integer.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s1"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+              },
+              "displayPath": "<benitoite>/Float.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s2"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+              },
+              "displayPath": "<benitoite>/Decimal.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s3"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950"
+              },
+              "displayPath": "<benitoite>/RoundingMode.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s4"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+              },
+              "displayPath": "<benitoite>/Byte.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s5"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+              },
+              "displayPath": "<benitoite>/Character.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s6"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+              },
+              "displayPath": "<benitoite>/String.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s7"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "577d0a804ecbe044c131ebd322978d6c3f7cc8b4a7cd443d41a01a2b610354c3"
+              },
+              "displayPath": "<benitoite>/Boolean.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s8"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+              },
+              "displayPath": "<benitoite>/List.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s9"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+              },
+              "displayPath": "<benitoite>/Map.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s10"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+              },
+              "displayPath": "<benitoite>/Set.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s11"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+              },
+              "displayPath": "<benitoite>/Option.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s12"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+              },
+              "displayPath": "<benitoite>/Result.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s13"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+              },
+              "displayPath": "<benitoite>/Pair.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s14"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cd769d32685089522bd1b0ea4f8a44fa2afe64cf0fb21390506f68f1da781454"
+              },
+              "displayPath": "<benitoite>/Triple.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s15"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "e54155984cefb9e6ebd0bee1755db16b1c35bc1b8234df9a0f8a4094513ef317"
+              },
+              "displayPath": "<benitoite>/IOError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s16"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "810eb42ef46504c9b36866c763755ce2e7cf9f252c4994d6683bd4281e938489"
+              },
+              "displayPath": "<benitoite>/IOErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s17"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "29f07105b80ffab7909d31d7ca6a19c5fe20dbf0da72788c9d9922992c8c4f86"
+              },
+              "displayPath": "<benitoite>/Reference.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s18"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "20c094ea2a2c3cc5a23453f5dc802b5cb918f6b4e78fc375d7eb392e19a7c44d"
+              },
+              "displayPath": "<benitoite>/Lazy.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s19"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "bd2550536d0cf6c41cdbebac347169fdac08c1bab97e39a7d1afbbe4bbc17c0c"
+              },
+              "displayPath": "<benitoite>/Task.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s20"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "74a80a69e0508a8df01395938478e5a9bdec246484dfa007e60a62aa378d8e5b"
+              },
+              "displayPath": "<benitoite>/TaskGroup.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s21"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "b1675d0beffca8ef06717261996b1934d4baadd013d4cb8b932147e8cb2e4389"
+              },
+              "displayPath": "<benitoite>/IO.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s22"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "6982093b656a004f3ef2e16c8b43164c1ddaad55f3c0517bd985bbcf81914bc4"
+              },
+              "displayPath": "<benitoite>/Assert.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s23"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+              },
+              "displayPath": "<benitoite>/Bytes.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s24"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "acc424de7fb9a2d7b0162fa0dc0f1970619a64dc3f44fb2fa4548777213a6bd3"
+              },
+              "displayPath": "<benitoite>/ByteOrder.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s25"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "1df6a61d583b2139d151c2fd69997f4e3dbb8374e5b0c6458287571201149fe3"
+              },
+              "displayPath": "<benitoite>/NetworkError.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s26"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "47179875af3eed035a4358b27ab6fbb200818cd1ad1d01d7b125344706c3eca1"
+              },
+              "displayPath": "<benitoite>/NetworkErrorKind.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s27"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+              },
+              "displayPath": "<benitoite>/Integer8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s28"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+              },
+              "displayPath": "<benitoite>/Integer16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s29"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+              },
+              "displayPath": "<benitoite>/Integer32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s30"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+              },
+              "displayPath": "<benitoite>/Integer64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s31"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger8.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s32"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger16.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s33"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s34"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s35"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+              },
+              "displayPath": "<benitoite>/UnsignedInteger.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s36"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+              },
+              "displayPath": "<benitoite>/Float32.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s37"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+              },
+              "displayPath": "<benitoite>/Float64.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s38"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "a6ba30182431bd10dc044a66b371ebda3b1efaac81fda8bf662d74e99b3aa06b"
+              },
+              "displayPath": "<benitoite>/SourceLocation.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s39"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "0178054a910755385a08ae47c85c723273b1e16af9c758a0936127bf1e95e3de"
+              },
+              "displayPath": "<benitoite>/Log.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s40"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "cfdd0cab52e581653ecd4bfbce9650faa8bdfa82066c19c1e77949b3e0017c8d"
+              },
+              "displayPath": "<benitoite>/IO/Console.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s41"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "8b6e1c7828abe87bfef821c9fccb4c84c55431e4d6412eafb7fc86685d3a58f8"
+              },
+              "displayPath": "<benitoite>/IO/Clock.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s42"
+            },
+            {
+              "contentHash": {
+                "algorithm": "sha256",
+                "value": "fcf90434e27db04844f31514a44f81a4734d19f3e1ea2e789c569358d95e603c"
+              },
+              "displayPath": "<benitoite>/Time.bnt",
+              "kind": "prelude",
+              "sourceId": "t0:s43"
+            }
+          ],
+          "seconds": 0.064569
+        }
+      }
+    },
+    {
+      "id": "docs/reference/benitoite.md:1133:46",
+      "modes": {
+        "W": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.092429
+        },
+        "R": {
+          "exit": 0,
+          "acquired": true,
+          "warnings": [],
+          "errors": [],
+          "reportStatus": null,
+          "seconds": 0.092464
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+== plan: level work against 1044a4e8a7e079250ed14964dda91f7167326edb (changed files not classified) (partial selection: --only spec_examples,spec_tally)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   later: stage checks named connections; change covers full regression; release checks the candidate

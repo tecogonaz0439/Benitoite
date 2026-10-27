@@ -1,0 +1,12 @@
+Benitoite/Interval/BudgetCallReach.lean:249:8: error: Type mismatch: After simplification, term
+  Option.some_ne_none binding
+ has type
+  some binding ≠ none
+but is expected to have type
+  rangeCallAt env ctx.next (callee.call labels positions sources) ≠ none
+Benitoite/Interval/BudgetCallReach.lean:252:8: error: Type mismatch: After simplification, term
+  child
+ has type
+  (exprs env sources).allows (advanceKey ctx.next (1 + (surfacePreorder callee).length)) warning
+but is expected to have type
+  (exprsTables (rangeTables env) sources).allows (advanceKey ctx.next (1 + (surfacePreorder callee).length)) warning

@@ -1,0 +1,7330 @@
+{
+  "kind": "interval-vm-comparison",
+  "compared": 39,
+  "excluded": 0,
+  "operations": 80,
+  "runs": [
+    {
+      "definition": ".addition",
+      "reached": [
+        "REACH:.addition:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".overflow",
+      "reached": [
+        "REACH:.overflow:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".division",
+      "reached": [
+        "REACH:.division:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0101"
+      ]
+    },
+    {
+      "definition": ".remainder",
+      "reached": [
+        "REACH:.remainder:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0101"
+      ]
+    },
+    {
+      "definition": ".subtraction",
+      "reached": [
+        "REACH:.subtraction:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".multiply",
+      "reached": [
+        "REACH:.multiply:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".negation",
+      "reached": [
+        "REACH:.negation:3"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".divisionOverflow",
+      "reached": [
+        "REACH:.divisionOverflow:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".moduloMinimum",
+      "reached": [
+        "REACH:.moduloMinimum:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".childFailure",
+      "reached": [
+        "REACH:.childFailure:4"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".rightFailure",
+      "reached": [
+        "REACH:.rightFailure:4",
+        "REACH:.rightFailure:8"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0101"
+      ]
+    },
+    {
+      "definition": ".shortAnd",
+      "reached": [],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".shortOr",
+      "reached": [],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".longAnd",
+      "reached": [
+        "REACH:.longAnd:6",
+        "REACH:.longAnd:5"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".longOr",
+      "reached": [
+        "REACH:.longOr:6",
+        "REACH:.longOr:5"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".branch",
+      "reached": [
+        "REACH:.branch:3",
+        "REACH:.branch:6"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".shadowed",
+      "reached": [
+        "REACH:.shadowed:2",
+        "REACH:.shadowed:6"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".guarded",
+      "reached": [
+        "REACH:.guarded:9"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".returned",
+      "reached": [
+        "REACH:.returned:3"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".signed8",
+      "reached": [
+        "REACH:.signed8:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".signed16",
+      "reached": [
+        "REACH:.signed16:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".signed32",
+      "reached": [
+        "REACH:.signed32:3"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".unsigned16",
+      "reached": [
+        "REACH:.unsigned16:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".unsigned32",
+      "reached": [
+        "REACH:.unsigned32:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".unsigned64",
+      "reached": [
+        "REACH:.unsigned64:2"
+      ],
+      "exit": 1,
+      "errors": [
+        "R0102"
+      ]
+    },
+    {
+      "definition": ".widthValue",
+      "reached": [
+        "REACH:.widthValue:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixinteger",
+      "reached": [
+        "REACH:.matrixinteger:8",
+        "REACH:.matrixinteger:6",
+        "REACH:.matrixinteger:5",
+        "REACH:.matrixinteger:3",
+        "REACH:.matrixinteger:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixs8",
+      "reached": [
+        "REACH:.matrixs8:8",
+        "REACH:.matrixs8:6",
+        "REACH:.matrixs8:5",
+        "REACH:.matrixs8:3",
+        "REACH:.matrixs8:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixs16",
+      "reached": [
+        "REACH:.matrixs16:8",
+        "REACH:.matrixs16:6",
+        "REACH:.matrixs16:5",
+        "REACH:.matrixs16:3",
+        "REACH:.matrixs16:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixs32",
+      "reached": [
+        "REACH:.matrixs32:8",
+        "REACH:.matrixs32:6",
+        "REACH:.matrixs32:5",
+        "REACH:.matrixs32:3",
+        "REACH:.matrixs32:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixu16",
+      "reached": [
+        "REACH:.matrixu16:8",
+        "REACH:.matrixu16:6",
+        "REACH:.matrixu16:5",
+        "REACH:.matrixu16:3",
+        "REACH:.matrixu16:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixu32",
+      "reached": [
+        "REACH:.matrixu32:8",
+        "REACH:.matrixu32:6",
+        "REACH:.matrixu32:5",
+        "REACH:.matrixu32:3",
+        "REACH:.matrixu32:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".matrixu64",
+      "reached": [
+        "REACH:.matrixu64:8",
+        "REACH:.matrixu64:6",
+        "REACH:.matrixu64:5",
+        "REACH:.matrixu64:3",
+        "REACH:.matrixu64:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".compareequal",
+      "reached": [
+        "REACH:.compareequal:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".compareunequal",
+      "reached": [
+        "REACH:.compareunequal:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".compareless",
+      "reached": [
+        "REACH:.compareless:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".comparelessEqual",
+      "reached": [
+        "REACH:.comparelessEqual:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".comparegreater",
+      "reached": [
+        "REACH:.comparegreater:2"
+      ],
+      "exit": 0,
+      "errors": []
+    },
+    {
+      "definition": ".comparegreaterEqual",
+      "reached": [
+        "REACH:.comparegreaterEqual:2"
+      ],
+      "exit": 0,
+      "errors": []
+    }
+  ],
+  "markerFailureExcluded": "R0201",
+  "negativeCases": [
+    "instrumentationStructure",
+    "unknownInSkippedBranch",
+    "reach",
+    "value",
+    "failurePosition"
+  ],
+  "sites": [
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".addition",
+        "2"
+      ],
+      "marker": "REACH:.addition:2",
+      "operands": [
+        [
+          0,
+          80,
+          81
+        ],
+        [
+          0,
+          84,
+          85
+        ]
+      ],
+      "operationText": "intervalOperand2x0 + intervalOperand2x1",
+      "span": [
+        0,
+        80,
+        85
+      ],
+      "instrumentedKey": [
+        ".addition",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        203,
+        242
+      ],
+      "markerSpan": [
+        0,
+        164,
+        202
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 9223372036854775807
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".overflow",
+        "2"
+      ],
+      "marker": "REACH:.overflow:2",
+      "operands": [
+        [
+          0,
+          139,
+          158
+        ],
+        [
+          0,
+          161,
+          162
+        ]
+      ],
+      "operationText": "intervalOperand2x0 + intervalOperand2x1",
+      "span": [
+        0,
+        139,
+        162
+      ],
+      "instrumentedKey": [
+        ".overflow",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        448,
+        487
+      ],
+      "markerSpan": [
+        0,
+        409,
+        447
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".division",
+        "2"
+      ],
+      "marker": "REACH:.division:2",
+      "operands": [
+        [
+          0,
+          216,
+          217
+        ],
+        [
+          0,
+          222,
+          223
+        ]
+      ],
+      "operationText": "intervalOperand2x0 div intervalOperand2x1",
+      "span": [
+        0,
+        216,
+        223
+      ],
+      "instrumentedKey": [
+        ".division",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        675,
+        716
+      ],
+      "markerSpan": [
+        0,
+        636,
+        674
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".remainder",
+        "2"
+      ],
+      "marker": "REACH:.remainder:2",
+      "operands": [
+        [
+          0,
+          278,
+          279
+        ],
+        [
+          0,
+          284,
+          285
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        278,
+        285
+      ],
+      "instrumentedKey": [
+        ".remainder",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        906,
+        947
+      ],
+      "markerSpan": [
+        0,
+        866,
+        905
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": -7
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".subtraction",
+        "2"
+      ],
+      "marker": "REACH:.subtraction:2",
+      "operands": [
+        [
+          0,
+          342,
+          344
+        ],
+        [
+          0,
+          347,
+          348
+        ]
+      ],
+      "operationText": "intervalOperand2x0 - intervalOperand2x1",
+      "span": [
+        0,
+        342,
+        348
+      ],
+      "instrumentedKey": [
+        ".subtraction",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        1142,
+        1181
+      ],
+      "markerSpan": [
+        0,
+        1100,
+        1141
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": -7
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".multiply",
+        "2"
+      ],
+      "marker": "REACH:.multiply:2",
+      "operands": [
+        [
+          0,
+          402,
+          404
+        ],
+        [
+          0,
+          407,
+          408
+        ]
+      ],
+      "operationText": "intervalOperand2x0 * intervalOperand2x1",
+      "span": [
+        0,
+        402,
+        408
+      ],
+      "instrumentedKey": [
+        ".multiply",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        1370,
+        1409
+      ],
+      "markerSpan": [
+        0,
+        1331,
+        1369
+      ]
+    },
+    {
+      "expression": {
+        "neg": {
+          "inner": {
+            "local": {
+              "index": 0
+            }
+          },
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        }
+      },
+      "key": [
+        ".negation",
+        "3"
+      ],
+      "marker": "REACH:.negation:3",
+      "operands": [
+        [
+          0,
+          502,
+          509
+        ]
+      ],
+      "operationText": "-intervalOperand3x0",
+      "span": [
+        0,
+        501,
+        509
+      ],
+      "instrumentedKey": [
+        ".negation",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        1613,
+        1632
+      ],
+      "markerSpan": [
+        0,
+        1574,
+        1612
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": -9223372036854775808
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": -1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".divisionOverflow",
+        "2"
+      ],
+      "marker": "REACH:.divisionOverflow:2",
+      "operands": [
+        [
+          0,
+          571,
+          591
+        ],
+        [
+          0,
+          596,
+          598
+        ]
+      ],
+      "operationText": "intervalOperand2x0 div intervalOperand2x1",
+      "span": [
+        0,
+        571,
+        598
+      ],
+      "instrumentedKey": [
+        ".divisionOverflow",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        1856,
+        1897
+      ],
+      "markerSpan": [
+        0,
+        1809,
+        1855
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": -9223372036854775808
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": -1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".moduloMinimum",
+        "2"
+      ],
+      "marker": "REACH:.moduloMinimum:2",
+      "operands": [
+        [
+          0,
+          657,
+          677
+        ],
+        [
+          0,
+          682,
+          684
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        657,
+        684
+      ],
+      "instrumentedKey": [
+        ".moduloMinimum",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        2115,
+        2156
+      ],
+      "markerSpan": [
+        0,
+        2071,
+        2114
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 9223372036854775807
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".childFailure",
+        "2"
+      ],
+      "marker": "REACH:.childFailure:2",
+      "operands": [
+        [
+          0,
+          742,
+          767
+        ],
+        [
+          0,
+          772,
+          773
+        ]
+      ],
+      "operationText": "intervalOperand2x0 div intervalOperand2x1",
+      "span": [
+        0,
+        742,
+        773
+      ],
+      "instrumentedKey": [
+        ".childFailure",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        2529,
+        2570
+      ],
+      "markerSpan": [
+        0,
+        2486,
+        2528
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 9223372036854775807
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".childFailure",
+        "4"
+      ],
+      "marker": "REACH:.childFailure:4",
+      "operands": [
+        [
+          0,
+          743,
+          762
+        ],
+        [
+          0,
+          765,
+          766
+        ]
+      ],
+      "operationText": "intervalOperand4x0 + intervalOperand4x1",
+      "span": [
+        0,
+        743,
+        766
+      ],
+      "instrumentedKey": [
+        ".childFailure",
+        "12"
+      ],
+      "operationSpan": [
+        0,
+        2405,
+        2444
+      ],
+      "markerSpan": [
+        0,
+        2362,
+        2404
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 1
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 8
+                        }
+                      }
+                    }
+                  },
+                  "op": "intDiv",
+                  "operand": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".rightFailure",
+        "2"
+      ],
+      "marker": "REACH:.rightFailure:2",
+      "operands": [
+        [
+          0,
+          831,
+          838
+        ],
+        [
+          0,
+          841,
+          850
+        ]
+      ],
+      "operationText": "intervalOperand2x0 + intervalOperand2x1",
+      "span": [
+        0,
+        831,
+        850
+      ],
+      "instrumentedKey": [
+        ".rightFailure",
+        "29"
+      ],
+      "operationSpan": [
+        0,
+        3086,
+        3125
+      ],
+      "markerSpan": [
+        0,
+        3043,
+        3085
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".rightFailure",
+        "4"
+      ],
+      "marker": "REACH:.rightFailure:4",
+      "operands": [
+        [
+          0,
+          832,
+          833
+        ],
+        [
+          0,
+          836,
+          837
+        ]
+      ],
+      "operationText": "intervalOperand4x0 + intervalOperand4x1",
+      "span": [
+        0,
+        832,
+        837
+      ],
+      "instrumentedKey": [
+        ".rightFailure",
+        "12"
+      ],
+      "operationSpan": [
+        0,
+        2801,
+        2840
+      ],
+      "markerSpan": [
+        0,
+        2758,
+        2800
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".rightFailure",
+        "8"
+      ],
+      "marker": "REACH:.rightFailure:8",
+      "operands": [
+        [
+          0,
+          842,
+          843
+        ],
+        [
+          0,
+          848,
+          849
+        ]
+      ],
+      "operationText": "intervalOperand8x0 div intervalOperand8x1",
+      "span": [
+        0,
+        842,
+        849
+      ],
+      "instrumentedKey": [
+        ".rightFailure",
+        "23"
+      ],
+      "operationSpan": [
+        0,
+        2989,
+        3030
+      ],
+      "markerSpan": [
+        0,
+        2946,
+        2988
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 8
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "eq",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".shortAnd",
+        "5"
+      ],
+      "marker": "REACH:.shortAnd:5",
+      "operands": [
+        [
+          0,
+          915,
+          922
+        ],
+        [
+          0,
+          925,
+          926
+        ]
+      ],
+      "operationText": "intervalOperand5x0 = intervalOperand5x1",
+      "span": [
+        0,
+        915,
+        926
+      ],
+      "instrumentedKey": [
+        ".shortAnd",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        3479,
+        3518
+      ],
+      "markerSpan": [
+        0,
+        3440,
+        3478
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".shortAnd",
+        "6"
+      ],
+      "marker": "REACH:.shortAnd:6",
+      "operands": [
+        [
+          0,
+          915,
+          916
+        ],
+        [
+          0,
+          921,
+          922
+        ]
+      ],
+      "operationText": "intervalOperand6x0 div intervalOperand6x1",
+      "span": [
+        0,
+        915,
+        922
+      ],
+      "instrumentedKey": [
+        ".shortAnd",
+        "14"
+      ],
+      "operationSpan": [
+        0,
+        3358,
+        3399
+      ],
+      "markerSpan": [
+        0,
+        3319,
+        3357
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 8
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "eq",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".shortOr",
+        "5"
+      ],
+      "marker": "REACH:.shortOr:5",
+      "operands": [
+        [
+          0,
+          989,
+          996
+        ],
+        [
+          0,
+          999,
+          1000
+        ]
+      ],
+      "operationText": "intervalOperand5x0 = intervalOperand5x1",
+      "span": [
+        0,
+        989,
+        1000
+      ],
+      "instrumentedKey": [
+        ".shortOr",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        3868,
+        3907
+      ],
+      "markerSpan": [
+        0,
+        3830,
+        3867
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".shortOr",
+        "6"
+      ],
+      "marker": "REACH:.shortOr:6",
+      "operands": [
+        [
+          0,
+          989,
+          990
+        ],
+        [
+          0,
+          995,
+          996
+        ]
+      ],
+      "operationText": "intervalOperand6x0 div intervalOperand6x1",
+      "span": [
+        0,
+        989,
+        996
+      ],
+      "instrumentedKey": [
+        ".shortOr",
+        "14"
+      ],
+      "operationSpan": [
+        0,
+        3748,
+        3789
+      ],
+      "markerSpan": [
+        0,
+        3710,
+        3747
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 8
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "eq",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".longAnd",
+        "5"
+      ],
+      "marker": "REACH:.longAnd:5",
+      "operands": [
+        [
+          0,
+          1064,
+          1071
+        ],
+        [
+          0,
+          1074,
+          1075
+        ]
+      ],
+      "operationText": "intervalOperand5x0 = intervalOperand5x1",
+      "span": [
+        0,
+        1064,
+        1075
+      ],
+      "instrumentedKey": [
+        ".longAnd",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        4258,
+        4297
+      ],
+      "markerSpan": [
+        0,
+        4220,
+        4257
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".longAnd",
+        "6"
+      ],
+      "marker": "REACH:.longAnd:6",
+      "operands": [
+        [
+          0,
+          1064,
+          1065
+        ],
+        [
+          0,
+          1070,
+          1071
+        ]
+      ],
+      "operationText": "intervalOperand6x0 div intervalOperand6x1",
+      "span": [
+        0,
+        1064,
+        1071
+      ],
+      "instrumentedKey": [
+        ".longAnd",
+        "14"
+      ],
+      "operationSpan": [
+        0,
+        4138,
+        4179
+      ],
+      "markerSpan": [
+        0,
+        4100,
+        4137
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 8
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "eq",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".longOr",
+        "5"
+      ],
+      "marker": "REACH:.longOr:5",
+      "operands": [
+        [
+          0,
+          1138,
+          1145
+        ],
+        [
+          0,
+          1148,
+          1149
+        ]
+      ],
+      "operationText": "intervalOperand5x0 = intervalOperand5x1",
+      "span": [
+        0,
+        1138,
+        1149
+      ],
+      "instrumentedKey": [
+        ".longOr",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        4645,
+        4684
+      ],
+      "markerSpan": [
+        0,
+        4608,
+        4644
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".longOr",
+        "6"
+      ],
+      "marker": "REACH:.longOr:6",
+      "operands": [
+        [
+          0,
+          1138,
+          1139
+        ],
+        [
+          0,
+          1144,
+          1145
+        ]
+      ],
+      "operationText": "intervalOperand6x0 div intervalOperand6x1",
+      "span": [
+        0,
+        1138,
+        1145
+      ],
+      "instrumentedKey": [
+        ".longOr",
+        "14"
+      ],
+      "operationSpan": [
+        0,
+        4526,
+        4567
+      ],
+      "markerSpan": [
+        0,
+        4489,
+        4525
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "lt",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".branch",
+        "3"
+      ],
+      "marker": "REACH:.branch:3",
+      "operands": [
+        [
+          0,
+          1205,
+          1206
+        ],
+        [
+          0,
+          1209,
+          1210
+        ]
+      ],
+      "operationText": "intervalOperand3x0 < intervalOperand3x1",
+      "span": [
+        0,
+        1205,
+        1210
+      ],
+      "instrumentedKey": [
+        ".branch",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        4872,
+        4911
+      ],
+      "markerSpan": [
+        0,
+        4835,
+        4871
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 9
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".branch",
+        "6"
+      ],
+      "marker": "REACH:.branch:6",
+      "operands": [
+        [
+          0,
+          1216,
+          1217
+        ],
+        [
+          0,
+          1220,
+          1221
+        ]
+      ],
+      "operationText": "intervalOperand6x0 + intervalOperand6x1",
+      "span": [
+        0,
+        1216,
+        1221
+      ],
+      "instrumentedKey": [
+        ".branch",
+        "20"
+      ],
+      "operationSpan": [
+        0,
+        5030,
+        5069
+      ],
+      "markerSpan": [
+        0,
+        4993,
+        5029
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".branch",
+        "9"
+      ],
+      "marker": "REACH:.branch:9",
+      "operands": [
+        [
+          0,
+          1227,
+          1228
+        ],
+        [
+          0,
+          1233,
+          1234
+        ]
+      ],
+      "operationText": "intervalOperand9x0 div intervalOperand9x1",
+      "span": [
+        0,
+        1227,
+        1234
+      ],
+      "instrumentedKey": [
+        ".branch",
+        "30"
+      ],
+      "operationSpan": [
+        0,
+        5188,
+        5229
+      ],
+      "markerSpan": [
+        0,
+        5151,
+        5187
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "local": {
+              "index": 0
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".shadowed",
+        "2"
+      ],
+      "marker": "REACH:.shadowed:2",
+      "operands": [
+        [
+          0,
+          1322,
+          1327
+        ],
+        [
+          0,
+          1330,
+          1331
+        ]
+      ],
+      "operationText": "intervalOperand2x0 + intervalOperand2x1",
+      "span": [
+        0,
+        1322,
+        1331
+      ],
+      "instrumentedKey": [
+        ".shadowed",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        5455,
+        5494
+      ],
+      "markerSpan": [
+        0,
+        5416,
+        5454
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "local": {
+              "index": 0
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".shadowed",
+        "6"
+      ],
+      "marker": "REACH:.shadowed:6",
+      "operands": [
+        [
+          0,
+          1341,
+          1346
+        ],
+        [
+          0,
+          1349,
+          1350
+        ]
+      ],
+      "operationText": "intervalOperand6x0 - intervalOperand6x1",
+      "span": [
+        0,
+        1341,
+        1350
+      ],
+      "instrumentedKey": [
+        ".shadowed",
+        "20"
+      ],
+      "operationSpan": [
+        0,
+        5623,
+        5662
+      ],
+      "markerSpan": [
+        0,
+        5584,
+        5622
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".guarded",
+        "5"
+      ],
+      "marker": "REACH:.guarded:5",
+      "operands": [
+        [
+          0,
+          1439,
+          1440
+        ],
+        [
+          0,
+          1445,
+          1446
+        ]
+      ],
+      "operationText": "intervalOperand5x0 div intervalOperand5x1",
+      "span": [
+        0,
+        1439,
+        1446
+      ],
+      "instrumentedKey": [
+        ".guarded",
+        "12"
+      ],
+      "operationSpan": [
+        0,
+        5884,
+        5925
+      ],
+      "markerSpan": [
+        0,
+        5846,
+        5883
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "local": {
+              "index": 0
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".guarded",
+        "9"
+      ],
+      "marker": "REACH:.guarded:9",
+      "operands": [
+        [
+          0,
+          1469,
+          1470
+        ],
+        [
+          0,
+          1473,
+          1474
+        ]
+      ],
+      "operationText": "intervalOperand9x0 * intervalOperand9x1",
+      "span": [
+        0,
+        1469,
+        1474
+      ],
+      "instrumentedKey": [
+        ".guarded",
+        "23"
+      ],
+      "operationSpan": [
+        0,
+        6062,
+        6101
+      ],
+      "markerSpan": [
+        0,
+        6024,
+        6061
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 8
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".guarded",
+        "12"
+      ],
+      "marker": "REACH:.guarded:12",
+      "operands": [
+        [
+          0,
+          1489,
+          1490
+        ],
+        [
+          0,
+          1495,
+          1496
+        ]
+      ],
+      "operationText": "intervalOperand12x0 div intervalOperand12x1",
+      "span": [
+        0,
+        1489,
+        1496
+      ],
+      "instrumentedKey": [
+        ".guarded",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        6233,
+        6276
+      ],
+      "markerSpan": [
+        0,
+        6194,
+        6232
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 7
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".returned",
+        "3"
+      ],
+      "marker": "REACH:.returned:3",
+      "operands": [
+        [
+          0,
+          1586,
+          1587
+        ],
+        [
+          0,
+          1590,
+          1591
+        ]
+      ],
+      "operationText": "intervalOperand3x0 + intervalOperand3x1",
+      "span": [
+        0,
+        1586,
+        1591
+      ],
+      "instrumentedKey": [
+        ".returned",
+        "10"
+      ],
+      "operationSpan": [
+        0,
+        6500,
+        6539
+      ],
+      "markerSpan": [
+        0,
+        6461,
+        6499
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "local": {
+              "index": 0
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".returned",
+        "7"
+      ],
+      "marker": "REACH:.returned:7",
+      "operands": [
+        [
+          0,
+          1613,
+          1618
+        ],
+        [
+          0,
+          1623,
+          1624
+        ]
+      ],
+      "operationText": "intervalOperand7x0 div intervalOperand7x1",
+      "span": [
+        0,
+        1613,
+        1624
+      ],
+      "instrumentedKey": [
+        ".returned",
+        "21"
+      ],
+      "operationSpan": [
+        0,
+        6680,
+        6721
+      ],
+      "markerSpan": [
+        0,
+        6641,
+        6679
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 127
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer8"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".signed8",
+        "2"
+      ],
+      "marker": "REACH:.signed8:2",
+      "operands": [
+        [
+          0,
+          1678,
+          1683
+        ],
+        [
+          0,
+          1686,
+          1689
+        ]
+      ],
+      "operationText": "intervalOperand2x0 + intervalOperand2x1",
+      "span": [
+        0,
+        1678,
+        1689
+      ],
+      "instrumentedKey": [
+        ".signed8",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        6914,
+        6953
+      ],
+      "markerSpan": [
+        0,
+        6876,
+        6913
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "negInteger16": {
+              "magnitude": 32768
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".signed16",
+        "2"
+      ],
+      "marker": "REACH:.signed16:2",
+      "operands": [
+        [
+          0,
+          1745,
+          1754
+        ],
+        [
+          0,
+          1757,
+          1761
+        ]
+      ],
+      "operationText": "intervalOperand2x0 - intervalOperand2x1",
+      "span": [
+        0,
+        1745,
+        1761
+      ],
+      "instrumentedKey": [
+        ".signed16",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        7154,
+        7193
+      ],
+      "markerSpan": [
+        0,
+        7115,
+        7153
+      ]
+    },
+    {
+      "expression": {
+        "neg": {
+          "inner": {
+            "local": {
+              "index": 0
+            }
+          },
+          "operand": {
+            "base": {
+              "name": "Integer32"
+            }
+          }
+        }
+      },
+      "key": [
+        ".signed32",
+        "3"
+      ],
+      "marker": "REACH:.signed32:3",
+      "operands": [
+        [
+          0,
+          1849,
+          1854
+        ]
+      ],
+      "operationText": "-intervalOperand3x0",
+      "span": [
+        0,
+        1848,
+        1854
+      ],
+      "instrumentedKey": [
+        ".signed32",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        7389,
+        7408
+      ],
+      "markerSpan": [
+        0,
+        7350,
+        7388
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 65535
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".unsigned16",
+        "2"
+      ],
+      "marker": "REACH:.unsigned16:2",
+      "operands": [
+        [
+          0,
+          1920,
+          1928
+        ],
+        [
+          0,
+          1931,
+          1935
+        ]
+      ],
+      "operationText": "intervalOperand2x0 * intervalOperand2x1",
+      "span": [
+        0,
+        1920,
+        1935
+      ],
+      "instrumentedKey": [
+        ".unsigned16",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        7620,
+        7659
+      ],
+      "markerSpan": [
+        0,
+        7579,
+        7619
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 0
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".unsigned32",
+        "2"
+      ],
+      "marker": "REACH:.unsigned32:2",
+      "operands": [
+        [
+          0,
+          2001,
+          2005
+        ],
+        [
+          0,
+          2008,
+          2012
+        ]
+      ],
+      "operationText": "intervalOperand2x0 - intervalOperand2x1",
+      "span": [
+        0,
+        2001,
+        2012
+      ],
+      "instrumentedKey": [
+        ".unsigned32",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        7867,
+        7906
+      ],
+      "markerSpan": [
+        0,
+        7826,
+        7866
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 18446744073709551615
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".unsigned64",
+        "2"
+      ],
+      "marker": "REACH:.unsigned64:2",
+      "operands": [
+        [
+          0,
+          2078,
+          2101
+        ],
+        [
+          0,
+          2104,
+          2108
+        ]
+      ],
+      "operationText": "intervalOperand2x0 * intervalOperand2x1",
+      "span": [
+        0,
+        2078,
+        2108
+      ],
+      "instrumentedKey": [
+        ".unsigned64",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        8133,
+        8172
+      ],
+      "markerSpan": [
+        0,
+        8092,
+        8132
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 18446744073709551615
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".widthValue",
+        "2"
+      ],
+      "marker": "REACH:.widthValue:2",
+      "operands": [
+        [
+          0,
+          2174,
+          2197
+        ],
+        [
+          0,
+          2202,
+          2206
+        ]
+      ],
+      "operationText": "intervalOperand2x0 div intervalOperand2x1",
+      "span": [
+        0,
+        2174,
+        2206
+      ],
+      "instrumentedKey": [
+        ".widthValue",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        8399,
+        8440
+      ],
+      "markerSpan": [
+        0,
+        8358,
+        8398
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixinteger",
+        "2"
+      ],
+      "marker": "REACH:.matrixinteger:2",
+      "operands": [
+        [
+          0,
+          2265,
+          2288
+        ],
+        [
+          0,
+          2293,
+          2294
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2265,
+        2294
+      ],
+      "instrumentedKey": [
+        ".matrixinteger",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        9276,
+        9317
+      ],
+      "markerSpan": [
+        0,
+        9232,
+        9275
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixinteger",
+        "3"
+      ],
+      "marker": "REACH:.matrixinteger:3",
+      "operands": [
+        [
+          0,
+          2265,
+          2282
+        ],
+        [
+          0,
+          2287,
+          2288
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2265,
+        2288
+      ],
+      "instrumentedKey": [
+        ".matrixinteger",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        9150,
+        9191
+      ],
+      "markerSpan": [
+        0,
+        9106,
+        9149
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "integer": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixinteger",
+        "5"
+      ],
+      "marker": "REACH:.matrixinteger:5",
+      "operands": [
+        [
+          0,
+          2266,
+          2277
+        ],
+        [
+          0,
+          2280,
+          2281
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2266,
+        2281
+      ],
+      "instrumentedKey": [
+        ".matrixinteger",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        9025,
+        9064
+      ],
+      "markerSpan": [
+        0,
+        8981,
+        9024
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixinteger",
+        "6"
+      ],
+      "marker": "REACH:.matrixinteger:6",
+      "operands": [
+        [
+          0,
+          2266,
+          2273
+        ],
+        [
+          0,
+          2276,
+          2277
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2266,
+        2277
+      ],
+      "instrumentedKey": [
+        ".matrixinteger",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        8901,
+        8940
+      ],
+      "markerSpan": [
+        0,
+        8857,
+        8900
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixinteger",
+        "8"
+      ],
+      "marker": "REACH:.matrixinteger:8",
+      "operands": [
+        [
+          0,
+          2267,
+          2268
+        ],
+        [
+          0,
+          2271,
+          2272
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2267,
+        2272
+      ],
+      "instrumentedKey": [
+        ".matrixinteger",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        8776,
+        8815
+      ],
+      "markerSpan": [
+        0,
+        8732,
+        8775
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer8": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "Integer8"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer8": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "Integer8"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "integer8": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "Integer8"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer8": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer8"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer8": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "Integer8"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs8",
+        "2"
+      ],
+      "marker": "REACH:.matrixs8:2",
+      "operands": [
+        [
+          0,
+          2349,
+          2382
+        ],
+        [
+          0,
+          2387,
+          2390
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2349,
+        2390
+      ],
+      "instrumentedKey": [
+        ".matrixs8",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        10136,
+        10177
+      ],
+      "markerSpan": [
+        0,
+        10097,
+        10135
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer8": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "Integer8"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer8": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "Integer8"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer8": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "Integer8"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer8": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer8"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs8",
+        "3"
+      ],
+      "marker": "REACH:.matrixs8:3",
+      "operands": [
+        [
+          0,
+          2349,
+          2374
+        ],
+        [
+          0,
+          2379,
+          2382
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2349,
+        2382
+      ],
+      "instrumentedKey": [
+        ".matrixs8",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        10013,
+        10054
+      ],
+      "markerSpan": [
+        0,
+        9974,
+        10012
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "integer8": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "Integer8"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer8": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "Integer8"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer8": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer8"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs8",
+        "5"
+      ],
+      "marker": "REACH:.matrixs8:5",
+      "operands": [
+        [
+          0,
+          2350,
+          2367
+        ],
+        [
+          0,
+          2370,
+          2373
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2350,
+        2373
+      ],
+      "instrumentedKey": [
+        ".matrixs8",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        9891,
+        9930
+      ],
+      "markerSpan": [
+        0,
+        9852,
+        9890
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer8": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "Integer8"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer8": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "Integer8"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs8",
+        "6"
+      ],
+      "marker": "REACH:.matrixs8:6",
+      "operands": [
+        [
+          0,
+          2350,
+          2361
+        ],
+        [
+          0,
+          2364,
+          2367
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2350,
+        2367
+      ],
+      "instrumentedKey": [
+        ".matrixs8",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        9770,
+        9809
+      ],
+      "markerSpan": [
+        0,
+        9731,
+        9769
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer8"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer8": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs8",
+        "8"
+      ],
+      "marker": "REACH:.matrixs8:8",
+      "operands": [
+        [
+          0,
+          2351,
+          2354
+        ],
+        [
+          0,
+          2357,
+          2360
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2351,
+        2360
+      ],
+      "instrumentedKey": [
+        ".matrixs8",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        9648,
+        9687
+      ],
+      "markerSpan": [
+        0,
+        9609,
+        9647
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer16": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "Integer16"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer16": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "Integer16"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "integer16": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "Integer16"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer16": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer16"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer16": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "Integer16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs16",
+        "2"
+      ],
+      "marker": "REACH:.matrixs16:2",
+      "operands": [
+        [
+          0,
+          2447,
+          2485
+        ],
+        [
+          0,
+          2490,
+          2494
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2447,
+        2494
+      ],
+      "instrumentedKey": [
+        ".matrixs16",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        11009,
+        11050
+      ],
+      "markerSpan": [
+        0,
+        10969,
+        11008
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer16": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "Integer16"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer16": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "Integer16"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer16": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "Integer16"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer16": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs16",
+        "3"
+      ],
+      "marker": "REACH:.matrixs16:3",
+      "operands": [
+        [
+          0,
+          2447,
+          2476
+        ],
+        [
+          0,
+          2481,
+          2485
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2447,
+        2485
+      ],
+      "instrumentedKey": [
+        ".matrixs16",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        10884,
+        10925
+      ],
+      "markerSpan": [
+        0,
+        10844,
+        10883
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "integer16": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "Integer16"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer16": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "Integer16"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer16": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs16",
+        "5"
+      ],
+      "marker": "REACH:.matrixs16:5",
+      "operands": [
+        [
+          0,
+          2448,
+          2468
+        ],
+        [
+          0,
+          2471,
+          2475
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2448,
+        2475
+      ],
+      "instrumentedKey": [
+        ".matrixs16",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        10760,
+        10799
+      ],
+      "markerSpan": [
+        0,
+        10720,
+        10759
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer16": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "Integer16"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer16": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "Integer16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs16",
+        "6"
+      ],
+      "marker": "REACH:.matrixs16:6",
+      "operands": [
+        [
+          0,
+          2448,
+          2461
+        ],
+        [
+          0,
+          2464,
+          2468
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2448,
+        2468
+      ],
+      "instrumentedKey": [
+        ".matrixs16",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        10637,
+        10676
+      ],
+      "markerSpan": [
+        0,
+        10597,
+        10636
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer16": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs16",
+        "8"
+      ],
+      "marker": "REACH:.matrixs16:8",
+      "operands": [
+        [
+          0,
+          2449,
+          2453
+        ],
+        [
+          0,
+          2456,
+          2460
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2449,
+        2460
+      ],
+      "instrumentedKey": [
+        ".matrixs16",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        10513,
+        10552
+      ],
+      "markerSpan": [
+        0,
+        10473,
+        10512
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer32": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "Integer32"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "integer32": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "Integer32"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "integer32": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "Integer32"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer32": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "Integer32"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer32": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "Integer32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer32": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs32",
+        "2"
+      ],
+      "marker": "REACH:.matrixs32:2",
+      "operands": [
+        [
+          0,
+          2551,
+          2589
+        ],
+        [
+          0,
+          2594,
+          2598
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2551,
+        2598
+      ],
+      "instrumentedKey": [
+        ".matrixs32",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        11882,
+        11923
+      ],
+      "markerSpan": [
+        0,
+        11842,
+        11881
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer32": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "Integer32"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "integer32": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "Integer32"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer32": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "Integer32"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer32": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "Integer32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer32": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs32",
+        "3"
+      ],
+      "marker": "REACH:.matrixs32:3",
+      "operands": [
+        [
+          0,
+          2551,
+          2580
+        ],
+        [
+          0,
+          2585,
+          2589
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2551,
+        2589
+      ],
+      "instrumentedKey": [
+        ".matrixs32",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        11757,
+        11798
+      ],
+      "markerSpan": [
+        0,
+        11717,
+        11756
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "integer32": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "Integer32"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "integer32": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "Integer32"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "integer32": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "Integer32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer32": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs32",
+        "5"
+      ],
+      "marker": "REACH:.matrixs32:5",
+      "operands": [
+        [
+          0,
+          2552,
+          2572
+        ],
+        [
+          0,
+          2575,
+          2579
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2552,
+        2579
+      ],
+      "instrumentedKey": [
+        ".matrixs32",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        11633,
+        11672
+      ],
+      "markerSpan": [
+        0,
+        11593,
+        11632
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "integer32": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "Integer32"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "integer32": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "Integer32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer32": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs32",
+        "6"
+      ],
+      "marker": "REACH:.matrixs32:6",
+      "operands": [
+        [
+          0,
+          2552,
+          2565
+        ],
+        [
+          0,
+          2568,
+          2572
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2552,
+        2572
+      ],
+      "instrumentedKey": [
+        ".matrixs32",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        11510,
+        11549
+      ],
+      "markerSpan": [
+        0,
+        11470,
+        11509
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer32": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "Integer32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer32": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixs32",
+        "8"
+      ],
+      "marker": "REACH:.matrixs32:8",
+      "operands": [
+        [
+          0,
+          2553,
+          2557
+        ],
+        [
+          0,
+          2560,
+          2564
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2553,
+        2564
+      ],
+      "instrumentedKey": [
+        ".matrixs32",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        11386,
+        11425
+      ],
+      "markerSpan": [
+        0,
+        11346,
+        11385
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "unsignedInteger16": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "UnsignedInteger16"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "unsignedInteger16": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "UnsignedInteger16"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "unsignedInteger16": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger16"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger16": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "UnsignedInteger16"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "unsignedInteger16": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu16",
+        "2"
+      ],
+      "marker": "REACH:.matrixu16:2",
+      "operands": [
+        [
+          0,
+          2663,
+          2701
+        ],
+        [
+          0,
+          2706,
+          2710
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2663,
+        2710
+      ],
+      "instrumentedKey": [
+        ".matrixu16",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        12763,
+        12804
+      ],
+      "markerSpan": [
+        0,
+        12723,
+        12762
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "unsignedInteger16": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "UnsignedInteger16"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "unsignedInteger16": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger16"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger16": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "UnsignedInteger16"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger16": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu16",
+        "3"
+      ],
+      "marker": "REACH:.matrixu16:3",
+      "operands": [
+        [
+          0,
+          2663,
+          2692
+        ],
+        [
+          0,
+          2697,
+          2701
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2663,
+        2701
+      ],
+      "instrumentedKey": [
+        ".matrixu16",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        12638,
+        12679
+      ],
+      "markerSpan": [
+        0,
+        12598,
+        12637
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger16": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger16"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger16": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "UnsignedInteger16"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "unsignedInteger16": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu16",
+        "5"
+      ],
+      "marker": "REACH:.matrixu16:5",
+      "operands": [
+        [
+          0,
+          2664,
+          2684
+        ],
+        [
+          0,
+          2687,
+          2691
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2664,
+        2691
+      ],
+      "instrumentedKey": [
+        ".matrixu16",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        12514,
+        12553
+      ],
+      "markerSpan": [
+        0,
+        12474,
+        12513
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger16": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "UnsignedInteger16"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger16": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu16",
+        "6"
+      ],
+      "marker": "REACH:.matrixu16:6",
+      "operands": [
+        [
+          0,
+          2664,
+          2677
+        ],
+        [
+          0,
+          2680,
+          2684
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2664,
+        2684
+      ],
+      "instrumentedKey": [
+        ".matrixu16",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        12391,
+        12430
+      ],
+      "markerSpan": [
+        0,
+        12351,
+        12390
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger16"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger16": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu16",
+        "8"
+      ],
+      "marker": "REACH:.matrixu16:8",
+      "operands": [
+        [
+          0,
+          2665,
+          2669
+        ],
+        [
+          0,
+          2672,
+          2676
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2665,
+        2676
+      ],
+      "instrumentedKey": [
+        ".matrixu16",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        12267,
+        12306
+      ],
+      "markerSpan": [
+        0,
+        12227,
+        12266
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "unsignedInteger32": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "UnsignedInteger32"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "unsignedInteger32": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "UnsignedInteger32"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "unsignedInteger32": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger32"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger32": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "UnsignedInteger32"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "unsignedInteger32": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu32",
+        "2"
+      ],
+      "marker": "REACH:.matrixu32:2",
+      "operands": [
+        [
+          0,
+          2775,
+          2813
+        ],
+        [
+          0,
+          2818,
+          2822
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2775,
+        2822
+      ],
+      "instrumentedKey": [
+        ".matrixu32",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        13644,
+        13685
+      ],
+      "markerSpan": [
+        0,
+        13604,
+        13643
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "unsignedInteger32": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "UnsignedInteger32"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "unsignedInteger32": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger32"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger32": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "UnsignedInteger32"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger32": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu32",
+        "3"
+      ],
+      "marker": "REACH:.matrixu32:3",
+      "operands": [
+        [
+          0,
+          2775,
+          2804
+        ],
+        [
+          0,
+          2809,
+          2813
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2775,
+        2813
+      ],
+      "instrumentedKey": [
+        ".matrixu32",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        13519,
+        13560
+      ],
+      "markerSpan": [
+        0,
+        13479,
+        13518
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger32": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger32"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger32": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "UnsignedInteger32"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "unsignedInteger32": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu32",
+        "5"
+      ],
+      "marker": "REACH:.matrixu32:5",
+      "operands": [
+        [
+          0,
+          2776,
+          2796
+        ],
+        [
+          0,
+          2799,
+          2803
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2776,
+        2803
+      ],
+      "instrumentedKey": [
+        ".matrixu32",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        13395,
+        13434
+      ],
+      "markerSpan": [
+        0,
+        13355,
+        13394
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger32": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "UnsignedInteger32"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger32": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu32",
+        "6"
+      ],
+      "marker": "REACH:.matrixu32:6",
+      "operands": [
+        [
+          0,
+          2776,
+          2789
+        ],
+        [
+          0,
+          2792,
+          2796
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2776,
+        2796
+      ],
+      "instrumentedKey": [
+        ".matrixu32",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        13272,
+        13311
+      ],
+      "markerSpan": [
+        0,
+        13232,
+        13271
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger32"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger32": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu32",
+        "8"
+      ],
+      "marker": "REACH:.matrixu32:8",
+      "operands": [
+        [
+          0,
+          2777,
+          2781
+        ],
+        [
+          0,
+          2784,
+          2788
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2777,
+        2788
+      ],
+      "instrumentedKey": [
+        ".matrixu32",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        13148,
+        13187
+      ],
+      "markerSpan": [
+        0,
+        13108,
+        13147
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "binary": {
+                          "lhs": {
+                            "paren": {
+                              "inner": {
+                                "binary": {
+                                  "lhs": {
+                                    "literal": {
+                                      "value": {
+                                        "unsignedInteger64": {
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "op": "add",
+                                  "operand": {
+                                    "base": {
+                                      "name": "UnsignedInteger64"
+                                    }
+                                  },
+                                  "rhs": {
+                                    "literal": {
+                                      "value": {
+                                        "unsignedInteger64": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "op": "mul",
+                          "operand": {
+                            "base": {
+                              "name": "UnsignedInteger64"
+                            }
+                          },
+                          "rhs": {
+                            "literal": {
+                              "value": {
+                                "unsignedInteger64": {
+                                  "value": 3
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "sub",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger64"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger64": {
+                              "value": 4
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "intDiv",
+              "operand": {
+                "base": {
+                  "name": "UnsignedInteger64"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "unsignedInteger64": {
+                      "value": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mod",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu64",
+        "2"
+      ],
+      "marker": "REACH:.matrixu64:2",
+      "operands": [
+        [
+          0,
+          2887,
+          2925
+        ],
+        [
+          0,
+          2930,
+          2934
+        ]
+      ],
+      "operationText": "intervalOperand2x0 mod intervalOperand2x1",
+      "span": [
+        0,
+        2887,
+        2934
+      ],
+      "instrumentedKey": [
+        ".matrixu64",
+        "47"
+      ],
+      "operationSpan": [
+        0,
+        14525,
+        14566
+      ],
+      "markerSpan": [
+        0,
+        14485,
+        14524
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "binary": {
+                      "lhs": {
+                        "paren": {
+                          "inner": {
+                            "binary": {
+                              "lhs": {
+                                "literal": {
+                                  "value": {
+                                    "unsignedInteger64": {
+                                      "value": 6
+                                    }
+                                  }
+                                }
+                              },
+                              "op": "add",
+                              "operand": {
+                                "base": {
+                                  "name": "UnsignedInteger64"
+                                }
+                              },
+                              "rhs": {
+                                "literal": {
+                                  "value": {
+                                    "unsignedInteger64": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "op": "mul",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger64"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger64": {
+                              "value": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "op": "sub",
+                  "operand": {
+                    "base": {
+                      "name": "UnsignedInteger64"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger64": {
+                          "value": 4
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "intDiv",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu64",
+        "3"
+      ],
+      "marker": "REACH:.matrixu64:3",
+      "operands": [
+        [
+          0,
+          2887,
+          2916
+        ],
+        [
+          0,
+          2921,
+          2925
+        ]
+      ],
+      "operationText": "intervalOperand3x0 div intervalOperand3x1",
+      "span": [
+        0,
+        2887,
+        2925
+      ],
+      "instrumentedKey": [
+        ".matrixu64",
+        "40"
+      ],
+      "operationSpan": [
+        0,
+        14400,
+        14441
+      ],
+      "markerSpan": [
+        0,
+        14360,
+        14399
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "binary": {
+              "lhs": {
+                "paren": {
+                  "inner": {
+                    "binary": {
+                      "lhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger64": {
+                              "value": 6
+                            }
+                          }
+                        }
+                      },
+                      "op": "add",
+                      "operand": {
+                        "base": {
+                          "name": "UnsignedInteger64"
+                        }
+                      },
+                      "rhs": {
+                        "literal": {
+                          "value": {
+                            "unsignedInteger64": {
+                              "value": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "op": "mul",
+              "operand": {
+                "base": {
+                  "name": "UnsignedInteger64"
+                }
+              },
+              "rhs": {
+                "literal": {
+                  "value": {
+                    "unsignedInteger64": {
+                      "value": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "sub",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu64",
+        "5"
+      ],
+      "marker": "REACH:.matrixu64:5",
+      "operands": [
+        [
+          0,
+          2888,
+          2908
+        ],
+        [
+          0,
+          2911,
+          2915
+        ]
+      ],
+      "operationText": "intervalOperand5x0 - intervalOperand5x1",
+      "span": [
+        0,
+        2888,
+        2915
+      ],
+      "instrumentedKey": [
+        ".matrixu64",
+        "33"
+      ],
+      "operationSpan": [
+        0,
+        14276,
+        14315
+      ],
+      "markerSpan": [
+        0,
+        14236,
+        14275
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "paren": {
+              "inner": {
+                "binary": {
+                  "lhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger64": {
+                          "value": 6
+                        }
+                      }
+                    }
+                  },
+                  "op": "add",
+                  "operand": {
+                    "base": {
+                      "name": "UnsignedInteger64"
+                    }
+                  },
+                  "rhs": {
+                    "literal": {
+                      "value": {
+                        "unsignedInteger64": {
+                          "value": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "op": "mul",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu64",
+        "6"
+      ],
+      "marker": "REACH:.matrixu64:6",
+      "operands": [
+        [
+          0,
+          2888,
+          2901
+        ],
+        [
+          0,
+          2904,
+          2908
+        ]
+      ],
+      "operationText": "intervalOperand6x0 * intervalOperand6x1",
+      "span": [
+        0,
+        2888,
+        2908
+      ],
+      "instrumentedKey": [
+        ".matrixu64",
+        "26"
+      ],
+      "operationSpan": [
+        0,
+        14153,
+        14192
+      ],
+      "markerSpan": [
+        0,
+        14113,
+        14152
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 6
+                }
+              }
+            }
+          },
+          "op": "add",
+          "operand": {
+            "base": {
+              "name": "UnsignedInteger64"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "unsignedInteger64": {
+                  "value": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".matrixu64",
+        "8"
+      ],
+      "marker": "REACH:.matrixu64:8",
+      "operands": [
+        [
+          0,
+          2889,
+          2893
+        ],
+        [
+          0,
+          2896,
+          2900
+        ]
+      ],
+      "operationText": "intervalOperand8x0 + intervalOperand8x1",
+      "span": [
+        0,
+        2889,
+        2900
+      ],
+      "instrumentedKey": [
+        ".matrixu64",
+        "19"
+      ],
+      "operationSpan": [
+        0,
+        14029,
+        14068
+      ],
+      "markerSpan": [
+        0,
+        13989,
+        14028
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "eq",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".compareequal",
+        "2"
+      ],
+      "marker": "REACH:.compareequal:2",
+      "operands": [
+        [
+          0,
+          2992,
+          2993
+        ],
+        [
+          0,
+          2996,
+          2997
+        ]
+      ],
+      "operationText": "intervalOperand2x0 = intervalOperand2x1",
+      "span": [
+        0,
+        2992,
+        2997
+      ],
+      "instrumentedKey": [
+        ".compareequal",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        14762,
+        14801
+      ],
+      "markerSpan": [
+        0,
+        14719,
+        14761
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "ne",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".compareunequal",
+        "2"
+      ],
+      "marker": "REACH:.compareunequal:2",
+      "operands": [
+        [
+          0,
+          3057,
+          3058
+        ],
+        [
+          0,
+          3062,
+          3063
+        ]
+      ],
+      "operationText": "intervalOperand2x0 <> intervalOperand2x1",
+      "span": [
+        0,
+        3057,
+        3063
+      ],
+      "instrumentedKey": [
+        ".compareunequal",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        15001,
+        15041
+      ],
+      "markerSpan": [
+        0,
+        14956,
+        15000
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "lt",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".compareless",
+        "2"
+      ],
+      "marker": "REACH:.compareless:2",
+      "operands": [
+        [
+          0,
+          3120,
+          3121
+        ],
+        [
+          0,
+          3124,
+          3125
+        ]
+      ],
+      "operationText": "intervalOperand2x0 < intervalOperand2x1",
+      "span": [
+        0,
+        3120,
+        3125
+      ],
+      "instrumentedKey": [
+        ".compareless",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        15235,
+        15274
+      ],
+      "markerSpan": [
+        0,
+        15193,
+        15234
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "le",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".comparelessEqual",
+        "2"
+      ],
+      "marker": "REACH:.comparelessEqual:2",
+      "operands": [
+        [
+          0,
+          3187,
+          3188
+        ],
+        [
+          0,
+          3192,
+          3193
+        ]
+      ],
+      "operationText": "intervalOperand2x0 <= intervalOperand2x1",
+      "span": [
+        0,
+        3187,
+        3193
+      ],
+      "instrumentedKey": [
+        ".comparelessEqual",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        15478,
+        15518
+      ],
+      "markerSpan": [
+        0,
+        15431,
+        15477
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "gt",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".comparegreater",
+        "2"
+      ],
+      "marker": "REACH:.comparegreater:2",
+      "operands": [
+        [
+          0,
+          3253,
+          3254
+        ],
+        [
+          0,
+          3257,
+          3258
+        ]
+      ],
+      "operationText": "intervalOperand2x0 > intervalOperand2x1",
+      "span": [
+        0,
+        3253,
+        3258
+      ],
+      "instrumentedKey": [
+        ".comparegreater",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        15718,
+        15757
+      ],
+      "markerSpan": [
+        0,
+        15673,
+        15717
+      ]
+    },
+    {
+      "expression": {
+        "binary": {
+          "lhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 2
+                }
+              }
+            }
+          },
+          "op": "ge",
+          "operand": {
+            "base": {
+              "name": "Integer"
+            }
+          },
+          "rhs": {
+            "literal": {
+              "value": {
+                "integer": {
+                  "value": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "key": [
+        ".comparegreaterEqual",
+        "2"
+      ],
+      "marker": "REACH:.comparegreaterEqual:2",
+      "operands": [
+        [
+          0,
+          3323,
+          3324
+        ],
+        [
+          0,
+          3328,
+          3329
+        ]
+      ],
+      "operationText": "intervalOperand2x0 >= intervalOperand2x1",
+      "span": [
+        0,
+        3323,
+        3329
+      ],
+      "instrumentedKey": [
+        ".comparegreaterEqual",
+        "9"
+      ],
+      "operationSpan": [
+        0,
+        15967,
+        16007
+      ],
+      "markerSpan": [
+        0,
+        15917,
+        15966
+      ]
+    }
+  ]
+}

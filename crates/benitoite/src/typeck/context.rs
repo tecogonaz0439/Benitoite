@@ -581,6 +581,14 @@ impl<'a, 'd> Body<'a, 'd> {
             }
         }
     }
+    /// 警告と同じ有効条件の下で、finish 前の型を保存する。
+    pub fn collect_interval(&mut self, node: NodeId, valid: bool) {
+        if let Some(definition) = self.decls.interval.definition(node) {
+            let input = super::interval::input::BodyInput::collect(definition, self, valid);
+            self.decls.interval.collect(node, input);
+        }
+    }
+
     pub fn finish(&mut self) {
         if self
             .diagnostics

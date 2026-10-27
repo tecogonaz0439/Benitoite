@@ -1,0 +1,78 @@
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.63s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-c8302b65d3cacd4e)
+
+running 13 tests
+test typeck::interval::tests::range_calls::nested_unrecognized_call_keeps_its_warning_in_the_independent_input ... ok
+test typeck::interval::tests::range_calls::range_result_match_in_independent_input_keeps_warnings_out_of_parent ... ok
+test typeck::interval::tests::range_calls::range_result_skips_arms_after_abrupt_scrutinee ... ok
+test typeck::interval::tests::range_calls::range_value_argument_uses_parent_environment_without_projecting_bounds ... ok
+test typeck::interval::tests::range_calls::range_call_arguments_keep_parent_facts_without_marking_unknown ... ok
+test typeck::interval::tests::range_calls::user_range_module_alias_is_not_the_standard_declaration ... ok
+test typeck::interval::tests::range_calls::range_call_arguments_match_lean_parent_and_independent_warning_examples ... ok
+test typeck::interval::tests::range_calls::range_calls_skip_remaining_arguments_after_abrupt_value_in_source_order ... ok
+test typeck::interval::tests::range_calls::range_result_arm_bindings_are_unknown_and_do_not_replace_outer_facts ... ok
+test typeck::interval::tests::range_calls::range_calls_exclude_function_values_holes_pipes_and_parenthesized_callees ... ok
+test typeck::interval::tests::range_calls::range_result_report_counts_only_user_bodies_and_actual_unsupported_inputs ... ok
+
+thread 'typeck::interval::tests::range_calls::range_result_matches_analyze_ok_error_guards_and_whole_patterns' (5170931) panicked at crates/benitoite/src/typeck/interval/identity/tests.rs:73:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0608,
+        ),
+        message: "this alternative can never be selected",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        183,
+                    ),
+                    end: BytePos(
+                        195,
+                    ),
+                },
+                text: "unreachable alternative",
+            },
+        ),
+        secondary: [
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        169,
+                    ),
+                    end: BytePos(
+                        181,
+                    ),
+                },
+                text: "already matched here",
+            },
+        ],
+        notes: [],
+        helps: [],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::tests::range_calls::range_result_matches_analyze_ok_error_guards_and_whole_patterns ... FAILED
+test typeck::interval::tests::range_calls::range_result_origin_survives_one_save_but_not_aliases_or_repackaging ... ok
+
+failures:
+
+failures:
+    typeck::interval::tests::range_calls::range_result_matches_analyze_ok_error_guards_and_whole_patterns
+
+test result: FAILED. 12 passed; 1 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 1.21s
+
+error: test failed, to rerun pass `-p benitoite --lib`

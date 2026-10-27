@@ -1,0 +1,6 @@
+{
+  "formal/Benitoite/Interval/Range.lean:range_check_small_model": {
+    "before": "theorem range_check_small_model (names : RangeNames) (key : OperationKey)\n    (lo hi value : Integer64Value) :\n    match Checked.Range.rawMake lo.toInt hi.toInt value.toInt with\n    | .ok raw => ∃ checked,\n        rangeCheck names key lo hi value = .normal (rangePayload names.record lo hi value) ∧\n        Checked.Range.erase checked = raw\n    | .error (.invalidBounds l h) =>\n        rangeCheck names key lo hi value = .rejected (.invalidBounds l h)\n    | .error (.outOfRange l h n) =>\n        rangeCheck names key lo hi value = .rejected (.outOfRange l h n)",
+    "after": "theorem range_check_small_model (names : RangeNames) (key : OperationKey)\n    (lo hi value : Integer64Value) :\n    match Checked.Range.rawMake lo.toInt hi.toInt value.toInt with\n    | .ok raw =>\n        rangeCheck names key lo hi value = .normal (rangePayload names.record lo hi value) ∧\n        raw = ⟨lo.toInt, hi.toInt, value.toInt⟩\n    | .error (.invalidBounds l h) =>\n        rangeCheck names key lo hi value = .rejected (.invalidBounds l h)\n    | .error (.outOfRange l h n) =>\n        rangeCheck names key lo hi value = .rejected (.outOfRange l h n)"
+  }
+}

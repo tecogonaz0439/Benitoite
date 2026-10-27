@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<repo>/docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/x05r/probe.py", line 16, in <module>
+    summary = source.exercise(runner, BASE/'manifest/manifest-interval')
+  File "<repo>/formal/tests/interval_source_compare.py", line 378, in exercise
+    inp['expectedBodies'] = [dict(definition=name, expected=expected_for(name))
+  File "<repo>/formal/tests/interval_source_compare.py", line 378, in <listcomp>
+    inp['expectedBodies'] = [dict(definition=name, expected=expected_for(name))
+  File "<repo>/formal/tests/interval_source_compare.py", line 374, in expected_for
+    return expectation(obs[name], entries[name], sites) if name in obs else dict(notAnalyzed=unproduced(name, m['whole']))
+KeyError: '.compare%body:59:0'

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "import os, subprocess; base=\"target/interval-diff/x04a-local\"; cases=[(\"manifest\",\"export_interval_manifest\"),(\"range\",\"export_interval_range\"),(\"vm\",\"export_interval_vm\"),(\"desugar\",\"export_independent_program_exchange\"),(\"desugar\",\"export_batch4_log_standard\")]; [(subprocess.run([\"cargo\",\"test\",\"--test\",\"desugar_export\",test,\"--\",\"--nocapture\"],env=dict(os.environ,BENITOITE_DESUGAR_DIFF_DIR=base+\"/\"+directory),check=True)) for directory,test in cases]"
+  ],
+  "exit": 0,
+  "seconds": 10.734,
+  "cargoHome": "<tmp>/benitoite-a01a-cargo"
+}

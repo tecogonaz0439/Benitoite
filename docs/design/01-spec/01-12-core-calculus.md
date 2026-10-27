@@ -1140,6 +1140,1424 @@ Leanの穴の脱糖は `ArgPlan.direct v` と `ArgPlan.evaluate m` のソース�
 
 コアの実装メソッドと `Surface.ImplDecl` は位置による本体を持つため、実装側の実名と宣言名の一致は `ImplDecl.WellTyped` の射影だけからは得られない。実行可能な表層検査の `MethodInput.names` は射影前の実装側の名前を持ち、`checkImpl_contracts`・`checkProgram_contracts` は検査成功から実名の一致と整形式を保証する。実装側の名前へ宣言側の名前を転記して検査を済ませない。メソッド自身の制約の辞書には内部名を前置し、実装自身の辞書の個数と混同しない。
 
+### 整数の閉区間の領域
+
+【決定】七種の整数の正常値の集合を表す領域は、`Benitoite.Interval` の `Interval/Domain.lean` を正とし、本節はその定義と言明の写しとする。コア計算の型・エフェクト・部分型の規則は変えない。理由: 正常値の集合を、言語の公開型と区別して扱うためである。
+
+`IntKind` は次の七種である。`Integer` と `Integer64` は同じ種類 `integer64` に対応し、八つ目の種類を作らない。`IntKind.type` は対応する解決済みの型を返し、`ofType` は七種の型だけを認定する。Byte は算術を持たないため含めない。
+
+| 種類 | 下限 `kind.min` | 上限 `kind.max` |
+|---|---:|---:|
+| `integer8` | −128 | 127 |
+| `integer16` | −32768 | 32767 |
+| `integer32` | −2147483648 | 2147483647 |
+| `integer64` | −9223372036854775808 | 9223372036854775807 |
+| `unsignedInteger16` | 0 | 65535 |
+| `unsignedInteger32` | 0 | 4294967295 |
+| `unsignedInteger64` | 0 | 18446744073709551615 |
+
+端点は数学上の Int とし、Integer64 の両端は既存の `Release.min64`・`max64` を参照する。`IntKind.bounds` は七種それぞれの下限が上限以下であることを示す。`IntegerValue kind` は `{ n : Int // kind.min ≤ n ∧ n ≤ kind.max }` とし、`toInt` で射影した値も同じ範囲にある（`IntegerValue.toInt_bounds`）。`IntegerValue integer64` は既存の `Release.Integer64Value` と定義上等しい。
+
+`Interval kind` は空集合 `bottom`、または `closed(lo, hi)` である。後者は `kind.min ≤ lo ∧ lo ≤ hi ∧ hi ≤ kind.max` の証拠を持つ。`top kind = closed(kind.min, kind.max)` は型の全値域であり、無限の端を持たない。未知の正常値には top を使い、正常値のない bottom と区別する。失敗可能性は、この領域の値に含めない。`Interval`・`normalize`・`top` で種類を省略すると Integer64 とし、既存の解析はこの特殊化を使う。
+
+| 定義 | 意味 |
+|---|---|
+| `Mem value bottom` | 偽 |
+| `Mem value closed(lo, hi)` | `lo ≤ value ∧ value ≤ hi` |
+| `normalize lo hi kind` | `lower = max(kind.min, lo)`、`upper = min(kind.max, hi)` とし、`lower ≤ upper` なら `closed(lower, upper)`、それ以外は bottom |
+| `Subset a b` | a が bottom なら真。a が非空で b が bottom なら偽。両方が閉区間なら `b.lo ≤ a.lo ∧ a.hi ≤ b.hi` |
+| `meet a b` | どちらかが bottom なら bottom。それ以外は `normalize (max(a.lo, b.lo)) (min(a.hi, b.hi)) kind` |
+| `join a b` | どちらかが bottom なら他方。それ以外は `normalize (min(a.lo, b.lo)) (max(a.hi, b.hi)) kind` |
+
+包含・交差・合流は同じ種類の区間どうしに定義する。`mem_normalize` は、正規化後の所属と `kind.min ≤ value ∧ value ≤ kind.max ∧ lo ≤ value ∧ value ≤ hi` の同値を示す。`normalize_closed` は、すでに値域内にある非空区間の正規化が端点を変えないことを示す。`mem_bounds` は任意の区間の所属値が指定した整数型で表現可能であることを示し、`mem_top` は top への所属とその表現可能性の同値を示す。
+
+`subset_iff` は、端点による包含の判定と `∀ value, Mem value a → Mem value b` の同値を示す。`mem_meet` は交差への所属と両方への所属の同値、`mem_join` はどちらかへの所属から合流への所属を示す。`join_least` は両方を包含する区間 c に合流も包含されることを示す。`meet_bounds`・`join_bounds` は、それぞれの結果の所属値の表現可能性を示す。これらは任意の `kind` についての補題である。
+
+合流は区間の間の穴を保持しない。例えば Integer64 の `[-2, -1]` と `[1, 2]` の合流は `[-2, 2]` であり、0 を含む。独立例はこの性質と、空・一点・端点で接する交差・包含の向き・七種それぞれの両端と直外の値・全域外の正規化・Byte の除外を確認する。これらの定理は区間の集合演算を対象とし、式の評価や警告の健全性、Rust の処理系との一致を結論しない。
+
+### 区間解析の対象構文の評価関係
+
+【決定】区間解析で使う対象構文の評価関係（evaluation relation for the target fragment）は、`Benitoite.Interval` の `Interval/Identity.lean`・`Interval/Eval.lean` を正とし、本節はその定義と言明の写しとする。脱糖と Release の実行で定める表層の意味とは、独立した関係である。理由: 脱糖の型保存から、算術の結果や対象演算への到達の一致は導けないためである。
+
+`EvalInput` は `Surface.Expr` の出現と、その位置の型・演算のキーを持つ。`OperationKey` はモジュールを含む定義名と `surfacePreorder` の組である。根のキーは入力で与え、元の表層との型・番号の対応や定義名の妥当性は、この構造だけでは保証しない。`ConcreteEnv` は内側から順に並ぶ局所値、解決済みの標準束縛表、出現のキーから宣言の名前を引く表を持つ。専用 builder の位置は通常値を持たない `none` として残す。`standardAt` は出現の同定結果を標準束縛表で引き、表にない宣言には評価規則を与えない。
+
+`ConcreteValue` は七種それぞれの有界な整数、Boolean、Unit、内部を読まないその他の型の値、Range の成功値とエラー、代数的データ型の構成子の値である。Integer64 は既存の `integer` 構成子、残る六種は各幅の構成子と `IntegerValue kind` で表す。`ConcreteValue.ofInteger kind` は対応する構成子へ写し、`ofInteger_type`・`ofInteger_inj` は型の保持と同じ幅の値の単射性を示す。その他の型の値は `IntKind.ofType type = none` の証拠を持ち、七種の整数・Boolean・Unit を表すことはできない。Range の成功値は `.con owner [] constructor [.integer minimum, .integer maximum, .integer value]` とし、型は `.data owner []` である。三欄には有界な実値だけを保存する。呼び出しキー・所属の証拠・成功値の束縛番号は由来の関係で扱い、具体値の欄には含めない。`EvalOutcome` は `normal value`、`failed reason`、`returned value` を区別する。`EvalEvent` は演算のキー、演算の種類、正常に得た引数の列、その演算の正常結果または拒否を持ち、`EvalTrace` は実行順の記録の列である。
+
+`classify` は全53構成子を次のように分類する。分類と子の列挙は構文についての定義であり、各構成子を具体評価できることを意味しない。
+
+| 分類 | 構成子 |
+|---|---|
+| `base` | local、constE、literal、negInt、unit、paren、block、binary、not、ite、elseIf、ifOnly、returnE |
+| `flow` | and、or、matchE |
+| `width` | negInteger8、negInteger16、negInteger32、neg |
+| `api` | call、record、recordUpdate |
+| `unknownValue` | funName、funDicts、methName、primName、opName、opDicts、raise、nullCon、conValue |
+| `boundary` | builderOp、handleFail、negFloat、negDecimal、negFloat32、conCall、pipe、partialCall、partialCon、list、listSpread、interpolation、lam、tryResult、tryOption、tryResultDie、tryOptionDie、withE、lazyE、handleE、resume |
+
+`children` は宣言のフィールド順に直接の子の式を返す。Exprs・HoleArgs・Block・Arms・Clauses の全ケースを扱い、容器そのもの、穴、パターン、専用 builder の位置から式を作らない。Block は右辺から続きを辿り、腕は guard を本体より前に置く。constE の埋め込み本体、ラムダ・遅延・節の本体も構文上の子である。未対応式の内側を評価しない規則と、この構文上の列挙は区別する。
+
+`Interval.Identity` の `surfacePreorder e` は、根 e を先頭に置き、`children e` の各部分木を順に辿った式の列である。全53構成子と相互帰納の容器を扱い、Expr 一つにつき一要素を持つ。容器自身は要素を増やさない。名前付き引数は契約上の位置で並べ替えず、式の列に書かれた順を保つ。未対応の境界の部分木と constE の埋め込み本体も省かない。`surfacePreorder_children` は `surfacePreorder e = e :: (children e).flatMap surfacePreorder` を全構成子について示す。
+
+`surfaceSize e` はこの列の長さとする。`numbered root e` は先行順の各式を、定義名を root と同じにし、番号を `root.surfacePreorder` から一つずつ進めたキーと組にする。`numbered_preorders` は番号列が根から長さ `surfaceSize e` の連続列となることを、`numbered_keys_nodup` はキーが重複しないことを示す。同じ内容の式が複数回現れても、別の出現として数える。
+
+子のキーは `childKey parent preceding` で定める。preceding は、親の直接の子のうち対象の子より前にある式の列である。定義名を保ち、番号を `parent.surfacePreorder + 1 + (preceding.map surfaceSize).sum` とする。`surfaceSize_children` は、親の部分木の大きさが `1 + ((children e).map surfaceSize).sum` であることを示す。現在の評価規則では次の列を使い、子のキーを独立した引数で受け取らない。
+
+| 規則の子 | preceding | 子の番号 |
+|---|---|---|
+| paren・constE・returnE・not・一般の負号の唯一の子 | 空列 | 親の番号 + 1 |
+| 加算・減算・乗算・整数除算・剰余・六比較・and・or の左の子 | 空列 | 親の番号 + 1 |
+| 同じ二項演算の右の子 | 左の式一つ | 親の番号 + 1 + 左の部分木の大きさ |
+| block の最初の式 | 空列 | 親の番号 + 1 |
+| ite・elseIf・ifOnly の条件 | 空列 | 親の番号 + 1 |
+| 同じ三形の真枝の最初の式 | 条件の式一つ | 親の番号 + 1 + 条件の部分木の大きさ |
+| ite の偽枝の最初の式・elseIf の偽枝の式 | 条件の式と真枝の `blockChildren` | 親の番号 + 1 + 条件と真枝の部分木の大きさの和 |
+
+根のキーと構文だけで子の番号が決まり、値・失敗・return や、どの子を評価したかによって番号を詰め直さない。この番号付けは、定義名の生成、本体名の区別、番号付けの予算、元 AST の NodeId・span との対応を定義しない。
+
+`Unsupported e` は `boundary` または `unknownValue` の式とする。`Unmodeled e` は現 profile に具体規則のない形を表す。整数七種と Boolean 以外のリテラル、七種の整数の加算・減算・乗算・整数除算・剰余・六比較以外の二項演算、幅付きリテラルおよび negInteger8・negInteger16・negInteger32 が値域外を表す内部表現、符号付き四種以外の一般の単項の負号、record・recordUpdate を含む。`UnknownAt env input` は Unsupported・Unmodeled、call で rangeCallBinding の認定がない出現、または call 以外の `api` で `standardAt` に規則のない出現（record・recordUpdate は常に Unmodeled に属する）とする。後の profile で具体規則を接続する形は、同じ変更で Unmodeled から外す。具体規則と未知の規則を重ねない。`EvalPartial env input outcome trace` の未知の規則は、`UnknownAt` の下で入力の型と同じ任意の正常値、または未知の失敗を許し、trace を空とする。子の評価を前提に持たず、子の実行順や失敗を主張しない。再開しないハンドラが呼び出し元へ値を返さず handle の外へ出る場合は、この未知の失敗に当たり、後続の事象を作らない。境界を囲む本体から子へ整数の事実を伝えない。
+
+具体的な式の規則は、整数七種の値域内のリテラル、Integer64 の直接負号と negInteger8・negInteger16・negInteger32、Boolean、Unit、局所参照、括弧、定数の埋め込み本体、return、七種の整数の加算・減算・乗算・整数除算・剰余・六比較と符号付き四種の一般の負号、not、and・or、block、ite・elseIf・ifOnly である。幅付きリテラルは内部の Nat を Int へ移した値、幅付きの直接負号はその負の値が `kind.min ≤ value ∧ value ≤ kind.max` を満たす証拠を要求し、対応する具体整数と空の trace を返す。値域外の内部表現には未知の規則だけを与え、具体規則と重ねない。局所参照は、その番号に通常値がある場合にその値を返す。括弧は子の結果と trace を保つ。定数の本体は局所値の列を空にし、標準束縛の情報を保つ。return はオペランドまで評価し、正常な結果だけを returned に変え、子の失敗・return を保つ。
+
+七種の整数の算術と六比較は左から右へ評価する。両方が正常な同じ種類の整数のときだけ、対応する検査付き演算を実行し、左、右、親の演算の順に trace を連ねる。`Comparison` は eq・ne・lt・le・gt・ge、`Comparison.Holds` は数学上の整数の等値・不等値・大小関係である。`Comparison.binOp` と `Comparison.ofBinOp` で表層の六比較と対応させる。`checkedCompare op a b` は `op.Holds a.toInt b.toInt` の真偽を正常な Boolean として返す。左が失敗または return なら右を評価せず、左の結果と trace を保つ。右が失敗または return ならその結果と両方の子の trace を保つ。どちらも親の到達記録は作らない。not は正常な Boolean の子を反転し、子の失敗・return を保つ。not 自体の演算事象は作らない。
+
+残る六種の二項演算は `WidthBinary` の add・sub・mul・intDiv・mod・compare で表す。`WidthBinary.type kind` は比較だけ Boolean、それ以外は kind.type を返し、`WidthBinary.apply kind` は各 IntKind の検査付き演算を使う。`EvalPartial.widthBinary` は kind が Integer64 でないことと、両子が同幅の正常な具体整数を返すことを要求する。左右の異常終了は widthBinaryLeftAbrupt・widthBinaryRightAbrupt で伝え、親の事象を追加しない。`IntKind.checkedCompare` は七種の同幅整数を数学上の整数として比較する。
+
+一般の負号は符号付き四種に限る。Integer64 では既存の neg・negAbrupt、残る三種では widthNeg・widthNegAbrupt を使う。後者は `kind.min < 0` の証拠を要求し、正常な子だけに checkedNeg を適用する。`widthNeg_known` は接続した符号付き負号の根が UnknownAt に属さないことを示す。符号なしの負号と Byte の算術には具体規則を与えない。
+
+and・or は Boolean 型の左辺を先に評価する。and の左辺が偽、or の左辺が真なら、その値と左辺の trace だけを返し、右辺の導出を要求しない。and の左辺が真、or の左辺が偽なら、同じ具体環境で右辺を評価し、右辺の結果と左・右の順の trace を返す。左辺の失敗・return は右辺を評価せず伝播し、右辺の失敗・return もそのまま伝播する。論理演算自身の事象は作らない。子のキーは上表の二項演算と同じとし、未評価の右辺に事象を作らない。
+
+`EvalBlock env key body type outcome trace` は `EvalPartial`・`EvalArms`・`EvalWidthArms` と相互帰納で定義する。key は Block 自身の番号ではなく、最初の式を置く番号である。空の Block と式を持たない builder の位置は番号を消費しない。`blockSize body = ((blockChildren body).map surfaceSize).sum` とし、`surfaceSize (.block body) = 1 + blockSize body` である。`advanceKey key size` は定義名を保ち、番号に size を足す。右辺 source の後の Block は `advanceKey key (surfaceSize source)` から始める。ブロック式は `childKey key []` から Block を評価し、その結果と trace を返す。
+
+| Block の形 | 正常な右辺または子の後の扱い |
+|---|---|
+| empty | 正常な Unit と空の trace を返す |
+| builderBind kind rest | `none` を局所位置の先頭に置き、同じ key から rest を評価する |
+| last source | source の結果と trace をそのまま返す |
+| lastBind kind boundType source | source の正常値を Unit に変え、trace を保つ |
+| lastDiscard source | source の正常値を Unit に変え、trace を保つ |
+| lastPat kind pattern boundType source | source の正常値を Unit に変え、trace を保つ。構造の照合は抽象化する |
+| bind kind boundType source rest | 正常値を `some value :: env.locals` に保存して rest を評価する。bind と shadow は同じ位置操作である |
+| discard source rest | 局所位置を追加せず rest を評価する |
+| seq source rest | Unit 型の source の後、局所位置を追加せず rest を評価する |
+| bindPat kind pattern boundType source rest | `PatternLocals pattern value values` を満たす通常値の列を de Bruijn 順に局所位置の先頭へ追加して rest を評価する |
+
+`PatternLocals` は、単独の var なら values を右辺の値一つ、wild なら空列とする。ほかのパターンは `values.length = pattern.binders` だけを要求し、構造の内部から得る値は任意の通常値とする。`patternLocals_length` は、全パターンについて追加する位置数が `pattern.binders` と一致することを示す。構成子・リスト・レコードなどの実際の照合や射影の正しさは、この関係に含めない。理由: 区間解析が構造の内部の整数の事実を推測せず、既存の `patternSlots` と同じ位置数を保って未知として扱うためである。
+
+末尾の束縛・discard・パターン束縛で使う `discardOutcome` は、正常値だけを Unit に変え、失敗と return を保つ。続きのある四形は、右辺が失敗または return なら rest を評価せず、右辺の結果と trace を返す。正常な右辺から rest へ進む場合は、右辺、rest の順に trace を連ねる。Block 自身や束縛操作の事象は作らない。
+
+ite・elseIf・ifOnly は先に Boolean 型の条件を評価する。条件が失敗または return なら枝を評価せず、その結果と trace を返す。正常な真偽値を得たときは、選んだ枝だけを評価し、条件、枝の順に trace を連ねる。ite は両枝を Block、elseIf は真枝を Block・偽枝を元の式として評価する。ifOnly は真のときだけ Unit 型の Block を評価し、偽のときは正常な Unit と条件の trace を返す。分岐自体の演算事象や未選択の枝の事象は作らない。両枝は条件と同じ外側の局所環境から始め、枝の局所束縛を外へ返さない。
+
+`EvalPartial.matchInteger` は照合値を `childKey key []` で正常な Integer64 として評価し、`childKey key [source]` から `EvalArms` で腕を選ぶ。残る六種は `matchWidth` により同じ子のキーで評価し、`EvalWidthArms` で腕を選ぶ。照合値が失敗・return なら腕へ進まない。`matchOtherNormal`・`matchOtherFailed` は、七種のどの具体整数とも等しくなく、後述の rangeResultMatch が認定しない正常値と腕列だけを対象とする。この場合は腕の内部を読まず、結果の型内の任意の正常値または未知の失敗を許し、照合値の trace だけを保つ。`matchE` 自体は Unmodeled に含めない。理由: 具体的に評価する七種の整数の腕と、それ以外の照合値に対する未知の結果を分けるためである。
+
+`IntegerSelection alts value selected` は、選択肢を `before ++ alt :: after` に分け、before の全パターンの照合が失敗し、alt の `pat.toCore.matchVal (const (integer value))` が成功することを要求する。左からの具体束縛 raw には `PatternLocals alt.pat (integer value) raw.reverse`、腕の宣言順への selected には `selectSlots raw alt.slots = some selected` を要求する。alt.slots.length は最初の選択肢の slots.length と一致する。これは型検査済みの共通の束縛数を評価の導出に保持する条件であり、中心二命題の前提を追加するものではない。
+
+`widthPatternMatch pattern kind value` は、残る六種の整数のパターンを照合する。wild は空の束縛、var は同じ幅の照合値一つを返し、ほかの形は照合失敗とする。`integerPatternValue` はその幅のコア定数への写像であり、var の具体束縛を表す。`WidthSelection` は IntegerSelection と同じ選択順・共通の束縛数・PatternLocals・slots の対応を要求し、パターンの照合だけを widthPatternMatch に替える。六種の定数・範囲パターンは [01-02](01-02-syntax.md)・[01-04](01-04-types-basic.md) の仕様で認めない。幅付きの接尾辞リテラルや構造の内部の照合を追加せず、束縛・ワイルドカードと guard を扱う。
+
+`guardSize guard` は guard がなければ0、あればその surfaceSize、`armsSize arms` は preorderArms の長さである。一つの腕の範囲は `guardSize guard + blockSize body`、残りの腕はその個数だけ advanceKey で進めた位置から始まる。選択肢がすべて照合しなければ guard と本体を評価せず次へ進む。照合した腕では selected を反転して既存の局所位置の先頭へ加える。guard がなければ本体を評価し、あれば同じ腕内の環境で先に guard を評価する。正常な真なら guard の後のキーで本体へ進み、偽なら本体を飛ばし、元の外側の環境で次の腕へ進む。guard の失敗・return はその場で伝播する。空の腕列は未知の失敗となる。trace は実際に評価した照合値、guard、本体または後続腕の順に連ね、照合操作自身の事象を作らない。`EvalWidthArms` も同じ guard・本体・後続腕の順序と trace の合成を使い、選択肢の判定には WidthSelection を用いる。構造の内部の照合と型付けからの全導出存在は保証しない。
+
+`add_derivation_exists`・`divMod_derivation_exists`・`compare_derivation_exists` は、指定された子のキーで正常な整数を返す二つの導出があれば、検査結果を返し、親の演算事象を含む trace を持つ導出が存在することを示す。算術の拒否も結果として含む。`not_derivation_exists` は正常な Boolean の子から反転結果への導出を示す。`and_derivation_exists`・`or_derivation_exists` は左辺の正常な真偽と、短絡しない場合だけ右辺の導出を前提に、短絡式の導出を構成する。短絡する場合は結果を左辺の真偽値、右辺の trace を空とし、右辺の評価を要求しない。`ite_derivation_exists`・`elseIf_derivation_exists` は条件の正常値と選ばれた枝の導出だけを前提に、結合した trace の存在を示す。`ifOnly_derivation_exists` は真の場合だけ本体の導出を要し、偽の場合は Unit と条件の trace を返す。`bind_derivation_exists` は bind・shadow の右辺の正常値と、その値を先頭へ追加した環境での後続の導出をつなぐ。これらは任意の具体環境について成り立つ条件付きの補題であり、型どおりの環境にも適用できる。全入力の型付けから導出の存在を結論する定理ではない。
+
+`TraceKeys key size trace` は、trace の事象のキーが対ごとに異なることと、各事象が key と同じ定義名を持ち、その番号 n が `key.surfacePreorder ≤ n < key.surfacePreorder + size` を満たすことの組である。`eval_trace_keys` は、任意の `EvalPartial env input outcome trace` の導出について `TraceKeys input.key (surfaceSize input.source) trace` を示す。`eval_trace_keys_nodup` は、その trace のキー列に重複がないことを結論する。`block_trace_keys` は、任意の Block の導出について `TraceKeys key (blockSize body) trace`、`arms_trace_keys` は任意の Integer64 の腕、`widthArms_trace_keys` は残る六種の腕の導出について `TraceKeys key (armsSize arms) trace` を示す。これらは相互帰納で証明し、兄弟の部分木や Block の右辺と続きの番号範囲が交わらず、親の番号が子の範囲より小さいことを使う。未選択の枝の番号を飛ばした場合も、子の失敗・return で途中までの trace だけを残す場合も同じ性質を保つ。
+
+独立例は `(1 intDiv 1) intDiv 0` の正常な内側の除算を親の次のキーに、外側の除数0による拒否を親のキーに記録する導出を構成する。同じ入力について、この二事象に同じ親のキーを付けた trace を持つ導出がないことも示す。`Reached` は従来どおり所属・キー・演算の一致だけを条件とし、拒否理由やキーの整合性を中心命題の新たな前提に加えない。キーの一意性だけから、解析した子の区間と正常な引数との対応までは結論しない。
+
+`unknownAnalysis type` は、正常値をその型の全値域、mayFail を真、警告の列を空とする。`unknown_analysis_sound` は、未知の正常評価がこの正常値集合に入ることを示す。`integerKind_value_in_top` は七種それぞれの型の値が、その幅の有界な具体整数の形を持ち、`top kind` に所属することを示す。`integer_value_in_top` は既存の Integer64 への特殊化であり、言明を保つ。`unknown_integer_possible` は未知の式が任意の Integer64 の正常評価を許すことを示し、未知を bottom と区別する。`unknown_integer_mem_top` と `unsupported_trace_empty` は、それぞれ未知の正常整数の top 所属と trace が空であることを示す。新しい警告の根拠となる子の到達記録は作らない。
+
+【決定】標準束縛の評価規則は `StandardBinding.rule` に持ち、`EvalStandard` で定義する。Release の δ やその仮定へ追加しない。Range の `rangeCheck` は三入力を Integer64 として受け取り、`Checked.Range.make` により端点の逆転を先に検査する。成功は元の三入力を三欄に、失敗は InvalidBounds の二端点または OutOfRange の三入力を保存する。`range_success_fields` は成功値が元の三入力の三欄であり、value が閉区間に属することを示す。`rangeValue` は、`rangeStoredValue` が所有元・レコード構成子・型引数なし・三欄の Integer64 型を認定した値から、保存した value を取り出す。
+
+`StandardRule.finish` は Range の成功を通常の Result.Ok、拒否を入力を保存した通常の Result.Error に変える。他の規則の拒否は failed とする。このため、演算の拒否とプログラム全体の異常終了は同じではない。固定域の規則は契約上の引数位置と閉じた上下端を持ち、`domainRejected` は域外では `.rejected .outsideDomain` を返す。域内では結果の型の任意値と他の失敗を許し、API の他の成功条件までは主張しない。`domain_outside_no_normal` は域外から正常結果を得る規則がないことを示す。これらは標準束縛に付ける規則の定義であり、record の表層評価や、実ソースとの同定の正しさを結論しない。Range の call への接続は後述の「区間解析のRangeの表層評価とResultの腕選択」で定める。
+
+`IntervalWarning` は対象演算のキー・種類と、警告が述べる原因 `cause : WarningCause` を持つ。`WarningCause` と拒否理由への写像 `toFailure` は次の三種類だけを持つ。`Failure.unknown`・`invalidBounds`・`outOfRange` は警告の原因には使えない。
+
+| 警告の原因 | 警告のコード | `toFailure` が返す拒否理由 |
+|---|---|---|
+| `zeroDivisor`（除数0） | W0401 | `Failure.zeroDivisor` |
+| `overflow`（あふれ） | W0402 | `Failure.overflow` |
+| `outsideDomain`（固定の定義域の外） | W0404 | `Failure.outsideDomain` |
+
+中心定理の言明は、解析関数と環境の対応を受け取る次の二つの命題として固定する。`AnalysisResult` は正常値の所属述語、mayFail、警告の列を持つ。環境の対応 `Models` と解析関数そのものの定義・証明は、この命題には含めない。
+
+| 命題 | 言明 |
+|---|---|
+| `NormalSoundness Models analyze` | 任意の抽象環境 Γ、具体環境 ρ、入力 e、予算 b、値 v、trace tr について、`Models Γ ρ` と `EvalPartial ρ e (normal v) tr` が成り立つなら、`(analyze Γ e b).normal v` が成り立つ |
+| `WarningSoundness Models analyze` | 任意の Γ・ρ・e・b・outcome・tr について、`Models Γ ρ` と `EvalPartial ρ e outcome tr` が成り立つなら、解析の各警告 warning と同じキー・演算を持つ tr 内の各到達記録 event について、`event.result = .rejected warning.cause.toFailure` が成り立つ |
+
+`Reached tr warning event` は trace 内の所属とキー・演算の一致を表す。拒否理由を到達の条件に含めず、警告の中心命題の結論で原因との一致を要求する。算術の具体規則では、除数0を `.rejected .zeroDivisor`、あふれを `.rejected .overflow` で表す。例えば最小値の `div -1` のあふれに除数0の警告を付けても、到達した事象の拒否理由が異なるので結論を満たさない。
+
+予算は任意の型 `Budget` の任意の値を量化する。profile の規則を加えるときにも、この二命題の前提・結論を変えず、標準 API の挙動や δ との一致の前提を足さない。土台の解析 `analyzeBase` に対する二命題の証明は、後述の「区間解析の土台の解析と健全性」で定める。警告の中心命題から全体の異常終了や停止性は結論しない。正常値の集合が bottom であることから、停止や全体の異常終了を結論しない。
+
+### 区間解析の直接引数と固定の定義域
+
+【決定】`Interval.FixedDomain` は、純粋な標準関数のシフト量の契約を定める。`FixedDomainApi` は API の役割を表し、解決済みの宣言名とは区別する。`FixedDomainContract` は契約上の引数位置 argument、宣言順の引数名 parameters、閉じた上下端 lo・hi と `lo ≤ hi` の証拠を持つ。検査する引数はすべて Integer64 であり、シフトの値の型とは異なる場合がある。
+
+| API の役割 | 契約上の位置（0始まり）と引数名 | 正常域 | 正常な結果の型 |
+|---|---|---|---|
+| `shift operand left/right` | 1、`[a, n]` の n | `[0,w−1]`。w は対象の型の幅 | operand の型 |
+| `shift (integer kind) rightUnsigned` | 1、`[a, n]` の n | 符号付き四種の `[0,w−1]` | kind の型 |
+
+`ShiftOperand` は `integer kind` または byte であり、Byte を IntKind に加えない。width は Integer8 と Byte が8、Integer16 と UnsignedInteger16 が16、Integer32 と UnsignedInteger32 が32、Integer64 と UnsignedInteger64 が64である。`FixedDomainApi.contract` は上表の契約を some で返し、Byte と符号なし三種の rightUnsigned は none とする。`FixedDomainApi.argumentTypes` は、シフトなら `[operand.type, Integer64]` を返す。
+
+`FixedDomainApi.resultType` はシフトする値の型を返す。`FixedDomainApi.binding` は contract が存在するときだけ、渡された宣言名と `contract.rule resultType`、宣言順の引数型から StandardBinding を作る。宣言の探索やモジュールの読み込みは行わず、名前の字面から標準宣言を補わない。同じ役割を持つ別名の宣言も、解決済みの宣言ごとに別の binding を持てる。入力の標準束縛表では、固定域の規則を FixedDomainApi.binding が作るシフトの宣言（別名の宣言を含む純粋な関数）だけに付け、エフェクトを持つ関数には付けない。
+
+```lean
+def FixedDomainContract.rule (contract : FixedDomainContract) (result : Ty) : StandardRule :=
+  .fixedDomain contract.argument contract.lo contract.hi result
+
+def FixedDomainContract.disjoint (contract : FixedDomainContract) : Interval → Bool
+  | .bottom => false
+  | .closed lo hi _ => decide (hi < contract.lo ∨ contract.hi < lo)
+```
+
+【決定】disjoint は非空の正常区間の全域が正常域の外にある場合だけ true とする。下端または上端を共有する区間は交差すると判定し、Bottom には重ねて警告しない。`fixed_disjoint_iff` は非空の閉区間についてこの判定と交差の不存在の同値を示し、`fixed_disjoint_outside` は区間に属する任意の正常整数が契約の外にあることを示す。Top だけから上表の域外を結論しない。
+
+固定域の評価は既存の `EvalStandard.domainNormal`・domainOtherFailure・domainRejected を使う。契約順に並べた正常な引数列の argument に Integer64 の値があり、その値が域内なら、指定した結果型の任意の正常値と未知の失敗を許す。域外なら outsideDomain で拒否する。`fixed_evaluation_total` は任意の正常整数について導出があること、`fixed_normal_inside` は正常な導出から引数の所属と結果型を示す。`fixed_outside_result` は域外の結果が outsideDomain による拒否に限られることを示す。`fixed_disjoint_rejected` はこれを不交差の判定へ接続し、`fixed_at_disjoint_failed` は同定された標準束縛の EvalStandardAt が failed outsideDomain を返すことを示す。`fixed_not_overflow` により、この規則から左シフトの捨てるビットを算術のあふれとして扱わない。
+
+`StandardBinding.argumentTypes` は各引数の型を宣言順に保持する。`rangeCallBinding` は、元のキーの標準出現表と読み込み済みの標準宣言、型引数・エフェクト引数のない直接の funName または primName の宣言、ラベルと位置の個数、位置の置換を照合する。この頭の照会は Range と固定域に共通であり、standardCallHead が行う。Range の規則は、その後で funName の頭だけに限る。固定域のシフトでは、組み込みの20宣言を primName、包みの7宣言（Integer64 の三つ、UnsignedInteger と UnsignedInteger8 の各二つ）を funName として認定する。組み込みの操作も primName の頭で表し、型引数・エフェクト引数のない頭なら同じ照会を行う。操作を固定域の認定から除くのは、標準束縛表に操作の固定域の項を置かないことによる。型引数付きの Process.exit は頭の照会前に除く。funDicts・opDicts・methName・opName と型引数・エフェクト引数のある頭は、標準表を照会する前に除く。固定域では sourceTypes により契約位置をソース順の型列へ写し、`EvalTypedArguments` で各式をそれぞれの型として左から評価する。正常な引数を得てから宣言順へ並べ、標準操作の事象を記録する。子の失敗と return は親へ伝播し、その後の引数と親の事象を作らない。固定域の失敗と return は親の期待型によらず伝播する。
+
+`analyzeBaseExpr` と共有予算付きの `BudgetAnalysis.expr` は、同じ認定を通った固定域の call の引数をソース順に解析する。対象引数の正常区間と契約域が不交差なら、元の call のキーと同じ標準束縛を持つ outsideDomain の警告候補を作る。Bottom・交差する区間・Top だけからは作らない。予算付きの解析では selectArguments が対象位置の近似だけを保持し、全引数の可変長の値列を作らない。正常値のない子の後は番号だけを辿り、親の警告を追加しない。
+
+この評価関係の内側で、既存の NormalSoundness・WarningSoundness の前提と結論を保って正常値所属と警告の健全性を証明する。シフトの正常域内では、具体的な結果の値を保証しない。操作はハンドラで差し替えられるため、Process.exit・Http.Listen.listen・Http.Listen.respond・Http.Connect.send に固定域の具体規則を付けない。操作の call は標準束縛表に対応する項がないため rangeCallBinding が認定せず、UnknownAt の既存規則により型内の任意の正常値と未知の失敗を許す。HTTP のレコードにも具体規則や欄の追跡を付けない。実ソースと標準束縛表の一致、VM との意味の一致も結論しない。閉じた評価器は、後述の「区間解析の閉じた対象入力の評価」のとおり、固定域外の拒否と域内で許された他の失敗を計算する。標準束縛の位置の同定は、後述の targetOperationAt で定める。
+
+### 区間解析のRangeの評価規則と小モデル
+
+【決定】標準束縛に付く Range の評価規則と、独立した `Checked.Range` の小モデルとの対応は、`Interval/Range.lean` を正とする。本節はその定義と言明の写しである。これらは対象構文の評価関係の標準規則の内側の条件とし、中心二命題・既存の主定理・Release の δ の前提に加えない。
+
+【決定】CheckedInteger はコアで `.data owner []` とし、checkInteger の戻り値は `.data result [.data owner [], .data error []]`、value の引数は `.data owner []` とする。標準 Range の「不透明」は公開境界の意味であり、外部での内部表現の使用は、[名前とモジュール](01-03-names-modules.md#公開初回リリース版)の「公開（初回リリース版）」に従い、名前解決が E0340 で拒否する。コアの組み込み不透明型 `.opaque` とは区別する。理由: `@opaque` のレコードもコアでは内部構造を持つデータ型であり、実ソースの型付き表層と同じ型で評価規則を接続するためである。
+
+`EvalStandardAt env key arguments outcome` は、出現の同定表と標準束縛表が選んだ規則だけを適用し、規則の結果を `finish` で式の成否へ移す。arguments は契約上の位置に並んだ正常値の列である。この関係は引数の式を評価せず、表層の呼び出しのソース順・名前付き引数の位置の対応・関数値や穴の除外を保証しない。
+
+```lean
+inductive EvalStandardAt (env : ConcreteEnv) (key : OperationKey)
+    (arguments : List ConcreteValue) : EvalOutcome → Prop where
+  | apply (binding result)
+      (identified : env.standardAt key = some binding)
+      (evaluated : EvalStandard binding.rule key arguments result) :
+      EvalStandardAt env key arguments (binding.rule.finish result)
+
+inductive RangeNames.IsOk (names : RangeNames) : ConcreteValue → ConcreteValue → Prop where
+  | intro (value : ConcreteValue) (typed : value.type = .data names.owner []) :
+      names.IsOk (.con names.result [.data names.owner [], .data names.error []]
+        names.ok [value]) value
+```
+
+`standardAt_unidentified` は、`env.standardAt key = none` ならこの標準評価の導出がないことを示す。宣言の表示名を照合する規則は置かない。`RangeNames.IsOk` は、Result の所有元・型引数・Ok の構成子・成功値の型を全て固定する。`range_ok_identity` は、その導出から同じ成功値を含む構成子と型の一致を取り出す。`range_finish_ok` は、検査の成功を `finish` で包んだ値がこの関係を満たすことを示す。IsOk だけから検査の由来や端点を結論しない。解決済みの表と実ソースの宣言の一致は、この関係の証明には含めない。
+
+`rangeCheck names key lo hi value` の三入力は、値域の証拠を持つ `Integer64Value` である。`range_inputs_representable` は、三入力それぞれが `Checked.Range.IntegerRepresentable` を満たすことを示す。`range_check_result_iff` は、同じ三入力の `EvalStandard (.rangeCheck names)` の結果が、この関数の結果と等しいことを示す。表現可能性を任意の Int の呼び出しへの外部の仮定にしない。
+
+| 定理 | 示す性質 |
+|---|---|
+| `range_success_representable` | 正常結果は、同定した所有元とレコード構成子の三欄の値である。三欄は元の三入力と等しく、それぞれ Integer64 で表現できる。value は保存された閉区間に属する |
+| `range_check_small_model` | `Checked.Range.erase_make`・`make_ok` を用い、`rawMake` の成功の三欄が元の三入力と等しく、標準規則の成功値も同じ三入力を保存することを示す。InvalidBounds の二端点、OutOfRange の三入力も標準規則と一致する |
+| `range_invalid_bounds` | `hi < lo` なら value の位置にかかわらず InvalidBounds を返す |
+| `range_out_of_range` | `lo ≤ hi` かつ value が閉区間の外なら、元の三入力を持つ OutOfRange を返す |
+| `range_value_exact` | 所有元・構成子・型引数・欄数・欄の型を認定した三欄の射影は、保存した value を返す正常結果に限る |
+| `range_success_projection`・`range_evaluated_projection` | 検査の成功、またはその標準規則の評価導出から、同じ成功値への value の評価導出を作る。`make_ok` による所属と三欄の保存、`range_payload_stored` による射影を用い、返した整数が元の `normalize lo hi` に属することを示す |
+| `range_check_at_total` | 同定された checkInteger の規則と三つの正常入力から、正しい Result 型の正常な値への導出を作る。Range の拒否も `finish` が Result.Error に包み、プログラム全体の異常終了にしない |
+
+【決定】`RangeNames` は CheckedInteger の所有元とレコード構成子の同一性を持ち、`RangeNames.record` がこの二つを `RangeRecord` にまとめて `StandardRule.rangeValue` へ渡す。入力として与える標準表の名前は、実交換の checkInteger の戻り値と value の引数が指す所有元、およびその所有元のレコード構成子宣言と一致することを条件とする。評価規則は型名・構成子の表示名を照合しない。
+
+```lean
+structure RangeRecord where
+  owner : DataName
+  constructor : ConName
+  deriving DecidableEq, BEq
+
+def rangePayload (record : RangeRecord) (lo hi value : Integer64Value) : ConcreteValue :=
+  .con record.owner [] record.constructor [.integer lo, .integer hi, .integer value]
+
+def rangeStoredValue (record : RangeRecord) : ConcreteValue → Option Integer64Value
+  | .con owner [] constructor [.integer _, .integer _, .integer value] =>
+      if owner = record.owner ∧ constructor = record.constructor then some value else none
+  | _ => none
+```
+
+`rangeCheck` は成功時に元の三入力から `rangePayload` を作る。三欄は有界な `.integer` なので、小モデルの任意の Int を表現不能な成功値として保持する専用構成子と、その射影の失敗規則は持たない。`range_payload_stored` は、この三欄を `rangeStoredValue` で読むと元の value を得ることを示す。所属の条件がなくても、正しく認定した三欄なら保存した value を正確に射影する。区間への所属は検査由来の証拠と合わせた場合に示す。
+
+【決定】`ConcreteValue.other` は不透明型とデータ型を引き続き許す。`rangeStoredValue record input = none` の場合、`EvalStandard.rangeValueUnknown` は任意の正常 Integer64 を、`rangeValueUnknownFailed` は未知の失敗を許す。other、誤った所有元・構成子・型引数・欄数・欄の型の con、rangeError にもこの導出を残す。`ConcreteValue.type` は con の内部を検査しないため、外側の型が合うことだけでは三欄を認定しない。認定時の `some value` と未認定時の `none` は排他的であり、未知の結果は正確な射影に重ならない。理由: 引数・捕捉値・未知の式から来た値に三欄を仮定せず、導出の欠落によって正常値の保証を空虚にしないためである。
+
+`range_value_total` は同じ `.data record.owner []` 型の任意の具体値に導出を与える。`range_other_possible`・`range_other_at_possible` は、局所規則と同定後の規則の両方で other から任意の正常整数へ導出があることを示す。`AbstractSlot`・`SlotModels`・`Models` を強めて未知の値を除外しない。
+
+これらは標準束縛に付く規則の定義と局所の証明である。表層の call と Result の match への接続は後述の「区間解析のRangeの表層評価とResultの腕選択」で定める。直接射影からの区間解析はここでは結論しない。Result の局所保存と Ok の束縛番号の局所的な対応は次節で定める。独立例は、局所引数と未知の式から来た other に正常値の導出があることと、Result の所有元が違えば同じ Ok の名前でも認定しないことを確認する。
+
+### 区間解析のResultの保存とOk束縛
+
+【決定】固定端点の Range の呼び出しと成功値の由来は、`Interval/RangeState.lean` の補助記録と `Interval/Range.lean` の認定で表す。本節は由来の認定・保存・Ok の一変数への対応と、その局所証明の写しである。通常の整数の `AbstractSlot`・`SlotModels`・`Models` は変えない。表層の `EvalPartial` への接続は後述の「区間解析のRangeの表層評価とResultの腕選択」で定める。土台の解析への接続は後述の「区間解析の土台の解析と健全性」で定める。
+
+```lean
+structure RangeOrigin where
+  names : RangeNames
+  checkKey : OperationKey
+  minimum : Integer64Value
+  maximum : Integer64Value
+
+def RangeOrigin.ResultModels (origin : RangeOrigin) (result : ConcreteValue) : Prop :=
+  ∃ value : Integer64Value,
+    (StandardRule.rangeCheck origin.names).finish
+      (rangeCheck origin.names origin.checkKey origin.minimum origin.maximum value) =
+        .normal result
+
+def RangeOrigin.CheckedModels (origin : RangeOrigin) (value : ConcreteValue) : Prop :=
+  ∃ number : Integer64Value,
+    value = rangePayload origin.names.record origin.minimum origin.maximum number ∧
+    Checked.Range.InRange origin.minimum.toInt origin.maximum.toInt number.toInt
+
+inductive RangeLocalFact where
+  | result (origin : RangeOrigin)
+  | checked (origin : RangeOrigin) (bindingId : Nat)
+
+structure RangeState where
+  scope : BindingScope
+  facts : List (Option RangeLocalFact)
+```
+
+`rangeFixedInteger` は `integerConstant` が読む Integer64 のリテラル・負のリテラル・定数参照・括弧から、表現可能な固定端点を得る。局所変数の区間を端点の定数として使わない。`range_fixed_integer_sound` は、この認定と正常な整数評価が同じ値になることを示す。
+
+`rangeCallOrigin` は、解決済みの `funName` を callee に持ち、型引数・エフェクト引数が空の直接 call を認める。ソース順の引数とラベルは三つ、契約上の位置は `[0, 1, 2]` の置換とし、`fieldAt` で二端点の式を選ぶ。`AbstractEnv.standardAt` が選んだ宣言との同一性と `rangeCheck` の規則を照合し、呼び出しキーと固定端点を記録する。穴・パイプ・関数値・別の解決済み宣言はこの形に含まれない。`range_call_origin_table` は認定結果のキーと標準表の規則の一致、`models_standardAt` は既存の `Models` の二表の一致から具体・抽象の同定結果の一致を示す。
+
+`rangeSaveResult` は、直接 call の由来だけを一つの通常位置へ保存する。`rangeResultOrigin` は、直接 call または result の記録を持つ局所参照だけを照合元とする。保存済み Result の別名への複写、再包装、別の成功値、動的端点は由来を作らない。bind と shadow は共通の `BindingScope.fresh` で新しい番号を一つ割り当てる。`BindingScope.idAt`・`fresh_idAt` は位置と番号の対応を示す。
+
+補助の番号列と facts は、通常の局所列の全位置を覆う必要はない。公開入口と忘却後は空列とし、その後に追加した位置の接頭辞だけを保持できる。記録のない古い位置への参照は由来を返さない。番号の新規性は現在保持する位置の範囲で述べ、異なる枝の環境の番号を混ぜて使わない。
+
+`rangeOkPattern` は、解決済み Result の Ok の一つの変数パターンだけを認め、修飾があれば Result の所有元も照合する。Error と wild には成功値の記録を付けない。`rangeMatchOk` は照合元とパターンを認定し、`rangeBindOk` で同じ成功値に新しい束縛番号を付ける。`rangeCheckedOrigin` は、その番号が現在の局所位置の番号と一致するときだけ由来を返す。`RangeState.forget` は合流・再包装・本体境界で記録と既存位置の番号列を全て捨て、次の番号だけを残す。引数と捕捉値の入口は `RangeState.empty` とし、三欄を仮定しない。理由: 型と端点が同じだけの別個体に、元の検査の成功を適用しないためである。
+
+| 定義・定理 | 示す対応と限界 |
+|---|---|
+| `RangeState.Valid`・`range_extend_valid`・`range_empty_valid`・`range_save_result_valid`・`range_bind_ok_valid` | 記録の列と番号の列の長さ、次番号が現在保持する全番号より大きい条件を保つ |
+| `RangeState.Models`・`range_extend_models` | 記録のある各局所位置に、同じ番号と具体値が存在し、その値が `RangeLocalFact.Models` を満たす。checked の記録には成功値の束縛番号との一致も要求する。既存の `Models` は強めない |
+| `RangeSourceNormal`・`range_result_at_models`・`range_result_source_models` | 同定された標準規則の実際の導出、または記録と対応する保存済み局所値から `ResultModels` を得る。直接 call では正常に得た三引数への `EvalStandardAt` を使い、引数の式のソース順の評価は保証しない |
+| `range_result_ok_models`・`range_ok_payload_models` | 検査由来の Result と同じ Ok の中身、Ok と Error の構成子の非等号から、呼び出しキーを持つ origin と、同じ二端点・有界な value・所属を持つ三欄を対応させる `CheckedModels` を得る。構成子の表示名の一致だけからは導かない |
+| `range_save_result_models`・`range_saved_result_models` | 証明済みの直接 call の由来を一度保存し、同じ局所値から読み出す対応を保つ。前者は認定された直接 call の `ResultModels` を局所の前提として使う |
+| `range_bind_ok_models`・`range_match_ok_models` | 認定した Ok の一変数を、同じ具体成功値の新しい番号へ対応させる。両者は Ok と Error の構成子の非等号も使い、後者は照合元の `RangeSourceNormal` と `OkPayload` を局所の前提として使う。中心命題の前提には加えない |
+| `range_checked_origin_models`・`range_checked_models_mem` | 読み出した同じ成功値の三欄と `normalize minimum maximum` への所属を得る。Range.value の表層評価や解析との接続は結論しない |
+| `range_checked_shift`・`range_checked_wrong_id` | shadow で外の位置がずれても番号と由来を保ち、違う番号へ貼り付けた記録は読めない |
+| `range_empty_models`・`range_forget_models` | 記録のない入口と忘却後は、other を含む任意の具体環境に対応する |
+
+Ok と Error の構成子の非等号は、既存の `rangeResultNames`・`rangeResultMatch` の認定から得る。`range_result_ok_models`・`range_bind_ok_models`・`range_ok_payload_models`・`range_match_ok_models` は、この事実を内部補助条件として受け取る。成功型とエラー型はともに data であり、任意の `RangeNames` ではその所有元が異なるとは限らないため、型の頭だけで Error を排除しない。公開入口の主定理や `Models` に非等号の条件を追加しない。
+
+【決定】`RangeNames.OkPayload` は、既知の構成子には `RangeNames.IsOk` を使い、`other` で表された Result には同じ `.data owner []` 型の任意の成功値の抽出を許す。`range_result_not_other` は、固定端点の検査由来の Result は other ではないことを示す。したがって、other から抽出した値に検査の端点を付けない。その成功値の射影には前節の任意の正常整数と未知の失敗の規則を保つ。この関係は Ok の中身を取り出す局所の関係であり、全ての Result の腕を評価する関係ではない。構造パターンの既存の `PatternLocals` は値の個数だけを定めるため、その条件だけから Ok の同一性を結論しない。
+
+明示した return の値は `NormalSoundness` の対象ではない。未対応の try 等の境界は、従来どおり任意の型内正常値または未知の失敗と空の trace を許す。境界による早い return を未知の失敗へ近似しても、その値の正常区間を要求せず、境界の内側の演算への到達を作らない。`WarningSoundness` は outcome 全般を量化するが、原因の結論には同じ trace の `Reached` を要求する。この契約は変更しない。
+
+独立例は、引数の順序を入れ替えた直接 call と一度の保存、Ok の新番号と shadow、二度目の保存・Error・wild・動的端点・偽の宣言・再包装・別の値・忘却での由来の不使用を確かめる。実際の三欄 `(0, 10, 5)` に対する保存後と Ok 束縛後の具体環境の対応、other の Result の抽出と任意の射影、try の正常値と未知の失敗の導出も含む。標準ソース・Release・VM との一致は A1 の信頼の範囲に残し、これらの局所証明で代用しない。
+
+### 区間解析の同じ成功値の直接射影
+
+【決定】同じ成功値への直接射影の認定と局所的な区間は、`Interval/Range.lean` の `rangeValueCall`・`rangeValueOrigin`・`rangeValueInterval` を正とする。本節はその定義と言明の写しである。これらは標準規則への局所的な接続である。表層への接続は次節、土台の解析による区間の精密化は後述の「区間解析の土台の解析と健全性」で定める。
+
+`rangeValueCall` は、結果型が Integer64 で、解決済みの直接 `funName`・一つの局所参照・一つのラベル・契約位置 `[0]` を持つ call だけを認める。標準表の宣言との一致と `rangeValue record` の規則を照合する。`range_value_call_table` は結果型と規則の一致、`range_value_call_source` は元の直接呼び出しと局所位置を取り出す。括弧で包んだ引数・関数値・穴・pipe はこの認定に含めない。
+
+```lean
+def rangeValueOrigin (env : AbstractEnv) (state : RangeState)
+    (input : EvalInput) : Option RangeOrigin := do
+  let (owner, index) ← rangeValueCall env input
+  let origin ← rangeCheckedOrigin state index
+  if origin.names.record = owner then some origin else none
+
+def rangeValueInterval (env : AbstractEnv) (state : RangeState) (input : EvalInput) : Interval :=
+  match rangeValueOrigin env state input with
+  | some origin => normalize origin.minimum.toInt origin.maximum.toInt
+  | none => top
+```
+
+`rangeValueOrigin` は局所位置の束縛番号と、データ型の所有元・レコード構成子を再照合する。認定した成功値には保存した二端点の正規化区間を返し、記録のない値・別の所有元や構成子・認定できない呼び出しには Top を返す。由来の別名へのコピーや再包装を新しく認めない。合流などで `RangeState.forget` を使った後は、`range_value_forget_top` により同じ入力の射影区間も Top になる。Error と逆転から警告を作る処理は持たない。
+
+| 定理 | 示す性質と局所的な前提 |
+|---|---|
+| `range_value_origin_source` | 認定した射影の所有元・レコード構成子・局所位置が、同じ番号を持つ `rangeCheckedOrigin` の記録と対応する |
+| `range_value_origin_mem` | 既存の `Models` と補助の `RangeState.Models` の下で、同じ局所値への `EvalStandardAt` が返した正常整数は保存端点の区間に属する |
+| `range_value_interval_mem` | 認定した場合の正常射影の導出があれば、未認定の場合の Top も含めて整数の所属を保つ |
+| `range_value_at_normal_integer` | 同定された value の標準評価の正常結果が Integer64 であることを、評価導出から得る。other の入力を除外しない |
+| `range_value_call_normal_mem` | 認定した直接 call と実際の局所値の読出し・正常標準評価から、正常結果が整数であり `rangeValueInterval` に属することを得る。由来がなければ Top に属する |
+| `range_value_origin_evaluated` | 認定した由来に対応する同じ成功値の標準評価は、任意の outcome に対して、正常整数とその射影区間への所属を結論する。正常性を呼び出し側で仮定しない |
+| `range_value_origin_total` | 既存の `Models` と補助記録の対応、射影の認定から、実際に存在する局所値と正常な標準評価の導出を作り、その結果の所属を示す |
+
+これらの補題の `RangeState.Models` は、保存・Ok 束縛で保つ補助の不変条件である。中心二命題の前提には加えず、既存の `Models` も強めない。これらの局所補題から表層の正常評価への接続は、次節の range_value_surface_mem が担う。実行する解析への接続は後述の「区間解析の土台の解析と健全性」で定める。`range_value_origin_evaluated` が示す正常性も、認定した同じ成功値への標準規則に限る。
+
+独立例は、一つの成功値への `[0,10]` と shadow 後の同じ番号への保存、忘却・別名・偽の宣言・別の所有元・間接呼び出しでの Top を確認する。三欄 `(0,10,5)` の既存の合成例は Result の保存と Ok 束縛から直接射影までを含み、実際に正常値 5 への標準評価の導出があることと、全ての射影結果への正常性・所属を確かめる。これらは Range.bnt・脱糖・Release・VM との一致の証拠ではない。
+
+### 区間解析のRangeの表層評価とResultの腕選択
+
+【決定】標準 Range の表層の呼び出しと単純な Result の腕選択は、`Interval/Eval.lean` の具体評価規則で定める。`Interval/Range.lean` は、その正常評価を固定端点・一度の保存・同じ成功値の局所の不変条件へ接続する。中心二命題と既存の主定理の言明、公理、`Models` は変更しない。理由: 標準規則だけの導出を表層の実行と取り違えず、実際の引数評価と選ばれた中身から局所の前提を作るためである。
+
+`rangeCallBinding env input` の Range の分岐は、型引数・エフェクト引数が空の直接の `funName` と、同じ出現の `standardAt` の宣言を照合する。check ではラベルと引数が三つ、契約位置が `[0,1,2]` の置換であることを要求する。value ではラベルと引数が一つ、契約位置が `[0]` であることを要求する。解決済みの規則は rangeCheck または rangeValue に限る。関数値・穴・pipe・異なる宣言・不正な位置や個数は認定しない。固定域の API の認定は、前述の「区間解析の直接引数と固定の定義域」で定める別の分岐で行う。評価の認定は固定端点や直接の局所参照を要求しない。固定端点と同じ成功値への直接射影の認定は、前二節の補助記録で別に行う。
+
+`StandardRule.argumentType` は rangeCheck の全引数を Integer64、rangeValue の引数を同じ所有元の `.data owner []` とする。`resultType` は check の Result と value の Integer64 を定める。`NormalTyped` と `eval_normal_typed` は評価規則と同じモジュールに置き、正常結果の型を示す。`standard_result_typed` は標準規則と finish の正常結果にもこの性質を与える。
+
+`EvalArguments env key sources type outcome trace` は、同じ具体環境でソース順に式を評価する。`ArgumentOutcome.normal values` は正常な値の列、`abrupt outcome` は途中の失敗または return を表す。次の式のキーは `advanceKey key (surfaceSize source)` で進める。先頭または途中が異常終了すれば、残りは評価しない。認定した callee は標準の名前なので、その位置は占めるが未知の値として評価しない。最初の引数は `childKey callKey [callee]` から始まる。
+
+`orderArguments positions values` は、正常な値の列を `fieldAt` で契約位置の順に並べ替える。`standardCall` は認定、全引数の正常評価、並べ替え、`EvalStandard` の実際の導出を要求する。結果は finish で包み、引数の trace に、同じ呼び出しキー・標準束縛・契約順の正常引数・標準規則の結果を持つ事象を一つ続ける。`standardCallAbrupt` は引数の失敗・return とその trace だけを返し、呼び出し自体の事象を作らない。`arguments_trace_keys` と既存の trace の補題は、これらを含む相互帰納で番号範囲と一意性を保つ。
+
+`rangeResultNames env type` は標準表の rangeCheck から、Result の所有元と成功・失敗の型引数が一致する名前の組を選ぶ。Ok と Error は異なる構成子であることを要求する。`RangeNames.ResultView` は、正しい型引数と一つの型の合う中身を持つ既知の Ok/Error では、その同じ中身を返す。other の Result では、型の合う任意の成功値を持つ Ok と、型の合う任意のエラー値を持つ Error の両方を許す。構成子の個数や `PatternLocals` から中身を推測しない。
+
+`rangeResultPattern` が具体化するパターンは、外側の var・wild、Ok/Error の中身一つが var または wild の構成子パターンである。修飾があれば Result の所有元も照合する。`rangeResultMatch` は、同定した名前の組、型の合う既知の一引数の構成子または other、全腕の全選択肢がこのパターン集合に入ることを要求する。未対応のパターンを一つでも含む腕列、不正な内部表現、未同定の型は近似に残す。`range_result_match_view` は、具体化した全表現に ResultView の導出があることを示し、導出の欠落で保証を空虚にしない。
+
+`resultPatternMatch` は var には照合値全体、構成子の var には同じ中身一つ、wild には空列を返す。`ResultSelection` は、左から最初の照合成功、`selectSlots` による宣言順への並べ替え、共通の束縛数を要求する。`EvalPartial.matchResult` は照合値を評価し、ResultView と `EvalResultArms` の選択を合成する。腕入口は `selected.reverse.map some ++ env.locals` とする。guard の真は本体、偽は元環境で次の腕へ進み、失敗・return は伝播する。全腕不一致は未知の失敗になる。`resultArms_trace_keys` は guard・本体・後続腕の元の番号範囲を保つ。
+
+| 接続の補題 | 示す性質 |
+|---|---|
+| `arguments_normal_field`・`order_arguments_field` | ソース順に評価した各式の正常値と、並べ替えた契約位置の値を対応させる |
+| `range_call_origin_arguments`・`range_source_normal_of_eval` | 認定した固定二端点を実際の引数評価と照合し、直接検査または保存済み局所参照の正常評価から RangeSourceNormal を構成する |
+| `range_save_result_of_eval` | 実際の表層の正常評価から、一度の Result 保存後の RangeState.Models を構成する |
+| `range_result_match_distinct`・`range_result_view_ok_payload` | 具体化した Ok と Error を区別し、選ばれた Ok の同じ中身を OkPayload へ対応させる。other も許す |
+| `result_selection_ok`・`range_match_selected_ok_models` | 一変数の Ok の実際の選択は同じ成功値一つを返す。検査由来または一度保存した照合元なら、その値に新しい番号を付け、選択後の具体環境との対応を保つ |
+| `range_value_standard_of_eval`・`range_value_surface_mem` | 同じ局所値への直接射影の表層評価から標準評価の導出を取り出し、その正常整数が rangeValueInterval に属することを示す |
+
+未知の規則から外す call は rangeCallBinding の認定に成功するものだけである。`matchOtherNormal`・`matchOtherFailed` は、七種の整数を除外する従来の条件に加え、`rangeResultMatch env value arms = none` を要求する。具体化した形と近似を重ねず、未対応の形の正常値・未知の失敗を残す。
+
+土台の解析は、認定した call の引数をソース順に解析し、直接または一度保存した Result の Ok の同じ成功値に由来を付ける。直接の value(local) では保存端点の正常区間を使う。その環境の不変条件と三つの保証への接続は後述の「区間解析の土台の解析と健全性」で定める。閉じた評価器の call/Result の評価は次節で定める。構文だけを見る `concreteRule` は call を標準呼び出しの認定前の候補として含めるが、実際の評価の認定には `rangeCallBinding` を使う。警告位置の targetOperationAt は算術と解決済み標準宣言の直接 call を同定する。Range の Error と逆転は警告の原因にしない。
+
+`Interval/Examples.lean` の表層の例は、契約位置の並べ替え、加算3・検査1・射影8の順の trace、値5と成功値の同一性、直接と一度の保存後の新番号、other の Result からの正常射影と失敗、Error の次の腕への選択、引数の return 後の未評価、不正な認定の除外を確認する。これらは定義内の導出と固定期待値の確認であり、Range.bnt・脱糖・Release・Rust/VM との意味の一致を示さない。
+
+### 区間解析の閉じた対象入力の評価
+
+【決定】閉じた対象入力の実行可能な評価は、`Interval/EvalClosed.lean` の `evalClosed` を正とする。本節は、その定義と言明の写しである。`EvalPartial` の未知の規則を一つの結果へ固定せず、実際に通る部分を具体的に評価できた場合だけ結果を返す。理由: 未知の関数が許す任意値を、実行比較の期待値に選ばないためである。
+
+結果は、正常値・失敗・return を区別する outcome と、実行順の trace、および同じ結果の評価導出を持つ。
+
+```lean
+structure ClosedRun (relation : EvalOutcome → EvalTrace → Prop) where
+  outcome : EvalOutcome
+  trace : EvalTrace
+  sound : relation outcome trace
+
+evalClosed (env : ConcreteEnv) (input : EvalInput) (fuel : Nat) :
+  Option (ClosedRun (EvalPartial env input))
+```
+
+`some result` は実際に計算した結果を表し、`some` の中の `failed` は対象言語の失敗である。`none` は評価不能を表す。深さの不足、未対応の式、型候補を得られない入力、期待型と具体規則の不一致などで `none` を返す。`none` から、対象言語の失敗、正常値の不存在、`EvalPartial` の導出の不存在を結論しない。fuel は評価器の再帰の深さの上限であり、区間解析の操作数・保持項目数の予算とは別である。
+
+`ClosedEval.expr`・`arguments`・`block`・`armList`・`widthArmList`・`resultArmList` は相互再帰で評価する。整数七種の値域内のリテラルと Integer64・Integer8・16・32 の直接負号、Boolean・Unit の原子式、局所参照、括弧、定数、return、七種の整数の二項演算、符号付き四種の一般の負号、not・and・or、全 Block 形、ite・elseIf・ifOnly、七種の整数の match と guard を扱う。整数二項演算は加算・減算・乗算・整数除算・剰余・六比較とし、Integer64 では既存の checkedAdd・checkedSub・checkedMul・checkedDivMod・checkedCompare、残る六種では各 IntKind の検査付き演算を使う。幅付きの直接負号は negInteger8・negInteger16・negInteger32 とし、これらと幅付きリテラルは値域を検査し、域外なら `none` を返す。一般の負号は Integer64 では `checkedNeg`、残る符号付き三種では `IntKind.checkedNeg` を使う。幅付きの二項演算は `WidthBinary.apply`、同幅の具体整数の取得は `ClosedEval.integerValue`、子の評価と異常終了の合成は `ClosedEval.widthBinary`・`widthNeg` で行う。型注釈と期待型の不一致では `none` を返す。既存の子のキーを用い、二項演算は正常な二引数、負号は正常な一引数を得たときだけ演算自身の事象を追加する。子の失敗・return では後続の評価を切り、既に評価した子の trace を保つ。短絡の右辺や未選択の枝は、その位置へ実際に進む場合だけ評価する。
+
+Integer64 の腕は既存の `armList`・`selectInteger`、残る六種は `widthArmList`・`selectWidth` で評価する。六種では束縛・ワイルドカードだけを照合し、選んだ具体値を同じ幅で局所位置へ追加する。guard が偽なら元の外側の環境で後続腕を評価する。各結果には対応する EvalArms または EvalWidthArms の導出を添える。
+
+定数の埋め込み本体は局所環境を空にする。通常束縛と shadow は新しい通常位置を加え、builderBind は値なしの専用位置を加える。整数の腕は最初の照合成功を選び、slots と共通の束縛数を検査する。guard が偽なら元の環境で次の腕へ進む。パターンの値は、単独の変数、ワイルドカード、原子的な具体値との照合に成功した束縛数0のパターンだけから作る。構造の内部の束縛値を任意に選ばない。認定されない非整数の match、一般呼び出し、関数・ラムダ・lazy・try・with・handler などの未対応の式へ到達したら `none` とする。
+
+局所参照の期待型と、定数・return・match の注釈の一致は、基本型・不透明型・リスト型・その組み合わせを型引数とするデータ型について、`sameType`・`sameTypes` で計算する。return のオペランドと discard のように期待型の注釈がない位置では、`typeOf`・`blockType` が構文・局所位置・標準束縛表から型候補を求める。直接の標準関数名の call には表の resultType を候補として使い、実際の評価では出現キーと rangeCallBinding の認定を別に要求する。候補だけを根拠に結果を返さず、式の評価導出を別に構築する。関数型のエフェクトの外延的等号を判定する手続きや、新しい型検査規則を加えない。型検査済みの全入力が評価可能であることや、十分な fuel で必ず `some` になることは証明していない。
+
+解決済みの直接の Range.checkInteger/value は、`rangeCallBinding` が認定する形だけを評価する。`typedArguments` は最初の引数を `childKey key [callee]` からソース順に評価し、正常な値の列を得た後にだけ `orderArguments` で契約順へ並べる。子の失敗・return では後続を評価せず、親の標準演算の事象も作らない。`standard` は三整数への rangeCheck と、`rangeStoredValue` が認定した三欄への rangeValue を計算する。後者は保存した value を返す。other・未認定の con・rangeError の射影は `none` とし、非決定的な規則から具体値を選ばない。`StandardRun.sound` と引数の導出から standardCall または standardCallAbrupt の導出を作る。Range の Error は finish で正常な Result 値へ包む。
+
+固定域のシフトの call も、同じ `rangeCallBinding` で認定する。`typedArguments` は `binding.sourceTypes positions` の型列を使い、ソース順に評価する。全引数が正常な場合、`standard` は `fixedDomain` の対象整数を正常域と比較する。域外なら `outsideDomain`、域内なら既存の `domainOtherFailure` が許す `unknown` の拒否を選ぶ。域内のこの結果は、非決定的な評価関係の一つの導出であり、実ソースや VM の失敗の予測ではない。この結果を選んだ入力は、未知を含む入力として VM の実行比較から外す。固定域の失敗と引数の return は親の期待型に依存せず、`fixedCallFailed`・`fixedCallAbrupt` で伝播する。正常引数を全て得たときだけ親の標準演算の事象を作る。
+
+操作の call と record・recordUpdate は閉じた評価器の対象外とし、到達した場合は `none` を返す。対象構文の評価関係には、これらの未知の正常値と失敗の導出が残る。
+
+Result の match は `rangeResultMatch` が認定する全腕と、`resultView` で同じ中身を取り出せる具体的な Ok/Error だけを評価する。other の Result は `none` とする。`selectResult` は最初に照合した選択肢の raw を slots の順へ並べ、共通の束縛数も検査する。最初の照合成功の slots が不正なら、後の選択肢へ進まず `none` とする。`resultArmList` は選んだ値の逆順を局所位置へ追加し、guard が偽なら元の環境で次の腕へ進む。guard・本体の失敗と return はそのまま伝播し、対応する EvalResultArms と matchResult の導出を作る。これらは閉じた評価器の接続であり、RangeState を用いて解析結果を精密化する保証ではない。
+
+| 言明 | 保証する内容 |
+|---|---|
+| `evalClosed_sound` | `evalClosed env input fuel = some result` なら、`EvalPartial env input result.outcome result.trace` が成り立つ |
+| `evalClosed_call` | `rangeCallBinding env input = none` の一般呼び出しは、頭と引数を評価せず `none` を返す |
+| `evalClosed_unsupported` | `Unsupported input.source` なら、任意の fuel で `none` を返す |
+| `evalClosed_trace_keys` | `some` の trace のキーは入力の部分木の番号範囲に入り、重複しない |
+
+`evalClosed_sound` の導出は結果の構築時に添える。未知の規則を用いた導出を後から選ぶ処理ではない。`EvalClosed.lean` の入口の独立例は、右辺の除数0で左辺の事象を残す順序、未到達の未知式を持つ短絡、未知式への到達と深さ0の評価不能、偽の guard から次の腕へ進む値を確認する。
+
+`Interval/DomainExamples.lean` は、実在する全シフト方向について域内・域外・端で交差する区間、ソース順と契約順、宣言の不在・偽装、子の失敗・return を、実際の解析入口と証明付きの閉じた評価器へ渡す。Process.exit(300) と域外の port の操作には W0404 がなく、既存の未知規則による正常値・失敗の導出が残ることも確かめる。SyntacticReachExamples は、record・recordUpdate の欄の除数0が親の候補にならず、独立入力自身に保存されることを確かめる。解析器・評価器を具体の入力で動かす例は #guard とし、kernel の計算で展開しない。これらの例は対象構文の評価関係の定義内の検査であり、実ソース・VM との比較を代用しない。
+
+`Interval/Examples.lean` の Range の接続例は、実行可能な入口で直接 match と一度の保存・shadow、引数のソース順と契約順、Error の逆転優先と次の腕、guard の偽での元環境への復帰、引数の途中の return、other・未認定・型違い・深さ不足の評価不能を、固定した値とキーへ照合する。評価導出だけを構成する例と区別し、Range による解析の精密化・実 VM との一致の証拠にはしない。
+
+`Examples.RangeC3` の独立例は、閉区間の両端・一点・Integer64 の最小値と最大値について、正常な Result.Ok の三欄と、同じ成功値の直接射影を確認する。逆転の二例は value が両端の間にある場合と外にある場合を使い、いずれも InvalidBounds を優先する。正順の両側の範囲外は元の三入力を持つ OutOfRange とし、Error を選んだ腕から正常に進み、新しい警告を作らない。
+
+二つの検査から得た同じデータ型の成功値について、解析の記録はそれぞれの由来の呼び出しキー・局所位置・束縛番号を保持する。具体値との関係 `ResultModels`・`CheckedModels` は同じ標準規則と二端点により定まり、呼び出しキーでは値を区別しない。内側の `[100,110]` と外側の `[0,10]` を別々に射影し、引数から来た由来のない別個体は正常に105を返せても解析では Top とする。出現の同定表が別の宣言を指す呼び出しは認定せず、閉じた評価器では評価不能とする。後続の加算では `[0,9]` の射影に1を足した `[1,10]` と、最大値一点の射影に1を足したあふれを、土台と予算付きの入口で確認する。これらの解析器・評価器の具体実行は `#guard` で行い、定義の展開を kernel に実行させない。三欄のうち minimum・maximum は保存値の観察と小モデルの射影で確認し、表層評価の標準規則には `Range.minimum`・`Range.maximum` を追加しない。
+
+`Interval/Examples.lean` は、土台の同じ表層入力を `evalClosed` と共有予算付きの解析の入口へ渡す。具体値・正常な引数・対象演算・キー・失敗原因の期待は固定し、一方の出力から他方の期待を生成しない。既定の import に含め、次の契約を確かめる。
+
+| 例 | 確かめる内容 |
+|---|---|
+| and・or | false の and と true の or は右辺の除数0を飛ばす。逆の真偽では同じ右辺へ到達し、正常な二引数と拒否原因を trace に残す |
+| 偽の guard | 腕の変数で guard を評価し、偽なら外の局所環境で次の腕を評価する。未選択のあふれの部分木を飛ばしても後続のキーを詰めない |
+| shadow | 新しい位置と保存した古い位置を区別し、同じ二引数の加算の値を具体評価と正常区間で確認する |
+| return | オペランドの値と事象を返し、後続の演算へ到達しない。式の正常値は復活させない |
+| 捕捉境界 | ラムダ自体の具体評価は `none` とし、別本体の解析入口では捕捉区間を Top に戻す。外の一点0から本体内の除数0を推測しない |
+| 予算停止 | 除数0の警告を保存した後で番号の取得を停止し、正常値は Top に退く。保存済みの警告は具体評価の同じ到達事象で原因どおり拒否される |
+| 六幅の演算 | 各幅の加減乗商剰余、符号付き三種の負号、除数0、下限割れ、最大u64の積について型・値・引数・位置・拒否原因と解析区間を固定期待値で照合する。一般の積と商・剰余はTop、子の失敗・returnでは親の事象なしとする |
+| 本体入口の系への接続 | shadow の計算した正常評価の導出を、深さ・初期消費・上限を制限しない analyzeBody_normal へ渡す。停止後に保存した警告も analyzeBody_warning_sound へ渡す |
+
+これらは `EvalPartial` と解析の接続の確認であり、脱糖・Release・Rust/VM との意味の一致の証拠ではない。評価器の深さと解析の予算を同一視せず、解析の停止後も具体評価は独立した到達記録を返す。
+
+### 区間解析のInteger64加算
+
+【決定】Integer64 の検査付き加算は `Interval/Eval.lean`、その正常区間と失敗条件は `Interval/Arithmetic.lean` を正とし、本節は定義と言明の写しとする。いずれも既定の import に含む。理由: 数学上の和から正常値を構成する前に型の値域を検査し、中間のあふれを後続の計算で取り消さないためである。
+
+七種に共通の局所定義は `IntKind.checkedAdd kind a b` とし、型ごとの下限・上限で数学上の和を検査し、成功時に `ConcreteValue.ofInteger kind` で具体値を作る。`IntegerApprox kind` と `addNormal`・`addMayOverflow`・`addAlwaysOverflows`・`addApprox`、下表の補題は同じ `kind` で引数化する。Integer64 以外では、以下の `min64`・`max64` を `kind.min`・`kind.max` に、`integer v` を `ofInteger kind v` に読み替える。既存の `checkedAdd` と Integer64 の具体評価規則は保ち、共通の定義の Integer64 特殊化と定義上等しい。幅付きリテラル・演算の具体評価と式全体の解析への接続は、この共通定義だけからは主張しない。
+
+`checkedAdd a b` は数学上の Int で `sum = a.toInt + b.toInt` を求める。`min64 ≤ sum ∧ sum ≤ max64` なら `normal (integer sum)`、それ以外なら `rejected overflow` を返す。`OperationResult.outcome` は正常値を `EvalOutcome.normal`、拒否を `EvalOutcome.failed` に移す。`EvalOutcome.Abrupt` は failed または returned のときだけ真であり、加算の子からの中断を表す。
+
+`IntegerApprox` は Integer64 に特殊化した正常値の区間 `normal : Interval` と、失敗可能性 `mayFail : Bool` を別々に持つ。区間が bottom であることだけでは、失敗・return・停止性のいずれも断定しない。二つの非空区間を `left = [lo, hi]`、`right = [lo′, hi′]` としたとき、加算の定義は次のとおりである。
+
+| 定義 | 子のどちらかが bottom の場合 | 両方が非空の場合 |
+|---|---|---|
+| `addNormal left right` | bottom | `normalize(lo + lo′, hi + hi′)`。数学上の和と Integer64 の全値域との交差 |
+| `addMayOverflow left right` | 偽 | `lo + lo′ < min64 ∨ max64 < hi + hi′` |
+| `addAlwaysOverflows left right` | 偽 | `hi + hi′ < min64 ∨ max64 < lo + lo′` |
+
+`addApprox left right` の正常区間は `addNormal left.normal right.normal` とする。失敗可能性は `left.mayFail ∨ (left.normal ≠ bottom ∧ (right.mayFail ∨ addMayOverflow left.normal right.normal))` とする。左に正常値がなければ右を実行しないため、右からの失敗可能性も引き継がない。両方の子が正常に得られたときに、この加算自身が失敗する可能性と、子の失敗可能性を混同しない。
+
+| 定理 | 言明 |
+|---|---|
+| `checkedAdd_normal_iff` | `checkedAdd a b = normal (integer v)` と `v.toInt = a.toInt + b.toInt` は同値である。v は有界な Integer64 の値である |
+| `checkedAdd_overflow_iff` | `checkedAdd a b = rejected overflow` と数学上の和が Integer64 の値域外にあることは同値である |
+| `add_normal_sound`・`add_approx_normal_sound` | 二つの正常な引数がそれぞれの子の区間に所属し、加算が正常値 v を返すなら、v は加算の正常区間に所属する |
+| `add_may_overflow_sound`・`add_approx_overflow_sound` | 区間に所属する正常な二引数で加算があふれるなら、加算自身のあふれ可能性と合成した mayFail はともに真である |
+| `add_always_overflows_sound` | 区間に所属する正常な二引数を得て `addAlwaysOverflows` が真なら、加算は `rejected overflow` を返す |
+| `add_bottom_iff` | 両方の子の区間が非空なら、加算の正常区間が bottom であることと `addAlwaysOverflows` が真であることは同値である |
+| `add_bottom_child` | 子の一方が bottom なら、親の正常区間は bottom、親自身の全域外の判定は偽である |
+
+一部だけがあふれる場合は、成功する値だけを正常区間に残し、mayFail を真、全域外の判定を偽とする。独立例では上限と下限の両方でこの区別を確認する。`(max64 + 1) + (-1)` の近似は内側から正常区間 bottom・mayFail 真を保ち、外側の加算の全域外の判定は偽とする。評価関係でも内側のあふれだけを trace に記録し、外側の加算を実行しない。右の子の失敗と左の子の return でも、親の到達記録を作らないことを確認する。
+
+これらは加算の局所の定義と補題であり、式全体を解析する関数に対する二つの中心命題の証明、加算の警告列の生成、Rust の処理系や VM との一致を結論しない。
+
+### 区間解析の減算と符号付き負号
+
+【決定】減算と符号付き負号の検査付き演算は `Interval/Eval.lean`、局所の正常区間と失敗条件は `Interval/Arithmetic.lean` を正とし、本節は定義と言明の写しとする。いずれも既定の import に含む。理由: 数学上の差・負号を型の値域と比較し、正常値と途中の失敗可能性を分けるためである。
+
+`IntKind.checkedSub kind a b` は七種を対象とし、数学上の Int の `difference = a.toInt - b.toInt` が `kind.min ≤ difference ∧ difference ≤ kind.max` を満たせば `normal (ofInteger kind difference)`、満たさなければ `rejected overflow` を返す。符号なしの下限は0であり、負の差を正常値へ丸めたり周回させたりしない。
+
+`IntKind.checkedNeg kind signed a` は `signed : kind.min < 0` の証拠を要求する。この条件を満たすのは Integer8・16・32・64 の四種だけである。数学上の `negative = -a.toInt` を同じ型の両端で検査し、値域内なら `normal (ofInteger kind negative)`、値域外なら `rejected overflow` を返す。符号付き最小値の負号はあふれる。符号なしの負号を対象に加えない。
+
+以下の区間はすべて同じ `kind` の値域内にあり、`normalize` は数学上の結果区間とその値域との交差を取る。二つの非空区間を `left = [a,b]`、`right = [c,d]`、負号の非空の子を `child = [a,b]` とする。負号の区間関数も `signed` の証拠を要求する。
+
+| 定義 | 子が bottom の場合 | 非空の場合 |
+|---|---|---|
+| `subNormal left right` | どちらかが bottom なら bottom | `normalize(a - d, b - c, kind)` |
+| `subMayOverflow left right` | 偽 | `a - d < kind.min ∨ kind.max < b - c` |
+| `subAlwaysOverflows left right` | 偽 | `b - c < kind.min ∨ kind.max < a - d` |
+| `negNormal signed child` | bottom | `normalize(-b, -a, kind)` |
+| `negMayOverflow signed child` | 偽 | `-b < kind.min ∨ kind.max < -a` |
+| `negAlwaysOverflows signed child` | 偽 | `-a < kind.min ∨ kind.max < -b` |
+
+`subApprox left right` は正常区間を `subNormal left.normal right.normal`、失敗可能性を `left.mayFail ∨ (left.normal ≠ bottom ∧ (right.mayFail ∨ subMayOverflow left.normal right.normal))` とする。左に正常値がないときは右からの失敗可能性を引き継がない。`negApprox signed child` は正常区間を `negNormal signed child.normal`、失敗可能性を `child.mayFail ∨ negMayOverflow signed child.normal` とする。いずれも子の正常値を復活させず、途中の失敗可能性を後続の計算で取り消さない。
+
+| 定理 | 言明 |
+|---|---|
+| `checkedSub_normal_iff`・`checkedNeg_normal_iff` | 検査付き演算が有界な正常値 v を返すことと、v の Int 値が数学上の差・負号に一致することは同値である |
+| `checkedSub_overflow_iff`・`checkedNeg_overflow_iff` | 検査付き演算の `rejected overflow` と数学上の結果がその型の値域外であることは同値である |
+| `sub_normal_sound`・`sub_approx_normal_sound`、`neg_normal_sound`・`neg_approx_normal_sound` | 正常な引数が子の区間に所属し、検査付き演算が正常値を返せば、その値は合成した正常区間に所属する |
+| `sub_may_overflow_sound`・`sub_approx_overflow_sound`、`neg_may_overflow_sound`・`neg_approx_overflow_sound` | 所属する正常引数で演算があふれた場合、演算自身のあふれ可能性と合成した mayFail はともに真である |
+| `sub_always_overflows_sound`・`neg_always_overflows_sound` | 全域外の判定が真なら、所属する任意の正常引数で検査付き演算は `rejected overflow` を返す |
+| `sub_bottom_iff`・`neg_bottom_iff` | 子が非空なら、合成した正常区間が bottom であることと全域外の判定が真であることは同値である |
+| `sub_bottom_child`・`neg_bottom_child` | 子 bottom から正常値を復活させず、親自身の全域外の判定を作らない。負号ではあふれ可能性の判定も偽である |
+
+独立例では、符号付き四種の上下端での減算と最小値の負号、符号なし三種の下限0への切り詰め、最大 u64 からの差、一部のあふれと全域外の違いを確認する。同じ `[2,4]` どうしの差も `[-2,2]` とし、`x-x` を一点0にする相関の特例を設けない。子 bottom、左に正常値がない場合の右の失敗可能性、負号の子の失敗可能性の保存も確認する。
+
+これらは局所の演算と区間の補題である。減算は七種、一般の負号は符号付き四種について、後述の具体規則・trace・式全体の解析と警告生成へ接続する。Rust と VM への接続は含まない。これらの局所補題から失敗一般に対する mayFail の完全性や、プログラム全体の異常終了を結論しない。
+
+### 区間解析の定数倍
+
+【決定】七種の整数の検査付き乗算は `Interval/Eval.lean` の `IntKind.checkedMul`、定数倍の局所の正常区間と失敗条件は `Interval/Arithmetic.lean` を正とし、本節は定義と言明の写しとする。いずれも既定の import に含む。理由: 積を数学上の Int で求めてから型の値域を検査し、端点の積と正常に得られる値の区間を分けるためである。
+
+`IntKind.checkedMul kind a b` は、数学上の `product = a.toInt * b.toInt` が `kind.min ≤ product ∧ product ≤ kind.max` を満たせば `normal (ofInteger kind product)`、満たさなければ `rejected overflow` を返す。この具体演算は任意の二整数の積を定める。区間の精密化は、左右いずれかの正常区間が一点である場合に限る。Byte は対象に含めない。
+
+同じ `kind` の非空区間を `left = [a,b]`・`right = [c,d]` とする。`scaleBounds k lo hi` は `0 ≤ k` なら `(k*lo,k*hi)`、負なら `(k*hi,k*lo)` を返す。`mulBounds a b c d` は、`a = b` なら `some (scaleBounds a c d)`、そうでなく `c = d` なら `some (scaleBounds c a b)`、どちらでもなければ `none` を返す。両辺が一点なら左を定数として使う。0倍は、他方に正常値がある場合に一点0となる。
+
+| 定義 | どちらかの子が bottom | 非空で `mulBounds = some (low,high)` | 非空で `mulBounds = none` |
+|---|---|---|---|
+| `mulNormal left right` | bottom | `normalize(low,high,kind)` | `top kind` |
+| `mulMayOverflow left right` | 偽 | `low < kind.min ∨ kind.max < high` | 真 |
+| `mulAlwaysOverflows left right` | 偽 | `high < kind.min ∨ kind.max < low` | 偽 |
+
+両辺が複数値なら、結果を Top にし、演算自身のあふれ可能性を否定せず、全域外の判定から警告を作らない。一点との積では、一部だけ値域外なら正常区間を値域と交差し、全域外の判定を偽にする。この正常区間は成功値を含む近似であり、積の間の穴は表さない。
+
+`mulApprox left right` は正常区間を `mulNormal left.normal right.normal`、失敗可能性を `left.mayFail ∨ (left.normal ≠ bottom ∧ (right.mayFail ∨ mulMayOverflow left.normal right.normal))` とする。左に正常値がないときは右の失敗可能性を引き継がない。0倍でも、子 bottom から正常値を復活させず、到達した子の失敗可能性を取り消さない。
+
+| 定理 | 言明 |
+|---|---|
+| `scaleBounds_sound` | `lo ≤ value ≤ hi` なら、`k*value` は符号に従って並べた二端点に挟まれる |
+| `mulBounds_sound` | `a ≤ x ≤ b`・`c ≤ y ≤ d` かつ `mulBounds a b c d = some (low,high)` なら、`low ≤ x*y ≤ high` である |
+| `checkedMul_normal_iff` | 検査付き乗算が有界な正常値 v を返すことと、v の Int 値が数学上の積に等しいことは同値である |
+| `checkedMul_overflow_iff` | 検査付き乗算の `rejected overflow` と数学上の積が型の値域外であることは同値である |
+| `mul_normal_sound`・`mul_approx_normal_sound` | 子の区間に所属する正常引数で乗算が正常値を返せば、その値は合成した正常区間に所属する |
+| `mul_may_overflow_sound`・`mul_approx_overflow_sound` | 所属する正常引数で乗算があふれた場合、演算自身のあふれ可能性と合成した mayFail はともに真である |
+| `mul_always_overflows_sound` | 全域外の判定が真なら、所属する任意の正常引数で検査付き乗算は `rejected overflow` を返す |
+| `mul_bottom_iff` | 二つの子が非空なら、正常区間が bottom であることと全域外の判定が真であることは同値である |
+| `mul_bottom_child` | 子 bottom から正常値を復活させず、乗算自身のあふれ可能性と全域外の判定をともに偽にする |
+
+独立例は、左右の0倍・負の定数での端点の交換・七種の上限と符号付き四種の下限での一部のあふれと全域外・一般の積の Top・子の失敗と bottom の保持を確認する。最大 u64 同士の積は `340282366920938463426481119284349108225` であり、Int の正確な積、その端点、正常区間の消失、全域外の判定と具体演算の拒否を確認する。
+
+端点と演算の中間値は Lean の `Int` で表す。この局所の証明から、処理系の整数表現との一致は結論しない。
+
+これらは局所の演算と区間の補題である。七種の乗算を後述の具体規則・trace・式全体の解析と警告生成へ接続する。`NormalSoundness`・`WarningSoundness` の本文・既存の主定理の言明・公理は変えず、失敗一般に対する mayFail の完全性を結論しない。
+
+### 区間解析のInteger64の減算・乗算・一般の負号の接続
+
+【決定】七種の整数の加算・減算・乗算・整数除算・剰余・六比較と、符号付き四種の一般の負号を、`Interval/Eval.lean`・`EvalClosed.lean`・`Sound.lean` と予算付き解析に接続する。Integer64 の既存の規則と入口を保ち、残る六種には種類で引数化した規則を使う。本節はその定義と言明の写しである。理由: 局所の算術の所属と拒否の補題を、式全体の正常値・警告の中心定理へ合成するためである。
+
+`checkedSub`・`checkedMul`・`checkedNeg` は、七種共通の検査付き演算の Integer64 の特殊化である。`EvalPartial.sub`・`mul` は正常な二引数を得た後だけ演算を実行し、子の事象の後に親の事象を追加する。子の失敗・return は `subLeftAbrupt`・`subRightAbrupt`・`mulLeftAbrupt`・`mulRightAbrupt` で保つ。`neg` は子を `childKey key []` で正常な整数として評価し、その trace の後に `⟨key, .neg Integer64, [.integer value], checkedNeg value⟩` を追加する。`negAbrupt` は子の異常終了と trace を保つ。負号自身の事象には二項演算と別の `TargetOperation.neg type` を使う。
+
+`baseOwn` は減算と乗算の正常区間・あふれ可能性・全域外の判定をそれぞれの局所補題へ渡す。`baseNegOwn key child` は `negNormal`・`negMayOverflow` と、`negAlwaysOverflows` の場合だけ一件のあふれ候補を持つ。`baseNeg key type child` は、型に対応する `baseNegOwnTyped` と子を baseThen で合成する。Integer64 では既存の baseNegOwn、残る符号付き三種では baseNegOwnKind を使い、その他は baseUnknown とする。`checkedSub_contains`・`checkedMul_contains`・`checkedNeg_contains` は、正常引数の子の近似への所属と具体演算の正常結果から、合成近似への所属を示す。親の候補の拒否理由は、同じ子の所属と全域外の局所補題で示す。
+
+残る六種の二項演算では、baseOwn は型から IntKind を認定し、`baseOwnKind key op kind left right` を使う。両子の rangeKind から同じ種類の区間を読み、加減算・定数倍の正常区間と全域外、整数除算・剰余の一点0を求める。警告の operation は元の kind.type を保つ。`baseNegOwnKind key kind signed child` は符号付きの同型区間に負号の局所規則を適用する。子が Bottom なら親の正常値と候補を復活させない。
+
+予算付きの `binarySupported` は七種の対象二項演算を認める。既存の `negSupported` は Integer64 の認定として保ち、一般の負号の振り分けには符号付き四種を認める `negModeled` を使う。`negOwnTyped` は `baseNegOwnTyped` の候補を、`own` と同じ共有の保存列へ保存する。Integer64 では既存の negOwn と一致する。警告の保存に失敗したときも、それ以前の候補・番号・消費を保持する。`targetOperationAt`・構文的な到達可能性・独立入力の保存の証明も同じ形に対応する。接続した幅の二項演算と符号付きの負号は Unmodeled から外し、未知の評価規則と重ねない。
+
+`analyzeBase_normal_sound`・`analyzeBase_warning_sound` と予算付きの対応する中心定理は、任意の深さ・操作数・保持の上限の下で同じ言明を保つ。商・剰余の結果は top、一般の積は top とあふれ可能性が真であり、局所区間の相関は推測しない。六幅の match の腕は、後述の種類付きの腕入口を使い、束縛・ワイルドカードと guard を解析する。標準 API の div・absolute などの既存の定数警告の規則や、Rust と VM との一致はこの接続に含まない。
+
+### 区間解析のInteger64除算と剰余
+
+【決定】Integer64 の整数除算と剰余は `Interval/Eval.lean`、区間の判定は `Interval/Arithmetic.lean`、局所の警告の生成とその補題は `Interval/Analyze.lean` を正とし、本節は定義と言明の写しとする。いずれも既定の import に含む。理由: 正常引数を得た演算の失敗と、その演算へ到達するかどうかを分けて扱うためである。
+
+`IntegerDivisionOp op` は `op = BinOp.intDiv ∨ op = BinOp.mod` とする。ソースの整数の `div` は `BinOp.intDiv` に対応する。`BinOp.div` は Float・Float32・Decimal の `/` であり、この判定と除数0の新しい局所規則の対象にしない。
+
+七種に共通の局所定義は `IntKind.checkedDivMod kind op a b` とし、`IntKind.tmod_bounds` は非零の除数による剰余がその型の値域内にあることを示す。共通定義は0の拒否を先に行い、剰余はこの証拠から構成し、商は型ごとの両端で検査する。`divModNormal`・`divModAlwaysZero`・`divModApprox` と、下表の `checkedDivMod_zero_iff`・`divMod_always_zero_target`・`divMod_always_zero_sound`・`divMod_normal_sound`・`divMod_approx_may_fail`・`divMod_bottom_child` は同じ `kind` で引数化する。既存の `checkedDivMod` は共通定義の Integer64 特殊化と定義上等しく、`tmod_bounds` の Integer64 の言明も保つ。局所の警告を作る既存の `analyzeDivMod` は Integer64 の入口として保つ。残る六種の式全体の評価は WidthBinary、解析の候補は baseOwnKind から作る。
+
+`checkedDivMod op a b` は、対象外の演算には `rejected unknown` を返す。対象の二演算では先に `b.toInt = 0` を検査し、真なら `rejected zeroDivisor` を返す。整数除算は数学上の Int の `tdiv` で商を0方向に切り捨て、Integer64 に収まれば正常値、収まらなければ `rejected overflow` とする。剰余は Int の `tmod` で求め、`tmod_bounds` の証拠によって正常な Integer64 を作る。非零の除数の剰余には、商のあふれの検査を適用しない。このため `min64 intDiv -1` はあふれるが、`min64 mod -1` は正常値0となる。
+
+`EvalPartial.divMod` は正常な二引数を得たときだけ `checkedDivMod` と親の到達記録を作る。`divModLeftAbrupt`・`divModRightAbrupt` は加算と同じ左からの評価順で失敗・return を伝える。三規則はいずれも `IntegerDivisionOp` を前提とし、`BinOp.div` の規則を追加しない。
+
+| 定義 | 子のどちらかが bottom の場合 | 両方が非空の場合 |
+|---|---|---|
+| `divModNormal left right` | bottom | top。商・剰余の結果区間を伝播しない |
+| `divModAlwaysZero op left right` | 偽 | `IntegerDivisionOp op ∧ right.lo = 0 ∧ right.hi = 0` |
+
+除数が `[0,0]` でも、子がともに非空なら正常区間は top とする。これは正常値の存在や成功を主張するものではない。`[-1,1]` は0を含むが一点0ではないため、除数0の警告を作らない。
+
+`divModApprox left right` の正常区間は `divModNormal left.normal right.normal` とする。mayFail は `left.mayFail ∨ (left.normal ≠ bottom ∧ (right.mayFail ∨ right.normal ≠ bottom))` とする。正常な二引数が得られる場合、除算自身が失敗する可能性を偽にしない保守的な近似である。左に正常値がなければ、右の失敗可能性を引き継がない。
+
+`analyzeDivMod key op left right` はこの近似を `AnalysisResult` に写す。正常値の述語は整数の区間への所属とし、他の形の値を含めない。警告列は `divModAlwaysZero` が真のときだけ `[⟨key, binary op Integer64, zeroDivisor⟩]`、それ以外は空とする。子の警告列の合成や式全体の探索は行わない。
+
+| 定理 | 言明 |
+|---|---|
+| `tmod_bounds` | 非零の有界な除数と有界な被除数の数学上の剰余は Integer64 に収まる |
+| `checkedDivMod_zero_iff` | 対象の二演算について、除数0での拒否と `b.toInt = 0` は同値である |
+| `divMod_always_zero_target` | 除数0の判定が真なら、演算は intDiv または mod である |
+| `divMod_always_zero_sound` | 正常引数が子の区間に所属し、除数0の判定が真なら、検査結果は `rejected zeroDivisor` となる |
+| `divMod_normal_sound`・`analyzeDivMod_normal_sound` | 正常な二引数が子の区間に所属すれば、任意の正常な整数結果が局所規則の正常値集合に所属する |
+| `divMod_approx_may_fail` | 正常な二引数が子の区間に所属すれば、合成した mayFail は真である |
+| `divMod_bottom_child` | 子の一方が bottom なら、正常区間は bottom、親の除数0の判定は偽である |
+| `eval_divMod_event` | 評価の trace 内の整数除算・剰余の記録は、二つの正常な整数引数と、その引数に対する `checkedDivMod` の結果を持つ |
+| `analyzeDivMod_warning_sound` | 局所規則の警告について `Reached` が成り立ち、その記録の正常引数が子の区間に所属するなら、記録の結果は警告の原因どおり `rejected zeroDivisor` となる |
+
+最後の補題は、到達した引数と子の区間との対応を前提に持つ。キー・演算の一致だけから区間への所属を推測せず、式全体の解析へ合成するときにこの対応を証明して渡す。二つの中心命題の前提・結論は変えない。
+
+独立例では、一点0と0を含むだけの区間、実数の `/` の除外、負の引数での切り捨て、最小値の商と剰余を照合する。左右の子の失敗・return では親の到達記録を作らず、`(max64+1) intDiv 0` では先に失敗する加算だけを記録し、親の除数0の警告を子の bottom で抑制する。これらは局所の規則と補題の検査であり、式全体の解析の健全性や Rust・VM との一致の証明ではない。
+
+### 区間解析の本体の識別と元の出現の対応
+
+【決定】本体の識別は `Interval/Identity.lean` を正とし、本節は定義と言明の写しとする。キーの定義名はモジュールを含む元の定義名とする。`QualifiedDefinition name` は空でないこと、`.` を含むこと、内部名用の `%` を含まないことを要求する。これは名前の構文や名前解決の検査を置き換えない。元の定義名の一意性と、実際の宣言との一致は入力の条件である。理由: 別モジュールの同名の定義と、同じ内容の式の別の出現を区別するためである。
+
+`bodyRoot body = Expr.block body` とし、関数・定数・別本体の根に明示した block 式を一つ置く。`bodyRootKey definition = (definition, 0)`、`bodyContentKey definition = (definition, 1)` とする。空の本体にも根の番号0がある。Block 容器自身に番号を付ける規則ではない。`bodyRoot_preorder` は根の後に `preorderBlock body` が続くこと、`bodyRoot_size` は根を含む大きさが `1 + (preorderBlock body).length` であることを示す。処理系が使う本体の入口は `analyzeBody` とし、定義名から bodyRootKey を作って根の block 式を解析する。Block だけを解析する補助関数と EvalBlock の開始キーには、内容の番号1を使う。
+
+`EmbeddedBody` は、元の定義の境界式のキー owner、同じ境界内の節位置 ordinal、本体の種類 kind、Block の body、元の定義で内容が始まる番号 parentStart を持つ。入れ子の境界でも owner は元の定義の先行順を使う。別本体の番号を元の定義の番号に置き換えて命名しない。
+
+| 境界 | kind・ordinal | body | parentStart |
+|---|---|---|---|
+| `lam … body` | lambda・0 | body | 境界の番号 + 1 |
+| `lazyE body` | lazy・0 | body | 境界の番号 + 1 |
+| `handleFail … body clause` | failure・0 | clause | 境界の番号 + 1 + 保護された body の式数 |
+| `handleE body clauses` の各節 | handler・0からの節位置 | 節の Block | 境界の番号 + 1 + 保護された body と先行する節の式数 |
+
+`embeddedBodies owner source` はこの表に従い、一出現が直接持つ別本体を列挙する。`clauseBodies` は節容器を数えず、空の節も一つの別本体として列挙する。constE の埋め込み本体は、局所位置を空にした親の解析で扱い、別本体にはしない。中にあるラムダ・lazy・節は別本体として列挙する。handle の保護された本体、with・try・return にも別本体を作らない。これらの子にある境界は通常の先行順で列挙する。`bodyManifest definition body` は、根を含む元の定義の `numbered` に embeddedBodies を適用した数学的な列である。並びは境界式の先行順、同じ境界では節の順である。局所環境を作る予算なしの `discoverBodies` の並びと位置で結び付けず、owner と ordinal で本体の出現を区別する。予算付きの発見は後述の BudgetDiscovery がこの manifest の順序に一致させる。
+
+`EmbeddedBody.definition` は `元の定義名%body:境界の番号:ordinal` とする。二つの数は先頭の0を加えない十進表記である。`address` は `(owner, ordinal)`、`root` はこの内部名の番号0である。別本体の根は独立した block 式であり、元の定義の走査には挿入しない。元の定義の後続の式の番号も変えない。内部名をさらに元の定義名として使うことはしない。
+
+`entry.parentKey 0 = none` とする。`i < (preorderBlock entry.body).length` なら `entry.parentKey (i + 1) = some (owner.definition, parentStart + i)` とし、範囲外も none とする。`parentKey_content` はこの式を、`parentKey_injective` は有効な二つの番号が同じ親の出現を指すなら番号が等しいことを示す。これは manifest から得た本体の内容と元の定義の対応に使う。任意に作った EmbeddedBody の body や parentStart が元の定義と一致することを、この補題だけからは結論しない。
+
+番号の取得には既存の `BudgetAnalysis.skipExpr` と解析の逐次走査を使う。`expr_prefix`・`skipExpr_prefix` により、停止時にも保存した対応は同じ numbered の接頭辞であり、次番号はその長さだけ進む。上限を超えた操作が番号付けの操作（identify の計上・保存、skip の走査枠の確保・分類、count の先読みの走査枠・分類）だったときは、原因を残した unidentified として停止する。expr の作業枠の確保や expression の計上で止まる場合は exceeded であり、その時点で番号を取得できていなくても unidentified にはしない。どちらの場合も、取得できなかった出現から後続を詰めて再開しない。深さの打ち切りは別の停止理由とする。全本体の発見が済んでいない状態を、別本体0件として扱わない。surfaceSize・clauseBodies・bodyManifest は数学的な指定であり、予算付きの実行が番号を求めるための無制限の事前走査には使わない。別本体自身の番号付けも同じ規則を使い、全体の予算消費を引き継ぐ。
+
+`SourceCorrespondence target origin operation` は、対象キーのすべてについて、origin が some source を返し、その source がキーの元演算であることを operation が示す、という入力の条件である。source の型は任意であり、Lean の交換に位置の欄を加えるものではない。異なるキーが同じ NodeId と範囲へ対応してよい。対応のない合成節点を対象に含めるとこの条件を満たさないことを `sourceCorrespondence_missing` が示す。対応漏れを警告の抑制だけで隠して条件を満たした扱いにしない。
+
+直接の負号付きリテラルは一式、通常の負号と return は自身とオペランドをそれぞれ数える。名前付き引数はソース順を保つ。合成した呼び出しとその頭を同じ元演算へ対応させる場合は、その元演算を明示する。追加した本体の根など、元の式としての対応を定めない合成節点は対象演算から除外したことを明示する。
+
+`Interval.IdentityExamples` は、空本体と別モジュール、負号・return・名前付き引数、入れ子の定数・ラムダ・lazy、空の節と複数の節、非再開節、親への番号の対応、元 AST への多対一の対応と対応漏れ、操作上限ちょうど・本体超過・全体超過・保持超過を固定の期待値で確認する。同じ構文を異なる区間環境で解析して得たキーと、番号だけの走査のキーも比較し、分岐の到達可能性や警告の有無で番号を変えないことを確認する。新定義と例は既定の import に含む。Rust の書き出し・対応表の正しさ、実ソースからこの表層入力への変換、交換の読者、VM との一致は、この Lean の定義と例からは結論しない。予算付きの別本体の発見は後述の独立した定義と証明で扱う。
+
+### 区間解析の局所環境と本体境界
+
+【決定】区間解析の局所環境と本体の列挙は、`Benitoite.Interval` の `Interval/Environment.lean`・`Interval/Analyze.lean` を正とし、本節はその定義と言明の写しとする。いずれも既定の import に含む。既存の表層の束縛規則と、型・エフェクト・脱糖の主定理は変えない。理由: 区間の事実を保持する位置と、別本体でその事実を捨てる位置を、評価の具体規則から分けて定めるためである。
+
+`AbstractEnv` は、内側を先頭とする `AbstractSlot` の列 `locals`、標準束縛表 `standards`、出現の同定表 `apiAt`、成功値の由来の補助記録 `ranges : RangeState` を持つ構造体である。`ranges` の既定値は空であり、通常の位置の型を変えない。位置には次の五種類がある。
+
+| 位置 | 表す値 |
+|---|---|
+| `integer range` | `range` に所属する具体的な Integer64 |
+| `integerKind kind range` | `range : Interval kind` に所属する同じ種類の具体整数 |
+| `unknown type` | 内部を読まない通常値。`type = some t` なら具体値の型が t、`none` なら型を限定しない |
+| `builder kind` | 通常値を持たない専用 builder の位置。具体環境では `none` |
+| `unavailable` | 通常値として利用できない位置。具体環境では `none` |
+
+`SlotModels` は表の対応を表す。`LocalsModels` は二つの列を空から同時に延ばす関係であり、同じ長さと全位置の対応を要求する。`Models Γ ρ` は `LocalsModels Γ.locals ρ.locals` と `ρ.standards = Γ.standards`、`ρ.apiAt = Γ.apiAt` の三つを要求する。この同定の一致は、標準 API の振る舞いや Release の δ との一致を前提に加えないという制約とは別である。
+
+局所位置の拡張・忘却・絞り込み・合流は標準束縛表と出現の同定表を保存する。`RangeState.Models Γ.ranges ρ` は記録のある位置だけに追加の対応を要求する補助の不変条件であり、`Models` の本文には含めない。`clearLocals Γ` は定数入口の局所位置と Range の記録を空にし、`models_clearLocals` は具体環境も同様に空にしたときの Models を示す。通常の位置の追加では由来のない位置を Range の列にも追加し、既存の記録の位置と番号を保つ。合流では Range の記録を忘れる。
+
+`lookup Γ i` は位置 i を返し、`integerAt Γ i` はその位置が `integer range` なら range、それ以外や範囲外なら top を返す。`integerKindAt Γ kind i` は同じ種類の位置の区間だけを返し、異なる種類・未知・専用位置・範囲外では `top kind` を返す。`integerKindSlot kind range` は Integer64 なら既存の `integer range`、残る六種なら `integerKind kind range` を作る。`topKindSlot kind` はこの操作へ `top kind` を渡す。`topSlot (some t)` は七種の整数型なら対応する top の位置、それ以外は `unknown type` である。Reference の位置は内容の型にかかわらず unknown とし、読出しの結果や二回の読出しの同一性をこの環境から推論しない。
+
+束縛の追加と番号の対応は次のとおりである。ここで `shift n i = n + i` とする。
+
+| 構文上の位置 | 区間環境への追加 | 元の位置 i の移動 |
+|---|---|---|
+| 通常の bind・shadow | 右辺の後で先頭に一位置。shadow も古い位置を残す | `shift 1 i` |
+| ワイルドカード・discard・式文 | 位置を追加しない | i |
+| 引数の列 | `extendValues` が宣言順の型を逆順にして先頭に置く。最後の引数が番号0 | `shift 引数数 i` |
+| パターン | `extendPattern` が `pattern.toCore.binders` 個の位置を先頭に置く。単独の変数は指定型の top、それ以外は型未取得の unknown | `shift pattern.binders i` |
+| 専用 builder | `builder kind` を先頭に一位置。整数の区間を置かない | `shift 1 i` |
+| 本体列挙での match の腕 | 最初の選択肢の `slots.length` 個の unknown を guard と本体の共通の先頭位置に置く | `shift slots.length i` |
+
+パターンの位置は既存の `toCore` の束縛順と、選択肢の `slots` による対応に従う。この段の列挙は位置数だけを保持し、構造の内部の値の型や区間を推測しない。`patternSlots_length` はコアの束縛数との一致を示す。`lookup_extend`・`lookup_extendValues`・`lookup_extendPattern` は、それぞれ一位置・引数列・パターンの追加の下で、古い位置をずらした lookup が元の lookup と一致することを示す。
+
+`models_lookup` は抽象位置の lookup から同じ番号の具体位置と `SlotModels` を取り出す。`models_extend` は、新しい位置と具体値の対応を与えると、局所列を同時に延ばした環境の対応が保たれることを示す。`topSlot_models` は型の合う任意の通常値が初期位置に入ることを示す。`integerAt_sound` は `Models Γ ρ` と `ρ.locals[i] = some (some (integer v))` から、`Mem v (integerAt Γ i)` を結論する。`integerKindAt_sound` は、任意の kind について同じ種類の具体整数の lookup から `integerKindAt Γ kind i` への所属を示す。`integerKindSlot_models`・`models_bindRangeKind` は、所属する具体整数を種類付きの位置へ保存しても環境の対応が保たれることを示す。
+
+`BindingScope` は、de Bruijn の各位置に対応する束縛番号の列 `positions` と、次に使う番号 `nextId` を持つ。`fresh` は nextId を先頭に追加して nextId を一つ進める。通常・パターン・専用束縛の位置に使い、ワイルドカードには使わない。`fresh_shift` は古い番号の保存、`fresh_distinct` は既存番号がすべて nextId 未満なら新番号が既存番号と異なること、`fresh_valid` はその条件の保存を示す。これは Rust の BindingId との対応の土台であり、実ソースの名前解決との一致は結論しない。枝や兄弟の解析は同じ元環境から開始するため、別の環境で割り当てた番号との全体的な一意性は要求しない。Rust の AST の BindingId との全体的な対応は、この補助番号の定理では結論しない。
+
+`hullSlots`・`hullEnv` は基準環境の各整数位置について、左右の同じ種類の読出しを凸包へ合流する。`models_hullEnv` は、どちらかの枝で具体環境との対応が成り立てば合流後も保つことを示す。
+
+`forgetSlot` は整数の区間だけをその種類の top にし、整数の幅と他の位置の種類を保つ。`forget` は全位置にこれを適用し、Range の記録も `RangeState.forget` で捨てる。`forgetSlot_models`・`models_forget` は、忘却しても元の具体値と環境の対応が保たれることを示す。`integerAt_forget` は忘却後の任意の番号の Integer64 の lookup が top になることを示す。`slotIntegerKind_forget`・`integerKindAt_forget` は、種類付きの読出しでも忘却後に `top kind` を返すことを示す。
+
+`BodySeed` は本体の種類、Block、初期環境を持つ。`startBody` は引数を追加した後、捕捉位置も含めて forget を適用する。`startBody_top` は、どの引数・捕捉値の位置にも狭い整数区間を持ち込まないことを示す。`functionBodies` は空の捕捉列から関数の本体を開始する。定数の埋め込み本体は親の解析の中で局所位置を空にして読み、discoverBodies はその内側の捕捉境界だけを列挙する。ラムダは引数の逆順と捕捉列、lazy は捕捉列を初期位置に持つ。型パラメータが増える節の捕捉値には `untypedCaptures` を用い、非整数の型を推測せず unknown の型指定を外し、Range の記録も忘れる。
+
+通常のハンドラ節は、番号0の継続、値引数の逆順、辞書の逆順、捕捉位置の順に置く。arity はワイルドカードの引数も数える。節では型の取得を行わず、継続・値引数・辞書を型未取得の unknown とする。非再開の失敗節は、利用不能な継続位置、エラーの unknown、捕捉位置の順に置く。どちらも別本体であり、外の整数の事実を保持しない。
+
+`discoverBodies`・`discoverExprs`・`discoverHoles`・`discoverBlock`・`discoverArms`・`discoverClauses`・`discoverOptional` は全53構成子と相互帰納の容器を扱い、宣言のフィールド順・列順で本体を列挙する。Block の右辺には追加前の環境、続きには追加後の環境を使う。末尾の束縛には続きがない。穴は固定式の環境に位置を増やさず、腕は guard を本体より先に辿る。try・with・handle・再開や未対応の複合式の内部を探すときは外の区間を忘却する。with の本体の資源位置も整数として扱わない。return のオペランドも列挙する。
+
+この走査は本体の発見だけを行い、到達不能な部分も含む構文の列挙である。未対応の子を評価したり、そこから囲む本体の警告を作ったりはしない。BodySeed は識別番号を持たず、先行順番号の付与・予算・実ソースとの対応はこの予算なしの定義と環境の証明には含まない。予算付きの入口では discoverBodies・functionBodies を呼ばず、後述の BudgetDiscovery と BudgetWhole を使う。算術・分岐・束縛の具体評価や解析全体の中心定理も、この環境の補題からは結論しない。
+
+### 区間解析の束縛保存と単一比較
+
+【決定】正常な右辺の区間の保存と一位置の更新は `Interval/Environment.lean`、原子式と単一比較は `Interval/Flow.lean` を正とし、本節は定義と言明の写しとする。いずれも既定の import に含む。既存の atomRange・integerConstant・comparisonAt は Integer64 の同型の値を対象とし、残る六種には後述の種類付きの入口を使う。理由: 新しい束縛の事実と比較した位置の事実を分け、別名の関係や公開の部分型を追加しないためである。
+
+`EvalPartial.local` は、`ρ.locals[i] = some (some v)` なら、型 `v.type` の `local i` が正常値 v と空の trace を返す規則である。専用位置の none からは通常値を得ない。既存の `constE` の規則は空の局所列で埋め込み本体を評価する。
+
+`atomRange Γ e` は、Integer64 のリテラルと負号付きリテラルをその具体整数の一点区間、`local i` を `integerAt Γ i`、括弧をその内側の区間とする。`constE Integer64 e` は `atomRange [] e` とし、捕捉位置を参照しない。それ以外は top とする。`integerConstant e` は同型のリテラル・負号付きリテラル・括弧・`constE Integer64` からだけ既知の整数を取り出し、局所参照や算術式から定数を推測しない。別幅のリテラルや const は対象外である。
+
+`bindRange kind Γ t range` は、t が Integer64 なら `integer range`、それ以外なら `topSlot (some t)` を先頭へ追加する。kind が bind か shadow かによって操作を変えない。右辺の正常値を得た後で新しい位置を追加し、古い位置は一つずれる。別名の右辺が局所参照なら、その時点の区間をコピーする。二つの位置の同一性を表す関係は保持しない。
+
+束縛保存の補題は次のとおりである。
+
+| 言明 | 保証 |
+|---|---|
+| `integerConstant_sound` | 読み取れた定数 k と同じ式の正常な具体整数 v は `v.toInt = k` を満たす |
+| `atomRange_sound` | `Models Γ ρ` の下で式 e の正常な具体整数 v は `Mem v.toInt (atomRange Γ e)` を満たす |
+| `models_bindRange` | 右辺の正常整数が保存する区間に属すれば、整数位置と具体値の同時追加後も Models が成り立つ |
+| `models_bindRange_typed` | 非整数では具体値と宣言型の一致から、型だけを保存した位置の追加後も Models が成り立つ |
+| `models_bindAtom` | 正常に評価した原子式の区間を bind/shadow へ保存した後も Models が成り立つ |
+
+残る六種の同型の単一比較には、種類付きの入口を使う。`integerKindConstant kind e` は、その種類の値域内のリテラル・直接負号・括弧・同型の constE だけから定数を取り出す。`comparisonKindAt` は Integer64 を除く整数型の六比較を認定し、`KindLocalComparison(kind,index,op,constant)` を返す。片辺は localIndex、他方は同じ種類の定数であり、左右反転には reverse を使う。別幅の定数、域外の内部表現、二つの変数、算術式の逆算は認定しない。
+
+`excludeKindPoint`・`refineKindTrue`・`refineKindRange` は、以下の Integer64 の局所規則の min64・max64 を kind.min・kind.max に置き換えた規則である。`refineKindEnv` は integerKindAt で同型の区間を読み、narrowKindAt でその一位置だけを更新する。`integerKindConstant_sound`・`refineKindRange_sound`・`models_refineKindEnv` は、定数との一致、正常値の所属、具体環境との対応を示す。`lookup_refineKindEnv_other` は比較しない位置を保つ。Integer64 の既存の入口と以下の言明はそのまま保つ。
+
+`Comparison` は eq・ne・lt・le・gt・ge の六種類である。`Holds op x k` は数学上の整数の等値・不等値・大小の比較を表す。`reverse` は左右反転であり、eq/ne は同じ、lt/gt と le/ge は互いに交換する。`complement` は偽枝用の反対の比較であり、eq/ne・lt/ge・le/gt を互いに交換する。`reverse_holds` は `Holds (reverse op) x k ↔ Holds op k x`、`complement_holds` は `Holds (complement op) x k ↔ ¬ Holds op x k` を示す。
+
+`refineTrue op range k` は、比較が真のときの正常区間を次のように定める。k±1 は数学上の Int の加減算であり、normalize が型の値域と交差させる。
+
+| 比較 | 新しい区間 |
+|---|---|
+| x = k | `meet range (normalize k k)` |
+| x ≠ k | `excludePoint range k` |
+| x < k | `meet range (normalize min64 (k - 1))` |
+| x ≤ k | `meet range (normalize min64 k)` |
+| x > k | `meet range (normalize (k + 1) max64)` |
+| x ≥ k | `meet range (normalize k max64)` |
+
+`excludePoint bottom k = bottom` とする。非空区間 [lo, hi] では、lo = k なら `normalize (lo + 1) hi`、そうでなく hi = k なら `normalize lo (hi - 1)`、それ以外なら元の区間を返す。内部の一点を除いた穴は区間では表せないので、その場合は元の区間を残す。端点だけの区間からその点を除けば bottom になる。`refineRange op range k truth` は、truth が真なら op、偽なら complement op で refineTrue を適用する。
+
+`localIndex` は直接の局所参照とそれを囲む括弧だけを読む。`comparisonAt` は、演算の型が Integer64 で、六比較の片辺が localIndex、他方が integerConstant として読めるときに `LocalComparison(index, op, constant)` を返す。局所参照が右にあれば reverse で反転する。それ以外は none とし、二変数間の関係や算術式の逆算を行わない。括弧を囲む比較も同じ結果を返す。読み取る式は型検査済みであり、局所位置の宣言型が比較の型と合うことはその型検査で確認する。
+
+`narrowAt Γ i range` は、番号 i が整数位置ならその区間だけを range へ置き換え、非整数・専用位置・範囲外なら変更しない。`refineEnv Γ comparison truth` は、比較した位置の integerAt を refineRange で絞り、narrowAt で同じ位置へ保存する。他の位置と束縛番号は変更しない。
+
+| 言明 | 保証 |
+|---|---|
+| `excludePoint_sound` | 元の区間に属し k と異なる具体値は、点を除いた近似にも属する |
+| `excludePoint_subset` | 点を除いた近似は元の区間を広げない |
+| `refineTrue_sound` | 元の区間への所属と Holds から、真枝の区間への所属が成り立つ |
+| `refineRange_sound` | 元の区間への所属と `Holds op v k ↔ truth = true` から、指定した枝の区間への所属が成り立つ |
+| `refineRange_subset` | 真偽のどちらの枝でも、絞った区間は元の区間に包含される |
+| `models_narrowAt` | 対象の具体整数が新区間に属すれば、更新後も Models が成り立つ |
+| `models_refineEnv` | 対象の具体整数の lookup と実際の比較結果の下で、絞り込み後も Models が成り立つ |
+| `lookup_narrowAt_other`・`lookup_refineEnv_other` | 比較した番号と異なる位置の lookup は元のままである |
+
+別名の逆方向の絞り込みを行わないことは、異なる位置の lookup を保つ補題から従う。shadow は先頭に新しい位置を追加するので、新しい番号0の絞り込みは古い位置を変えない。束縛番号の新規性と古い番号の保存は、前節の `BindingScope.fresh_distinct`・`fresh_valid`・`fresh_shift` に従う。
+
+これらは式と環境の局所の補題である。Block 全体の評価順・分岐・警告を合成する解析全体の中心定理、予算、識別の一意性、Rust/VM との一致は結論しない。
+
+### 区間解析の単一ifと正常値の合流
+
+中心定理と処理系への転記の正は「区間解析の土台の解析と健全性」の `analyzeBaseExpr`・`analyzeBaseBlock` であり、本節の `analyzeIte` など、および局所の `addApprox`・`divModApprox`・`analyzeDivMod` は局所規則の検査用である。
+
+【決定】単一の条件による `ite`・`elseIf`・`ifOnly` の解析の合成規則は `Interval/Flow.lean` を正とし、本節は定義と言明の写しとする。既定の import に含む。条件式・枝の解析を行う関数を引数に取り、到達可能な枝だけを解析して結果を合成する。理由: 正常値の合流と、条件から枝への到達・失敗・警告の引き継ぎを分けて定めるためである。
+
+`NormalRange T` は正常値の範囲を次のように表す。`NormalMem T range v` は `v.type = T` と表の所属条件の両方を要求する。`NormalContains` は表の所属条件だけを表す。
+
+| 型 T | `NormalRange T` | `emptyNormal T` | `topNormal T` | 所属条件 |
+|---|---|---|---|---|
+| Integer64 | `Interval` | bottom | top | 具体整数の区間への所属 |
+| Boolean | 偽・真の可能性を表す二つの真偽値 | `(false, false)` | `(true, true)` | 具体値に対応する可能性が真 |
+| その他 | 正常値の有無を表す真偽値 | false | true | 正常値あり |
+
+`joinNormal T left right` は、Integer64 では閉区間の `join`、Boolean では偽・真それぞれの論理和、その他では正常値の有無の論理和を取る。正常値のない枝は正常値の合流に寄与しない。整数の合流は穴を失うので、`[-2,-1]` と `[1,2]` の合流にも0が入る。`joinNormal_sound` は、どちらかの枝に所属する具体値が、合流後にも所属することを示す。
+
+`FlowApprox T` は正常値の範囲 `normal : NormalRange T`、失敗可能性 `mayFail : Bool`、警告列 `warnings` を持つ。`unreachableFlow T` は正常値なし・失敗可能性なし・警告なし、`unknownFlow T` は型内の任意の正常値・失敗可能・警告なしとする。`FlowApprox.toAnalysis` は正常値の所属を `NormalMem` として、既存の `AnalysisResult` へ写す。正常値なし・失敗可能性なしは return の後にも使えるが、return の有無や戻り値を記録するものではない。
+
+`branchEnv Γ condition normal truth` は、条件の正常な真偽から一枝の入口を求める。対応する真偽の可能性が偽なら `none` とし、可能性が真なら、後述の `conditionEnv Γ condition truth` で条件の構文から環境を求める。単一比較では `atomicConditionEnv` を使い、`comparisonAt condition = none` なら kindAtomicConditionEnv へ進み、comparisonKindAt も none なら `some Γ` を返す。種類付きの比較では同型の refineKindRange が bottom なら none、それ以外は refineKindEnv の環境を返す。Integer64 で認定した比較の `refineRange` が bottom なら `none`、それ以外なら `some (refineEnv Γ comparison truth)` を返す。
+
+`analyzeBranch none analyze` は `unreachableFlow T` を返し、枝の解析関数を呼ばない。`analyzeBranch (some Γ') analyze` は `analyze Γ'` を一度呼ぶ。枝の中で追加した束縛や絞り込みを、枝の外の環境へ持ち出す結果欄は持たない。
+
+各分岐の規則は、まず条件を一度解析して `FlowApprox Boolean` を得る。真枝・偽枝の入口をそれぞれ `branchEnv` で求め、次の対象を `analyzeBranch` で一度ずつ解析する。
+
+| 規則 | 真枝 | 偽枝 |
+|---|---|---|
+| `analyzeIte` | 真枝の Block | 偽枝の Block |
+| `analyzeElseIf` | 真枝の Block | 偽枝の Expr。偽枝の絞り込みをその式へ渡す |
+| `analyzeIfOnly` | 真枝の Unit 型の Block | 正常な unit・失敗可能性なし・警告なし |
+
+`mergeBranches tested yes no` は、正常値を `joinNormal` で合流し、失敗可能性を `tested.mayFail || yes.mayFail || no.mayFail` とする。警告列は条件・真枝・偽枝の順につなぐ。枝の到達判定は `analyzeBranch` が先に行うため、未到達枝の正常値・失敗可能性・新警告はここに含まれない。条件に正常な真偽がなければ両枝を解析せず、条件自身の失敗可能性と警告だけを保つ。到達した失敗枝は、正常値の合流に寄与しなくても、失敗可能性と警告を残す。
+
+`ifOnly` の偽枝は正常な unit であり、正常値のない枝と区別する。真枝が失敗したり return したりして正常値を持たない場合、真枝だけが可能なら分岐全体も正常値を持たない。偽枝も可能なら、その unit を正常値として残す。
+
+| 補題 | 示す内容 |
+|---|---|
+| `mergeBranches_normal_sound` | どちらかの枝の正常値が、合成後の正常値にも所属する |
+| `branchEnv_no_normal` | 正常な真偽がどちらもなければ、どちらの枝の入口も `none` となる |
+| `branchEnv_comparison_sound` | 条件の真偽の可能性があり、認定した比較について具体値の lookup と実際の真偽が与えられれば、選ばれた枝の入口が存在し、絞り込み後も Models を保つ |
+
+独立例は、正常値の合流、条件の正常値なし、条件自身の警告の保存、選ばれない枝の失敗・警告の除外、偽枝への環境の受け渡し、別名への逆伝播なし、比較の矛盾による未到達、到達した失敗枝と正常枝の混在、`ifOnly` の unit と正常値なしの区別を確認する。これらは合成規則の検査であり、引数として受け取る解析関数の健全性、表層の評価関係との式全体での対応、任意の予算での二つの中心命題、Rust/VM との一致は結論しない。
+
+### 区間解析の短絡と複合条件
+
+【決定】短絡の評価規則は `Interval/Eval.lean`、条件の真偽ごとの環境は `Interval/Flow.lean`、解析全体と健全性の証明は `Interval/Sound.lean` を正とする。本節は定義と言明の写しであり、いずれも既定の import に含む。理由: 右辺を評価する条件と、実際の正常な真偽を満たす環境を、評価順に合わせて対応させるためである。
+
+`conditionEnv Γ e truth` は、その真偽で正常終了しうる条件の環境を `Option AbstractEnv` で表す。`none` は未到達を表す。Boolean リテラルは指定した真偽と一致する場合だけ Γ を返し、括弧は子へ、not は反対の真偽へ進む。比較は前節の `atomicConditionEnv` を使い、未知の論理式は Γ を保つ。型の異なる比較や二変数の関係から整数の事実を作らない。
+
+次表の `C(Γ,e,t)` は `conditionEnv Γ e t`、`A >>= f` は環境が存在する場合だけ f へ進む操作、`JΓ(A,B)` は `joinConditionEnvs Γ A B` を表す。
+
+| 条件 | 真の環境 | 偽の環境 |
+|---|---|---|
+| and a b | `C(Γ,a,true) >>= (Γ' ↦ C(Γ',b,true))` | `JΓ(C(Γ,a,false), C(Γ,a,true) >>= (Γ' ↦ C(Γ',b,false)))` |
+| or a b | `JΓ(C(Γ,a,true), C(Γ,a,false) >>= (Γ' ↦ C(Γ',b,true)))` | `C(Γ,a,false) >>= (Γ' ↦ C(Γ',b,false))` |
+
+`joinConditionEnvs` は片方が none なら他方を返す。両方が環境を持つ場合、`hullEnv Γ left right` で元の Γ の各位置を合流する。整数位置は、その種類に対応する左右の integerAt または integerKindAt の区間を `join` で包含する最小の閉区間にし、非整数・専用位置は Γ の種類と型を保つ。位置の追加や別名への逆伝播は行わない。各合流で区間の穴と変数間の相関を捨て、経路の組み合わせを列挙したり保存したりしない。
+
+`models_hullEnv` は、Γ とどちらかの枝が同じ具体環境に対応すれば、合流後も対応することを示す。`joinConditionEnvs_models` はその枝の入口が存在すれば合流後の入口も存在することを示す。`conditionEnv_comparison` は認定した単一比較が `atomicConditionEnv` と一致することを示す。`conditionEnv_sound` は、`Models Γ concrete` と正常な Boolean を返す `EvalPartial` の導出の下で、その真偽の入口 Γ' が存在し、`Models Γ' concrete` が成り立つことを示す。否定・短絡・合流を含み、`branchEnv` を通して if の各枝にも接続する。
+
+`baseShortCircuit Γ left tested continueTruth run` は、and では continueTruth を真、or では偽とする。左辺を一度解析した tested から、継続する真偽の環境を `baseBranch` で run へ渡し、反対の真偽の枝では右辺を解析せず、その真偽値だけを正常値とする。二つの枝を `baseMerge` で合成し、左辺の警告・失敗可能性を先に保つ。未到達の右辺の警告・失敗可能性を追加せず、左辺・右辺の return の後に正常値を復活させない。`baseShortCircuit_warnings` は警告列が左辺・到達可能な右辺の順であることを示す。
+
+独立例は、短絡した値と空 trace、到達した右辺の除数0の事象、左右の return、右辺への絞り込みによるあふれ警告、複合条件から if への正常区間、否定と凸包で失う穴、矛盾する条件の未到達、未知の条件と別名・専用位置の保存を確認する。中心二定理は短絡を含む解析へ接続しており、前提・結論と公理を変更しない。操作数・保持項目数の予算と Rust/VM との一致は本節の保証に含めない。
+
+### 区間解析のIntegerパターンと腕入口
+
+【決定】Integer64 のパターンから作る腕入口は `Interval/Flow.lean`、パターンの位置の保存と選択肢の並べ替えは `Interval/Environment.lean` を正とする。本節は局所の定義と言明の写しであり、いずれも既定の import に含む。理由: パターンが表す整数の区間と、腕の変数を追加する順序を分け、同じ具体値との対応を保存するためである。
+
+matchE は照合値の型を構文に持たないため、解析の近似が七種のうち一種類の整数だけに限られる場合に腕を解析する。呼び出しの結果や構造パターンの束縛など、非整数や複数の整数幅の可能性も含む未知の照合値では、実ソースの型が整数でも腕を解析しない。
+
+`integerPatternRange p` は次の区間を返す。範囲の両端を含め、計算は数学上の Int で行う。`matchRange T normal p` は、T が Integer64 の場合に限り `meet normal (integerPatternRange p)`、その他の型では top を返す。
+
+| パターン | `integerPatternRange` |
+|---|---|
+| `integer n` | `normalize n.toValue.toInt n.toValue.toInt` |
+| `negInt n` | `normalize n.negValue.toInt n.negValue.toInt` |
+| `range (integer lo) (integer hi)` | `normalize lo.toInt hi.toInt` |
+| 変数、ワイルドカード、その他 | top |
+
+幅付き整数の接尾辞リテラルを Pattern の構成子に加えない。Pattern.range の内部表現が別幅の Const を持っていても、区間の根拠にしない。構造パターンの内部の値の型や区間も推測しない。`integerPatternRange_sound` は、既存の `p.toCore.matchVal (const (integer v))` が成功した場合に、`Mem v.toInt (integerPatternRange p)` が成り立つことを示す。区間への所属から照合成功を導く定理ではなく、既存の型検査や網羅性判定へ新しい事実を渡さない。
+
+`matchPatternSlots p T range` は、左からの束縛順の抽象位置を作る。単独の変数は、T が Integer64 なら `integer range`、その他の型なら `topSlot (some T)` の一位置となる。他のパターンは `p.binders` 個の `unknown none` となり、ワイルドカードとリテラルは零位置である。`matchPatternSlots_length` は既存のコアの束縛数との一致を示す。`matchPatternSlots_models` は、値の型・整数の所属・`PatternLocals p value raw.reverse` の対応の下で、左からの抽象位置と具体値の列が対応することを示す。評価関係の `PatternLocals` は de Bruijn 順の列を受け取るため、左からの raw は反転して渡す。`patternLocals_reverse` は、現在の PatternLocals が単独の変数・ワイルドカード以外で個数だけを要求することにより、反転前後で条件が同値であることを示す。構造の照合成功はこの条件から結論しない。
+
+`extendMatchSlots Γ slots positions` は、既存の `selectSlots` で positions の順に抽象位置を選び、その列を反転して Γ.locals の先頭に加える。選択肢の slots はパターンの左から数えた束縛位置を指定する。腕では最後の変数が de Bruijn 番号0となる。範囲外の位置を指定すると none を返す。`LocalsModels.get`・`select`・`append`・`reverse` は、この参照・選択・連結・反転で各位置の対応を保つ。`models_extendMatchSlots` は、具体値への同じ選択が成功すれば腕入口が存在し、選んだ具体値を反転して追加した環境との Models が成り立つことを示す。`selectSlots_length` と `lookup_extendMatchSlots` により、元の位置 i は `shift positions.length i` に移る。
+
+`matchScrutineeEnv Γ source T range` は、T が Integer64 で source が括弧を除いた直接の局所参照の場合に、その位置だけを narrowAt で絞る。他の位置や別名へ逆伝播せず、複合式を逆算しない。この絞り込みは腕の変数の追加より先に行う。`matchAlternativeEnv` は、正常値の区間とパターンを交差し、Integer64 で空なら none を返す。空でなければ対象の位置を絞り、`matchPatternSlots` と選択肢の slots を `extendMatchSlots` へ渡す。各操作は標準束縛表と出現の同定表を保存する。
+
+`matchArmBinders alternatives` は最初の選択肢の slots.length、選択肢がなければ0である。`matchArmTemplate Γ T count` は合流の基準とし、T が Integer64 なら count 個の `integer top`、その他の型なら count 個の `unknown none` を Γ に追加する。`matchAlternativesEnv template Γ source T normal alternatives` は、各選択肢を同じ Γ と normal から解析して `joinConditionEnvs template` で合流する。選択肢がなければ none を返す。`matchArmEnv` は、腕の束縛数から作った template でこの合流を行う。
+
+選択肢ごとの交差が空なら、その選択肢から正常値を合流しない。複数の選択肢の間の穴は凸包で失う。各腕の入口も元の Γ から作り、先の腕の不一致や guard の否定を蓄積しない。腕内で追加した束縛を腕の外へ持ち出さない。
+
+| 補題 | 前提と結論 |
+|---|---|
+| `integerPatternLocals_values` | 整数についてのコアの照合成功と PatternLocals の下で、新しい束縛の具体値は照合した整数だけである |
+| `models_matchScrutineeEnv` | Models と照合値の所属、source が指す具体位置の一致から、局所参照を絞った後の Models を示す |
+| `models_matchAlternativeEnv` | Models、正常区間への所属、整数の照合成功、具体位置の一致、パターンの束縛対応、slots の選択成功から、対応する腕入口の存在を示す |
+| `models_matchArmTemplate` | 元環境の Models、新しい値の個数と整数であることから、合流の基準環境の Models を示す |
+| `matchAlternativesEnv_models` | 基準環境の Models と、いずれかの選択肢の対応する入口の存在から、合流後の対応する入口の存在を示す |
+| `models_matchIntegerArmEnv` | 選ばれた選択肢について前述の照合・所属・束縛・slots の対応と、腕の共通の束縛数との一致があれば、合流後も同じ具体値と束縛順を保つ |
+
+残る六種の腕入口は `matchKindArmEnv Γ source kind normal alternatives` で作る。Integer64 では既存の matchArmEnv へ分岐し、定数・範囲の交差を保つ。六種では integerKindPatternRange は常にその幅の Top とし、照合前の normal を保存する。matchKindPatternSlots は単独の変数へ integerKindSlot kind range を保存し、matchKindScrutineeEnv は直接参照した元の位置だけを narrowKindAt で更新する。matchKindArmTemplate は同じ幅の Top の位置を作り、選択肢は同じ元環境から合流する。models_matchKindArmEnv は WidthSelection の照合成功・束縛数・slots の契約から、同じ具体値と束縛順を持つ入口の存在と Models を示す。六種の定数・範囲パターンを型検査で受理する規則は加えない。
+
+独立例は、両端と負号、逆転した範囲、選択肢との交差を先に取る順序、凸包で失う穴、後続腕から先の一致値を除かないこと、束縛と元の位置のずれ、slots の並べ替えと範囲外、構造・別幅のパターンから事実を作らないことを確認する。本節は腕入口の局所規則と証明である。guard と腕本体の局所の解析順は次節、整数の腕の具体評価・選択順・trace は「区間解析の対象構文の評価関係」、再帰的な解析と中心二定理への接続は「区間解析の土台の解析と健全性」に定める。操作数・保持項目数の予算と Rust/VM との一致は、本節の保証に含めない。
+
+### 区間解析のguardとreturnの局所規則
+
+【決定】guard と return の局所の合成規則は `Interval/Flow.lean`、実際の土台の式・Block の解析を使う独立例は `Interval/FlowExamples.lean` を正とし、既定の import に含む。本節はその定義と言明の写しである。理由: guard の真の環境を渡す範囲と、正常値のない式の後で解析を切る位置を、match 全体の具体評価と分けて確かめるためである。
+
+`normalPossible T normal` は、Integer64 なら区間が bottom 以外、Boolean なら偽・真の可能性のいずれかが真、その他の型なら正常値の有無を返す。`normalPossible_sound` は `NormalMem T normal v` から真を導き、`normalPossible_empty` は `emptyNormal T` に対して偽を示す。正常値の有無は、失敗や return の有無と区別する。
+
+| 規則 | 正常値・失敗可能性・警告と環境の扱い |
+|---|---|
+| `returnFlow resultType operand` | 正常値を `emptyNormal resultType` にし、operand の mayFail と警告列をそのまま保つ。戻り値自体は記録しない |
+| `analyzeReturn resultType Γ operand analyze` | operand を Γ で一度解析し、結果を returnFlow へ渡す |
+| `thenFlow first next` | first に正常値がある場合だけ next を解析する。正常値は next、mayFail は論理和、警告列は first・next の順とする。正常値がなければ next を解析せず、returnFlow で first の mayFail と警告だけを残す |
+| `analyzeGuardedBody Γ none body` | Γ で body を解析する |
+| `analyzeGuardedBody Γ (some guard) body` | guard を Γ で一度解析する。その正常真偽と `branchEnv Γ guard normal true` から真の入口を求め、入口がある場合だけ body を解析する。正常値は body の結果、mayFail と警告は guard・body の順に合成する |
+| `analyzeMatchArm Γ source T normal alternatives guard body` | `matchArmEnv` の入口に対してだけ analyzeGuardedBody を実行する。入口がなければ正常値なし・失敗可能性なし・警告なしとする |
+
+guard の入口にはパターンの束縛が既に追加されている。真の事実はその腕の本体だけへ渡し、後続の腕は同じ元環境 Γ と照合値の正常区間から入る。局所規則の結果に環境を含めず、先の腕のパターンの不一致や guard の偽の事実を蓄積しない。match 全体の呼び出し側が、照合値の正常評価と後続腕の合成を扱う。
+
+`returnFlow_no_normal` は、returnFlow の結果に正常値が属さないことを示す。`thenFlow_return` は、returnFlow に続く解析を省き、オペランドの mayFail と警告だけを残すことを示す。`thenFlow_normal_sound` は、第一式の正常値の所属と後続の正常値の所属から、合成後の所属を導く。`analyzeGuardedBody_unreachable` は、guard の真の入口がなければ、本体の警告や失敗可能性を加えず、guard の結果だけを returnFlow で残すことを示す。
+
+return する枝を除いて if 後の環境を狭める規則は加えない。try・with・handle の内部も既存の未知の境界として扱い、境界内の return を推測して後続を除外しない。独立例では、guard の束縛位置と腕内だけの絞り込み、偽・失敗・return・パターンとの空の交差による本体の除外、未知の guard の保守性、guard と本体の警告順、return のオペランドの警告の保存と後続の除外、if 後と未知の境界の扱いを確認する。
+
+本節は局所の合成規則と補題を対象とする。整数の matchE 全体の具体評価・腕選択の trace は「区間解析の対象構文の評価関係」、再帰的な解析と中心二定理への接続は次節に定める。操作数・保持項目数の予算と Rust/VM との意味の一致を保証に含めない。
+
+### 区間解析の土台の解析と健全性
+
+【決定】土台の解析は `Interval/Sound.lean` の `analyzeBaseExpr`・`analyzeBaseBlock`、中心命題への入口は `analyzeBase` とする。本節は定義と言明の写しであり、既定の import に含む。型・エフェクト・脱糖・コアの実行の規則は変更しない。理由: 対象構文の評価関係に対する正常値と警告の保証を、局所の算術・環境・分岐の規則から合成するためである。
+
+`BaseApprox` は、Integer64 の正常区間 `integer`、整数の種類ごとの区間 `widths`、正常な Boolean の偽・真の可能性 `boolean`、Integer64 と Boolean 以外の正常値の有無 `other`、整数七種と Boolean 以外の正常値の可能性 `nonIntegerOther`、失敗可能性 `mayFail`、警告列 `warnings` を持つ。型の注記を持たない discard や return の子も同じ関数で読むため、これらの正常値の範囲を一つの組にする。`rangeKind kind` は Integer64 では integer、残る六種では widths kind を読む。`BaseApprox.Contains A v` は、v が Integer64 なら `Mem v.toInt A.integer`、残る六種なら `A.other = true` とその種類の区間への所属の両方、Boolean なら対応する真偽の可能性が真、それ以外なら `A.other = true` と `A.nonIntegerOther = true` の両方を要求する。入口の `analyzeBase Γ input fuel` は、`resetRanges Γ` から解析を開始し、この所属と `v.type = input.type` の両方を正常値の述語とする。`resetRanges` は既存の局所位置と二表を保ち、Range の補助記録だけを空にする。入口で局所位置を走査して番号列を作らず、入口後に追加した位置だけへ新しい番号を付ける。
+
+| 近似の操作 | 定義 |
+|---|---|
+| `baseEmpty` | Integer64 と全 widths は bottom、真偽の可能性と other・nonIntegerOther・mayFail は偽、警告は空 |
+| `baseUnknown` | Integer64 と全 widths は各種類の top、両真偽の可能性と other・nonIntegerOther・mayFail は真、警告は空。入口では入力の型に所属する値だけを許す |
+| `baseInteger range mayFail` | Integer64 の正常区間と失敗可能性だけを設定し、ほかの正常値と警告は空 |
+| `baseIntegerKind kind range mayFail` | Integer64 は baseInteger。残る六種は指定した種類だけに range を保存し、range が非空のとき other を真にする。失敗可能性を設定し、警告は空 |
+| `baseWidthLiteral kind value` | 値域内なら指定した種類の一点区間を baseIntegerKind で作り、域外なら baseUnknown |
+| `baseBoolean range` | 偽・真の可能性だけを設定し、ほかの正常値・失敗可能性・警告は空 |
+| `baseUnit` | other と nonIntegerOther を真にする。入口では Unit 型の値に制限される |
+| `A.live` | Integer64 が非空、または偽・真・other のいずれかが可能なら真 |
+| `A.abrupt` | 正常値をすべて消し、A の mayFail と警告を保つ |
+| `baseJoin A B` | Integer64 と widths の各種類を閉区間で合流し、偽・真・other・nonIntegerOther・mayFail はそれぞれ論理和を取り、警告は A・B の順につなぐ |
+| `baseThen A B` | A.live が真なら B の正常値、A・B の mayFail の論理和と警告列を返す。偽なら A.abrupt を返す |
+| `baseDiscard A` | `baseThen A baseUnit`。正常値だけを Unit に変え、失敗・return の後に正常値を復活させない |
+
+fuel は自然数であり、式・Block・腕列の各呼び出しで一つ減らす深さの打ち切りである。0 では未対応と同じ `baseUnknown` に退く。builderBind の容器も深さを一つ使うが、出現のキーは進めない。操作数・保持項目数・本体全体の消費を数える予算とは区別する。この定義はそれらの上限や超過位置の保証を含まない。
+
+| 解析する形 | 正常値・環境・警告の扱い |
+|---|---|
+| Integer64 のリテラル・直接負号 | 型域と交差した一点の整数区間 |
+| 残る六種のリテラルと negInteger8・negInteger16・negInteger32 | baseWidthLiteral により、値域内なら同じ種類の一点区間、域外なら未知 |
+| Boolean・Unit | 対応する真偽値・Unit の正常値 |
+| local | `baseLocal Γ index`。lookup が integer range または integerKind kind range なら対応する種類の区間を正常値とし、mayFail は真を保つ。他の位置は未知の正常値を保つ |
+| paren | 子の結果を保つ |
+| constE | 空の局所環境で埋め込み本体を解析する |
+| returnE | 子まで解析し、正常値だけを消す。子の警告と失敗可能性を保つ |
+| 七種の整数の add | 子の整数区間から `addNormal`・`addMayOverflow` を求め、`addAlwaysOverflows` のときだけ親にあふれの警告を作る |
+| 七種の整数の sub・mul | `subNormal`・`subMayOverflow`・`subAlwaysOverflows`、または `mulNormal`・`mulMayOverflow`・`mulAlwaysOverflows` を使い、全域外のときだけあふれの候補を作る。一般の積の正常区間は top とする |
+| 符号付き四種の一般の負号 | `baseNeg` と `baseNegOwnTyped` により、子の正常区間の端点を交換し、型域と交差する。全域外のときだけ負号自身にあふれの候補を作る |
+| 七種の整数の intDiv・mod | `divModNormal` と失敗可能性を用い、`divModAlwaysZero` の一点0の条件で親に除数0の警告を作る |
+| 七種の整数の六比較 | 正常値は両方の真偽を許す。枝入口では Integer64 の comparisonAt と残る六種の comparisonKindAt から、同じ種類の局所位置を絞る |
+| not | 子の偽・真の可能性を交換し、警告と失敗可能性を保つ |
+| and・or | `baseShortCircuit` により、and の右辺へ真、or の右辺へ偽の環境を渡す。短絡する枝は左辺の正常な真偽を返す |
+| 解決済みの直接 Range call | `rangeCallAt` で評価と同じ標準規則を認定し、`analyzeBaseArguments` で全引数を同じ親環境・ソース順で解析する。正常な引数の後だけ `baseRangeCall` を使い、同じ成功値の value(local) なら保存端点の区間、未認定の射影と check の結果なら未知へ退く |
+| matchE | 照合値を一度解析する。`rangeMatchAt` が直接または一度保存した検査由来の Result と全腕のパターンを認定すれば、`analyzeBaseResultArms` を使う。それ以外では matchKind が一種類の整数を認定した場合の analyzeBaseKindArms を使い、残りは未知へ退く。照合値に正常値がなければ腕の警告を追加しない |
+| block | `childKey key []` から Block を解析する |
+| ite・elseIf・ifOnly | 条件を一度読み、`branchEnv` が返す環境で到達可能な各枝を一度ずつ読む。条件・真枝・偽枝の順に警告を保存し、正常値は枝だけから合流する。ifOnly の偽枝は正常な Unit |
+| それ以外 | `baseUnknown` に退き、子の区間・警告を採用しない。非整数や未対応の二項演算もこの扱いとする |
+
+対象の二項演算は `baseThen left (baseThen right own)` により子と親の結果を合成する。子に正常値がない場合、後続の近似から警告を追加しない。子の整数区間が bottom なら、全域外・一点0の条件から親の警告も作らない。商・剰余の正常区間は、除数が一点0でも二つの子の整数区間が非空なら top とする。この過大近似から正常終了の存在を結論しない。
+
+Block の bind・shadow は `baseBindSource` が通常の `baseBind` と由来の保存を組み合わせる。`baseBind` は、宣言型が七種の整数なら `rangeKind` で右辺の同じ種類の正常区間を読み、`bindRangeKind` で新しい先頭位置へコピーする。それ以外では宣言型の初期位置を追加する。builderBind は通常値のない専用位置、discard・seq は位置の追加なし、bindPat は `extendPattern` の位置と型だけを使う。単独のパターン変数にも、ここでは右辺の狭い区間をコピーせず初期位置を与える。構造の内部の値から整数の事実を推測しない。last は子の結果を保ち、末尾の束縛・discard・パターン束縛は `baseDiscard` を使う。右辺と続きのキーは評価関係と同じ `advanceKey` で決める。Range の由来は直接 check の Result を一度保存する場合だけ `rangeSaveResult` で付け、保存済み Result の再保存や成功値の別名には付けない。枝内の束縛や比較による絞り込みを、分岐後の外側の環境へ返す欄は持たない。
+
+`BaseApprox.onlyInteger` は偽・真・other の可能性がすべて偽の場合だけ真となり、Integer64 以外の正常値を含まないことを表す。残る六種の非空区間では other も真にするため、この判定を満たさない。`onlyWidth kind` は、偽・真・nonIntegerOther の可能性がなく、指定した種類以外の整数区間がすべて bottom の場合だけ真となる。`matchKind` は従来の onlyInteger を先に使い、それを満たさなければ六種の onlyWidth を順に調べる。`nonIntegerOther` を分けた理由は、六種の整数だけを含む近似を、Unit や構造の値も含む近似から区別するためである。
+
+Range の Result の認定に失敗した式の解析では `baseMatchKind tested run = baseThen tested (match tested.matchKind with | some kind => run kind | none => baseUnknown)` を使う。正常値の種類の認定は局所位置と解析結果から行い、型の字面を推測しない。`baseMatch` は Integer64 の局所規則として残す。
+
+`analyzeBaseKindArms fuel kind Γ source normal key arms` は、深さ0では baseUnknown、空の腕列では baseEmpty を返す。各腕には同じ Γ・source・normal から `matchKindArmEnv` で入り、入口がなければ baseEmpty とする。既存の `analyzeBaseArms` は kind を Integer64 に固定した特殊化である。guard がなければ本体を解析する。あれば guard を腕内の環境で一度解析し、正常な真と `branchEnv` が認める環境だけで本体を解析する。結果は本体の正常値、guard・本体の mayFail の論理和、guard・本体の順の警告列となる。これを同じ元環境で解析した残りの腕の結果と baseJoin で合流する。guard の偽や前の不一致は後続腕へ渡さず、先の腕が必ず選ばれることによる後続腕の除外も行わない。したがって後続腕の警告は、先の腕の return で実際には到達しない場合にも残りうるが、別の腕の事象と同じキーにはならない。return はオペランドまで解析し、その式の後続の正常値を消す。
+
+`rangeMatchAt` は照合元の由来に記録した Result の所有元・成功型・失敗型と、標準表から認定した名前の組の全欄の一致を求める。`baseResultArmEnv` は共通の束縛数だけ未知の位置を追加し、選択肢が slots `[0]` の Ok の一変数一つである場合だけ同じ成功値の記録を付ける。Error・wild・複数の選択肢には記録を付けない。Result の guard と本体はこの腕内の環境で解析し、残りの腕は元の環境から解析する。`baseResultArmEnv_models` と `baseResultArmEnv_ranges` は、実際に選ばれた同じ中身との二つの環境の対応を保つ。`baseRangeCall_normal` は表層の正常評価から、その直接射影の整数と保存端点への所属を得る。これらの認定は入力の結果型の注記を由来として使わない。
+
+`comparisonAt_sound` は、認定した単一比較が正常な Boolean を返す導出から、対象の局所値の lookup と `comparison.op.Holds value.toInt comparison.constant ↔ truth = true` を取り出す。括弧、同型の整数定数、左右反転も含む。この事実と正常値所属を使い、実際に選ばれた枝の入口が存在し、絞り込み後も `Models` が保たれることを示す。bind・shadow・builder・パターンの位置の追加でも、対応する具体環境との `Models` を保つ。
+
+`comparisonKindAt_sound` は、残る六種の認定した比較の正常評価から、同じ種類の具体整数の lookup と `comparison.op.Holds value.toInt comparison.constant ↔ truth = true` を取り出す。atomicConditionEnv の種類付き分岐を通して conditionEnv_sound と枝入口の Models の保存へ接続する。複合条件の合流では各整数位置の種類を保ち、比較しない位置や別名へ狭い区間を逆伝播しない。
+
+`arithmeticOperationAt e` は七種の整数の加算・減算・乗算・整数除算・剰余・六比較と、符号付き四種の一般の負号を構文から認定し、それ以外は none とする。`targetOperationAt env key e` はこの算術の認定に加え、直接 call の頭が型引数・エフェクト引数のない funName または primName なら、env.standardAt key を使って解決済み標準束縛を引く。同定された binding.declaration と頭の宣言が一致する場合だけ `.standard binding` を返す。標準表・出現の同定表・表層の宣言の一致を要求し、同じ表示名の利用者関数、表にない宣言、異なる出現キー、型引数・エフェクト引数のある頭、funDicts・opDicts・methName・opName・関数値・部分呼び出し・パイプを標準呼び出しとして認定しない。この位置の認定自身は引数の型・順序・正常評価を検査しない。
+
+`WarningLocated analyze` は、各警告 w に対して、numbered input.key input.source に `(w.key, e)` があり、`targetOperationAt env w.key e = some w.operation` であることを要求する。`target_at_tables` は二表が同じなら位置の認定も同じこと、`target_at_function`・`target_at_primitive` は、それぞれ型引数・エフェクト引数のない funName・primName を頭に持つ直接 call と standardAt の対応を示す。`arithmetic_target_at` は従来の算術の認定が任意の環境とキーで一般化後の認定にも一致することを示す。`analyzeBase_warning_located` は短絡・match・guard・return を含む現在の解析について、この橋渡しにより WarningLocated を評価導出なしで示す。内部の算術に限定した位置の不変条件と構文的な到達可能性の命題は arithmeticOperationAt を使い、意味を保つ。
+
+`KeyWithin start size key` は定義名の一致と `start.surfacePreorder ≤ key.surfacePreorder < start.surfacePreorder + size` の組である。`base_warning_bounds`・`base_block_warning_bounds`・`base_arms_warning_bounds` は、評価の導出を前提にせず、すべての警告のキーがそれぞれの式・Block・腕列の範囲に入ることを示す。警告の健全性の証明では、警告と評価事象の範囲を併せて使い、兄弟・未選択枝・Block の続きの事象との誤った一致を除く。実際に評価しない部分は空の trace として合成し、その警告が到達した事象に一致しないことを示す。親の事象に一致する警告は、正常な二引数の解析区間への所属から、加算・減算・定数倍の全域外または除数0の局所補題で拒否理由を結論する。
+
+| 中心定理 | 証明した言明 |
+|---|---|
+| `analyzeBase_normal_sound` | `NormalSoundness Models analyzeBase` |
+| `analyzeBase_warning_sound` | `WarningSoundness Models analyzeBase` |
+
+いずれも任意の抽象・具体環境と任意の fuel を量化し、既存の二命題の前提・結論を変えない。内部の正常値と警告原因の補題は `Models` に加えて補助の `RangeState.Models` を用いるが、公開入口は `resetRanges` でこの条件を構成する。整数以外の正常評価値、型の一致、Block の全形、子の失敗・return、単一 if の各分岐、短絡と複合条件、整数の match の選択肢・guard と腕の return も同じ証明で扱う。mayFail を正常値とは別に計算するが、中心定理は失敗可能性の検出率や、mayFail が偽の場合の全実行の成功を言明しない。
+
+未知の境界の内部の早い return は、未知の失敗と空の trace で近似する。正常値所属の中心定理は正常評価だけを、警告健全性の中心定理は trace で実際に到達した演算だけを要求するため、この近似で両言明を保てる。return の値・外側の継続への帰還・境界内部の事象は結論しない。実際の return 後に到達しない外側の警告が解析に残っても、到達記録との一致を要求できないため、無条件の失敗保証にはならない。try・with・handle の内部を推測して事実を伝播する規則は加えない。
+
+導出存在の保証は、前述の「区間解析の対象構文の評価関係」の条件付き補題の範囲とする。型付けから土台の全式の導出存在を導く定理、構造の実際の照合、脱糖・Release・Rust/VM との意味の一致は含めない。各構文の形には具体または未知の規則があるが、局所値の lookup や子の導出の前提を満たすことを、型付けから一括して証明してはいない。
+
+独立例は、内側の正常な除算と外側の除数0、子のあふれと親の警告の抑制、return 後と未選択枝の警告の除外、shadow の後の比較位置と正常区間、別名への逆伝播なしを確認する。整数の match 全体の独立例では、guard による腕内の絞り込み、空の交差・偽の guard・return による本体の除外、非整数や複数の幅を含む照合値への退避、guard と本体の警告順を固定値と比べる。guard が偽の後に進む腕の除数0の導出と警告の一致も確かめる。実際の加算と match の正常評価の導出を中心定理へ渡し、深さ0を含む任意の fuel で正常値が所属する例も含む。
+
+### 区間解析の予算の状態と計上
+
+【決定】`Interval.Budget` は操作数と保持項目数の予算の状態遷移を定義する。本節はその定義と言明の写しである。自然数を使い、ホストのバイト数・容量・ポインタ幅から超過位置を決めない。理由: 同じ入力と上限について、ホストの構成によらず同じ単位で消費を数えるためである。
+
+`Resource` は operations・items、`Scope` は body・whole、`LimitFailure` は両者の組とする。`StopReason.exceeded failure` は本体または全体の上限超過、`StopReason.unidentified failure` は番号未取得を表す。番号未取得にも元の範囲と資源を残す。`Step` は成功した状態 `ok state` または停止理由と最後の成功状態 `stopped reason state` であり、拒否された候補の消費を実消費に加えない。
+
+| 単位・上限 | 定義 |
+|---|---|
+| `Operation` | 式の訪問、環境の参照、環境の更新、合流の一項、番号付けの追加走査、分類の追加走査を各一回とする。`origin` は汎用の操作識別子として定義に残るが、診断用の由来の処理は計上しない |
+| `Item` | 環境の一項、Range の成功値の由来の一記録、レコードの一欄、番号の対応表の一要素、警告候補の一件、作業スタックの一枠を各一項とする。独立入力・別本体の結果枠などの `auxiliary` も数え、診断用の補助位置は数えない |
+| `Lifetime.temporary`・`saved` | 本体終了時に削除する項目と、終了後も保存する項目を区別する |
+| `Cap`・`Limits` | 操作数と最大同時保持項目数の組を、本体と全体について別に持つ。任意の自然数を渡せ、既定値は本体が各100,000、全体が各1,000,000である |
+
+同じ内容を二か所へ保存した場合は二項とする。固定長の区間端点など各項の内部、既存 AST・型表の読み取り専用参照先、解析前からある診断は重ねて数えない。追加する直前に計上し、削除したときに返却する。
+
+診断の説明に使う束縛・比較の由来と補助位置は、操作数・保持項目数の対象外とする。値・整数の局所位置・候補ごとに最大8件の固定長の列とし、正常区間・候補の有無・停止位置と分類の判定に使わない。Range の成功値を同定する由来と、独立入力・別本体の結果枠などの計上は保つ。理由: 診断の説明は正常値所属と警告原因の証明に使わず、固定上限によって途中の保持と合成にも上界を設けられるためである。
+
+`BodyState` は現本体の累積操作数 operations、一時保持数 temporary、保存保持数 saved、最大同時保持 peak を持つ。`WholeState` は全体の累積操作数 operations、完了済み本体の保存保持数 saved、全体の最大同時保持 peak を持つ。`State` はこの二つの組である。現本体の saved を全体にも重ねて保存せず、同時保持を次の和から求める。
+
+| 量・不変条件 | 数学的な定義 |
+|---|---|
+| `s.bodyHeld` | s.body.temporary + s.body.saved |
+| `s.wholeHeld` | s.whole.saved + s.bodyHeld |
+| `s.savedHeld` | s.whole.saved + s.body.saved。本体終了後も保存する項目の総数 |
+| `s.Valid` | s.bodyHeld ≤ s.body.peak、s.wholeHeld ≤ s.whole.peak、s.body.operations ≤ s.whole.operations の連言 |
+| `s.Within limits` | 本体・全体それぞれの operations と peak が対応する上限以下であることの連言 |
+
+| 状態遷移 | 定義 |
+|---|---|
+| `charge limits s operation` | 本体と全体の operations を各一回増やす候補を作る。どちらかの操作数の上限を超えれば s のまま停止し、両方が上限以下なら候補を採用する |
+| `reserve limits s item lifetime` | lifetime が指す現本体の保持数を一項増やす候補を作る。本体・全体の peak を、それぞれ旧 peak と旧同時保持数 + 1 の最大値にする。どちらかの保持上限を超えれば s のまま停止し、両方が上限以下なら候補を採用する |
+| `save s count available` | count ≤ s.body.temporary の下で、一時保持を count 減らし、現本体の保存保持を count 増やす。複製を作らず、同時保持・操作数・peak を変えない |
+| `release s lifetime count available` | 指定した現本体の保持数が count 以上である証拠の下で、その保持数を count 減らす。操作数と peak は保つ |
+| `releaseSaved s count available` | count ≤ s.whole.saved の下で、完了済み本体の保存保持を count 減らす。現本体・操作数・peak は保つ |
+| `finishBody s` | 全体の saved を s.savedHeld にして本体状態を0へ戻す。全体の operations と peak は保つ。終了した本体の実消費と最大値はこの遷移の前の body から読む |
+| `Step.forNumbering` | exceeded を、同じ failure と状態を持つ unidentified へ変える。成功と既に分類した番号未取得は保つ |
+
+上限ちょうどは成功とし、両上限を同時に超える場合は本体を先に報告する。停止を返された呼び出し側は、その候補の操作・追加を実行しない。保存への移動と削除には個数の証拠を要求し、自然数の減算によって過剰な返却を見えなくする使い方を防ぐ。
+
+| 定理 | 証明した言明 |
+|---|---|
+| `initial_valid`・`initial_within` | 空の状態は整合し、0を含む任意の上限内にある |
+| `charge_accepted`・`reserve_accepted` | 成功時だけ両範囲の操作数が一回、または同時保持数が一項増える。確保時の peak は旧 peak と追加後の同時保持数の最大値となる |
+| `charge_temporary`・`reserve_accepted_temporary` | 操作は一時保持数を変えず、成功した確保は temporary のときだけ一時保持数を一項増やす |
+| `charge_rejected`・`reserve_rejected` | 停止した計上・確保の状態は入力の s と等しい。保持数・操作数・peak のすべてを保つ |
+| `charge_valid`・`reserve_valid`、`charge_within`・`reserve_within` | 成否の両方について、入力の Valid・Within を出力状態へ保存する |
+| `save_held`・`save_valid`・`save_within` | 保存への移動は両同時保持数と peak を保ち、整合性と上限を保存する |
+| `release_held`・`releaseSaved_held` | 削除後の保持数 + count は削除前の保持数と等しい。前者は本体・全体、後者は全体について成り立つ |
+| `release_valid`・`releaseSaved_valid`、`release_within`・`releaseSaved_within` | 削除は整合性と上限を保存する |
+| `finish_operations`・`finish_saved`・`finish_held`・`finish_peak` | 本体終了後の全体の操作数・savedHeld・peak は終了前と等しい。終了後の wholeHeld + 終了前の body.temporary は終了前の wholeHeld と等しい |
+| `finish_valid`・`finish_within` | 本体終了は整合性と上限を保存する |
+| `numbering_state` | 番号未取得への分類は状態を変えない |
+
+`Interval.BudgetExamples` の独立例は、0と上限ちょうど、本体だけ・全体だけの超過、返却後の再確保、二つ目の本体での全体の操作数・保持数の超過、保存への移動と明示削除、番号未取得の原因と実消費を固定値で確認する。両モジュールは既定の import に含める。
+
+この証明は予算の状態遷移を対象とする。前節の深さによる `analyzeBase` の打ち切りとは独立しており、式・環境・番号付けの実際の走査がこの状態を逐次消費することや、超過時の正常値・警告の健全性を結論しない。既存の主定理・中心命題・公理を変更しない。
+
+### 区間解析の予算付きの局所走査
+
+【決定】`Interval/BudgetScan.lean`・`BudgetEnvironment.lean`・`BudgetPatterns.lean`・`BudgetRangeBorrow.lean`・`BudgetRange.lean` は、`Benitoite.Interval.BudgetScan` の名前空間で予算付きの局所走査を定義する。本節は定義と言明の写しである。環境・比較・短絡条件・パターン・腕の選択肢・Range の由来を、操作と保持項目の追加直前に予算を検査しながら走査する。理由: 式の訪問だけを数えて、環境の更新や分類の走査を上限の外に残さないためである。
+
+操作の計上・項目の確保と返却の正確な順序と回数は、`Interval/Budget*.lean` の関数定義を正とする。本節と「区間解析の予算付きの式とフロー」の表は、その要約である。例えば存在する局所位置 i の読み出しは i + 1 回の参照を計上し、警告の保存は候補ごとに作業枠を確保する。
+
+`Outcome α` は `ok value state` または `stopped reason state` とする。停止は、到達不能を表す正常な `ok none state` と区別する。`Scan α` は `Limits → State → Outcome α` の関数 `run` と、次の三性質の証明を持つ。
+
+| 性質 | 言明 |
+|---|---|
+| `keepsTemporary` | 入力の body.temporary ≤ 出力の body.temporary。呼び出し前から保持する項目を返却しない |
+| `keepsValid` | 入力の Valid が成り立つなら出力も Valid である |
+| `keepsWithin` | 入力が Within limits なら出力も同じ上限内にある |
+
+逐次合成 `first >>= next` は、first が成功した状態をそのまま next に渡す。first が停止した場合は next を呼ばず、同じ理由と状態を返す（`bind_stopped`）。操作数・保持数・本体と全体の状態を、子の呼び出しごとに作り直さない。
+
+| 入口 | 状態と保持の扱い |
+|---|---|
+| `tick operation` | `Budget.charge` を呼び、成功した場合だけ後続へ進む |
+| `allocate item lifetime` | `Budget.reserve` を呼び、成功した場合だけ一項を追加する |
+| `frame body` | body を呼ぶ前に stackFrame を一時項目として確保する。確保できなければ body を呼ばない。成功・停止のどちらでも復帰時にその一項を返す。返却には reserve の増分と keepsTemporary から得た個数の証拠を使う |
+| `region body` | 呼び出し前の一時保持数を記録し、body が新しく確保した一時項目の領域を、成功・停止のどちらでも終了時に返す。保存項目・操作数・最大値は変えない |
+| `forNumbering body` | body 全体を囲み、枠の確保も含む exceeded を同じ原因・状態の unidentified へ写す。既に分類した unidentified は保つ |
+| `identify next` | 番号付けの一訪問を計上し、identity 一項を saved として確保してから、割り当てる next と、その番号を一つ進めた次キーを返す |
+
+新しく作った環境の項目は、中間の環境も含め、呼び出し側の作業領域に保持する。共有する入力の接尾辞は複製せず、再計上しない。region を閉じる前に、その領域内で作った環境の利用を終える。環境を外へ返してからその保持だけを返却する使い方はしない。`region_temporary` は終了時の一時保持数が入力と等しいこと、`region_counters` はその返却によって操作数・最大値・保存項目を消さないことを示す。
+
+局所走査の対応は次のとおりである。各再帰の作業枠は frame で計上し、下表の操作と項目を同じ状態へ逐次加える。長さや部分木の大きさを先に求めてから計上する処理は置かない。
+
+| 入口 | 計上する操作・項目 | 完走時に一致する局所規則 |
+|---|---|---|
+| `readSlots`・`read`・`integer`・`integerKind` | 参照先へ進む各位置と終端の参照を environmentRead とする | 列の添字の取得・lookup・integerAt・integerKindAt |
+| `consSlot`・`push`・`bindEnv` | 環境への一項の追加に environmentWrite と environment 一項 | 列の先頭への追加・extend・bindRange |
+| `narrow`・`update`・`narrowKind`・`updateKind` | 更新位置までの参照と、作成する接頭辞の各項の更新・保持 | narrowSlots・narrowAt・narrowSlotsKind・narrowKindAt。更新位置の後ろの列は共有する |
+| `forgetSlots`・`forgetEnv` | 各項の参照・更新・新しい環境項目 | map forgetSlot・forget。同定表は保存する |
+| `hull`・`joinEnvs`・`joinEnvs?` | 基準の各項に joinItem、各種類の整数位置の左右の参照、結果の各項の更新・保持 | hullSlots・hullEnv・joinConditionEnvs |
+| `indexOf`・`constant`・`comparison`・`constantKind` | 括弧と埋込み定数を含む各訪問を classification とする | localIndex・integerConstant・comparisonAt・integerKindConstant |
+| `comparisons` | 根を一度分類し、注記された整数型に対応する一方のオペランド走査だけを行う | comparisonAt と comparisonKindAt の結果の組 |
+| `refine`・`refineKind`・`atomic`・`condition`・`branch` | 分類の各訪問と、下位の参照・更新・合流 | refineEnv・refineKindEnv・atomicConditionEnv・conditionEnv・branchEnv |
+| `countList`・`field`・`fieldsSum` | 長さ・欄位置・欄の宣言順の各訪問を classification とする | length・fieldAt・欄ごとの束縛数の和 |
+| `patternBinders`・`patternSum`・`patternCounts` | パターンと列の各訪問を classification、保持する欄ごとの束縛数を recordField 一項とする | Pattern.binders・toCore 後の束縛数の和・各子の束縛数の列 |
+| `replicateOnto`・`replicateEnv`・`values`・`patternSlotsScan`・`patternEnv` | 位置と型の列の分類、各追加位置の更新・保持 | replicate の前置・extendValues・matchPatternSlots・extendPattern |
+| `selectReverse`・`extendSelected` | slots の各指定の分類・参照・追加位置の更新と保持 | selectSlots の結果の反転と接尾辞への前置・extendMatchSlots |
+| `scrutinee`・`alternative`・`alternatives`・`armTemplate`・`arm` | Integer64 の照合の分類と、下位の参照・更新・選択・合流 | matchScrutineeEnv・matchAlternativeEnv・matchAlternativesEnv・matchArmTemplate・matchArmEnv |
+| `patternSlotsKindScan`・`scrutineeKind`・`alternativeKind`・`alternativesKind`・`armTemplateKind`・`armKind` | 六種の整数幅を保つ位置の分類・参照・更新・選択・合流。armKind の Integer64 は既存の arm と同じ走査 | matchKindPatternSlots・matchKindScrutineeEnv・matchKindAlternativeEnv・matchKindAlternativesEnv・matchKindArmTemplate・matchKindArmEnv |
+
+環境の一項は、通常の抽象位置・束縛番号・由来への参照の固定長の欄をまとめた一項として数える。Lean の locals・scope.positions・facts の三列は、この行の各欄を表す。由来がない位置の none と束縛番号を別の補助項として重ねて数えない。実際の RangeLocalFact の本体を保存するときは、これと別に Range の由来を auxiliary 一項として確保する。`replicateEnv` と `selectReverse` は既存の位置の走査中に番号欄も構成し、位置数を求めた後に純粋な extendUnknown の反復を追加しない。Range の忘却は既存の番号列と facts を空にし、次番号だけを保持する定数時間の操作である。
+
+| Range の入口 | 計上する走査と保持 | 完走時の一致 |
+|---|---|---|
+| `rangeCall` | 根を分類し、standardCallHead で型引数・エフェクト引数のない直接の funName と primName を読む。型引数・エフェクト引数のある頭は表を探索しない。元キーの出現表一参照、標準表の最初の一致までの走査、頭の宣言一致の順に確認する。Range はここで funName の頭に限り、check/value の借用走査を行う。fixedDomain は domainEntry で対象の引数型、domainCallShape で型列の個数・ラベル列・位置の置換・引数容器の個数・位置列の個数の順に調べる。funDicts・opDicts・methName・opName とその他の頭は表の探索前に認定を断る | rangeCallAt |
+| `rangeOrigin` | 根を分類し、直接 callee の形なら、rangeBorrowCheck でラベルの長さ・引数の三個・契約位置の三個を先に読む。借用に成功した場合だけ rangeStandardAt を読み、宣言と rangeCheck 規則が一致すれば下端、上端の順に rangeFixed で認定する | rangeCallOrigin |
+| `rangeMatch` | 直接呼び出しまたは一度保存した Result の位置、固定端点・標準表・腕のパターンの分類。本体と guard を認定のために再走査しない | rangeMatchAt |
+| `rangeValue` | 同じ成功値の直接射影の形、標準表・由来・束縛番号の列の参照 | baseRangeCall |
+| `rangeBind` | 右辺の開始キーで直接検査の由来を認定し、通常の環境位置を追加する。result の由来の保存前に auxiliary 一項を確保する | baseBindSource |
+| `rangeArm` | 腕の共通束縛数と通常位置を予算内で構成する。単独の Ok の一変数を認定したときだけ、checked の由来の保存前に auxiliary 一項を確保する | baseResultArmEnv |
+
+固定端点の認定は、ラベルの長さを確認し、元の容器の三引数、三つの契約位置の順に借用して、六通りの並べ替えから二端点を直接選ぶ。その後は二端点の括弧と埋込み整数定数だけを辿る。value 引数の一般の本体を再走査しない。認定用の可変長の引数列を複製せず、固定個数の式への参照だけを使う。環境へ保存する由来は、その環境を利用する領域が閉じるまで保持する。診断の説明用の由来は、この会計の対象へ追加しない。 `RangeBorrowed.lean` の補題は、借用による認定と既存の Perm・exprsChildren・fieldAt を使う純規則の一致を証明する。予算付きの実行定義からは、これらの純粋な列走査を呼ばない。
+
+レコードパターンの束縛数は、子ごとの数を予算付きで求めた後、宣言中の欄を順に読む。重複した欄の位置は最初の指定を選び、範囲外の欄は数に加えない。これは型検査前の不正な形でも元の toCore.binders と一致する規則であり、新しい受理規則を加えない。欄ごとの数の一時表は、レコード一つの分類が成功・停止した時点で region により返す。巨大な欄数や追加位置数でも、先に range・replicate の列を作らない。
+
+`atomic` は comparisons で根の分類を共有し、Integer64 の比較が認定されなかったことだけを理由に同じ根を再走査しない。六幅の比較のオペランドの分類、局所位置の参照・更新・保持は、それぞれの走査で計上する。`comparisons_agrees` は二つの非予算の認定結果との一致を示す。
+
+`Agrees scan expected` は、任意の limits・初期状態 s について、`scan.run limits s = ok value state` なら value = expected であることを表す。上表の各入口の `_agrees` 定理はこの言明を証明する。失敗を成功へ写す定理や、任意の有限予算での完走を主張する定理ではない。`Scan` の三性質と一致の証明は、既存の中心命題の前提・結論を変更しない。
+
+番号付けの走査側は、訪問順の次キーを持ち、各出現を保存する直前に identify を呼ぶ。先行する部分木を surfaceSize・surfacePreorder・numbered で予算の外から走査して次キーを計算しない。走査全体を forNumbering で囲み、停止後に同じ番号を使って再開しない。identify 自体は子の列挙や本体の命名を行わず、53構成子の有界の走査との境界だけを提供する。`identify_agrees` は成功した場合のキーと次キーの組を示す。
+
+`BudgetScanExamples` は、分類の上限ちょうどと途中停止、作業枠と借用した項目の返却、環境更新・合流の消費、巨大な追加位置数・欄数での早期停止、到達不能と停止の区別、重複欄・範囲外の欄、腕の選択位置、後の本体での全体超過、番号付けの成功と未取得を固定値で確かめる。局所走査の定義のモジュールと独立例は既定の import に含める。
+
+本節の保証は局所走査とその逐次合成に限る。式・Block・腕列の解析全体への予算状態の接続、任意の操作数・保持数に対する中心二定理と WarningLocated、全構文の番号付け・本体の列挙、Rust/VM との一致は結論しない。
+
+固定域の認定と解析の計上の順序・回数は、BudgetRange.lean の `BudgetScan.rangeCall`・`rangeStandardAt`・`rangeStandard`・`domainCallShape`、BudgetDomainScan.lean の `BudgetScan.domainEntry`・`domainExprsLength`・`domainPermutation`・`domainRange`・`domainIsPerm`・`domainContains`・`domainErase`、BudgetSelect.lean の `BudgetAnalysis.selectArguments`・`bindingArgument`・`selectedFixedOwn`、BudgetAnalyze.lean の `BudgetAnalysis.expr`（local・call と未知の形への振り分け）・`fixedOwn`・`saveWarnings` を正とする。置換検査で作る列は auxiliary の一時項目として確保する。selectArguments は各容器の classification、子の解析、正常値がない場合の後続の番号走査をこの順で行い、対象位置だけを保持する。整数でない局所参照は通常の BudgetScan.read だけを行い、欄の事実を追加走査しない。record・recordUpdate は HTTP の認定走査を行わず、後述の独立入力の振り分けに従う。
+
+### 区間解析の予算付きの式とフロー
+
+【決定】`Interval/BudgetWalk.lean`・`BudgetAnalyze.lean` は、`Benitoite.Interval.BudgetAnalysis` の名前空間で、式・Block・腕列の解析へ共有の予算状態を接続する。本節は定義と証明済みの言明の写しである。深さによる土台の解析と同じ Range の認定・保存規則を用い、土台と予算付きの公開の健全性定理の言明を保つ。理由: 局所走査で消費した操作数と保持数を、後続の子や枝へ逐次渡すためである。
+
+`Context` は、予算状態 budget、次の出現のキー next、保存済みの警告 warningsRev、出現のキーと式への参照 identitiesRev、独立入力の結果 independentRev、未対応を通過したかを示す unsupported を持つ。警告と識別対応の列はそれぞれ候補の保存順と出現の訪問順の逆順、独立入力の列は成功・停止の結果を記録した順の逆順とする。入れ子の入力では内側の結果を先に保存し、その後に外側の結果を先頭へ加える。新しい一件を先頭へ追加して既得の接尾辞を共有し、解析結果の合成では保存列を連結・複製しない。`Analysis α` は次の関数である。
+
+```math
+Analysis\;α = Limits → Context → (Except\;Halt\;α × Context)
+```
+
+`Halt` は深さの打ち切り depth または budget reason とする。reason は Budget.StopReason であり、本体超過・全体超過と資源の種類、番号未取得を区別する。`scan` は BudgetScan.Scan の成功・停止のどちらでも実消費を Context に転記する。停止した場合は後続の計算を呼ばず、既に保存した警告・対応・次番号・未対応の記録を保持する（scan_preserves_saved）。
+
+| 入口 | 実行と保持の規則 |
+|---|---|
+| `scope` | 作業枠一項を一時項目として確保してから内部へ進む。確保できなければ内部を呼ばない。内部が成功・停止したら、一時保持数と呼び出し前の数の差を release で返す。内部で作った環境を外へ返す用途には使わない。保存列・保存数・累積操作数・最大同時保持は返却で変更しない |
+| `identify` | BudgetScan.identify に現在の next を渡す。番号の操作と保存項目の確保に成功してから、キーと式への参照を保存し、next を一つ進める |
+| `numbering` | 番号のための走査を囲み、その中の枠・操作・保存の exceeded を、同じ原因の unidentified に写す。途中までの Context は変更しない（numbering_context） |
+| `saveWarnings` | 候補ごとに作業枠と warning 一項の saved を確保してから保存列へ加える。確保できなかった候補は追加しない |
+| `branch` | BudgetScan.branch で枝の入口を分類する。到達可能なら値を解析し、到達不能なら番号だけを辿る。枝で作った環境の利用後に領域を返す |
+
+`Interval/BudgetProof.lean` は、成功値の性質と、成功・停止に共通の保存列の性質を合成する補題を定める。入力の保存列を before、出力の保存列を after としたとき、ListExtension P before after は、新しい追加分 added が存在し、after = added ++ before かつ added の各要素に P が成り立つことを表す。元からある before の要素には P を要求しない。Saved W I before after は、警告列に ListExtension W、識別対応の列に ListExtension I が成り立つ関係である。ここで before・after は Context とする。いずれも予算や次キーに条件を課さない。
+
+Spec work limits ctx P W I は、run = work limits ctx としたとき、Saved W I ctx run.2 と、「run.1 = ok value ならば P value」が成り立つ命題である。ListExtension.trans・Saved.trans は逐次合成の追加分を合成し、ListExtension.member は出力の要素について「元の列に属する、または新しい追加分の性質を満たす」という選言を与える。spec_mono は成功値と追加分の性質をそれぞれ含意で移す。これらは証明用の命題であり、実行時に保存列を連結する処理を追加しない。
+
+| 補題 | 証明する性質 |
+|---|---|
+| `spec_pure`・`spec_throw` | 値だけを返す場合と停止だけの場合には、追加分が空である。停止には成功値の性質を要求しない |
+| `spec_bind` | 先行の成功値と実際の中間 Context を後続へ渡す。先行と後続の追加分を合成し、先行が停止した場合は後続の性質を要求しない |
+| `spec_scope` | 枠の確保で停止した場合は追加分が空である。内部へ進んだ場合は、内部の成功値と保存列の追加分の性質を、一時項目の返却後も保つ |
+| `spec_scan`・`spec_scan_agrees` | 局所走査は保存列を増やさない。成功値について、走査の完走時の性質または既存の局所規則との一致を引き継ぐ |
+| `spec_numbering` | 停止理由の分類によって、成功値の性質と保存列の追加分の性質を変えない |
+| `identify_success`・`identify_stopped`・`spec_identify` | 成功時は入力の next を返し、次番号を一つ進め、そのキーと式の対応を一件追加する。停止時は警告列・対応列・次キー・未対応の記録を変更しない。警告列は成功時も変更しない |
+| `saveWarnings_progress`・`saveWarnings_success`・`spec_saveWarnings` | 候補列 = written ++ rest と分け、出力の警告列 = reverse written ++ 入力の警告列であることを示す。成功時は rest が空であり、停止時も保存済みの候補は入力の接頭辞である。対応列・次キー・未対応の記録を変更しない。候補が満たす性質は、新しく追加した分だけに引き継ぐ |
+
+`expr fuel env source` は、深さ0では depth で停止する。それ以外では一出現の identify と expression 一回を計上する。整数七種のリテラル、Integer64・Integer8・16・32 の直接負号、Bool・Unit・局所位置・括弧・埋込み定数・return・対象の二項演算・not・Block・if・短絡・七種の整数の match を解析する。幅付きの葉は widthLiteral を使い、値域内では baseWidthLiteral の一点区間、値域外では未知の近似と未対応の記録を返す。局所位置は BudgetScan.read で参照する。対象の二項演算は加算・減算・乗算・整数除算・剰余・六比較とし、左の正常値がなければ右の値を解析しない。両引数の正常値がある場合だけ既存の baseOwn を使い、その警告を別の保存列へ移す。符号付き四種の一般の負号は子を同じ共有状態で解析し、`negOwnTyped` が負号自身の候補を保存した後で baseThen で合成する。子の正常値がなければ、正常値を復活させず、負号自身の候補も作らない。constE の子は clearLocals env で解析する。
+
+短絡の右辺へは、左辺が継続する真偽の BudgetScan.branch の環境だけを渡す。if の枝は条件・真の枝・偽の枝の順に処理し、それぞれの入口は同じ元環境から求める。match の照合値の matchKind が一種類の整数を認定した場合は、その種類の腕へ進む。Range 由来の Result の認定は整数の種類の判定より前に行う。認定できれば resultArmList へ進み、単独の Ok の同じ成功値の射影を精密化する。それ以外の非整数や複数の幅の可能性が残り認定できない場合は、腕の値を解析せず Top と未対応の記録を返す。未対応の二項演算と未知の形は、BudgetChildren の unknownChildren で対象の子を独立解析してから Top と未対応の記録を返す。子の正常値・return・絞り込みと警告は親の近似へ合成せず、警告は独立入力の結果へ保存する。振り分けと入力ごとの保証は「区間解析の独立入力の保存と保証」に定める。
+
+`block fuel env body` は、作業枠と容器の classification 一回を計上する。bind・shadow は右辺の解析前に開始キーを借用し、正常な右辺の後で BudgetScan.rangeBind を使う。七種の整数なら右辺の rangeKind を integerKindSlot に保存し、それ以外は通常の型の位置を追加する。固定端点の直接検査の Result の由来だけを一度保存する。パターンは patternEnv、専用位置は push で追加し、末尾の文の正常値は Unit とする。正常値のない先行式と return の後では、残りの値を解析しない。`armListKind fuel kind env source normal arms` は BudgetScan.armKind で腕入口を作り、guard の真の環境だけで本体を解析する。既存の `armList` は kind を Integer64 に固定した特殊化であり、その場合の腕入口と計上は既存の BudgetScan.arm と同じである。後続腕には元環境を渡す。枝・腕・先行式の正常値と失敗可能性は既存の baseThen・baseJoin・baseMerge で合成し、警告列は Context だけに保存する。
+
+認定済みの標準 call は callee の番号を skipExpr で占め、arguments により引数をソース順に同じ共有状態で解析する。正常値のない引数の後は、残りの番号だけを辿る。引数列の後で rangeValue を走査し、同じ成功値への直接射影の区間を baseThen で合成する。固定域の call は前述の selectArguments と fixedOwn により、対象の直接引数を検査する。引数列に正常値がなければ、後半の区間を正常値へ加えない。標準 check の Error や端点の逆転から追加警告を作らない。未認定の call は従来の unknownChildren に進む。
+
+共通の構造の証明は、expr・shortCircuit・block・armListKind・arguments・resultArmList の六成分を `analysis_walk_all`・`analysis_located_all`・`analysis_within_all`・`analysis_inputWalk_all`・`analysis_savesInputs_all` で同時に扱う。既存の四成分の `_kind` 版と Integer64 版の言明は、この結果の射影で保つ。
+
+腕列の共通の走査は armListKind に対して証明する。番号の走査は `analysis_walk_kind`、警告位置は `analysis_located_kind`、構文的な到達可能性は `analysis_within_kind`、独立入力の位置と保存は `analysis_inputWalk_kind`・`analysis_savesInputs_kind` により、種類を指定した腕と式・Block・短絡を同時に扱う。既存の対応する補題は Integer64 に特殊化した同じ言明を保つ。中心の NormalSoundness・WarningSoundness と既存の主定理の前提・結論、公理は変えない。
+
+未到達の枝・正常値のない先行式や return の後続・一種類の整数と認定できない match の腕・別本体の内部は、skipExpr・skipChildren・skipExprs・skipHoles・skipBlock・skipArms・skipClauses・skipOptional によって、値の解析をせず番号だけを辿る。走査は全53構成子と相互帰納の容器を宣言のフィールド順・列順に読む。容器では作業枠と classification を計上し、式では identify を呼ぶ。番号付けのために surfaceSize・surfacePreorder・numbered・子の列の平坦化を先に計算しない。途中で停止したら、残りを詰めた番号で再開しない。
+
+`Interval/BudgetTraversal.lean` は、これらの skip 群と実際に値を解析する部分について、保存した対応の順序と番号の消費を証明する。numberFrom key sources は、証明用の式列 sources に key から連続する番号を付ける関数である。空列では空列を返し、先頭 source には key を、残りには advanceKey key 1 からの番号を付ける。numberFrom_zipIdx・numberFrom_numbered は、それぞれ zipIdx による番号付け、既存の numbered との一致を示す。この関数や証明用の先行順の列を、実行する解析から呼ばない。
+
+Traversal sources before outcome after は、次を満たす visited・rest が存在する命題である。outcome は成功または停止の結果、before・after は Context とする。
+
+```math
+sources = visited ++ rest
+after.identitiesRev = reverse(numberFrom\;before.next\;visited) ++ before.identitiesRev
+after.next = advanceKey\;before.next\;length(visited)
+outcome = ok\;value ⇒ rest = []
+```
+
+Walk work sources は、任意の limits・ctx について、work limits ctx の結果と終了状態に Traversal sources ctx が成り立つ命題である。入力からある対応列は接尾辞として残し、今回の訪問列の所属は追加分だけに要求する。走査の途中で停止した場合、visited は空でも全列でもよい。最後の識別の後に式の計上や警告の保存で止まる場合があるため、停止から rest が空でないとは結論しない。
+
+| 補題 | 証明する性質 |
+|---|---|
+| `walk_bind`・`walk_scope`・`walk_numbering` | 前半が成功したときだけ全長を使って後半を接続する。前半の停止・枠の確保の拒否・停止理由の分類でも、保存した接頭辞と次キーを保つ |
+| `walk_scan`・`walk_identify`・`walk_saveWarnings`・`walk_unsupported`・`walk_own`・`walk_branch` | 局所操作は番号を消費せず、identify は成功時だけ一出現を追加する。枝の値の解析と番号だけの走査に同じ訪問列を要求する |
+| `skip_walk` | 全 skip 群の Walk を、任意の深さ・予算・入力 Context について同時に示す。式では surfacePreorder、子だけではその先頭を除いた列、容器では対応する preorder の列を使う |
+| `analysis_walk` | expr・shortCircuit・block・armList の Walk を同時に示す。未到達・正常値のない先行式の後続・別本体を skip し、未知の形の子を独立解析する場合も、同じ先行順を使う |
+| `Traversal.prefix`・`expr_prefix`・`skipExpr_prefix` | 成否によらず追加分が全番号列の接頭辞であり、次キーはその長さだけ進む。式の二つの補題は numbered との対応を直接示す |
+| `Walk.success`・`skipExpr_success`・`expr_success`・`block_success`・`armList_success`・`shortCircuit_success` | 完走時には全番号列を追加する。番号の消費は式の surfaceSize、Block の blockSize、腕列の armsSize、短絡の左右の surfaceSize の和に一致する |
+| `Walk.identities` | 成否によらず、追加した各対応が全番号列に属することを ListExtension で示す。入力からの対応には現在の部分木への所属を要求しない |
+
+ここで証明するのは、入力された一つの式・容器からの番号走査の対応である。本体名・別本体の全列挙・元 AST の NodeId/span との対応は含めない。
+
+`Report` は正常値の近似 approx、完走状態 coverage、終了前の Context、次の本体へ渡す after を持つ。coverage は complete・unsupported・stopped reason とする。正常値のない Bottom は coverage と別に近似の値から読む。report は停止時の正常値を全値域に戻し、停止理由を保つ（report_stopped）。成功・停止とも approx.warnings に warningsRev をそのまま設定し、逆順の保存列を出力する（report_warnings）。警告なし・Top・未対応・停止を、安全の証明とは扱わない。
+
+`analyzeExpr limits state fuel env key source` は、保持済みの入力環境を借用する式の入口である。`analyzeBody limits state fuel definition seed` は、交換と処理系の比較が使う本体の入口である。次キーを bodyRootKey definition に固定し、bodyWork が本体入口の作業枠を確保して BudgetScan.forgetEnv seed.initial を計上した後、`expr fuel initial (bodyRoot seed.body)` を呼ぶ。根の block 式は番号0、内容は番号1からであり、根の訪問と対応の保存も計上する。忘却で作った一時環境は本体の解析が終わるまで保持する。全体の操作数または同時保持数が上限に達している場合は、入口の環境を構築せず全体超過として返す。各出力の after は finishBody によって一時項目だけを返した状態であり、次の本体へそのまま渡す。report_after は、そのとき全体の累積操作数・保存項目・最大同時保持を失わないことを示す。本体の列を予算外で先に発見する入口は定義しない。
+
+`Interval/BudgetNormal.lean` は、任意の操作数・保持数・初期消費・深さに対する正常値の保存を示す。成功値の性質を表す Success は、次の命題である。入力 Context の保存列や次キーにも制約を付けない。
+
+```math
+Success work post = ∀ limits ctx value,
+  (work limits ctx).1 = Except.ok value → post value
+NormalCovered approx outcome = ∀ value,
+  outcome = EvalOutcome.normal value → approx.Contains value
+```
+
+| 言明 | 保証 |
+|---|---|
+| `success_bind`・`success_before`・`success_scope` | 成功した前半の値を後続へ渡す。前半または枠の確保で停止したときは、成功値を要求しない。scope の返却は成功値を変えない |
+| `success_scan_agrees`・`success_branch_selected` | 局所走査の成功値の一致を用い、具体評価で選ばれた枝と同じ絞った環境へ進む |
+| `contains_warnings`・`success_own`・`own_contains` | 警告欄の変更は正常値への所属を変えない。子の正常値と演算自身の正常値を合成する |
+| `expr_normal`・`block_normal` | Models、補助の RangeState.Models と EvalPartial または EvalBlock の下で、評価側の開始キーに解析側の次キーを合わせた SuccessAt を使う。任意の深さで成功した値に NormalCovered を要求する |
+| `binary_normal`・`shortCircuit_short_normal`・`shortCircuit_right_normal` | 二項演算・短絡した値・継続した右辺の正常値を、同じ共有状態の逐次実行に沿って合成する |
+| `armList_normal`・`armListKind_normal` | 元の環境の Models、同じ種類の scrutinee の正常評価と normal 区間への所属、Integer64 の EvalArms または六種の EvalWidthArms の下で、選択された腕の正常値を全腕の合流に含める |
+| `shortCircuit_normal` | continueTruth が真なら and、偽なら or の EvalPartial に対し、短絡補助解析の成功値が正常値を含む |
+| `report_normal`・`analyzeExpr_normal` | 成功時は上記の所属を出力へ写し、停止時は baseUnknown の全値域への所属を使う。停止理由や完走の前提を追加しない |
+
+`SuccessAt key work post` は `∀ limits ctx, ctx.next = key → ∀ value, (work limits ctx).1 = .ok value → post value` とし、内部の正常値の保存の契約に使う。解決済みの標準呼び出しの同定表を評価と解析で同じキーから読むため、開始キーの一致が必要である。公開入口は入力のキーから解析を開始し、空または忘却済みの Range の記録を用いるので、この二つの内部条件を構成できる。公開の正常値の定理の言明は変えない。帰納法は予算付きの定義を直接辿り、同じ深さの旧解析との等式を用いない。開始キーの対応は番号走査の完走を仮定するものではない。警告の位置の証明では前述の Traversal を別に使う。
+
+`Parameters` は limits・state・fuel を持つ。`Report.toAnalysisResult output type` は、normal を `fun value => value.type = type ∧ output.approx.Contains value`、mayFail と warnings をそれぞれ output.approx の同名の欄とする。`analyze env input parameters` は analyzeExpr にこれらの三引数と input のキー・式を渡し、input.type についてこの射影を取る。
+
+```math
+analyze_normal_sound : NormalSoundness Models analyze
+```
+
+この中心定理は任意の Parameters を量化し、Models と正常評価を前提とする。解析の完走・予算内・事前の警告健全性の前提を加えない。mayFail が真であることを具体評価の失敗から導く定理ではない。
+
+`Interval/BudgetLocated.lean` は、同じ入口の警告の位置と対象演算の一致を証明する。Silent work は、任意の limits・ctx について、成功・停止のどちらでも警告列が入力のままであることを表す。skip_silent は全 skip 群にこの性質を示す。識別対応の追加や途中停止を妨げず、値を解析しない部分から警告を作らないことを保証する。
+
+LocatedIn key sources warning は、numberFrom key sources に `(warning.key, node)` があり、`arithmeticOperationAt node = some warning.operation` となる node が存在する命題である。Located work sources extra は、任意の limits・ctx において、保存列の追加警告だけが `extra warning ∨ LocatedIn ctx.next sources warning` を満たすことを Spec で表す。成功値と識別対応の追加分には True を使う。extra は、子の解析中に親自身の警告を位置へ結び付けるための証明用の述語である。RootWarning key source warning は、警告のキーが key と等しく、arithmeticOperationAt が source から認定した対象演算に一致することを表す。
+
+| 補題 | 証明する性質 |
+|---|---|
+| `located_bind`・`located_scope` | 成功した前半の Walk から後半の開始番号を求め、追加警告を全体の番号列へ移す。前半の停止や枠の確保の拒否でも、保存済みの追加分の性質を保つ |
+| `located_identified`・`own_warning_origin`・`located_own` | identify の成功キーと、演算自身の候補のキー・対象演算を結び付ける。候補の保存途中で停止しても、保存した分だけに性質を渡す |
+| `analysis_located` | 任意の深さ・予算・入力 Context に対し、expr・shortCircuit・block・armList の Located を同時に示す。番号だけを辿る部分には skip_silent、未知の形の子には親の警告列を復元する unknownChildren_silent を使う |
+| `expr_located`・`shortCircuit_located`・`block_located`・`armList_located` | extra を False とし、追加警告だけが当該部分木の番号列と対象演算に対応することを ListExtension で示す。expr の言明は既存の numbered を使う。元からある警告に、現在の部分木への所属を要求しない |
+| `analyzeExpr_warning_located`・`analyze_warning_located` | 空の警告列から始める入口では出力の全警告が、入口の環境と警告自身のキーを targetOperationAt に渡す位置の性質を満たす。analyze_warning_located は任意の Parameters について WarningLocated analyze を示し、評価導出・完走・予算内・事前の警告健全性を前提に加えない |
+
+この証明は、対象の位置と対象演算の一致に限る。警告位置での演算の失敗を結論する警告の中心定理とは区別する。
+
+`Interval/SyntacticReach.lean`・`BudgetReach.lean` は、根から対象の出現まで具体規則の候補を辿る構文上の範囲を構文的な到達可能性とし、追加警告がその範囲に属することを示す。call の引数は標準束縛の認定前の候補として含めるため、この範囲だけでは未認定 call の内側を除外しない。その除外は後述する別の定理で保証する。構文的な到達可能性（syntactic reachability）は、実行で到達できることとは異なる。具体的な実行でその位置へ到達することや、到達する実行が存在することを要求しない。理由: 未知の規則は子を評価せず空の trace を返すため、内側の警告は Reached を前提とする警告の中心命題だけでは区別できないからである。
+
+`concreteRule source` は、現 profile の Integer64 と Bool のリテラル・negInt・Unit・局所位置・括弧・埋め込み定数・return・短絡・match・not・Block・if・call を true とする。残る六種のリテラルと negInteger8・negInteger16・negInteger32 は、表す整数がその種類の値域内の場合だけ true とする。二項演算では binarySupported と同じく七種の整数の加算・減算・乗算・整数除算・剰余・六比較を true とし、一般の負号は negModeled と同じく符号付き四種を true とし、ほかは false とする。concreteRule_known は、true の構文について、任意の具体環境・型・キーで UnknownAt が成り立たないことを示す。ただし call には、同じ環境・型・キーの rangeCallBinding が none でないという callKnown の前提を要する。record・recordUpdate は false とし、その子を親の候補に含めない。match の腕を候補に含めることから、腕の実際の到達や、整数とも Range の Result とも認定できない腕の解析は結論しない。
+
+syntacticReachExpr source は、元の先行順の各出現に Bool の印を付けた列である。先頭は `(concreteRule source, source)` とする。syntacticReachChildren は、括弧・constE・return・not の子、対象二項演算・短絡の左右、match の照合値と腕、Block、if の条件と枝へ進む。call では頭の全出現を outsideSyntacticReach によって false にし、引数を syntacticReachExprs で連ねる。標準束縛の認定はここでは要求しない。record・recordUpdate の子は outsideSyntacticReach により false とする。concreteRule が false の形では、子の全出現も false にする。syntacticReachBlock は文の右辺と続きを連ね、syntacticReachArms は guard・本体・後続腕を連ねる。容器には番号を加えない。true の印のある出現だけが構文的な到達可能性に属する。match の腕は認定結果によらず含めるため、整数とも Range の Result とも認定できない場合の腕も、この候補範囲には残る。
+
+numberSyntacticReach key slots は false の出現も含めて一つずつ番号を進める。syntacticReachExpr_sources・syntacticReachChildren_sources・syntacticReachBlock_sources・syntacticReachArms_sources は、印を忘れた列が元の先行順と一致することを示し、numberSyntacticReach_sources は番号を含む一致を示す。未知の内側を構文的な到達可能性から除いても、後続のキーは詰めない。これらの列と番号付けは証明用であり、実行する解析から呼ばず、予算の消費も変更しない。
+
+InSyntacticReach key slots warning は、numberSyntacticReach key slots に `(warning.key, true, source)` があり、`WarningOperationSyntax source warning.operation` を満たす source が存在する命題である。算術では従来の arithmeticOperationAt の等式を使い、標準操作では固定域の規則と直接の callee の宣言の一致を要求する。WarningsInSyntacticReach analyze は、式の入力ごとに出力の全警告が `InSyntacticReach input.key (syntacticReachExpr input.source)` を満たし、同じ環境・元のキーの targetOperationAt による WarningLocated も満たす契約である。Within work slots extra は、この性質と証明用の extra との選言を、Spec によって追加警告だけへ要求する。
+
+固定域の契約を持つ純粋なシフトの call 自身と、その認定した call の引数へ範囲を広げる。実際の認定は CallReach が元の環境とキーで行う。未認定の call・利用者関数・対象外の標準 call の内側の除外は `WarningsInCallReach` の定理が担う。構文だけの候補の上界と、この表による認定を組み合わせて公開の解析の定理を示す。`InSyntacticReach.arithmetic`・`analyze_warning_arithmetic`・`analyzeBody_warning_arithmetic` は、算術の演算を持つ警告について `arithmeticOperationAt source = some warning.operation` という演算の同定を保つ。
+
+| 言明 | 前提と結論 |
+|---|---|
+| `syntacticReachExpr_unknown`・`outsideSyntacticReach_excluded`・`unknown_warning_excluded` | concreteRule が false の根では全出現の印が false になり、その式自身と内側の対象演算は当該入力の構文的な到達可能性に属さない |
+| `InSyntacticReach.located`・`WarningsInSyntacticReach.located` | 前者は印を忘れた番号と WarningOperationSyntax を、後者は契約に含めた元の環境の WarningLocated を取り出す |
+| `within_bind`・`within_scope`・`within_identified`・`within_own` | 成功した前半の番号消費と identify のキーを使い、追加警告の構文的な到達可能性を合成する。停止と枠の確保の拒否でも保存済みの追加分を保つ |
+| `analysis_within` | 任意の fuel・limits・入力 Context に対し、expr・shortCircuit・block・armList の Within を相互帰納法で示す。未知の形の子は unknownChildren_silent、番号だけを辿る部分は skip_silent により、現在の入力の警告列へ追加しない |
+| `expr_warning_syntactic_reach`・`shortCircuit_warning_syntactic_reach`・`block_warning_syntactic_reach`・`armList_warning_syntactic_reach` | extra を False とし、成功・停止とも新しい警告だけが各入力の構文的な到達可能性に属することを ListExtension で示す。入力からある警告には現在の構文的な到達可能性への所属を要求しない |
+| `analyzeExpr_warning_syntactic_reach`・`analyze_warning_syntactic_reach` | 空の保存列から始める式の入口では全出力警告が構文的な到達可能性に属し、同じ analyze が WarningsInSyntacticReach analyze を満たす。任意の上限・初期消費・深さを量化し、Models・評価導出・完走・予算内・事前の警告健全性は要求しない |
+| `bodyWork_warning_syntactic_reach`・`analyzeBody_warning_syntactic_reach` | 入口の忘却と全体上限の事前停止を含め、本体入口の全出力警告が、bodyRootKey definition から始める bodyRoot seed.body の構文的な到達可能性に属する。同じく任意の上限・初期消費・深さを量化し、評価導出などの前提を加えない |
+
+`Interval/CallReach.lean`・`CallTables.lean`・`BudgetCallReach.lean`・`CallReachSound.lean` は、公開の解析入口の言明を保ち、警告範囲の述語を固定域へ拡張した上で、未認定 call の内側を親の警告から除く別の保証を与える。証明用の CallReach.Scope は、番号を占める元の sources と、開始キー・警告を受け取る述語 allows を持つ。append は左の列の長さだけ右の開始キーを進め、outside は番号を占めて警告を認めず、root はその位置の RootWarning だけを認める。gate は、その開始キーで条件が成り立つ場合だけ内側の述語を認める。
+
+CallReach.expr env source は、call の場合、`rangeCallAt env key source ≠ none` を gate の条件とし、根・番号だけを占める頭・ソース順の引数を連ねる。根は callRoot を使い、標準操作の候補には同じ認定済みの束縛との一致も要求する。未認定なら、その call 自身も引数の全出現も allows を満たさない。record・recordUpdate の子は親の範囲に含めない。ほかの対応する形では、根と各子の述語を連ねる。CallReach.block・exprs・armList は、容器に番号を加えず内容を連ねる。認定に使うのは env の標準表・出現表と元のキーであり、局所値と Range の補助記録は参照しない。CallTables の補題は、局所位置の追加・忘却、定数、条件の絞り込みと合流、整数と Result の腕でも両表が変わらないことを示す。
+
+| 別の保証の言明 | 前提と結論 |
+|---|---|
+| `CallReach.unrecognized_call_excluded` | rangeCallAt が none の call は、任意の警告について CallReach.expr の allows を満たさない |
+| `CallExclusion.expr_unrecognized_call_silent_at` | 任意の fuel・予算・入力 Context で、開始キーの rangeCallAt が none なら、その call を根とする内部解析は成功・停止とも既存の warningsRev を保つ |
+| `CallExclusion.analysis_within_all` | 式・短絡・Block・整数の腕・引数列・Result の腕の六つについて、任意予算で追加警告が extra または allows を満たすことを Spec で合成する。既存の警告には今の部分木の性質を要求しない |
+| `expr_warning_call_reach`・`block_warning_call_reach` | extra を False とし、追加警告の ListExtension を与える |
+| `analyzeExpr_warning_call_reach`・`analyze_warning_call_reach`・`analyzeBody_warning_call_reach` | 式・共通の analyze・本体の各入口の全出力警告が、入口の二表と元の開始キーによる allows を満たす。任意の上限・初期消費・深さを量化し、Models・評価導出・完走を要求しない |
+| `analyzeExpr_unrecognized_call_warnings` | 式入口の根が未認定 call なら、全引数を含め親の警告列は空である |
+
+既存の構文的な到達可能性の定理と、この別の保証を合わせて、未認定 call を含む未知の式の内側を親の警告列から除く。構文だけの候補範囲が call の引数を含むことを、未認定の引数から親へ警告を返せる根拠にはしない。内側を別の独立入力として解析した結果は independentRev に保存し、各入力の根と環境から定め直した両方の範囲に対して保証する。これらの証明用の列・述語は解析から実行せず、正常値と警告の中心二命題・評価関係・解析器・予算の計上を変更しない。SyntacticReachExamples は、同じ call について標準表・出現表・キーを変えた場合の除外と認定を小さな有限表で確かめ、親と独立入力への候補の振り分けを #guard で確かめる。
+
+`Interval/BudgetCause.lean` は、警告の追加分に対する範囲と拒否原因の合成補題を定める。CauseIn key size trace warning は、KeyWithin key size warning.key と、「Reached trace warning event ならば event.result = rejected warning.cause.toFailure」の組である。Causal work limits ctx key size trace は、入力と出力の warningsRev に ListExtension (CauseIn key size trace) が成り立つ命題とする。成功・停止のどちらも対象にし、入力からある警告にはこの性質を要求しない。これらは証明用の命題であり、実行する解析・予算の計上・評価関係は変えない。
+
+| 補題 | 前提と結論 |
+|---|---|
+| `CauseIn.emptyTrace`・`numberFrom_bounds`・`LocatedIn.bounds`・`causal_absent` | 空 trace には到達事象がない。評価導出に依存しない Located から、未実行部分の追加警告の範囲と空 trace に対する原因の性質を得る |
+| `CauseIn.widen`・`append_left`・`append_right` | 警告の範囲を広げるか、交わらない別範囲の TraceKeys を持つ trace を前後に連結しても原因を保つ。別の範囲の事象と警告のキーの一致は不可能である |
+| `Silent.causal`・`Causal.mono`・`causal_bind`・`causal_scope`・`causal_map` | 警告を追加しない処理、原因の含意、逐次実行、枠の確保・返却、結果値の変換について追加分を合成する。後続の仮定は前半が実際に成功した中間 Context にだけ要求する |
+| `causal_bind_append`・`causal_bind_follow`・`causal_bind_root` | 子ごとの Causal・TraceKeys・範囲の分離から、保存列の追加順とは独立に実行順の trace を合成する。follow は成功時の Walk から次の子の開始キーを得る。root は子の範囲と親自身の一番号を分ける |
+| `causal_saveWarnings`・`causal_own` | 候補の原因の性質から、保存に成功した追加分に同じ性質を渡す。候補の途中で停止した場合も含む |
+| `own_cause_absent`・`own_add_cause`・`own_sub_cause`・`own_mul_cause`・`own_div_cause`・`negOwn_cause` | own の警告は親の一番号に属する。正常な二引数が両近似に所属すれば、加算・減算・定数倍はあふれ、整数除算・剰余は除数0の原因どおりに拒否される。負号は正常な一引数の近似を使う。未実行の場合は空 trace に対して範囲だけを使う |
+| `causal_scope_same`・`causal_scan_bind`・`causal_branch_selected`・`causal_arm_selected` | 成功した走査の既存規則との一致と、同じ中間状態の次キーを使う。選ばれた枝・腕の Causal は子の仮定として明示する |
+| `causal_branch_absent`・`causal_arm_absent` | 未実行の枝・腕では、解析し得る各入口の子の空 trace に対する Causal と、番号だけを走査する部分の Silent を別に要求する |
+| `expr_normal_next`・`block_normal_next`・`binary_operands` | 同じ成功実行の NormalCovered と次キーの消費を組にする。二項演算では左右の実際の中間 Context を通して、二引数の所属と右の子の開始キーを得る |
+| `causal_add_of_operands`・`causal_div_of_operands` | 二つの子の正常評価・Models・実際の解析の成功から、続く own の追加分の原因を示す。own 自身の保存の成功は要求しない |
+| `branch_entry_of_success`・`arm_entry_of_success` | 成功した条件式・照合値の正常値所属から、具体評価が選ぶ枝・整数の腕の入口の存在と Models を得る |
+
+これらの合成補題は子の Causal を仮定に取る。`Interval/BudgetSound.lean` は、その仮定を予算付き解析についての相互帰納法で閉じる。実行された子には Models と評価導出を渡し、実行されなかった部分には Located から得た空 trace の性質を使う。入力からある警告には、現在の部分木への所属や原因の健全性を要求しない。
+
+| 言明 | 前提と結論 |
+|---|---|
+| `expr_causal`・`block_causal` | Models と EvalPartial または EvalBlock、および入力 Context の next と評価の開始キーの一致から、式または Block 全体の Causal を示す。任意の fuel・limits・入力 Context を量化し、成功と停止の両方で追加警告の範囲と拒否原因を保つ |
+| `shortCircuit_run_causal`・`shortCircuit_absent_causal` | 実行した右辺には左辺の成功から得た絞った環境を渡す。短絡または左辺の異常終了では右辺を空 trace とし、左辺と右辺の範囲を合わせた Causal を示す |
+| `armList_causal`・`armListKind_causal` | 元の環境の Models、同じ種類の照合値の正常評価と normal 区間への所属、Integer64 の EvalArms または六種の EvalWidthArms、開始キーの一致から、腕列全体の Causal を示す。選ばれた腕の束縛と guard の真の環境を対応させ、偽の guard から進む後続腕には元の環境を渡す |
+| `binary_causal`・`conditional_causal`・`guard_causal` | 成功した中間状態の番号消費と、互いに交わらない trace の範囲を使い、子と演算自身、条件と各枝、guard と本体の追加警告を合成する |
+| `analyzeExpr_warning_sound` | 空の保存列から始める同じ analyzeExpr の全出力警告について、Models と EvalPartial の下で、Reached が成り立つ事象の結果が警告原因どおりの拒否であることを示す。停止後に保持した警告も対象に含める |
+
+番号の大きさと先行順の列は証明用に使い、実行する解析へ予算外の走査を加えない。相互帰納法の入口では、空 trace に対する原因を位置の保証から得る。加算・減算・乗算と整数除算・剰余の own には、両オペランドの解析が実際に成功した同じ状態列の正常値所属を使う。独立した二つの子の事象や、未選択の枝・腕の事象を取り違えないように、キーの範囲を分離する。
+
+```math
+analyze_warning_sound : WarningSoundness Models analyze
+```
+
+この定理と analyze_normal_sound・analyze_warning_located は、同じ analyze と任意の Parameters を対象とする。警告の定理は、到達して正常な引数を得た演算にだけ拒否原因の一致を要求する。解析の完走・予算内・事前の警告健全性の前提を加えず、正常値・警告の中心命題や旧主定理の前提と結論、公理を変更しない。
+
+`Interval/BudgetBody.lean` は、本体の入口の事前判定・入口環境の忘却・根の block 式の解析へ、同じ正常値・警告・位置の保証を接続する。次の三つの系は、任意の上限・初期消費・深さ・定義名・BodySeed を量化する。
+
+| 言明 | 前提と結論 |
+|---|---|
+| `analyzeBody_normal` | `Models (forget seed.initial) concrete` と `EvalPartial concrete ⟨bodyRoot seed.body, type, bodyRootKey definition⟩ outcome trace` から、出力の approx が NormalCovered を満たすことを示す |
+| `analyzeBody_warning_sound` | 同じ Models と評価導出の下で、出力の警告へ Reached が成り立つ事象は、その警告の原因どおりに拒否される。停止後に保持した警告も含む |
+| `analyzeBody_warning_located` | 評価導出を要求せず、全出力警告のキーと対象演算が、根を番号0とする numbered の出現と一致することを示す |
+
+bodyWork_normal・bodyWork_causal・bodyWork_located は、forgetEnv の完走時の一致から expr_normal・expr_causal・analysis_located へ接続する。内部の bodyWork_normal では bodyRootKey との開始キーの一致を使い、本体の公開入口がその一致と忘却済みの Range の不変条件を構成する。analyzeBody_property は全体上限で入口を止めた場合と bodyWork を実行した場合を同じ出力の性質へ移す。事前停止と忘却中の停止は正常値を Top に戻し、警告を作らない。入口の系も、解析の完走・予算内・事前の警告健全性を前提に加えない。
+
+BudgetWalk・BudgetAnalyze・BudgetProof・BudgetTraversal・BudgetNormal・BudgetLocated・BudgetCause・BudgetSound・BudgetBody・SyntacticReach・BudgetReach・SyntacticReachExamples・BudgetAnalysisExamples を既定の import に含める。独立例は、深さ0、未対応と Bottom の区別、操作・保持の途中超過、番号未取得、警告候補の確保の拒否、保存済み警告の保持、未到達・短絡・return・guard・shadow・捕捉境界、後続本体の全体超過、保存数と借用項目を確認する。空でない警告列と対応列を持つ入力について、候補の途中での停止と完走を比較し、追加順・拒否した候補の除外・既存の接尾辞の保持も確認する。非零の開始番号と既存の対応列からは、短絡で飛ばす match の guard・const 本体と後続の演算について、解析と番号だけの走査の完走・途中停止を固定の番号列と比較する。共通の解析結果への射影について、短絡の完走時の偽だけへの近似、深さ2と操作上限0での両真偽の保持、型の不一致の除外を比較する。構文的な到達可能性の独立例は、未知の list・未対応演算・with・handle の内側の除外、後続キーの保持、const・括弧の内側、整数の可能性がある腕の guard と本体を固定期待値で確認する。本体名・別本体の全列挙・元 AST との対応と Rust/VM との一致は、本節の保証に含めない。
+
+### 区間解析の予算付きの別本体の発見
+
+【決定】`BudgetDiscovery.discover limits state fuel definition seed` は、元の定義の根を番号0から辿り、ラムダ・lazy・handlerの節を別本体として発見する。値の到達可能性や具体評価の有無によらず全53構成子と相互帰納容器を宣言のフィールド順に読む。constE 自身は別本体にせず、その子では局所位置を空にする。通常・パターン・builder・with・腕・節の局所位置を予算内で構築し、保存する本体の引数と捕捉値は Top から始める。
+
+発見順は境界式の先行順、同じhandleでは節順である。同じhandleの全節を、その保護本体や節の内側の境界より先に保存する。節の `parentStart` に必要な式数は `BudgetScan.countBlock` で先読みする。この走査にも作業枠・番号の計数・容器の分類を計上し、番号の対応表は作らない。`countExpr_agrees`・`countBlock_agrees` などは、完走した計数が既存の先行順の長さと一致することを任意の予算について示す。実行から `bodyManifest` や `preorderBlock` の全列挙を呼ばない。
+
+出力は成功または Halt と、次キー・発見列・実消費である。reidentify は番号付けの操作だけを計上し、次キーを一つ進める。親の解析が保存した対応表を二組目として作らず、identity の確保をしない。walk.identitiesRev は空のまま保つ。`Entry` は EmbeddedBody と任意の入口環境を持つ。一保存枠を先に確保し、入口環境の作成・忘却が成功したら、その新しい環境だけを保存保持へ移す。作成中の停止では環境を none とした発見項目が残る。停止以前に保存した項目を捨てず、未発見の残りを全列挙済みと扱わない。`discovery_complete` と `discover_manifest` は、完走時に次キー・発見順が元の全先行順の長さと bodyManifest に一致し、対応表を作らないことを示す。深さでの停止も Halt.depth として区別する。`typedValues_agrees` は既存の引数の束縛順との一致、`saveEntry_top` は保存に成功した任意の入口の全整数位置が Top であることを示す。
+
+### 区間解析の検査全体の駆動
+
+【決定】`BudgetWhole.analyze limits state fuel modules` を検査全体の入口とする。入力は型検査に成功した関数・定数の読み取り専用の Definition の列を持つ Module の列であり、呼び出し側が読み込み済みモジュールのソース順と各モジュールの定義順を保つ。name はモジュール付きの元の定義名、kind は function または constant、params は宣言順の型、body は Block、metadata は同定表を持つ環境である。定数の params は空とする。metadata の局所位置を借用せず、引数は `typedValues` で一位置ずつ作って忘却する。出力の一記録を auxiliary 一保存項目として先に確保する。
+
+モジュール自身の分類は、作業枠を一時項目として確保し、分類一操作を計上してから枠を返す。成功した状態も `finishBody` で本体消費を初期化してから定義列へ渡す。分類の操作数と最大同時保持は全体状態に残る。理由: モジュールの先頭の定義と二つ目以降の定義に、同じ本体予算を与えるためである。全体上限の事前判定と分類中の停止では、定義を開始せず残るモジュールを報告する。
+
+定義ごとの順序は、入口環境の作成、親の `analyzeBody`、元の定義からの `BudgetDiscovery.discover`、発見列を解析順へ反転する待ち行列の作成、各別本体の `analyzeBody` とする。入口の作成・親解析・発見・待ち行列の作成は同じ本体予算を使う。親と発見の Report.after は途中で使わず、終了前の context の予算を渡す。待ち行列の作成まで終えてから本体を閉じ、各別本体では新しい本体予算を使う。全体操作数・保存数・最大同時保持は全段で共有する。別本体の解析結果から再発見しないため、入れ子も元の定義に対して一度だけ列挙する。
+
+`prepareQueue` は逆順の発見列を予算内で反転し、各セルの保持と分類を計上する。完走した列だけを保存保持へ移し、停止した途中の一時セルを返す。`reverseEntries_agrees` は完走時に元の発見順となることを示す。別本体の一記録も auxiliary 一保存項目として解析前に確保する。`entryEnv` は別本体内の同定キーを元の定義の `parentStart + i` へ戻し、元の同定表から標準束縛を読む。長さの事前走査をせず、有効な内容の番号について `entryEnv_parent` が既存の parentKey との一致を示す。根0には元の式の同定を与えない。保存した本体の入口には、既存の正常値・警告原因・位置・構文的な到達可能性と独立入力の健全性の系を適用する。その際の Models は、その本体へ渡した seed.initial を忘却した環境について要求する。
+
+Report は定義の出力を逆順に持つ。各 DefinitionOutput は入口の成否、任意の親の結果、任意の発見結果、任意の待ち行列の成否、別本体の解析結果と未解析の発見項目を持つ。入口未作成、発見未着手、発見途中の未発見部分、発見済みだが環境未作成、待ち行列未作成、発見済み未解析を区別する。未着手を成功した空列に変えない。全体上限に達した後は次の環境・番号・出力枠を作らず、残る定義・モジュールは元入力への参照で返す。未発見の本体数を求める事前走査は行わない。保存した親の警告と各独立入力自身の警告、別本体の警告は、停止後もそれぞれの結果に残す。
+
+fuel は検査全体への明示の自然数の入力とし、同じ値を各本体と発見へ渡す。fuel は入れ子の深さだけでなく、Exprs・Block・腕・節の列の長さでも減る。「深さで止まらない」という保証は置かない。`StopClass` は depth・bodyBudget・wholeBudget・unidentified を区別し、元の Halt は原因の範囲と資源を保持する。`bodyStops` は親と別本体の Coverage の停止、`phaseStops` は入口・発見・待ち行列・制御の停止を別々に列挙し、`stopCount` が分類ごとの事象数を返す。これらは本体の件数ではなく、同じ全体上限の到達を複数の段で重ねて数えうる。独立入力内の停止は親の停止にも伝播するため、独立入力の停止をこの本体件数へ重ねて数えない。`comparisonEligible body` は当該 BodyOutput の Coverage が depth の場合だけ false となる。他の本体は比較対象に保つ。excludedBodies は比較から除外した本体の列を返す。発見などの段の depth は phaseStops で別に報告し、全列挙の完了と扱わない。深さ停止を予算超過や正常な Top の一致へ混ぜない。
+
+利用者向けの件数は停止事象の列から直接求めず、次の射影で数える。各射影は報告用であり解析から呼ばない。
+
+| 射影 | 数える単位 |
+|---|---|
+| `inputDefinitionCount` | 解析済みと残る元入力の定義数。別本体を含めない |
+| `unsupportedBodies` | 各BodyOutputの親のunsupportedまたは独立入力のunsupportedが一つでもtrueなら一件。停止した出力も含む |
+| `bodyBudgetExceeded` | Coverageが本体原因のexceededであるBodyOutput。unidentifiedを含めない |
+| `unidentifiedBodies` | CoverageがunidentifiedであるBodyOutput。元の本体/全体と資源の原因は別に保持する |
+| `wholeBudgetSkipped` | 全体原因のexceededで停止したBodyOutputと、DefinitionOutput.incompleteWhole、全体原因で残った発見済み未解析の別本体、全体原因で残る元定義の数の和 |
+
+incompleteWhole は、同じ元定義の入口・発見・待ち行列・制御のどれかが全体原因のexceededで停止し、発見済み未解析の項目がなく、親が既に全体原因（unidentifiedを含む）で停止していない場合に一件とする。複数の段で同じ全体上限に達しても一件である。wholeBudgetSkipped は未発見の別本体を数えるための走査をせず、その元定義の不完全な範囲を一件として表す。発見済み未解析の項目はembedded.stopped、残る元定義はReport.stoppedが全体原因の場合だけ加える。全体原因のunidentifiedの本体はunidentifiedBodiesへ数え、同じ本体をwholeBudgetSkippedへ重ねない。
+
+`BudgetWhole`・`BudgetWholeExamples` を既定 import に含める。独立期待値は、モジュール・定義・親と別本体の順序、各境界での全体停止と既存候補の保持、本体予算の切り替え、全体の累積消費、深さ停止の二種類の件数と比較からの除外を確認する。本体操作上限の直前・ちょうど・直後では、先頭への空関数の追加によって元本体の操作数と候補が変わらないことも確認する。これらは実行比較であり、検査全体の順序の実行定義を全プログラムの意味保存の定理と扱わない。Rustの入力変換・元ASTの対応表・実行との一致は保証に含めない。
+
+### 区間解析の独立入力の保存と保証
+
+【決定】`Interval.BudgetIndependentRun` と `Interval.BudgetAnalyze` は、親の警告と分けて Expr または Block を解析し、入力ごとの結果を保存する内部の入口を定める。`Interval.BudgetIndependent` と `Interval.BudgetIndependentSound` は、この入口の保証と保存列の不変条件を定める。BudgetAnalyze の expr は、未知の形と未対応の二項演算の子を BudgetChildren の unknownChildren で振り分け、この入口へ接続する。独立入力の内側の未知の形にも、同じ処理を再帰的に使う。理由: 外の局所の事実を持ち込まず、入力の内側だけで得た区間と警告を利用するためである。
+
+`BudgetIndependentRun` は BudgetWalk だけを import し、prepareIndependent・captureIndependent・independentWith を定義する。解析本体の expr・block は、BudgetIndependent・BudgetIndependentSound を import せず、independentWith へ内部走査を渡せる。`BudgetChildren` は BudgetIndependentRun を import し、`BudgetAnalyze` は BudgetChildren と Sound を import する。BudgetAnalyze は、expr・block の相互再帰の定義の後に IndependentInput.run と independent を置く。一般の内部走査に対する prepareIndependent_walk・captureIndependent_walk・independentWith_walk は BudgetTraversal の analysis_walk より前に、independentWith_silent は BudgetLocated の解析の位置の証明より前に置く。入力自身の評価・構文的な到達可能性・正常値・原因を使う証明は BudgetIndependent・BudgetIndependentSound に置く。
+
+`BudgetChildren` の childExprs・childHoles・childOptional は、子の列を平坦化せず、宣言のフィールド順と容器の列順に独立入力を処理する。childExprs・childHoles は容器の作業枠と classification を計上し、穴には値の解析も番号も加えない。unknownChildren を含め、深さ0では depth で停止する。expr の未知の場合は、小さい fuel の expr・block を内部走査として渡す。構成子ごとの振り分けは次のとおりである。土台で具体規則を持つ形は expr 自身が処理し、この振り分けへ進まない。
+
+| 未知の形 | 子の扱いと順序 |
+|---|---|
+| 子を持たない名前・値、非対象の literal、幅付きの葉の値域外の内部表現、negFloat・negDecimal・negFloat32 | 独立入力を作らない。親自身は Top と未対応の記録を返す |
+| 未対応の binary、pipe | 左右をそれぞれ独立入力とする。左の正常値や return によって右の解析を省かない |
+| 符号付き四種以外の neg・tryResult・tryOption・resume | オペランドを独立入力とする |
+| builderOp・conCall・record・list | 式列の各要素を独立入力とする |
+| recordUpdate | 更新元を先に、続いて式列の各要素を独立入力とする |
+| 未認定の call | 呼び出しの頭を先に、続いて式列の各要素を独立入力とする。rangeCall で認定した Range または純粋なシフトの標準 call はこの振り分けに入らず、頭の番号だけを占め、引数を同じ親環境・共有状態でソース順に解析する。引数を独立入力にせず、認定した call 自身に未対応の印を付けない |
+| partialCall・partialCon | partialCall の頭を先に、続いて HoleArgs の式だけを独立入力とする。partialCon には頭の式がない |
+| listSpread | concat、展開前の式列、展開する式、展開後の式列の順に独立入力とする |
+| interpolation | 式列、変換の頭の列の順に各要素を独立入力とする |
+| tryResultDie・tryOptionDie | オペランド、存在する場合のメッセージの順に独立入力とする |
+| withE | 束縛式を独立入力とする。次に BudgetScan.push で型だけを持つリソースの位置0を加え、その環境を忘却して本体の Block を独立解析する。外の位置は一つずれ、束縛式の正常値の事実は渡さない |
+| handleFail・handleE | 保護された本体の Block を独立入力とする。failure 節・通常の handler 節は別本体なので番号だけを辿る |
+| lam・lazyE | 本体は別本体なので番号だけを辿り、ここでは解析しない |
+
+独立入力は skip に代えて実行し、先に同じ部分木を番号走査しない。unknownChildren_walk は、内部走査の Walk から元の子の先行順との対応を示す。unknownChildren_silent は、入れ子の保存列を残しながら親の警告列を変更しないことを示す。これらを analysis_walk・analysis_located・analysis_within と正常値・警告原因の証明へ接続する。未到達の枝、正常値のない先行式や return の後続、一種類の整数とも Range の Result とも認定できない match の腕は、引き続き番号だけを辿り、その内部を独立解析しない。正常値のある照合値には整数の種類の判定より先に rangeMatch を試み、認定した Result では Error の腕・guard・外側の var と wild を含む全腕を親の環境から解析する。これらの腕を独立入力にせず、認定した match 自身に未対応の印を付けない。未到達の判定は各入力が持つ事実に対して行う。独立入力は外の事実を忘れるため、外の事実なら未到達になる枝に警告が出る場合がある。
+
+`IndependentInput` は expr source または block body である。syntacticReach はそれぞれ syntacticReachExpr source または syntacticReachBlock body とし、Evaluates はそれぞれ EvalPartial または EvalBlock を使う。Block の容器を式に包まず、元の開始キーから内容を読む。`IndependentResult` は input・開始キー key・忘却後の入口環境 initial・成功または停止 result・入力自身の warningsRev・unsupported を持つ。initial は忘却の完走時だけ some env とし、忘却中の停止では none とする。この欄は証明用であり、対応する処理系は環境の項目を結果へ保存しない。approx は停止時に正常値を Top に戻し、warningsRev を付けた近似である。
+
+| 入口 | 実行と保持の規則 |
+|---|---|
+| `prepareIndependent env` | BudgetScan.forgetEnv で外の局所の整数の事実を忘れる。新しく作った環境は一時項目のまま子の解析中だけ保持し、成否とも外側の scope で返す。標準束縛表・出現の同定表は保つ。途中停止で作った未完成の環境は記録せず、外側の scope の復帰で一時項目を返す |
+| `captureIndependent input env work` | 保存枠の確保後に呼ぶ内部処理。親の警告列を空にし、未対応の印を false にして忘却と work を実行する。成否にかかわらず入力の結果を independentRev の先頭へ保存し、親の警告列と未対応の印を復元する。予算・次キー・識別対応と、内部で保存した独立入力の列は終了状態をそのまま使う |
+| `independentWith input env work` | scope で作業枠を確保し、結果の一記録を auxiliary 一項の saved として確保してから captureIndependent を呼ぶ。記録の固定長の欄は重ねて数えず、警告候補は各件を別に保存計上する。忘却した環境は一時項目としてのみ計上し、結果の initial は証明用の欄として保存項目に含めない。AST と標準束縛・同定表の読み取り専用参照先は複製しない。枠を確保できなければ内部を呼ばず、それ以前に保存した入力を残す |
+| `independent fuel env input` | work に現在の expr または block を使う入口。親へ返す値は Unit だけとし、子の正常値・return・絞り込みを親へ戻さない。子の停止は同じ停止理由で親へ伝え、以後の処理を呼ばない。本体の予算を初期化せず、finishBody も呼ばない |
+
+`IndependentResult.Sound entry` は、構文的な到達可能性と、入口の成否ごとの次の条件を持つ。
+
+```math
+∀ warning ∈ entry.warningsRev,
+  InSyntacticReach entry.key entry.input.syntacticReach warning
+entry.initial = none ⇒
+  (∃ reason, entry.result = error reason) ∧ entry.warningsRev = []
+entry.initial = some env ⇒ forget env = env ∧
+  ∀ concrete type outcome trace,
+  Models env concrete → entry.input.Evaluates concrete entry.key type outcome trace →
+  NormalCovered entry.approx outcome ∧
+  (∀ warning ∈ entry.warningsRev, ∀ event, Reached trace warning event →
+    event.result = rejected warning.cause.toFailure)
+```
+
+最初の条件と入口環境の忘却済みの条件は評価導出を要求しない。`Sound.located` はそこから元の番号列での位置と対象演算の一致を得る。`Sound.normal`・`Sound.cause` は、記録した環境を満たす具体環境と、その入力自身の評価導出から正常値と警告原因の保証を取り出す。忘却中に停止した入力は Top と空の候補を持つ。親の未知の式の空 trace から、その内側の警告の健全性を結論することはない。
+
+```math
+SavesInputs work = ∀ limits ctx,
+  ListExtension IndependentResult.Sound ctx.independentRev (work limits ctx).2.independentRev
+```
+
+| 言明 | 前提と結論 |
+|---|---|
+| `prepareIndependent_spec`・`captureIndependent_head` | 忘却の成功値が forget env と等しく、記録した入力と開始キーが渡したものと一致する。忘却は親の保存列と番号を変えず、復帰では親の候補と未対応の印を復元する |
+| `IndependentInput.run_contract` | 任意の上限・初期消費・深さに対し、忘却済みの環境と空の警告列で始めた expr・block の結果が、その入力の Sound を満たす。正常値は停止時の Top、警告は停止後に残った候補も含む |
+| `captureIndependent_saves`・`independentWith_saves` | 内部走査が入力自身の保証 IndependentContract と SavesInputs を満たせば、復帰後も健全な追加分だけを入力列へ加える。内部で加えた独立入力も残す |
+| `savesInputs_bind`・`savesInputs_scope`・`SavesInputs.all` | 成功した前半から後半へ保存列を合成する。前半の停止・枠の拒否でも保存済みの入力を失わない。元の列の全要素が Sound なら出力の全要素も Sound になる |
+| `unknownChildren_saves`・`analysis_savesInputs` | 各独立入力自身の run_contract と、小さい fuel の Expr・Block の SavesInputs を用い、expr・shortCircuit・block・armList の健全な追加分を相互帰納法で示す。未知の形が入れ子でも、内側と外側の保存結果にそれぞれ Sound を要求する |
+| `IndependentInput.run_saves`・`independent_saves` | 現在の Expr・Block の入口について、入れ子の追加分も含む SavesInputs を閉じる。元の列の要素に現在の入力の性質を要求せず、追加分だけに Sound を要求する |
+| `analyzeExpr_independent_sound`・`bodyWork_saves`・`analyzeBody_independent_sound` | 空の入力保存列で始める式・本体入口から保存した全入力に Sound を与える。本体入口の事前停止・忘却中の停止と、解析途中の停止後に残った入力と候補も含む |
+| `IndependentResult.Sound.forgotten`・`IndependentResult.Sound.integer_top` | Soundから忘却済みの入口環境と全整数位置のTopを取り出す。analyzeBody_independent_soundが入れ子を含む全保存入力に与えるSoundにもこの条件を含む |
+| `InputSegment`・`InputWalk`・`analysis_inputWalk` | 独立入力全体のnumberFromの列が元の本体の番号列の連続部分である不変条件を、番号のWalkとともに成功・停止を含めて合成する。証明用の列を解析から実行しない |
+| `analyzeBody_independent_segment`・`analyzeBody_independent_located` | 本体入口から保存した各入力全体の番号列がbodyRootKeyからの本体の番号列の連続部分となり、各候補のキー・式・対象演算が元の本体に位置する。評価導出・完走・予算内を要求しない |
+| `independentWith_silent`・`captureIndependent_shared` | 子の警告は親の列を変えず、内部走査の実消費・次キー・識別対応を復帰後へそのまま渡す |
+| `prepareIndependent_walk`・`captureIndependent_walk`・`independentWith_walk`・`independent_walk` | 忘却と結果の保存は番号を増やさない。内部走査の Walk を合成し、成否によらず元の先行順の接頭辞を取得し、完走時だけ全列を取得する |
+
+`Interval/CallReachIndependent.lean` は、既存の IndependentResult.Sound を変えず、保存された各入力に次の別の条件 IndependentResult.CallsRecognized を与える。CallReach.input env input は、Expr なら CallReach.expr env source、Block なら CallReach.block env body である。
+
+```math
+entry.initial = none ⇒ entry.warningsRev = []
+entry.initial = some env ⇒
+  ∀ warning ∈ entry.warningsRev,
+    (CallReach.input env entry.input).allows entry.key warning
+```
+
+CallExclusion.run_contract は入力自身のこの条件を示す。CallExclusion.SavesInputs は ListExtension の要素の条件に CallsRecognized を用い、captureIndependent・independentWith・unknownChildren と六つの内部解析で、入れ子の入力の追加分も合成する。analyzeExpr_independent_call_reach・analyzeBody_independent_call_reach は、式・本体入口から保存した全入力へこの条件を渡す。忘却中の停止と解析途中の停止後に残った入力も含み、評価導出を前提にしない。既存の analyzeExpr_independent_sound・analyzeBody_independent_sound と合わせることで、各独立入力自身についても未認定 call の内側をその入力の警告列から除く。
+
+`Interval/CallReachWhole.lean` の BudgetWhole.BodyOutput.CallsRecognized は、本体の親の候補が、保存した seed の環境・bodyRootKey による CallReach.expr の allows を満たし、独立入力の全記録が CallsRecognized を満たすという連言である。runBody_call_reach・runEntries_call_reach・runDefinition_call_reach・definitions_call_reach・modules_call_reach は、実際に保存した出力にこの条件を保つ。BudgetWhole.analyze_warning_call_reach は、全体入口の bodyOutputs の全要素にこの条件を与える。全体上限や入口・発見・待ち行列の停止後に残った出力も対象とし、未着手の本体を解析済みとは扱わない。別本体には entryEnv で元の出現へ戻した実際の入口環境を使う。
+
+`BudgetIndependentRun`・`BudgetChildren`・`BudgetIndependent`・`BudgetIndependentSound`・`BudgetIndependentPosition`・`BudgetIndependentExamples`・`BudgetChildrenExamples` を既定の import に含める。独立例は、非空の入力列から Expr と Block を逐次解析した場合の親の候補・未対応の保存、元の番号、累積操作数・保存項目、外の区間の忘却と内側の bind、環境の一時項目の返却、候補保存後の停止、結果枠の拒否、忘却中と深さでの停止を固定期待値で確かめる。逐次実行の二例は #guard による実行比較であり、定理ではない。環境と停止の二例も #guard による実行比較であり、カーネルが検査する証明とは区別する。BudgetChildrenExamples の9組の #guard は、実際の式・本体入口から、呼び出し・リスト・レコード・補間・穴・try・未対応の二項演算の元番号と候補、入れ子、外の事実の忘却と内側の bind、return の非伝播、with の位置0、保護本体と別本体の区分、途中停止後の保存を固定期待値で照合する。これらは実行比較であり、任意の入力の保証は上の定理で与える。中心二命題・評価関係・旧主定理・公理・Builtins.Assumptions は変更しない。独立入力の Sound の定理だけから、本体の全列挙と検査全体の駆動の正しさ、深さの選び方、Rust/VM との一致を結論しない。
+
+### 区間解析の独立交換の読者
+
+【決定】`Interval.Exchange` は、対象構文の評価関係・解析器の外側で、独立入力と期待結果を復号する。`readCorpus : String → Except String Corpus` は生の JSON を読み、重複欄を失う前に拒否する。`decodeCorpus : Json → Except String Corpus` はすでに作られた JSON の復号であり、生の入力の入口には使わない。型・本体・定数は既存 Surface の読者と変換を使い、深い欄の一致を検査する。具体の欄と版は [07-04「区間解析の独立交換の読者」](../07-quality/07-04-formal-semantics.md#区間解析の独立交換の読者)に定める。
+
+| 定義 | 保持する内容 |
+|---|---|
+| `Exchange.Expected` | integer : Interval、boolean : Bool × Bool、other : Bool、mayFail : Bool、warnings : List IntervalWarning、coverage : BudgetAnalysis.Coverage、after : Budget.State、independent : List Json、context : Option Json、widths : Option Json、nonIntegerOther : Option Bool |
+| `Exchange.BodyExpected` | analyzed : Expected、または notAnalyzed : Json（検証済みの停止理由） |
+| `Exchange.Definition` | input : BudgetWhole.Definition、根の type : Ty、types : List (OperationKey × Ty)、sourceKeys : List OperationKey、expected : BodyExpected、evaluation : Option Json |
+| `Exchange.Module` | name : String、definitions : List Definition |
+| `Exchange.Input` | name : String、fuel : Nat、limits : Budget.Limits、initial : Budget.State、constants : List Benitoite.Exchange.ConstantEntry（既存 Surface 交換の型）、modules : List Module、expectedBodies : List (String × BodyExpected)、expected : Option Json（入力全体の期待） |
+| `Exchange.Corpus` | inputs : List Input、profile : String |
+
+`modules` の先頭を実行開始のモジュールの位置とし、その `name` だけは空文字列を認める。名前付きモジュールだけの独立入力も認める。後続モジュールの空名とモジュール名の重複は拒否する。空名の通常定義は `.point`、メソッドは `%impl:2:1:point` の形の元キーを保ち、別名を補わない。通常定義の宣言名は空にできず、モジュールとの整合・全型キー・元演算キーの検査は名前付きの場合と同じである。`QualifiedDefinition` は `.point` も満たし、メソッドの内部名は従来の専用の検査で扱う。これは交換の入力制約の修正であり、識別の定義は変えない。
+
+読者の受理範囲は base・flow・width・range・domain profile である。base・flow・width の標準束縛表は空とする。range・domain では明示した標準規則・引数型・宣言の役割を照合し、解決済みの標準束縛表と出現表を各定義の metadata に渡す。全型キーを根の block 式からの先行順と照合し、`targetOperationAt` が認める算術と標準呼び出しの元演算の対応を検査する。親・独立入力・別本体の期待でも、警告のキーと演算の一致を検査する。閉区間の端点は数学上の Int、予算と番号は Nat として正確に読む。読者の正負例を既定ビルドに含めるが、期待結果と解析・具体評価の一致の証拠とはしない。読者の検査によって、中心二命題の前提・結論、対象構文の評価関係、型とエフェクトの規則は変更しない。
+
+width・range・domain では、正常値の期待に `widths` と `nonIntegerOther` を必須とする。`widths` は Integer8・Integer16・Integer32・UnsignedInteger16・UnsignedInteger32・UnsignedInteger64 の六欄であり、Integer64 は従来の `integer` 欄に置く。それぞれの `top` はその型の全域、閉区間はその型の有限の値域内である。`other` は Integer64・Boolean 以外（六種の幅付き整数を含む）の正常値の可能性、`nonIntegerOther` は整数・Boolean 以外の正常値の可能性であり、両者を混同しない。保存した独立入力にも同じ幅の期待を使う。
+
+標準規則は Range の検査と射影、および純粋なシフトの固定域に限る。Range の成功値は所有元・構成子・型引数・三欄を持つ構造値として交換し、Result の正常な Error と trace 内の拒否を別々に記す。シフトの域内で閉じた評価器が選ぶ unknown の失敗を、成功値や実 VM との比較へ読み替えない。操作と HTTP の欄に固定域の規則を付けない。標準表の解決済みID・役割名・構成子宣言が実ソースに由来すること自体は入力の信頼範囲であり、読者は名前解決の正しさを証明しない。
+
+`Exchange.initialFuel : Corpus → Nat` は、定数展開後の全ての元定義の `surfaceSize (bodyRoot body)` の総和を4倍して32を加える。選んだ fuel は入力に明示し、解析と別本体の発見で同じ値を使う。深さ停止があれば値を倍にして固定コーパス全件を再実行し、選択と停止の件数を保存する。fuel が減るのは式の入れ子だけではなく、Block・Exprs・腕・節の列も含む。これは深さ停止がなくなることの証明ではない。
+
+`Exchange.analyzeCorpus : Corpus → Comparison` は、各 input を `BudgetWhole.analyze` に渡す。正常値の直積・親と保存した独立入力の候補と coverage・終了後の after・終了前の context を期待値と比較する。context は予算状態・次のキー・取得済みのキー列・未対応の印を持つ。mayFail は報告するが一致の判定に使わない。`Comparison` は JSON の report と matched・accepted を持ち、一致と受け入れを分ける。比較した本体0件、全ての比較結果が Top、または本体・段の深さ停止が残る場合は accepted を偽にする。Top の判定は元定義の根の型、別本体では元の型表にある末尾の型の正常成分で行う。整数はその幅の区間、Boolean は真偽の可能性、それ以外の型は nonIntegerOther だけで判定し、別の型の成分が Bottom であるだけでは非Topと数えない。型を取得できない本体も非Topとして数えない。
+
+未着手の元定義と別本体では、期待があれば `{"notAnalyzed": 停止理由}` と照合する。通常の解析結果の期待が残る場合、停止理由が異なる場合、解析した本体へ notAnalyzed を期待した場合は不一致とする。notAnalyzed の照合を正常範囲の比較件数へ足さない。数学的な manifest・未着手の理由・残る元入力も報告する。input の任意の expected は after・phaseStops・counts の各欄を独立に指定でき、与えた欄を最終報告と厳密に比較する。counts は BudgetWhole の五つの専用射影を持ち、phaseStops は段・停止理由・位置・保存済みの状態を含む順序付きの列である。本体・未着手・入力全体のいずれかの期待が不一致なら matched と accepted は偽となる。manifest の全列挙は交換の検証だけに使い、予算付き解析へ先行させない。
+
+`Exchange.evalCorpus : Corpus → Comparison` は別モードとして `evalClosed` の outcome と trace を期待値と比較する。normal・failed・returned と、各事象のキー・対象演算・正常な引数・演算自身の結果・実行順序を保持する。引数を持つ元定義、評価不能な入力、unknown の失敗を選んだ入力、環境を用意していない別本体は理由付きで除外し、具体的に比較した件数へ加えない。除外だけの評価比較は受け入れない。各モードの報告の `profileManifest` は必須profileの五種と、今回のprofile、入力・元定義・全本体・比較・除外の件数を持つ。必須の集合を示したことだけでは他profileの実施を意味しない。この実行器は対象構文の評価関係との比較であり、Rust の解析や実 VM との一致の証拠ではない。
+
 ### 検査済みの値の独立した小モデル
 
 【決定】`Benitoite.Checked.Access`・`Scope`・`Range`・`ListLength`・`ListIndex`・`NonEmptyList` は、コア計算の型付けとは独立した小モデルである。以下はその定義と保証の写しであり、進行・保存・エフェクトの健全性、脱糖の型の保存、検査器と網羅性の健全性の前提や結論を変更しない。Rust・標準ライブラリとの対応は、独立した期待値との照合で確認する。理由: 公開境界や検査済み値の固有の意味を、本体の型保存だけから導いたと扱わないためである。

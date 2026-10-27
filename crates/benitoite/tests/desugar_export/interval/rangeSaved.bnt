@@ -1,0 +1,7 @@
+function sample(value: Integer) -> Integer
+ bind result <- Range.checkInteger(value: value, maximum: 10, minimum: 0)
+ return match result with
+ case Result.Ok(c) -> Range.value(value: c)
+ case Result.Error(_) -> return -99
+ end match
+end function

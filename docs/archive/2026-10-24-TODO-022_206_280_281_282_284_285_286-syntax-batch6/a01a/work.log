@@ -1,0 +1,245 @@
+== plan: level work against 31960eb28c2003ce01fe4195e7808b2c1c7bb4c9 (7 changed file(s))
+   [fmt] because of crates/benitoite/src/typeck/interval/input.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/src/typeck/interval/input.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/src/typeck/interval/input.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/src/typeck/interval/input.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/src/typeck/interval/input.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/src/typeck/interval/input.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/src/typeck/interval/input.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling foldhash v0.2.0
+    Checking typenum v1.20.1
+    Checking cfg-if v1.0.5
+    Checking libc v0.2.190
+    Checking serde_core v1.0.229
+    Checking log v0.4.34
+    Checking libm v0.2.16
+    Checking memchr v2.8.3
+   Compiling hashbrown v0.17.1
+    Checking allocator-api2 v0.2.21
+    Checking equivalent v1.0.2
+    Checking bitflags v2.13.2
+    Checking thiserror v2.0.21
+    Checking bumpalo v3.20.3
+   Compiling cranelift-codegen-shared v0.136.4
+    Checking cobs v0.3.0
+    Checking leb128fmt v0.1.0
+    Checking fnv v1.0.7
+    Checking hashbrown v0.16.1
+    Checking target-lexicon v0.13.5
+    Checking arbitrary v1.5.0
+    Checking rustc-hash v2.1.3
+    Checking cpufeatures v0.2.17
+    Checking cranelift-assembler-x64 v0.136.4
+   Compiling zmij v1.0.23
+    Checking generic-array v0.14.7
+   Compiling wasmtime-internal-core v49.0.4
+   Compiling itoa v1.0.18
+    Checking zeroize v1.9.1
+    Checking crc32fast v1.5.2
+    Checking anyhow v1.0.104
+    Checking rustls-pki-types v1.15.1
+    Checking errno v0.3.14
+    Checking untrusted v0.9.0
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+   Compiling cranelift-bitset v0.136.4
+    Checking cranelift-control v0.136.4
+    Checking core-foundation-sys v0.8.7
+    Checking once_cell v1.21.4
+    Checking digest v0.10.7
+    Checking termcolor v1.4.1
+   Compiling pulley-interpreter v49.0.4
+    Checking sha2 v0.10.9
+    Checking rustls-webpki v0.103.16
+    Checking hybrid-array v0.4.15
+    Checking wasm-encoder v0.258.3
+    Checking wasmtime-internal-component-util v49.0.4
+    Checking subtle v2.6.1
+    Checking security-framework-sys v2.17.0
+    Checking core-foundation v0.10.1
+    Checking either v1.19.0
+    Checking bytes v1.12.1
+    Checking rustls v0.23.46
+    Checking serde v1.0.229
+    Checking semver v1.0.28
+    Checking block-buffer v0.12.1
+    Checking crypto-common v0.2.2
+    Checking security-framework v3.7.0
+    Checking http v1.5.0
+   Compiling indexmap v2.14.2
+    Checking smallvec v1.16.3
+    Checking postcard v1.1.3
+    Checking regalloc2 v0.15.2
+    Checking wasmparser v0.258.3
+    Checking cranelift-entity v0.136.4
+    Checking gimli v0.33.0
+   Compiling cranelift-codegen-meta v0.136.4
+    Checking cranelift-bforest v0.136.4
+   Compiling serde_json v1.0.151
+    Checking object v0.40.0
+    Checking itertools v0.14.0
+    Checking getrandom v0.3.4
+    Checking httparse v1.10.1
+    Checking signal-hook-registry v1.4.8
+    Checking aho-corasick v1.1.5
+    Checking scopeguard v1.2.0
+    Checking unicode-width v0.2.2
+    Checking simdutf8 v0.1.5
+    Checking regex-syntax v0.8.11
+    Checking base64 v0.23.1
+    Checking encoding_rs v0.8.42
+    Checking ureq-proto v0.6.4
+    Checking signal-hook v0.4.5
+    Checking graviola v0.4.1
+    Checking rustls-platform-verifier v0.7.1
+   Compiling cranelift-codegen v0.136.4
+    Checking wasmtime-internal-jit-icache-coherence v49.0.4
+    Checking digest v0.11.3
+    Checking rustix v1.1.5
+    Checking mio v1.2.4
+    Checking regex-automata v0.4.18
+    Checking cpufeatures v0.3.1
+    Checking wasm-encoder v0.261.0
+    Checking mach2 v0.6.0
+    Checking percent-encoding v2.3.2
+    Checking utf8-zero v0.8.1
+    Checking jiff-core v0.1.1
+    Checking ureq v3.4.2
+   Compiling benitoite v0.0.11 (<repo>/crates/benitoite)
+    Checking wasmprinter v0.258.3
+    Checking regex v1.13.1
+    Checking wast v261.0.0
+    Checking rustls-graviola v0.4.0
+    Checking jiff v0.2.37
+    Checking sha2 v0.11.0
+    Checking signal-hook-mio v0.3.0
+    Checking getrandom v0.4.3
+    Checking csv-core v0.1.13
+    Checking wasmtime-environ v49.0.4
+   Compiling wit-parser v0.258.3
+   Compiling wasm-metadata v0.258.3
+    Checking wat v1.261.0
+   Compiling wit-component v0.258.3
+   Compiling wasmtime-internal-wit-bindgen v49.0.4
+   Compiling wasmtime-internal-component-macro v49.0.4
+    Checking cranelift-native v0.136.4
+    Checking wasmtime-internal-unwinder v49.0.4
+    Checking cranelift-frontend v0.136.4
+    Checking wasmtime-internal-cranelift v49.0.4
+    Checking wasmtime v49.0.4
+warning: struct `SourceOrder` is never constructed
+  --> crates/benitoite/src/typeck/interval/input.rs:14:30
+   |
+14 | pub(in crate::typeck) struct SourceOrder {
+   |                              ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: enum `BodySource` is never used
+  --> crates/benitoite/src/typeck/interval/input.rs:22:28
+   |
+22 | pub(in crate::typeck) enum BodySource<'ast> {
+   |                            ^^^^^^^^^^
+
+warning: methods `node`, `params`, and `span` are never used
+  --> crates/benitoite/src/typeck/interval/input.rs:31:12
+   |
+30 | impl<'ast> BodySource<'ast> {
+   | --------------------------- methods in this implementation
+31 |     pub fn node(self) -> NodeId {
+   |            ^^^^
+...
+38 |     pub fn params(self) -> &'ast [Param] {
+   |            ^^^^^^
+...
+45 |     pub fn span(self) -> Span {
+   |            ^^^^
+
+warning: struct `Definition` is never constructed
+  --> crates/benitoite/src/typeck/interval/input.rs:55:30
+   |
+55 | pub(in crate::typeck) struct Definition<'ast> {
+   |                              ^^^^^^^^^^
+
+warning: enum `InputError` is never used
+  --> crates/benitoite/src/typeck/interval/input.rs:64:28
+   |
+64 | pub(in crate::typeck) enum InputError {
+   |                            ^^^^^^^^^^
+
+warning: function `definitions` is never used
+  --> crates/benitoite/src/typeck/interval/input.rs:76:26
+   |
+76 | pub(in crate::typeck) fn definitions<'ast>(
+   |                          ^^^^^^^^^^^
+
+warning: struct `BodyInput` is never constructed
+   --> crates/benitoite/src/typeck/interval/input.rs:167:30
+    |
+167 | pub(in crate::typeck) struct BodyInput<'ast> {
+    |                              ^^^^^^^^^
+
+warning: associated items `collect`, `expression_type`, `operand_type`, and `local_type` are never used
+   --> crates/benitoite/src/typeck/interval/input.rs:177:12
+    |
+174 | impl<'ast> BodyInput<'ast> {
+    | -------------------------- associated items in this implementation
+...
+177 |     pub fn collect(
+    |            ^^^^^^^
+...
+237 |     pub fn expression_type(&self, node: NodeId) -> Result<&Ty, InputError> {
+    |            ^^^^^^^^^^^^^^^
+...
+243 |     pub fn operand_type(&self, node: NodeId) -> Result<&Ty, InputError> {
+    |            ^^^^^^^^^^^^
+...
+249 |     pub fn local_type(&self, binding: BindingId) -> Option<&Ty> {
+    |            ^^^^^^^^^^
+
+warning: struct `InputTables` is never constructed
+   --> crates/benitoite/src/typeck/interval/input.rs:255:30
+    |
+255 | pub(in crate::typeck) struct InputTables<'a> {
+    |                              ^^^^^^^^^^^
+
+warning: enum `SurfaceForm` is never used
+   --> crates/benitoite/src/typeck/interval/input.rs:264:28
+    |
+264 | pub(in crate::typeck) enum SurfaceForm {
+    |                            ^^^^^^^^^^^
+
+warning: enum `Handling` is never used
+   --> crates/benitoite/src/typeck/interval/input.rs:322:28
+    |
+322 | pub(in crate::typeck) enum Handling {
+    |                            ^^^^^^^^
+
+warning: method `handling` is never used
+   --> crates/benitoite/src/typeck/interval/input.rs:333:12
+    |
+332 | impl SurfaceForm {
+    | ---------------- method in this implementation
+333 |     pub fn handling(self) -> Handling {
+    |            ^^^^^^^^
+
+error: `benitoite` (lib) generated 12 warnings
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+error: `benitoite` (lib test) generated 12 warnings (12 duplicates)
+error: warnings are denied by `build.warnings` configuration
+FAILED: lint_default
+       28.17 real       105.89 user         6.89 sys
+time: sysctl kern.clockrate: Operation not permitted

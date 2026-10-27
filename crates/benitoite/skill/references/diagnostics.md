@@ -2690,16 +2690,23 @@ The declaration is marked `@deprecated` and may be removed later. The note shows
 - Kind: check (warning)
 - Message: this divides by zero
 - Label: the divisor is always 0
+- `inferred_range`: the inferred divisor interval is {interval}
+- `local_analysis`: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+- `origin`: this binding or comparison contributes to the inferred interval
 
-The divisor is a constant expression whose value is 0, so the division stops the program when it runs.
+Constant evaluation or local interval analysis shows that the divisor is always zero. If execution reaches this operation and all operands are evaluated successfully, the division stops the program at runtime.
 
 ## W0402
 
 - Kind: check (warning)
 - Message: this calculation overflows `{ty}`
 - Label: always overflows
+- `inferred_range`: the inferred result interval before the range check is {interval}
+- `allowed_range`: the range of `{ty}` is {range}
+- `local_analysis`: this local analysis applies only if execution reaches this operation and all operands are evaluated successfully
+- `origin`: this binding or comparison contributes to the inferred interval
 
-Every operand is a constant expression and the result does not fit the type, so the calculation stops the program when it runs.
+Constant evaluation or local interval analysis shows that the result does not fit the type. If execution reaches this operation and all operands are evaluated successfully, the calculation stops the program at runtime.
 
 ## W0403
 
@@ -2709,6 +2716,18 @@ Every operand is a constant expression and the result does not fit the type, so 
 - `first`: first given here
 
 `Map.fromList` keeps the last value for a repeated key and `Set.fromList` keeps one element, so a repeated key in a list literal is likely a mistake.
+
+## W0404
+
+- Kind: check (warning)
+- Message: argument `{parameter}` to `{function}` is always out of range
+- Label: always out of range
+- `inferred_range`: the inferred interval is {interval}
+- `allowed_range`: the allowed range is {range}
+- `local_analysis`: this local analysis applies only if execution reaches this call and all arguments are evaluated successfully
+- `origin`: this binding or comparison contributes to the inferred interval
+
+Local interval analysis shows that the argument is always out of range. If execution reaches this call and all arguments are evaluated successfully, the call stops the program at runtime.
 
 ## W0501
 
@@ -2872,8 +2891,9 @@ By default, external calls limit total guest linear memory to 64 MiB and each di
 - Kind: resource (error)
 - Message: the external function `{function}` needed {size} {resource}; the limit is {limit}
 - `component`: component `{component}`
+- `component_handles`: the external function `{function}` exceeded the limit of {limit} component handles
 
-Each external call limits core instances, memories, and tables to 16 each, and each guest table to 10,000 elements. Reduce the component's resource requirements.
+Each Store limits core instances, memories, and tables to 16 each, each guest table to 10,000 elements, and simultaneously live component handles to 100,000. Stateful calls retain the live handle count across calls; dropping a handle returns capacity. Reduce the component's resource requirements.
 
 ## R0907
 

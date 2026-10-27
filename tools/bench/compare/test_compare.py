@@ -428,6 +428,29 @@ class SyntaxBatch4Contracts(unittest.TestCase):
 
 
 class CommonProbeCompilationTests(unittest.TestCase):
+    def test_interval_inputs_check_on_base_and_current_revision(self):
+        # 関門: 生成器の文字列だけの検査では、旧版での構文・型・警告の退行を検出できない。
+        # 実 CLI の check と共通の照合器を使い、標本採取や外部操作は行わない。
+        from build import build_all, git
+        from run import case_command, execute, validate, verify_group
+        baseline = '706d7ca3d16fc27d67e2ded0f7b1fee371aeb8a8'
+        head = git('rev-parse', 'HEAD').decode().strip()
+        records = build_all(dict(before=baseline, after=head))
+        cases = [c for c in corpus(False) if c.family.startswith('interval-') or
+                 (c.family == 'main' and not c.codes and c.n in (0, 1, 8, 32, 64, 256))]
+        configure(cases, {s: {} for s in records})
+        with tempfile.TemporaryDirectory() as tmp:
+            _, entries = materialize(Path(tmp), cases)
+            for case in cases:
+                outputs = {}
+                for state, record in records.items():
+                    with self.subTest(case=case.id, state=state):
+                        result = execute(case_command(case, record, entries[case.id, state]), 30)
+                        self.assertEqual(validate(case, state, result), 'verified')
+                        self.assertEqual(result['stderr'], '')
+                        outputs[state] = result
+                verify_group(case, outputs)
+
     def test_both_revisions_compile_through_the_common_builder(self):
         # コンパイルだけでは宣言型などの実行時の前提の欠落を捕まえられない。
         # quick の独立 IR とグラフを両版自身の検査・変換の入口へ一度ずつ通す。

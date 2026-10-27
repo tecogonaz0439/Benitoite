@@ -1,0 +1,12 @@
+../docs/2026-10-24-TODO-022_206_280_281_282_284_285_286-syntax-batch6/l21r/CallProbeExamples.lean:43:2: error: 'change' tactic failed, pattern
+  (CallReach.expr recognized division ++ CallReach.exprs recognized (Exprs.cons zero (Exprs.cons one Exprs.nil))).allows
+    ?m.17 ?m.18
+is not definitionally equal to target
+  (CallReach.exprsTables (rangeTables recognized)
+        (Exprs.cons division (Exprs.cons zero (Exprs.cons one Exprs.nil)))).allows
+    (advanceKey root
+      (CallReach.root
+              ((Expr.funName checkBinding.declaration [] []).call [none, none, none] [0, 1, 2]
+                (Exprs.cons division (Exprs.cons zero (Exprs.cons one Exprs.nil)))) ++
+            CallReach.outside (surfacePreorder (Expr.funName checkBinding.declaration [] []))).sources.length)
+    divisionWarning

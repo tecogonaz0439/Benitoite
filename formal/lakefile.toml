@@ -1,5 +1,7 @@
 name = "benitoite-formal"
-defaultTargets = ["Benitoite", "desugarDiff", "builtinCheck", "coverageDiff", "coverageProgramDiff", "surfaceCheck", "surfaceCheckAll"]
+defaultTargets = ["Benitoite", "desugarDiff", "builtinCheck", "coverageDiff", "coverageProgramDiff", "surfaceCheck", "surfaceCheckAll", "intervalDiff"]
+# Lean のプロセスごとのメモリの上限（MiB）。証明の計算の展開でメモリが際限なく増えるのを止める。
+moreLeanArgs = ["-M", "12288"]
 
 [[lean_lib]]
 name = "Benitoite"
@@ -29,3 +31,7 @@ root = "SurfaceCheck.All"
 
 [[lean_lib]]
 name = "SurfaceCheck"
+
+[[lean_exe]]
+name = "intervalDiff"
+root = "IntervalDiff.Main"

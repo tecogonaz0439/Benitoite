@@ -34,7 +34,7 @@ To read this executable's Skill without installing it, use `benitoite skill list
 
 1. Before writing, read `references/idioms.md` and, for every module the script uses, its file `references/stdlib/<Module>.md` (the `references/` directory is next to this file). Do not guess function names, field names, or import names; look them up there. Then write the script, starting from an example in `references/idioms.md` when one fits.
 2. Run `benitoite check script.bnt` to check without executing user functions.
-3. Read the diagnostics on standard error and fix the script. A diagnostic gives a code such as `E0230`; when its meaning is unclear, look the code up in `references/diagnostics.md`.
+3. Read the diagnostics on standard error and fix the script. A diagnostic gives a code such as `E0230`; when its meaning is unclear, look the code up in `references/diagnostics.md`. For W0401, W0402, or W0404 with a local-analysis note, use [Explaining local interval warnings](references/idioms.md#explaining-local-interval-warnings) to explain the cause and its conditions before choosing a correction.
 4. Repeat 2 and 3 until the check succeeds with exit status 0. Fix warnings too; they usually point at a real mistake.
 5. Immediately before the confirmation in [Before running](#before-running), run `benitoite check --report=json script.bnt` once to obtain the declared effects of `main`. Require a complete single JSON object, a known `schemaVersion` and `kind: "checkReport"`, `status: "ok"`, `complete: true`, and exit status 0. Never treat a missing, partial, or failed report as an empty effect set. If it fails, return to ordinary checks while fixing the script, then obtain a fresh report before confirmation.
 6. Do the confirmation in [Before running](#before-running), then run `benitoite run --allow-effects=<accepted names> script.bnt [arguments...]`, using the accepted atomic names from `aggregateEffects.expanded`. For a pure script, write `--allow-effects=`. If `E0512` reports an added effect, inspect and review it again before changing the allowed set.
@@ -56,9 +56,13 @@ To include documentation examples, keep `--doc` on both the inspection and execu
 
 ## Before running
 
+The harness must read `intervalAnalysis` on inspection reports and targets separately from `complete`. Its `basis: "localIntervals"` and `coverage: "all"`, `"some"`, or `"none"` describe the range of local interval analysis and do not participate in report acceptance. Keep the acceptance rules below; no warnings does not mean safe, even with `all`. For counts, budget stops, usage, and aggregation, see [Local interval analysis](references/inspection.md#local-interval-analysis).
+
+Unknown values, unsupported forms, and exhausted analysis budgets do not by themselves require a code change or a larger `uses` bound. Keep runtime checks and failure handling. Local warnings describe failure only if execution reaches the reported operation or call and every operand or argument evaluates successfully. W0404 covers direct standard shift-count arguments; effect operations and HTTP record fields are outside its scope. See [the examples and analysis boundaries](references/idioms.md#explaining-local-interval-warnings) before interpreting missing warnings.
+
 Before running a script for the first time, and whenever the effects of `main` grow beyond what you last showed the user:
 
-1. Accept an inspection only after checking the complete single JSON object, a known `schemaVersion` and `kind`, `status: "ok"`, `complete: true`, and exit status 0. Read its declared upper bound (`targets[0].main.effects.expanded` for scripts, or each selected test's `effects`, and `aggregateEffects`) and tell the user, in the words of the table below, what kinds of operations the program declares. Compare it with each function's `uses` and the file-level `uses` when explaining the code. Declared but unused effects and additions from the file still count. Unknown or failed results are not an empty set, and the bound does not authorize itself. The report fields and acceptance rules are defined by the processor's [version-pinned CLI specification (v0.0.11, checkReport 1 and testCheckReport 1/2)](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.11/docs/design/06-tooling/06-01-cli.md#main-の非実行の検査報告); see also [inspection](references/inspection.md).
+1. Accept an inspection only after checking the complete single JSON object, a known `schemaVersion` and `kind`, `status: "ok"`, `complete: true`, and exit status 0. Read its declared upper bound (`targets[0].main.effects.expanded` for scripts, or each selected test's `effects`, and `aggregateEffects`) and tell the user, in the words of the table below, what kinds of operations the program declares. Compare it with each function's `uses` and the file-level `uses` when explaining the code. Declared but unused effects and additions from the file still count. Unknown or failed results are not an empty set, and the bound does not authorize itself. The existing required fields and acceptance rules are described in the processor's [version-pinned English reference (v0.0.12, checkReport 1 and testCheckReport 1/2)](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports); the added interval summary is described in [inspection](references/inspection.md#local-interval-analysis).
 2. If the list contains `File.Write`, `Process.Run`, `Http.Connect`, or `Http.Listen`, ask the user to confirm before running. For `Process.Run`, also name the commands the script starts; what those commands do is outside the checks of `benitoite`.
 3. Treat `IO.All` as including `File.Write` and `Process.Run`. Write the specific effects in `uses` instead of `IO.All`.
 
@@ -167,6 +171,8 @@ Use `block ... end block` to keep builder declarations and work inside one expre
 
 Log and SourceLocation are prelude modules. Call `SourceLocation.here()` directly where the desired position is written; wrappers should take an explicit Location. Function values/holes/pipes are E0467. `Log.info(message: ..., attributes: [Log.attribute(key: ..., value: ...)], location: SourceLocation.here())` needs uses Log and, when declared, accepted effect Log. IO.All and Console.Write do not include Log. Arguments are eager even if disabled; guard expensive formatting with Log.enabled(Log.Level.Debug). Default stderr output accepts Info and above. Log.error does not terminate. Handle emit and enabled together; withTextLogger requires Console.Write, withSinks preserves sink effects, and withAttributes forwards Log. Log cannot be renamed with as. Checked list APIs are in Range and NonEmptyList; get takes only the checked index, which retains its original list. See references/idioms.md.
 
+For an already-open file sink, capture the Writer inside its `with` block and pass `Log.formatRecord(record: record)` to `File.writeLine`. For JSON lines, convert the record in application code. See [File and JSON log sinks](references/idioms.md#file-and-json-log-sinks) for executable examples, duplicate attributes, numeric values, and flush/close failures. Ask the harness to review the remaining sink effects before running.
+
 ## Choosing collection and sequencing functions
 
 When the container is known, use `List.map/fold`, `Option.map/andThen`, or `Result.map/andThen/mapError`. Use the smallest class constraint needed only when one function must work with several containers: `Trait.Functor`, `Trait.Applicative`, or `Trait.Monad` for one type parameter; `Trait.Functor2`, `Trait.Applicative2`, or `Trait.Monad2` for two. Import `Benitoite.Trait` explicitly. The two-parameter classes transform `F[A, X]` while keeping `X`; their standard implementation is `Result`. They do not make `Result` usable with the one-parameter `Monad` or `Traversable`.
@@ -256,11 +262,20 @@ Show uses field order and each field's quoting;
 Order stops at the first non-Equal field. Neither supplies builtin equality,
 key constraints, or a serialization format. Existing handwritten implementations
 are protected. An opaque record may explicitly request Show/Order in its owner
-module; review the proposed opaque display before applying it. Its declaration inventory
-uses version 2; manifests, receipts, generation records and semantic hashes use
-version 3 with generator rules `3.0.0-syntax-batch4`; settings remain version 1.
-Authenticate old body hashes, then review a fresh preview to migrate records; old
-manifests cannot authorize the new apply. The same seed alone does not reproduce
+module; review the proposed opaque display before applying it. JSON/Property
+generation refuses a target module with file-level `uses`; Show/Order-only
+targets remain accepted. Replace the file declaration with individual `uses` on
+the functions that need effects, or move the type definition and derive target
+to a pure model module and import it from effectful code. Changing only the
+configured `source` cannot move generated output away from its declaring type.
+For existing regions, follow the target removal/relocation procedure in
+`tools/derive/README.md` before making a fresh preview.
+The derive tool's declaration inventory uses version 3; manifests, receipts, generation records
+and semantic hashes use version 3 with generator rules `3.1.0-syntax-batch5`;
+settings remain version 1. Finish pending apply/recovery with the saved old tool
+before updating it. Authenticate old body hashes, then review a fresh preview
+and apply its exact reviewed manifest hash. Even with the same generator version,
+tool input hashes can invalidate an earlier manifest. The same seed alone does not reproduce
 an old generation distribution. Use handwritten checked construction for
 opaque types (including custom codecs/generators for opaque fields). In an environment with
 only the distributed executable and Skill, write these functions directly using

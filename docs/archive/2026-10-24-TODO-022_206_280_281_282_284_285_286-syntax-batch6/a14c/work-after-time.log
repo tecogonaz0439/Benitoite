@@ -1,0 +1,127 @@
+{"command": ["scripts/check.sh", "--level", "work", "--base", "c60e47fe6782b21e49f2e5465c37feaba8d96781", "--only", "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally", "--test", "*"], "exit": 1, "seconds": 128.679}
+   Running tests/checked_args.rs (target/debug/deps/checked_args-be3cae742fe14985)
+
+running 10 tests
+test log_record_parameter_is_an_ordinary_contextual_name ... ok
+test constant_origins_follow_cached_transitive_values ... ok
+test constant_origin_labels_are_bounded_and_keep_chain_endpoints ... ok
+test range_checked_integer_hides_all_representation_operations ... ok
+test regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion ... ok
+test source_location_requires_the_standard_direct_zero_argument_call ... ok
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test regex_constants_reject_only_known_direct_standard_calls ... ok
+test additional_budgets_fall_back_to_runtime_and_do_not_reset_per_body ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.67s
+
+     Running tests/cli_process.rs (target/debug/deps/cli_process-c717bd0a592a6f65)
+
+running 33 tests
+test check_rejects_a_script_piped_to_dev_stdin ... ok
+test check_rejects_a_fifo_module_without_blocking ... ok
+test check_report_panics_preserve_failure_and_single_output ... ok
+test check_report_write_failures_exit_once_without_stderr_fallback ... ok
+test check_usage_reports_respect_option_scope_and_argument_order ... ok
+test log_default_output_runs_through_the_real_cli_in_both_modes ... ok
+test log_main_report_and_effect_limits_keep_schema_one ... ok
+test file_effects_reach_main_reports_and_limit_origins ... ok
+test die_source_reports_cause_message_and_location_once ... ok
+test failure_entry_help_uses_resolved_standard_effect ... ok
+test main_check_reports_warnings_without_execution ... ok
+test cli_process_contracts ... ok
+test main_check_reports_failures_without_execution ... ok
+test main_check_reports_sources_without_execution ... ok
+test die_reports_precede_real_release_and_flush_failures ... ok
+test run_failure_contracts_are_checked_before_effect_limits ... ok
+test skill_document_output_failures_exit_one ... ok
+test main_check_reports_contracts_without_execution ... ok
+test shared_decisions_are_accepted_by_all_cli_modes ... ok
+test skill_documents_need_no_writable_directory ... ok
+test test_check_report_catches_tool_panics_as_a_single_report ... ok
+test skill_document_usage_errors_do_not_open_paths_or_write_documents ... ok
+test tool_panics_are_internal_reports ... ok
+test unreadable_path_controls_are_escaped_in_the_header ... ok
+test run_effect_limits_recheck_changed_sources ... ok
+test main_check_reports_shell_without_execution ... ok
+test test_doc_uses_version_two_and_keeps_check_nonexecuting ... ok
+test skill_documents_match_the_embedded_bundle_and_installed_bytes ... ok
+test run_effect_limits_check_declared_contracts_before_execution ... ok
+test main_control_flow_reports_match_effect_limits ... ok
+test expanded_type_limits ... ok
+test interval_reports_keep_coverage_and_counts_independent_of_acceptance ... ok
+test expanded_types_at_the_limits_are_usable ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.98s
+
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-dfd1484753d40198)
+
+running 4 tests
+test export_coverage ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_named_coverage ... ok
+test export_batch4_integer ... ok
+test scalar_source_arms_preserve_selection ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.07s
+
+     Running tests/declarations.rs (target/debug/deps/declarations-62c1acffbc3f5933)
+
+running 28 tests
+test diagnosed_binding_chain_scales_with_input_length ... ignored, long: checks near-linear recovery of a long chain of diagnosed bindings
+test config_rejects_duplicate_unknown_and_incomplete_settings ... ok
+test declarations_do_not_resolve_check_or_evaluate_bodies ... ok
+test diagnosed_recovery_keeps_pending_call_escape ... ok
+test diagnosed_recovery_does_not_infer_values_from_callback_requirements ... ok
+test diagnosed_recovery_skips_coverage_without_a_known_pattern_shape ... ok
+test file_uses_external_declarations_check_the_effective_contract ... ok
+test file_uses_failure_no_fail_is_enforced_at_calls ... ok
+test file_uses_inventory_keeps_original_ast_and_effect_origins ... ok
+test file_uses_imports_and_higher_order_values_use_merged_contracts ... ok
+test file_uses_loading_merges_functions_and_rejects_config_declarations ... ok
+test declaration_errors_are_rejected_at_the_same_stage_as_check ... ok
+test constant_intervals_analyze_bodies_and_merge_original_warning_locations ... ok
+test inventory_json_preserves_resolved_types_order_spans_and_input_hashes ... ok
+test inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries ... ok
+test checked_lists_hide_representation_and_bind_indices_to_their_list ... ok
+test file_uses_visibility_reports_once_and_repairs_all_public_functions ... ok
+test opaque_declarations_keep_representation_and_owner_but_hide_its_contract ... ok
+test diagnosed_binding_recovery_preserves_own_contracts ... ok
+test log_standard_declarations_and_effect_identity ... ok
+test file_uses_contracts_preserve_existing_restrictions ... ok
+test opaque_types_keep_nominal_equality_and_nonempty_coverage ... ok
+test log_standard_handlers_keep_the_outer_effect_contract ... ok
+test diagnosed_recovery_preserves_independent_later_checks ... ok
+test interpolation_formats_preserve_recovery ... ok
+test local_intervals_report_only_reached_arithmetic_failures ... FAILED
+test interval_boundaries_forget_outer_facts_and_keep_inner_warnings ... ok
+test diagnosed_recovery_preserves_partial_structure ... ok
+
+failures:
+
+---- local_intervals_report_only_reached_arithmetic_failures stdout ----
+
+thread 'local_intervals_report_only_reached_arithmetic_failures' (4148615) panicked at crates/benitoite/tests/declarations.rs:2189:9:
+assertion `left == right` failed: const zero: Integer = 0
+function sample(x: Integer, other: Integer, flag: Boolean) -> Integer
+ bind n <- 0s8
+ bind z <- 0
+ return match n with
+ case v if v = 0s8 -> 10 div z
+ case _ -> 1 end match
+end function
+
+  left: [W0401]
+ right: []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    local_intervals_report_only_reached_arithmetic_failures
+
+test result: FAILED. 26 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.61s
+
+error: test failed, to rerun pass `-p benitoite --test declarations`
+FAILED: tests_related
+
+      128.69 real       526.68 user        34.41 sys
+time: sysctl kern.clockrate: Operation not permitted

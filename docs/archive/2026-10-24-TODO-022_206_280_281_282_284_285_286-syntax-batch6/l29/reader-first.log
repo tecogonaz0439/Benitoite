@@ -1,0 +1,54 @@
+Benitoite/Interval/Exchange.lean:306:8: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HAppend Json (List (String × Json)) ?m.126
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:312:74: error: unexpected token ')'; expected command
+Benitoite/Interval/Exchange.lean:358:39: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq Ty
+
+Hint: Adding the command `deriving instance BEq for Benitoite.Release.Ty` may allow Lean to derive the missing instance.
+Benitoite/Interval/Exchange.lean:358:65: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq Ty
+
+Hint: Adding the command `deriving instance BEq for Benitoite.Release.Ty` may allow Lean to derive the missing instance.
+Benitoite/Interval/Exchange.lean:464:21: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq Ty
+
+Hint: Adding the command `deriving instance BEq for Benitoite.Release.Ty` may allow Lean to derive the missing instance.
+Benitoite/Interval/Exchange.lean:481:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:497:60: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:499:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:510:58: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:512:5: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (List Ty)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:582:83: error: unexpected identifier; expected '}'
+Benitoite/Interval/Exchange.lean:648:77: error(lean.invalidField): Invalid field `integerKind`: The environment does not contain `Benitoite.Interval.BaseApprox.integerKind`, so it is not possible to project the field `integerKind` from an expression
+  value
+of type `BaseApprox`
+Benitoite/Interval/Exchange.lean:677:57: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HAppend Json (List (String × Json)) ?m.66
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Benitoite/Interval/Exchange.lean:727:38: error(lean.invalidField): Invalid field `integerKind`: The environment does not contain `Benitoite.Interval.BaseApprox.integerKind`, so it is not possible to project the field `integerKind` from an expression
+  body.output.approx
+of type `BaseApprox`
+Benitoite/Interval/Exchange.lean:876:40: error(lean.invalidField): Invalid field `env`: The environment does not contain `Benitoite.Interval.BudgetWhole.Definition.env`, so it is not possible to project the field `env` from an expression
+  d.input
+of type `BudgetWhole.Definition`
+Benitoite/Interval/Exchange.lean:876:63: error(lean.invalidField): Invalid field `env`: The environment does not contain `Benitoite.Interval.BudgetWhole.Definition.env`, so it is not possible to project the field `env` from an expression
+  d.input
+of type `BudgetWhole.Definition`

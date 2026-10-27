@@ -1,0 +1,212 @@
+Benitoite/Interval/BudgetCallReach.lean:280:93: warning: This simp argument is unused:
+  outside
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [append_sources, exprTables_sources]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Interval/BudgetCallReach.lean:470:42: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  inner
+in the target expression
+  rangeTables ?m.3335 = rangeTables env
+
+fuel : Nat
+he :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (source : Expr),
+    Within (expr fuel env source) (CallReach.expr env source) extra
+hs :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (left right : Expr) (truth : Bool),
+    Within (shortCircuit fuel env left right truth) (CallReach.expr env left ++ CallReach.expr env right) extra
+hb :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (body : Block),
+    Within (block fuel env body) (CallReach.block env body) extra
+ha :
+  ∀ (extra : IntervalWarning → Prop) (kind : IntKind) (env : AbstractEnv) (source : Expr) (normal : Interval kind)
+    (arms : Arms), Within (armListKind fuel kind env source normal arms) (CallReach.armList env arms) extra
+hargs :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (sources : Exprs),
+    Within (arguments fuel env sources) (exprs env sources) extra
+hr :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (input : EvalInput) (arms : Arms),
+    Within (resultArmList fuel env input arms) (CallReach.armList env arms) extra
+we :
+  ∀ (env : AbstractEnv) (source : Expr) {scopeEnv : AbstractEnv},
+    Walk (expr fuel env source) (CallReach.expr scopeEnv source).sources
+ws :
+  ∀ (env : AbstractEnv) (left right : Expr) (truth : Bool) {scopeEnv : AbstractEnv},
+    Walk (shortCircuit fuel env left right truth)
+      (CallReach.expr scopeEnv left ++ CallReach.expr scopeEnv right).sources
+wb :
+  ∀ (env : AbstractEnv) (body : Block) {scopeEnv : AbstractEnv},
+    Walk (block fuel env body) (CallReach.block scopeEnv body).sources
+wa :
+  ∀ (kind : IntKind) (env : AbstractEnv) (source : Expr) (normal : Interval kind) (arms : Arms)
+    {scopeEnv : AbstractEnv},
+    Walk (armListKind fuel kind env source normal arms) (CallReach.armList scopeEnv arms).sources
+wargs :
+  ∀ (env : AbstractEnv) (sources : Exprs) {scopeEnv : AbstractEnv},
+    Walk (arguments fuel env sources) (exprs scopeEnv sources).sources
+wr :
+  ∀ (env : AbstractEnv) (input : EvalInput) (arms : Arms) {scopeEnv : AbstractEnv},
+    Walk (resultArmList fuel env input arms) (CallReach.armList scopeEnv arms).sources
+extra : IntervalWarning → Prop
+env : AbstractEnv
+se : ∀ (source : Expr), Walk (skipExpr fuel source) (CallReach.expr env source).sources
+sc : ∀ (source : Expr), Walk (skipChildren fuel source) (CallReach.children env source).sources
+left✝² : ∀ (sources : Exprs), Walk (skipExprs fuel sources) (outside (preorderExprs sources)).sources
+left✝¹ : ∀ (args : HoleArgs), Walk (skipHoles fuel args) (outside (preorderHoles args)).sources
+sb : ∀ (body : Block), Walk (skipBlock fuel body) (CallReach.block env body).sources
+sa : ∀ (arms : Arms), Walk (skipArms fuel arms) (CallReach.armList env arms).sources
+left✝ : ∀ (clauses : Clauses), Walk (skipClauses fuel clauses) (outside (preorderClauses clauses)).sources
+so :
+  ∀ (value : Option Expr),
+    Walk (skipOptional fuel value)
+      (match value with
+        | none => empty
+        | some source => CallReach.expr env source).sources
+value✝ : Unit
+kind : BuilderKind
+rest : Block
+inner : AbstractEnv
+eq : inner = extend env (AbstractSlot.builder kind)
+⊢ rangeTables ?m.3335 = rangeTables env
+Benitoite/Interval/BudgetCallReach.lean:487:44: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  inner
+in the target expression
+  rangeTables ?m.3497 = rangeTables env
+
+fuel : Nat
+he :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (source : Expr),
+    Within (expr fuel env source) (CallReach.expr env source) extra
+hs :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (left right : Expr) (truth : Bool),
+    Within (shortCircuit fuel env left right truth) (CallReach.expr env left ++ CallReach.expr env right) extra
+hb :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (body : Block),
+    Within (block fuel env body) (CallReach.block env body) extra
+ha :
+  ∀ (extra : IntervalWarning → Prop) (kind : IntKind) (env : AbstractEnv) (source : Expr) (normal : Interval kind)
+    (arms : Arms), Within (armListKind fuel kind env source normal arms) (CallReach.armList env arms) extra
+hargs :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (sources : Exprs),
+    Within (arguments fuel env sources) (exprs env sources) extra
+hr :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (input : EvalInput) (arms : Arms),
+    Within (resultArmList fuel env input arms) (CallReach.armList env arms) extra
+we :
+  ∀ (env : AbstractEnv) (source : Expr) {scopeEnv : AbstractEnv},
+    Walk (expr fuel env source) (CallReach.expr scopeEnv source).sources
+ws :
+  ∀ (env : AbstractEnv) (left right : Expr) (truth : Bool) {scopeEnv : AbstractEnv},
+    Walk (shortCircuit fuel env left right truth)
+      (CallReach.expr scopeEnv left ++ CallReach.expr scopeEnv right).sources
+wb :
+  ∀ (env : AbstractEnv) (body : Block) {scopeEnv : AbstractEnv},
+    Walk (block fuel env body) (CallReach.block scopeEnv body).sources
+wa :
+  ∀ (kind : IntKind) (env : AbstractEnv) (source : Expr) (normal : Interval kind) (arms : Arms)
+    {scopeEnv : AbstractEnv},
+    Walk (armListKind fuel kind env source normal arms) (CallReach.armList scopeEnv arms).sources
+wargs :
+  ∀ (env : AbstractEnv) (sources : Exprs) {scopeEnv : AbstractEnv},
+    Walk (arguments fuel env sources) (exprs scopeEnv sources).sources
+wr :
+  ∀ (env : AbstractEnv) (input : EvalInput) (arms : Arms) {scopeEnv : AbstractEnv},
+    Walk (resultArmList fuel env input arms) (CallReach.armList scopeEnv arms).sources
+extra : IntervalWarning → Prop
+env : AbstractEnv
+se : ∀ (source : Expr), Walk (skipExpr fuel source) (CallReach.expr env source).sources
+sc : ∀ (source : Expr), Walk (skipChildren fuel source) (CallReach.children env source).sources
+left✝² : ∀ (sources : Exprs), Walk (skipExprs fuel sources) (outside (preorderExprs sources)).sources
+left✝¹ : ∀ (args : HoleArgs), Walk (skipHoles fuel args) (outside (preorderHoles args)).sources
+sb : ∀ (body : Block), Walk (skipBlock fuel body) (CallReach.block env body).sources
+sa : ∀ (arms : Arms), Walk (skipArms fuel arms) (CallReach.armList env arms).sources
+left✝ : ∀ (clauses : Clauses), Walk (skipClauses fuel clauses) (outside (preorderClauses clauses)).sources
+so :
+  ∀ (value : Option Expr),
+    Walk (skipOptional fuel value)
+      (match value with
+        | none => empty
+        | some source => CallReach.expr env source).sources
+value✝ : Unit
+kind : BindKind
+type : Ty
+source : Expr
+rest : Block
+start : Context
+head : BaseApprox
+h✝ : ¬(!head.live) = true
+inner : AbstractEnv
+eq : inner = baseBindSource kind env type head { source := source, type := type, key := start.next }
+⊢ rangeTables ?m.3497 = rangeTables env
+Benitoite/Interval/BudgetCallReach.lean:504:44: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  inner
+in the target expression
+  rangeTables ?m.3712 = rangeTables env
+
+fuel : Nat
+he :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (source : Expr),
+    Within (expr fuel env source) (CallReach.expr env source) extra
+hs :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (left right : Expr) (truth : Bool),
+    Within (shortCircuit fuel env left right truth) (CallReach.expr env left ++ CallReach.expr env right) extra
+hb :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (body : Block),
+    Within (block fuel env body) (CallReach.block env body) extra
+ha :
+  ∀ (extra : IntervalWarning → Prop) (kind : IntKind) (env : AbstractEnv) (source : Expr) (normal : Interval kind)
+    (arms : Arms), Within (armListKind fuel kind env source normal arms) (CallReach.armList env arms) extra
+hargs :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (sources : Exprs),
+    Within (arguments fuel env sources) (exprs env sources) extra
+hr :
+  ∀ (extra : IntervalWarning → Prop) (env : AbstractEnv) (input : EvalInput) (arms : Arms),
+    Within (resultArmList fuel env input arms) (CallReach.armList env arms) extra
+we :
+  ∀ (env : AbstractEnv) (source : Expr) {scopeEnv : AbstractEnv},
+    Walk (expr fuel env source) (CallReach.expr scopeEnv source).sources
+ws :
+  ∀ (env : AbstractEnv) (left right : Expr) (truth : Bool) {scopeEnv : AbstractEnv},
+    Walk (shortCircuit fuel env left right truth)
+      (CallReach.expr scopeEnv left ++ CallReach.expr scopeEnv right).sources
+wb :
+  ∀ (env : AbstractEnv) (body : Block) {scopeEnv : AbstractEnv},
+    Walk (block fuel env body) (CallReach.block scopeEnv body).sources
+wa :
+  ∀ (kind : IntKind) (env : AbstractEnv) (source : Expr) (normal : Interval kind) (arms : Arms)
+    {scopeEnv : AbstractEnv},
+    Walk (armListKind fuel kind env source normal arms) (CallReach.armList scopeEnv arms).sources
+wargs :
+  ∀ (env : AbstractEnv) (sources : Exprs) {scopeEnv : AbstractEnv},
+    Walk (arguments fuel env sources) (exprs scopeEnv sources).sources
+wr :
+  ∀ (env : AbstractEnv) (input : EvalInput) (arms : Arms) {scopeEnv : AbstractEnv},
+    Walk (resultArmList fuel env input arms) (CallReach.armList scopeEnv arms).sources
+extra : IntervalWarning → Prop
+env : AbstractEnv
+se : ∀ (source : Expr), Walk (skipExpr fuel source) (CallReach.expr env source).sources
+sc : ∀ (source : Expr), Walk (skipChildren fuel source) (CallReach.children env source).sources
+left✝² : ∀ (sources : Exprs), Walk (skipExprs fuel sources) (outside (preorderExprs sources)).sources
+left✝¹ : ∀ (args : HoleArgs), Walk (skipHoles fuel args) (outside (preorderHoles args)).sources
+sb : ∀ (body : Block), Walk (skipBlock fuel body) (CallReach.block env body).sources
+sa : ∀ (arms : Arms), Walk (skipArms fuel arms) (CallReach.armList env arms).sources
+left✝ : ∀ (clauses : Clauses), Walk (skipClauses fuel clauses) (outside (preorderClauses clauses)).sources
+so :
+  ∀ (value : Option Expr),
+    Walk (skipOptional fuel value)
+      (match value with
+        | none => empty
+        | some source => CallReach.expr env source).sources
+value✝ : Unit
+kind✝ : BindKind
+pattern : Pattern
+type : Ty
+source : Expr
+rest : Block
+head : BaseApprox
+h✝ : ¬(!head.live) = true
+inner : AbstractEnv
+eq : inner = extendPattern env pattern type
+⊢ rangeTables ?m.3712 = rangeTables env

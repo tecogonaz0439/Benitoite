@@ -1,0 +1,18 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "89c7a777c664bc0cd5b728019f0ce983bda4c0cf",
+    "--only",
+    "spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples",
+    "--dry-run"
+  ],
+  "exit": 0,
+  "wallSeconds": 0.013
+}

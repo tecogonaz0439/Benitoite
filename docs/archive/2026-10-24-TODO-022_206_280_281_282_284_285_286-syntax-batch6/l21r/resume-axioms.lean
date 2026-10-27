@@ -1,0 +1,18 @@
+import Benitoite
+
+open Benitoite.Interval Benitoite.Interval.BudgetAnalysis
+
+#check analyzeExpr_warning_syntactic_reach
+#check analyze_warning_syntactic_reach
+#check analyzeBody_warning_syntactic_reach
+#check analyzeExpr_independent_sound
+#check analyzeBody_independent_sound
+#print axioms analyze_normal_sound
+#print axioms analyze_warning_sound
+#print axioms analyzeExpr_warning_call_reach
+#print axioms analyze_warning_call_reach
+#print axioms analyzeBody_warning_call_reach
+#print axioms analyzeExpr_unrecognized_call_warnings
+#print axioms analyzeExpr_independent_call_reach
+#print axioms analyzeBody_independent_call_reach
+#print axioms Benitoite.Interval.BudgetWhole.analyze_warning_call_reach

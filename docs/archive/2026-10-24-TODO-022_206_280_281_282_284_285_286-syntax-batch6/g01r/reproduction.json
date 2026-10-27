@@ -1,0 +1,131 @@
+{
+  "exit": 0,
+  "executed": false,
+  "diagnostics": [
+    {
+      "code": "W0401",
+      "helps": [],
+      "kind": "check",
+      "message": "this divides by zero",
+      "notes": [
+        "the inferred divisor interval is [0,0]",
+        "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+      ],
+      "primary": {
+        "end": {
+          "column": 29,
+          "line": 3,
+          "offset": 111
+        },
+        "file": "testdata/warnings/skill-local-intervals.bnt",
+        "label": "the divisor is always 0",
+        "start": {
+          "column": 22,
+          "line": 3,
+          "offset": 104
+        }
+      },
+      "secondary": [
+        {
+          "end": {
+            "column": 17,
+            "line": 2,
+            "offset": 77
+          },
+          "file": "testdata/warnings/skill-local-intervals.bnt",
+          "label": "this binding or comparison contributes to the inferred interval",
+          "start": {
+            "column": 6,
+            "line": 2,
+            "offset": 66
+          }
+        }
+      ],
+      "severity": "warning"
+    },
+    {
+      "code": "W0402",
+      "helps": [],
+      "kind": "check",
+      "message": "this calculation overflows `Integer8`",
+      "notes": [
+        "the inferred result interval before the range check is [130,137]",
+        "the range of `Integer8` is [-128,127]",
+        "this local analysis applies only if execution reaches this operation and all operands are evaluated successfully"
+      ],
+      "primary": {
+        "end": {
+          "column": 24,
+          "line": 11,
+          "offset": 254
+        },
+        "file": "testdata/warnings/skill-local-intervals.bnt",
+        "label": "always overflows",
+        "start": {
+          "column": 12,
+          "line": 11,
+          "offset": 242
+        }
+      },
+      "secondary": [
+        {
+          "end": {
+            "column": 20,
+            "line": 10,
+            "offset": 225
+          },
+          "file": "testdata/warnings/skill-local-intervals.bnt",
+          "label": "this binding or comparison contributes to the inferred interval",
+          "start": {
+            "column": 6,
+            "line": 10,
+            "offset": 211
+          }
+        }
+      ],
+      "severity": "warning"
+    },
+    {
+      "code": "W0404",
+      "helps": [],
+      "kind": "check",
+      "message": "argument `n` to `Integer.shiftLeft` is always out of range",
+      "notes": [
+        "the inferred interval is [64,9223372036854775807]",
+        "the allowed range is [0,63]",
+        "this local analysis applies only if execution reaches this call and all arguments are evaluated successfully"
+      ],
+      "primary": {
+        "end": {
+          "column": 40,
+          "line": 19,
+          "offset": 397
+        },
+        "file": "testdata/warnings/skill-local-intervals.bnt",
+        "label": "always out of range",
+        "start": {
+          "column": 39,
+          "line": 19,
+          "offset": 396
+        }
+      },
+      "secondary": [
+        {
+          "end": {
+            "column": 13,
+            "line": 18,
+            "offset": 352
+          },
+          "file": "testdata/warnings/skill-local-intervals.bnt",
+          "label": "this binding or comparison contributes to the inferred interval",
+          "start": {
+            "column": 6,
+            "line": 18,
+            "offset": 345
+          }
+        }
+      ],
+      "severity": "warning"
+    }
+  ]
+}

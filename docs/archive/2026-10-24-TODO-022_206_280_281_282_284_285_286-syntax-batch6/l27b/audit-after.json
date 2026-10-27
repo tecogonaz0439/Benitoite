@@ -1,0 +1,27 @@
+{
+  "base": "9f857805dab73e6253a3574d237b5c9b83711a87",
+  "head": "9f857805dab73e6253a3574d237b5c9b83711a87",
+  "checked_files": 4538,
+  "changed": [
+    "formal/lakefile.toml"
+  ],
+  "unchanged_named_theorems": 3434,
+  "old_executables": [
+    "desugarDiff",
+    "builtinCheck",
+    "coverageDiff",
+    "coverageProgramDiff",
+    "surfaceCheck",
+    "surfaceCheckAll"
+  ],
+  "new_executable": {
+    "name": "intervalDiff",
+    "root": "IntervalDiff.Main"
+  },
+  "moreLeanArgs": [
+    "-M",
+    "12288"
+  ],
+  "input_hashes_unchanged": true,
+  "diff_check": "passed"
+}

@@ -1,0 +1,19 @@
+Benitoite/Interval/Examples.lean:1005:27: error: Tactic `subst` failed: invalid equality proof, it is not of the form (x = t) or (t = x)
+  input = ConcreteValue.rangeError names.owner tag error ∨ input ∈ []
+
+case inr
+tag : ConName
+args : List ConcreteValue
+error : Checked.Range.RangeError
+number : Integer64Value
+input : ConcreteValue
+h✝ : input = ConcreteValue.rangeError names.owner tag error ∨ input ∈ []
+⊢ EvalStandard valueBinding.rule (key 10) [input] (OperationResult.normal (ConcreteValue.integer number)) ∧
+    EvalStandard valueBinding.rule (key 10) [input] (OperationResult.rejected Failure.unknown)
+Benitoite/Interval/Examples.lean:1004:28: warning: This simp argument is unused:
+  List.mem_singleton
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [List.mem_cons] at member
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
